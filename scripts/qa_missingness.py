@@ -12,14 +12,15 @@ Generates a single self-contained HTML file:
     each cohort (BP/SZ/DR). Cohorts without a source CSV column show a
     distinct grey 'no source' bar.
 
-Outputs: qa_missingness.html  (single file, plotly.js loaded via CDN)
-         qa_missingness.csv   (raw numbers — useful for downstream tooling)
+Outputs: reports/qa_missingness.html (single file, plotly.js loaded via CDN)
+         results/qa_missingness.csv  (raw numbers — useful for downstream tooling)
 
-Run: python3 qa_missingness.py
+Run: python3 scripts/qa_missingness.py
 """
 from __future__ import annotations
 
 import html
+import sys
 import warnings
 from pathlib import Path
 from typing import Iterable
@@ -29,12 +30,16 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.io as pio
 
-from face_common import build_unified_dataframe, load_variables
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
+from face_common import build_unified_dataframe, load_variables  # noqa: E402
 
 
-HERE = Path(__file__).resolve().parent
-DATA_DIR = HERE / "data"
-DICT_PATH = HERE / "face-common-vars.xlsx"
+DATA_DIR = REPO_ROOT / "data"
+DICT_PATH = REPO_ROOT / "face-common-vars.xlsx"
+RESULTS_DIR = REPO_ROOT / "results"
+REPORTS_DIR = REPO_ROOT / "reports"
 
 VISITS = ["V0", "V1", "V2", "V3", "V4"]
 COHORTS = ["BP", "SZ", "DR"]
@@ -459,13 +464,15 @@ def main() -> int:
 
     print("Computing missingness table...")
     miss_df = compute_missingness(df, feature_vars)
-    csv_path = HERE / "qa_missingness.csv"
+    RESULTS_DIR.mkdir(exist_ok=True)
+    csv_path = RESULTS_DIR / "qa_missingness.csv"
     miss_df.to_csv(csv_path, index=False)
     print(f"  wrote {csv_path} ({len(miss_df):,} rows)")
 
     print("Building HTML report (this generates ~700 Plotly figures)...")
     html_str = build_html(df, miss_df, feature_vars)
-    html_path = HERE / "qa_missingness.html"
+    REPORTS_DIR.mkdir(exist_ok=True)
+    html_path = REPORTS_DIR / "qa_missingness.html"
     html_path.write_text(html_str, encoding="utf-8")
     size_mb = html_path.stat().st_size / (1024 * 1024)
     print(f"  wrote {html_path} ({size_mb:.1f} MB)")

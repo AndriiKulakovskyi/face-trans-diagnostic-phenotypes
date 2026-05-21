@@ -2,7 +2,7 @@
 
 Run from the repo root:
 
-    python3 verify.py
+    python3 scripts/verify.py
 
 Exits non-zero on any assertion failure. Prints a per-canonical rule status
 table at the end.
@@ -16,7 +16,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from face_common import (
+# Allow running as a plain script: prepend repo root to sys.path.
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
+from face_common import (  # noqa: E402
     RULES,
     YEARLY_VISIT_MAP,
     build_unified_dataframe,
@@ -24,9 +28,8 @@ from face_common import (
 )
 
 
-HERE = Path(__file__).resolve().parent
-DATA_DIR = HERE / "data"
-DICT_PATH = HERE / "face-common-vars.xlsx"
+DATA_DIR = REPO_ROOT / "data"
+DICT_PATH = REPO_ROOT / "face-common-vars.xlsx"
 
 EXPECTED_PATIENTS = {"BP": 6252, "SZ": 2209, "DR": 552}
 EXPECTED_ARMS = {

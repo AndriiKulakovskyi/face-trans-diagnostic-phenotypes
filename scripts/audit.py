@@ -14,11 +14,12 @@ one cohort source column, this script verifies:
 
 Findings are categorized PASS / WARN / FAIL and printed in a per-variable table.
 
-Run: python3 audit.py
+Run: python3 scripts/audit.py
 """
 from __future__ import annotations
 
 import re
+import sys
 import warnings
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -27,13 +28,16 @@ from typing import Iterable
 import numpy as np
 import pandas as pd
 
-from face_common import RULES, build_unified_dataframe, load_variables
-from face_common.loader import YEARLY_VISIT_MAP
+REPO_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO_ROOT))
+
+from face_common import RULES, build_unified_dataframe, load_variables  # noqa: E402
+from face_common.loader import YEARLY_VISIT_MAP  # noqa: E402
 
 
-HERE = Path(__file__).resolve().parent
-DATA_DIR = HERE / "data"
-DICT_PATH = HERE / "face-common-vars.xlsx"
+DATA_DIR = REPO_ROOT / "data"
+DICT_PATH = REPO_ROOT / "face-common-vars.xlsx"
+RESULTS_DIR = REPO_ROOT / "results"
 _YEARLY = set(YEARLY_VISIT_MAP)
 
 
@@ -349,7 +353,8 @@ def main() -> int:
     print(pat_counts.to_string())
 
     # Write the full table to disk for downstream inspection
-    out_path = HERE / "audit_report.csv"
+    RESULTS_DIR.mkdir(exist_ok=True)
+    out_path = RESULTS_DIR / "audit_report.csv"
     audit_df.to_csv(out_path, index=False)
     print(f"\nFull audit table written to: {out_path}")
 
