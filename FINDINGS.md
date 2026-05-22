@@ -1,0 +1,94 @@
+# FINDINGS — FACE trans-diagnostic clustering (running research log)
+
+Paper-oriented log of empirical + methodological discoveries. Numbers are
+reproducible from `scripts/cluster_v0.py` + `scripts/cluster_v0_profile.py`
+(artifacts in `results/cluster_v0_*`, report `reports/cluster_v0.html`).
+See ROADMAP.md for the plan; this file is the "what we actually learned".
+
+## 1. Data & reconciliation
+- **9,013 V0 patients**: BP 6,252 / SZ 2,209 / DR 552.
+- `patient_uid = cohort::usubjid_patients` — `usubjid` collides across cohorts
+  (970 shared ids); all patient ops must key on `patient_uid`, not `usubjid`.
+- The sister 4-cohort reference clusters cover **7,211** of our BP/SZ/DR patients
+  (those that passed their coverage filter); the ASP-dominated cluster is empty
+  in our cohorts → **6 populated reference clusters**.
+- **No imputation anywhere** — masked pairwise-complete cosine similarity.
+
+## 2. Methodological discoveries (paper Methods / Limitations)
+
+### 2.1 The confound ladder (clustering raw EHR features is a trap)
+Unsupervised clustering recovers the **largest-variance nuisance axis** unless it
+is explicitly removed. We climbed down four rungs:
+1. `brthdtc` (birth date) is stored numeric ≈ **1e17** → that one column
+   dominated the cosine geometry and produced a *spurious* "great" result
+   (bootstrap ARI 0.96, ARI-vs-sister 0.31). **Retracted.**
+2. After dropping the date + robust-scaling: **raw labs/anthropometry** (counts
+   in the thousands) dominated.
+3. After robust z-scoring: clusters became a **sex × age stratification** —
+   cluster↔sex ARI **0.32** > cluster↔cohort **0.19**.
+4. That sex/age signal was carried **almost entirely by physical-comorbidity
+   occurrence flags** (`*_mhoccur`: lupus→female, MI→older …). Excluding them:
+   cluster↔sex ARI **0.32 → 0.005**, cluster↔age → **0.008**.
+
+**Principled configuration:** clinical sections only, **age/sex-residualized**,
+robust-scaled, `*_mhoccur` excluded, dates/site/IDs dropped (→ 129 features).
+
+### 2.2 Implicit feature weighting = item count (important, fixable)
+Cosine treats each column as one equal dimension, so a construct measured by
+**many items contributes many dimensions** and dominates. In the 129-feature
+clinical set:
+
+| section | dims | | instrument | items |
+|---|--:|---|---|--:|
+| SUICIDE | 39 (30%) | | isf | 15 |
+| AUTO-QUESTIONNAIRES | 35 | | cssrs | 11 |
+| HETERO-QUESTIONNAIRES | 15 | | psqi (sleep) | 8 |
+| ANTECEDENTS | 12 | | ctq (trauma) | 8 |
+| EVALUATION MEDICALE | 10 | | fast (functioning) | 7 |
+
+⇒ The phenotypes that emerged (suicidality, sleep, trauma, depression) are
+**precisely the most-itemized instruments**. The clustering currently weights by
+item count, not clinical importance. **Fix:** aggregate items → instrument/
+domain scores (or per-domain factor scores) so each construct contributes
+comparably, *before* embedding.
+
+### 2.3 Engine reused as-is (no surgery)
+masked cosine (pairwise-complete) → spectral embedding per cohort-coverage
+partition → partition weight `sqrt(n_features × n_patients)` → concat + L2 →
+KMeans. We reproduced the sister's published 7-cluster contingency exactly from
+their saved embedding (`scripts/reproduce_v0_clusters.py`).
+
+## 3. Result — v1 (clinical, residualized, comorbidity-free, k=6)
+- **Six reproducible trans-diagnostic symptom phenotypes** (bootstrap mean
+  pairwise ARI **0.89**) that cut across BP/SZ/DR (cluster↔cohort ARI **0.024**):
+  childhood maltreatment (CTQ↑), **depression-severity + poor sleep**
+  (MADRS/PSQI↑, **DR-enriched** → face validity), minimal-suicidality, and a
+  **denial / response-style** axis.
+- **Validity signal:** the depression cohort (DR) concentrates in the high-MADRS
+  / poor-sleep cluster (419/552 DR), alongside BP — a genuine cross-DSM mood axis.
+- It does **not** reproduce the sister diagnosis-aligned clusters (ARI vs ref
+  **0.03**) — by construction (we removed the diagnosis/demographic axes).
+
+## 4. The scientific fork (framing)
+Two mutually-exclusive products, because **diagnosis + demographics are the
+dominant variance axes** in the data:
+- **(A) Trans-diagnostic discovery** — cluster *net of* diagnosis/demographics →
+  symptom-dimension phenotypes shared across BP/SZ/DR. Novel; matches the
+  project's primary goal (cut across DSM-5). *Current direction.*
+- **(B) Diagnosis-aligned recovery** — keep the diagnosis-separating features →
+  clusters recapitulate DSM + demographics and resemble the sister's. A
+  replication/concordance result, not novel phenotypes.
+
+## 5. Open questions / caveats (Discussion)
+- **"Denial" axis** likely a symptom-minimization *response style*, not
+  psychopathology; partly inflated by item count. Scrutinise / consider dropping.
+- **Modest silhouette (~0.2)** — dimensional phenotypes, not separated islands.
+  Validate by **stability + interpretability + outcome prediction**, not silhouette.
+- **k not yet principled** — needs a stability-vs-k curve, gap statistic, and/or
+  consensus clustering (current k=6 was chosen only to match the sister count).
+- **DR V3 attrition cliff** (3 patient×visit rows) — exclude DR at V3 longitudinally.
+
+## 6. To verify before any headline claim
+- **Item-count weighting fix** before naming phenotypes definitively (§2.2).
+- **Metabolic-direction sign** (deck's metabolic claim) — biology is currently
+  excluded; revisit direction if biology is re-introduced as domain scores.

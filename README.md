@@ -50,6 +50,8 @@ df = build_unified_dataframe("data", "face-common-vars.xlsx",
 - **[CLAUDE.md](CLAUDE.md)** — concise project + repo guide.
 - **[ROADMAP.md](ROADMAP.md)** — research question, methods, paper framing,
   phased plan, course-correction log.
+- **[FINDINGS.md](FINDINGS.md)** — running research log of empirical +
+  methodological discoveries (paper-oriented).
 - **[DATA.md](DATA.md)** — how to read the common-variables dictionary.
 - **`archive/docs/`** — the sister engine's stage documentation.
 
