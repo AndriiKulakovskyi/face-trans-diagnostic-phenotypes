@@ -103,25 +103,96 @@ def normalize_for_embedding(
     return out.replace([np.inf, -np.inf], np.nan)
 
 
-def residualize_features(X: pd.DataFrame, covariates: pd.DataFrame) -> pd.DataFrame:
-    """Remove the linear effect of ``covariates`` from each feature (OLS residuals).
+def _design_matrix(covariates: pd.DataFrame, spline_df: int) -> np.ndarray:
+    """Confounder design: intercept + (spline or linear) covariates + interactions.
 
-    For every feature column we regress its observed values on ``[1, *covariates]``
-    and replace them with residuals, so clustering reflects phenotype **net of**
-    those covariates (here: age + sex). Covariate NaNs are mean-imputed for the
-    design matrix only; feature NaNs are preserved (no imputation of features).
+    Continuous covariates (> 10 distinct values) are natural-spline-expanded when
+    ``spline_df > 0`` (degree-3 B-spline, ``spline_df`` knots); discrete ones stay
+    linear. Each continuous spline block is also interacted with each discrete
+    covariate (e.g. sex-specific age curves). Covariate NaNs are mean-imputed for
+    the design only.
     """
-    design = covariates.fillna(covariates.mean(numeric_only=True))
-    A = np.column_stack([np.ones(len(design)), design.to_numpy(dtype="float64")])
+    blocks: list[np.ndarray] = [np.ones((len(covariates), 1))]
+    continuous: list[np.ndarray] = []
+    discrete: list[np.ndarray] = []
+    for name in covariates.columns:
+        col = covariates[name]
+        x = col.to_numpy(dtype="float64").reshape(-1, 1)
+        mean = float(np.nanmean(x)) if np.isfinite(np.nanmean(x)) else 0.0
+        x = np.nan_to_num(x, nan=mean)
+        if spline_df > 0 and col.nunique(dropna=True) > 10:
+            try:
+                from sklearn.preprocessing import SplineTransformer
+                basis = SplineTransformer(
+                    n_knots=spline_df, degree=3, include_bias=False
+                ).fit_transform(x)
+            except Exception:  # pragma: no cover - fallback if sklearn too old
+                basis = np.column_stack([x, x ** 2, x ** 3])
+            continuous.append(basis)
+            blocks.append(basis)
+        else:
+            discrete.append(x)
+            blocks.append(x)
+    for basis in continuous:          # continuous × discrete interactions
+        for xb in discrete:
+            blocks.append(basis * xb)
+    return np.column_stack(blocks)
+
+
+def residualize_features(
+    X: pd.DataFrame,
+    covariates: pd.DataFrame,
+    *,
+    spline_df: int = 0,
+    cross_fit: int = 1,
+    random_state: int = 0,
+) -> pd.DataFrame:
+    """Remove the effect of ``covariates`` from each feature (regression residuals).
+
+    Clustering then reflects phenotype **net of** the covariates (here: age + sex).
+    Feature NaNs are preserved (no imputation of features); covariate NaNs are
+    mean-imputed for the design matrix only.
+
+    Parameters
+    ----------
+    spline_df:
+        ``0`` (default) → covariates enter linearly (plain OLS partialling-out,
+        backward compatible). ``> 0`` → natural-spline-expand continuous
+        covariates + add covariate×discrete interactions, i.e. **double-ML
+        "partialling out" of nonlinear confounding** (e.g. nonlinear age, sex-
+        specific age curves).
+    cross_fit:
+        ``1`` (default) → in-sample residuals. ``> 1`` → K-fold **cross-fitting**:
+        each feature's residuals are computed out-of-fold to avoid overfitting /
+        over-correction (Chernozhukov et al. double/debiased ML).
+    """
+    A = _design_matrix(covariates, spline_df)
     out = X.copy()
-    for col in out.columns:
-        y = out[col].to_numpy(dtype="float64")
-        obs = np.isfinite(y)
-        if int(obs.sum()) < A.shape[1] + 2:
-            continue  # too few observations to fit reliably; leave as-is
-        beta, *_ = np.linalg.lstsq(A[obs], y[obs], rcond=None)
-        y[obs] = y[obs] - A[obs] @ beta
-        out[col] = y
+    min_obs = A.shape[1] + 2
+
+    if cross_fit and cross_fit > 1:
+        from sklearn.model_selection import KFold
+        kf = KFold(n_splits=cross_fit, shuffle=True, random_state=random_state)
+        for col in out.columns:
+            y = out[col].to_numpy(dtype="float64")
+            obs = np.where(np.isfinite(y))[0]
+            if obs.size < max(min_obs, cross_fit):
+                continue
+            resid = y.copy()
+            for tr, te in kf.split(obs):
+                tr_i, te_i = obs[tr], obs[te]
+                beta, *_ = np.linalg.lstsq(A[tr_i], y[tr_i], rcond=None)
+                resid[te_i] = y[te_i] - A[te_i] @ beta
+            out[col] = resid
+    else:
+        for col in out.columns:
+            y = out[col].to_numpy(dtype="float64")
+            obs = np.isfinite(y)
+            if int(obs.sum()) < min_obs:
+                continue
+            beta, *_ = np.linalg.lstsq(A[obs], y[obs], rcond=None)
+            y[obs] = y[obs] - A[obs] @ beta
+            out[col] = y
     return out
 
 

@@ -289,3 +289,20 @@ def test_residualize_features_removes_linear_covariate_effect():
     # residual is centred and no longer correlated with age
     assert abs(float(Xr["y"].mean())) < 0.05
     assert abs(float(np.corrcoef(Xr["y"].to_numpy(), age)[0, 1])) < 0.1
+
+
+def test_residualize_spline_crossfit_removes_nonlinear_age():
+    rng = np.random.default_rng(2)
+    n = 400
+    age = rng.uniform(18, 70, n)
+    sex = rng.integers(0, 2, n).astype(float)
+    y = 0.01 * (age - 45) ** 2 + 2.0 * sex + rng.normal(0, 0.2, n)  # U-shaped in age
+    X = pd.DataFrame({"y": y})
+    cov = pd.DataFrame({"age": age, "sex": sex})
+    a2 = (age - 45) ** 2
+    lin = residualize_features(X, cov)                                   # linear
+    nonlin = residualize_features(X, cov, spline_df=4, cross_fit=5)      # spline + CV
+    c_lin = abs(np.corrcoef(lin["y"].to_numpy(), a2)[0, 1])
+    c_non = abs(np.corrcoef(nonlin["y"].to_numpy(), a2)[0, 1])
+    assert c_non < c_lin          # spline removes curvature linear leaves
+    assert c_non < 0.15
