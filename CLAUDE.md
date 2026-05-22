@@ -28,6 +28,7 @@ face-common-bp-sz-dr/
 ├── src/
 │   └── face_common/                 ← OUR development base (the only code we write)
 │       ├── variable.py  rules.py  loader.py  filters.py
+│       ├── schema_gen.py  adapter.py  ← engine bridge (dictionary→schema, frame→HarmonizedDataset)
 ├── archive/                         ← copied sister code — VENDORED, do not develop here
 │   ├── face_stratification/         ← the reused engine (importable)
 │   ├── face_rlvr/                   ← engine's patient extractors + glossary loader
@@ -35,7 +36,7 @@ face-common-bp-sz-dr/
 ├── config/                          ← engine config (feature schema + glossary; vendored, kept at root)
 ├── data/                            ← OUR 3-cohort longitudinal CSVs + data/external (engine reference artifacts)
 ├── scripts/                         ← OUR runnable scripts (verify, audit, qa_missingness, v0_anchor, phase2*, reproduce_v0_clusters)
-├── tests/                           ← OUR tests (test_filters.py)
+├── tests/                           ← OUR tests (test_filters.py, test_adapter.py)
 ├── results/  reports/               ← our outputs
 └── pyproject.toml                   ← packages: src/face_common + archive engine; pytest pythonpath = [src, archive]
 ```
@@ -69,6 +70,12 @@ to `identity_cast` (dtype coercion + value-set warnings).
 **Filters** (`face_common/filters.py`) — `filter_variables`, `filter_patients`,
 `V0Anchor`, `select_v0_anchor` (completeness floors, visit-scoped).
 
+**Engine bridge** (`face_common/schema_gen.py` + `adapter.py`) —
+`to_harmonized_dataset(df, variables, visit='V0')` reshapes our matrix into the
+engine's `HarmonizedDataset` (numeric float `X`, MultiIndex `[cohort,
+patient_id]`); `build_feature_schema(...)` turns the dictionary into the engine's
+`FeatureSchema` (`section`→block, `dtype`→type). Drives `scripts/cluster_v0.py`.
+
 **`patient_uid = cohort::usubjid_patients`** — the globally-unique key
 (`usubjid_patients` is reused across cohorts; 970 collisions). All patient-level
 ops key on it.
@@ -85,6 +92,7 @@ values are never filled (optional KNN/MICE imputers exist but are off).
 python3 scripts/verify.py          # end-to-end smoke test (~30 s)
 python3 scripts/audit.py           # per-variable correctness audit → results/
 python3 scripts/qa_missingness.py  # interactive HTML report → reports/
+python3 scripts/cluster_v0.py      # V0 3-cohort clustering via engine → results/cluster_v0_*
 python3 -m pytest tests/ -q        # unit tests
 ```
 
@@ -94,6 +102,12 @@ df = build_unified_dataframe("data", "face-common-vars.xlsx",
                              readiness=["READY", "PARTIAL"], format="long")
 features = df.drop(columns=["patient_uid", "usubjid_patients", "cohort",
                             "arm", "visitnum", "visit"])
+
+# Feed our V0 matrix into the vendored engine (no imputation):
+from face_common import load_variables, to_harmonized_dataset
+ds = to_harmonized_dataset(df, load_variables("face-common-vars.xlsx"), visit="V0")
+# ds.X is MultiIndex[cohort, patient_id] × numeric features; ds.schema is a
+# face_stratification FeatureSchema generated from our dictionary.
 ```
 
 ## Conventions
@@ -114,9 +128,14 @@ features = df.drop(columns=["patient_uid", "usubjid_patients", "cohort",
 - Harmonization: 348/348 feature variables PASS the audit (0 FAIL, 45 WARN).
 - Merge done; engine reproduces the sister 4-cohort clusters exactly
   (`results/v0_clusters_anchor.csv`); **no imputation** confirmed.
+- **Phase 3 (3-cohort recovery) — first result done.** `schema_gen.py` +
+  `adapter.py` bridge our V0 matrix into the engine; `scripts/cluster_v0.py`
+  embeds + clusters it. At k=6: bootstrap ARI **0.96** (stable), recovers a
+  clean SZ cluster + a BP–DR mood bridge (all 552 DR co-cluster with BP);
+  moderate match to the 4-cohort reference (ARI **0.31**). 40 tests pass.
 - DR has a V3 attrition cliff (3 patient×visit rows) — exclude from V3.
-- Next: build the dictionary→schema adapter + `scripts/cluster_v0.py`
-  (3-cohort recovery). See ROADMAP §9–10.
+- Next: name clusters (feature enrichment + Cohen's d), verify metabolic
+  direction, ablations (READY-only / core-67), then Phase 4 longitudinal.
 
 ## Where to read next
 

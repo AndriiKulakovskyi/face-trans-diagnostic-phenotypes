@@ -17,7 +17,8 @@ similarity).
 
 ## Layout
 
-- `src/face_common/` — the only code we develop (harmonization + filters).
+- `src/face_common/` — the only code we develop (harmonization, filters, and the
+  `schema_gen`/`adapter` bridge that feeds our matrix into the engine).
 - `archive/` — copied sister code, vendored (engine, extractors, their scripts/
   notebooks/data/tests). Import it; don't edit it.
 - `config/` — engine config (feature schema + clinical glossary), kept at root.

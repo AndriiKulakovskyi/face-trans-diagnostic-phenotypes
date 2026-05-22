@@ -189,14 +189,32 @@ face-common-bp-sz-dr/
       (b2 → `results/v0_clusters_anchor.csv`); confirmed **no imputation** in the
       engine.
 
-### Phase 3 — 3-cohort recovery via our features — **NEXT**
-- [ ] Build the dictionary→schema generator (`section`/`dtype`) + the
-      `face_common → HarmonizedDataset` adapter.
-- [ ] `scripts/cluster_v0.py`: our V0 3-cohort matrix → engine embedding →
-      consensus clustering → `results/v0_clusters.csv` (patient_uid).
-- [ ] Recovery report: ARI + semantic match vs the sister reference; per-cluster
-      Cohen's d (test the 7 axes); **verify the metabolic direction** (§3 ⚠️);
-      ablations + negative controls (§7).
+### Phase 3 — 3-cohort recovery via our features — **IN PROGRESS (first recovery done)**
+- [x] `src/face_common/schema_gen.py` — dictionary→`FeatureSchema` generator
+      (`section`→block, `canonical_name`→feature id, `dtype`→`FeatureType`,
+      source-column presence→`cohorts`).
+- [x] `src/face_common/adapter.py` — `to_harmonized_dataset(...)`: our V0 long
+      frame → engine `HarmonizedDataset` (numeric float matrix, MultiIndex
+      `[cohort, patient_id]`, lowercased cohorts, no imputation). 14 new tests.
+- [x] `scripts/cluster_v0.py` — V0 3-cohort matrix → engine multipartite-spectral
+      embedding → `run_kmeans`/`kmeans_sweep`/`bootstrap_stability`. Artifacts in
+      `results/cluster_v0_*` (embedding parquet, assignments, sweep, contingency,
+      meta).
+- **First result (READY+PARTIAL, 9,013 patients × 341 features → 36-dim, 4
+  coverage partitions bp+sz/bp+dr/bp+dr+sz/dr+sz):** at k=6 the clustering is
+  highly reproducible (**bootstrap mean pairwise ARI 0.96 ± 0.05**) and recovers
+  the sister's principal trans-diagnostic structure — a **clean SZ-pure cluster**
+  (2,043/2,209 SZ) and a **BP–DR mood bridge** (all 552 DR co-cluster with BP;
+  DR never isolates and never joins the SZ group). Agreement with the 4-cohort
+  reference is **moderate (ARI 0.31, NMI 0.32 on 7,211 shared patients)** — as
+  expected given a different harmonized feature set, a 3- vs 4-cohort embedding
+  geometry, and different retained-patient sets. The claim is **semantic/
+  structural recovery, not exact label match.**
+- [ ] Name clusters via per-cluster feature enrichment (engine
+      `analysis/enrichment.py`, `stage_c/biomarkers.py`); test the sister's axes
+      with Cohen's d; **verify the metabolic direction** (§3 ⚠️) before any headline.
+- [ ] Principled k-selection (sister composite score) + ablations: READY-only and
+      the informative-core (67); negative controls (§7). HTML recovery report.
 
 ### Phase 4 — Longitudinal coherence (our core)
 - [ ] Harmonize V1–V4 with the same schema; assign/re-cluster; ARI(V0↔Vk) +
@@ -232,11 +250,14 @@ tree, no engine surgery).
 - [x] `pyproject` packages = `src/face_common` + the archived engine;
       `.gitignore` ignores `.env*`/`output/`; `.env` (secrets) never copied.
 - [x] Docs rewritten for the clean layout (CLAUDE.md, README.md, ROADMAP §8).
-- [x] Verified: 26 unit tests pass; `verify.py` runs end-to-end; both
+- [x] Verified: 40 unit tests pass; `verify.py` runs end-to-end; both
       `face_common` (src) and `face_stratification` (archive) import.
-- [ ] **Build the dictionary→schema generator + `face_common → HarmonizedDataset`
-      adapter** — the one new glue module (Phase 3 prerequisite).
-- [ ] `scripts/cluster_v0.py` — our 3-cohort V0 matrix → engine → clusters.
+- [x] **Dictionary→schema generator + `face_common → HarmonizedDataset` adapter**
+      built (`src/face_common/schema_gen.py`, `adapter.py`) — the glue between our
+      pipeline and the engine. Exposed via `face_common.{to_harmonized_dataset,
+      build_feature_schema}`.
+- [x] `scripts/cluster_v0.py` — our 3-cohort V0 matrix → engine → clusters
+      (`results/cluster_v0_*`). See Phase 3 above for the first recovery result.
 
 Principle: develop only in `src/face_common`; reuse the engine from `archive/`
 by import; never edit vendored code. To run the engine's heavy paths:

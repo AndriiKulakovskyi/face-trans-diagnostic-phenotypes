@@ -1,0 +1,84 @@
+{
+  "timestamp_utc": "2026-05-22T16:48:49.899268+00:00",
+  "git_rev": "ea4ef1a",
+  "readiness": [
+    "READY",
+    "PARTIAL"
+  ],
+  "embed_config": {
+    "min_coverage": 0.3,
+    "min_features_per_partition": 3,
+    "n_components_per_partition": 8,
+    "k_neighbours": 10,
+    "include_4way": true,
+    "include_mask_columns": true,
+    "l2_normalize": true,
+    "feature_mode": "cumulative",
+    "partition_weighting": "sqrt_info"
+  },
+  "n_patients": 9013,
+  "n_features": 341,
+  "cohort_counts": {
+    "bp": 6252,
+    "dr": 552,
+    "sz": 2209
+  },
+  "embedding_dim": 36,
+  "partitions": [
+    {
+      "name": "bp+sz",
+      "n_cohorts": 2,
+      "cohorts": "bp+sz",
+      "n_features": 173,
+      "weight": 1.0,
+      "features_sample": "acne_mhoccur, age, agedebut_cigarettes_lt..."
+    },
+    {
+      "name": "bp+dr",
+      "n_cohorts": 2,
+      "cohorts": "bp+dr",
+      "n_features": 168,
+      "weight": 0.8836960102860293,
+      "features_sample": "acne_mhoccur, age, agedebut_cigarettes_lt..."
+    },
+    {
+      "name": "bp+dr+sz",
+      "n_cohorts": 3,
+      "cohorts": "bp+dr+sz",
+      "n_features": 102,
+      "weight": 0.7925029223015101,
+      "features_sample": "acne_mhoccur, age, agedebut_cigarettes_lt..."
+    },
+    {
+      "name": "dr+sz",
+      "n_cohorts": 2,
+      "cohorts": "dr+sz",
+      "n_features": 103,
+      "weight": 0.44077597683961517,
+      "features_sample": "acne_mhoccur, age, agedebut_cigarettes_lt..."
+    }
+  ],
+  "headline_k": 6,
+  "cluster_sizes": {
+    "0": 914,
+    "1": 2976,
+    "2": 2043,
+    "3": 1436,
+    "4": 727,
+    "5": 917
+  },
+  "reference_overlap": 7211,
+  "ari_vs_reference": 0.31060529558397704,
+  "nmi_vs_reference": 0.3243151525529172,
+  "bootstrap_stability": {
+    "n_clusters": 6,
+    "n_bootstraps": 25,
+    "subsample_fraction": 0.8,
+    "mean_ari": 0.9595171260131952,
+    "std_ari": 0.045245834660709944,
+    "min_ari": 0.8297575584544331,
+    "max_ari": 1.0,
+    "n_pairs": 300
+  },
+  "schema_version": "face_common-0.1.0"
+}
