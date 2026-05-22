@@ -52,6 +52,8 @@ df = build_unified_dataframe("data", "face-common-vars.xlsx",
   phased plan, course-correction log.
 - **[FINDINGS.md](FINDINGS.md)** — running research log of empirical +
   methodological discoveries (paper-oriented).
+- **[LABBOOK.md](LABBOOK.md)** — chronological lab notebook (steps, observations,
+  decisions, rationale) for full research traceability.
 - **[DATA.md](DATA.md)** — how to read the common-variables dictionary.
 - **`archive/docs/`** — the sister engine's stage documentation.
 

@@ -152,4 +152,5 @@ ds = to_harmonized_dataset(df, load_variables("face-common-vars.xlsx"), visit="V
 - **Dictionary columns** → [DATA.md](DATA.md)
 - **Plan, methods, paper framing, course-corrections** → [ROADMAP.md](ROADMAP.md)
 - **Empirical + methodological discoveries (paper log)** → [FINDINGS.md](FINDINGS.md)
+- **Chronological lab notebook (steps/decisions/rationale)** → [LABBOOK.md](LABBOOK.md)
 - **Engine internals** → `archive/docs/` (sister stage docs)

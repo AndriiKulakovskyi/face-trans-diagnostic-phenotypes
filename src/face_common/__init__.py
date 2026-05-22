@@ -22,6 +22,11 @@ try:  # pragma: no cover - exercised in integration, not unit tests
         residualize_features,
         to_harmonized_dataset,
     )
+    from .domains import (
+        BIOLOGY_COMPOSITES,
+        DOMAIN_SECTIONS,
+        build_domain_scores,
+    )
     from .schema_gen import DEFAULT_SCHEMA_VERSION, build_feature_schema
 except ImportError:  # engine not importable in this environment
     COHORT_TO_CODE = None  # type: ignore[assignment]
@@ -30,6 +35,9 @@ except ImportError:  # engine not importable in this environment
     normalize_for_embedding = None  # type: ignore[assignment]
     residualize_features = None  # type: ignore[assignment]
     to_harmonized_dataset = None  # type: ignore[assignment]
+    build_domain_scores = None  # type: ignore[assignment]
+    BIOLOGY_COMPOSITES = None  # type: ignore[assignment]
+    DOMAIN_SECTIONS = None  # type: ignore[assignment]
     build_feature_schema = None  # type: ignore[assignment]
     DEFAULT_SCHEMA_VERSION = None  # type: ignore[assignment]
 
@@ -51,9 +59,12 @@ __all__ = [
     "to_harmonized_dataset",
     "normalize_for_embedding",
     "residualize_features",
+    "build_domain_scores",
     "build_feature_schema",
     "COHORT_TO_CODE",
     "ADMINISTRATIVE_FEATURES",
     "CLINICAL_SECTIONS",
+    "BIOLOGY_COMPOSITES",
+    "DOMAIN_SECTIONS",
     "DEFAULT_SCHEMA_VERSION",
 ]
