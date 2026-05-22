@@ -212,8 +212,10 @@ def test_filter_patients_anchor_mode_v0(df_long):
     # Pt2: 2 / 5 = 40% → dropped
     # Pt3: 3 / 5 = 60% → kept
     # Pt4: 1 / 5 = 20% → dropped
-    assert set(rep.kept_patient_ids) == {1, 3}
-    assert set(rep.dropped_patient_ids) == {2, 4}
+    # Patients are keyed by patient_uid (cohort::id); synthetic frame has
+    # cohort but no patient_uid column, so _patient_key derives cohort::id.
+    assert set(rep.kept_patient_uids) == {"BP::1", "DR::3"}
+    assert set(rep.dropped_patient_uids) == {"SZ::2", "BP::4"}
     # Anchor mode preserves all visits for kept patients
     kept = out["usubjid_patients"].unique()
     assert set(kept) == {1, 3}
@@ -255,7 +257,7 @@ def test_filter_patients_variables_restricts_completeness(df_long):
 def test_filter_patients_threshold_edges(df_long):
     out, rep = filter_patients(df_long, threshold=0.0, visit="V0")
     # threshold=0 → everyone kept (anchor mode preserves all visits)
-    assert set(rep.kept_patient_ids) == {1, 2, 3, 4}
+    assert set(rep.kept_patient_uids) == {"BP::1", "SZ::2", "DR::3", "BP::4"}
 
 
 def test_filter_patients_invalid_threshold(df_long):
@@ -293,7 +295,7 @@ def test_select_v0_anchor_basic(df_long):
     assert set(anchor.feature_columns) == {"var_A", "var_B", "var_D"}
     # Step 2 — patient filter at V0 with 0.99 over {var_A, var_B, var_D}:
     #   Pt1: 3/3 kept · Pt2: 2/3 dropped · Pt3: 3/3 kept · Pt4: 1/3 dropped
-    assert set(anchor.patient_ids) == {1, 3}
+    assert set(anchor.patient_uids) == {"BP::1", "DR::3"}
     # v0_filtered restricted to V0 rows of {1,3} and the anchor features
     assert set(v0_filtered["visit"]) == {"V0"}
     assert set(v0_filtered["usubjid_patients"]) == {1, 3}
@@ -376,3 +378,52 @@ def test_v0_anchor_str_contains_counts(df_long):
     s = str(anchor)
     assert f"n_features={anchor.n_features}" in s
     assert f"n_patients={anchor.n_patients}" in s
+
+
+# ---------------------------------------------------------------------------
+# Cross-cohort id-collision regression (the patient_uid fix)
+# ---------------------------------------------------------------------------
+
+def _make_collision_frame() -> pd.DataFrame:
+    """Two patients in different cohorts SHARE usubjid_patients == 99.
+    BP-99 is complete at V0; SZ-99 is empty at V0. A correct filter keeps
+    only BP-99; a buggy id-keyed filter would keep both.
+    """
+    rows = [
+        # BP patient 99 — complete at V0, has a V1 follow-up
+        {"patient_uid": "BP::99", "usubjid_patients": 99, "cohort": "BP",
+         "arm": "BP-1", "visit": "V0", "var_A": 1.0, "var_B": 2.0},
+        {"patient_uid": "BP::99", "usubjid_patients": 99, "cohort": "BP",
+         "arm": "BP-1", "visit": "V1", "var_A": 1.1, "var_B": 2.1},
+        # SZ patient 99 — empty at V0 (should be dropped)
+        {"patient_uid": "SZ::99", "usubjid_patients": 99, "cohort": "SZ",
+         "arm": "SZ", "visit": "V0", "var_A": np.nan, "var_B": np.nan},
+        {"patient_uid": "SZ::99", "usubjid_patients": 99, "cohort": "SZ",
+         "arm": "SZ", "visit": "V1", "var_A": 9.0, "var_B": 9.0},
+    ]
+    return pd.DataFrame(rows)
+
+
+def test_filter_patients_no_cross_cohort_contamination():
+    df = _make_collision_frame()
+    out, rep = filter_patients(df, threshold=0.9, visit="V0",
+                               keep_other_visits=True)
+    # Only BP-99 passes; SZ-99 (empty at V0) must be dropped despite sharing id 99
+    assert set(rep.kept_patient_uids) == {"BP::99"}
+    assert set(rep.dropped_patient_uids) == {"SZ::99"}
+    # The output must NOT contain SZ-99 rows (the contamination bug)
+    assert set(out["patient_uid"].unique()) == {"BP::99"}
+    assert (out["cohort"] == "SZ").sum() == 0
+    # Both BP-99 visits retained (anchor mode)
+    assert len(out) == 2
+
+
+def test_anchor_apply_no_cross_cohort_contamination():
+    df = _make_collision_frame()
+    _, anchor = select_v0_anchor(df, variable_threshold=0.5,
+                                 patient_threshold=0.9)
+    assert set(anchor.patient_uids) == {"BP::99"}
+    # Projecting onto V1 must pull only BP-99's V1 row, not SZ-99's
+    v1 = anchor.apply(df, restrict_visits=["V1"])
+    assert set(v1["patient_uid"].unique()) == {"BP::99"}
+    assert (v1["cohort"] == "SZ").sum() == 0

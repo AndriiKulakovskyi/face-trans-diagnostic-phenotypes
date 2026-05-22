@@ -135,8 +135,17 @@ def build_unified_dataframe(
     merged = pd.concat(frames, axis=0, ignore_index=True)
     _enforce_dtypes(merged, variables)
 
+    # `usubjid_patients` is only unique WITHIN a cohort (970 ids are reused
+    # across BP/SZ/DR). The globally-unique patient key is (cohort, id);
+    # expose it as `patient_uid` so every downstream stage (filtering,
+    # clustering, projection, stability) identifies patients correctly.
+    merged["patient_uid"] = (
+        merged["cohort"].astype(str) + "::" + merged["usubjid_patients"].astype(str)
+    )
+
     if format == "long":
-        front = [c for c in ("usubjid_patients", "cohort", "arm", "visitnum", "visit")
+        front = [c for c in ("patient_uid", "usubjid_patients", "cohort",
+                             "arm", "visitnum", "visit")
                  if c in merged.columns]
         rest = [c for c in merged.columns if c not in front]
         return merged[front + rest]
@@ -176,17 +185,22 @@ def _enforce_dtypes(df: pd.DataFrame, variables: list[Variable]) -> None:
 
 
 def _to_wide(merged: pd.DataFrame) -> pd.DataFrame:
-    id_extras = ["cohort", "arm"]
-    drop_from_features = {"usubjid_patients", "cohort", "arm", "visit", "visitnum"}
+    # Group on patient_uid (globally unique), NOT usubjid_patients (which
+    # collides across cohorts). usubjid_patients/cohort/arm are carried as
+    # time-invariant identifier columns.
+    id_extras = [c for c in ("usubjid_patients", "cohort", "arm")
+                 if c in merged.columns]
+    drop_from_features = {"patient_uid", "usubjid_patients", "cohort", "arm",
+                          "visit", "visitnum"}
     feature_cols = [c for c in merged.columns if c not in drop_from_features]
 
-    id_frame = merged.groupby("usubjid_patients", as_index=True)[id_extras].first()
+    id_frame = merged.groupby("patient_uid", as_index=True)[id_extras].first()
 
     if not feature_cols:
         return id_frame.reset_index()
 
     wide = merged.pivot_table(
-        index="usubjid_patients",
+        index="patient_uid",
         columns="visit",
         values=feature_cols,
         aggfunc="first",

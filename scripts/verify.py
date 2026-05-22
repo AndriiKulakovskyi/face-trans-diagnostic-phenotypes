@@ -105,7 +105,11 @@ def run_test_2_ready_wide() -> pd.DataFrame:
     header("Test 2: readiness=['READY'], format='wide'")
     df = build_unified_dataframe(DATA_DIR, DICT_PATH, readiness=["READY"], format="wide")
     print(f"  shape: {df.shape}")
-    check("one row per patient", df["usubjid_patients"].is_unique)
+    # One row per patient_uid (globally unique). usubjid_patients is NOT
+    # unique — it collides across cohorts (970 shared ids).
+    check("one row per patient_uid", df["patient_uid"].is_unique)
+    check("usubjid_patients NOT globally unique (collisions expected)",
+          not df["usubjid_patients"].is_unique)
     check("'cohort' column unsuffixed", "cohort" in df.columns)
     check("'arm' column unsuffixed", "arm" in df.columns)
 

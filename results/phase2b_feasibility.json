@@ -1,0 +1,467 @@
+{
+  "readiness": [
+    "READY"
+  ],
+  "n_ready_features": 127,
+  "n_informative_features": 67,
+  "informative_features": [
+    "sex",
+    "siteid_city",
+    "brthdtc",
+    "age",
+    "mars",
+    "psqi",
+    "psqi11",
+    "psqi12",
+    "psqi13",
+    "psqi14",
+    "psqi15",
+    "psqi16",
+    "psqi17",
+    "ctq29",
+    "ctq31",
+    "ctq33",
+    "ctq35",
+    "ctq37",
+    "ctq39",
+    "ctq40",
+    "cgi01",
+    "egf",
+    "ymrs",
+    "height",
+    "weight",
+    "bmi",
+    "wstcir",
+    "sysbpsupine",
+    "diabpsupine",
+    "urate",
+    "crp",
+    "gluc",
+    "hdl",
+    "ldl",
+    "chol",
+    "trig",
+    "wbc",
+    "rbc",
+    "hgb",
+    "neut",
+    "eos",
+    "mcv",
+    "plat",
+    "prembrth",
+    "naisstyp",
+    "isf01",
+    "isf02",
+    "isf03",
+    "isf04",
+    "isf05",
+    "suncf_cigarettes_lt",
+    "agetrt",
+    "agedebutpremier_episode",
+    "traumacra_mhoccur",
+    "hta_mhoccur",
+    "acne_mhoccur",
+    "eczema_mhoccur",
+    "toxidermi_mhoccur",
+    "cheveux_mhoccur",
+    "somat_all",
+    "allergie_mhoccur",
+    "mere_structure",
+    "pere_structure",
+    "nboccur_hospitalisation_lt",
+    "maristat",
+    "stprof",
+    "lvsbjind"
+  ],
+  "n_v0_patients": 7966,
+  "results_by_feature_set": {
+    "full_ready": {
+      "distribution": {
+        "BP": {
+          "n": 6252,
+          "mean": 0.6941614903703255,
+          "p10": 0.4330708661417323,
+          "p25": 0.6220472440944882,
+          "p50": 0.7559055118110236,
+          "p75": 0.8110236220472441,
+          "p90": 0.8425196850393701
+        },
+        "SZ": {
+          "n": 2209,
+          "mean": 0.6386400658722549,
+          "p10": 0.43149606299212606,
+          "p25": 0.5748031496062992,
+          "p50": 0.6771653543307087,
+          "p75": 0.7480314960629921,
+          "p90": 0.7874015748031495
+        },
+        "DR": {
+          "n": 552,
+          "mean": 0.6655825630491841,
+          "p10": 0.43464566929133863,
+          "p25": 0.5905511811023623,
+          "p50": 0.7007874015748031,
+          "p75": 0.7952755905511811,
+          "p90": 0.8346456692913385
+        }
+      },
+      "floor_feasibility": {
+        "0.80": {
+          "per_cohort": {
+            "BP": 1882,
+            "SZ": 168,
+            "DR": 133
+          },
+          "balanced_N": 133
+        },
+        "0.85": {
+          "per_cohort": {
+            "BP": 548,
+            "SZ": 22,
+            "DR": 41
+          },
+          "balanced_N": 22
+        },
+        "0.90": {
+          "per_cohort": {
+            "BP": 20,
+            "SZ": 1,
+            "DR": 6
+          },
+          "balanced_N": 1
+        },
+        "0.95": {
+          "per_cohort": {
+            "BP": 0,
+            "SZ": 0,
+            "DR": 0
+          },
+          "balanced_N": 0
+        },
+        "1.00": {
+          "per_cohort": {
+            "BP": 0,
+            "SZ": 0,
+            "DR": 0
+          },
+          "balanced_N": 0
+        }
+      }
+    },
+    "informative_core": {
+      "distribution": {
+        "BP": {
+          "n": 6252,
+          "mean": 0.8587102873349185,
+          "p10": 0.6268656716417911,
+          "p25": 0.791044776119403,
+          "p50": 0.9253731343283582,
+          "p75": 0.9850746268656716,
+          "p90": 1.0
+        },
+        "SZ": {
+          "n": 2209,
+          "mean": 0.7989297514239576,
+          "p10": 0.5373134328358209,
+          "p25": 0.7164179104477613,
+          "p50": 0.8507462686567164,
+          "p75": 0.9402985074626866,
+          "p90": 0.9701492537313433
+        },
+        "DR": {
+          "n": 552,
+          "mean": 0.7662502703871945,
+          "p10": 0.4776119402985075,
+          "p25": 0.6716417910447761,
+          "p50": 0.7835820895522388,
+          "p75": 0.9402985074626866,
+          "p90": 0.9835820895522392
+        }
+      },
+      "floor_feasibility": {
+        "0.80": {
+          "per_cohort": {
+            "BP": 4538,
+            "SZ": 1386,
+            "DR": 271
+          },
+          "balanced_N": 271
+        },
+        "0.85": {
+          "per_cohort": {
+            "BP": 4247,
+            "SZ": 1179,
+            "DR": 248
+          },
+          "balanced_N": 248
+        },
+        "0.90": {
+          "per_cohort": {
+            "BP": 3593,
+            "SZ": 804,
+            "DR": 198
+          },
+          "balanced_N": 198
+        },
+        "0.95": {
+          "per_cohort": {
+            "BP": 2774,
+            "SZ": 512,
+            "DR": 129
+          },
+          "balanced_N": 129
+        },
+        "1.00": {
+          "per_cohort": {
+            "BP": 944,
+            "SZ": 37,
+            "DR": 38
+          },
+          "balanced_N": 37
+        }
+      }
+    }
+  },
+  "section_counts": {
+    "PATIENT": 4,
+    "AUTO-QUESTIONNAIRES": 18,
+    "HETERO-QUESTIONNAIRES": 3,
+    "CONSTANTES ET ECG": 7,
+    "BILAN BIOLOGIQUE": 16,
+    "PERINATALITE": 6,
+    "SUICIDE": 15,
+    "SUBSTANCES": 4,
+    "EVALUATION MEDICALE": 2,
+    "ANTECEDENTS": 41,
+    "SOIN SUIVI HOSP ARRET TRAVAIL": 4,
+    "SOCIAL": 7
+  },
+  "dtype_counts": {
+    "int8 binary": 46,
+    "float": 52,
+    "date (YYYY-MM-DD)": 1,
+    "int8 categorical": 23,
+    "string": 4,
+    "int8 ordinal": 1
+  },
+  "near_constant_features": [
+    {
+      "name": "sep_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.998
+    },
+    {
+      "name": "epilepsie_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.976
+    },
+    {
+      "name": "avc_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.991
+    },
+    {
+      "name": "autneuro_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.975
+    },
+    {
+      "name": "coronar_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.995
+    },
+    {
+      "name": "infarctus_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.995
+    },
+    {
+      "name": "trbrycard_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.968
+    },
+    {
+      "name": "autcardv_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.957
+    },
+    {
+      "name": "autendoc_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.977
+    },
+    {
+      "name": "asthme_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.964
+    },
+    {
+      "name": "lupus_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.999
+    },
+    {
+      "name": "polyarthr_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 1.0
+    },
+    {
+      "name": "inflachro_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.986
+    },
+    {
+      "name": "cirrhose_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.999
+    },
+    {
+      "name": "ulcgasduo_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.969
+    },
+    {
+      "name": "hepmedic_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.986
+    },
+    {
+      "name": "vih_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.997
+    },
+    {
+      "name": "hvc_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.99
+    },
+    {
+      "name": "genetique_mhoccur",
+      "section": "ANTECEDENTS",
+      "modal_share": 0.984
+    }
+  ],
+  "biology_vs_psych": {
+    "biology": 70,
+    "psych": 38,
+    "other": 19
+  },
+  "selection_bias_floor": 0.95,
+  "selection_bias_check": {
+    "age": {
+      "BP": {
+        "n_high": 2774,
+        "n_rest": 3478,
+        "mean_high": 40.05803893294881,
+        "mean_rest": 38.603220241518116,
+        "smd": 0.10929497535148755
+      },
+      "SZ": {
+        "n_high": 512,
+        "n_rest": 1697,
+        "mean_high": 30.603515625,
+        "mean_rest": 31.185621685327046,
+        "smd": -0.06105852755308939
+      },
+      "DR": {
+        "n_high": 129,
+        "n_rest": 423,
+        "mean_high": 52.64341085271318,
+        "mean_rest": 50.550827423167846,
+        "smd": 0.15607529910321644
+      }
+    },
+    "ymrs": {
+      "BP": {
+        "n_high": 2774,
+        "n_rest": 3247,
+        "mean_high": 2.467916366258111,
+        "mean_rest": 2.5004619648906683,
+        "smd": -0.008563655435780863
+      },
+      "SZ": {
+        "n_high": 510,
+        "n_rest": 1518,
+        "mean_high": 1.3215686274509804,
+        "mean_rest": 2.0434782608695654,
+        "smd": -0.2457998654448382
+      },
+      "DR": {
+        "n_high": 125,
+        "n_rest": 261,
+        "mean_high": 0.888,
+        "mean_rest": 1.2337164750957854,
+        "smd": -0.1848766058419875
+      }
+    },
+    "cgi01": {
+      "BP": {
+        "n_high": 2677,
+        "n_rest": 2832,
+        "mean_high": 3.274561075831154,
+        "mean_rest": 3.468926553672316,
+        "smd": -0.13086598769371557
+      },
+      "SZ": {
+        "n_high": 510,
+        "n_rest": 1585,
+        "mean_high": 4.198039215686275,
+        "mean_rest": 4.358990536277602,
+        "smd": -0.1425080375189804
+      },
+      "DR": {
+        "n_high": 125,
+        "n_rest": 400,
+        "mean_high": 4.912,
+        "mean_rest": 4.9425,
+        "smd": -0.030145527419907402
+      }
+    },
+    "psqi": {
+      "BP": {
+        "n_high": 2762,
+        "n_rest": 3062,
+        "mean_high": 7.2715423606082545,
+        "mean_rest": 7.848138471587198,
+        "smd": -0.15038368615912057
+      },
+      "SZ": {
+        "n_high": 508,
+        "n_rest": 641,
+        "mean_high": 6.78740157480315,
+        "mean_rest": 6.694227769110764,
+        "smd": 0.02764550392743232
+      },
+      "DR": {
+        "n_high": 107,
+        "n_rest": 188,
+        "mean_high": 9.570093457943925,
+        "mean_rest": 10.00531914893617,
+        "smd": -0.10953031689714833
+      }
+    },
+    "bmi": {
+      "BP": {
+        "n_high": 2768,
+        "n_rest": 2944,
+        "mean_high": 25.895917630057802,
+        "mean_rest": 25.826837635869563,
+        "smd": 0.0125969178813248
+      },
+      "SZ": {
+        "n_high": 496,
+        "n_rest": 1406,
+        "mean_high": 26.456249999999997,
+        "mean_rest": 26.21394025604552,
+        "smd": 0.04511831220341145
+      },
+      "DR": {
+        "n_high": 125,
+        "n_rest": 315,
+        "mean_high": 25.950160000000007,
+        "mean_rest": 29.763269841269835,
+        "smd": -0.1844242738425712
+      }
+    }
+  }
+}

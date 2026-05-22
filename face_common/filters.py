@@ -33,9 +33,25 @@ import pandas as pd
 
 
 IDENTIFIER_COLUMNS: frozenset[str] = frozenset({
-    "usubjid_patients", "fondacode", "cohort", "arm", "armcd",
+    "patient_uid", "usubjid_patients", "fondacode", "cohort", "arm", "armcd",
     "visit", "visitnum",
 })
+
+
+def _patient_key(df: pd.DataFrame) -> pd.Series:
+    """Globally-unique patient key.
+
+    `usubjid_patients` is only unique within a cohort (ids are reused across
+    BP/SZ/DR), so patient-level operations must key on (cohort, id). Prefer the
+    precomputed `patient_uid` column; otherwise derive cohort::id; otherwise
+    fall back to usubjid_patients alone (e.g., single-cohort test frames).
+    """
+    if "patient_uid" in df.columns:
+        return df["patient_uid"]
+    if "cohort" in df.columns:
+        return (df["cohort"].astype(str) + "::"
+                + df["usubjid_patients"].astype(str))
+    return df["usubjid_patients"]
 
 
 # ---------------------------------------------------------------------------
@@ -88,8 +104,11 @@ class PatientFilterReport:
 
     `table` has one row per (patient, visit) cell that was *evaluated* by
     the filter (so just V0 rows when called with `visit='V0'`, or all rows
-    when called with `visit=None`). Columns: `usubjid_patients`, `visit`,
-    `completeness`, `kept`.
+    when called with `visit=None`). Columns: `patient_uid`,
+    `usubjid_patients`, `visit`, `completeness`, `kept`.
+
+    Patients are identified by `patient_uid` (globally unique, cohort::id) —
+    NOT by `usubjid_patients`, which is only unique within a cohort.
     """
     threshold: float
     visit: Optional[str]
@@ -98,16 +117,16 @@ class PatientFilterReport:
     keep_other_visits: bool
 
     @property
-    def kept_patient_ids(self) -> list:
-        return self.table.loc[self.table["kept"], "usubjid_patients"].unique().tolist()
+    def kept_patient_uids(self) -> list:
+        return self.table.loc[self.table["kept"], "patient_uid"].unique().tolist()
 
     @property
-    def dropped_patient_ids(self) -> list:
-        return self.table.loc[~self.table["kept"], "usubjid_patients"].unique().tolist()
+    def dropped_patient_uids(self) -> list:
+        return self.table.loc[~self.table["kept"], "patient_uid"].unique().tolist()
 
     def __str__(self) -> str:
-        n_kept = len(self.kept_patient_ids)
-        n_drop = len(self.dropped_patient_ids)
+        n_kept = len(self.kept_patient_uids)
+        n_drop = len(self.dropped_patient_uids)
         return (
             f"PatientFilterReport(threshold={self.threshold:.2f}, "
             f"visit={self.visit!r}, kept={n_kept}, dropped={n_drop}, "
@@ -263,10 +282,11 @@ def filter_patients(
         raise ValueError("visit-based filtering requires a 'visit' column")
 
     feature_cols = list(_candidate_feature_columns(df, variables))
+    pkey = _patient_key(df)
     if not feature_cols:
         # Nothing to evaluate — keep everyone (vacuous filter).
         empty_table = pd.DataFrame(
-            {"usubjid_patients": [], "visit": [],
+            {"patient_uid": [], "usubjid_patients": [], "visit": [],
              "completeness": [], "kept": []}
         )
         report = PatientFilterReport(
@@ -280,6 +300,7 @@ def filter_patients(
     feat = df[feature_cols]
     completeness_per_row = 1.0 - feat.isna().mean(axis=1)
     eval_rows = pd.DataFrame({
+        "patient_uid": pkey.values,
         "usubjid_patients": df["usubjid_patients"].values,
         "visit": df["visit"].values if "visit" in df.columns else None,
         "completeness": completeness_per_row.values,
@@ -292,20 +313,19 @@ def filter_patients(
         filtered_df = df.loc[keep_mask].copy()
     else:
         # Evaluate at the chosen visit; carry decision to other visits.
-        # `df` may carry a non-contiguous index (e.g., when filter_patients
-        # is called after another upstream slice); eval_rows has a fresh
-        # RangeIndex. Use positional masks to keep the two aligned.
+        # Key on patient_uid (globally unique) — NOT usubjid_patients, which
+        # collides across cohorts. `df` may carry a non-contiguous index;
+        # eval_rows has a fresh RangeIndex, so use positional masks.
         v_mask_series = df["visit"] == visit
         v_mask_pos = v_mask_series.values
         eval_rows = eval_rows[v_mask_pos].reset_index(drop=True)
         eval_rows["kept"] = eval_rows["completeness"] >= threshold
-        kept_pids = set(
-            eval_rows.loc[eval_rows["kept"], "usubjid_patients"]
-        )
+        kept_uids = set(eval_rows.loc[eval_rows["kept"], "patient_uid"])
+        uid_in_kept = pkey.isin(kept_uids).values
         if keep_other_visits:
-            mask = df["usubjid_patients"].isin(kept_pids)
+            mask = uid_in_kept
         else:
-            mask = df["usubjid_patients"].isin(kept_pids) & v_mask_series
+            mask = uid_in_kept & v_mask_pos
         filtered_df = df.loc[mask].copy()
 
     report = PatientFilterReport(
@@ -327,10 +347,13 @@ class V0Anchor:
 
     Apply to any frame (e.g. the V1..V4 slices for stability analysis) via
     `apply(df, restrict_visits=...)`. The same `feature_columns` and
-    `patient_ids` are reused unchanged — that is the *anchor* contract.
+    `patient_uids` are reused unchanged — that is the *anchor* contract.
+
+    Patients are identified by `patient_uids` (globally unique, cohort::id),
+    never by `usubjid_patients` alone (which collides across cohorts).
     """
     feature_columns: tuple[str, ...]
-    patient_ids: tuple
+    patient_uids: tuple
     variable_threshold: float
     patient_threshold: float
     variable_report: VariableFilterReport = field(repr=False)
@@ -342,7 +365,7 @@ class V0Anchor:
 
     @property
     def n_patients(self) -> int:
-        return len(self.patient_ids)
+        return len(self.patient_uids)
 
     def apply(
         self,
@@ -353,7 +376,7 @@ class V0Anchor:
         """Project the anchor onto another frame.
 
         Keeps:
-          - rows whose `usubjid_patients` is in the anchor's roster
+          - rows whose patient key (cohort::id) is in the anchor's roster
             (and whose `visit` is in `restrict_visits` if provided);
           - identifier columns that exist in `df`;
           - feature columns that exist in `df` (silently drops any
@@ -364,13 +387,13 @@ class V0Anchor:
         identifiers = [c for c in IDENTIFIER_COLUMNS if c in df.columns]
         feats = [c for c in self.feature_columns if c in df.columns]
         out_cols = identifiers + feats
-        mask = df["usubjid_patients"].isin(self.patient_ids)
+        mask = _patient_key(df).isin(self.patient_uids).values
         if restrict_visits is not None:
             if "visit" not in df.columns:
                 raise ValueError(
                     "restrict_visits requires a 'visit' column in df"
                 )
-            mask = mask & df["visit"].isin(restrict_visits)
+            mask = mask & df["visit"].isin(restrict_visits).values
         return df.loc[mask, out_cols].copy()
 
     def __str__(self) -> str:
@@ -413,7 +436,7 @@ def select_v0_anchor(
     )
     anchor = V0Anchor(
         feature_columns=tuple(feature_cols),
-        patient_ids=tuple(pt_report.kept_patient_ids),
+        patient_uids=tuple(pt_report.kept_patient_uids),
         variable_threshold=variable_threshold,
         patient_threshold=patient_threshold,
         variable_report=var_report,

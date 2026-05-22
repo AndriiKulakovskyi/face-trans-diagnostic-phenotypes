@@ -66,9 +66,13 @@ when produced values fall outside the dictionary's declared value set.
 them to `V0..V10`. `visitnum` is a global row id (not a sequence) and is
 preserved as metadata only.
 
-**Identifiers** (never clustered on) — `usubjid_patients`, `cohort`, `arm`
-(DSM-5 text label), `visit`, `visitnum`. Always present unmodified in the
-output. `arm` is reserved for post-clustering evaluation (ARI vs clusters).
+**Identifiers** (never clustered on) — `patient_uid`, `usubjid_patients`,
+`cohort`, `arm` (DSM-5 text label), `visit`, `visitnum`. Always present
+unmodified in the output. `arm` is reserved for post-clustering evaluation
+(ARI vs clusters). **`patient_uid = cohort::usubjid_patients`** is the
+globally-unique patient key — `usubjid_patients` alone is only unique within
+a cohort (970 ids are reused across BP/SZ/DR), so all patient-level
+operations must key on `patient_uid`.
 
 **Readiness filter** — `build_unified_dataframe(..., readiness=[...])` is
 **required**. Use `['READY']` for the 130-variable clean set or `['READY',
@@ -100,8 +104,8 @@ df = build_unified_dataframe(
     format="long",                       # 'long' or 'wide'
 )
 # To get the feature matrix for clustering:
-features = df.drop(columns=["usubjid_patients", "cohort", "arm",
-                            "visitnum", "visit"])
+features = df.drop(columns=["patient_uid", "usubjid_patients", "cohort",
+                            "arm", "visitnum", "visit"])
 ```
 
 ## Conventions

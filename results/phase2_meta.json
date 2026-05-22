@@ -1,0 +1,50 @@
+{
+  "primary_var_threshold": 0.75,
+  "primary_pt_threshold": 0.75,
+  "primary_n_features": 73,
+  "primary_n_patients": 6896,
+  "grid": [
+    0.5,
+    0.6,
+    0.7,
+    0.75,
+    0.8,
+    0.85,
+    0.9
+  ],
+  "readiness": [
+    "READY",
+    "PARTIAL"
+  ],
+  "primary_cohort_missingness": {
+    "BP": {
+      "n_cells": 364854,
+      "n_nan": 23856,
+      "nan_rate": 0.06538505813284218
+    },
+    "SZ": {
+      "n_cells": 112128,
+      "n_nan": 11624,
+      "nan_rate": 0.10366723744292237
+    },
+    "DR": {
+      "n_cells": 26426,
+      "n_nan": 2744,
+      "nan_rate": 0.10383713009914478
+    }
+  },
+  "near_constant_features": [
+    "asthme_mhoccur",
+    "autcardv_mhoccur",
+    "autendoc_mhoccur",
+    "autneuro_mhoccur",
+    "avc_mhoccur",
+    "coronar_mhoccur",
+    "epilepsie_mhoccur",
+    "infarctus_mhoccur",
+    "lupus_mhoccur",
+    "polyarthr_mhoccur",
+    "sep_mhoccur",
+    "trbrycard_mhoccur"
+  ]
+}

@@ -99,12 +99,14 @@ def main() -> int:
     meta_path = RESULTS_DIR / "v0_anchor_meta.json"
 
     anchor.variable_report.table.to_csv(features_path, index=False)
-    # enrich the patient report with cohort+arm for downstream convenience
+    # enrich the patient report with cohort+arm for downstream convenience.
+    # Merge on patient_uid (globally unique) — NOT usubjid_patients, which
+    # collides across cohorts.
     pt_table = anchor.patient_report.table.copy()
     cohort_arm = (df[df["visit"] == "V0"]
-                  [["usubjid_patients", "cohort", "arm"]]
-                  .drop_duplicates("usubjid_patients"))
-    pt_table = pt_table.merge(cohort_arm, on="usubjid_patients", how="left")
+                  [["patient_uid", "cohort", "arm"]]
+                  .drop_duplicates("patient_uid"))
+    pt_table = pt_table.merge(cohort_arm, on="patient_uid", how="left")
     pt_table.to_csv(patients_path, index=False)
 
     kept_cohort_counts = (v0_filtered.groupby("cohort")["usubjid_patients"]
@@ -131,11 +133,14 @@ def main() -> int:
 
     # ----- sanity-check apply() to V1..V4 -----------------------------------
     print("\nV1..V4 projection (patients × visits via anchor.apply):")
+    n_ids = sum(c in df.columns for c in
+                ("patient_uid", "usubjid_patients", "cohort", "arm",
+                 "visitnum", "visit"))
     for visit in ("V1", "V2", "V3", "V4"):
         v_df = anchor.apply(df, restrict_visits=[visit])
         print(f"  {visit}: {len(v_df):>5} rows, "
-              f"{v_df['usubjid_patients'].nunique():>5} patients, "
-              f"{v_df.shape[1] - 5:>4} features")
+              f"{v_df['patient_uid'].nunique():>5} patients, "
+              f"{v_df.shape[1] - n_ids:>4} features")
     print("\nDone.")
     return 0
 
