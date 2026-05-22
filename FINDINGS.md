@@ -89,6 +89,22 @@ spectral embedding.
 - By construction this does **not** reproduce the sister diagnosis-aligned
   clusters — it is trans-diagnostic phenotype discovery (direction A).
 
+### 3c. Temporal coherence V0→V4 (Phase 4)
+A phenotype **classifier** (HistGradientBoosting, NaN-native) trained on V0 domain
+scores → V0 labels (**5-fold accuracy 0.842**, k=5) applied to each follow-up
+visit. (A nearest-centroid rule failed — self-ARI 0.024 — because it cannot
+reproduce the V0 spectral-embedding geometry.)
+- **Modest, stable coherence:** ARI(V0↔Vk) **≈0.06–0.07**, persistence **≈37–39%**
+  across V1–V4 (n 3782→697).
+- **Phenotype-dependent:** trait-like axes persist (smoking/illness-burden **59%**,
+  functioning 48%, metabolic 40%); symptom-state axes are transient (manic
+  activation 35%, somatic **14%**). Non-persisters converge toward the
+  illness-burden phenotype (attractor).
+- **Implication:** a single-visit clustering captures **state as well as trait**;
+  durable trans-diagnostic phenotypes are the trait-like (metabolic / illness-
+  burden) ones. Reframes "temporal coherence" from a yes/no claim to a
+  phenotype-specific trait–state gradient. DR excluded at V3 (attrition).
+
 ## 4. The scientific fork (framing)
 Two mutually-exclusive products, because **diagnosis + demographics are the
 dominant variance axes** in the data:

@@ -158,6 +158,28 @@ residualize on age+sex → robust-z → engine masked-cosine spectral embedding 
 
 ---
 
+## E11 · Phase 4 — temporal coherence V0→V4 — 2026-05-22
+`scripts/longitudinal_coherence.py`. Build the SAME domain scores at every visit
+(pooled scaling, per-visit-age spline+cross-fit residualization), assign each
+patient-visit to a V0 phenotype, measure persistence.
+- **Methodology note (important):** a masked nearest-**centroid** rule could *not*
+  reproduce the V0 spectral-embedding clusters (self-ARI **0.024** — centroid vs
+  spectral geometry mismatch). Replaced with a **classifier** (HistGradientBoosting,
+  NaN-native) trained on V0 domain scores → V0 labels: **5-fold accuracy 0.842**
+  (k=5, chance 0.20) — phenotypes ARE recoverable from domains; rule is valid.
+- **Result:** coherence is **modest and stable** across visits — ARI(V0↔Vk)
+  **≈0.06–0.07**, persistence **≈37–39%** (V1 n=3782 … V4 n=697). Phenotype-
+  dependent: smoking/illness-burden (1) **59%**, functioning (2) 48%, metabolic
+  (0) 40%, manic activation (3) 35%, **somatic (4) 14%**.
+- **Attractor:** non-persisters converge toward phenotype 1 (29/36/32% of 0/3/4
+  → 1 at V1).
+- **Interpretation:** the V0 cross-sectional phenotypes are **part trait, part
+  state** — trait-like burden axes (metabolic, smoking/illness-burden, functioning)
+  persist; symptom-state axes (mania, somatic) are transient (treatment + episode
+  resolution + regression-to-mean). This **nuances the temporal-coherence
+  hypothesis**: a single-visit clustering captures state as well as trait. DR
+  excluded at V3 (cliff).
+
 ## Deferred / open (do not forget)
 - **ComBat site harmonization** as a sensitivity analysis (task #43).
 - **Cognition (NEUROPSYCHOLOGIE)** domains — handle non-random battery
