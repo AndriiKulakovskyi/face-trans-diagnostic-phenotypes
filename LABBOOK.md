@@ -134,12 +134,23 @@ residualize on age+sex → robust-z → engine masked-cosine spectral embedding 
 - **Confound verified removed** (Tier-3): sex Cramér's V **0.041**, age-tertile
   ARI **0.006**, age **dCor 0.117** (small residual), **cohort ARI 0.002** —
   clusters independent of sex, age and diagnosis.
-- **Five trans-diagnostic phenotypes** (cohort mix ≈ proportional to sample):
-  0 **metabolic burden / later-onset** (metabolic_syndrome↑); 1 **smoking +
-  inflammation / early-onset**; 2 **high-functioning / low burden** (EGF↑,
-  metabolic↓ inflammation↓ cholesterol↓); 3 **manic activation + impulsivity +
-  ADHD-traits** (YMRS/Altman/Mathys/BIS/WURS↑, DR only 2%); 4 **somatic +
-  medication-effects** (somatic↑, prolactin↑, QTc↑, seasonality↑).
+- **Five trans-diagnostic phenotypes** (cohort mix ≈ proportional to sample;
+  standardized domain profiles in `reports/cluster_domains.html`):
+  0 **metabolic / later-onset** (metabolic_syndrome +0.41σ, later age-of-onset);
+  1 **heavy-smoking / hospitalization burden** (smoking +0.76σ, hospitalizations↑,
+  low YMRS); 2 **high-functioning / low burden** (EGF/education/QoL↑,
+  metabolic −0.89σ, smoking −0.93σ); 3 **manic activation / impulsivity**
+  (YMRS +1.33σ, Altman/Mathys/BIS↑, DR ≈ 0); 4 **somatic / medication-burden**
+  (somatic +1.53σ, QTc +0.41σ, prolactin +0.37σ). Clusters 3 & 4 are dominated by
+  a single strong axis; 0-2 are multivariate.
+
+## E10 · Phenotype profile report — 2026-05-22
+- `scripts/cluster_domains_profile.py` → `reports/cluster_domains.html`:
+  cluster×domain signature heatmap, UMAP (cluster/cohort), per-cluster enrichment
+  bars, medoid vignettes, k-selection figure, independence callout.
+- Bug fixed: a CSV→parquet round-trip had coerced `patient_id` int (lost the str
+  type), breaking the scores↔embedding join; `cluster_domains.py` now writes
+  parquet directly and the profile coerces the index defensively.
 - **Metabolic axis recovered** as a prominent phenotype (cluster 0 high vs 2 low)
   — the deck's metabolic theme is supported; composite direction is explicit
   (BMI/trig/glucose↑, HDL↓ = higher burden) so no sign-inversion ambiguity.

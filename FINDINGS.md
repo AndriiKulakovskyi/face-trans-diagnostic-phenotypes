@@ -75,11 +75,14 @@ spectral embedding.
 - **Confound verified removed:** sex Cramér's V **0.041**, age-tertile ARI
   **0.006**, age dCor **0.117**, **cohort ARI 0.002** — independent of sex, age,
   and diagnosis (genuinely trans-diagnostic).
-- **Five phenotypes** cutting across BP/SZ/DR: (0) **metabolic burden /
-  later-onset**, (1) **smoking + inflammation / early-onset**, (2)
-  **high-functioning / low burden**, (3) **manic activation + impulsivity +
-  ADHD-traits** (YMRS/Altman/Mathys/BIS/WURS↑), (4) **somatic + medication-effect**
-  (prolactin/QTc↑).
+- **Five phenotypes** cutting across BP/SZ/DR (standardized domain profiles,
+  `reports/cluster_domains.html`): (0) **metabolic / later-onset**
+  (metabolic_syndrome↑, later age-of-onset↑, somatic↓); (1) **heavy-smoking /
+  hospitalization burden** (smoking↑, hospitalizations↑, YMRS↓); (2)
+  **high-functioning / low burden** (EGF↑, education↑, QoL↑; metabolic↓,
+  smoking↓); (3) **manic activation / impulsivity** (YMRS **+1.33σ**, Altman/
+  Mathys/BIS↑; DR ≈ 0); (4) **somatic / medication-burden** (somatic **+1.53σ**,
+  QTc↑, prolactin↑). Clusters 3 & 4 are single-axis-dominated; 0–2 multivariate.
 - **Metabolic axis** is now a prominent, explicit phenotype (cluster 0 high vs 2
   low; composite oriented BMI/trig/glucose↑, HDL↓) — supports the deck's
   metabolic theme without sign ambiguity.
