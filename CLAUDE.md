@@ -28,15 +28,15 @@ face-common-bp-sz-dr/
 ├── src/
 │   └── face_common/                 ← OUR development base (the only code we write)
 │       ├── variable.py  rules.py  loader.py  filters.py
-│       ├── schema_gen.py  adapter.py  ← engine bridge (dictionary→schema, frame→HarmonizedDataset)
+│       ├── schema_gen.py  adapter.py  domains.py  ← engine bridge + domain aggregation
 ├── archive/                         ← copied sister code — VENDORED, do not develop here
 │   ├── face_stratification/         ← the reused engine (importable)
 │   ├── face_rlvr/                   ← engine's patient extractors + glossary loader
 │   ├── data/ scripts/ notebooks/ tests_face_stratification/ docs/ output/
 ├── config/                          ← engine config (feature schema + glossary; vendored, kept at root)
 ├── data/                            ← OUR 3-cohort longitudinal CSVs + data/external (engine reference artifacts)
-├── scripts/                         ← OUR runnable scripts (verify, audit, qa_missingness, v0_anchor, phase2*, reproduce_v0_clusters)
-├── tests/                           ← OUR tests (test_filters.py, test_adapter.py)
+├── scripts/                         ← OUR scripts (verify, audit, qa_missingness, v0_anchor, phase2*, cluster_v0*, cluster_domains*, longitudinal_coherence)
+├── tests/                           ← OUR tests (test_filters.py, test_adapter.py, test_domains.py)
 ├── results/  reports/               ← our outputs
 └── pyproject.toml                   ← packages: src/face_common + archive engine; pytest pythonpath = [src, archive]
 ```
@@ -125,27 +125,21 @@ ds = to_harmonized_dataset(df, load_variables("face-common-vars.xlsx"), visit="V
 
 ## Status
 
-- Harmonization: 348/348 feature variables PASS the audit (0 FAIL, 45 WARN).
-- Merge done; engine reproduces the sister 4-cohort clusters exactly
-  (`results/v0_clusters_anchor.csv`); **no imputation** confirmed.
-- **Phase 3 (V0 clustering) — done, with a key methodology correction.**
-  `schema_gen.py` + `adapter.py` bridge our V0 matrix into the engine;
-  `scripts/cluster_v0.py` embeds + clusters; `cluster_v0_profile.py` names
-  clusters (UMAP + engine enrichment) → `reports/cluster_v0.html`.
-- **Confound trace (important):** clustering on raw/all features was dominated
-  by a `brthdtc` 1e17 artifact, then by feature scale, then by **sex×age**
-  (cluster↔sex ARI 0.32 > cohort 0.19). Fix = cluster on **clinical sections,
-  age/sex-residualized, robust-scaled, physical-comorbidity (`*_mhoccur`)
-  excluded** → confound gone (cluster↔sex ARI **0.005**).
-- **Result (k=6, 129 clinical features):** six **trans-diagnostic symptom
-  phenotypes** that cut across BP/SZ/DR (cluster↔cohort ARI **0.024**) —
-  childhood-maltreatment, depression+sleep (DR-enriched, validity), suicidality,
-  denial/response-style. Bootstrap **0.89**. Deliberately does **not** recover
-  the sister's diagnosis-aligned clusters (ARI vs ref 0.03) — it serves the
-  cut-across-DSM goal instead. 48 tests pass.
-- DR has a V3 attrition cliff (3 patient×visit rows) — exclude from V3.
-- Open fork: trans-diagnostic discovery (current) vs sister-cluster recovery
-  (retain diagnosis signal). A "denial" response-style axis needs scrutiny.
+- Harmonization: 348/348 feature variables PASS; **no imputation** (masked similarity); engine reproduces the sister 4-cohort clusters exactly.
+- **Engine bridge + V0 clustering (Phase 3) — done.** `schema_gen`/`adapter`
+  reshape our V0 matrix into the engine; `domains.py` aggregates 190 items → 72
+  balanced **domain scores** (incl. biology composites), age/sex-**residualized**
+  (spline + cross-fit). Lesson (FINDINGS §2): naive clustering chased a confound
+  ladder (`brthdtc` 1e17 → scale → sex×age via `*_mhoccur`) + item-count weighting.
+- **V0 result (FINAL — `cluster_domains.py`, k=5):** principled k (bootstrap 0.972
+  / consensus PAC 0.047); confound gone (**cohort ARI 0.002**, sex 0.04). Five
+  trans-diagnostic phenotypes: metabolic/later-onset · smoking/illness-burden ·
+  high-functioning · manic-activation · somatic/medication-burden
+  (`reports/cluster_domains.html`).
+- **Phase 4 (`longitudinal_coherence.py`):** V0-phenotype classifier (5-fold acc
+  0.842) → V0→V4 coherence modest & **phenotype-specific** (trait-like persist
+  ~40–59%, symptom-state churn 14–35%; DR excluded at V3).
+- 54 tests pass. Trace: **FINDINGS.md** + **LABBOOK.md**. Next: Phase 5 outcomes.
 
 ## Where to read next
 

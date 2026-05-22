@@ -189,7 +189,7 @@ face-common-bp-sz-dr/
       (b2 → `results/v0_clusters_anchor.csv`); confirmed **no imputation** in the
       engine.
 
-### Phase 3 — V0 trans-diagnostic clustering — **DONE (v1), with a methodology correction**
+### Phase 3 — V0 trans-diagnostic clustering — **DONE (direction A locked)**
 - [x] `src/face_common/schema_gen.py` — dictionary→`FeatureSchema` generator
       (`section`→block, `canonical_name`→feature id, `dtype`→`FeatureType`,
       source-column presence→`cohorts`).
@@ -209,24 +209,36 @@ face-common-bp-sz-dr/
   **clinical sections only, age/sex-residualized, robust-scaled, `*_mhoccur`
   excluded** (129 features). Earlier "ARI 0.96 / 0.31" numbers were the date
   artifact and are retracted.
-- **Result (k=6, 9,013 patients):** the confound is gone (cluster↔sex ARI
-  **0.005**, ↔age 0.008) and six **trans-diagnostic symptom phenotypes** emerge
-  that cut across BP/SZ/DR (cluster↔cohort ARI **0.024**): childhood
-  maltreatment (CTQ↑), depression-severity + poor sleep (MADRS/PSQI↑, **DR-
-  enriched** → face-validity), suicidality (C-SSRS), and a denial / response-
-  style axis. Bootstrap mean pairwise ARI **0.89**. This **serves the
-  cut-across-DSM goal** (§1) and, by construction, does **not** reproduce the
-  sister's diagnosis-aligned clusters (ARI vs ref **0.03**).
-- **Open fork (needs a call):** (a) *trans-diagnostic discovery* — keep the
-  current demographics/comorbidity-free phenotypes; vs (b) *sister recovery* —
-  retain diagnosis signal (clusters then partly recapitulate DSM + demographics).
-- [ ] Scrutinise the "denial" axis (symptom-minimization response style, not
-      psychopathology?); principled k-selection; ablations (symptom-only,
-      READY-only); negative controls (§7).
+- **v1 (intermediate, k=6 symptom items):** confound removed (cluster↔sex ARI
+  0.005) but the phenotypes were driven by the **most-itemized instruments** +
+  a denial response-style axis — item-count weighting, not clinical priority
+  (FINDINGS §2.2, §3a). Motivated the domain-aggregation fix.
+- **Fork resolved → (A) trans-diagnostic discovery.** Built `domains.py` (190
+  items → 72 balanced domain scores incl. biology composites), nonlinear spline
+  + cross-fit residualization, and `scripts/cluster_domains.py` (+`_profile`).
+- **v2 result (FINAL) — k=5, principled selection.** Max bootstrap stability
+  (ARI **0.972**) / min consensus **PAC 0.047**; confound verified gone
+  (cluster↔sex Cramér's V **0.041**, age-tertile ARI 0.006, **cohort ARI 0.002**).
+  Five trans-diagnostic phenotypes: **metabolic/later-onset, smoking/illness-
+  burden, high-functioning, manic-activation, somatic/medication-burden**
+  (`reports/cluster_domains.html`; FINDINGS §3b). The metabolic axis is recovered
+  with explicit composite direction (resolves the §3 ⚠️ for our data).
+- [ ] Remaining: age-dCor residual (0.117); cognition domains; READY-only
+      ablation; negative controls (§7).
 
-### Phase 4 — Longitudinal coherence (our core)
-- [ ] Harmonize V1–V4 with the same schema; assign/re-cluster; ARI(V0↔Vk) +
-      transition Sankey + bootstrap/LOCO stability. DR excluded at V3.
+### Phase 4 — Longitudinal coherence (our core) — **DONE**
+- [x] `scripts/longitudinal_coherence.py`: SAME domain scores at every visit
+      (pooled scaling, per-visit-age residualized) → V0 phenotype **classifier**
+      (HistGradientBoosting, 5-fold acc **0.842**; a nearest-centroid rule was
+      invalid, self-ARI 0.024) → coherence + transition Sankey
+      (`reports/longitudinal.html`).
+- **Result:** modest, stable coherence (ARI V0↔Vk **≈0.06–0.07**, persistence
+  **≈37–39%** across V1–V4); a phenotype-specific **trait↔state gradient** —
+  trait-like axes persist (smoking/illness-burden 59%, functioning 48%, metabolic
+  40%), symptom-state axes transient (mania 35%, somatic 14%); non-persisters
+  flow toward the illness-burden phenotype. Reframes "temporal coherence" as
+  phenotype-specific, not global. DR excluded at V3. FINDINGS §3c.
+- [ ] Refinement: multi-visit-averaged "trait" phenotypes; LOCO stability.
 
 ### Phase 5 — Outcome prediction & DSM head-to-head
 - [ ] Functional outcome (GAF/FAST) ~ V0_cluster + arm + age + sex + (1|site);
