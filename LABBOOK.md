@@ -114,12 +114,36 @@ placeholder (the sister's non-ASP count) — k must be chosen on internal ground
   4. k-selection = **consensus + bootstrap stability + gap + interpretability**.
   5. **Start with symptoms + biology** (cognition deferred — availability-confounded).
 
-## E8 · Building domain aggregation — 2026-05-22 (in progress)
+## E8 · Domain aggregation + nonlinear residualization — 2026-05-22 (done)
 - `src/face_common/domains.py` — symptom instruments auto-grouped by canonical
   stem (masked mean of robust-z items, min-items threshold); curated biology
-  composites with explicit members + directions.
-- Next: nonlinear residualization → engine embedding on ~20-30 domain scores →
-  consensus/stability k-selection → re-profile + independence check.
+  composites with explicit members + directions. 190 items → 72 domains; no
+  domain > 1.4% of dims (was 30% for SUICIDE); metabolic_syndrome 90% coverage.
+- `residualize_features(spline_df, cross_fit)` — natural-spline age + sex-specific
+  curves + K-fold cross-fitting (double-ML partialling-out).
+
+## E9 · Direction-A domain clustering result — 2026-05-22
+`scripts/cluster_domains.py`: 72 domains → coverage floor 30% (**54 kept**, 18
+near-empty dropped incl `cssrs`/`ltsg`/`ltsv`/`mdq`/`cgi`) → spline+cross-fit
+residualize on age+sex → robust-z → engine masked-cosine spectral embedding (36-dim,
+4 partitions) → stability/PAC/gap/independence k-sweep.
+
+- **Principled k = 5.** Highest bootstrap stability (**ARI 0.972**) and lowest
+  consensus **PAC 0.047**; at k≥6 stability falls *and* sex creeps back
+  (Cramér's V 0.18→0.24). Gap rises monotonically (not decisive alone).
+- **Confound verified removed** (Tier-3): sex Cramér's V **0.041**, age-tertile
+  ARI **0.006**, age **dCor 0.117** (small residual), **cohort ARI 0.002** —
+  clusters independent of sex, age and diagnosis.
+- **Five trans-diagnostic phenotypes** (cohort mix ≈ proportional to sample):
+  0 **metabolic burden / later-onset** (metabolic_syndrome↑); 1 **smoking +
+  inflammation / early-onset**; 2 **high-functioning / low burden** (EGF↑,
+  metabolic↓ inflammation↓ cholesterol↓); 3 **manic activation + impulsivity +
+  ADHD-traits** (YMRS/Altman/Mathys/BIS/WURS↑, DR only 2%); 4 **somatic +
+  medication-effects** (somatic↑, prolactin↑, QTc↑, seasonality↑).
+- **Metabolic axis recovered** as a prominent phenotype (cluster 0 high vs 2 low)
+  — the deck's metabolic theme is supported; composite direction is explicit
+  (BMI/trig/glucose↑, HDL↓ = higher burden) so no sign-inversion ambiguity.
+- Residual to tighten: age dCor 0.117 (consider more spline knots / age²·sex).
 
 ---
 

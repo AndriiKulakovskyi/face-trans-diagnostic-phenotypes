@@ -58,16 +58,33 @@ partition → partition weight `sqrt(n_features × n_patients)` → concat + L2 
 KMeans. We reproduced the sister's published 7-cluster contingency exactly from
 their saved embedding (`scripts/reproduce_v0_clusters.py`).
 
-## 3. Result — v1 (clinical, residualized, comorbidity-free, k=6)
-- **Six reproducible trans-diagnostic symptom phenotypes** (bootstrap mean
-  pairwise ARI **0.89**) that cut across BP/SZ/DR (cluster↔cohort ARI **0.024**):
-  childhood maltreatment (CTQ↑), **depression-severity + poor sleep**
-  (MADRS/PSQI↑, **DR-enriched** → face validity), minimal-suicidality, and a
-  **denial / response-style** axis.
-- **Validity signal:** the depression cohort (DR) concentrates in the high-MADRS
-  / poor-sleep cluster (419/552 DR), alongside BP — a genuine cross-DSM mood axis.
-- It does **not** reproduce the sister diagnosis-aligned clusters (ARI vs ref
-  **0.03**) — by construction (we removed the diagnosis/demographic axes).
+## 3. Result
+
+### 3a. v1 (item-level clinical, residualized, k=6) — intermediate
+Six trans-diagnostic symptom phenotypes (bootstrap ARI 0.89, cohort ARI 0.024),
+but the drivers were dominated by the most-itemized instruments (§2.2) and a
+"denial" response-style axis — i.e. item-count weighting, not clinical priority.
+Superseded by v2.
+
+### 3b. v2 — domain scores + biology, spline-residualized (k=5) — **current**
+`scripts/cluster_domains.py`: 72 domain scores → coverage floor 30% (54 kept) →
+**nonlinear spline + cross-fit residualization** on age+sex → masked-cosine
+spectral embedding.
+- **Principled k = 5** (max bootstrap stability **ARI 0.972**, min consensus
+  **PAC 0.047**; k≥6 loses stability *and* re-admits sex).
+- **Confound verified removed:** sex Cramér's V **0.041**, age-tertile ARI
+  **0.006**, age dCor **0.117**, **cohort ARI 0.002** — independent of sex, age,
+  and diagnosis (genuinely trans-diagnostic).
+- **Five phenotypes** cutting across BP/SZ/DR: (0) **metabolic burden /
+  later-onset**, (1) **smoking + inflammation / early-onset**, (2)
+  **high-functioning / low burden**, (3) **manic activation + impulsivity +
+  ADHD-traits** (YMRS/Altman/Mathys/BIS/WURS↑), (4) **somatic + medication-effect**
+  (prolactin/QTc↑).
+- **Metabolic axis** is now a prominent, explicit phenotype (cluster 0 high vs 2
+  low; composite oriented BMI/trig/glucose↑, HDL↓) — supports the deck's
+  metabolic theme without sign ambiguity.
+- By construction this does **not** reproduce the sister diagnosis-aligned
+  clusters — it is trans-diagnostic phenotype discovery (direction A).
 
 ## 4. The scientific fork (framing)
 Two mutually-exclusive products, because **diagnosis + demographics are the
