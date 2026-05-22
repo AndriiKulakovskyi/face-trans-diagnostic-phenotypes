@@ -1,0 +1,408 @@
+$schema_version: 1
+PANSS:
+  name: PANSS
+  full_name: Positive and Negative Syndrome Scale — Total
+  full_name_fr: Échelle des syndromes positifs et négatifs — Score total
+  domain: psychosis
+  total_column: panss_
+  score_range:
+  - 30
+  - 210
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: Hétéro-évaluation de référence de la sévérité de la schizophrénie (30 items, 3 sous-échelles).
+  subscale_columns:
+    Sous-échelle positive: panssp
+    Sous-échelle négative: panssn
+    Psychopathologie générale: panssg
+  severity_thresholds:
+  - min_score: 30
+    max_score: 58
+    code: mild
+    label_fr: Symptômes légers
+    clinical_meaning_fr: Symptômes psychotiques légers, fonctionnement relativement préservé.
+  - min_score: 59
+    max_score: 75
+    code: moderate
+    label_fr: Symptômes modérés
+    clinical_meaning_fr: Symptômes psychotiques d'intensité modérée, retentissement fonctionnel notable.
+  - min_score: 76
+    max_score: 95
+    code: marked
+    label_fr: Symptômes marqués
+    clinical_meaning_fr: Symptômes psychotiques marqués avec altération fonctionnelle significative, prise en charge intensive nécessaire.
+  - min_score: 96
+    max_score: 210
+    code: severe
+    label_fr: Symptômes sévères
+    clinical_meaning_fr: Symptômes psychotiques sévères, altération fonctionnelle majeure, réévaluation thérapeutique urgente.
+PANSS-P:
+  name: PANSS-P
+  full_name: PANSS Positive Subscale
+  full_name_fr: PANSS — Sous-échelle positive
+  domain: psychosis_positive
+  total_column: panssp
+  score_range:
+  - 7
+  - 49
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: 'Sous-échelle positive PANSS (7 items) : idées délirantes, désorganisation conceptuelle, hallucinations, excitation, idées de grandeur, méfiance, hostilité.'
+  severity_thresholds:
+  - min_score: 7
+    max_score: 7
+    code: absent
+    label_fr: Absent
+    clinical_meaning_fr: Pas de symptôme positif identifié.
+  - min_score: 8
+    max_score: 14
+    code: minimal
+    label_fr: Minimal
+    clinical_meaning_fr: Symptômes positifs minimaux, possiblement subsyndromiques.
+  - min_score: 15
+    max_score: 21
+    code: mild
+    label_fr: Léger
+    clinical_meaning_fr: Symptômes positifs légers (idées de référence, méfiance, expériences perceptives inhabituelles).
+  - min_score: 22
+    max_score: 28
+    code: moderate
+    label_fr: Modéré
+    clinical_meaning_fr: Symptômes positifs modérés (délire partiel, hallucinations fréquentes mais critiquées).
+  - min_score: 29
+    max_score: 49
+    code: severe
+    label_fr: Sévère
+    clinical_meaning_fr: Symptômes positifs sévères (délire envahissant, hallucinations persistantes, désorganisation conceptuelle).
+PANSS-N:
+  name: PANSS-N
+  full_name: PANSS Negative Subscale
+  full_name_fr: PANSS — Sous-échelle négative
+  domain: psychosis_negative
+  total_column: panssn
+  score_range:
+  - 7
+  - 49
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: 'Sous-échelle négative PANSS (7 items) : émoussement affectif, retrait émotionnel, mauvais contact, retrait social passif/apathique, difficulté de pensée abstraite, manque de spontanéité,
+    pensée stéréotypée.'
+  severity_thresholds:
+  - min_score: 7
+    max_score: 7
+    code: absent
+    label_fr: Absent
+    clinical_meaning_fr: Pas de symptôme négatif identifié.
+  - min_score: 8
+    max_score: 14
+    code: minimal
+    label_fr: Minimal
+    clinical_meaning_fr: Symptômes négatifs minimaux.
+  - min_score: 15
+    max_score: 21
+    code: mild
+    label_fr: Léger
+    clinical_meaning_fr: Symptômes négatifs légers (émoussement affectif discret, retrait social partiel).
+  - min_score: 22
+    max_score: 28
+    code: moderate
+    label_fr: Modéré
+    clinical_meaning_fr: Symptômes négatifs modérés (affect aplati, pauvreté du discours, apathie notable).
+  - min_score: 29
+    max_score: 49
+    code: severe
+    label_fr: Sévère
+    clinical_meaning_fr: Symptômes négatifs sévères (retrait autistique, alogie, aboulie marquée). Pronostic fonctionnel défavorable.
+PANSS-G:
+  name: PANSS-G
+  full_name: PANSS General Psychopathology Subscale
+  full_name_fr: PANSS — Psychopathologie générale
+  domain: psychosis_general
+  total_column: panssg
+  score_range:
+  - 16
+  - 112
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: Sous-échelle de psychopathologie générale PANSS (16 items).
+  severity_thresholds:
+  - min_score: 16
+    max_score: 31
+    code: minimal
+    label_fr: Minimal
+    clinical_meaning_fr: Psychopathologie générale minimale.
+  - min_score: 32
+    max_score: 47
+    code: mild
+    label_fr: Léger
+    clinical_meaning_fr: Psychopathologie générale légère (anxiété, tension, préoccupations somatiques modérées).
+  - min_score: 48
+    max_score: 63
+    code: moderate
+    label_fr: Modéré
+    clinical_meaning_fr: Psychopathologie générale modérée avec retentissement fonctionnel.
+  - min_score: 64
+    max_score: 112
+    code: severe
+    label_fr: Sévère
+    clinical_meaning_fr: Psychopathologie générale sévère.
+Calgary:
+  name: Calgary
+  full_name: Calgary Depression Scale for Schizophrenia
+  full_name_fr: Échelle de dépression de Calgary pour la schizophrénie
+  domain: depression_sz
+  total_column: calgar
+  score_range:
+  - 0
+  - 27
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: Échelle spécifique de la dépression dans la schizophrénie (9 items), distingue la dépression des symptômes négatifs et extrapyramidaux.
+  severity_thresholds:
+  - min_score: 0
+    max_score: 5
+    code: none
+    label_fr: Pas de dépression
+    clinical_meaning_fr: Pas de symptomatologie dépressive significative chez ce patient schizophrène.
+  - min_score: 6
+    max_score: 8
+    code: mild
+    label_fr: Dépression légère
+    clinical_meaning_fr: Symptômes dépressifs légers. À distinguer des symptômes négatifs de la schizophrénie.
+  - min_score: 9
+    max_score: 27
+    code: moderate_severe
+    label_fr: Dépression modérée à sévère
+    clinical_meaning_fr: Dépression comorbide significative, nécessitant une prise en charge spécifique et un risque suicidaire à évaluer.
+CGI-S:
+  name: CGI-S
+  full_name: Clinical Global Impression — Severity
+  full_name_fr: Impression clinique globale — Sévérité
+  domain: global_severity
+  total_column: cgi0101
+  score_range:
+  - 1
+  - 7
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: Évaluation globale par le clinicien de la sévérité de la maladie.
+  subscale_columns:
+    CGI-I (amélioration): cgi0102
+  severity_thresholds:
+  - min_score: 1
+    max_score: 1
+    code: normal
+    label_fr: Normal, pas du tout malade
+    clinical_meaning_fr: Le patient ne présente aucun symptôme psychiatrique identifiable.
+  - min_score: 2
+    max_score: 2
+    code: borderline
+    label_fr: À la limite
+    clinical_meaning_fr: Symptômes psychiatriques à la limite du pathologique.
+  - min_score: 3
+    max_score: 3
+    code: mild
+    label_fr: Légèrement malade
+    clinical_meaning_fr: Symptômes légers avec un retentissement fonctionnel minime.
+  - min_score: 4
+    max_score: 4
+    code: moderate
+    label_fr: Modérément malade
+    clinical_meaning_fr: Symptômes modérés avec retentissement fonctionnel notable.
+  - min_score: 5
+    max_score: 5
+    code: markedly_ill
+    label_fr: Manifestement malade
+    clinical_meaning_fr: Symptômes marqués avec retentissement fonctionnel important.
+  - min_score: 6
+    max_score: 6
+    code: severe
+    label_fr: Gravement malade
+    clinical_meaning_fr: Symptômes sévères avec altération fonctionnelle majeure.
+  - min_score: 7
+    max_score: 7
+    code: extreme
+    label_fr: Parmi les patients les plus malades
+    clinical_meaning_fr: Symptômes psychiatriques d'une intensité extrême.
+PSP:
+  name: PSP
+  full_name: Personal and Social Performance Scale
+  full_name_fr: Échelle de performance personnelle et sociale
+  domain: functioning_sz
+  total_column: psp_
+  score_range:
+  - 0
+  - 100
+  higher_is_worse: false
+  evaluation_type: hetero
+  clinical_note_fr: Évaluation du fonctionnement personnel et social sur 4 domaines (activités utiles, relations, soins personnels, comportement perturbateur).
+  severity_thresholds:
+  - min_score: 71
+    max_score: 100
+    code: mild
+    label_fr: Difficultés légères
+    clinical_meaning_fr: Fonctionnement globalement préservé avec des difficultés légères dans un ou plusieurs domaines.
+  - min_score: 31
+    max_score: 70
+    code: marked
+    label_fr: Difficultés marquées
+    clinical_meaning_fr: Difficultés manifestes dans plusieurs domaines du fonctionnement (activités socialement utiles, relations, autonomie, comportement).
+  - min_score: 1
+    max_score: 30
+    code: severe
+    label_fr: Difficultés sévères
+    clinical_meaning_fr: Fonctionnement sévèrement altéré, le patient nécessite un soutien ou une supervision intensive.
+S-QoL:
+  name: S-QoL
+  full_name: Schizophrenia Quality of Life
+  full_name_fr: Qualité de vie dans la schizophrénie
+  domain: quality_of_life_sz
+  total_column: sqol
+  score_range:
+  - 0
+  - 100
+  higher_is_worse: false
+  evaluation_type: auto
+  clinical_note_fr: Auto-questionnaire spécifique de la qualité de vie dans la schizophrénie.
+  severity_thresholds:
+  - min_score: 0
+    max_score: 39
+    code: poor
+    label_fr: Qualité de vie médiocre
+    clinical_meaning_fr: Qualité de vie très altérée, retentissement majeur de la maladie et des traitements.
+  - min_score: 40
+    max_score: 59
+    code: moderate
+    label_fr: Qualité de vie modérée
+    clinical_meaning_fr: Qualité de vie partiellement altérée.
+  - min_score: 60
+    max_score: 100
+    code: good
+    label_fr: Bonne qualité de vie
+    clinical_meaning_fr: Qualité de vie relativement préservée.
+AIMS:
+  name: AIMS
+  full_name: Abnormal Involuntary Movement Scale
+  full_name_fr: Échelle des mouvements anormaux involontaires
+  domain: movement_disorders
+  total_column: aims0112
+  score_range:
+  - 0
+  - 1
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: 'Évaluation globale de la dyskinésie tardive (item 12 : jugement global du clinicien).'
+  severity_thresholds:
+  - min_score: 0
+    max_score: 0
+    code: none
+    label_fr: Pas de dyskinésie
+    clinical_meaning_fr: Pas de mouvement anormal involontaire détecté.
+  - min_score: 1
+    max_score: 1
+    code: present
+    label_fr: Dyskinésie tardive présente
+    clinical_meaning_fr: Mouvements anormaux involontaires détectés (dyskinésie tardive). Réévaluation du traitement antipsychotique recommandée.
+BARS:
+  name: BARS
+  full_name: Barnes Akathisia Rating Scale
+  full_name_fr: Échelle d'akathisie de Barnes
+  domain: akathisia
+  total_column: bars03
+  score_range:
+  - 0
+  - 5
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: Évaluation de l'akathisie induite par les neuroleptiques (item global du clinicien).
+  subscale_columns:
+    Score objectif: bars02
+  severity_thresholds:
+  - min_score: 0
+    max_score: 0
+    code: absent
+    label_fr: Pas d'akathisie
+    clinical_meaning_fr: Pas d'akathisie détectée.
+  - min_score: 1
+    max_score: 1
+    code: questionable
+    label_fr: Akathisie douteuse
+    clinical_meaning_fr: Akathisie douteuse, à surveiller.
+  - min_score: 2
+    max_score: 2
+    code: mild
+    label_fr: Akathisie légère
+    clinical_meaning_fr: Akathisie légère. Le patient rapporte une sensation d'impatience intérieure.
+  - min_score: 3
+    max_score: 3
+    code: moderate
+    label_fr: Akathisie modérée
+    clinical_meaning_fr: Akathisie modérée avec agitation motrice observable. Ajustement thérapeutique à considérer.
+  - min_score: 4
+    max_score: 5
+    code: severe
+    label_fr: Akathisie sévère
+    clinical_meaning_fr: Akathisie sévère, source de détresse importante. Modification du traitement nécessaire.
+WURS-25:
+  name: WURS-25
+  full_name: Wender Utah Rating Scale — 25 items
+  full_name_fr: Échelle de Wender Utah (25 items)
+  domain: childhood_adhd
+  total_column: wurstot
+  score_range:
+  - 0
+  - 100
+  higher_is_worse: true
+  evaluation_type: auto
+  clinical_note_fr: Auto-questionnaire rétrospectif de dépistage du TDAH dans l'enfance (seuil ≥ 46).
+  screening_threshold: 46
+  screening_positive_label_fr: Dépistage positif de TDAH de l'enfance
+  screening_negative_label_fr: Dépistage négatif de TDAH de l'enfance
+$registry:
+  order:
+  - PANSS
+  - PANSS-P
+  - PANSS-N
+  - PANSS-G
+  - Calgary
+  - CGI-S
+  - PSP
+  - S-QoL
+  - EQ-5D
+  - AIMS
+  - BARS
+  - YMRS
+  - PSQI
+  - MARS
+  - CTQ
+  - Fagerström
+  - WURS-25
+  groups:
+    SZ_PSYCHOSIS_INSTRUMENTS:
+    - PANSS
+    - PANSS-P
+    - PANSS-N
+    - PANSS-G
+    SZ_DEPRESSION_INSTRUMENTS:
+    - Calgary
+    SZ_GLOBAL_INSTRUMENTS:
+    - CGI-S
+    SZ_FUNCTIONING_INSTRUMENTS:
+    - PSP
+    - S-QoL
+    - EQ-5D
+    SZ_MOVEMENT_INSTRUMENTS:
+    - AIMS
+    - BARS
+    SZ_MOOD_INSTRUMENTS:
+    - YMRS
+    SZ_SLEEP_INSTRUMENTS:
+    - PSQI
+    SZ_ADHERENCE_INSTRUMENTS:
+    - MARS
+    SZ_TRAUMA_INSTRUMENTS:
+    - CTQ
+    SZ_SUBSTANCE_INSTRUMENTS:
+    - Fagerström
+    SZ_SCREENING_INSTRUMENTS:
+    - WURS-25

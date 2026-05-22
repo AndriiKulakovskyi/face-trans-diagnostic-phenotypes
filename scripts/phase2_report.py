@@ -34,7 +34,8 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+sys.path.insert(0, str(REPO_ROOT / "archive"))
+sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from face_common import (  # noqa: E402
     build_unified_dataframe,

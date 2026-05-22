@@ -1,0 +1,180 @@
+$schema_version: 1
+labs:
+- csv_col: gluc_lbstresc
+  name: Glucose
+  name_fr: Glycémie à jeun
+  unit: mmol/L
+  normal_range:
+  - 3.9
+  - 5.5
+- csv_col: hba1c_lbstresc
+  name: HbA1c
+  name_fr: Hémoglobine glyquée
+  unit: '%'
+  normal_range:
+  - 4.0
+  - 5.6
+- csv_col: chol_lbstresc
+  name: Total cholesterol
+  name_fr: Cholestérol total
+  unit: mmol/L
+  normal_range:
+  - 0.0
+  - 5.2
+- csv_col: hdl_lbstresc
+  name: HDL
+  name_fr: HDL-cholestérol
+  unit: mmol/L
+  normal_range:
+  - 1.0
+  - 99.0
+- csv_col: ldl_lbstresc
+  name: LDL
+  name_fr: LDL-cholestérol
+  unit: mmol/L
+  normal_range:
+  - 0.0
+  - 3.4
+- csv_col: trig_lbstresc
+  name: Triglycerides
+  name_fr: Triglycérides
+  unit: mmol/L
+  normal_range:
+  - 0.0
+  - 1.7
+- csv_col: tsh_lbstresc
+  name: TSH
+  name_fr: TSH
+  unit: mUI/L
+  normal_range:
+  - 0.4
+  - 4.0
+- csv_col: t3fr_lbstresc
+  name: Free T3
+  name_fr: T3 libre
+  unit: pmol/L
+  normal_range:
+  - 3.5
+  - 6.5
+- csv_col: t4fr_lbstresc
+  name: Free T4
+  name_fr: T4 libre
+  unit: pmol/L
+  normal_range:
+  - 12.0
+  - 22.0
+- csv_col: creat_lbstresc
+  name: Creatinine
+  name_fr: Créatinine
+  unit: µmol/L
+  normal_range:
+  - 60.0
+  - 110.0
+  sex_specific: true
+- csv_col: creatclr_lbstresc
+  name: Creatinine clearance
+  name_fr: Clairance créatinine
+  unit: mL/min
+  normal_range:
+  - 90.0
+  - 999.0
+- csv_col: prolctn_lbstresc
+  name: Prolactin
+  name_fr: Prolactine
+  unit: ng/mL
+  normal_range:
+  - 2.0
+  - 25.0
+- csv_col: crp_lbstresc
+  name: CRP
+  name_fr: Protéine C réactive
+  unit: mg/L
+  normal_range:
+  - 0.0
+  - 5.0
+- csv_col: alt_lbstresc
+  name: ALT
+  name_fr: ALAT
+  unit: U/L
+  normal_range:
+  - 0.0
+  - 40.0
+- csv_col: ast_lbstresc
+  name: AST
+  name_fr: ASAT
+  unit: U/L
+  normal_range:
+  - 0.0
+  - 40.0
+- csv_col: ggt_lbstresc
+  name: GGT
+  name_fr: Gamma-GT
+  unit: U/L
+  normal_range:
+  - 0.0
+  - 60.0
+- csv_col: bili_lbstresc
+  name: Bilirubin
+  name_fr: Bilirubine
+  unit: µmol/L
+  normal_range:
+  - 0.0
+  - 17.0
+- csv_col: hgb_lbstresc
+  name: Hemoglobin
+  name_fr: Hémoglobine
+  unit: g/dL
+  normal_range:
+  - 12.0
+  - 17.0
+  sex_specific: true
+- csv_col: wbc_lbstresc
+  name: WBC
+  name_fr: Leucocytes
+  unit: G/L
+  normal_range:
+  - 4.0
+  - 10.0
+- csv_col: plat_lbstresc
+  name: Platelets
+  name_fr: Plaquettes
+  unit: G/L
+  normal_range:
+  - 150.0
+  - 400.0
+- csv_col: sodium_lbstresc
+  name: Sodium
+  name_fr: Natrémie
+  unit: mmol/L
+  normal_range:
+  - 136.0
+  - 145.0
+- csv_col: k_lbstresc
+  name: Potassium
+  name_fr: Kaliémie
+  unit: mmol/L
+  normal_range:
+  - 3.5
+  - 5.0
+- csv_col: ca_lbstresc
+  name: Calcium
+  name_fr: Calcémie
+  unit: mmol/L
+  normal_range:
+  - 2.2
+  - 2.6
+- csv_col: urate_lbstresc
+  name: Uric acid
+  name_fr: Acide urique
+  unit: µmol/L
+  normal_range:
+  - 150.0
+  - 420.0
+  sex_specific: true
+- csv_col: urea_lbstresc
+  name: Urea
+  name_fr: Urée
+  unit: mmol/L
+  normal_range:
+  - 2.5
+  - 7.5

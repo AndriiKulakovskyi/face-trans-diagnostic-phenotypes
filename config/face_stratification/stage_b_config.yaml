@@ -1,0 +1,206 @@
+# Stage B — Embedding + Clustering + Validation configuration
+# All hyperparameters live here; no magic numbers in Python code.
+# Version: 0.1.0
+
+version: "0.1.0"
+
+# ── Train/test split ─────────────────────────────────────────────────────────
+
+split:
+  test_fraction: 0.2
+  seed: 42
+  n_cv_folds: 5
+  n_cv_repeats: 3
+
+# ── Embedding methods ────────────────────────────────────────────────────────
+
+embedding_methods:
+
+  # ── Feature baselines (no graph) ──
+  raw_baseline:
+    enabled: true
+
+  pca:
+    enabled: true
+    n_components: 8    # or "auto" for cumulative variance ≥ 0.8
+
+  kernel_pca:
+    enabled: true
+    n_components: 16
+    kernel: rbf
+    gamma: auto        # 1 / (n_features * X.var()) by default
+
+  umap:
+    enabled: true
+    n_components: 16
+    n_neighbors: 30
+    min_dist: 0.2
+    metric: cosine
+
+  # ── Deep feature baselines (no graph) ──
+  vanilla_ae:
+    enabled: true
+    bottleneck_dim: 32
+    hidden_dims: [128, 64]
+    n_epochs: 200
+    lr: 0.001
+    weight_decay: 0.0001
+    batch_size: 256
+
+  vae:
+    enabled: true
+    bottleneck_dim: 32
+    hidden_dims: [128, 64]
+    n_epochs: 200
+    lr: 0.001
+    beta: 1.0           # KL weight
+    batch_size: 256
+
+  # ── Graph spectral ──
+  transdiagnostic_spectral:
+    enabled: true
+    n_components: 16
+
+  multiplex_spectral:
+    enabled: true
+    n_components: 32
+
+  diffusion_map:
+    enabled: true
+    n_components: 16
+    diffusion_time: 2   # t=1..3; 2 is a good default for multi-scale
+    alpha: 0.5           # Coifman-Lafon normalization
+
+  # ── GNN methods ──
+  gae:
+    enabled: true
+    hidden_dim: 64
+    out_dim: 32
+    n_layers: 2
+    dropout: 0.1
+    n_epochs: 200
+    lr: 0.01
+    edge_holdout: 0.2
+
+  vgae:
+    enabled: true
+    hidden_dim: 64
+    out_dim: 32
+    n_layers: 2
+    dropout: 0.1
+    n_epochs: 200
+    lr: 0.01
+    beta: 1.0
+    edge_holdout: 0.2
+
+  graphcl:
+    enabled: true
+    hidden_dim: 64
+    out_dim: 32
+    n_layers: 3
+    dropout: 0.1
+    n_epochs: 300
+    lr: 0.001
+    temperature: 0.5
+    p_edge_drop: 0.2
+    p_feature_mask: 0.2
+    edge_filter: transdiagnostic_only
+
+  gat:
+    enabled: true
+    hidden_dim: 64
+    out_dim: 32
+    n_heads: 4
+    n_layers: 2
+    dropout: 0.1
+    n_epochs: 200
+    lr: 0.005
+    attention_dropout: 0.1
+
+  dgi:
+    enabled: true
+    hidden_dim: 64
+    out_dim: 32
+    n_layers: 2
+    dropout: 0.1
+    n_epochs: 300
+    lr: 0.001
+
+  rgcn:
+    enabled: true
+    hidden_dim: 64
+    out_dim: 32
+    n_layers: 2
+    n_bases: 8
+    dropout: 0.1
+    n_epochs: 200
+    lr: 0.01
+
+  # ── Multi-view ──
+  weighted_concatenated:
+    enabled: true
+    sub_views:
+      - pca
+      - transdiagnostic_spectral
+      - multiplex_spectral
+
+# ── Graph construction ───────────────────────────────────────────────────────
+
+graph:
+  k_neighbours: 10
+  build_on_train_only: true
+
+# ── Clustering methods ───────────────────────────────────────────────────────
+
+clustering_methods:
+  kmeans:
+    enabled: true
+    n_init: 10
+  kmedoids:
+    enabled: true
+    n_init: 5
+  minibatch_kmeans:
+    enabled: true
+    batch_size: 1024
+  gmm_full:
+    enabled: true
+    covariance_type: full
+  gmm_tied:
+    enabled: true
+    covariance_type: tied
+  gmm_diag:
+    enabled: true
+    covariance_type: diag
+  bayesian_gmm:
+    enabled: true
+    max_clusters: 20
+  hdbscan:
+    enabled: true
+    min_cluster_size: 50
+    min_samples: 10
+  spectral_clustering:
+    enabled: true
+    affinity: rbf
+  ward:
+    enabled: true
+
+k_range: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+# ── Validation ───────────────────────────────────────────────────────────────
+
+validation:
+  n_permutations: 1000
+  bootstrap_n: 100
+  bootstrap_subsample: 0.8
+  alpha: 0.05
+  silhouette_sample_size: 5000
+
+# ── Visualization ────────────────────────────────────────────────────────────
+
+visualization:
+  plotly_template: plotly_dark
+  paper_bgcolor: "#0f1117"
+  plot_bgcolor: "#1a1d27"
+  scale: 3
+  export_format: png
+  output_dir: output/stage_b

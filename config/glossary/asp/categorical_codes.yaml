@@ -1,0 +1,21 @@
+# ASP (TSASDI) categorical code lookups.
+$schema_version: 1
+
+DSM_TYPE_CODES:
+  "1": "Autisme infantile"
+  "2": "Syndrome d'Asperger"
+  "3": "TED-NOS"
+  "4": "Autre"
+
+SCHOOL_LEVEL_CODES:
+  "1": "Non scolarisé"
+  "2": "Maternelle"
+  "3": "Primaire"
+  "4": "Collège"
+  "5": "Lycée"
+  "6": "Études supérieures"
+
+SCHOOL_TYPE_CODES:
+  "1": "Milieu ordinaire"
+  "2": "Milieu spécialisé"
+  "3": "Milieu mixte"

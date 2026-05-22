@@ -1,0 +1,7 @@
+# DR-specific categorical code lookups.
+$schema_version: 1
+
+RESISTANCE_LEVEL_CODES:
+  "0": "non resistant"
+  "1": "resistance partielle"
+  "2": "resistant"

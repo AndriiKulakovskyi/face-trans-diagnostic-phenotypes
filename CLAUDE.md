@@ -1,138 +1,125 @@
-# CLAUDE.md — FACE Common (BP · SZ · DR)
+# CLAUDE.md — FACE trans-diagnostic clustering (BP · SZ · DR)
 
-> Project guide for human collaborators and AI assistants. Keep this short. For
-> the full research plan see [ROADMAP.md](ROADMAP.md); for the data dictionary
-> see [DATA.md](DATA.md).
+> Guide for collaborators and AI assistants. Keep it short. Full research plan:
+> [ROADMAP.md](ROADMAP.md). Dictionary reading guide: [DATA.md](DATA.md).
 
 ## What this is
 
-A harmonization + clustering pipeline for the FACE multi-cohort psychiatric
-dataset (Bipolar, Schizophrenia, Depression). The goal is **data-driven
-trans-diagnostic clustering** of patients across the three DSM-5 categories
-using a common variable dictionary, then comparing the discovered clusters
-against DSM-5 labels and tracking their stability across annual follow-up
-visits (V0 baseline → V4).
+A **merged project** for data-driven **trans-diagnostic clustering** of the FACE
+psychiatric cohort (Bipolar, Schizophrenia, Depression). Two halves:
 
-## Data inputs (read-only)
+1. **Our pipeline** (`src/face_common`) — harmonizes the 3-cohort **longitudinal**
+   data (V0 baseline → V4) from the common-variables dictionary into a unified
+   patient × feature matrix. **This is the feature/data source.**
+2. **The vendored engine** (`archive/face_stratification`) — a sister project's
+   modelling algorithms (masked similarity → multipartite-spectral embedding →
+   consensus clustering → validation), **reused, not developed**. We feed it our
+   matrix; its original 4-cohort clusters are a comparison **reference**.
 
-- `face-common-vars.xlsx` — Sheet1 dictionary (379 rows × 20 cols). Each row =
-  one harmonized variable, with per-cohort source-column names, target dtype,
-  value set, clinical rationale, and harmonization rule. **Authoritative.**
-- `data/bipolar.csv` — 21,343 visit-level rows, 6,252 patients (BP).
-- `data/schizophrenia.csv` — 6,203 rows, 2,209 patients (SZ).
-- `data/depression.csv` — 1,953 rows, 552 patients (DR).
-- `thesaurus/*.xlsx` — original per-cohort thesauri; reference only.
+Goal: discover clusters that cut across DSM-5, track their **temporal coherence**
+V0→V4, and relate them to outcomes (the "FACE Score").
 
 ## Repository layout
 
 ```
 face-common-bp-sz-dr/
-├── CLAUDE.md                  ← this file
-├── DATA.md                    ← dictionary reading guide
-├── ROADMAP.md                 ← research plan, milestones, open questions
-├── face-common-vars.xlsx      ← dictionary (input)
-├── data/                      ← raw CSVs (input, large)
-├── thesaurus/                 ← original per-cohort xlsx (reference)
-├── face_common/               ← the library
-│   ├── __init__.py
-│   ├── variable.py            ← Variable dataclass + load_variables()
-│   ├── rules.py               ← harmonization registry (RULES dict)
-│   └── loader.py              ← build_unified_dataframe()
-├── scripts/                   ← runnable analysis scripts
-│   ├── verify.py              ← end-to-end smoke test
-│   ├── audit.py               ← per-variable correctness audit
-│   └── qa_missingness.py      ← interactive HTML missingness report
-├── results/                   ← CSV/JSON outputs (audit_report.csv, qa_missingness.csv …)
-├── reports/                   ← HTML / figure artifacts (qa_missingness.html …)
-└── tests/                     ← unit tests (currently empty, see roadmap)
+├── CLAUDE.md  ROADMAP.md  DATA.md   ← docs (ours)
+├── face-common-vars.xlsx            ← the common-variables dictionary (input)
+├── src/
+│   └── face_common/                 ← OUR development base (the only code we write)
+│       ├── variable.py  rules.py  loader.py  filters.py
+├── archive/                         ← copied sister code — VENDORED, do not develop here
+│   ├── face_stratification/         ← the reused engine (importable)
+│   ├── face_rlvr/                   ← engine's patient extractors + glossary loader
+│   ├── data/ scripts/ notebooks/ tests_face_stratification/ docs/ output/
+├── config/                          ← engine config (feature schema + glossary; vendored, kept at root)
+├── data/                            ← OUR 3-cohort longitudinal CSVs + data/external (engine reference artifacts)
+├── scripts/                         ← OUR runnable scripts (verify, audit, qa_missingness, v0_anchor, phase2*, reproduce_v0_clusters)
+├── tests/                           ← OUR tests (test_filters.py)
+├── results/  reports/               ← our outputs
+└── pyproject.toml                   ← packages: src/face_common + archive engine; pytest pythonpath = [src, archive]
 ```
 
-## Core concepts
+**Imports.** `face_common` resolves from `src/`; `face_stratification` /
+`face_rlvr` from `archive/`. pytest is configured for both; scripts insert
+`src/` + `archive/` on `sys.path`. (Or `pip install -e .`.)
 
-**`Variable`** (`face_common/variable.py`) — one instance per dictionary row.
-Carries `canonical_name`, `bp_csv_col` / `sz_csv_col` / `dr_csv_col`, `dtype`,
-`unit_or_value_set`, `cluster_readiness`, `clinical_rationale`, `rule`,
-`section`, `label`, `findings`. Method `source_col(cohort)` returns the right
-CSV column for a cohort or `None`.
+## Data inputs (read-only)
 
-**Harmonization registry** (`face_common/rules.py`) — module-level dict
-`RULES: {canonical_name → callable(series, cohort) → series}`. Register custom
-transformers with `@register("canonical_name")`. Anything unregistered falls
-through to `identity_cast`, which handles standard dtype coercion and warns
-when produced values fall outside the dictionary's declared value set.
+- `face-common-vars.xlsx` — Sheet1 dictionary (379 rows × 20 cols). Each row =
+  one harmonized variable: per-cohort source columns, `dtype`, value set,
+  `section` (13 clinical blocks), `cluster_readiness`, rationale, rule.
+- `data/bipolar.csv` (6,252 patients), `data/schizophrenia.csv` (2,209),
+  `data/depression.csv` (552) — visit-level rows (V0–V4).
+- `archive/data/{BP,SZ,DR,ASP}.csv` — the sister's V0-only extracts (reference).
 
-**Visits** — CSV column `visit` holds labels like `V0`, `V1_an`, `V2_ans`,
-`V6_mois`, `screening`. The loader keeps **only yearly visits** and recodes
-them to `V0..V10`. `visitnum` is a global row id (not a sequence) and is
-preserved as metadata only.
+## Core concepts (our pipeline)
 
-**Identifiers** (never clustered on) — `patient_uid`, `usubjid_patients`,
-`cohort`, `arm` (DSM-5 text label), `visit`, `visitnum`. Always present
-unmodified in the output. `arm` is reserved for post-clustering evaluation
-(ARI vs clusters). **`patient_uid = cohort::usubjid_patients`** is the
-globally-unique patient key — `usubjid_patients` alone is only unique within
-a cohort (970 ids are reused across BP/SZ/DR), so all patient-level
-operations must key on `patient_uid`.
+**`Variable`** (`face_common/variable.py`) — one per dictionary row;
+`source_col(cohort)` returns the right CSV column or `None`.
 
-**Readiness filter** — `build_unified_dataframe(..., readiness=[...])` is
-**required**. Use `['READY']` for the 130-variable clean set or `['READY',
-'PARTIAL']` for the 351-variable richer set. Prefix-matched on the dictionary's
-multi-word readiness strings.
+**Harmonization registry** (`face_common/rules.py`) — `RULES: {canonical_name →
+callable(series, cohort)}`. Register with `@register(...)`; unregistered falls
+to `identity_cast` (dtype coercion + value-set warnings).
+
+**`build_unified_dataframe(...)`** (`face_common/loader.py`) — required
+`readiness=[...]` (`['READY']` = 130 vars, `['READY','PARTIAL']` = 351);
+`format='long'|'wide'`. Keeps only yearly visits, recoded `V0..V10`.
+
+**Filters** (`face_common/filters.py`) — `filter_variables`, `filter_patients`,
+`V0Anchor`, `select_v0_anchor` (completeness floors, visit-scoped).
+
+**`patient_uid = cohort::usubjid_patients`** — the globally-unique key
+(`usubjid_patients` is reused across cohorts; 970 collisions). All patient-level
+ops key on it.
+
+**Identifiers (never clustered on):** `patient_uid`, `usubjid_patients`,
+`cohort`, `arm`, `visit`, `visitnum`.
+
+**No imputation** — the engine uses masked pairwise-complete similarity; missing
+values are never filled (optional KNN/MICE imputers exist but are off).
 
 ## Quick start
 
 ```bash
-# 1. Smoke test (≈ 30 s) — confirms the pipeline runs end-to-end
-python3 scripts/verify.py
-
-# 2. Per-variable correctness audit (writes results/audit_report.csv)
-python3 scripts/audit.py
-
-# 3. Interactive missingness QA report (writes reports/qa_missingness.html)
-python3 scripts/qa_missingness.py
-open reports/qa_missingness.html
+python3 scripts/verify.py          # end-to-end smoke test (~30 s)
+python3 scripts/audit.py           # per-variable correctness audit → results/
+python3 scripts/qa_missingness.py  # interactive HTML report → reports/
+python3 -m pytest tests/ -q        # unit tests
 ```
 
 ```python
-# Use the library
 from face_common import build_unified_dataframe
-
-df = build_unified_dataframe(
-    data_dir="data",
-    dictionary_path="face-common-vars.xlsx",
-    readiness=["READY", "PARTIAL"],     # required
-    format="long",                       # 'long' or 'wide'
-)
-# To get the feature matrix for clustering:
+df = build_unified_dataframe("data", "face-common-vars.xlsx",
+                             readiness=["READY", "PARTIAL"], format="long")
 features = df.drop(columns=["patient_uid", "usubjid_patients", "cohort",
                             "arm", "visitnum", "visit"])
 ```
 
 ## Conventions
 
-- **Python ≥ 3.10**, pandas, numpy, plotly, matplotlib, openpyxl.
-- **Editing the dictionary** (`face-common-vars.xlsx`) is allowed but logged
-  carefully — the audit and QA scripts use it as the source of truth.
-- **Adding a new harmonization rule**: append a `@register("canonical_name")`
-  function in `face_common/rules.py`. Re-run `python3 scripts/audit.py` to
-  verify it cleared the relevant value-set warning.
-- **Output paths**: scripts always write to `results/` (data) or `reports/`
-  (HTML / figures). Do not write to repo root.
-- **No notebooks in the main path** — keep analysis reproducible as scripts.
-  Ad-hoc exploration is fine in a personal scratch dir but not committed.
+- **Python ≥ 3.11**; pandas, numpy, scikit-learn, scipy, networkx, plotly,
+  matplotlib, openpyxl. Engine extras (torch, leidenalg…) via
+  `pip install -e ".[stratification]"`.
+- **Develop only in `src/face_common`.** `archive/` is vendored copied code —
+  reuse by import, do not edit it.
+- **Adding a harmonization rule**: `@register(...)` in `rules.py`, then re-run
+  `scripts/audit.py`.
+- **Output paths**: scripts write to `results/` (data) or `reports/` (HTML).
+- The clustering runs on **our common-variables features** (block = `section`,
+  metric by `dtype`); the engine's 184-feature schema is the reference only.
 
-## Status (as of last update)
+## Status
 
-- Pipeline: 348/348 feature variables passing the audit (0 FAIL, 45 WARN — all
-  legitimate clinical heterogeneity, not bugs).
-- 31 custom harmonization rules registered; 317 fall through to identity_cast.
-- DR cohort has a known V3 attrition cliff (only 3 patient×visit rows). Flag
-  prominently in any V3-dependent analysis.
-- See `reports/qa_missingness.html` for the current per-variable missingness
-  snapshot at V0..V4.
+- Harmonization: 348/348 feature variables PASS the audit (0 FAIL, 45 WARN).
+- Merge done; engine reproduces the sister 4-cohort clusters exactly
+  (`results/v0_clusters_anchor.csv`); **no imputation** confirmed.
+- DR has a V3 attrition cliff (3 patient×visit rows) — exclude from V3.
+- Next: build the dictionary→schema adapter + `scripts/cluster_v0.py`
+  (3-cohort recovery). See ROADMAP §9–10.
 
 ## Where to read next
 
-- **What the dictionary columns mean** → [DATA.md](DATA.md)
-- **What we're building toward and why** → [ROADMAP.md](ROADMAP.md)
-- **The library API** → `face_common/__init__.py` (re-exports the public surface)
+- **Dictionary columns** → [DATA.md](DATA.md)
+- **Plan, methods, paper framing, course-corrections** → [ROADMAP.md](ROADMAP.md)
+- **Engine internals** → `archive/docs/` (sister stage docs)

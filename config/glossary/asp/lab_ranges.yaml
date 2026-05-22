@@ -1,0 +1,30 @@
+$schema_version: 1
+labs:
+- csv_col: gluc
+  name: Glucose
+  name_fr: Glycémie
+  unit: mmol/L
+  normal_range:
+  - 3.9
+  - 5.5
+- csv_col: hdl
+  name: HDL
+  name_fr: HDL-cholestérol
+  unit: mmol/L
+  normal_range:
+  - 1.0
+  - 2.5
+- csv_col: chol
+  name: Total cholesterol
+  name_fr: Cholestérol total
+  unit: mmol/L
+  normal_range:
+  - 3.5
+  - 5.2
+- csv_col: trig
+  name: Triglycerides
+  name_fr: Triglycérides
+  unit: mmol/L
+  normal_range:
+  - 0.4
+  - 1.7

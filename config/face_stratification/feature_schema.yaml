@@ -1,0 +1,1911 @@
+# Unified transdiagnostic V1 feature schema for face_stratification.
+#
+# Scope: baseline visit only. No longitudinal / follow-up / delta features.
+# Loaded and validated by face_stratification.harmonization.feature_schema.
+#
+# Conventions
+# -----------
+# - Every feature declares the cohorts (bp / sz / dr / asp) that can provide it.
+#   Cohorts that don't provide a feature emit NaN for the corresponding column.
+# - `temporal_scope` is one of {current, lifetime, static}. `trajectory` is
+#   banned by the loader — see feature_schema.py.
+# - `direction` is used downstream by normalization to optionally flip sign.
+# - Instrument totals are stored under `inst_<name>_total` where <name> is the
+#   lowercased canonical instrument abbreviation with hyphens dropped.
+# - Cohort-specific clinical flags are stored under `<domain>_<name>` — these
+#   are single-cohort features that should remain NaN for other cohorts.
+
+version: "0.2.0"
+
+# ─── Data-driven transdiagnostic feature selection ───────────────────────────
+# A feature joins the "transdiagnostic set" only if its observed-value coverage
+# is at least `min_cohort_coverage` in every cohort. The pure transdiagnostic
+# graph is built from this set with no imputation.
+transdiagnostic_selection:
+  min_cohort_coverage: 0.5            # must be measured for ≥50% of each cohort
+  min_shared_features_fraction: 0.75  # pairs must share ≥75% of selected set
+  metric: cosine
+  excluded_feature_ids: []
+
+# ─── Clinical blocks ─────────────────────────────────────────────────────────
+#
+# Each block's similarity graph enforces a semantic overlap edge constraint:
+# - `min_fraction_present`: a patient needs at least this fraction of the
+#   block's features measured to appear as a node in this block's graph.
+# - `min_shared_features`: two candidate patients need to share at least this
+#   many observed features to receive an edge. Omitted → defaults to half the
+#   block at graph-build time.
+#
+# No values are ever imputed. A block never fabricates a distance from unseen
+# measurements.
+blocks:
+  - id: demographics
+    label_fr: "Données démographiques"
+    description: "Âge, sexe, statut social, niveau d'études."
+    metric: gower
+    min_fraction_present: 0.6
+    min_shared_features: 3
+
+  - id: mood
+    label_fr: "Symptômes thymiques"
+    description: "Dépression, manie, hypomanie, global clinique."
+    metric: cosine
+    min_fraction_present: 0.5
+    min_shared_features: 3
+
+  - id: psychosis
+    label_fr: "Symptômes psychotiques"
+    description: "PANSS, Calgary, insight (SUMD), mouvements anormaux."
+    metric: cosine
+    min_fraction_present: 0.6   # aggressively excludes non-SZ patients
+    min_shared_features: 3
+
+  - id: anxiety_impulsivity
+    label_fr: "Anxiété et impulsivité"
+    description: "Anxiété (STAI, HAM-A, LSAS), impulsivité (BIS-10, BDHI)."
+    metric: cosine
+    min_fraction_present: 0.20  # DR has STAI+BIS-10 (2/8=25%); lowered to allow BP↔DR bridges
+    min_shared_features: 2
+
+  - id: functioning
+    label_fr: "Fonctionnement et qualité de vie"
+    description: "FAST, PSP, EQ-5D, EGF, LEAPS."
+    metric: cosine
+    min_fraction_present: 0.25  # each cohort uses different instruments (FAST, PSP, EGF, EQ-5D)
+    min_shared_features: 1      # cross-cohort pairs share only 1 instrument (e.g. EQ-5D for BP↔SZ)
+
+  - id: sleep_circadian
+    label_fr: "Sommeil et rythme circadien"
+    description: "PSQI, ESS, CSM (chronotype)."
+    metric: cosine
+    min_fraction_present: 0.5
+    min_shared_features: 2
+
+  - id: cognition
+    label_fr: "Profil cognitif"
+    description: "TMT, Stroop, fluences, empan, WAIS, BRIEF."
+    metric: euclidean
+    min_fraction_present: 0.15  # SZ has CVLT+fluency (3/17=18%); lowered to allow SZ↔BP bridges
+    min_shared_features: 2      # SZ↔BP share CVLT+fluency; lowered from 5 for cross-cohort edges
+
+  - id: biology
+    label_fr: "Panel biologique"
+    description: "IMC, vitales, glycémie, lipides, transaminases."
+    metric: euclidean
+    min_fraction_present: 0.5
+    min_shared_features: 5
+
+  - id: treatment
+    label_fr: "Traitements actuels"
+    description: "Classes médicamenteuses et adhésion (MARS)."
+    metric: cosine
+    min_fraction_present: 0.5
+    min_shared_features: 3
+
+  - id: substance
+    label_fr: "Consommations"
+    description: "Tabac, alcool, cannabis, autres substances."
+    metric: gower
+    min_fraction_present: 0.6
+    min_shared_features: 3
+
+  - id: trauma
+    label_fr: "Antécédents traumatiques"
+    description: "CTQ (enfance), PCL-5 (TSPT)."
+    metric: cosine
+    min_fraction_present: 0.5
+    min_shared_features: 1
+
+  - id: family_history
+    label_fr: "Antécédents familiaux"
+    description: "Psychiatrie / suicide / addictions chez apparentés."
+    metric: gower
+    min_fraction_present: 0.5
+    min_shared_features: 2
+
+  - id: comorbidities
+    label_fr: "Comorbidités"
+    description: "Comorbidités somatiques et psychiatriques (nombre)."
+    metric: gower
+    min_fraction_present: 0.5
+    min_shared_features: 2
+
+  - id: suicide_history
+    label_fr: "Conduites suicidaires"
+    description: "Idéation, plans, tentatives, violence des moyens."
+    metric: gower
+    min_fraction_present: 0.5
+    min_shared_features: 2
+
+  - id: psychiatric_history
+    label_fr: "Histoire de la maladie"
+    description: "Âge de début, durée, nombre d'épisodes, hospitalisations."
+    metric: cosine
+    min_fraction_present: 0.5
+    min_shared_features: 2
+
+  - id: insight
+    label_fr: "Insight et conscience morbide"
+    description: "SUMD — conscience de la maladie, des symptômes et du traitement (SZ)."
+    metric: cosine
+    min_fraction_present: 0.30  # SZ has 4/10 items at 93% + 6 newly fixed items at 93%; lowered from 0.6
+    min_shared_features: 3
+
+  - id: autism_profile
+    label_fr: "Profil autistique"
+    description: "ADI-R, ADOS, RBS-R, BRIEF, WAIS-IV, ADHD-RS, LSAS — phénotypage TSA."
+    metric: cosine
+    min_fraction_present: 0.3
+    min_shared_features: 3
+
+  - id: hostility_aggression
+    label_fr: "Hostilité et agressivité"
+    description: "BDHI — dimensions d'hostilité et d'agressivité (BP)."
+    metric: cosine
+    min_fraction_present: 0.5
+    min_shared_features: 3
+
+  - id: treatment_resistance
+    label_fr: "Résistance thérapeutique"
+    description: "Staging de résistance, C-SSRS, estime de soi, réactivité émotionnelle (DR)."
+    metric: cosine
+    min_fraction_present: 0.5
+    min_shared_features: 2
+
+  - id: neuropsych
+    label_fr: "Batterie neuropsychologique étendue"
+    description: "WAIS-IV sous-tests, empans, CPT — évaluation cognitive détaillée."
+    metric: euclidean
+    min_fraction_present: 0.10  # SZ has WAIS matrices only (1/10=10%); lowered for SZ↔BP bridges
+    min_shared_features: 1      # SZ↔BP share WAIS matrices; lowered from 4 for cross-cohort edges
+
+  - id: personality
+    label_fr: "Traits de personnalité"
+    description: "Big Five (BFI) — dimensions de personnalité."
+    metric: cosine
+    min_fraction_present: 0.40  # DR has 5/5 BFI at ~66%; lowered from 0.5 after fixing suspect_value
+    min_shared_features: 3
+
+
+# ─── Features ─────────────────────────────────────────────────────────────────
+#
+# Grouped visually by block. Declarative only — no logic.
+features:
+
+  # ── Demographics ─────────────────────────────────────────────────────────
+  - id: demo_age_years
+    label_fr: "Âge (années)"
+    block: demographics
+    type: continuous
+    temporal_scope: current
+    unit: years
+    direction: none
+    cohorts: [bp, sz, dr, asp]
+
+  - id: demo_sex_male
+    label_fr: "Sexe masculin"
+    block: demographics
+    type: binary
+    temporal_scope: static
+    direction: none
+    cohorts: [bp, sz, dr, asp]
+
+  - id: demo_education_years_ordinal
+    label_fr: "Niveau d'études (ordinal)"
+    block: demographics
+    type: ordinal
+    temporal_scope: static
+    direction: higher_is_better
+    cohorts: [bp, sz, dr, asp]
+    allowed_values: ["none", "primaire", "college", "lycee", "bac", "bac_plus_2", "bac_plus_5_plus"]
+
+  - id: demo_marital_partnered
+    label_fr: "En couple"
+    block: demographics
+    type: binary
+    temporal_scope: current
+    direction: none
+    cohorts: [bp, sz, dr, asp]
+    rdoc_domain: social_processes
+
+  - id: demo_employed
+    label_fr: "En activité professionnelle"
+    block: demographics
+    type: binary
+    temporal_scope: current
+    direction: higher_is_better
+    cohorts: [bp, sz, dr, asp]
+    rdoc_domain: social_processes
+
+  # ── Mood instruments ─────────────────────────────────────────────────────
+  - id: inst_madrs_total
+    label_fr: "MADRS — score total"
+    block: mood
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, dr]
+    rdoc_domain: negative_valence
+
+  - id: inst_ymrs_total
+    label_fr: "YMRS — score total"
+    block: mood
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr]
+    rdoc_domain: positive_valence
+
+  - id: inst_cgis_total
+    label_fr: "CGI-S — sévérité globale"
+    block: mood
+    type: ordinal
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr]
+
+  - id: inst_qids_total
+    label_fr: "QIDS — score total"
+    block: mood
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, dr]
+    rdoc_domain: negative_valence
+
+  - id: inst_mathys_total
+    label_fr: "MAThyS — activation thymique"
+    block: mood
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: none
+    cohorts: [bp, dr]
+    rdoc_domain: positive_valence
+
+  - id: inst_asrm_total
+    label_fr: "ASRM — auto-évaluation de la manie"
+    block: mood
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp]
+    rdoc_domain: positive_valence
+
+  - id: inst_bdi2_total
+    label_fr: "BDI-II — dépression auto-évaluée"
+    block: mood
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: negative_valence
+
+  - id: inst_shaps_total
+    label_fr: "SHAPS — anhédonie"
+    block: mood
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [dr]
+    rdoc_domain: negative_valence
+
+  - id: inst_calgary_total
+    label_fr: "Calgary — dépression dans la schizophrénie"
+    block: mood
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [sz]
+    rdoc_domain: negative_valence
+
+  # ── Psychosis ────────────────────────────────────────────────────────────
+  - id: inst_panss_total
+    label_fr: "PANSS — score total"
+    block: psychosis
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: inst_panss_p
+    label_fr: "PANSS — sous-échelle positive"
+    block: psychosis
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: inst_panss_n
+    label_fr: "PANSS — sous-échelle négative"
+    block: psychosis
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: inst_panss_g
+    label_fr: "PANSS — sous-échelle générale"
+    block: psychosis
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  # PANSS Wallwork 5-factor model (consensus factor structure)
+  - id: inst_panss_wallwork_positive
+    label_fr: "PANSS Wallwork — facteur positif"
+    block: psychosis
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: inst_panss_wallwork_negative
+    label_fr: "PANSS Wallwork — facteur négatif"
+    block: psychosis
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: inst_panss_wallwork_disorganized
+    label_fr: "PANSS Wallwork — facteur désorganisé"
+    block: psychosis
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: inst_panss_wallwork_excited
+    label_fr: "PANSS Wallwork — facteur excité"
+    block: psychosis
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: inst_panss_wallwork_depressed
+    label_fr: "PANSS Wallwork — facteur dépressif"
+    block: psychosis
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: inst_aims_total
+    label_fr: "AIMS — mouvements anormaux involontaires"
+    block: psychosis
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [sz]
+    rdoc_domain: sensorimotor
+
+  - id: inst_bars_total
+    label_fr: "BARS — akathisie"
+    block: psychosis
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [sz]
+    rdoc_domain: sensorimotor
+
+  # ── Anxiety / impulsivity ────────────────────────────────────────────────
+  - id: inst_stai_ya_total
+    label_fr: "STAI-YA — anxiété état"
+    block: anxiety_impulsivity
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, dr]
+    rdoc_domain: negative_valence
+
+  - id: inst_bis10_total
+    label_fr: "BIS-10 — impulsivité"
+    block: anxiety_impulsivity
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, dr]
+    rdoc_domain: arousal_regulatory
+
+  - id: inst_bdhi_total
+    label_fr: "BDHI — hostilité (total)"
+    block: hostility_aggression
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  - id: inst_als_total
+    label_fr: "ALS — labilité affective"
+    block: anxiety_impulsivity
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp]
+    rdoc_domain: arousal_regulatory
+
+  - id: inst_hama_total
+    label_fr: "HAM-A — anxiété clinicien"
+    block: anxiety_impulsivity
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: negative_valence
+
+  - id: inst_lsas_total
+    label_fr: "LSAS — anxiété sociale"
+    block: anxiety_impulsivity
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: negative_valence
+
+  - id: inst_bis10_attentional
+    label_fr: "BIS-10 — impulsivité attentionnelle"
+    block: anxiety_impulsivity
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, dr]
+    rdoc_domain: arousal_regulatory
+
+  - id: inst_bis10_motor
+    label_fr: "BIS-10 — impulsivité motrice"
+    block: anxiety_impulsivity
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, dr]
+    rdoc_domain: arousal_regulatory
+
+  - id: inst_bis10_nonplanning
+    label_fr: "BIS-10 — impulsivité de non-planification"
+    block: anxiety_impulsivity
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, dr]
+    rdoc_domain: arousal_regulatory
+
+  # ── Functioning / QoL ────────────────────────────────────────────────────
+  - id: inst_fast_total
+    label_fr: "FAST — fonctionnement"
+    block: functioning
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, dr]
+    rdoc_domain: social_processes
+
+  - id: inst_psp_total
+    label_fr: "PSP — fonctionnement personnel et social"
+    block: functioning
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_better
+    cohorts: [sz]
+    rdoc_domain: social_processes
+
+  - id: inst_eq5d_total
+    label_fr: "EQ-5D — utilité en santé"
+    block: functioning
+    type: continuous
+    temporal_scope: current
+    unit: utility
+    direction: higher_is_better
+    cohorts: [bp, sz, asp]
+    rdoc_domain: positive_valence
+
+  - id: inst_egf_total
+    label_fr: "EGF — échelle globale de fonctionnement"
+    block: functioning
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_better
+    cohorts: [dr, asp]
+    rdoc_domain: social_processes
+
+  # ── Sleep / circadian ────────────────────────────────────────────────────
+  - id: inst_psqi_total
+    label_fr: "PSQI — qualité du sommeil"
+    block: sleep_circadian
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+    rdoc_domain: arousal_regulatory
+
+  - id: inst_ess_total
+    label_fr: "ESS — somnolence diurne"
+    block: sleep_circadian
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, dr, asp]
+    rdoc_domain: arousal_regulatory
+
+  - id: inst_csm_total
+    label_fr: "CSM — chronotype"
+    block: sleep_circadian
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: none
+    cohorts: [bp, dr]
+    rdoc_domain: arousal_regulatory
+
+  # ── Cognition ────────────────────────────────────────────────────────────
+  - id: cog_tmt_a_seconds
+    label_fr: "TMT-A — temps (s)"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: seconds
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_tmt_b_seconds
+    label_fr: "TMT-B — temps (s)"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: seconds
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_stroop_interference
+    label_fr: "Stroop — score d'interférence"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_cvlt_total_learning
+    label_fr: "CVLT — apprentissage total"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: items
+    direction: higher_is_better
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_cvlt_long_delay_free
+    label_fr: "CVLT — rappel libre long différé"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: items
+    direction: higher_is_better
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_phonemic_fluency
+    label_fr: "Fluence phonémique"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: items
+    direction: higher_is_better
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_semantic_fluency
+    label_fr: "Fluence sémantique"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: items
+    direction: higher_is_better
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_wais_similarities_std
+    label_fr: "WAIS-IV — similitudes (note standard)"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: std
+    direction: higher_is_better
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_wais_vocabulary_std
+    label_fr: "WAIS-IV — vocabulaire (note standard)"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: std
+    direction: higher_is_better
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_wais_working_memory_std
+    label_fr: "WAIS-IV — indice de mémoire de travail"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: std
+    direction: higher_is_better
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_tmt_b_minus_a
+    label_fr: "TMT B−A — coût exécutif"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: seconds
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_tmt_ratio_ba
+    label_fr: "TMT B/A — ratio exécutif"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_stroop_word
+    label_fr: "Stroop — lecture de mots"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_better
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_stroop_color
+    label_fr: "Stroop — dénomination de couleurs"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_better
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_stroop_color_word
+    label_fr: "Stroop — interférence couleur-mot"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_better
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_cvlt_short_delay_free
+    label_fr: "CVLT — rappel libre court différé"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: items
+    direction: higher_is_better
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  - id: cog_cvlt_recognition
+    label_fr: "CVLT — reconnaissance"
+    block: cognition
+    type: continuous
+    temporal_scope: current
+    unit: items
+    direction: higher_is_better
+    cohorts: [bp, sz, dr]
+    rdoc_domain: cognitive_systems
+
+  # ── Neuropsych extended ─────────────────────────────────────────────────
+  - id: np_wais_matrices_std
+    label_fr: "WAIS-IV — matrices (note standard)"
+    block: neuropsych
+    type: continuous
+    temporal_scope: current
+    unit: std
+    direction: higher_is_better
+    cohorts: [bp, sz]
+    rdoc_domain: cognitive_systems
+
+  - id: np_wais_code_std
+    label_fr: "WAIS-IV — code (note standard)"
+    block: neuropsych
+    type: continuous
+    temporal_scope: current
+    unit: std
+    direction: higher_is_better
+    cohorts: [bp, sz]
+    rdoc_domain: cognitive_systems
+
+  - id: np_wais_symbol_std
+    label_fr: "WAIS-IV — symboles (note standard)"
+    block: neuropsych
+    type: continuous
+    temporal_scope: current
+    unit: std
+    direction: higher_is_better
+    cohorts: [bp, sz]
+    rdoc_domain: cognitive_systems
+
+  - id: np_digit_span_forward_std
+    label_fr: "Empan endroit (note standard)"
+    block: neuropsych
+    type: continuous
+    temporal_scope: current
+    unit: std
+    direction: higher_is_better
+    cohorts: [bp, sz]
+    rdoc_domain: cognitive_systems
+
+  - id: np_digit_span_backward_std
+    label_fr: "Empan envers (note standard)"
+    block: neuropsych
+    type: continuous
+    temporal_scope: current
+    unit: std
+    direction: higher_is_better
+    cohorts: [bp, sz]
+    rdoc_domain: cognitive_systems
+
+  - id: np_digit_span_total_std
+    label_fr: "Empan total (note standard)"
+    block: neuropsych
+    type: continuous
+    temporal_scope: current
+    unit: std
+    direction: higher_is_better
+    cohorts: [bp, sz]
+    rdoc_domain: cognitive_systems
+
+  - id: np_cpt_omissions
+    label_fr: "CPT — omissions"
+    block: neuropsych
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [bp, sz]
+    rdoc_domain: cognitive_systems
+
+  - id: np_cpt_commissions
+    label_fr: "CPT — fausses alarmes"
+    block: neuropsych
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [bp, sz]
+    rdoc_domain: cognitive_systems
+
+  - id: np_cpt_hit_rt
+    label_fr: "CPT — temps de réaction"
+    block: neuropsych
+    type: continuous
+    temporal_scope: current
+    unit: ms
+    direction: higher_is_worse
+    cohorts: [bp, sz]
+    rdoc_domain: cognitive_systems
+
+  - id: np_cpt_variability
+    label_fr: "CPT — variabilité"
+    block: neuropsych
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [bp, sz]
+    rdoc_domain: cognitive_systems
+
+  # ── Biology / vitals ─────────────────────────────────────────────────────
+  - id: bio_bmi
+    label_fr: "IMC"
+    block: biology
+    type: continuous
+    temporal_scope: current
+    unit: "kg/m²"
+    direction: none
+    cohorts: [bp, sz, dr, asp]
+
+  - id: bio_waist_cm
+    label_fr: "Tour de taille"
+    block: biology
+    type: continuous
+    temporal_scope: current
+    unit: cm
+    direction: higher_is_worse
+    cohorts: [bp, dr]
+
+  - id: bio_sbp_mmhg
+    label_fr: "Pression artérielle systolique"
+    block: biology
+    type: continuous
+    temporal_scope: current
+    unit: mmHg
+    direction: none
+    cohorts: [bp, dr]
+
+  - id: bio_dbp_mmhg
+    label_fr: "Pression artérielle diastolique"
+    block: biology
+    type: continuous
+    temporal_scope: current
+    unit: mmHg
+    direction: none
+    cohorts: [bp, dr]
+
+  - id: bio_hr_bpm
+    label_fr: "Fréquence cardiaque"
+    block: biology
+    type: continuous
+    temporal_scope: current
+    unit: bpm
+    direction: none
+    cohorts: [bp]
+
+  - id: bio_qtc_ms
+    label_fr: "QT corrigé"
+    block: biology
+    type: continuous
+    temporal_scope: current
+    unit: ms
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  - id: bio_fasting_glucose
+    label_fr: "Glycémie à jeun"
+    block: biology
+    type: continuous
+    temporal_scope: current
+    unit: "mmol/L"
+    direction: higher_is_worse
+    cohorts: [sz, dr]
+
+  - id: bio_total_cholesterol
+    label_fr: "Cholestérol total"
+    block: biology
+    type: continuous
+    temporal_scope: current
+    unit: "mmol/L"
+    direction: higher_is_worse
+    cohorts: [sz, dr]
+
+  - id: bio_hdl_cholesterol
+    label_fr: "HDL-cholestérol"
+    block: biology
+    type: continuous
+    temporal_scope: current
+    unit: "mmol/L"
+    direction: higher_is_better
+    cohorts: [sz, dr]
+
+  - id: bio_triglycerides
+    label_fr: "Triglycérides"
+    block: biology
+    type: continuous
+    temporal_scope: current
+    unit: "mmol/L"
+    direction: higher_is_worse
+    cohorts: [sz, dr]
+
+  - id: bio_tg_hdl_ratio
+    label_fr: "Ratio triglycérides/HDL"
+    block: biology
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [sz, dr]
+
+  # ── Treatment ────────────────────────────────────────────────────────────
+  - id: tx_on_antidepressant
+    label_fr: "Sous antidépresseur"
+    block: treatment
+    type: binary
+    temporal_scope: current
+    direction: none
+    cohorts: [bp, sz, dr, asp]
+
+  - id: tx_on_antipsychotic
+    label_fr: "Sous antipsychotique"
+    block: treatment
+    type: binary
+    temporal_scope: current
+    direction: none
+    cohorts: [bp, sz, dr, asp]
+
+  - id: tx_on_mood_stabilizer
+    label_fr: "Sous thymorégulateur"
+    block: treatment
+    type: binary
+    temporal_scope: current
+    direction: none
+    cohorts: [bp, sz, dr]
+
+  - id: tx_on_benzodiazepine
+    label_fr: "Sous benzodiazépine"
+    block: treatment
+    type: binary
+    temporal_scope: current
+    direction: none
+    cohorts: [bp]
+
+  - id: tx_on_lithium
+    label_fr: "Sous lithium"
+    block: treatment
+    type: binary
+    temporal_scope: current
+    direction: none
+    cohorts: [bp, dr]
+
+  - id: tx_on_clozapine
+    label_fr: "Sous clozapine"
+    block: treatment
+    type: binary
+    temporal_scope: current
+    direction: none
+    cohorts: [sz]
+
+  - id: inst_mars_total
+    label_fr: "MARS — adhésion au traitement"
+    block: treatment
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_better
+    cohorts: [bp, sz, dr, asp]
+
+  - id: tx_lithium_level
+    label_fr: "Lithémie"
+    block: treatment
+    type: continuous
+    temporal_scope: current
+    unit: "mmol/L"
+    direction: none
+    cohorts: [bp, dr]
+
+  - id: tx_valproate_level
+    label_fr: "Valproatémie"
+    block: treatment
+    type: continuous
+    temporal_scope: current
+    unit: "mg/L"
+    direction: none
+    cohorts: [bp]
+
+  - id: tx_clozapine_level
+    label_fr: "Clozapinémie"
+    block: treatment
+    type: continuous
+    temporal_scope: current
+    unit: "ng/mL"
+    direction: none
+    cohorts: [sz]
+
+  # ── Substance use ────────────────────────────────────────────────────────
+  - id: sub_tobacco_current
+    label_fr: "Tabagisme actuel"
+    block: substance
+    type: binary
+    temporal_scope: current
+    direction: none
+    cohorts: [bp, sz, dr, asp]
+
+  - id: sub_tobacco_cpd
+    label_fr: "Cigarettes par jour"
+    block: substance
+    type: continuous
+    temporal_scope: current
+    unit: cpd
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+
+  - id: sub_alcohol_current
+    label_fr: "Consommation d'alcool actuelle"
+    block: substance
+    type: binary
+    temporal_scope: current
+    direction: none
+    cohorts: [bp, sz, dr, asp]
+
+  - id: sub_cannabis_current
+    label_fr: "Consommation de cannabis actuelle"
+    block: substance
+    type: binary
+    temporal_scope: current
+    direction: none
+    cohorts: [bp, sz, dr, asp]
+
+  - id: sub_use_disorder
+    label_fr: "Trouble de l'usage de substances"
+    block: substance
+    type: binary
+    temporal_scope: lifetime
+    direction: none
+    cohorts: [bp, sz, dr, asp]
+
+  # ── Trauma ───────────────────────────────────────────────────────────────
+  - id: inst_ctq_total
+    label_fr: "CTQ — traumatismes de l'enfance (total)"
+    block: trauma
+    type: continuous
+    temporal_scope: lifetime
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+    rdoc_domain: negative_valence
+
+  - id: inst_pcl5_total
+    label_fr: "PCL-5 — TSPT"
+    block: trauma
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [dr]
+    rdoc_domain: negative_valence
+
+  - id: inst_ctq_emotional_abuse
+    label_fr: "CTQ — abus émotionnel"
+    block: trauma
+    type: continuous
+    temporal_scope: lifetime
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+    rdoc_domain: negative_valence
+
+  - id: inst_ctq_physical_abuse
+    label_fr: "CTQ — abus physique"
+    block: trauma
+    type: continuous
+    temporal_scope: lifetime
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+    rdoc_domain: negative_valence
+
+  - id: inst_ctq_sexual_abuse
+    label_fr: "CTQ — abus sexuel"
+    block: trauma
+    type: continuous
+    temporal_scope: lifetime
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+    rdoc_domain: negative_valence
+
+  - id: inst_ctq_emotional_neglect
+    label_fr: "CTQ — négligence émotionnelle"
+    block: trauma
+    type: continuous
+    temporal_scope: lifetime
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+    rdoc_domain: negative_valence
+
+  - id: inst_ctq_physical_neglect
+    label_fr: "CTQ — négligence physique"
+    block: trauma
+    type: continuous
+    temporal_scope: lifetime
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+    rdoc_domain: negative_valence
+
+  # ── Family history ───────────────────────────────────────────────────────
+  - id: fh_bipolar_any
+    label_fr: "Antécédent familial de bipolarité"
+    block: family_history
+    type: binary
+    temporal_scope: static
+    direction: none
+    cohorts: [bp, sz, dr, asp]
+
+  - id: fh_suicide_any
+    label_fr: "Antécédent familial de suicide"
+    block: family_history
+    type: binary
+    temporal_scope: static
+    direction: none
+    cohorts: [bp, sz, dr, asp]
+
+  - id: fh_substance_any
+    label_fr: "Antécédent familial d'addiction"
+    block: family_history
+    type: binary
+    temporal_scope: static
+    direction: none
+    cohorts: [bp, sz, dr, asp]
+
+  - id: fh_n_affected_relatives
+    label_fr: "Nombre d'apparentés atteints"
+    block: family_history
+    type: continuous
+    temporal_scope: static
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+
+  # ── Comorbidities ────────────────────────────────────────────────────────
+  - id: cm_n_somatic
+    label_fr: "Nombre de comorbidités somatiques"
+    block: comorbidities
+    type: continuous
+    temporal_scope: lifetime
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+
+  - id: cm_n_psychiatric
+    label_fr: "Nombre de comorbidités psychiatriques"
+    block: comorbidities
+    type: continuous
+    temporal_scope: lifetime
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+
+  # ── Suicide history ──────────────────────────────────────────────────────
+  - id: sui_ever_ideation
+    label_fr: "Idéation suicidaire au cours de la vie"
+    block: suicide_history
+    type: binary
+    temporal_scope: lifetime
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+    rdoc_domain: negative_valence
+
+  - id: sui_ever_attempt
+    label_fr: "Tentative de suicide au cours de la vie"
+    block: suicide_history
+    type: binary
+    temporal_scope: lifetime
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+    rdoc_domain: negative_valence
+
+  - id: sui_n_attempts
+    label_fr: "Nombre de tentatives de suicide"
+    block: suicide_history
+    type: continuous
+    temporal_scope: lifetime
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr]
+    rdoc_domain: negative_valence
+
+  - id: sui_any_violent_attempt
+    label_fr: "Tentative violente au cours de la vie"
+    block: suicide_history
+    type: binary
+    temporal_scope: lifetime
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr]
+    rdoc_domain: negative_valence
+
+  # ── Psychiatric history ──────────────────────────────────────────────────
+  - id: psyh_age_first_episode
+    label_fr: "Âge au premier épisode"
+    block: psychiatric_history
+    type: continuous
+    temporal_scope: static
+    unit: years
+    direction: none
+    cohorts: [bp, sz, dr]
+
+  - id: psyh_illness_duration_years
+    label_fr: "Durée d'évolution (années)"
+    block: psychiatric_history
+    type: continuous
+    temporal_scope: lifetime
+    unit: years
+    direction: none
+    cohorts: [bp, sz, dr]
+
+  - id: psyh_n_depressive_episodes_lifetime
+    label_fr: "Nombre d'épisodes dépressifs au cours de la vie"
+    block: psychiatric_history
+    type: continuous
+    temporal_scope: lifetime
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  - id: psyh_n_manic_episodes_lifetime
+    label_fr: "Nombre d'épisodes maniaques au cours de la vie"
+    block: psychiatric_history
+    type: continuous
+    temporal_scope: lifetime
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  - id: psyh_rapid_cycling
+    label_fr: "Cycles rapides"
+    block: psychiatric_history
+    type: binary
+    temporal_scope: lifetime
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  - id: psyh_n_hospitalizations_lifetime
+    label_fr: "Nombre d'hospitalisations au cours de la vie"
+    block: psychiatric_history
+    type: continuous
+    temporal_scope: lifetime
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr]
+
+  # ── Treatment resistance (DR) ────────────────────────────────────────────
+  - id: dr_treatment_resistant
+    label_fr: "Dépression résistante au traitement"
+    block: treatment_resistance
+    type: binary
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [dr]
+
+  - id: dr_sachs_score
+    label_fr: "Score de résistance thérapeutique de Sachs"
+    block: treatment_resistance
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [dr]
+
+  - id: dr_cssrs_highest_ideation
+    label_fr: "C-SSRS — idéation suicidaire la plus sévère"
+    block: treatment_resistance
+    type: ordinal
+    temporal_scope: lifetime
+    direction: higher_is_worse
+    cohorts: [dr]
+    rdoc_domain: negative_valence
+
+  - id: dr_rosenberg_total
+    label_fr: "Rosenberg — estime de soi"
+    block: treatment_resistance
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_better
+    cohorts: [dr]
+
+  - id: dr_erd_total
+    label_fr: "ERD — réactivité émotionnelle"
+    block: treatment_resistance
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [dr]
+
+  - id: dr_leaps_total
+    label_fr: "LEAPS — fonctionnement professionnel"
+    block: treatment_resistance
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [dr]
+    rdoc_domain: social_processes
+
+  # ── Insight (SZ) ────────────────────────────────────────────────────────
+  - id: sz_insight_sumd_mean
+    label_fr: "SUMD — insight moyen"
+    block: insight
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: sz_sumd_awareness_illness
+    label_fr: "SUMD — conscience de la maladie"
+    block: insight
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: sz_sumd_awareness_medication
+    label_fr: "SUMD — conscience de l'effet du traitement"
+    block: insight
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: sz_sumd_awareness_social
+    label_fr: "SUMD — conscience des conséquences sociales"
+    block: insight
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: sz_sumd_awareness_hallucinations
+    label_fr: "SUMD — conscience des hallucinations"
+    block: insight
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: sz_sumd_awareness_delusions
+    label_fr: "SUMD — conscience des idées délirantes"
+    block: insight
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  # ── Autism profile (ASP) ────────────────────────────────────────────────
+  - id: asp_dsm_domain1_met
+    label_fr: "DSM-5 domaine 1 (communication sociale) rempli"
+    block: autism_profile
+    type: binary
+    temporal_scope: static
+    direction: none
+    cohorts: [asp]
+
+  - id: asp_dsm_domain2_met
+    label_fr: "DSM-5 domaine 2 (comportements restreints) rempli"
+    block: autism_profile
+    type: binary
+    temporal_scope: static
+    direction: none
+    cohorts: [asp]
+
+  - id: asp_age_language_months
+    label_fr: "Âge aux premières phrases (mois)"
+    block: autism_profile
+    type: continuous
+    temporal_scope: static
+    unit: months
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  - id: asp_rbs_r_total
+    label_fr: "RBS-R — comportements répétitifs (total)"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  - id: asp_brief_gec
+    label_fr: "BRIEF — indice exécutif composite"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: T-score
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  - id: asp_wais4_iri
+    label_fr: "WAIS-IV — indice de raisonnement perceptif"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_better
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  - id: asp_wais4_imt
+    label_fr: "WAIS-IV — indice de mémoire de travail"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_better
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  - id: asp_wais4_ivt
+    label_fr: "WAIS-IV — indice de vitesse de traitement"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_better
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  - id: asp_adhd_rs_inattention
+    label_fr: "ADHD-RS — inattention"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  - id: asp_adhd_rs_hyperactivity
+    label_fr: "ADHD-RS — hyperactivité/impulsivité"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  # ── Autism profile — RBS-R subscales ────────────────────────────────────
+  - id: asp_rbs_r_stereotypies
+    label_fr: "RBS-R — stéréotypies"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  - id: asp_rbs_r_self_injury
+    label_fr: "RBS-R — auto-mutilation"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  - id: asp_rbs_r_compulsive
+    label_fr: "RBS-R — comportements compulsifs"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  - id: asp_rbs_r_rituals
+    label_fr: "RBS-R — rituels"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  - id: asp_rbs_r_sameness
+    label_fr: "RBS-R — mêmeté"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  - id: asp_rbs_r_restricted
+    label_fr: "RBS-R — comportements restreints"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  # ── Autism profile — BRIEF 9 subscales ──────────────────────────────────
+  - id: asp_brief_inhibition
+    label_fr: "BRIEF — inhibition"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: T-score
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  - id: asp_brief_flexibility
+    label_fr: "BRIEF — flexibilité"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: T-score
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  - id: asp_brief_emotional_control
+    label_fr: "BRIEF — contrôle émotionnel"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: T-score
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  - id: asp_brief_self_control
+    label_fr: "BRIEF — auto-contrôle"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: T-score
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  - id: asp_brief_initiative
+    label_fr: "BRIEF — initiative"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: T-score
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  - id: asp_brief_working_memory
+    label_fr: "BRIEF — mémoire de travail"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: T-score
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  - id: asp_brief_planning
+    label_fr: "BRIEF — planification/organisation"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: T-score
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  - id: asp_brief_task_monitoring
+    label_fr: "BRIEF — contrôle de la tâche"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: T-score
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  - id: asp_brief_organization
+    label_fr: "BRIEF — organisation matérielle"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: T-score
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  # ── Autism profile — WAIS-IV ICV ────────────────────────────────────────
+  - id: asp_wais4_icv
+    label_fr: "WAIS-IV — indice de compréhension verbale"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_better
+    cohorts: [asp]
+    rdoc_domain: cognitive_systems
+
+  # ── Autism profile — ADI-R 4 domains ────────────────────────────────────
+  - id: asp_adir_social
+    label_fr: "ADI-R — interaction sociale (A)"
+    block: autism_profile
+    type: continuous
+    temporal_scope: static
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  - id: asp_adir_communication
+    label_fr: "ADI-R — communication (B)"
+    block: autism_profile
+    type: continuous
+    temporal_scope: static
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  - id: asp_adir_restricted
+    label_fr: "ADI-R — comportements restreints (C)"
+    block: autism_profile
+    type: continuous
+    temporal_scope: static
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  - id: asp_adir_development
+    label_fr: "ADI-R — développement anormal < 36 mois (D)"
+    block: autism_profile
+    type: continuous
+    temporal_scope: static
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+
+  # ── Autism profile — LSAS subscales ─────────────────────────────────────
+  - id: asp_lsas_anxiety
+    label_fr: "LSAS — anxiété"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: negative_valence
+
+  - id: asp_lsas_avoidance
+    label_fr: "LSAS — évitement"
+    block: autism_profile
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [asp]
+    rdoc_domain: negative_valence
+
+  # ── Hostility — BDHI 9 subscales ────────────────────────────────────────
+  - id: inst_bdhi_assault
+    label_fr: "BDHI — agressivité"
+    block: hostility_aggression
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  - id: inst_bdhi_indirect_hostility
+    label_fr: "BDHI — hostilité indirecte"
+    block: hostility_aggression
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  - id: inst_bdhi_irritability
+    label_fr: "BDHI — irritabilité"
+    block: hostility_aggression
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  - id: inst_bdhi_negativism
+    label_fr: "BDHI — négativisme"
+    block: hostility_aggression
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  - id: inst_bdhi_resentment
+    label_fr: "BDHI — ressentiment"
+    block: hostility_aggression
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  - id: inst_bdhi_suspicion
+    label_fr: "BDHI — suspicion"
+    block: hostility_aggression
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  - id: inst_bdhi_verbal_hostility
+    label_fr: "BDHI — hostilité verbale"
+    block: hostility_aggression
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  - id: inst_bdhi_guilt
+    label_fr: "BDHI — culpabilité"
+    block: hostility_aggression
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  - id: inst_bdhi_attitudinal
+    label_fr: "BDHI — composante attitudinale"
+    block: hostility_aggression
+    type: continuous
+    temporal_scope: current
+    unit: points
+    direction: higher_is_worse
+    cohorts: [bp]
+
+  # ── Insight — additional SUMD items ─────────────────────────────────────
+  - id: sz_sumd_awareness_thought_disorder
+    label_fr: "SUMD — conscience du trouble de la pensée"
+    block: insight
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: sz_sumd_awareness_flat_affect
+    label_fr: "SUMD — conscience de l'émoussement affectif"
+    block: insight
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: sz_sumd_awareness_anhedonia
+    label_fr: "SUMD — conscience de l'anhédonie"
+    block: insight
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  - id: sz_sumd_awareness_asociality
+    label_fr: "SUMD — conscience de l'asocialité"
+    block: insight
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [sz]
+
+  # ── Personality ─────────────────────────────────────────────────────────
+  - id: inst_bfi_openness
+    label_fr: "BFI — ouverture"
+    block: personality
+    type: continuous
+    temporal_scope: static
+    unit: points
+    direction: none
+    cohorts: [dr]
+
+  - id: inst_bfi_conscientiousness
+    label_fr: "BFI — conscience"
+    block: personality
+    type: continuous
+    temporal_scope: static
+    unit: points
+    direction: none
+    cohorts: [dr]
+
+  - id: inst_bfi_extraversion
+    label_fr: "BFI — extraversion"
+    block: personality
+    type: continuous
+    temporal_scope: static
+    unit: points
+    direction: none
+    cohorts: [dr]
+
+  - id: inst_bfi_agreeableness
+    label_fr: "BFI — agréabilité"
+    block: personality
+    type: continuous
+    temporal_scope: static
+    unit: points
+    direction: none
+    cohorts: [dr]
+
+  - id: inst_bfi_neuroticism
+    label_fr: "BFI — névrosisme"
+    block: personality
+    type: continuous
+    temporal_scope: static
+    unit: points
+    direction: higher_is_worse
+    cohorts: [dr]
+
+  # ── Derived composites ─────────────────────────────────────────────────
+
+  - id: tx_polypharmacy_index
+    label_fr: "Indice de polypharmacie"
+    block: treatment
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr, asp]
+
+  - id: bio_metabolic_syndrome
+    label_fr: "Syndrome métabolique (IDF/ATP-III)"
+    block: biology
+    type: binary
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [bp, dr]
+
+  - id: bio_waist_height_ratio
+    label_fr: "Ratio tour de taille / taille"
+    block: biology
+    type: continuous
+    temporal_scope: current
+    direction: higher_is_worse
+    cohorts: [bp, dr]
+
+  - id: psyh_onset_category
+    label_fr: "Catégorie d'âge de début"
+    block: psychiatric_history
+    type: ordinal
+    temporal_scope: static
+    direction: none
+    cohorts: [bp, sz, dr]
+    allowed_values: ["early", "typical", "late"]
+
+  - id: psyh_illness_burden
+    label_fr: "Charge de maladie cumulée"
+    block: psychiatric_history
+    type: continuous
+    temporal_scope: lifetime
+    direction: higher_is_worse
+    cohorts: [bp, sz, dr]

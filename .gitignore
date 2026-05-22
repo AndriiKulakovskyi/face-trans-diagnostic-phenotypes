@@ -1,20 +1,84 @@
-# Python
+# Byte-compiled / cache
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
 *.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Testing / coverage
 .pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Type checkers / linters
 .mypy_cache/
 .ruff_cache/
+.dmypy.json
+dmypy.json
 
-# Editor / OS
+# Environment and secrets (API keys for LLM providers)
+.env
+.env.*
+!.env.example
+
+# Project output (pipeline runs, figures) — regenerated, not tracked
+output/
+
+# Vendored sister-project raw cohort CSVs (confidential, ~52MB; BP/SZ/DR
+# duplicate data/*.csv, plus ASP). Kept on disk as a working copy but NOT
+# tracked: the engine is reused as a library, and cluster reproduction reads
+# the precomputed data/external/face_stratification/*.parquet instead.
+archive/data/
+
+# Logs
+*.log
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Editors / IDEs
 .idea/
 .vscode/
 *.swp
+*.swo
+*~
+
+# Local tool settings (do not commit machine-specific paths or keys)
+.claude/settings.local.json
 
 # Jupyter
 .ipynb_checkpoints/
 
-# Generated outputs are tracked, but transient runs go here:
+# Office temp/lock files
+~$*
+
+# Transient analysis scratch
 results/_scratch/
 reports/_scratch/

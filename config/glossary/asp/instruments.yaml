@@ -1,0 +1,631 @@
+$schema_version: 1
+BDI-II:
+  name: BDI-II
+  full_name: Beck Depression Inventory — II
+  full_name_fr: Inventaire de dépression de Beck — II
+  domain: depression
+  total_column: bdi02
+  score_range:
+  - 0
+  - 63
+  higher_is_worse: true
+  evaluation_type: auto
+  clinical_note_fr: Auto-questionnaire de référence pour évaluer la sévérité dépressive.
+  severity_thresholds:
+  - min_score: 0
+    max_score: 13
+    code: minimal
+    label_fr: Dépression minimale
+    clinical_meaning_fr: Pas de symptômes dépressifs significatifs.
+  - min_score: 14
+    max_score: 19
+    code: mild
+    label_fr: Dépression légère
+    clinical_meaning_fr: Symptômes dépressifs légers, surveillance recommandée.
+  - min_score: 20
+    max_score: 28
+    code: moderate
+    label_fr: Dépression modérée
+    clinical_meaning_fr: Symptômes dépressifs d'intensité modérée nécessitant une prise en charge.
+  - min_score: 29
+    max_score: 63
+    code: severe
+    label_fr: Dépression sévère
+    clinical_meaning_fr: Symptômes dépressifs sévères, prise en charge urgente nécessaire.
+CGI-C:
+  name: CGI-C
+  full_name: Clinical Global Impression — Change
+  full_name_fr: Impression clinique globale — Changement
+  domain: global_change
+  total_column: cgichang
+  score_range:
+  - 0
+  - 7
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: Évaluation globale par le clinicien du changement clinique depuis le début du suivi.
+  severity_thresholds:
+  - min_score: 0
+    max_score: 0
+    code: not_assessed
+    label_fr: Non évalué
+    clinical_meaning_fr: Le changement clinique n'a pas été évalué.
+  - min_score: 1
+    max_score: 1
+    code: very_improved
+    label_fr: Très amélioré
+    clinical_meaning_fr: Amélioration clinique très importante par rapport à l'état initial.
+  - min_score: 2
+    max_score: 2
+    code: much_improved
+    label_fr: Fortement amélioré
+    clinical_meaning_fr: Amélioration clinique nette par rapport à l'état initial.
+  - min_score: 3
+    max_score: 3
+    code: minimally_improved
+    label_fr: Légèrement amélioré
+    clinical_meaning_fr: Amélioration clinique légère par rapport à l'état initial.
+  - min_score: 4
+    max_score: 4
+    code: no_change
+    label_fr: Pas de changement
+    clinical_meaning_fr: Pas de modification clinique notable par rapport à l'état initial.
+  - min_score: 5
+    max_score: 5
+    code: minimally_worse
+    label_fr: Légèrement aggravé
+    clinical_meaning_fr: Aggravation clinique légère par rapport à l'état initial.
+  - min_score: 6
+    max_score: 6
+    code: much_worse
+    label_fr: Fortement aggravé
+    clinical_meaning_fr: Aggravation clinique nette par rapport à l'état initial.
+  - min_score: 7
+    max_score: 7
+    code: very_worse
+    label_fr: Très aggravé
+    clinical_meaning_fr: Aggravation clinique très importante par rapport à l'état initial.
+EQ-5D:
+  name: EQ-5D
+  full_name: EuroQol 5 Dimensions
+  full_name_fr: EuroQol 5 dimensions — qualité de vie
+  domain: quality_of_life
+  total_column: eq5d_score
+  score_range:
+  - 0
+  - 1
+  higher_is_worse: false
+  evaluation_type: auto
+  clinical_note_fr: Mesure générique de la qualité de vie liée à la santé.
+  unit: (index)
+  severity_thresholds:
+  - min_score: 0.0
+    max_score: 0.49
+    code: poor
+    label_fr: Qualité de vie médiocre
+    clinical_meaning_fr: Qualité de vie significativement altérée, retentissement majeur de la maladie.
+  - min_score: 0.5
+    max_score: 0.74
+    code: moderate
+    label_fr: Qualité de vie modérée
+    clinical_meaning_fr: Qualité de vie partiellement altérée.
+  - min_score: 0.75
+    max_score: 1.0
+    code: good
+    label_fr: Bonne qualité de vie
+    clinical_meaning_fr: Qualité de vie préservée ou peu altérée.
+EGF:
+  name: EGF
+  full_name: Global Assessment of Functioning
+  full_name_fr: Évaluation globale du fonctionnement
+  domain: global_functioning
+  total_column: egfval
+  score_range:
+  - 0
+  - 100
+  higher_is_worse: false
+  evaluation_type: hetero
+  clinical_note_fr: Évaluation clinique globale du fonctionnement (axe V du DSM-IV-TR).
+  severity_thresholds:
+  - min_score: 91
+    max_score: 100
+    code: superior
+    label_fr: Fonctionnement supérieur
+    clinical_meaning_fr: Fonctionnement supérieur dans une grande variété d'activités.
+  - min_score: 81
+    max_score: 90
+    code: absent_minimal
+    label_fr: Symptômes absents ou minimaux
+    clinical_meaning_fr: Symptômes absents ou minimaux, bon fonctionnement dans tous les domaines.
+  - min_score: 71
+    max_score: 80
+    code: slight
+    label_fr: Symptômes transitoires et attendus
+    clinical_meaning_fr: Symptômes transitoires, léger retentissement sur le fonctionnement.
+  - min_score: 61
+    max_score: 70
+    code: mild
+    label_fr: Symptômes légers
+    clinical_meaning_fr: Symptômes légers avec retentissement léger sur le fonctionnement.
+  - min_score: 51
+    max_score: 60
+    code: moderate
+    label_fr: Symptômes modérés
+    clinical_meaning_fr: Symptômes modérés ou difficultés modérées du fonctionnement.
+  - min_score: 41
+    max_score: 50
+    code: serious
+    label_fr: Symptômes graves
+    clinical_meaning_fr: Symptômes graves ou altération grave du fonctionnement.
+  - min_score: 31
+    max_score: 40
+    code: major_impairment
+    label_fr: Altération majeure
+    clinical_meaning_fr: Altération majeure dans plusieurs domaines.
+  - min_score: 21
+    max_score: 30
+    code: serious_impairment
+    label_fr: Altération sérieuse
+    clinical_meaning_fr: Altération sérieuse de la communication ou du jugement.
+  - min_score: 11
+    max_score: 20
+    code: some_danger
+    label_fr: Danger potentiel
+    clinical_meaning_fr: Danger potentiel envers soi-même ou autrui.
+  - min_score: 1
+    max_score: 10
+    code: persistent_danger
+    label_fr: Danger persistant
+    clinical_meaning_fr: Danger persistant de blessure sévère.
+RBS-R:
+  name: RBS-R
+  full_name: Repetitive Behavior Scale — Revised
+  full_name_fr: Échelle des comportements répétitifs — Révisée
+  domain: repetitive_behaviors
+  total_column: rbsr_score
+  score_range:
+  - 0
+  - 129
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: Hétéro-évaluation des comportements répétitifs et restreints (6 sous-échelles).
+  subscale_columns:
+    Stéréotypies: rbsr_score1
+    Auto-mutilation: rbsr_score2
+    Comportements compulsifs: rbsr_score3
+    Rituels: rbsr_score4
+    Mêmeté: rbsr_score5
+    Comportements restreints: rbsr_score6
+  severity_thresholds:
+  - min_score: 0
+    max_score: 20
+    code: low
+    label_fr: Comportements répétitifs peu fréquents
+    clinical_meaning_fr: Comportements répétitifs peu fréquents, retentissement fonctionnel limité.
+  - min_score: 21
+    max_score: 50
+    code: moderate
+    label_fr: Comportements répétitifs modérés
+    clinical_meaning_fr: Comportements répétitifs d'intensité modérée avec retentissement fonctionnel notable.
+  - min_score: 51
+    max_score: 129
+    code: high
+    label_fr: Comportements répétitifs fréquents
+    clinical_meaning_fr: Comportements répétitifs fréquents avec retentissement fonctionnel significatif.
+WAIS-IV:
+  name: WAIS-IV
+  full_name: Wechsler Adult Intelligence Scale — IV
+  full_name_fr: Échelle d'intelligence de Wechsler pour adultes — IV
+  domain: intelligence
+  total_column: wai4qit
+  score_range:
+  - 40
+  - 160
+  higher_is_worse: false
+  evaluation_type: hetero
+  clinical_note_fr: Évaluation standardisée de l'intelligence globale (QI total + 4 indices).
+  subscale_columns:
+    Compréhension verbale (ICV): wai4icv
+    Raisonnement perceptif (IRP): wai4irp
+    Mémoire de travail (IMT): wai4imt
+    Vitesse de traitement (IVT): wai4ivt
+  severity_thresholds:
+  - min_score: 130
+    max_score: 160
+    code: very_superior
+    label_fr: Très supérieur
+    clinical_meaning_fr: Fonctionnement intellectuel très supérieur (≥ 130).
+  - min_score: 120
+    max_score: 129
+    code: superior
+    label_fr: Supérieur
+    clinical_meaning_fr: Fonctionnement intellectuel supérieur.
+  - min_score: 110
+    max_score: 119
+    code: high_average
+    label_fr: Moyenne supérieure
+    clinical_meaning_fr: Fonctionnement intellectuel dans la moyenne supérieure.
+  - min_score: 90
+    max_score: 109
+    code: average
+    label_fr: Moyen
+    clinical_meaning_fr: Fonctionnement intellectuel dans la moyenne.
+  - min_score: 80
+    max_score: 89
+    code: low_average
+    label_fr: Moyenne inférieure
+    clinical_meaning_fr: Fonctionnement intellectuel dans la moyenne inférieure.
+  - min_score: 70
+    max_score: 79
+    code: borderline
+    label_fr: Zone limite
+    clinical_meaning_fr: Fonctionnement intellectuel en zone limite (borderline).
+  - min_score: 40
+    max_score: 69
+    code: extremely_low
+    label_fr: Extrêmement bas
+    clinical_meaning_fr: Fonctionnement intellectuel extrêmement bas, évocateur de déficience intellectuelle.
+BRIEF:
+  name: BRIEF
+  full_name: Behavior Rating Inventory of Executive Function
+  full_name_fr: Inventaire d'évaluation des fonctions exécutives
+  domain: executive_function
+  total_column: brief_score7
+  score_range:
+  - 0
+  - 100
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: 'Hétéro-évaluation des fonctions exécutives (9 sous-échelles, scores T : ≥ 65 cliniquement significatif).'
+  subscale_columns:
+    Inhibition: brief_score1
+    Flexibilité: brief_score2
+    Contrôle émotionnel: brief_score3
+    Auto-contrôle: brief_score4
+    Initiative: brief_score5
+    Mémoire de travail: brief_score6
+    Planification/Organisation: brief_score7
+    Contrôle de la tâche: brief_score8
+    Organisation matérielle: brief_score9
+  severity_thresholds:
+  - min_score: 0
+    max_score: 59
+    code: normal
+    label_fr: Normal
+    clinical_meaning_fr: Fonctionnement exécutif dans les limites de la normale.
+  - min_score: 60
+    max_score: 64
+    code: mildly_elevated
+    label_fr: Légèrement élevé
+    clinical_meaning_fr: Difficultés exécutives légèrement élevées, à surveiller.
+  - min_score: 65
+    max_score: 69
+    code: potentially_clinical
+    label_fr: Potentiellement clinique
+    clinical_meaning_fr: Difficultés exécutives potentiellement cliniquement significatives.
+  - min_score: 70
+    max_score: 100
+    code: clinically_significant
+    label_fr: Cliniquement significatif
+    clinical_meaning_fr: Difficultés exécutives cliniquement significatives nécessitant une prise en charge.
+AQ-24:
+  name: AQ-24
+  full_name: Autism Quotient — 24 items
+  full_name_fr: Quotient autistique (version courte, 24 items)
+  domain: autism_screening
+  total_column: a24tot
+  score_range:
+  - 0
+  - 24
+  higher_is_worse: true
+  evaluation_type: auto
+  clinical_note_fr: Auto-questionnaire de dépistage des traits autistiques (seuil ≥ 17 pour le TSA).
+  screening_threshold: 17
+  screening_positive_label_fr: Dépistage positif de TSA (≥ 17)
+  screening_negative_label_fr: Dépistage négatif de TSA (< 17)
+ADI-R:
+  name: ADI-R
+  full_name: Autism Diagnostic Interview — Revised
+  full_name_fr: Entretien diagnostique de l'autisme — Révisé
+  domain: autism_diagnostic
+  total_column: adialg_tota
+  score_range:
+  - 0
+  - 30
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: 'Hétéro-évaluation diagnostique standardisée de l''autisme (4 domaines). Seuils diagnostiques : A ≥ 10, B ≥ 8, C ≥ 3, D ≥ 1.'
+  subscale_columns:
+    Interaction sociale (A): adialg_tota
+    Communication (B): adialg_totb
+    Comportements restreints (C): adialg_totc
+    Développement anormal < 36 mois (D): adialg_totd
+HAM-A:
+  name: HAM-A
+  full_name: Hamilton Anxiety Rating Scale
+  full_name_fr: Échelle d'anxiété de Hamilton
+  domain: anxiety
+  total_column: hamanx_score
+  score_range:
+  - 0
+  - 56
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: Hétéro-évaluation de la sévérité de l'anxiété (14 items).
+  severity_thresholds:
+  - min_score: 0
+    max_score: 7
+    code: normal
+    label_fr: Pas d'anxiété
+    clinical_meaning_fr: Pas d'anxiété cliniquement significative.
+  - min_score: 8
+    max_score: 14
+    code: mild
+    label_fr: Anxiété légère
+    clinical_meaning_fr: Anxiété légère.
+  - min_score: 15
+    max_score: 23
+    code: moderate
+    label_fr: Anxiété modérée
+    clinical_meaning_fr: Anxiété modérée nécessitant une prise en charge.
+  - min_score: 24
+    max_score: 56
+    code: severe
+    label_fr: Anxiété sévère
+    clinical_meaning_fr: Anxiété sévère avec retentissement fonctionnel important.
+LSAS:
+  name: LSAS
+  full_name: Liebowitz Social Anxiety Scale
+  full_name_fr: Échelle d'anxiété sociale de Liebowitz
+  domain: social_anxiety
+  total_column: lsas_score
+  score_range:
+  - 0
+  - 144
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: Hétéro-évaluation de l'anxiété sociale (24 situations, sous-échelles anxiété et évitement).
+  subscale_columns:
+    Anxiété: lsas_tota
+    Évitement: lsas_totae
+  severity_thresholds:
+  - min_score: 0
+    max_score: 54
+    code: none
+    label_fr: Pas d'anxiété sociale
+    clinical_meaning_fr: Pas d'anxiété sociale cliniquement significative.
+  - min_score: 55
+    max_score: 65
+    code: moderate
+    label_fr: Anxiété sociale modérée
+    clinical_meaning_fr: Anxiété sociale d'intensité modérée.
+  - min_score: 66
+    max_score: 80
+    code: marked
+    label_fr: Anxiété sociale marquée
+    clinical_meaning_fr: Anxiété sociale marquée avec retentissement fonctionnel notable.
+  - min_score: 81
+    max_score: 95
+    code: severe
+    label_fr: Anxiété sociale sévère
+    clinical_meaning_fr: Anxiété sociale sévère avec retentissement fonctionnel important.
+  - min_score: 96
+    max_score: 144
+    code: very_severe
+    label_fr: Anxiété sociale très sévère
+    clinical_meaning_fr: Anxiété sociale très sévère, évitement massif des situations sociales.
+ADHD-RS:
+  name: ADHD-RS
+  full_name: ADHD Rating Scale
+  full_name_fr: Échelle d'évaluation du TDAH
+  domain: adhd
+  total_column: adhdrs_scoretot
+  score_range:
+  - 0
+  - 54
+  higher_is_worse: true
+  evaluation_type: hetero
+  clinical_note_fr: Hétéro-évaluation de la sévérité du TDAH (18 items, 2 sous-échelles).
+  subscale_columns:
+    Inattention: adhdrs_score1
+    Hyperactivité-Impulsivité: adhdrs_score2
+  severity_thresholds:
+  - min_score: 0
+    max_score: 17
+    code: subthreshold
+    label_fr: Sous le seuil
+    clinical_meaning_fr: Symptômes de TDAH sous le seuil clinique.
+  - min_score: 18
+    max_score: 26
+    code: mild
+    label_fr: TDAH léger
+    clinical_meaning_fr: Symptômes de TDAH d'intensité légère.
+  - min_score: 27
+    max_score: 36
+    code: moderate
+    label_fr: TDAH modéré
+    clinical_meaning_fr: Symptômes de TDAH d'intensité modérée.
+  - min_score: 37
+    max_score: 54
+    code: severe
+    label_fr: TDAH sévère
+    clinical_meaning_fr: Symptômes de TDAH sévères nécessitant une prise en charge spécifique.
+PSQI:
+  name: PSQI
+  full_name: Pittsburgh Sleep Quality Index
+  full_name_fr: Index de qualité du sommeil de Pittsburgh
+  domain: sleep
+  total_column: psqi_score
+  score_range:
+  - 0
+  - 21
+  higher_is_worse: true
+  evaluation_type: auto
+  clinical_note_fr: Auto-questionnaire évaluant la qualité du sommeil sur le dernier mois.
+  severity_thresholds:
+  - min_score: 0.0
+    max_score: 5.0
+    code: good
+    label_fr: Bonne qualité de sommeil
+    clinical_meaning_fr: Qualité de sommeil satisfaisante, pas de trouble du sommeil cliniquement significatif.
+  - min_score: 6.0
+    max_score: 10.0
+    code: poor
+    label_fr: Mauvaise qualité de sommeil
+    clinical_meaning_fr: Qualité de sommeil altérée, des troubles du sommeil sont présents et méritent une évaluation.
+  - min_score: 11.0
+    max_score: 21.0
+    code: very_poor
+    label_fr: Très mauvaise qualité de sommeil
+    clinical_meaning_fr: Troubles du sommeil sévères, retentissement probable sur le fonctionnement diurne et la stabilité thymique.
+ESS:
+  name: ESS
+  full_name: Epworth Sleepiness Scale
+  full_name_fr: Échelle de somnolence d'Epworth
+  domain: sleepiness
+  total_column: ess
+  score_range:
+  - 0
+  - 24
+  higher_is_worse: true
+  evaluation_type: auto
+  clinical_note_fr: Auto-questionnaire mesurant la somnolence diurne excessive.
+  severity_thresholds:
+  - min_score: 0.0
+    max_score: 7.0
+    code: normal
+    label_fr: Somnolence diurne normale
+    clinical_meaning_fr: Pas de somnolence diurne excessive.
+  - min_score: 8.0
+    max_score: 9.0
+    code: average
+    label_fr: Somnolence diurne moyenne
+    clinical_meaning_fr: Somnolence diurne à la limite supérieure de la normale.
+  - min_score: 10.0
+    max_score: 15.0
+    code: excessive
+    label_fr: Somnolence diurne excessive
+    clinical_meaning_fr: Somnolence diurne excessive, à explorer (apnées, effet sédatif des traitements, qualité du sommeil).
+  - min_score: 16.0
+    max_score: 24.0
+    code: severe
+    label_fr: Somnolence diurne sévère
+    clinical_meaning_fr: Somnolence diurne sévère, risque d'endormissement dans les activités quotidiennes.
+MARS:
+  name: MARS
+  full_name: Medication Adherence Rating Scale
+  full_name_fr: Échelle d'évaluation de l'observance médicamenteuse
+  domain: adherence
+  total_column: mars
+  score_range:
+  - 0
+  - 10
+  higher_is_worse: false
+  evaluation_type: auto
+  clinical_note_fr: Auto-questionnaire évaluant l'adhésion au traitement médicamenteux.
+  severity_thresholds:
+  - min_score: 0.0
+    max_score: 5.0
+    code: poor
+    label_fr: Mauvaise observance
+    clinical_meaning_fr: Observance médicamenteuse insuffisante, facteur de risque de rechute.
+  - min_score: 6.0
+    max_score: 7.0
+    code: moderate
+    label_fr: Observance partielle
+    clinical_meaning_fr: Observance médicamenteuse partielle, nécessitant un travail sur l'alliance thérapeutique.
+  - min_score: 8.0
+    max_score: 10.0
+    code: good
+    label_fr: Bonne observance
+    clinical_meaning_fr: Bonne observance médicamenteuse.
+Fagerström:
+  name: Fagerström
+  full_name: Fagerström Test for Nicotine Dependence
+  full_name_fr: Test de Fagerström de dépendance à la nicotine
+  domain: nicotine_dependence
+  total_column: fagerstrom_score
+  score_range:
+  - 0
+  - 10
+  higher_is_worse: true
+  evaluation_type: auto
+  clinical_note_fr: Auto-questionnaire évaluant le degré de dépendance à la nicotine.
+  severity_thresholds:
+  - min_score: 0.0
+    max_score: 2.0
+    code: low
+    label_fr: Dépendance faible
+    clinical_meaning_fr: Dépendance à la nicotine faible ou absente.
+  - min_score: 3.0
+    max_score: 4.0
+    code: moderate_low
+    label_fr: Dépendance modérée basse
+    clinical_meaning_fr: Dépendance à la nicotine modérée basse. Un soutien au sevrage pourrait être bénéfique.
+  - min_score: 5.0
+    max_score: 6.0
+    code: moderate
+    label_fr: Dépendance modérée
+    clinical_meaning_fr: Dépendance à la nicotine modérée. Substitution nicotinique recommandée en cas de tentative de sevrage.
+  - min_score: 7.0
+    max_score: 8.0
+    code: high
+    label_fr: Dépendance forte
+    clinical_meaning_fr: Forte dépendance à la nicotine. Traitement pharmacologique du sevrage à envisager.
+  - min_score: 9.0
+    max_score: 10.0
+    code: very_high
+    label_fr: Dépendance très forte
+    clinical_meaning_fr: Dépendance très forte à la nicotine. Prise en charge addictologique spécialisée recommandée.
+$registry:
+  order:
+  - BDI-II
+  - CGI-C
+  - EQ-5D
+  - EGF
+  - RBS-R
+  - WAIS-IV
+  - BRIEF
+  - AQ-24
+  - ADI-R
+  - HAM-A
+  - LSAS
+  - ADHD-RS
+  - CTQ
+  - PSQI
+  - ESS
+  - MARS
+  - Fagerström
+  - PRISM
+  groups:
+    ASP_DEPRESSION_INSTRUMENTS:
+    - BDI-II
+    ASP_GLOBAL_INSTRUMENTS:
+    - CGI-C
+    ASP_FUNCTIONING_INSTRUMENTS:
+    - EQ-5D
+    - EGF
+    ASP_REPETITIVE_INSTRUMENTS:
+    - RBS-R
+    ASP_COGNITIVE_INSTRUMENTS:
+    - WAIS-IV
+    ASP_EXECUTIVE_INSTRUMENTS:
+    - BRIEF
+    ASP_AUTISM_SCREENING_INSTRUMENTS:
+    - AQ-24
+    - ADI-R
+    ASP_ANXIETY_INSTRUMENTS:
+    - HAM-A
+    - LSAS
+    ASP_ADHD_INSTRUMENTS:
+    - ADHD-RS
+    ASP_TRAUMA_INSTRUMENTS:
+    - CTQ
+    ASP_SLEEP_INSTRUMENTS:
+    - PSQI
+    - ESS
+    ASP_ADHERENCE_INSTRUMENTS:
+    - MARS
+    ASP_SUBSTANCE_INSTRUMENTS:
+    - Fagerström
+    - PRISM

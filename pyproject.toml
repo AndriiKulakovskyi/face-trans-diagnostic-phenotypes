@@ -1,0 +1,49 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "face-common"
+version = "0.1.0"
+description = "FACE merged project: trans-diagnostic stratification engine (face_stratification) + longitudinal harmonization/clustering (face_common) across BP/SZ/DR/ASP."
+requires-python = ">=3.11"
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "pyyaml>=6.0",    # For clinical glossary YAML files
+    "pydantic>=2.5",  # For validating glossary schemas
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+stratification = [
+    "scikit-learn>=1.4",
+    "networkx>=3.2",
+    "matplotlib>=3.7",
+    "seaborn>=0.13",
+    "umap-learn>=0.5",
+    "hdbscan>=0.8",
+    "leidenalg>=0.10",
+    "python-igraph>=0.11",
+    "torch>=2.2",
+    "torch-geometric>=2.5",
+    "mlflow>=2.9",
+    "shap>=0.45",
+]
+
+[tool.hatch.build.targets.wheel]
+# Clean layout: our development package lives in src/; the vendored sister
+# engine (reused, not developed) lives in archive/ and is kept importable.
+packages = ["src/face_common", "archive/face_stratification", "archive/face_rlvr"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"config/glossary" = "face_rlvr/_glossary_data"
+"config/face_stratification" = "face_stratification/_config_data"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# src/ exposes face_common (our code); archive/ exposes the vendored engine.
+pythonpath = ["src", "archive"]

@@ -1,0 +1,313 @@
+# Complete CSV extraction layout for the BP (Bipolar) cohort.
+#
+# Every CSV column that bp_extractor.py reads from BP.csv is declared here.
+# To adapt to a new FACE data release (column renames), edit this file only —
+# no Python changes needed.
+$schema_version: 1
+
+patient_id_column: usubjid_patients
+
+# ─── Demographics ────────────────────────────────────────────────────────────
+demographics:
+  age: age
+  sex: sex
+  site_id: siteid
+  arm: arm
+  marital_status: maristat
+  education_level: edulevel
+  employment: empjob
+  social_protection: social_protec
+
+# ─── Vitals (populated into BiologicalPanel.vitals dict) ─────────────────────
+vitals:
+  bmi: bmi
+  weight_kg: weight
+  height_cm: height
+  waist_cm: wstcir
+  sbp_standing: sysbpstanding
+  sbp_supine: sysbpsupine
+  dbp_standing: diabpstanding
+  dbp_supine: diabpsupine
+  hr_standing: hrstanding
+  hr_supine: hrsupine
+
+# ─── ECG (populated into BiologicalPanel.ecg dict) ───────────────────────────
+ecg:
+  qt: qt
+  qtc: qtc
+  rr: rr
+
+# ─── Psychiatric history (BP-specific episode counts) ───────────────────────
+psychiatric_history:
+  age_first_episode: agedebutpremier_episode
+  illness_duration_years: durtot
+  rapid_cycling: cyclerap
+  current_episode_type: cedecodtrouble_humeur_actuel_type
+  current_episode_severity: cesevtrouble_humeur_actuel
+  n_depressive_episodes_lifetime: evnum_edm_lt
+  n_manic_episodes_lifetime: evnum_epman_lt
+  n_hypomanic_episodes_lifetime: evnum_ehman_lt
+  n_mixed_episodes_lifetime: evnum_epmixt_lt
+  n_depressive_episodes_last_year: evnum_edm_ly
+  n_manic_episodes_last_year: evnum_epman_ly
+  n_mixed_episodes_last_year: evnum_epmixt_ly
+  n_psychotic_depressive_lifetime: evnum_edm_psy_lt
+  n_psychotic_manic_lifetime: evnum_epman_psy_lt
+
+# ─── Current episode DSM criteria (etatd01-09 + etatm01-09) ─────────────────
+current_episode_criteria:
+  depressive_items:
+    depressed_mood: etatd01
+    anhedonia: etatd02
+    weight_change: etatd03
+    sleep_disturbance: etatd04
+    psychomotor_change: etatd05
+    fatigue: etatd06
+    worthlessness: etatd07
+    concentration_difficulty: etatd08
+    suicidal_thoughts: etatd09
+  manic_items:
+    elevated_mood: etatm01
+    irritable_mood: etatm02
+    grandiosity: etatm03
+    decreased_sleep_need: etatm04
+    pressured_speech: etatm05
+    flight_of_ideas: etatm06
+    distractibility: etatm07
+    goal_directed_activity: etatm08
+    risky_behavior: etatm09
+  depressive_total: etatd
+  manic_total: etatm
+
+most_recent_episode:
+  episode_type: cetermepisode_recent_type
+  severity: cesevepisode_recent
+  start_date: cestdtcepisode_recent
+  end_date: ceendtcepisode_recent
+  chronicity: chronepisode_recent
+  postpartum: ppartepisode_recent
+
+# ─── Current treatments (BP has mood stabilizer plasma levels) ──────────────
+treatments:
+  mood_stabilizers:
+    lithium:
+      plasma: lithiumplasma
+      label_fr: Lithium
+      unit: mEq/L
+    valproate:
+      plasma: valproplasma
+      label_fr: Valproate
+      unit: "µg/mL"
+    carbamazepine:
+      plasma: carbamaz
+      label_fr: Carbamazépine
+      unit: "µg/mL"
+    lamotrigine:
+      plasma: lamotrig
+      label_fr: Lamotrigine
+      unit: "µg/mL"
+  classes:
+    antidepressant: cmoccur_antid
+    antipsychotic: cmoccur_antip
+    benzodiazepine: cmoccur_benzo
+    thymoregulator: cmoccur_thymo
+  adherence_instrument_key: MARS
+
+# ─── Lifetime medications ───────────────────────────────────────────────────
+lifetime_medications:
+  classes:
+    antidepressant: {ever: cmoccur_antid, duration: cmdur_antid}
+    antipsychotic:  {ever: cmoccur_antip, duration: cmdur_antip}
+    neuroleptic:    {ever: cmoccur_neuro, duration: cmdur_neuro}
+    lithium:        {ever: cmoccur_lithi, duration: cmdur_lithi}
+    benzodiazepine: {ever: cmoccur_benzo, duration: cmdur_benzo}
+    thymoregulator: {ever: cmoccur_thymo, duration: cmdur_thymo}
+
+# ─── Non-pharmacological treatments ─────────────────────────────────────────
+non_pharm_treatments:
+  has_any: rad_non_pharmacologique_lt
+  ect_ever: proccur_sismo_lt
+  ect_sessions: prdur_sismo_lt
+  tms_ever: proccur_tms_lt
+  tms_sessions: prdur_tms_lt
+  cbt_ever: proccur_tcc_lt
+  ipsrt_ever: proccur_ipsrt_lt
+  psychoeducation_ever: proccur_psychoed_lt
+
+# ─── Substance use ──────────────────────────────────────────────────────────
+substance_use:
+  tobacco: suoccur_cigarettes_lt
+  alcohol: suoccur_alcool
+  alcohol_type: type_alcool
+  cannabis: suoccur_cannabis
+  substance_use_disorder: rad_tb_subst
+  other_substances:
+    cocaine: suoccur_cocaine
+    opiaces: suoccur_opiaces
+    stimulants: suoccur_stimulants
+    sedatif: suoccur_sedatif
+    hallucinogenes: suoccur_hallucinogenes
+
+# ─── Family history ─────────────────────────────────────────────────────────
+family_history:
+  maternal_psychiatric: mere_trouble
+  paternal_psychiatric: pere_trouble
+  maternal_substance: mere_substance
+  paternal_substance: pere_substance
+  maternal_suicide: mere_suicide
+  paternal_suicide: pere_suicide
+  bipolar_keyword: bipolaire
+  # Extended pedigree: iterate over these relatives, read _trouble/_suicide/... columns
+  relatives:
+    - {key: gmmaternel, label_fr: "Grand-mère maternelle"}
+    - {key: gpmaternel, label_fr: "Grand-père maternel"}
+    - {key: gmpaternel, label_fr: "Grand-mère paternelle"}
+    - {key: gppaternel, label_fr: "Grand-père paternel"}
+  relative_suffixes:
+    psychiatric_disorder: _trouble
+    structure: _structure
+    suicide: _suicide
+    substance_use: _substance
+    anxiety: _anx
+    dementia: _dem
+    cardiovascular_risk: _risque
+  siblings:
+    - {key: frere1, label_fr: "Frère"}
+    - {key: soeur1, label_fr: "Sœur"}
+  brothers_count_col: frere_structure
+  sisters_count_col: soeur_structure
+  brothers_affected_col: frere_structureatteint
+  sisters_affected_col: soeur_structureatteint
+  sons_count_col: fils_structure
+  daughters_count_col: fille_structure
+  sons_affected_col: fils_structureatteint
+  daughters_affected_col: fille_structureatteint
+
+# ─── Suicide history (ISF items + lethality details) ────────────────────────
+suicide_history:
+  ever_felt_life_not_worth: isf01
+  ever_wished_dead: isf02
+  ever_thought_suicide: isf03
+  ever_planned_suicide: isf04
+  ever_attempted: isf05
+  n_attempts: isf07
+  has_violent_attempts: isf08
+  n_violent_attempts: isf08a
+  has_serious_attempts: isf09
+  n_serious_attempts: isf09a
+  most_serious_method: ltsg01
+  most_violent_method: ltsv01
+  most_serious_trigger: ltsg08
+
+suicide_indicators:
+  madrs_item10: madrs10
+  madrs_elevated_threshold: 3
+  lifetime_attempts: ltsg
+  lifetime_self_harm: ltsv
+
+# ─── Hospitalization history ────────────────────────────────────────────────
+hospitalization:
+  n_lifetime: nboccur_hospitalisation
+  n_last_year: nboccur_hospitalisation_ly
+  duration_last: hodur_hospitalisation
+  er_visits_flag: hooccur_urg_sans_hosp
+  n_er_visits: nboccur_urg_sans_hosp
+  work_absences_flag: hooccur_arret_travail
+  n_work_absences: nboccur_arret_travail
+
+# ─── Cognitive profile (objective neuropsych tests) ─────────────────────────
+cognitive_profile:
+  tmt_a_seconds: tmta01_
+  tmt_b_seconds: tmtb01_
+  stroop_word: strooa01_
+  stroop_color: stroob01_
+  stroop_color_word: strooc01_
+  stroop_interference: strooi01_
+  cvlt_total_learning: cvlt05_
+  cvlt_short_delay_free: cvlt07_
+  cvlt_long_delay_free: cvlt09_
+  cvlt_recognition: cvlt11_
+  phonemic_fluency: fv01_
+  wais_similarities_std: similstd_wais
+  wais_vocabulary_std: vocabstd_wais
+  wais_working_memory_std: wais_mc_end_std_w
+  cobra_instrument_key: COBRA
+
+# ─── Additional neuropsych (BP-specific WAIS subscores, CPT-III, dyslexia) ──
+additional_neuropsych:
+  matrices_raw: mat_tot_w
+  matrices_std: mat_std_w
+  code_raw: code03_w
+  code_std: code04_w
+  symbol_raw: symbol03_w
+  symbol_std: symbol04_w
+  digit_span_forward_total: msdtot_
+  digit_span_forward_std: msdstd_
+  digit_span_backward_total: msitot_
+  digit_span_backward_std: msistd_
+  digit_span_total_raw: mstbrut_
+  digit_span_total_std: mststd_
+  cpt_omissions: cpt301a
+  cpt_commissions: cpt302a
+  cpt_hit_rt: cpt303a
+  cpt_variability: cpt305a
+  cpt_detectability: cpt306a
+  cpt_perseverations: cpt308a
+  dyslexia: trbapp01_
+  dysorthographia: trbapp02_
+  dyscalculia: trbapp03_
+  dyspraxia: trbapp05_
+
+# ─── DIVA ADHD structured interview (BP-specific) ───────────────────────────
+diva_adhd:
+  attention_adult_count: divaaa
+  hyperactivity_adult_count: divaahi
+  attention_childhood_count: divaea
+  hyperactivity_childhood_count: divaehi
+
+# ─── Circadian rhythm (BP-specific) ─────────────────────────────────────────
+circadian:
+  flexibility_score: circad12
+  languid_vigorous_score: circad13
+
+# ─── Comorbidities ──────────────────────────────────────────────────────────
+comorbidities:
+  somatic_suffix: _mhoccur
+  # Iterate over these keys: {col = key + somatic_suffix}
+  somatic:
+    - {col: diabete_mhoccur,     label_fr: "Diabète"}
+    - {col: hta_mhoccur,         label_fr: "Hypertension artérielle"}
+    - {col: dyslipid_mhoccur,    label_fr: "Dyslipidémie"}
+    - {col: dysthyro_mhoccur_tt, label_fr: "Dysthyroïdie"}
+    - {col: coronar_mhoccur,     label_fr: "Coronaropathie"}
+    - {col: infarctus_mhoccur,   label_fr: "Infarctus du myocarde"}
+    - {col: avc_mhoccur,         label_fr: "Accident vasculaire cérébral"}
+    - {col: epilepsie_mhoccur,   label_fr: "Épilepsie"}
+    - {col: asthme_mhoccur,      label_fr: "Asthme"}
+    - {col: nephropat_mhoccur,   label_fr: "Néphropathie"}
+    - {col: cirrhose_mhoccur,    label_fr: "Cirrhose"}
+    - {col: neoplasi_mhoccur,    label_fr: "Néoplasie"}
+    - {col: psoriasis_mhoccur,   label_fr: "Psoriasis"}
+    - {col: lupus_mhoccur,       label_fr: "Lupus"}
+    - {col: sep_mhoccur,         label_fr: "Sclérose en plaques"}
+    - {col: migraine_mhoccur,    label_fr: "Migraine"}
+    - {col: glaucomeo_mhoccur,   label_fr: "Glaucome"}
+  psychiatric:
+    - {col: ceoccuranxietegeneral, label_fr: "Trouble anxieux généralisé"}
+    - {col: ceoccurtrouble_panique, label_fr: "Trouble panique"}
+    - {col: ceoccurphobiesoc,      label_fr: "Phobie sociale"}
+    - {col: ceoccurphobie_sp_cifi, label_fr: "Phobie spécifique"}
+    - {col: ceoccurtoc,            label_fr: "Trouble obsessionnel compulsif"}
+    - {col: ceoccurspt,            label_fr: "Trouble de stress post-traumatique"}
+    - {col: ceoccurtca,            label_fr: "Trouble des conduites alimentaires"}
+    - {col: ceoccurtroubsomato,    label_fr: "Trouble somatoforme"}
+  general_anxiety_flag: rad_tb_anx
+  substance_use_flag: rad_tb_subst
+  general_anxiety_label_fr: "Trouble anxieux comorbide (non spécifié)"
+  substance_use_label_fr: "Trouble lié à l'usage de substances"
+
+# ─── V1 follow-up mood scores (BP only cohort with _n1 data) ────────────────
+v1_followup:
+  instruments:
+    MADRS: madrs_n1
+    YMRS: ymrs_n1

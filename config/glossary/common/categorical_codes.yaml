@@ -1,0 +1,44 @@
+# Shared demographic categorical code lookups.
+# The loader auto-expands "1" into both "1" and "1.0" for numeric strings
+# to preserve current Python behavior.
+$schema_version: 1
+
+MARITAL_STATUS_CODES:
+  "1": "célibataire"
+  "2": "en couple"
+  "3": "séparé(e)"
+  "4": "divorcé(e)"
+  "5": "veuf/veuve"
+
+EDUCATION_LEVEL_CODES:
+  "1": "primaire (CP)"
+  "2": "primaire (CE1)"
+  "3": "primaire (CE2)"
+  "4": "primaire (CM1)"
+  "5": "primaire (CM2)"
+  "6": "collège (6e)"
+  "7": "collège (5e)"
+  "8": "collège (4e)"
+  "9": "collège (3e)"
+  "10": "lycée (2nde)"
+  "11": "lycée (1re)"
+  "12": "lycée (Terminale)"
+  "13": "CAP"
+  "14": "BEP"
+  "15": "Bac+1"
+  "16": "Bac+2"
+  "17": "Bac+3 (licence)"
+  "18": "Bac+4 (maîtrise)"
+  "19": "Bac+5 (master)"
+  "20": "doctorat"
+
+EMPLOYMENT_CODES:
+  "0": "autre"
+  "1": "agriculteur exploitant"
+  "2": "artisan/commerçant/chef d'entreprise"
+  "3": "cadre/profession intellectuelle supérieure"
+  "4": "profession intermédiaire"
+  "5": "employé(e)"
+  "6": "ouvrier"
+  "7": "retraité(e)"
+  "8": "sans activité professionnelle"

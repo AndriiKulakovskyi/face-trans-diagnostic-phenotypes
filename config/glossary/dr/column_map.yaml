@@ -1,0 +1,225 @@
+# Complete CSV extraction layout for the DR (Treatment-Resistant Depression) cohort.
+$schema_version: 1
+
+patient_id_column: usubjid_patients
+
+demographics:
+  age: age
+  sex: sex
+  site_id: siteid
+  arm: arm
+  marital_status: maristat
+  education_level: edulevel
+  employment: empjob
+
+vitals:
+  bmi: bmi
+  weight_kg: weight
+  height_cm: height
+  waist_cm: wstcir
+  sbp_supine: sysbpsupine
+  dbp_supine: diabpsupine
+
+ecg:
+  qtc: qtc
+
+# ─── DR-specific: simplified psychiatric history ────────────────────────────
+psychiatric_history:
+  age_first_episode: agedebutpremier_episode
+  illness_duration_years: durtot
+  current_episode_severity: cesevtrouble_humeur_actuel
+
+# ─── DR-specific: treatment resistance staging ──────────────────────────────
+treatment_resistance:
+  resistance_level: epi_resist
+  current_episode_number: epi_num_epi
+  current_episode_duration_months: epi_duree
+  antidepressant_response: epi_vir_antid
+  episode_treated: epi_traite
+  age_first_treatment: agetrt
+  total_treatment_duration_months: duree_glob_trt
+  has_psychotic_features: epi_car_psycho
+  achieved_complete_remission: epi_remi_comp
+  sachs_score: sachs_
+
+# ─── DR-specific: C-SSRS binary ideation items ─────────────────────────────
+cssrs:
+  col_prefix: cssrs0
+  items: [1, 2, 3, 4, 5]
+
+# ─── Current episode DSM criteria ───────────────────────────────────────────
+current_episode_criteria:
+  depressive_items:
+    depressed_mood: etatd01
+    anhedonia: etatd02
+    weight_change: etatd03
+    sleep_disturbance: etatd04
+    psychomotor_change: etatd05
+    fatigue: etatd06
+    worthlessness: etatd07
+    concentration_difficulty: etatd08
+    suicidal_thoughts: etatd09
+  manic_items:
+    elevated_mood: etatm01
+    irritable_mood: etatm02
+    grandiosity: etatm03
+    decreased_sleep_need: etatm04
+    pressured_speech: etatm05
+    flight_of_ideas: etatm06
+    distractibility: etatm07
+    goal_directed_activity: etatm08
+    risky_behavior: etatm09
+  depressive_total: etatd
+  manic_total: etatm
+
+most_recent_episode:
+  episode_type: cetermepisode_recent_type
+  severity: cesevepisode_recent
+  start_date: cestdtcepisode_recent
+  end_date: ceendtcepisode_recent
+  chronicity: chronepisode_recent
+  postpartum: ppartepisode_recent
+
+cognitive_profile:
+  tmt_a_seconds: tmta01_
+  tmt_a_seconds_alt: tmt0101
+  tmt_b_seconds: tmtb01_
+  tmt_b_seconds_alt: tmt0102
+  stroop_interference: strooi01_
+  cvlt_total_learning: cvlt05_
+  cvlt_long_delay_free: cvlt09_
+  cvlt_recognition: cvlt11_
+  phonemic_fluency: fv01_
+  wais_similarities_std: similstd_wais
+  wais_vocabulary_std: vocabstd_wais
+  wais_working_memory_std: wais_mc_end_std_w
+
+# ─── DR-specific treatments ─────────────────────────────────────────────────
+treatments:
+  lithium_level: lithemie
+  valproate_level: valprate
+  ect_flag: proccur_ect
+  adherence_instrument_key: MARS
+
+substance_use:
+  tobacco: suoccur_cigarettes_lt
+  alcohol: suoccur_alcool
+  alcohol_type: type_alcool
+  cannabis: suoccur_cannabis
+  substance_use_disorder: rad_tb_subst
+  other_substances:
+    cocaine: suoccur_cocaine
+    opiaces: suoccur_opiaces
+    stimulants: suoccur_stimulants
+    sedatif: suoccur_sedatif
+    hallucinogenes: suoccur_hallucinogenes
+
+family_history:
+  maternal_psychiatric: mere_trouble
+  paternal_psychiatric: pere_trouble
+  maternal_substance: mere_substance
+  paternal_substance: pere_substance
+  maternal_suicide: mere_suicide
+  paternal_suicide: pere_suicide
+  bipolar_keyword: bipolaire
+  relatives:
+    - {key: gmmaternel, label_fr: "Grand-mere maternelle"}
+    - {key: gpmaternel, label_fr: "Grand-pere maternel"}
+    - {key: gmpaternel, label_fr: "Grand-mere paternelle"}
+    - {key: gppaternel, label_fr: "Grand-pere paternel"}
+  relative_suffixes:
+    psychiatric_disorder: _trouble
+    structure: _structure
+    suicide: _suicide
+    substance_use: _substance
+    anxiety: _anx
+    dementia: _dem
+  siblings:
+    - {key: frere1, label_fr: "Frere"}
+    - {key: soeur1, label_fr: "Soeur"}
+  brothers_count_col: frere_structure
+  sisters_count_col: soeur_structure
+  brothers_affected_col: frere_structureatteint
+  sisters_affected_col: soeur_structureatteint
+  sons_count_col: fils_structure
+  daughters_count_col: fille_structure
+  sons_affected_col: fils_structureatteint
+  daughters_affected_col: fille_structureatteint
+
+suicide_history:
+  ever_felt_life_not_worth: isf01
+  ever_wished_dead: isf02
+  ever_thought_suicide: isf03
+  ever_planned_suicide: isf04
+  ever_attempted: isf05
+  n_attempts: isf07
+  has_violent_attempts: isf08
+  n_violent_attempts: isf08a
+  has_serious_attempts: isf09
+  n_serious_attempts: isf09a
+  most_serious_method: ltsg01
+  most_violent_method: ltsv01
+  most_serious_trigger: ltsg08
+
+suicide_indicators:
+  madrs_item10: madrs10
+  madrs_elevated_threshold: 3
+  lifetime_attempts: ltsg
+  lifetime_self_harm: ltsv
+
+hospitalization:
+  n_lifetime: nboccur_hospitalisation
+  n_last_year: nboccur_hospitalisation_ly
+  duration_last: hodur_hospitalisation
+  work_absences_flag: hooccur_arret_travail
+  n_work_absences: nboccur_arret_travail
+
+comorbidities:
+  somatic_suffix: _mhoccur
+  somatic:
+    - {col: diabete_mhoccur,     label_fr: "Diabete"}
+    - {col: hta_mhoccur,         label_fr: "Hypertension arterielle"}
+    - {col: dyslipid_mhoccur,    label_fr: "Dyslipidemie"}
+    - {col: dysthyro_mhoccur_tt, label_fr: "Dysthyroidie"}
+    - {col: coronar_mhoccur,     label_fr: "Coronaropathie"}
+    - {col: infarctus_mhoccur,   label_fr: "Infarctus du myocarde"}
+    - {col: avc_mhoccur,         label_fr: "Accident vasculaire cerebral"}
+    - {col: epilepsie_mhoccur,   label_fr: "Epilepsie"}
+    - {col: asthme_mhoccur,      label_fr: "Asthme"}
+    - {col: nephropat_mhoccur,   label_fr: "Nephropathie"}
+    - {col: cirrhose_mhoccur,    label_fr: "Cirrhose"}
+    - {col: neoplasi_mhoccur,    label_fr: "Neoplasie"}
+    - {col: migraine_mhoccur,    label_fr: "Migraine"}
+  psychiatric:
+    - {col: ceoccuranxietegeneral, label_fr: "Trouble anxieux generalise"}
+    - {col: ceoccurtrouble_panique, label_fr: "Trouble panique"}
+    - {col: ceoccurphobiesoc,      label_fr: "Phobie sociale"}
+    - {col: ceoccurphobie_sp_cifi, label_fr: "Phobie specifique"}
+    - {col: ceoccurtoc,            label_fr: "Trouble obsessionnel compulsif"}
+    - {col: ceoccurspt,            label_fr: "Trouble de stress post-traumatique"}
+    - {col: ceoccurtca,            label_fr: "Trouble des conduites alimentaires"}
+    - {col: ceoccurtroubsomato,    label_fr: "Trouble somatoforme"}
+  general_anxiety_flag: rad_tb_anx
+  substance_use_flag: rad_tb_subst
+  general_anxiety_label_fr: "Trouble anxieux comorbide (non specifie)"
+  substance_use_label_fr: "Trouble lie a l'usage de substances"
+
+# ─── DR-specific extras ─────────────────────────────────────────────────────
+episode_counts:
+  depressive: ceoccurnbepisode_depr
+  manic: ceoccurnbepisode_mani
+  hypomanic: ceoccurnbepisode_hypo
+  mixed: ceoccurnbepisode_mixte
+
+birth_data:
+  birth_weight_g: naispoid
+  birth_height_cm: naistail
+
+extended_somatic_history:
+  - {col: hepatite_mhoccur,     label_fr: "Hepatite"}
+  - {col: obesite_mhoccur,      label_fr: "Obesite"}
+  - {col: osteoporose_mhoccur,  label_fr: "Osteoporose"}
+  - {col: fibromyalgie_mhoccur, label_fr: "Fibromyalgie"}
+  - {col: apnee_sommeil_mhoccur, label_fr: "Syndrome d'apnees du sommeil"}
+  - {col: allergie_mhoccur,     label_fr: "Allergie"}
+  - {col: anemie_mhoccur,       label_fr: "Anemie"}
