@@ -128,14 +128,24 @@ ds = to_harmonized_dataset(df, load_variables("face-common-vars.xlsx"), visit="V
 - Harmonization: 348/348 feature variables PASS the audit (0 FAIL, 45 WARN).
 - Merge done; engine reproduces the sister 4-cohort clusters exactly
   (`results/v0_clusters_anchor.csv`); **no imputation** confirmed.
-- **Phase 3 (3-cohort recovery) — first result done.** `schema_gen.py` +
-  `adapter.py` bridge our V0 matrix into the engine; `scripts/cluster_v0.py`
-  embeds + clusters it. At k=6: bootstrap ARI **0.96** (stable), recovers a
-  clean SZ cluster + a BP–DR mood bridge (all 552 DR co-cluster with BP);
-  moderate match to the 4-cohort reference (ARI **0.31**). 40 tests pass.
+- **Phase 3 (V0 clustering) — done, with a key methodology correction.**
+  `schema_gen.py` + `adapter.py` bridge our V0 matrix into the engine;
+  `scripts/cluster_v0.py` embeds + clusters; `cluster_v0_profile.py` names
+  clusters (UMAP + engine enrichment) → `reports/cluster_v0.html`.
+- **Confound trace (important):** clustering on raw/all features was dominated
+  by a `brthdtc` 1e17 artifact, then by feature scale, then by **sex×age**
+  (cluster↔sex ARI 0.32 > cohort 0.19). Fix = cluster on **clinical sections,
+  age/sex-residualized, robust-scaled, physical-comorbidity (`*_mhoccur`)
+  excluded** → confound gone (cluster↔sex ARI **0.005**).
+- **Result (k=6, 129 clinical features):** six **trans-diagnostic symptom
+  phenotypes** that cut across BP/SZ/DR (cluster↔cohort ARI **0.024**) —
+  childhood-maltreatment, depression+sleep (DR-enriched, validity), suicidality,
+  denial/response-style. Bootstrap **0.89**. Deliberately does **not** recover
+  the sister's diagnosis-aligned clusters (ARI vs ref 0.03) — it serves the
+  cut-across-DSM goal instead. 48 tests pass.
 - DR has a V3 attrition cliff (3 patient×visit rows) — exclude from V3.
-- Next: name clusters (feature enrichment + Cohen's d), verify metabolic
-  direction, ablations (READY-only / core-67), then Phase 4 longitudinal.
+- Open fork: trans-diagnostic discovery (current) vs sister-cluster recovery
+  (retain diagnosis signal). A "denial" response-style axis needs scrutiny.
 
 ## Where to read next
 

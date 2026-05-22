@@ -51,6 +51,8 @@ from sklearn.metrics import (  # noqa: E402
 )
 
 from face_common import (  # noqa: E402
+    ADMINISTRATIVE_FEATURES,
+    CLINICAL_SECTIONS,
     build_unified_dataframe,
     load_variables,
     to_harmonized_dataset,
@@ -158,9 +160,23 @@ def main() -> int:
             DATA_DIR, DICT_PATH, readiness=args.readiness, format="long"
         )
         variables = load_variables(DICT_PATH)
-        dataset = to_harmonized_dataset(df, variables, visit="V0")
+        # Cluster on psychiatric phenotype, net of demographics:
+        #   sections=CLINICAL_SECTIONS  → drop physiology / cognition / demographics
+        #   residualize_on=(age, sex)   → regress out the dominant demographic axes
+        #   normalize=True              → robust per-feature scaling for cosine
+        #   exclude: recruitment site + *_mhoccur physical-comorbidity flags
+        #            (HIV/MI/lupus/asthma — physical health, not psychiatric phenotype)
+        exclude = set(ADMINISTRATIVE_FEATURES) | {
+            v.canonical_name for v in variables if v.canonical_name.endswith("_mhoccur")
+        }
+        dataset = to_harmonized_dataset(
+            df, variables, visit="V0",
+            sections=CLINICAL_SECTIONS, residualize_on=("age", "sex"),
+            normalize=True, exclude=exclude,
+        )
     print(f"  HarmonizedDataset: {dataset.n_patients:,} patients × "
-          f"{dataset.n_features} features  {dataset.cohort_counts().to_dict()}")
+          f"{dataset.n_features} clinical features "
+          f"(age/sex-residualized, normalized)  {dataset.cohort_counts().to_dict()}")
 
     # ── 2. multipartite-spectral embedding (engine, no imputation) ──────────
     print("\nFitting MultipartiteSpectralEmbedding (engine)...")
@@ -260,6 +276,10 @@ def main() -> int:
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "git_rev": _git_rev(),
         "readiness": args.readiness,
+        "normalized": True,
+        "residualized_on": ["age", "sex"],
+        "clinical_sections": sorted(CLINICAL_SECTIONS),
+        "excluded_features": sorted(exclude),
         "embed_config": EMBED_CONFIG,
         "n_patients": int(dataset.n_patients),
         "n_features": int(dataset.n_features),

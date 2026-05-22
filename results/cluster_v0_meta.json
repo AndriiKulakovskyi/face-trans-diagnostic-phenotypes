@@ -1,9 +1,55 @@
 {
-  "timestamp_utc": "2026-05-22T16:48:49.899268+00:00",
-  "git_rev": "ea4ef1a",
+  "timestamp_utc": "2026-05-22T19:01:42.960795+00:00",
+  "git_rev": "77b1f64",
   "readiness": [
     "READY",
     "PARTIAL"
+  ],
+  "normalized": true,
+  "residualized_on": [
+    "age",
+    "sex"
+  ],
+  "clinical_sections": [
+    "ANTECEDENTS",
+    "AUTO-QUESTIONNAIRES",
+    "EVALUATION MEDICALE",
+    "HETERO-QUESTIONNAIRES",
+    "SOCIAL",
+    "SOIN SUIVI HOSP ARRET TRAVAIL",
+    "SUBSTANCES",
+    "SUICIDE"
+  ],
+  "excluded_features": [
+    "acne_mhoccur",
+    "allergie_mhoccur",
+    "asthme_mhoccur",
+    "autcardv_mhoccur",
+    "autendoc_mhoccur",
+    "autneuro_mhoccur",
+    "avc_mhoccur",
+    "cheveux_mhoccur",
+    "cirrhose_mhoccur",
+    "coronar_mhoccur",
+    "eczema_mhoccur",
+    "epilepsie_mhoccur",
+    "genetique_mhoccur",
+    "hepmedic_mhoccur",
+    "hta_mhoccur",
+    "hvc_mhoccur",
+    "infarctus_mhoccur",
+    "inflachro_mhoccur",
+    "lupus_mhoccur",
+    "migraine_mhoccur",
+    "polyarthr_mhoccur",
+    "psoriasis_mhoccur",
+    "sep_mhoccur",
+    "siteid_city",
+    "toxidermi_mhoccur",
+    "traumacra_mhoccur",
+    "trbrycard_mhoccur",
+    "ulcgasduo_mhoccur",
+    "vih_mhoccur"
   ],
   "embed_config": {
     "min_coverage": 0.3,
@@ -17,7 +63,7 @@
     "partition_weighting": "sqrt_info"
   },
   "n_patients": 9013,
-  "n_features": 341,
+  "n_features": 129,
   "cohort_counts": {
     "bp": 6252,
     "dr": 552,
@@ -26,58 +72,58 @@
   "embedding_dim": 36,
   "partitions": [
     {
-      "name": "bp+sz",
-      "n_cohorts": 2,
-      "cohorts": "bp+sz",
-      "n_features": 173,
-      "weight": 1.0,
-      "features_sample": "acne_mhoccur, age, agedebut_cigarettes_lt..."
-    },
-    {
       "name": "bp+dr",
       "n_cohorts": 2,
       "cohorts": "bp+dr",
-      "n_features": 168,
-      "weight": 0.8836960102860293,
-      "features_sample": "acne_mhoccur, age, agedebut_cigarettes_lt..."
+      "n_features": 75,
+      "weight": 1.0,
+      "features_sample": "agedebut_cigarettes_lt, agedebut_hospitalisation, agedebutpremier_episode..."
+    },
+    {
+      "name": "bp+sz",
+      "n_cohorts": 2,
+      "cohorts": "bp+sz",
+      "n_features": 48,
+      "weight": 0.8921105638223775,
+      "features_sample": "agedebut_cigarettes_lt, agedebut_hospitalisation, agedebutpremier_episode..."
     },
     {
       "name": "bp+dr+sz",
       "n_cohorts": 3,
       "cohorts": "bp+dr+sz",
-      "n_features": 102,
-      "weight": 0.7925029223015101,
-      "features_sample": "acne_mhoccur, age, agedebut_cigarettes_lt..."
+      "n_features": 45,
+      "weight": 0.8915139808945857,
+      "features_sample": "agedebut_cigarettes_lt, agedebut_hospitalisation, agedebutpremier_episode..."
     },
     {
       "name": "dr+sz",
       "n_cohorts": 2,
       "cohorts": "dr+sz",
-      "n_features": 103,
-      "weight": 0.44077597683961517,
-      "features_sample": "acne_mhoccur, age, agedebut_cigarettes_lt..."
+      "n_features": 45,
+      "weight": 0.49343127870835285,
+      "features_sample": "agedebut_cigarettes_lt, agedebut_hospitalisation, agedebutpremier_episode..."
     }
   ],
   "headline_k": 6,
   "cluster_sizes": {
-    "0": 914,
-    "1": 2976,
-    "2": 2043,
-    "3": 1436,
-    "4": 727,
-    "5": 917
+    "0": 933,
+    "1": 1276,
+    "2": 2534,
+    "3": 1495,
+    "4": 923,
+    "5": 1852
   },
   "reference_overlap": 7211,
-  "ari_vs_reference": 0.31060529558397704,
-  "nmi_vs_reference": 0.3243151525529172,
+  "ari_vs_reference": 0.02964988668253375,
+  "nmi_vs_reference": 0.04866804783670191,
   "bootstrap_stability": {
     "n_clusters": 6,
     "n_bootstraps": 25,
     "subsample_fraction": 0.8,
-    "mean_ari": 0.9595171260131952,
-    "std_ari": 0.045245834660709944,
-    "min_ari": 0.8297575584544331,
-    "max_ari": 1.0,
+    "mean_ari": 0.8887021906269766,
+    "std_ari": 0.0984228494411871,
+    "min_ari": 0.6622679127619175,
+    "max_ari": 0.9966086655175639,
     "n_pairs": 300
   },
   "schema_version": "face_common-0.1.0"

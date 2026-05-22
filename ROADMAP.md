@@ -189,32 +189,40 @@ face-common-bp-sz-dr/
       (b2 → `results/v0_clusters_anchor.csv`); confirmed **no imputation** in the
       engine.
 
-### Phase 3 — 3-cohort recovery via our features — **IN PROGRESS (first recovery done)**
+### Phase 3 — V0 trans-diagnostic clustering — **DONE (v1), with a methodology correction**
 - [x] `src/face_common/schema_gen.py` — dictionary→`FeatureSchema` generator
       (`section`→block, `canonical_name`→feature id, `dtype`→`FeatureType`,
       source-column presence→`cohorts`).
-- [x] `src/face_common/adapter.py` — `to_harmonized_dataset(...)`: our V0 long
-      frame → engine `HarmonizedDataset` (numeric float matrix, MultiIndex
-      `[cohort, patient_id]`, lowercased cohorts, no imputation). 14 new tests.
-- [x] `scripts/cluster_v0.py` — V0 3-cohort matrix → engine multipartite-spectral
-      embedding → `run_kmeans`/`kmeans_sweep`/`bootstrap_stability`. Artifacts in
-      `results/cluster_v0_*` (embedding parquet, assignments, sweep, contingency,
-      meta).
-- **First result (READY+PARTIAL, 9,013 patients × 341 features → 36-dim, 4
-  coverage partitions bp+sz/bp+dr/bp+dr+sz/dr+sz):** at k=6 the clustering is
-  highly reproducible (**bootstrap mean pairwise ARI 0.96 ± 0.05**) and recovers
-  the sister's principal trans-diagnostic structure — a **clean SZ-pure cluster**
-  (2,043/2,209 SZ) and a **BP–DR mood bridge** (all 552 DR co-cluster with BP;
-  DR never isolates and never joins the SZ group). Agreement with the 4-cohort
-  reference is **moderate (ARI 0.31, NMI 0.32 on 7,211 shared patients)** — as
-  expected given a different harmonized feature set, a 3- vs 4-cohort embedding
-  geometry, and different retained-patient sets. The claim is **semantic/
-  structural recovery, not exact label match.**
-- [ ] Name clusters via per-cluster feature enrichment (engine
-      `analysis/enrichment.py`, `stage_c/biomarkers.py`); test the sister's axes
-      with Cohen's d; **verify the metabolic direction** (§3 ⚠️) before any headline.
-- [ ] Principled k-selection (sister composite score) + ablations: READY-only and
-      the informative-core (67); negative controls (§7). HTML recovery report.
+- [x] `src/face_common/adapter.py` — `to_harmonized_dataset(...)`: V0 long frame →
+      engine `HarmonizedDataset` (no imputation), with `normalize_for_embedding`
+      (robust per-feature z), `residualize_features` (regress out covariates), a
+      `sections` filter (`CLINICAL_SECTIONS`) and confound `exclude`. 22 tests.
+- [x] `scripts/cluster_v0.py` (embed + cluster) and `scripts/cluster_v0_profile.py`
+      (k-sweep, UMAP, engine enrichment naming → `reports/cluster_v0.html`).
+- **Confound trace — the headline lesson.** Clustering on the full numeric
+  common-variable set was an artifact ladder: (1) a `brthdtc` date encoded as
+  ~1e17 dominated everything; (2) after fixing scale, raw labs/anthropometry
+  dominated; (3) after robust z-scoring, the clusters were a **sex×age
+  stratification** (cluster↔sex ARI 0.32 > cluster↔cohort 0.19); (4) the sex/age
+  signal was carried almost entirely by **physical-comorbidity flags**
+  (`*_mhoccur`: lupus→F, MI→older…). The principled configuration:
+  **clinical sections only, age/sex-residualized, robust-scaled, `*_mhoccur`
+  excluded** (129 features). Earlier "ARI 0.96 / 0.31" numbers were the date
+  artifact and are retracted.
+- **Result (k=6, 9,013 patients):** the confound is gone (cluster↔sex ARI
+  **0.005**, ↔age 0.008) and six **trans-diagnostic symptom phenotypes** emerge
+  that cut across BP/SZ/DR (cluster↔cohort ARI **0.024**): childhood
+  maltreatment (CTQ↑), depression-severity + poor sleep (MADRS/PSQI↑, **DR-
+  enriched** → face-validity), suicidality (C-SSRS), and a denial / response-
+  style axis. Bootstrap mean pairwise ARI **0.89**. This **serves the
+  cut-across-DSM goal** (§1) and, by construction, does **not** reproduce the
+  sister's diagnosis-aligned clusters (ARI vs ref **0.03**).
+- **Open fork (needs a call):** (a) *trans-diagnostic discovery* — keep the
+  current demographics/comorbidity-free phenotypes; vs (b) *sister recovery* —
+  retain diagnosis signal (clusters then partly recapitulate DSM + demographics).
+- [ ] Scrutinise the "denial" axis (symptom-minimization response style, not
+      psychopathology?); principled k-selection; ablations (symptom-only,
+      READY-only); negative controls (§7).
 
 ### Phase 4 — Longitudinal coherence (our core)
 - [ ] Harmonize V1–V4 with the same schema; assign/re-cluster; ARI(V0↔Vk) +

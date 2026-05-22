@@ -18,7 +18,14 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from face_common.adapter import COHORT_TO_CODE, to_harmonized_dataset
+from face_common.adapter import (
+    ADMINISTRATIVE_FEATURES,
+    CLINICAL_SECTIONS,
+    COHORT_TO_CODE,
+    normalize_for_embedding,
+    residualize_features,
+    to_harmonized_dataset,
+)
 from face_common.schema_gen import _slug, build_feature_schema, feature_cohorts
 from face_common.variable import Variable
 
@@ -205,3 +212,80 @@ def test_duplicate_patient_rows_warn_and_dedupe():
         ds = to_harmonized_dataset(dup, _variables(), visit="V0")
     assert ds.X.index.is_unique
     assert ds.n_patients == 4
+
+
+# ---------------------------------------------------------------------------
+# normalization + confound exclusion
+# ---------------------------------------------------------------------------
+
+def test_normalize_scales_continuous_passes_through_discrete():
+    rng = np.random.default_rng(0)
+    X = pd.DataFrame({
+        "labval": rng.normal(1000.0, 50.0, 300),    # large-scale continuous (>10 unique)
+        "flag": np.tile([0, 1], 150),               # binary → unchanged
+    })
+    Xn = normalize_for_embedding(X)
+    # binary passes through untouched
+    assert (Xn["flag"].to_numpy() == X["flag"].to_numpy()).all()
+    # continuous is centred (~0) and on ~unit scale (no longer ~1000)
+    assert abs(float(Xn["labval"].median())) < 0.5
+    assert 0.5 < float(Xn["labval"].std()) < 2.0
+
+
+def test_normalize_preserves_nan():
+    X = pd.DataFrame({"v": [1.0, 2.0, np.nan] + list(np.linspace(3, 40, 20))})
+    Xn = normalize_for_embedding(X)
+    assert Xn["v"].isna().sum() == 1
+
+
+def test_date_and_excluded_features_dropped():
+    variables = _variables() + [_var("bdate", "date (YYYY-MM-DD)", "PATIENT")]
+    frame = _make_frame()
+    frame["bdate"] = 19900101
+    ds = to_harmonized_dataset(frame, variables, visit="V0", exclude={"age"})
+    assert "bdate" not in ds.X.columns      # date dtype dropped
+    assert "age" not in ds.X.columns         # explicitly excluded
+    assert "sex" in ds.X.columns
+
+
+def test_administrative_features_constant():
+    assert "siteid_city" in ADMINISTRATIVE_FEATURES
+
+
+def test_clinical_sections_constant():
+    # physiology / cognition / demographics are NOT clinical phenotype sections
+    assert "AUTO-QUESTIONNAIRES" in CLINICAL_SECTIONS
+    assert "BILAN BIOLOGIQUE" not in CLINICAL_SECTIONS
+    assert "NEUROPSYCHOLOGIE" not in CLINICAL_SECTIONS
+    assert "PATIENT" not in CLINICAL_SECTIONS
+
+
+def test_sections_filter_keeps_only_named_sections():
+    ds = to_harmonized_dataset(
+        _make_frame(), _variables(), visit="V0",
+        sections={"AUTO-QUESTIONNAIRES", "HETERO-QUESTIONNAIRES"})
+    assert set(ds.X.columns) == {"madrs", "panss"}
+
+
+def test_residualize_on_drops_covariates_and_keeps_clinical():
+    ds = to_harmonized_dataset(
+        _make_frame(), _variables(), visit="V0",
+        sections=CLINICAL_SECTIONS, residualize_on=("age", "sex"))
+    # age/sex are covariates, never emitted as features
+    assert "age" not in ds.X.columns
+    assert "sex" not in ds.X.columns
+    # clinical-section features survive (madrs=AUTO, panss=HETERO, ord1=SUICIDE, cat1=SOCIAL)
+    assert {"madrs", "panss", "ord1", "cat1"} <= set(ds.X.columns)
+
+
+def test_residualize_features_removes_linear_covariate_effect():
+    rng = np.random.default_rng(0)
+    age = rng.uniform(20, 60, 300)
+    sex = rng.integers(0, 2, 300).astype(float)
+    y = 3.0 + 2.0 * age - 1.5 * sex + rng.normal(0, 0.1, 300)
+    X = pd.DataFrame({"y": y})
+    cov = pd.DataFrame({"age": age, "sex": sex})
+    Xr = residualize_features(X, cov)
+    # residual is centred and no longer correlated with age
+    assert abs(float(Xr["y"].mean())) < 0.05
+    assert abs(float(np.corrcoef(Xr["y"].to_numpy(), age)[0, 1])) < 0.1
