@@ -1,0 +1,5 @@
+cohort,n_V0,age_mean_sd,sex_counts,n_subtypes
+Bipolar (BP),6252,39.2 (13.4),0:2283; 1:3969,3
+Schizophrenia (SZ),2209,31.1 (9.6),0:1609; 1:600,3
+Depression (DR),552,51.0 (13.3),0:229; 1:323,1
+All,9013,38.0 (13.5),0:4121; 1:4892,7
