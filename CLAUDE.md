@@ -130,16 +130,16 @@ ds = to_harmonized_dataset(df, load_variables("face-common-vars.xlsx"), visit="V
   build 72 age/sex-**residualized domain scores**; engine masked-cosine spectral + KMeans.
   Lesson (FINDINGS §2): a confound ladder (`brthdtc` 1e17 → scale → sex×age via
   `*_mhoccur`) + item-count weighting nearly fooled us.
-- **V0 clustering (`cluster_domains.py`, k=5):** stable (bootstrap 0.972/PAC 0.047),
-  confound-free — but the **structure test shows these are reproducible *slices of a
-  continuum*, not discrete clusters.**
-- **DECISION (memorize): trans-diagnostic structure is DIMENSIONAL, not discrete.** Only
-  discrete structure = DSM diagnosis (HDBSCAN↔cohort ARI 0.70; no eigengap); the **7 DSM
-  subtypes** (BP-I/II/NOS · schiz/schizoaffective/schizophreniform · MDD) form a
-  **mood↔psychosis continuum** (|Spearman| 0.64–0.79). → dimensional **axis model**
-  (sklearn FA + PyTorch AE); deep graph embedding **deferred** for discrete search.
-- **Phase 4:** V0-classifier (acc 0.842) → V0→V4 coherence modest, phenotype-specific (DR out V3).
-- 54 tests. Trace: **FINDINGS.md** §2.4 + **LABBOOK.md** E12. Next: dimensional axes → Phase 5.
+- **DECISION (memorize): trans-diagnostic structure is DIMENSIONAL, not discrete.** k=5
+  clustering (`cluster_domains.py`) was stable (0.972) but the structure test =
+  reproducible *slices of a continuum*; the only discrete structure is DSM diagnosis
+  (HDBSCAN↔cohort ARI 0.70). The **7 DSM subtypes** (BP-I/II/NOS · schiz/schizoaffective/
+  schizophreniform · MDD) form a mood↔psychosis continuum. Deep graph embedding
+  **deferred** for discrete search.
+- **Phase 4:** V0→V4 coherence modest/phenotype-specific. **Dimensional model (FINAL):**
+  K=6 reproducible confound-free axes (`dimensional_refine.py`; FA + PyTorch AE agree). **Phase 5:**
+  axes beat DSM on QoL (R² 0.33 vs 0.29), complement functioning, lose hospitalization.
+- 54 tests. Trace: **FINDINGS.md** + **LABBOOK.md**. Next: site/ComBat + V2 replication.
 
 ## Where to read next
 

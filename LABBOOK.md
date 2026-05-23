@@ -237,6 +237,22 @@ Two more "don't trust the auto-pick" catches: the K-rule first grabbed K=9 off t
 erratic tail, and a patient-level (vs subtype-centroid) Spearman made the continuum
 look like 0.07 — both fixed.
 
+## E14 · Phase 5 — outcome validation (axes vs DSM) — 2026-05-23
+`scripts/phase5_outcomes.py`: nested 5-fold CV, V1 outcome ~ V0 baseline + age + sex +
+{DSM = arm, 7 subtypes} vs {6 axes} vs both. Leakage-safe (predictors V0, outcome V1,
+baseline-adjusted → de-circularizes EGF/hospitalization that also feed the axes).
+- **QoL (EQ-5D): axes BEAT DSM** (R² 0.333 vs 0.289, +0.044, p<1e-16; combined ≈ axes).
+- **Functioning (EGF): axes COMPLEMENT DSM** (combined 0.271 vs 0.239, p<1e-16; axes
+  alone ≈ DSM).
+- **Hospitalization: DSM dominates** (AUC 0.743; axes add +0.009).
+- Effects face-valid: depression-severity → worse functioning/QoL (β −2.48 EGF);
+  illness-burden → hospitalization (β +0.35). ⇒ dimensional axes add value for
+  symptom-aligned outcomes, not service-use.
+- Fixes: cohort+arm collinear → use **arm only** (7 subtypes, implies cohort); binary
+  Logit LRT non-convergent (rare schizophréniforme separation) → CV AUC is primary;
+  work-disability dropped (no follow-up coverage). Deferred: site/ComBat +
+  mixed-effects, V2 replication.
+
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
   attempt at *discrete*-structure discovery, in case a learned representation

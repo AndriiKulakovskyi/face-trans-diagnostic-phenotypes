@@ -157,6 +157,26 @@ and `scripts/dimensional_ae.py` (PyTorch masked autoencoder, **no imputation**).
   representation** carried into Phase 4 (persistence) and Phase 5 (do axes beat DSM
   on outcomes?).
 
+### 3e. Phase 5 — do the axes beat DSM on outcomes? (the value test)
+Nested 5-fold CV predicting V1 outcomes from V0 axes vs DSM (arm, 7 subtypes), all
+adjusting for the V0 baseline + age + sex (`scripts/phase5_outcomes.py`; leakage-safe:
+predictors V0, outcome V1, baseline-adjusted):
+
+| outcome | n | DSM | axes | combined | verdict |
+|---|--:|--:|--:|--:|---|
+| EQ-5D quality of life (R²) | 2423 | 0.289 | **0.333** | 0.331 | **axes BEAT DSM** (+0.044, p<1e-16) |
+| EGF functioning (R²) | 3196 | 0.239 | 0.218 | **0.271** | axes **complement** DSM (+0.032 over DSM, p<1e-16) |
+| any hospitalization (AUC) | 3332 | **0.743** | 0.600 | 0.752 | DSM dominates; axes add little |
+
+- **Conclusion:** the dimensional axes carry information DSM lacks for **patient-
+  reported / functional** outcomes (QoL, functioning) — for QoL they *outperform*
+  diagnosis — but not for **service-use** (hospitalization), where diagnosis + prior
+  hospitalization dominate. Effects are face-valid: depression-severity axis → worse
+  functioning/QoL (β −2.48 on EGF); illness-burden axis → more hospitalization (β +0.35).
+- This validates direction A for symptom-aligned outcomes. Deferred: site/ComBat +
+  mixed-effects, V2 replication; the binary-outcome LRT didn't converge (rare
+  schizophréniforme subtype) so the CV AUC is the primary evidence there.
+
 ## 4. The scientific fork (framing)
 Two mutually-exclusive products, because **diagnosis + demographics are the
 dominant variance axes** in the data:

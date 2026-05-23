@@ -1,0 +1,19 @@
+outcome,axis,beta
+EGF functioning,axis1,-2.483534889462009
+EGF functioning,axis2,0.8646425343933696
+EGF functioning,axis3,-1.3073214739430616
+EGF functioning,axis4,-0.729039611310693
+EGF functioning,axis5,-0.7678715917666812
+EGF functioning,axis6,-1.1076057821722916
+any hospitalization,axis1,0.23007302329740892
+any hospitalization,axis2,0.0691103729015999
+any hospitalization,axis3,0.1111702660359406
+any hospitalization,axis4,0.3491009972716357
+any hospitalization,axis5,0.1010050852558462
+any hospitalization,axis6,-0.04096884572367004
+EQ-5D quality of life,axis1,-0.03200261985672559
+EQ-5D quality of life,axis2,0.017482069724604362
+EQ-5D quality of life,axis3,-0.02694165148659438
+EQ-5D quality of life,axis4,-0.01222052176494776
+EQ-5D quality of life,axis5,-0.01698269428014675
+EQ-5D quality of life,axis6,-0.020456431108503065

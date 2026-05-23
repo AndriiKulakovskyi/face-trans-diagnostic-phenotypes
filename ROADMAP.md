@@ -240,9 +240,16 @@ face-common-bp-sz-dr/
   phenotype-specific, not global. DR excluded at V3. FINDINGS §3c.
 - [ ] Refinement: multi-visit-averaged "trait" phenotypes; LOCO stability.
 
-### Phase 5 — Outcome prediction & DSM head-to-head
-- [ ] Functional outcome (GAF/FAST) ~ V0_cluster + arm + age + sex + (1|site);
-      show clusters add information *over* DSM (the "superiority" test).
+### Phase 5 — Outcome prediction & DSM head-to-head — **DONE (v1)**
+- [x] `scripts/phase5_outcomes.py`: nested 5-fold CV, V1 outcome ~ V0 baseline + age +
+      sex + {DSM arm} vs {6 axes} vs both (leakage-safe, baseline-adjusted).
+- **Result:** axes add information *over* DSM for symptom-aligned outcomes — **QoL
+  (EQ-5D) axes beat DSM** (R² 0.333 vs 0.289), **functioning (EGF) axes complement
+  DSM** (0.271 vs 0.239, p<1e-16) — but **not hospitalization** (DSM AUC 0.743
+  dominates). Depression-severity axis drives functioning/QoL; illness-burden drives
+  hospitalization. FINDINGS §3e.
+- [ ] Refinements: site/ComBat + mixed-effects `(1|site)`; V2 replication; ISF
+      suicidality outcome; redo Phase-4 coherence on the 6 axis scores.
 
 ### Phase 6 — FACE Score
 - [ ] Leakage-safe parsimonious score (deck's 6 candidates), corrected
