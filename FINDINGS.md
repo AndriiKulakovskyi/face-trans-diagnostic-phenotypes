@@ -132,8 +132,8 @@ fragility is itself a discreteness red flag.)
   axis band* far better — same-band V0→V1 persistence **0.32–0.60** (depression 0.60, ADHD/trauma
   0.56) vs the discrete labels' 0.39: the **labels hop, the positions are stable**. Cross-
   sectionally the axes are also **diagnosis-independent** — DSM-5 subtype explains only
-  **η² 0.01–0.14** of each axis (depression 0.14 highest, ≤0.05 for five of six;
-  `export_dimensional_flow.py` fig6c). DR excluded at V3 (attrition).
+  **η² 0.01–0.14** of each axis (depression 0.14 [95% CI 0.13–0.16] highest, ≤0.05 for five of
+  six; 2000-sample bootstrap; `dimensional_dsm_eta_squared.csv`, fig6c). DR excluded at V3.
 
 ### 3d. Dimensional axis model — the convincing representation (classical + AI)
 Following the dimensional verdict (§2.4): model trans-diagnostic variation as

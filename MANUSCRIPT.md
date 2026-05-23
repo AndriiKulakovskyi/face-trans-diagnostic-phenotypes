@@ -421,9 +421,10 @@ the data do not contain. We therefore model the trans-diagnostic variation dimen
 The six-dimension model (Table 2; `results/dimensional_final_loadings.csv`; Figure 2) was
 reproducible (split-half minimum Tucker congruence 0.95, mean 0.98) and essentially
 orthogonal to demographics (maximum |correlation| with age/sex ≤0.002 for all six). They are
-also largely **independent of diagnosis**: DSM-5 subtype explains only η² = 0.01–0.05 of the
-variance of five of the six axes and 14% of the most diagnosis-linked (depression) axis
-(Figure 6c) — the dimensions are genuinely trans-diagnostic, not diagnosis re-encodings. No
+also largely **independent of diagnosis**: DSM-5 subtype explains only η² = 0.01–0.05 (95% CI
+upper bounds ≤0.053) of the variance of five of the six axes, and 0.14 (95% CI 0.13–0.16) of
+the most diagnosis-linked (depression) axis (Figure 6c; 2000-sample bootstrap) — the
+dimensions are genuinely trans-diagnostic, not diagnosis re-encodings. No
 single dimension dominated (variance diffuse; largest ≈6%), confirming genuinely
 multi-axial structure. The dimensions are:
 
@@ -742,8 +743,8 @@ correspondingly named `reports/*.html`.
   and the discrete clusters' 38% — a patient's continuous-axis *position* is retained where
   discrete *labels* hop; **(c)** cross-sectional **DSM-5 → axis-band** flow for the most
   diagnosis-linked axis (depression): every DSM-5 subtype fans across Low/Mid/High and diagnosis
-  explains only 14% of even that axis (η² 0.14; ≤0.05 for the other five) — the dimensions are
-  trans-diagnostic. This is the dimensional analogue of a phenotype-flow diagram (bands are a
+  explains only 14% of even that axis (η² 0.14, 95% CI 0.13–0.16; ≤0.05 for the other five) —
+  the dimensions are trans-diagnostic. This is the dimensional analogue of a phenotype-flow diagram (bands are a
   display-only discretization; the model stays continuous).
 
 ---

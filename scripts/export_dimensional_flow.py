@@ -158,11 +158,26 @@ def main() -> int:
 
     # ── Fig 6c: DSM-5 → axis-band (cross-sectional, trans-diagnostic overlap) ──
     dsm = load_dsm_for(v0.index)
-    g = dsm.to_numpy().astype(str)
-    eta = {ax: eta_squared(v0[ax].to_numpy(float), g) for ax in AXES}
-    print("\nVariance in each axis explained by DSM-5 subtype (η²; low ⇒ trans-diagnostic):")
+    valid = dsm.notna().to_numpy()
+    g = dsm.to_numpy().astype(str)[valid]
+    V = v0[AXES].to_numpy(float)[valid]
+    # point η² + 95% bootstrap CI (B resamples of patients) per axis
+    B, rng, n = 2000, np.random.default_rng(0), len(g)
+    pt = np.array([eta_squared(V[:, j], g) for j in range(len(AXES))])
+    boot = np.empty((B, len(AXES)))
+    for b in range(B):
+        idx = rng.integers(0, n, n); gb = g[idx]
+        for j in range(len(AXES)):
+            boot[b, j] = eta_squared(V[idx, j], gb)
+    lo_a, hi_a = np.percentile(boot, [2.5, 97.5], axis=0)
+    eta = dict(zip(AXES, pt)); lo = dict(zip(AXES, lo_a)); hi = dict(zip(AXES, hi_a))
+    print(f"\nVariance in each axis explained by DSM-5 subtype (η² [95% bootstrap CI], B={B}, "
+          f"n={n}):")
     for ax in AXES:
-        print(f"  {PRETTY[ax]:14s} η²={eta[ax]:.3f}")
+        print(f"  {PRETTY[ax]:14s} η²={eta[ax]:.3f}  [{lo[ax]:.3f}, {hi[ax]:.3f}]")
+    pd.DataFrame({"axis": AXES, "eta_sq": [eta[a] for a in AXES],
+                  "ci_lo": [lo[a] for a in AXES], "ci_hi": [hi[a] for a in AXES]}
+                 ).to_csv(RES / "dimensional_dsm_eta_squared.csv", index=False)
     best = max(AXES, key=lambda a: eta[a])              # most diagnosis-linked axis
     bv0 = band(v0[best], edges[best])
     pair = pd.DataFrame({"dsm": dsm.to_numpy(), "band": bv0.to_numpy()}).dropna()
@@ -181,10 +196,10 @@ def main() -> int:
     figc = go.Figure(go.Sankey(node=dict(label=nodes, color=node_color, pad=16, thickness=16),
                                link=dict(source=src, target=tgt, value=val)))
     figc.update_layout(
-        title=dict(text=f"DSM-5 → {PRETTY[best]}-axis band — diagnosis explains only "
-                        f"{eta[best]*100:.0f}% of it (η²={eta[best]:.2f}); trans-diagnostic",
-                   font=dict(size=13), x=0.5, xanchor="center"),
-        height=460, width=1100, font=dict(size=12), margin=dict(t=58, l=10, r=10, b=10))
+        title=dict(text=f"DSM-5 → {PRETTY[best]} axis band  "
+                        f"(η²={eta[best]:.2f}, 95% CI {lo[best]:.2f}–{hi[best]:.2f})",
+                   font=dict(size=14), x=0.5, xanchor="center"),
+        height=460, width=1040, font=dict(size=12), margin=dict(t=58, l=10, r=10, b=10))
     for ext in ("png", "svg"):
         figc.write_image(str(FIG / f"fig6c_dsm_axis_flow.{ext}"), scale=2)
     print(f"  wrote reports/figures/fig6c_dsm_axis_flow.png/.svg  (axis={best}, η²={eta[best]:.3f})")
