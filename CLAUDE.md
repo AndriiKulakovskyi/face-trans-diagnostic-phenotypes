@@ -136,7 +136,11 @@ ds = to_harmonized_dataset(df, load_variables("face-common-vars.xlsx"), visit="V
   (HDBSCAN↔cohort ARI 0.70). The **7 DSM subtypes** (BP-I/II/NOS · schiz/schizoaffective/
   schizophreniform · MDD) form a mood↔psychosis continuum. Deep graph embedding
   **deferred** for discrete search.
-- **Phase 4:** V0→V4 coherence modest/phenotype-specific. **Dimensional model (FINAL):**
+- **Phase 4 (NEGATIVE result, reframed):** forcing discrete clusters → labels that are
+  unstable (~38% persist, ARI(V0↔Vk)≈0.07) & DSM-independent (ARI 0.006) = slices of a
+  continuum, not kinds → motivates dimensional. The continuous-axis *band* is retained
+  instead (same-band V0→V1 0.32–0.60; `export_dimensional_flow.py` = dimensional flow;
+  discrete Sankey supplement-only). **Dimensional model (FINAL):**
   K=6 reproducible confound-free axes (`dimensional_refine.py`; FA + PyTorch AE agree). **Phase 5:**
   axes beat DSM on QoL (R² 0.33 vs 0.29), complement functioning, lose hospitalization.
 - 54 tests. Trace: **FINDINGS.md** + **LABBOOK.md**. Next: site/ComBat + V2 replication.

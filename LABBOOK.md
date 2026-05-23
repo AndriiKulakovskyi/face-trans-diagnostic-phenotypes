@@ -167,18 +167,21 @@ patient-visit to a V0 phenotype, measure persistence.
   spectral geometry mismatch). Replaced with a **classifier** (HistGradientBoosting,
   NaN-native) trained on V0 domain scores → V0 labels: **5-fold accuracy 0.842**
   (k=5, chance 0.20) — phenotypes ARE recoverable from domains; rule is valid.
-- **Result:** coherence is **modest and stable** across visits — ARI(V0↔Vk)
-  **≈0.06–0.07**, persistence **≈37–39%** (V1 n=3782 … V4 n=697). Phenotype-
-  dependent: smoking/illness-burden (1) **59%**, functioning (2) 48%, metabolic
-  (0) 40%, manic activation (3) 35%, **somatic (4) 14%**.
-- **Attractor:** non-persisters converge toward phenotype 1 (29/36/32% of 0/3/4
-  → 1 at V1).
-- **Interpretation:** the V0 cross-sectional phenotypes are **part trait, part
-  state** — trait-like burden axes (metabolic, smoking/illness-burden, functioning)
-  persist; symptom-state axes (mania, somatic) are transient (treatment + episode
-  resolution + regression-to-mean). This **nuances the temporal-coherence
-  hypothesis**: a single-visit clustering captures state as well as trait. DR
-  excluded at V3 (cliff).
+- **Result (now read as a NEGATIVE result):** the discrete clusters do **not**
+  persist — ARI(V0↔Vk) **≈0.06–0.07**, persistence **≈37–39%** (V1 n=3782 … V4 n=697),
+  barely above chance. Phenotype-dependent: smoking/illness-burden (1) **59%**,
+  functioning (2) 48%, metabolic (0) 40%, manic activation (3) 35%, **somatic (4) 14%**.
+- **They also cut across DSM-5** (added E11b): ARI(7 DSM-5 subtypes, V0 cluster) = **0.006**
+  — each cluster draws from every diagnosis (`longitudinal_dsm_phenotype.csv`; Suppl. Fig S1
+  via `export_longitudinal_figure.py`).
+- **Reframe (decision):** this is the empirical demonstration that *discrete* clustering
+  fails — subgroups that neither persist nor align to DSM-5 = **slices of a continuum, not
+  natural kinds** — i.e. a negative result that **motivates the dimensional model**, NOT a
+  phenotype finding. The discrete flow Sankey is supplement-only, retitled accordingly.
+- **Dimensional companion** (`export_dimensional_flow.py`, E11c): the *continuous-axis band*
+  is retained far better than the discrete label — same-band V0→V1 **0.32–0.60** (depression
+  0.60, ADHD/trauma 0.56) vs discrete 0.39 ⇒ the **labels hop, the positions are stable**.
+  later_onset ≈ chance (0.32) confirms it is baseline-only/static. DR excluded at V3 (cliff).
 
 ## E12 · Step-1 structure test — discrete vs dimensional — 2026-05-23
 Triggered by an unconvincing k=5 (flat silhouette ~0.18 at all k, arbitrary-looking

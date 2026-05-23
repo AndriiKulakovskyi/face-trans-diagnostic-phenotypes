@@ -62,8 +62,9 @@ def main() -> int:
     fig = go.Figure(go.Sankey(node=dict(label=nodes, color=node_color, pad=16, thickness=16),
                               link=dict(source=src, target=tgt, value=val)))
     fig.update_layout(
-        title=f"DSM-5 → phenotype flow (V0→V1→V2)   ARI(DSM, phenotype) = {ari:.3f}",
-        height=520, width=1040, font=dict(size=12), margin=dict(t=54, l=10, r=10, b=10))
+        title=f"Discrete clusters are not stable kinds: DSM-5 → cluster flow V0→V1→V2 "
+              f"(ARI[DSM, cluster] = {ari:.3f}; ≈38% persistence)",
+        height=520, width=1100, font=dict(size=12), margin=dict(t=54, l=10, r=10, b=10))
     for ext in ("png", "svg"):
         fig.write_image(str(FIG / f"figS1_dsm_phenotype_flow.{ext}"), scale=2)
     print(f"  wrote reports/figures/figS1_dsm_phenotype_flow.png/.svg  (ARI={ari:.3f})")

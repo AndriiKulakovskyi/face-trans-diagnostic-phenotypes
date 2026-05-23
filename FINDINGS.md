@@ -111,21 +111,27 @@ spectral embedding.
 - By construction this does **not** reproduce the sister diagnosis-aligned
   clusters — it is trans-diagnostic phenotype discovery (direction A).
 
-### 3c. Temporal coherence V0→V4 (Phase 4)
-A phenotype **classifier** (HistGradientBoosting, NaN-native) trained on V0 domain
-scores → V0 labels (**5-fold accuracy 0.842**, k=5) applied to each follow-up
-visit. (A nearest-centroid rule failed — self-ARI 0.024 — because it cannot
-reproduce the V0 spectral-embedding geometry.)
-- **Modest, stable coherence:** ARI(V0↔Vk) **≈0.06–0.07**, persistence **≈37–39%**
-  across V1–V4 (n 3782→697).
-- **Phenotype-dependent:** trait-like axes persist (smoking/illness-burden **59%**,
-  functioning 48%, metabolic 40%); symptom-state axes are transient (manic
-  activation 35%, somatic **14%**). Non-persisters converge toward the
-  illness-burden phenotype (attractor).
-- **Implication:** a single-visit clustering captures **state as well as trait**;
-  durable trans-diagnostic phenotypes are the trait-like (metabolic / illness-
-  burden) ones. Reframes "temporal coherence" from a yes/no claim to a
-  phenotype-specific trait–state gradient. DR excluded at V3 (attrition).
+### 3c. Discrete clusters are unstable & diagnosis-independent — NEGATIVE result (→ dimensional)
+**Reframed (was "temporal coherence"):** this is the empirical demonstration that *discrete*
+clustering fails here, motivating the dimensional model — not a phenotype finding. A phenotype
+**classifier** (HistGradientBoosting, NaN-native) trained on V0 domain scores → V0 k=5 labels
+(**5-fold accuracy 0.842**) is applied to each follow-up visit. (A nearest-centroid rule failed
+— self-ARI 0.024 — because it cannot reproduce the V0 spectral-embedding geometry; that
+fragility is itself a discreteness red flag.)
+- **The discrete clusters do not persist:** ARI(V0↔Vk) **≈0.06–0.07**, persistence **≈37–39%**
+  across V1–V4 (n 3782→697) — barely above chance for k=5.
+- **They cut across DSM-5:** ARI(7 DSM-5 subtypes, V0 cluster) = **0.006** — each cluster draws
+  from every diagnosis (trans-diagnostic, not relabelled DSM). (`longitudinal_dsm_phenotype.csv`;
+  Suppl. Fig S1.)
+- **Persistence is phenotype-dependent:** trait-like clusters persist (smoking/illness-burden
+  **59%**, functioning 48%, metabolic 40%); symptom-state clusters are transient (manic
+  activation 35%, somatic **14%**).
+- **Verdict (negative result):** forcing discrete clusters yields subgroups that are neither
+  temporally stable nor diagnosis-aligned ⇒ **slices of a continuum, not natural kinds**. The
+  honest dimensional "flow" (`export_dimensional_flow.py`; §3f) retains a patient's *continuous-
+  axis band* far better — same-band V0→V1 persistence **0.32–0.60** (depression 0.60, ADHD/trauma
+  0.56) vs the discrete labels' 0.39: the **labels hop, the positions are stable**. DR excluded
+  at V3 (attrition).
 
 ### 3d. Dimensional axis model — the convincing representation (classical + AI)
 Following the dimensional verdict (§2.4): model trans-diagnostic variation as

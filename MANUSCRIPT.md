@@ -493,9 +493,13 @@ at baseline), so its low *r* (0.08) is a data property, not instability, and it 
 treated as a baseline-only axis. This gradient unifies the cross-sectional and longitudinal
 results: the depression dimension is both moderately stable and the strongest predictor of
 functioning/quality of life, while developmental/temperamental load (ADHD/trauma) is the
-most enduring trait. A discrete-phenotype view of the same longitudinal signal — which is
-both trans-diagnostic (ARI 0.006 with DSM-5) and temporally fluid (~38% persistence) — is
-given in Supplementary Figure S1.
+most enduring trait. Displayed as a **flow** (Figure 6), a patient's *band* on a continuous
+axis is largely retained across visits — same-band V0→V1 persistence 0.60 (depression) and
+0.56 (ADHD/trauma), well above the 33% three-band chance level — i.e. the continuous
+*position* is stable. This is the appropriate "phenotype flow" for a dimensional model;
+forcing *discrete* clusters on the same data instead yields labels that hop (~38%
+persistence) and that are independent of DSM-5 (ARI 0.006) — a negative result shown in
+Supplementary Figure S1 and discussed as motivation for modelling dimensionally.
 
 ### 3.7 Cognition: a semi-independent general-ability and processing-speed structure
 
@@ -727,16 +731,25 @@ correspondingly named `reports/*.html`.
 - **Figure 5. Cognition (BP/SZ)** (`fig5_cognition.png`) — (a) construct loadings on the
   *g* and processing-speed factors; (b) cognition × symptom-dimension correlations
   (max |r| 0.24).
+- **Figure 6. Dimensional phenotype flow** (`fig6_dimensional_flow.png`,
+  `fig6b_band_persistence.png`; `scripts/export_dimensional_flow.py`) — (a) continuous-axis
+  band (V0-tertile Low/Mid/High) trajectories V0→V1→V2 for a trait-like (ADHD/trauma) and a
+  state-like (mania) axis, showing in-band (diagonal) dominance; (b) same-band V0→V1
+  persistence per dimension (0.32–0.60) against the 33% three-band chance level and the
+  discrete clusters' 38% — a patient's continuous-axis *position* is retained where discrete
+  *labels* hop. This is the dimensional analogue of a phenotype-flow diagram (bands are a
+  display-only discretization; the model stays continuous).
 
 ---
 
 ## Supplementary material
 
-**Supplementary Figure S1. A discrete-phenotype view: the data-driven phenotypes cut across
-DSM-5 and are temporally fluid** (`reports/figures/figS1_dsm_phenotype_flow.png`,
-`figS1b_dsm_composition.png`; `scripts/longitudinal_coherence.py` +
-`export_longitudinal_figure.py`). As an *exploratory discrete view* — superseded by the
-dimensional model of the main text — we assigned every patient–visit to one of five V0
+**Supplementary Figure S1. Discrete clustering does not yield temporally stable or
+diagnosis-transcending subgroups (a negative result that motivates the dimensional model)**
+(`reports/figures/figS1_dsm_phenotype_flow.png`, `figS1b_dsm_composition.png`;
+`scripts/longitudinal_coherence.py` + `export_longitudinal_figure.py`). As an *exploratory
+discrete view* — superseded by the dimensional model of the main text — we assigned every
+patient–visit to one of five V0
 domain-phenotypes with a NaN-native gradient-boosted classifier (5-fold V0 accuracy 0.84)
 and traced the flow **DSM-5 subtype → V0 → V1 → V2** (Sankey), with the DSM-5 composition of
 each phenotype shown as a heatmap. Two features reinforce the dimensional conclusion rather

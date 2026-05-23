@@ -331,10 +331,15 @@ def _write_report(coherence, trans, wide, k, cv_acc, dsm_of=None, ari_dsm=float(
            ".callout{border-left:4px solid #16a085;background:#f2fbf6;padding:10px 14px;margin:14px 0}")
     parts = [f"<!DOCTYPE html><html><head><meta charset='utf-8'><title>FACE longitudinal "
              f"coherence</title><style>{css}</style></head><body>",
-             "<h1>FACE — temporal coherence of the V0 phenotypes (V0→V4)</h1>",
-             f"<div class='callout'>Assignment rule = a phenotype classifier trained on "
-             f"V0 (domain scores → V0 labels); 5-fold V0 accuracy <b>{cv_acc:.3f}</b>. "
-             "Applied unchanged to each follow-up visit. DR excluded at V3 (attrition).</div>",
+             "<h1>FACE — discrete clustering is unstable and diagnosis-independent "
+             "(negative result motivating the dimensional model)</h1>",
+             f"<div class='callout'><b>This page is a negative result.</b> The structure "
+             f"test shows the trans-diagnostic structure is <b>dimensional</b>, not discrete; "
+             f"here we force discrete k-means phenotypes and show they are neither temporally "
+             f"stable nor aligned to DSM-5 — i.e. slices of a continuum, not natural kinds. "
+             f"Assignment rule = a phenotype classifier trained on V0 (domain scores → V0 "
+             f"labels), 5-fold V0 accuracy <b>{cv_acc:.3f}</b>, applied unchanged to each "
+             f"follow-up. DR excluded at V3 (attrition).</div>",
              "<h2>Coherence vs V0</h2>",
              coherence.assign(ari_vs_V0=coherence["ari_vs_V0"].round(3),
                               pct_persist=(coherence["pct_persist"]*100).round(0))
