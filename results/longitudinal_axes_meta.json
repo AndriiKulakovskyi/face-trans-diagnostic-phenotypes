@@ -1,0 +1,27 @@
+{
+  "K": 6,
+  "axis_names": [
+    "depression_severity",
+    "later_onset",
+    "mania_activation",
+    "illness_burden",
+    "metabolic",
+    "adhd_impulsivity_trauma"
+  ],
+  "congruence_with_locked": [
+    0.9838358708129131,
+    0.9975073912981409,
+    0.939634945918969,
+    0.9843237531423575,
+    0.9778913838546855,
+    0.9748332908317926
+  ],
+  "trait_state_meanr_V1V2": {
+    "adhd_impulsivity_trauma": 0.617,
+    "depression_severity": 0.463,
+    "mania_activation": 0.346,
+    "illness_burden": 0.289,
+    "metabolic": 0.215,
+    "later_onset": 0.064
+  }
+}

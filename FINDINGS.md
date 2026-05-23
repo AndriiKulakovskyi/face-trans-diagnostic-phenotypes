@@ -177,6 +177,21 @@ predictors V0, outcome V1, baseline-adjusted):
   mixed-effects, V2 replication; the binary-outcome LRT didn't converge (rare
   schizophréniforme subtype) so the CV AUC is the primary evidence there.
 
+### 3f. Phase 4 on axes — temporal stability (trait↔state gradient)
+`scripts/longitudinal_axes.py`: project the V0 factor model onto V1–V4 (pooled scaling,
+per-visit-age residualized; the refit axes match the locked set, Tucker congruence
+≥0.94) → per-axis V0↔Vk test-retest correlation.
+- **Trait↔state gradient** (mean V0↔V1/V2 Pearson r): adhd/impulsivity/trauma **0.62
+  (trait-like)** > depression-severity 0.46 (intermediate) > mania/activation 0.35,
+  illness-burden 0.29 (state-like) > metabolic 0.22 > later-onset 0.06.
+- **Honest caveats:** later-onset is **static** — its domains (age of onset / first
+  hospitalization) are recorded only at V0, so it can't be tracked (the 0.06 is a data
+  artifact, not instability — flag the axis baseline-only). Metabolic's low r is partly
+  **attenuation** (labs are repeated less often at follow-up). Symptom axes (depression,
+  mania) genuinely fluctuate, as expected clinically.
+- **Unifies Phases 4+5:** the depression-severity axis is moderately stable *and* the
+  strongest predictor of functioning/QoL; the trauma/ADHD axis is the most trait-like.
+
 ## 4. The scientific fork (framing)
 Two mutually-exclusive products, because **diagnosis + demographics are the
 dominant variance axes** in the data:

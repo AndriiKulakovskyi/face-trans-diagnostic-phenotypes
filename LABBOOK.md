@@ -253,6 +253,19 @@ baseline-adjusted → de-circularizes EGF/hospitalization that also feed the axe
   work-disability dropped (no follow-up coverage). Deferred: site/ComBat +
   mixed-effects, V2 replication.
 
+## E15 · Phase 4 on axes — trait↔state stability — 2026-05-23
+`scripts/longitudinal_axes.py`: project the V0 FA onto V1–V4 (pooled scaling,
+per-visit-age residualized; refit axes ≡ locked, Tucker congruence ≥0.94) → V0↔Vk
+test-retest r per axis.
+- Trait↔state: adhd/trauma **0.62 (trait)** > depression **0.46 (intermediate)** >
+  mania 0.35, illness-burden 0.29 (state) > metabolic 0.22 > later-onset 0.06.
+- **Honest caveats:** later-onset domains recorded only at V0 → not trackable (0.06 =
+  data artifact; mark axis STATIC/baseline-only). Metabolic low r partly attenuation
+  (labs less repeated). Symptom axes genuinely fluctuate.
+- Ties Phases 4+5: depression axis moderately stable + top outcome predictor;
+  trauma/ADHD most trait-like. Lesson: check whether a variable is even *measured* at
+  follow-up before interpreting low test-retest as instability.
+
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
   attempt at *discrete*-structure discovery, in case a learned representation
