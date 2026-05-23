@@ -198,10 +198,18 @@ bimodality, DSM-subtype anchor + mood↔psychosis continuum.
   raw-domain PCA overturned it; heuristic fixed to key off HDBSCAN↔cohort ARI +
   gap-monotonicity. *Lesson: don't trust an automated cluster-validity verdict
   without checking what the "clusters" actually are.*
-- **Decision pending:** (Step 2) confirm with AI graph embeddings before committing,
-  vs (Step 3) pivot to a dimensional (factor / sparse-PCA) trans-diagnostic-axis model.
+- **Decision (2026-05-23):** pivot to the **dimensional axis model** — classical
+  (sklearn: factor analysis / sparse-PCA) + AI (PyTorch autoencoder). Validate axes
+  against the 7 subtypes (continuum) + outcomes. The **deep graph embedding** (engine
+  `stage_b2` VGAE/contrastive) is **kept in reserve for discrete-structure discovery**
+  — worth a future shot, but not the current focus.
+- **For the paper Discussion:** we explicitly tested discrete structure and showed the
+  only discrete signal is DSM diagnosis itself → motivates the dimensional/HiTOP framing.
 
 ## Deferred / open (do not forget)
+- **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
+  attempt at *discrete*-structure discovery, in case a learned representation
+  surfaces clusters the masked-cosine spectral view misses.
 - **ComBat site harmonization** as a sensitivity analysis (task #43).
 - **Cognition (NEUROPSYCHOLOGIE)** domains — handle non-random battery
   availability before inclusion.
