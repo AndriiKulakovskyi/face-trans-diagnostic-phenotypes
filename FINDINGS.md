@@ -64,7 +64,8 @@ prompted by an unconvincing k=5 (flat silhouette, arbitrary-looking UMAP):
 - **No discrete trans-diagnostic clusters.** Laplacian eigenvalues rise smoothly
   from ~0 (no eigengap); the gap statistic vs a matched-Gaussian null rises
   **monotonically** (no natural k); standardized PCA scree is gradual (PC1 10%,
-  top-5 25%); top axes are ~unimodal (Sarle BC ≈ 0.56).
+  top-5 25%); no axis approaches bimodality (Sarle BC ≤0.56 ≈ the 0.556 *uniform* value,
+  far from the bimodal regime ~1 — weak/ambiguous, the least decisive of the tests).
 - **The only discrete structure is DSM diagnosis.** HDBSCAN finds 4 dense regions,
   but they ARE the cohorts (**ARI 0.70 with cohort**: an SZ blob, a DR blob, two BP
   blobs).

@@ -219,7 +219,9 @@ On the embedding $Z$ (`structure_test.py`) we ran five complementary tests:
    clusters, a noise fraction, and the adjusted Rand index ${\rm ARI}$ of its labels against cohort.
 4. **Bimodality.** For the top principal axes we compute Sarle's coefficient
    $\mathrm{BC}=\dfrac{\gamma_1^2+1}{\gamma_2+\frac{3(n-1)^2}{(n-2)(n-3)}}$ (skew $\gamma_1$,
-   excess kurtosis $\gamma_2$); $\mathrm{BC}>0.555$ suggests multimodality, the uniform value.
+   excess kurtosis $\gamma_2$). A normal distribution gives $\mathrm{BC}\approx0.33$, a uniform
+   $5/9\approx0.556$, and a clearly bimodal one $\to1$; values *clearly* above 0.556 suggest
+   multimodality, whereas a value *at* 0.556 indicates an approximately flat (not bimodal) axis.
 5. **DSM-subtype ordering.** We rank the seven subtypes on an a-priori mood→psychosis scale and
    correlate (Spearman $\rho$) the rank with each subtype's PC centroid.
 
@@ -420,9 +422,12 @@ The formal structure test (`results/structure_test.json`; Figure 1) was unambigu
 - **Monotone gap statistic.** Real-data silhouette exceeded the Gaussian null at every *k*,
   but the gap *increased monotonically* with *k* (0.025 at k=2 → 0.39 at k=12) rather than
   peaking — the signature of a continuum, not a fixed cluster count.
-- **No clearly multimodal axis.** The top principal axes had Sarle bimodality coefficients
-  0.37–0.56 — at or just below the 0.555 uniform-distribution benchmark; none is clearly
-  multimodal (this is the weakest of the five lines of evidence and is reported as such).
+- **No axis approaches bimodality.** Sarle bimodality coefficients were 0.37–0.56; even the
+  highest (PC1 = 0.56) is essentially the **uniform-distribution value (0.556)** — an
+  approximately flat marginal, far from the bimodal regime (BC → 1; a normal would be ≈0.33).
+  This rules out two-mode/cluster structure along the principal axes, but it is the weakest
+  and least decisive of the five lines (a value at the uniform benchmark is ambiguous), so we
+  rest the verdict on the eigengap, monotone gap, and HDBSCAN results.
 - **The dense structure tracks diagnosis — but partly via measurement protocol.** HDBSCAN
   found four dense regions that *were the cohorts* (cluster↔cohort ARI 0.70; 7% noise). This
   cohort separation is **confounded by differential missingness**: cohort is **98%
