@@ -266,11 +266,23 @@ test-retest r per axis.
   trauma/ADHD most trait-like. Lesson: check whether a variable is even *measured* at
   follow-up before interpreting low test-retest as instability.
 
+## E16 · Robustness — V2 replication + site ComBat — 2026-05-23
+- **V2 replication** of the Phase-5 head-to-head: QoL axes beat DSM (+0.041 vs V1
+  +0.044), functioning complements (combined 0.229 vs 0.172), hospitalization
+  DSM-dominated. Replicates cleanly.
+- **Site ComBat** (`scripts/robustness_site.py`, neuroHarmonize; 20 sites ≥10):
+  site batch magnitude 0.044 SD (small); axes survive harmonization (Tucker congruence
+  with locked [1,1,1,.98,.98,.99]); head-to-head survives (QoL axes−DSM +0.037,
+  functioning combined 0.262). ⇒ the axes are **not a site artifact**.
+- Installed: neuroHarmonize, nibabel, neuroCombat. **Closes deferred task #43.**
+- Net: the dimensional model is reproducible + confound-free + site-robust +
+  V1/V2-replicated, with axes adding value over DSM for QoL/functioning. Manuscript-ready.
+
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
   attempt at *discrete*-structure discovery, in case a learned representation
   surfaces clusters the masked-cosine spectral view misses.
-- **ComBat site harmonization** as a sensitivity analysis (task #43).
+- ~~ComBat site harmonization~~ — **DONE (E16)**: axes site-robust (congruence ~1).
 - **Cognition (NEUROPSYCHOLOGIE)** domains — handle non-random battery
   availability before inclusion.
 - **Verify the metabolic-direction sign** once biology composites are in.

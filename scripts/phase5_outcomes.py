@@ -158,8 +158,9 @@ def main() -> int:
         for a in axis_cols:
             eff_rows.append({"outcome": name, "axis": a, "beta": betas[a]})
 
-    head = pd.DataFrame(head_rows); head.to_csv(RESULTS_DIR / "phase5_headtohead.csv", index=False)
-    eff = pd.DataFrame(eff_rows); eff.to_csv(RESULTS_DIR / "phase5_axis_effects.csv", index=False)
+    suf = args.visit
+    head = pd.DataFrame(head_rows); head.to_csv(RESULTS_DIR / f"phase5_headtohead_{suf}.csv", index=False)
+    eff = pd.DataFrame(eff_rows); eff.to_csv(RESULTS_DIR / f"phase5_axis_effects_{suf}.csv", index=False)
     _report(head, eff, axis_cols, args.visit)
     print(f"\nWrote results/phase5_* + reports/phase5.html. Done.")
     return 0
@@ -189,7 +190,7 @@ def _report(head, eff, axis_cols, visit):
             "<th>axes (M1)</th><th>combined (M2)</th><th>axes−DSM</th><th>added-axes p</th></tr>",
             rows, "</table>",
             pio.to_html(f, include_plotlyjs="cdn", full_html=False), "</body></html>"]
-    (REPORTS_DIR / "phase5.html").write_text("\n".join(html), encoding="utf-8")
+    (REPORTS_DIR / f"phase5_{visit}.html").write_text("\n".join(html), encoding="utf-8")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,48 @@
+{
+  "n": 9008,
+  "n_sites": 20,
+  "site_batch_magnitude": 0.04355686677080663,
+  "axes_congruence_with_locked": [
+    1.0,
+    1.0,
+    1.0,
+    0.98,
+    0.98,
+    0.99
+  ],
+  "headtohead_combat": [
+    {
+      "outcome": "EGF functioning",
+      "n": 3196,
+      "metric": "R2",
+      "DSM": 0.239,
+      "axes": 0.201,
+      "combined": 0.262,
+      "combat_axes_minus_DSM": -0.038,
+      "orig_axes_minus_DSM": -0.021,
+      "added_axes_p": 1.1102230246251565e-16
+    },
+    {
+      "outcome": "any hospitalization",
+      "n": 6749,
+      "metric": "AUC",
+      "DSM": 0.75,
+      "axes": 0.578,
+      "combined": 0.742,
+      "combat_axes_minus_DSM": -0.172,
+      "orig_axes_minus_DSM": -0.143,
+      "added_axes_p": 0.049009900516161164
+    },
+    {
+      "outcome": "EQ-5D quality of life",
+      "n": 2423,
+      "metric": "R2",
+      "DSM": 0.289,
+      "axes": 0.327,
+      "combined": 0.33,
+      "combat_axes_minus_DSM": 0.037,
+      "orig_axes_minus_DSM": 0.044,
+      "added_axes_p": 1.1102230246251565e-16
+    }
+  ]
+}

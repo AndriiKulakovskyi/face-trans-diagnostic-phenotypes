@@ -192,6 +192,20 @@ per-visit-age residualized; the refit axes match the locked set, Tucker congruen
 - **Unifies Phases 4+5:** the depression-severity axis is moderately stable *and* the
   strongest predictor of functioning/QoL; the trauma/ADHD axis is the most trait-like.
 
+### 3g. Robustness — V2 replication + site (ComBat) harmonization
+- **V2 replication:** the Phase-5 head-to-head holds at a second follow-up — QoL axes
+  beat DSM (R² 0.258 vs 0.217, **+0.041**; V1 was +0.044), functioning axes complement
+  DSM (combined 0.229 vs 0.172), hospitalization DSM-dominated.
+- **Site (ComBat, `scripts/robustness_site.py`, neuroHarmonize; 20 sites ≥10 patients):**
+  the site batch effect is small (mean |adjustment| = 0.044 SD); after ComBat-harmonizing
+  the domain scores, the 6 axes are essentially unchanged (Tucker congruence with the
+  locked axes [1.0, 1.0, 1.0, 0.98, 0.98, 0.99]) — they are **not a site artifact**. The
+  head-to-head survives: QoL axes still beat DSM (+0.037), functioning still complements
+  (combined 0.262), hospitalization still DSM-dominated.
+- **Conclusion:** the dimensional model and its outcome advantage are **reproducible**
+  (split-half 0.95), **confound-free** (age/sex 0.002), **site-robust** (ComBat congruence
+  ~1), and **replicated across V1+V2** — solid for the manuscript.
+
 ## 4. The scientific fork (framing)
 Two mutually-exclusive products, because **diagnosis + demographics are the
 dominant variance axes** in the data:

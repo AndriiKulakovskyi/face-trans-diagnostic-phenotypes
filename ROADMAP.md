@@ -248,8 +248,15 @@ face-common-bp-sz-dr/
   DSM** (0.271 vs 0.239, p<1e-16) — but **not hospitalization** (DSM AUC 0.743
   dominates). Depression-severity axis drives functioning/QoL; illness-burden drives
   hospitalization. FINDINGS §3e.
-- [ ] Refinements: site/ComBat + mixed-effects `(1|site)`; V2 replication; ISF
-      suicidality outcome; redo Phase-4 coherence on the 6 axis scores.
+- [x] **Robustness (DONE):** V2 replication (QoL axes beat DSM +0.041, matching V1) +
+      site **ComBat** harmonization (axes congruence with locked ~1.0; head-to-head
+      survives — QoL +0.037). The result is reproducible + confound-free + site-robust
+      + V1/V2-replicated. FINDINGS §3g.
+- [x] **Phase 4 on axes (DONE):** trait↔state stability — trauma/ADHD trait-like (0.62),
+      depression intermediate (0.46), mania/illness-burden state-like; later-onset is
+      static (V0-only). FINDINGS §3f.
+- [ ] Remaining: mixed-effects `(1|site)`; ISF suicidality outcome; deep graph embedding
+      (discrete, in reserve); manuscript.
 
 ### Phase 6 — FACE Score
 - [ ] Leakage-safe parsimonious score (deck's 6 candidates), corrected
