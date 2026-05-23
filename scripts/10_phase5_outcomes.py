@@ -19,7 +19,7 @@ EQ-5D quality of life. (Work disability dropped — not measured at follow-up.)
 
 Artifacts: results/phase5_headtohead.csv, results/phase5_axis_effects.csv,
 reports/phase5.html.
-Run:  python3 scripts/phase5_outcomes.py [--visit V1]
+Run:  python3 scripts/10_phase5_outcomes.py [--visit V1]
 """
 from __future__ import annotations
 
@@ -36,67 +36,18 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 
 import plotly.graph_objects as go  # noqa: E402
 import plotly.io as pio  # noqa: E402
-import statsmodels.api as sm  # noqa: E402
-from sklearn.linear_model import LogisticRegression, Ridge  # noqa: E402
-from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score  # noqa: E402
-from sklearn.preprocessing import StandardScaler  # noqa: E402
 
 from trans_diag import build_unified_dataframe  # noqa: E402
+from trans_diag.outcomes import (  # noqa: E402  shared head-to-head helpers
+    OUTCOMES,
+    added_axes_test,
+    axis_betas,
+    cv_metric,
+)
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
 AXES_PATH = RESULTS_DIR / "dimensional_final_scores.parquet"
-RANDOM = 0
-# (name, kind, source_col, transform)
-OUTCOMES = [
-    ("EGF functioning", "continuous", "egf", None),
-    ("any hospitalization", "binary", "nboccur_hospitalisation_lt", lambda s: (s > 0).astype(float)),
-    ("EQ-5D quality of life", "continuous", "eq5d", None),
-]
-
-
-def cv_metric(X, y, kind):
-    # NOTE: folds MUST be shuffled — the patient matrix is ordered by cohort
-    # (BP…SZ…DR), so un-shuffled KFold makes cohort-imbalanced folds and distorts
-    # the R² (e.g. EGF baseline 0.19 unshuffled vs 0.33 shuffled).
-    Xs = StandardScaler().fit_transform(X)
-    if kind == "continuous":
-        kf = KFold(5, shuffle=True, random_state=RANDOM)
-        return float(np.mean(cross_val_score(Ridge(alpha=1.0), Xs, y, cv=kf, scoring="r2")))
-    skf = StratifiedKFold(5, shuffle=True, random_state=RANDOM)
-    return float(np.mean(cross_val_score(LogisticRegression(max_iter=2000), Xs, y,
-                                         cv=skf, scoring="roc_auc")))
-
-
-def added_axes_test(df_xy, base_cols, dsm_cols, axis_cols, y, kind):
-    """In-sample p-value for adding the axes to the DSM model (F-test / LRT).
-    Returns NaN if the model fails to converge (e.g. rare-subtype separation)."""
-    try:
-        X0 = sm.add_constant(df_xy[base_cols + dsm_cols].astype(float))
-        X2 = sm.add_constant(df_xy[base_cols + dsm_cols + axis_cols].astype(float))
-        if kind == "continuous":
-            from scipy.stats import f as fdist
-            m0, m2 = sm.OLS(y, X0).fit(), sm.OLS(y, X2).fit()
-            dfn, dfd = len(axis_cols), int(m2.df_resid)
-            F = ((m0.ssr - m2.ssr) / dfn) / (m2.ssr / dfd)
-            return float(1 - fdist.cdf(F, dfn, dfd))
-        from scipy.stats import chi2
-        m0 = sm.Logit(y, X0).fit(disp=0)
-        m2 = sm.Logit(y, X2).fit(disp=0)
-        return float(1 - chi2.cdf(2 * (m2.llf - m0.llf), len(axis_cols)))
-    except Exception:
-        return float("nan")
-
-
-def axis_betas(d, cols_all, axis_cols, y, kind):
-    """Standardized per-axis effects from a regularized model (robust to collinearity)."""
-    Xs = StandardScaler().fit_transform(d[cols_all].to_numpy(float))
-    if kind == "continuous":
-        coef = Ridge(alpha=1.0).fit(Xs, y).coef_
-    else:
-        coef = LogisticRegression(max_iter=2000).fit(Xs, y).coef_[0]
-    beta = dict(zip(cols_all, coef))
-    return {a: float(beta[a]) for a in axis_cols}
 
 
 def main() -> int:

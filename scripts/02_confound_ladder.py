@@ -17,7 +17,7 @@ configuration:
      ↔age ~0.008): the principled configuration.
 
 Writes results/confound_ladder.csv (+ prints achieved-vs-target).
-Run:  python3 scripts/confound_ladder.py
+Run:  python3 scripts/02_confound_ladder.py
 """
 from __future__ import annotations
 

@@ -32,7 +32,7 @@ face-common-bp-sz-dr/
 │       ├── feature_schema.py  harmonized_dataset.py   ← data contracts
 │       ├── masked_similarity.py  spectral_base.py  multipartite.py  ← embedding (no imputation)
 │       ├── enrichment.py  clustering.py               ← enrichment + kmeans/bootstrap
-├── scripts/                         ← pipeline (run_all.py orchestrates) + verify/audit/qa infra
+├── scripts/                         ← pipeline (00_run_all.py orchestrates) + verify/audit/qa infra
 ├── tests/                           ← unit tests (filters, adapter, domains)
 ├── results/  reports/               ← reproducible artifacts (CSV/JSON/parquet) + HTML + figures
 └── pyproject.toml                   ← packages = src/trans_diag; deps; [full] extras
@@ -49,7 +49,7 @@ pytest uses `pythonpath = ["src"]`. Or `pip install -e ".[full]"`.
   visit-level rows (V0–V4). **Confidential.** ⚠️ Currently *tracked* in git — must be
   removed (gitignore + history scrub) before sharing the repo externally.
 - `results/v0_clusters_anchor.csv` — the sister 4-cohort clusters projected onto our
-  ids; a reference used only by `confound_ladder.py` (ARI-vs-sister in §3.1).
+  ids; a reference used only by `02_confound_ladder.py` (ARI-vs-sister in §3.1).
 
 ## Core concepts
 
@@ -75,10 +75,10 @@ observed — see MANUSCRIPT §2.1).
 
 ```bash
 pip install -e ".[full]"             # core + torch (AE) + neuroHarmonize (ComBat) + kaleido (figures)
-python3 scripts/run_all.py           # reproduce the whole manuscript pipeline (~5 min)
+python3 scripts/00_run_all.py           # reproduce the whole manuscript pipeline (~5 min)
 python3 -m pytest tests/ -q          # unit tests (54)
 python3 scripts/verify.py            # end-to-end harmonization smoke test
-python3 scripts/confound_ladder.py   # reproduce the §3.1 confound ladder
+python3 scripts/02_confound_ladder.py   # reproduce the §3.1 confound ladder
 ```
 
 ```python
@@ -90,14 +90,19 @@ ds = to_harmonized_dataset(df, load_variables("face-common-vars.xlsx"), visit="V
 # ds.schema: a trans_diag.engine.FeatureSchema generated from our dictionary.
 ```
 
-## Pipeline order (`scripts/run_all.py`)
+## Pipeline order (`scripts/00_run_all.py`)
 
-`cluster_domains` → `structure_test` → `dimensional_axes` → `dimensional_ae` →
-`dimensional_refine` (locked K=6 axes) → `longitudinal_axes` → `longitudinal_coherence` →
-`phase5_outcomes` (V1/V2) → `phase5_ci` → `phase5_decircularized` → `robustness_site`
-(ComBat) → `cognition_bpsz` → `review_checks` → `manuscript_table1` → `manuscript_figures`
-→ `export_longitudinal_figure` → `export_dimensional_flow`. (`confound_ladder.py` is a
-standalone §3.1 reproducer.)
+Scripts are numbered in execution order — read or run them top-to-bottom:
+`01_manuscript_table1` (Table 1) → `02_confound_ladder` (§3.1 confound trap) →
+`03_cluster_domains` (residualized scores + embedding) → `04_structure_test`
+(discrete-vs-dimensional) → `05_dimensional_axes` (varimax FA) → `06_dimensional_ae`
+(autoencoder cross-check) → `07_dimensional_refine` (locked K=6 axes) →
+`08_longitudinal_axes` → `09_longitudinal_coherence` → `10_phase5_outcomes` (V1 then V2)
+→ `11_phase5_ci` → `12_phase5_decircularized` → `13_robustness_site` (ComBat) →
+`14_cognition_bpsz` → `15_review_checks` → `16_manuscript_figures` →
+`17_export_longitudinal_figure` (Suppl. Fig S1) → `18_export_dimensional_flow` (Fig 6).
+`00_run_all.py` runs all 18 in this order; the four unnumbered scripts (`verify`,
+`audit`, `qa_missingness`, `build_notebook`) are utilities, not pipeline steps.
 
 ## Conventions
 
@@ -112,7 +117,7 @@ standalone §3.1 reproducer.)
 - **Trans-diagnostic structure is DIMENSIONAL, not discrete** (structure test: no eigengap,
   monotone gap, HDBSCAN≈cohort ARI 0.70; the only discrete structure is diagnosis). The 7
   DSM subtypes order on a mood↔psychosis continuum (ρ 0.79 [0.75,0.86]).
-- **Final model: K=6 confound-free axes** (`dimensional_refine.py`; FA + PyTorch AE agree,
+- **Final model: K=6 confound-free axes** (`07_dimensional_refine.py`; FA + PyTorch AE agree,
   CCA 0.93 vs permutation null 0.06). Diagnosis-independent (cohort η²≤0.10, site ≤0.05).
 - **Outcomes (shuffled CV + repeated-CV CIs):** axes beat DSM on QoL (+0.036 [+0.033,+0.039]),
   complement functioning (combined +0.029), DSM dominates hospitalization. Robust to

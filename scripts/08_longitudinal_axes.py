@@ -1,6 +1,6 @@
 """Phase 4 (on axes) — temporal stability of the 6 dimensional axes, V0→V4.
 
-The cluster version (longitudinal_coherence.py) needed a classifier and discretized
+The cluster version (09_longitudinal_coherence.py) needed a classifier and discretized
 a continuum. Axes are continuous, so we ask the cleaner question directly: does a
 patient keep their score on each axis across annual visits?
 
@@ -15,7 +15,7 @@ on patients present at both → a trait↔state gradient. We also confirm the re
 match the locked set (Tucker congruence with dimensional_final_loadings).
 
 Artifacts: results/longitudinal_axes_{stability.csv,scores.parquet}, reports/longitudinal_axes.html.
-Run:  python3 scripts/longitudinal_axes.py
+Run:  python3 scripts/08_longitudinal_axes.py
 """
 from __future__ import annotations
 

@@ -123,7 +123,7 @@ placeholder (the sister's non-ASP count) — k must be chosen on internal ground
   curves + K-fold cross-fitting (double-ML partialling-out).
 
 ## E9 · Direction-A domain clustering result — 2026-05-22
-`scripts/cluster_domains.py`: 72 domains → coverage floor 30% (**54 kept**, 18
+`scripts/03_cluster_domains.py`: 72 domains → coverage floor 30% (**54 kept**, 18
 near-empty dropped incl `cssrs`/`ltsg`/`ltsv`/`mdq`/`cgi`) → spline+cross-fit
 residualize on age+sex → robust-z → engine masked-cosine spectral embedding (36-dim,
 4 partitions) → stability/PAC/gap/independence k-sweep.
@@ -149,7 +149,7 @@ residualize on age+sex → robust-z → engine masked-cosine spectral embedding 
   cluster×domain signature heatmap, UMAP (cluster/cohort), per-cluster enrichment
   bars, medoid vignettes, k-selection figure, independence callout.
 - Bug fixed: a CSV→parquet round-trip had coerced `patient_id` int (lost the str
-  type), breaking the scores↔embedding join; `cluster_domains.py` now writes
+  type), breaking the scores↔embedding join; `03_cluster_domains.py` now writes
   parquet directly and the profile coerces the index defensively.
 - **Metabolic axis recovered** as a prominent phenotype (cluster 0 high vs 2 low)
   — the deck's metabolic theme is supported; composite direction is explicit
@@ -159,7 +159,7 @@ residualize on age+sex → robust-z → engine masked-cosine spectral embedding 
 ---
 
 ## E11 · Phase 4 — temporal coherence V0→V4 — 2026-05-22
-`scripts/longitudinal_coherence.py`. Build the SAME domain scores at every visit
+`scripts/09_longitudinal_coherence.py`. Build the SAME domain scores at every visit
 (pooled scaling, per-visit-age spline+cross-fit residualization), assign each
 patient-visit to a V0 phenotype, measure persistence.
 - **Methodology note (important):** a masked nearest-**centroid** rule could *not*
@@ -174,19 +174,19 @@ patient-visit to a V0 phenotype, measure persistence.
   functioning (2) 48%, metabolic (0) 40%, manic activation (3) 35%, **somatic (4) 14%**.
 - **They also cut across DSM-5** (added E11b): ARI(7 DSM-5 subtypes, V0 cluster) = **0.006**
   — each cluster draws from every diagnosis (`longitudinal_dsm_phenotype.csv`; Suppl. Fig S1
-  via `export_longitudinal_figure.py`).
+  via `17_export_longitudinal_figure.py`).
 - **Reframe (decision):** this is the empirical demonstration that *discrete* clustering
   fails — subgroups that neither persist nor align to DSM-5 = **slices of a continuum, not
   natural kinds** — i.e. a negative result that **motivates the dimensional model**, NOT a
   phenotype finding. The discrete flow Sankey is supplement-only, retitled accordingly.
-- **Dimensional companion** (`export_dimensional_flow.py`, E11c): the *continuous-axis band*
+- **Dimensional companion** (`18_export_dimensional_flow.py`, E11c): the *continuous-axis band*
   is retained far better than the discrete label — same-band V0→V1 **0.32–0.60** (depression
   0.60, ADHD/trauma 0.56) vs discrete 0.39 ⇒ the **labels hop, the positions are stable**.
   later_onset ≈ chance (0.32) confirms it is baseline-only/static. DR excluded at V3 (cliff).
 
 ## E12 · Step-1 structure test — discrete vs dimensional — 2026-05-23
 Triggered by an unconvincing k=5 (flat silhouette ~0.18 at all k, arbitrary-looking
-UMAP). `scripts/structure_test.py`: eigengap, gap-vs-Gaussian-null, HDBSCAN,
+UMAP). `scripts/04_structure_test.py`: eigengap, gap-vs-Gaussian-null, HDBSCAN,
 bimodality, DSM-subtype anchor + mood↔psychosis continuum.
 - **Verdict: no discrete trans-diagnostic clusters.** Eigenvalues smooth (no gap);
   gap statistic monotone (no natural k); PCA scree gradual (PC1 10%); axes ~unimodal
@@ -211,7 +211,7 @@ bimodality, DSM-subtype anchor + mood↔psychosis continuum.
   only discrete signal is DSM diagnosis itself → motivates the dimensional/HiTOP framing.
 
 ## E13 · Dimensional axis model — classical + AI — 2026-05-23
-`scripts/dimensional_axes.py` (sklearn FA, varimax) + `scripts/dimensional_ae.py`
+`scripts/05_dimensional_axes.py` (sklearn FA, varimax) + `scripts/06_dimensional_ae.py`
 (PyTorch masked autoencoder, no imputation — mask fed to encoder, masked recon loss).
 - **Classical:** parallel analysis K=14 (capped 8) → **7 reproducible axes**
   (Tucker congruence ≥0.85; 8th=0.18 noise), **confound-free** (max age/sex |corr|
@@ -228,7 +228,7 @@ bimodality, DSM-subtype anchor + mood↔psychosis continuum.
   unrotated (PCA) / in the AE. Consider an oblique rotation, or report the AE axis as
   the mood↔psychosis dimension. Axis scores → Phase 4/5.
 
-**Refinement (`dimensional_refine.py`):** K chosen by reproducibility-vs-K, not my
+**Refinement (`07_dimensional_refine.py`):** K chosen by reproducibility-vs-K, not my
 arbitrary cap. Split-half Tucker congruence is high only at low K (3/4/6) and
 **erratic above** (K=7 0.08, K=8 0.18, K=9 0.88 — varimax factor-splitting + greedy
 matching), so select from the stable range ≤8 → **final K=6** (min congruence 0.95,
@@ -242,7 +242,7 @@ erratic tail, and a patient-level (vs subtype-centroid) Spearman made the contin
 look like 0.07 — both fixed.
 
 ## E14 · Phase 5 — outcome validation (axes vs DSM) — 2026-05-23
-`scripts/phase5_outcomes.py`: nested 5-fold CV, V1 outcome ~ V0 baseline + age + sex +
+`scripts/10_phase5_outcomes.py`: nested 5-fold CV, V1 outcome ~ V0 baseline + age + sex +
 {DSM = arm, 7 subtypes} vs {6 axes} vs both. Leakage-safe (predictors V0, outcome V1,
 baseline-adjusted → de-circularizes EGF/hospitalization that also feed the axes).
 - **QoL (EQ-5D): axes BEAT DSM** (R² 0.333 vs 0.289, +0.044, p<1e-16; combined ≈ axes).
@@ -258,7 +258,7 @@ baseline-adjusted → de-circularizes EGF/hospitalization that also feed the axe
   mixed-effects, V2 replication.
 
 ## E15 · Phase 4 on axes — trait↔state stability — 2026-05-23
-`scripts/longitudinal_axes.py`: project the V0 FA onto V1–V4 (pooled scaling,
+`scripts/08_longitudinal_axes.py`: project the V0 FA onto V1–V4 (pooled scaling,
 per-visit-age residualized; refit axes ≡ locked, Tucker congruence ≥0.94) → V0↔Vk
 test-retest r per axis.
 - Trait↔state: adhd/trauma **0.62 (trait)** > depression **0.46 (intermediate)** >
@@ -274,7 +274,7 @@ test-retest r per axis.
 - **V2 replication** of the Phase-5 head-to-head: QoL axes beat DSM (+0.041 vs V1
   +0.044), functioning complements (combined 0.229 vs 0.172), hospitalization
   DSM-dominated. Replicates cleanly.
-- **Site ComBat** (`scripts/robustness_site.py`, neuroHarmonize; 20 sites ≥10):
+- **Site ComBat** (`scripts/13_robustness_site.py`, neuroHarmonize; 20 sites ≥10):
   site batch magnitude 0.044 SD (small); axes survive harmonization (Tucker congruence
   with locked [1,1,1,.98,.98,.99]); head-to-head survives (QoL axes−DSM +0.037,
   functioning combined 0.262). ⇒ the axes are **not a site artifact**.
@@ -283,7 +283,7 @@ test-retest r per axis.
   V1/V2-replicated, with axes adding value over DSM for QoL/functioning. Manuscript-ready.
 
 ## E17 · Cognition BP/SZ sub-analysis — 2026-05-23
-`scripts/cognition_bpsz.py` (cognition absent in DR by design → BP/SZ only, n=6,099;
+`scripts/14_cognition_bpsz.py` (cognition absent in DR by design → BP/SZ only, n=6,099;
 4273 BP / 1826 SZ).
 - **Polish (the fix):** v1 let WAIS sub-items dominate by count (~25 split domains →
   4 WAIS-flavoured factors, CVLT/TMT under-weighted). Now a **two-level aggregation**
@@ -303,6 +303,31 @@ test-retest r per axis.
   R² 0.394 → +cognition 0.398 (Δ **+0.004**; shuffled CV — was 0.169→0.174 under the
   un-shuffled-CV bug, see E15b). Modest but independent.
 - Kept OUT of the 3-cohort model (would re-inject the DR-availability confound).
+
+## E18 · Independence refactor — self-sufficient, sharable repo — 2026-05-23
+The repo was made fully **self-contained** so collaborators can clone-and-run with no
+sister project. (This is why earlier entries — E2/E3/E10, FINDINGS §2.3, ROADMAP — still
+name now-deleted exploratory scripts like `cluster_v0.py`, `cluster_v0_profile.py`,
+`cluster_domains_profile.py`, `reproduce_v0_clusters.py`: they were superseded here.)
+- **Engine internalized.** The vendored `face_stratification` modelling code we actually
+  use was copied into `src/trans_diag/engine/` (`MultipartiteSpectralEmbedding`,
+  `HarmonizedDataset`, `FeatureSchema`, masked similarity, enrichment, KMeans,
+  `bootstrap_stability`). `archive/`, `config/` and `data/external/` were removed.
+- **Package renamed** `face_common` → `trans_diag` (kept the `src/` layout).
+- **Per-patient data purged from git history** (`git filter-repo`): the 3 raw cohort CSVs,
+  `data/external`, and 10 per-patient result artifacts (scores/embedding parquets,
+  cluster-assignment CSVs). Aggregate results (loadings, meta JSON, contingencies) still
+  ship; per-patient files stay on disk (`.gitignore`d) so the pipeline runs locally.
+  `.git` 65M→24M. FACE data is confidential (Fondation FondaMental).
+- **Scripts numbered in execution order** `01_…`→`18_` + a `00_run_all.py` orchestrator,
+  so a reviewer reads/runs them top-to-bottom. 4 superseded V0-exploration scripts deleted.
+  Gotcha: Python module names can't start with a digit, so the shared head-to-head helpers
+  (`cv_metric`, `added_axes_test`, `axis_betas`, `OUTCOMES`) were lifted out of
+  `phase5_outcomes.py` into importable `src/trans_diag/outcomes.py` before renaming.
+- **Reproduction notebook** `notebooks/FACE_reproduction.ipynb` added (runs the numbered
+  pipeline, displays **aggregate** outputs only — no per-patient rows — for confidentiality).
+- **Verified:** every manuscript number reproduces to ≤**1.8e-12** (BLAS round-off); 54 tests
+  pass with no `archive/` on the path; the engine still reproduces the sister contingency.
 
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future

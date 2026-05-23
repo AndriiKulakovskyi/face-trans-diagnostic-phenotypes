@@ -15,7 +15,7 @@ orthogonal scores) + 1 spectrum axis. These scores feed Phase 5 (outcomes).
 
 Artifacts: results/dimensional_final_{scores.parquet,loadings.csv,meta.json},
 reports/dimensional_final.html.
-Run:  python3 scripts/dimensional_refine.py
+Run:  python3 scripts/07_dimensional_refine.py
 """
 from __future__ import annotations
 

@@ -8,7 +8,7 @@ of the key difference Dimensions − DSM (and combined − DSM).
 Caveat: a repeated-CV interval captures fold-partition variance, not cohort
 sampling variance, so it is a lower bound on true uncertainty.
 
-Writes results/phase5_ci.csv. Run: python3 scripts/phase5_ci.py
+Writes results/phase5_ci.csv. Run: python3 scripts/11_phase5_ci.py
 """
 from __future__ import annotations
 

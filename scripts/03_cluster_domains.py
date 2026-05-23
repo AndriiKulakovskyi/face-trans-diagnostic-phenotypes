@@ -24,8 +24,8 @@ Artifacts (results/):
     cluster_domains_naming.csv         per-cluster top domains + cohort mix
     cluster_domains_meta.json
 
-Run:  python3 scripts/cluster_domains.py            # auto-pick k
-      python3 scripts/cluster_domains.py --k 5
+Run:  python3 scripts/03_cluster_domains.py            # auto-pick k
+      python3 scripts/03_cluster_domains.py --k 5
 """
 from __future__ import annotations
 

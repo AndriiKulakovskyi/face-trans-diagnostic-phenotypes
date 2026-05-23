@@ -14,7 +14,7 @@ tell discrete from dimensional structure, on the domain embedding:
      order along a mood↔psychosis continuum (the dimensional signature).
 
 Writes results/structure_test.json + reports/structure_test.html.
-Run:  python3 scripts/structure_test.py
+Run:  python3 scripts/04_structure_test.py
 """
 from __future__ import annotations
 

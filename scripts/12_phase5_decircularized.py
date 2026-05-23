@@ -19,7 +19,7 @@ Per-outcome exclusions (own measure + same-instrument synonym):
   EGF functioning        → drop {egf, fast}
   any hospitalization    → drop {nboccur_hospitalisation_lt, hodur_hospitalisation_lt}
 
-Writes results/phase5_decircularized.csv. Run: python3 scripts/phase5_decircularized.py
+Writes results/phase5_decircularized.csv. Run: python3 scripts/12_phase5_decircularized.py
 """
 from __future__ import annotations
 
@@ -32,12 +32,11 @@ import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
-sys.path.insert(0, str(REPO / "scripts"))
 
 from sklearn.decomposition import FactorAnalysis  # noqa: E402
 
 from trans_diag import build_unified_dataframe  # noqa: E402
-from phase5_outcomes import cv_metric  # noqa: E402  (reuse the exact CV metric)
+from trans_diag.outcomes import cv_metric  # noqa: E402  (reuse the exact CV metric)
 
 RES = REPO / "results"
 SCORES = RES / "cluster_domains_scores.parquet"     # residualized 54 domains

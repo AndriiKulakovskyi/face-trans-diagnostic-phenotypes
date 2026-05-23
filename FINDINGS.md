@@ -1,9 +1,12 @@
 # FINDINGS — FACE trans-diagnostic clustering (running research log)
 
-Paper-oriented log of empirical + methodological discoveries. Numbers are
-reproducible from `scripts/cluster_v0.py` + `scripts/cluster_v0_profile.py`
-(artifacts in `results/cluster_v0_*`, report `reports/cluster_v0.html`).
-See ROADMAP.md for the plan; this file is the "what we actually learned".
+Paper-oriented log of empirical + methodological discoveries. Every number is
+reproducible from the numbered pipeline (`python3 scripts/00_run_all.py`, or the
+annotated `notebooks/FACE_reproduction.ipynb`); each finding below cites the
+specific `scripts/NN_*.py` step that produces it. See ROADMAP.md for the plan;
+this file is the "what we actually learned". (Early-phase exploratory scripts
+named in §2–§3 — `cluster_v0*.py`, `reproduce_v0_clusters.py` — were superseded
+and removed in the independence refactor; see LABBOOK E18.)
 
 ## 1. Data & reconciliation
 - **9,013 V0 patients**: BP 6,252 / SZ 2,209 / DR 552.
@@ -59,7 +62,7 @@ KMeans. We reproduced the sister's published 7-cluster contingency exactly from
 their saved embedding (`scripts/reproduce_v0_clusters.py`).
 
 ### 2.4 Discrete vs dimensional — the structure is DIMENSIONAL (pivotal)
-Step-1 structure test (`scripts/structure_test.py`) on the V0 domain embedding,
+Step-1 structure test (`scripts/04_structure_test.py`) on the V0 domain embedding,
 prompted by an unconvincing k=5 (flat silhouette, arbitrary-looking UMAP):
 - **No discrete trans-diagnostic clusters.** Laplacian eigenvalues rise smoothly
   from ~0 (no eigengap); the gap statistic vs a matched-Gaussian null rises
@@ -90,7 +93,7 @@ but the drivers were dominated by the most-itemized instruments (§2.2) and a
 Superseded by v2.
 
 ### 3b. v2 — domain scores + biology, spline-residualized (k=5) — **current**
-`scripts/cluster_domains.py`: 72 domain scores → coverage floor 30% (54 kept) →
+`scripts/03_cluster_domains.py`: 72 domain scores → coverage floor 30% (54 kept) →
 **nonlinear spline + cross-fit residualization** on age+sex → masked-cosine
 spectral embedding.
 - **Principled k = 5** (max bootstrap stability **ARI 0.972**, min consensus
@@ -129,7 +132,7 @@ fragility is itself a discreteness red flag.)
   activation 35%, somatic **14%**).
 - **Verdict (negative result):** forcing discrete clusters yields subgroups that are neither
   temporally stable nor diagnosis-aligned ⇒ **slices of a continuum, not natural kinds**. The
-  honest dimensional "flow" (`export_dimensional_flow.py`; §3f) retains a patient's *continuous-
+  honest dimensional "flow" (`18_export_dimensional_flow.py`; §3f) retains a patient's *continuous-
   axis band* far better — same-band V0→V1 persistence **0.32–0.60** (depression 0.60, ADHD/trauma
   0.56) vs the discrete labels' 0.39: the **labels hop, the positions are stable**. Cross-
   sectionally the axes are also **diagnosis-independent** — DSM-5 subtype explains only
@@ -138,8 +141,8 @@ fragility is itself a discreteness red flag.)
 
 ### 3d. Dimensional axis model — the convincing representation (classical + AI)
 Following the dimensional verdict (§2.4): model trans-diagnostic variation as
-continuous axes — `scripts/dimensional_axes.py` (sklearn varimax factor analysis)
-and `scripts/dimensional_ae.py` (PyTorch masked autoencoder, **no imputation**).
+continuous axes — `scripts/05_dimensional_axes.py` (sklearn varimax factor analysis)
+and `scripts/06_dimensional_ae.py` (PyTorch masked autoencoder, **no imputation**).
 - **7 reproducible, confound-free axes** (classical FA; parallel analysis K=14,
   capped 8): (1) **depression/internalizing severity** (QIDS/MADRS/STAI/FAST/PSQI,
   6.3% var), (2) later age-of-onset, (3) **mania/activation** (Altman/YMRS/Mathys/
@@ -154,7 +157,7 @@ and `scripts/dimensional_ae.py` (PyTorch masked autoencoder, **no imputation**).
   on one AE axis; PCA 0.79; varimax dispersed it). Two very different methods
   (linear/imputed vs nonlinear/no-imputation) converge → the axes are robust.
   Caveat: the AE has a small age leak (|corr| 0.15) vs FA's 0.002.
-- **Refined final set (`dimensional_refine.py`):** reproducibility-vs-K (split-half
+- **Refined final set (`07_dimensional_refine.py`):** reproducibility-vs-K (split-half
   Tucker congruence) is high only at low K (3/4/6) and erratic above (varimax
   factor-splitting), so the **locked set is K=6** (min congruence 0.95, confound
   0.002): depression-severity · later-onset · mania/activation · illness-burden ·
@@ -167,7 +170,7 @@ and `scripts/dimensional_ae.py` (PyTorch masked autoencoder, **no imputation**).
   on outcomes?).
 
 ### 3e. Phase 5 — do the axes beat DSM on outcomes? (the value test)
-**Shuffled, repeated** 5-fold CV (R=200; `phase5_outcomes.py` + `phase5_ci.py`) predicting V1
+**Shuffled, repeated** 5-fold CV (R=200; `10_phase5_outcomes.py` + `11_phase5_ci.py`) predicting V1
 outcomes from V0 axes vs DSM (arm, 7 subtypes), all adjusting for V0 baseline + age + sex
 (leakage-safe). **Bugfix (E15b):** the original `cv_metric` used UN-shuffled folds and the
 matrix is cohort-ordered (BP…SZ…DR) → cohort-imbalanced folds distorted the R² (EGF baseline
@@ -188,7 +191,7 @@ notably functioning. Numbers below are repeated-CV mean [95% CI]:
 - This validates direction A for symptom-aligned outcomes. Deferred: site/ComBat +
   mixed-effects, V2 replication; the binary-outcome LRT didn't converge (rare
   schizophréniforme subtype) so the CV AUC is the primary evidence there.
-- **De-circularization (`phase5_decircularized.py`; addresses the review's #1 concern):** the
+- **De-circularization (`12_phase5_decircularized.py`; addresses the review's #1 concern):** the
   depression axis contains EQ-5D/EGF/FAST and the illness-burden axis contains the hosp counts,
   so predicting those outcomes from those axes is potentially circular. Refitting the axes
   **without each outcome's own measure(s)** changed essentially nothing: QoL still beats DSM
@@ -199,7 +202,7 @@ notably functioning. Numbers below are repeated-CV mean [95% CI]:
   controls each outcome's V0 value, and the depression axis is carried by QIDS/MADRS/STAI.
 
 ### 3f. Phase 4 on axes — temporal stability (trait↔state gradient)
-`scripts/longitudinal_axes.py`: project the V0 factor model onto V1–V4 (pooled scaling,
+`scripts/08_longitudinal_axes.py`: project the V0 factor model onto V1–V4 (pooled scaling,
 per-visit-age residualized; the refit axes match the locked set, Tucker congruence
 ≥0.94) → per-axis V0↔Vk test-retest correlation.
 - **Trait↔state gradient** (mean V0↔V1/V2 Pearson r): adhd/impulsivity/trauma **0.62
@@ -217,7 +220,7 @@ per-visit-age residualized; the refit axes match the locked set, Tucker congruen
 - **V2 follow-up (same cohort, not independent replication):** the head-to-head holds — QoL
   axes beat DSM (R² 0.265 vs 0.230, **+0.034**), functioning axes complement DSM (combined
   0.353 vs 0.306, **+0.047**), hospitalization DSM-dominated (AUC 0.727).
-- **Site (ComBat, `scripts/robustness_site.py`, neuroHarmonize; 20 sites ≥10 patients):**
+- **Site (ComBat, `scripts/13_robustness_site.py`, neuroHarmonize; 20 sites ≥10 patients):**
   the site batch effect is small (mean |adjustment| = 0.044 SD); after ComBat-harmonizing
   the domain scores, the 6 axes are essentially unchanged (Tucker congruence with the
   locked axes [1.0, 1.0, 1.0, 0.98, 0.98, 0.99]) — they are **not a site artifact**. The
@@ -227,7 +230,7 @@ per-visit-age residualized; the refit axes match the locked set, Tucker congruen
   (split-half 0.95), **confound-free** (age/sex 0.002), **site-robust** (ComBat congruence
   ~1), **de-circularization-robust**, and **consistent across V1+V2** (same cohort) — solid
   for the manuscript, pending independent external replication.
-- **Extra robustness checks (`review_checks.py`, addresses review #5–9):** the age/sex
+- **Extra robustness checks (`15_review_checks.py`, addresses review #5–9):** the age/sex
   orthogonality (0.002) is by construction (residualized) — the meaningful test is independence
   from variables NOT removed: **site η² ≤0.05, cohort η² ≤0.10** per axis. AE↔FA agreement is
   real, not a CCA artifact (**leading canonical corr 0.93 vs permutation null 0.06**). Mood↔
@@ -241,7 +244,7 @@ per-visit-age residualized; the refit axes match the locked set, Tucker congruen
 ### 3h. Cognition (BP/SZ complementary analysis)
 Cognition is absent in DR **by design** (0% vs BP 71% / SZ 86%) — including it in the
 3-cohort model would re-inject a cohort/availability confound — so it is analysed within
-BP/SZ (`scripts/cognition_bpsz.py`; 6,099 patients). To stop WAIS sub-items dominating
+BP/SZ (`scripts/14_cognition_bpsz.py`; 6,099 patients). To stop WAIS sub-items dominating
 by count, raw items are aggregated **items → instrument stem-domains → 7 standard
 constructs** (memory[CVLT], executive[TMT], processing speed, working memory, verbal &
 perceptual reasoning, fluency; TMT reverse-signed — confirmed −0.16 vs CVLT).

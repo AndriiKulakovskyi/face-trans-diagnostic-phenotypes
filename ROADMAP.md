@@ -9,7 +9,7 @@
 > code and `archive/` have been **removed** — the engine pieces we use are now
 > internalized in `src/trans_diag/engine/`. Historical references to `archive/`
 > below describe the earlier merged layout and are kept for the record. The repo
-> is self-contained: `pip install -e ".[full]"` + `python scripts/run_all.py`
+> is self-contained: `pip install -e ".[full]"` + `python scripts/00_run_all.py`
 > reproduces the manuscript.
 
 ---
@@ -222,7 +222,7 @@ face-common-bp-sz-dr/
   (FINDINGS §2.2, §3a). Motivated the domain-aggregation fix.
 - **Fork resolved → (A) trans-diagnostic discovery.** Built `domains.py` (190
   items → 72 balanced domain scores incl. biology composites), nonlinear spline
-  + cross-fit residualization, and `scripts/cluster_domains.py` (+`_profile`).
+  + cross-fit residualization, and `scripts/03_cluster_domains.py` (+`_profile`).
 - **v2 result (FINAL) — k=5, principled selection.** Max bootstrap stability
   (ARI **0.972**) / min consensus **PAC 0.047**; confound verified gone
   (cluster↔sex Cramér's V **0.041**, age-tertile ARI 0.006, **cohort ARI 0.002**).
@@ -234,7 +234,7 @@ face-common-bp-sz-dr/
       ablation; negative controls (§7).
 
 ### Phase 4 — Longitudinal coherence (our core) — **DONE**
-- [x] `scripts/longitudinal_coherence.py`: SAME domain scores at every visit
+- [x] `scripts/09_longitudinal_coherence.py`: SAME domain scores at every visit
       (pooled scaling, per-visit-age residualized) → V0 phenotype **classifier**
       (HistGradientBoosting, 5-fold acc **0.842**; a nearest-centroid rule was
       invalid, self-ARI 0.024) → coherence + transition Sankey
@@ -248,7 +248,7 @@ face-common-bp-sz-dr/
 - [ ] Refinement: multi-visit-averaged "trait" phenotypes; LOCO stability.
 
 ### Phase 5 — Outcome prediction & DSM head-to-head — **DONE (v1)**
-- [x] `scripts/phase5_outcomes.py`: nested 5-fold CV, V1 outcome ~ V0 baseline + age +
+- [x] `scripts/10_phase5_outcomes.py`: nested 5-fold CV, V1 outcome ~ V0 baseline + age +
       sex + {DSM arm} vs {6 axes} vs both (leakage-safe, baseline-adjusted).
 - **Result:** axes add information *over* DSM for symptom-aligned outcomes — **QoL
   (EQ-5D) axes beat DSM** (R² 0.333 vs 0.289), **functioning (EGF) axes complement

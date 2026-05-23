@@ -206,7 +206,7 @@ concatenates. Missing values never enter $\operatorname{sim}$, so the embedding 
 
 ### 2.6 Discrete-versus-dimensional structure test
 
-On the embedding $Z$ (`structure_test.py`) we ran five complementary tests:
+On the embedding $Z$ (`04_structure_test.py`) we ran five complementary tests:
 
 1. **Eigengap.** On a $k=15$ kNN graph of $Z$ we form $L=I-D^{-1/2}WD^{-1/2}$ and inspect its
    ordered eigenvalues $\lambda_1\le\lambda_2\le\cdots$; a discrete $k$-cluster geometry shows a
@@ -234,8 +234,8 @@ diagnosis itself.
 
 ### 2.7 Dimensional factor model
 
-We model the residual domain matrix as continuous latent dimensions (`dimensional_axes.py`,
-`dimensional_refine.py`). Residuals are standardized per domain to unit variance and the
+We model the residual domain matrix as continuous latent dimensions (`05_dimensional_axes.py`,
+`07_dimensional_refine.py`). Residuals are standardized per domain to unit variance and the
 remaining gaps mean-imputed to $0$ (the $z$-space mean), giving $X\in\mathbb R^{N\times 54}$ —
 **the one imputation on the factor path**. We fit the factor model $X=F\Lambda^\top+\varepsilon$
 with $K$ factors (scikit-learn `FactorAnalysis`, maximum-likelihood) and a **varimax** rotation
@@ -264,7 +264,7 @@ $\max_k\max\{|{\rm corr}(F_{\cdot k},a)|,|{\rm corr}(F_{\cdot k},\mathrm{sex})|\
 
 As a nonlinear counterpart to the linear factor model, we compress the $d=54$ residual domain
 scores into a $K$-dimensional latent code with an **undercomplete autoencoder** trained under a
-masked reconstruction loss (`dimensional_ae.py`, PyTorch); we set $K=6$ to match the factor model
+masked reconstruction loss (`06_dimensional_ae.py`, PyTorch); we set $K=6$ to match the factor model
 and ask whether the two recover the same subspace.
 
 *Inputs.* Let $r_i\in\mathbb R^{d}$ be patient $i$'s per-domain-standardized residual vector and
@@ -323,7 +323,7 @@ downstream analyses.
 ### 2.9 Outcome prediction (head-to-head versus DSM)
 
 We tested whether the dimensions predict 1-year outcomes beyond diagnosis in **nested 5-fold
-cross-validation** (`phase5_outcomes.py`), leakage-safe by construction: predictors are V0,
+cross-validation** (`10_phase5_outcomes.py`), leakage-safe by construction: predictors are V0,
 outcomes V1, and every model adjusts for the V0 **baseline** of the same outcome plus age and
 sex, so outcomes that also feed the dimensions (functioning, hospitalization) are predicted as a
 *trajectory*. Three nested models are compared,
@@ -342,7 +342,7 @@ outcomes (EQ-5D, EGF) use ridge regression ($\alpha=1$) scored by cross-validate
 binary outcome (any hospitalization) uses $\ell_2$ logistic regression scored by stratified-CV
 AUC. Folds are **shuffled** with a fixed seed (the patient matrix is cohort-ordered, so
 un-shuffled folds give cohort-imbalanced splits and distort the $R^2$), and 95% intervals are
-obtained from $R=200$ repeated CV (`phase5_ci.py`). The **incremental value** of the dimensions over diagnosis is tested in-sample by a nested
+obtained from $R=200$ repeated CV (`11_phase5_ci.py`). The **incremental value** of the dimensions over diagnosis is tested in-sample by a nested
 $F$-test (continuous), $F=\dfrac{(\mathrm{SSR}_0-\mathrm{SSR}_2)/q}{\mathrm{SSR}_2/(n-p_2)}$ with
 $q=6$ added parameters, or a likelihood-ratio test (binary),
 $\Lambda=2(\ell_2-\ell_0)\sim\chi^2_q$ (returned as `NaN` if the saturated model fails to
@@ -351,11 +351,11 @@ standardized effects $\beta$ come from the regularized M2 model. As a **de-circu
 sensitivity** (because some axes contain the V0 outcome measures), we refit the axes after
 excluding each outcome's own measure(s) — EQ-5D outcome: drop EQ-5D/EQ-VAS; EGF: drop EGF/FAST;
 hospitalization: drop the hospitalization counts — and re-ran the head-to-head
-(`scripts/phase5_decircularized.py`; §3.5).
+(`scripts/12_phase5_decircularized.py`; §3.5).
 
 ### 2.10 Temporal stability (trait–state gradient)
 
-We projected the locked V0 factor model onto each follow-up (`longitudinal_axes.py`): per visit
+We projected the locked V0 factor model onto each follow-up (`08_longitudinal_axes.py`): per visit
 we rebuilt domain scores on a common scale, restricted to the 54 V0 domains, residualized on
 **per-visit** age/sex, standardized, and applied the fixed loadings to obtain $(patient,visit)$
 axis scores. For each axis and visit we report the V0↔V$k$ Pearson and Spearman correlations and
@@ -373,7 +373,7 @@ $\ge0.94$).
 ### 2.11 Site harmonization (ComBat)
 
 To rule out a multi-site batch artifact we harmonized the domain scores across the 20 sites with
-$\ge\!10$ patients by **ComBat** empirical-Bayes adjustment [13,14] (`robustness_site.py`,
+$\ge\!10$ patients by **ComBat** empirical-Bayes adjustment [13,14] (`13_robustness_site.py`,
 neuroHarmonize). ComBat models each feature as
 $y_{isf}=\alpha_f+X_{is}\beta_f+\gamma_{sf}+\delta_{sf}\,\varepsilon_{isf}$ for site $s$, and
 removes the empirical-Bayes-shrunk site location/scale terms $(\hat\gamma_{sf},\hat\delta_{sf})$ to
@@ -386,7 +386,7 @@ follow-up (V2)** — the same individuals, so temporal consistency, not independ
 
 Neuropsychology is absent in DR **by design** (0% vs BP 71% / SZ 86%), so including it in the
 3-cohort model would re-inject a cohort/availability confound; we analysed it within BP/SZ only
-(`cognition_bpsz.py`, $n=6{,}099$). Raw items were aggregated in **two levels** — items →
+(`14_cognition_bpsz.py`, $n=6{,}099$). Raw items were aggregated in **two levels** — items →
 instrument stem-domains → seven standard constructs (verbal memory [CVLT], executive [TMT],
 processing speed, working memory, verbal and perceptual reasoning, fluency) — because the
 composite path matches raw canonicals, so constructs must be built from stems; the Trail-Making
@@ -520,7 +520,7 @@ still complemented, combined R² 0.386 vs 0.366; hospitalization still diagnosis
 loads on EQ-5D, EQ-VAS, EGF and FAST; the illness-burden axis on the lifetime-hospitalization
 counts), so predicting those outcomes from those axes is potentially circular and unfair to
 the bare DSM label. We therefore refit the axes after **excluding each outcome's own
-measure(s)** and re-ran the head-to-head (`scripts/phase5_decircularized.py`). The results
+measure(s)** and re-ran the head-to-head (`scripts/12_phase5_decircularized.py`). The results
 were essentially unchanged: quality of life still beat diagnosis (R² 0.340 vs 0.305, Δ +0.036;
 circular axes also +0.036), functioning was still complemented (combined R² 0.392 vs DSM 0.366,
 +0.026; dimensions alone ≈ DSM, −0.005), and hospitalization was still diagnosis-dominated
@@ -724,7 +724,7 @@ to be validated prospectively and externally.
 ## Tables
 
 **Table 1. Cohort composition (V0, n=9,013; 21 sites).** Source:
-`scripts/manuscript_table1.py` → `results/manuscript_table1*.csv`.
+`scripts/01_manuscript_table1.py` → `results/manuscript_table1*.csv`.
 
 | Cohort | n (V0) | Age, mean (SD) | % female | DSM subtypes (n) | Follow-up V1 / V2 / V3 / V4 |
 |---|--:|--:|--:|---|--:|
@@ -777,7 +777,7 @@ dimension 0.24 (g↔illness-burden).
 ## Figures
 
 Static publication figures (PNG + SVG, 300 dpi) are generated by
-`scripts/manuscript_figures.py` → `reports/figures/`. Interactive versions are the
+`scripts/16_manuscript_figures.py` → `reports/figures/`. Interactive versions are the
 correspondingly named `reports/*.html`.
 
 - **Figure 1. Trans-diagnostic structure is dimensional** (`fig1_structure.png`). Four
@@ -797,7 +797,7 @@ correspondingly named `reports/*.html`.
   *g* and processing-speed factors; (b) cognition × symptom-dimension correlations
   (max |r| 0.24).
 - **Figure 6. Dimensional phenotype flow** (`fig6_dimensional_flow.png`,
-  `fig6b_band_persistence.png`, `fig6c_dsm_axis_flow.png`; `scripts/export_dimensional_flow.py`).
+  `fig6b_band_persistence.png`, `fig6c_dsm_axis_flow.png`; `scripts/18_export_dimensional_flow.py`).
   **(a)** continuous-axis band (V0-tertile Low/Mid/High) trajectories V0→V1→V2 for a trait-like
   (ADHD/trauma) and a state-like (mania) axis, showing in-band (diagonal) dominance; **(b)**
   same-band V0→V1 persistence per dimension (0.32–0.60) against the 33% three-band chance level
@@ -815,7 +815,7 @@ correspondingly named `reports/*.html`.
 **Supplementary Figure S1. Discrete clustering does not yield temporally stable or
 diagnosis-transcending subgroups (a negative result that motivates the dimensional model)**
 (`reports/figures/figS1_dsm_phenotype_flow.png`, `figS1b_dsm_composition.png`;
-`scripts/longitudinal_coherence.py` + `export_longitudinal_figure.py`). As an *exploratory
+`scripts/09_longitudinal_coherence.py` + `17_export_longitudinal_figure.py`). As an *exploratory
 discrete view* — superseded by the dimensional model of the main text — we assigned every
 patient–visit to one of five V0
 domain-phenotypes with a NaN-native gradient-boosted classifier (shuffled 5-fold V0 accuracy 0.87)
@@ -832,7 +832,7 @@ continuous trait–state gradient on the six dimensional axes (Figure 4, §3.6) 
 representation of this same longitudinal signal.
 
 **Supplementary Figure S2. Factor-count selection is non-monotone**
-(`reports/figures/figS2_kcurve.png`; `scripts/review_checks.py`). Split-half Tucker congruence
+(`reports/figures/figS2_kcurve.png`; `scripts/15_review_checks.py`). Split-half Tucker congruence
 vs K: the mean stays high but the **minimum** congruence is jagged (0.98/0.94 at K=3/4, 0.31 at
 K=5, 0.95 at K=6, 0.08 at K=7) because varimax rotation splits factors unstably at some K. We
 report K=6 as the most granular reproducible solution (min congruence ≥0.85) rather than as a
@@ -845,10 +845,10 @@ clean optimum; K=4 is a defensible, more parsimonious alternative.
 The FACE data are confidential and governed by the cohort's data-access procedures
 (individual-level data are not shared). The full harmonization and analysis pipeline is
 available as source: harmonization (`src/trans_diag`), structure test
-(`scripts/structure_test.py`), dimensional model (`scripts/dimensional_axes.py`,
-`dimensional_ae.py`, `dimensional_refine.py`), outcomes (`scripts/phase5_outcomes.py`),
-longitudinal stability (`scripts/longitudinal_axes.py`), site robustness
-(`scripts/robustness_site.py`), and cognition (`scripts/cognition_bpsz.py`). Reproducible
+(`scripts/04_structure_test.py`), dimensional model (`scripts/05_dimensional_axes.py`,
+`06_dimensional_ae.py`, `07_dimensional_refine.py`), outcomes (`scripts/10_phase5_outcomes.py`),
+longitudinal stability (`scripts/08_longitudinal_axes.py`), site robustness
+(`scripts/13_robustness_site.py`), and cognition (`scripts/14_cognition_bpsz.py`). Reproducible
 result artifacts are written to `results/` and interactive reports to `reports/`.
 
 ## Author contributions / Funding / Ethics

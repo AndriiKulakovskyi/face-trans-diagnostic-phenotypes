@@ -1,6 +1,6 @@
 """Dimensional trans-diagnostic axes — PyTorch masked autoencoder (the AI companion).
 
-Nonlinear, no-imputation counterpart to scripts/dimensional_axes.py (classical FA).
+Nonlinear, no-imputation counterpart to scripts/05_dimensional_axes.py (classical FA).
 The autoencoder reconstructs the standardized domain scores with a MASKED loss —
 missing entries never contribute, and the observed-mask is fed to the encoder, so
 nothing is imputed. The K-dim bottleneck is the learned dimensional representation.
@@ -10,8 +10,8 @@ We then ask: do the AE's nonlinear axes agree with the classical factor axes?
 robust to the method; the AE may add nonlinear refinement.
 
 Artifacts: results/dimensional_ae_{scores.parquet,meta.json}, reports/dimensional_ae.html.
-Run:  python3 scripts/dimensional_ae.py            # K = #classical factors
-      python3 scripts/dimensional_ae.py --k 5 --epochs 300
+Run:  python3 scripts/06_dimensional_ae.py            # K = #classical factors
+      python3 scripts/06_dimensional_ae.py --k 5 --epochs 300
 """
 from __future__ import annotations
 

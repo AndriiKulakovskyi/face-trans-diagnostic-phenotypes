@@ -17,7 +17,7 @@ carry into Phase 4 (do axes persist?) and Phase 5 (do axes beat DSM on outcomes?
 
 Artifacts: results/dimensional_axes_{loadings.csv,scores.parquet,meta.json},
 reports/dimensional_axes.html.
-Run:  python3 scripts/dimensional_axes.py [--max-k 8]
+Run:  python3 scripts/05_dimensional_axes.py [--max-k 8]
 """
 from __future__ import annotations
 

@@ -23,7 +23,7 @@ Artifacts (results/ + reports/):
     longitudinal_transitions.csv   V0→Vk transition counts (long form)
     longitudinal.html              Sankey + transition heatmaps + coherence table
 
-Run:  python3 scripts/longitudinal_coherence.py
+Run:  python3 scripts/09_longitudinal_coherence.py
 """
 from __future__ import annotations
 

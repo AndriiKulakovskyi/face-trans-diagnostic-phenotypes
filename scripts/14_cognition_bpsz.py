@@ -16,7 +16,7 @@ Three steps:
 
 Artifacts: results/cognition_bpsz_{loadings.csv,scores.parquet,corr.csv,meta.json},
 reports/cognition_bpsz.html.
-Run:  python3 scripts/cognition_bpsz.py
+Run:  python3 scripts/14_cognition_bpsz.py
 """
 from __future__ import annotations
 
@@ -30,7 +30,6 @@ import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
-sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 import plotly.graph_objects as go  # noqa: E402
 import plotly.io as pio  # noqa: E402
@@ -46,7 +45,7 @@ from trans_diag import (  # noqa: E402
     residualize_features,
     to_harmonized_dataset,
 )
-from phase5_outcomes import cv_metric  # noqa: E402
+from trans_diag.outcomes import cv_metric  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"

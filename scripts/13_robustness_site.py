@@ -11,7 +11,7 @@ dimensional axes and the Phase-5 head-to-head robust to site batch effects?
      survive site harmonization?
 
 Artifacts: results/robustness_site.json, reports/robustness_site.html.
-Run:  python3 scripts/robustness_site.py
+Run:  python3 scripts/13_robustness_site.py
 """
 from __future__ import annotations
 
@@ -25,7 +25,6 @@ import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
-sys.path.insert(0, str(REPO_ROOT / "scripts"))   # reuse phase5 helpers
 
 import plotly.graph_objects as go  # noqa: E402
 import plotly.io as pio  # noqa: E402
@@ -35,7 +34,7 @@ from sklearn.impute import SimpleImputer  # noqa: E402
 from sklearn.preprocessing import StandardScaler  # noqa: E402
 
 from trans_diag import build_unified_dataframe, load_variables  # noqa: E402
-from phase5_outcomes import OUTCOMES, added_axes_test, cv_metric  # noqa: E402
+from trans_diag.outcomes import OUTCOMES, added_axes_test, cv_metric  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
