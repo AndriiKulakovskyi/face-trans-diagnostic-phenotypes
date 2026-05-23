@@ -180,6 +180,27 @@ patient-visit to a V0 phenotype, measure persistence.
   hypothesis**: a single-visit clustering captures state as well as trait. DR
   excluded at V3 (cliff).
 
+## E12 · Step-1 structure test — discrete vs dimensional — 2026-05-23
+Triggered by an unconvincing k=5 (flat silhouette ~0.18 at all k, arbitrary-looking
+UMAP). `scripts/structure_test.py`: eigengap, gap-vs-Gaussian-null, HDBSCAN,
+bimodality, DSM-subtype anchor + mood↔psychosis continuum.
+- **Verdict: no discrete trans-diagnostic clusters.** Eigenvalues smooth (no gap);
+  gap statistic monotone (no natural k); PCA scree gradual (PC1 10%); axes ~unimodal
+  (BC 0.56). The only discrete structure is **diagnosis** (HDBSCAN↔cohort ARI **0.70**
+  — it recovers SZ/DR/BP blobs). Trans-diagnostic variation is **dimensional**: the 7
+  enrolled DSM subtypes order on a mood↔psychosis axis (|Spearman| 0.64–0.79).
+- **DSM subtypes (enrolled, 7):** BP-I/II/NOS · schizophrenia/schizoaffective/
+  schizophreniform · MDD. (Thesauri list more codes, but only these are enrolled; DR
+  is uniformly MDD.) `arm` is the primary-diagnosis column; read it via the
+  HarmonizedDataset MultiIndex (string-id concat breaks on float usubjid).
+- **Process note:** the script's first auto-verdict said "4/4 discrete" — an
+  over-generous heuristic. The HDBSCAN-vs-cohort check (ARI 0.70) + a standardized
+  raw-domain PCA overturned it; heuristic fixed to key off HDBSCAN↔cohort ARI +
+  gap-monotonicity. *Lesson: don't trust an automated cluster-validity verdict
+  without checking what the "clusters" actually are.*
+- **Decision pending:** (Step 2) confirm with AI graph embeddings before committing,
+  vs (Step 3) pivot to a dimensional (factor / sparse-PCA) trans-diagnostic-axis model.
+
 ## Deferred / open (do not forget)
 - **ComBat site harmonization** as a sensitivity analysis (task #43).
 - **Cognition (NEUROPSYCHOLOGIE)** domains — handle non-random battery

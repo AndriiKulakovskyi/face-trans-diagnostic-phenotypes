@@ -58,6 +58,28 @@ partition → partition weight `sqrt(n_features × n_patients)` → concat + L2 
 KMeans. We reproduced the sister's published 7-cluster contingency exactly from
 their saved embedding (`scripts/reproduce_v0_clusters.py`).
 
+### 2.4 Discrete vs dimensional — the structure is DIMENSIONAL (pivotal)
+Step-1 structure test (`scripts/structure_test.py`) on the V0 domain embedding,
+prompted by an unconvincing k=5 (flat silhouette, arbitrary-looking UMAP):
+- **No discrete trans-diagnostic clusters.** Laplacian eigenvalues rise smoothly
+  from ~0 (no eigengap); the gap statistic vs a matched-Gaussian null rises
+  **monotonically** (no natural k); standardized PCA scree is gradual (PC1 10%,
+  top-5 25%); top axes are ~unimodal (Sarle BC ≈ 0.56).
+- **The only discrete structure is DSM diagnosis.** HDBSCAN finds 4 dense regions,
+  but they ARE the cohorts (**ARI 0.70 with cohort**: an SZ blob, a DR blob, two BP
+  blobs).
+- **Trans-diagnostic variation is a continuum.** The 7 enrolled DSM subtypes order
+  along a mood↔psychosis axis (|Spearman| 0.79 on the embedding / 0.64 raw-domain
+  PCA): MDD → BP-II → BP-I → BP-NOS → schizoaffective → schizophreniform →
+  schizophrenia.
+- **Implication:** the k=5 KMeans phenotypes were *reproducible slices of a
+  continuum* (stable but low-silhouette). The honest, stronger representation is
+  **dimensional** (a few interpretable trans-diagnostic axes), not discrete boxes;
+  "more k / other clustering" cannot create discrete clusters the data lacks.
+- *Process note:* the script's first auto-verdict ("4/4 discrete") was an
+  over-generous heuristic, overturned by the HDBSCAN-vs-cohort check + standardized
+  PCA; the heuristic was fixed to key off HDBSCAN↔cohort ARI + gap monotonicity.
+
 ## 3. Result
 
 ### 3a. v1 (item-level clinical, residualized, k=6) — intermediate
