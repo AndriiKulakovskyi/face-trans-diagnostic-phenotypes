@@ -125,87 +125,213 @@ quantities were computed with masked, pairwise-complete operators, so that missi
 never enter as filled-in numbers — important because missingness in psychiatric records is
 informative and frequently differential by cohort.
 
-### 2.2 Confound control and feature aggregation
+### 2.2 Notation and the no-imputation convention
 
-Naïve clustering of the raw matrix recovered, in sequence, four nuisance axes (Section
-3.1). The principled configuration that removed them retained **clinical/biological
-sections only**, dropped administrative fields (dates, site, identifiers), excluded
-physical-comorbidity occurrence flags (which encode age/sex), robustly scaled every
-feature, and **residualized each feature on age and sex** using a spline + cross-fit
-("double-ML"-style) partialling-out that removes nonlinear age/sex dependence without
-leakage.
+Let $N$ patients be indexed by $i$ and harmonized items by $f$. Write $x_{if}\in\mathbb{R}$
+for an observed value and define the **observation mask** $m_{if}=\mathbb{1}[x_{if}\text{ observed}]$.
+We apply **no imputation**: every similarity, covariance and reconstruction is computed on
+the observed support only (pairwise-complete / masked), so a missing entry never enters as a
+filled-in number. This matters because missingness in psychiatric records is informative and
+differential by cohort (e.g. neuropsychology is absent in DR by design). The two places where
+a value is substituted (mean-imputation to $0$ in $z$-space for the factor-analysis input, and
+mean-imputation of *covariates* in the residualization design) are stated explicitly below;
+neither touches the masked-similarity embedding or domain aggregation. The autoencoder is fed
+zeros for missing entries but flags them through the input mask and excludes them from the
+reconstruction loss (§2.8), so no imputed value contributes to its objective.
 
-Because cosine/covariance treats each column as one dimension, an instrument measured by
-many items contributes many dimensions and silently dominates (in our clinical set the
-15-item suicidality scale alone accounted for 30% of dimensions). We therefore aggregated
-raw items to **construct-level domain scores** (masked mean of robust *z*-scores with a
-minimum-item threshold), and formed curated biology composites (metabolic syndrome,
-cholesterol, inflammation, hepatic, renal, prolactin, cardiac/QTc). This yielded
-construct-balanced features (54 domains passing a 30% coverage floor) in which each
-construct contributes comparably.
+### 2.3 Robust scaling and construct-level domain aggregation
 
-### 2.3 Discrete-versus-dimensional structure test
+Cosine and covariance treat each column as one equal dimension, so an instrument with many
+items contributes many dimensions and silently dominates (in the raw clinical set the 15-item
+suicidality scale alone accounted for 30% of dimensions). We therefore aggregate items to
+**construct-level domain scores**. Each item is first robustly scaled (`domains.py`):
+winsorize to its 1st/99th percentiles, then
 
-On the residualized domain representation (`scripts/structure_test.py`) we computed: (i)
-the **Laplacian eigenvalue spectrum** of the masked-similarity graph, inspecting for an
-eigengap; (ii) a **gap statistic** comparing real-data silhouette to a matched-Gaussian
-null across *k*=2–12; (iii) **HDBSCAN** density clustering, and the adjusted Rand index
-(ARI) of its solution against cohort; (iv) **bimodality** (Sarle's bimodality coefficient)
-of the top principal axes; and (v) the **ordering of the seven DSM subtypes** along the
-leading embedding/PCA directions (Spearman correlation of subtype-centroid rank against a
-mood→psychosis ordering).
+$$z_{if}=\frac{x_{if}-\mathrm{med}_f}{1.4826\cdot \mathrm{MAD}_f},\qquad
+\mathrm{MAD}_f=\operatorname{median}_i\big|x_{if}-\mathrm{med}_f\big|,$$
 
-### 2.4 Dimensional model
+with the fallback $1.4826\cdot\mathrm{MAD}_f\!\to\!\hat\sigma_f$ when $\mathrm{MAD}_f=0$. The
+constant $1.4826$ makes the scale consistent for Gaussian data. Symptom items are grouped into
+one domain per **instrument stem** (canonical name with the trailing item index stripped, regex
+`\d+[a-z]*$`: `madrs07`→`madrs`); biology items are grouped into curated composites
+$d$ with member set $M_d$ and clinical signs $s_f\in\{\pm1\}$ ("higher = more pathological":
+metabolic syndrome [BMI, waist, triglycerides, HDL$^-$, glucose, HbA1c, blood pressure],
+cholesterol, inflammation, hepatic, renal, prolactin, cardiac/QTc). For observed members
+$O_{id}=\{f\in M_d:m_{if}=1\}$ the masked, sign-oriented domain score is
 
-We modelled trans-diagnostic variation as continuous dimensions by varimax-rotated factor
-analysis on the residualized, standardized domains (`scripts/dimensional_axes.py`). Horn's
-parallel analysis [11] over-extracted (K≈14, reflecting many tiny construct-specific
-factors), so the number of dimensions was fixed by **split-half reproducibility**: we refit
-the model on random halves and retained the most granular *K* whose dimensions reproduced
-across halves (minimum Tucker congruence [12]). Reproducibility was high only at low, even *K* and
-erratic above (varimax factor-splitting), selecting **K=6** (`dimensional_refine.py`).
-Dimension confounding was quantified as the maximum absolute correlation of each dimension
-score with age and sex.
+$$g_{id}=\frac{1}{|O_{id}|}\sum_{f\in O_{id}} s_f\,z_{if}
+\quad\text{if } \frac{|O_{id}|}{|M_d|}\ge \tau,\ \text{else } \texttt{NaN},$$
 
-As a methodologically independent check we trained a **masked-input autoencoder**
-(PyTorch; reconstructs only observed entries, so **no imputation**;
-`scripts/dimensional_ae.py`) and measured agreement between its nonlinear latent axes and
-the classical factors by canonical correlation analysis. The locked six-dimension scores
-(`results/dimensional_final_scores.parquet`) were carried forward to all downstream
-analyses.
+with minimum-observed fraction $\tau=0.5$ (no imputation: under-observed domains stay missing).
+We retain domains observed in $\ge\!30\%$ of patients (54 of 72).
 
-### 2.5 Outcome prediction (head-to-head versus DSM)
+### 2.4 Confounder residualization (nonlinear, cross-fitted)
 
-We tested whether the dimensions predict 1-year outcomes better than diagnosis in nested
-5-fold cross-validation (`scripts/phase5_outcomes.py`), with a leakage-safe design:
-predictors measured at V0, outcomes at V1, every model adjusted for the V0 baseline value
-of the outcome plus age and sex. Three models were compared — **M0** diagnosis (the
-7-level subtype), **M1** the six dimensions, **M2** both — for: EQ-5D quality of life and
-EGF global functioning (continuous; cross-validated R²) and any psychiatric hospitalization
-(binary; cross-validated AUC). Incremental value of the dimensions over diagnosis was
-tested by a likelihood-ratio / partial-F test on the added dimension block. Effect
-directions were read from the regularized full model.
+Unsupervised structure recovers the largest-variance nuisance axis unless it is removed
+(Section 3.1). We partial age $a_i$ and sex out of every domain by **double/debiased-ML-style
+residualization** (`adapter.py`). Continuous covariates are expanded in a cubic B-spline
+basis $B(\cdot)$ (degree 3, 4 knots; scikit-learn `SplineTransformer`), and the design adds
+covariate×discrete interactions (e.g. sex-specific age curves):
 
-### 2.6 Temporal stability and robustness
+$$A_i=\big[\,1,\ B(a_i),\ \mathrm{sex}_i,\ B(a_i)\!\otimes\!\mathrm{sex}_i\,\big],$$
 
-We projected the locked V0 factor model onto V1–V4 (pooled scaling, per-visit age
-residualization; refit axes matched the locked set, congruence ≥0.94) and computed per-
-dimension V0↔Vk test–retest correlation and ICC (`scripts/longitudinal_axes.py`).
-**Site robustness** was assessed by ComBat [13,14] harmonization (neuroHarmonize) of the
-domain scores across 20 sites with ≥10 patients, re-deriving the dimensions and re-running
-the head-to-head (`scripts/robustness_site.py`). The head-to-head was **replicated** using V2
-as the follow-up.
+with covariate `NaN`s mean-imputed *for the design matrix only*. For each domain $d$ we solve
+the masked least-squares fit $\hat\beta_d=\arg\min_\beta\sum_{i:\,m_{id}=1}(g_{id}-A_i\beta)^2$
+and take residuals $r_{id}=g_{id}-A_i\hat\beta_d$. To avoid over-correction we use **$K$-fold
+cross-fitting** ($K=5$): $\hat\beta_d$ is estimated out-of-fold, so $r_{id}=g_{id}-A_i\hat\beta_d^{(-\kappa(i))}$
+where $\kappa(i)$ is $i$'s fold (Chernozhukov et al.). Feature `NaN`s are preserved. This drives
+the maximum $|{\rm corr}|$ of any downstream dimension with age/sex to $\le 0.002$ (Section 3.3).
 
-### 2.7 Cognition (BP/SZ complementary analysis)
+### 2.5 Masked similarity and spectral embedding
 
-Neuropsychological testing was administered in BP and SZ but is absent in DR **by design**
-(0% coverage vs BP 71% / SZ 86%); including cognition in the 3-cohort model would re-inject
-a cohort/availability confound. We therefore analysed cognition within BP/SZ only
-(`scripts/cognition_bpsz.py`, n=6,099). Raw items were aggregated in two levels (items →
-instrument stem-domains → seven standard constructs: verbal memory [CVLT], executive
-[TMT], processing speed, working memory, verbal and perceptual reasoning, and fluency; TMT
-reverse-signed), factor-analysed (parallel analysis), correlated with the six symptom
-dimensions, and tested for incremental prediction of functioning.
+For the structure test and the (superseded) consensus clustering we embed patients with the
+vendored engine's **masked pairwise-complete cosine** similarity. For patients $i,j$ with
+commonly-observed features $O_{ij}=\{f:m_{if}=m_{jf}=1\}$,
+
+$$\operatorname{sim}(i,j)=\frac{\sum_{f\in O_{ij}} \tilde z_{if}\,\tilde z_{jf}}
+{\sqrt{\sum_{f\in O_{ij}}\tilde z_{if}^2}\;\sqrt{\sum_{f\in O_{ij}}\tilde z_{jf}^2}},$$
+
+on robustly-scaled residual domains $\tilde z$. The engine
+(`MultipartiteSpectralEmbedding`) builds a $k$-nearest-neighbour graph ($k=10$) within each
+cohort-coverage partition, computes a per-partition spectral embedding (8 components) from the
+**symmetric normalized Laplacian** $L=I-D^{-1/2}WD^{-1/2}$ (with $D=\operatorname{diag}(W\mathbf 1)$),
+weights each partition by $\sqrt{n_{\text{features}}\,n_{\text{patients}}}$, $L_2$-normalizes, and
+concatenates. Missing values never enter $\operatorname{sim}$, so the embedding is imputation-free.
+
+### 2.6 Discrete-versus-dimensional structure test
+
+On the embedding $Z$ (`structure_test.py`) we ran five complementary tests:
+
+1. **Eigengap.** On a $k=15$ kNN graph of $Z$ we form $L=I-D^{-1/2}WD^{-1/2}$ and inspect its
+   ordered eigenvalues $\lambda_1\le\lambda_2\le\cdots$; a discrete $k$-cluster geometry shows a
+   jump $\lambda_{k+1}-\lambda_k$, a continuum shows a smooth rise.
+2. **Gap statistic vs a matched-Gaussian null.** For $k=2..12$ we fit $k$-means (inertia $W_k$)
+   and compare $\log W_k$ and the silhouette to $n_{\text{ref}}=5$ draws from a Gaussian
+   $\mathcal N(\hat\mu,\hat\Sigma)$ matched to $Z$; $\mathrm{gap}(k)=\mathbb{E}^\ast[\log W_k]-\log W_k$.
+   A *monotone* gap (no peak) indicates no natural $k$.
+3. **Density clustering.** HDBSCAN (`min_cluster_size`$=150$, `min_samples`$=10$) yields dense
+   clusters, a noise fraction, and the adjusted Rand index ${\rm ARI}$ of its labels against cohort.
+4. **Bimodality.** For the top principal axes we compute Sarle's coefficient
+   $\mathrm{BC}=\dfrac{\gamma_1^2+1}{\gamma_2+\frac{3(n-1)^2}{(n-2)(n-3)}}$ (skew $\gamma_1$,
+   excess kurtosis $\gamma_2$); $\mathrm{BC}>0.555$ suggests multimodality, the uniform value.
+5. **DSM-subtype ordering.** We rank the seven subtypes on an a-priori mood→psychosis scale and
+   correlate (Spearman $\rho$) the rank with each subtype's PC centroid.
+
+The pre-registered verdict rule: *discrete trans-diagnostic* structure requires a peaking gap,
+dense clusters not explained by diagnosis (${\rm ARI}(\text{HDBSCAN},\text{cohort})<0.30$), and
+multimodal axes; ${\rm ARI}(\text{HDBSCAN},\text{cohort})\ge0.40$ implies the only discrete
+structure is diagnosis itself.
+
+### 2.7 Dimensional factor model
+
+We model the residual domain matrix as continuous latent dimensions (`dimensional_axes.py`,
+`dimensional_refine.py`). Residuals are standardized per domain to unit variance and the
+remaining gaps mean-imputed to $0$ (the $z$-space mean), giving $X\in\mathbb R^{N\times 54}$ —
+**the one imputation on the factor path**. We fit the factor model $X=F\Lambda^\top+\varepsilon$
+with $K$ factors (scikit-learn `FactorAnalysis`, maximum-likelihood) and a **varimax** rotation
+$\Lambda\mapsto\Lambda R$ maximizing $\sum_k\!\big[\frac1p\sum_f\lambda_{fk}^4-(\frac1p\sum_f\lambda_{fk}^2)^2\big]$
+(simple structure); factor scores use the regression method.
+
+*Number of factors.* Horn's **parallel analysis** [11] retains factors whose sample
+correlation-matrix eigenvalue exceeds the 95th percentile of eigenvalues from 30
+column-permuted (independent) null matrices. This over-extracted ($K\approx14$, many tiny
+construct-specific factors), so $K$ was fixed by **split-half reproducibility**: for each
+candidate $K$ we fit varimax loadings $\Lambda^{(1)},\Lambda^{(2)}$ on random halves and
+greedily match factors by **Tucker's congruence** [12]
+
+$$\phi(a,b)=\frac{\big|\boldsymbol\lambda_a^{(1)\top}\boldsymbol\lambda_b^{(2)}\big|}
+{\lVert\boldsymbol\lambda_a^{(1)}\rVert\,\lVert\boldsymbol\lambda_b^{(2)}\rVert}.$$
+
+We chose the largest $K\le 8$ with $\min_a\phi\ge0.85$ (reproducibility is high only at low,
+even $K$ and erratic above, from varimax factor-splitting), giving **$K=6$**. Confounding was
+quantified as $\max_k\max\{|{\rm corr}(F_{\cdot k},a)|,|{\rm corr}(F_{\cdot k},\mathrm{sex})|\}$.
+
+### 2.8 Masked autoencoder (no-imputation cross-check)
+
+To test whether the dimensions are an artifact of linear/imputed factor analysis we trained a
+**masked-input autoencoder** (`dimensional_ae.py`, PyTorch). The encoder receives the
+mask-augmented input $[\,x^0_i\,;\,m_i\,]\in\mathbb R^{2d}$ (where $x^0$ is the standardized
+residual matrix with gaps set to $0$ and $m$ the mask), through
+$\mathbb R^{2d}\!\to\!64\!\to\!\mathrm{ReLU}\!\to\!K$; the decoder maps
+$K\!\to\!64\!\to\!\mathrm{ReLU}\!\to\!d$. Crucially the loss is a **masked MSE** that excludes
+missing entries entirely (no imputation):
+
+$$\mathcal L=\frac{\sum_{i,f} m_{if}\,(\hat x_{if}-x^0_{if})^2}{\sum_{i,f} m_{if}}.$$
+
+We optimized with Adam (lr $10^{-3}$, weight decay $10^{-5}$, batch 512, 300 epochs). Agreement
+between the autoencoder bottleneck and the classical factor scores was measured by **canonical
+correlation analysis** (CCA): the canonical correlations are the agreement spectrum, and a
+strong leading canonical correlation indicates the two methods recover the same axes. The locked
+classical six-dimension scores (`results/dimensional_final_scores.parquet`) were carried into all
+downstream analyses.
+
+### 2.9 Outcome prediction (head-to-head versus DSM)
+
+We tested whether the dimensions predict 1-year outcomes beyond diagnosis in **nested 5-fold
+cross-validation** (`phase5_outcomes.py`), leakage-safe by construction: predictors are V0,
+outcomes V1, and every model adjusts for the V0 **baseline** of the same outcome plus age and
+sex, so outcomes that also feed the dimensions (functioning, hospitalization) are predicted as a
+*trajectory*. Three nested models are compared,
+
+$$
+\begin{aligned}
+\textbf{M0 (DSM)}&: \ Y_{V1}\sim \text{baseline}(Y_{V0})+a+\mathrm{sex}+\mathbf 1[\text{arm}],\\
+\textbf{M1 (axes)}&: \ Y_{V1}\sim \text{baseline}(Y_{V0})+a+\mathrm{sex}+F_1..F_6,\\
+\textbf{M2 (both)}&: \ Y_{V1}\sim \text{baseline}(Y_{V0})+a+\mathrm{sex}+\mathbf 1[\text{arm}]+F_1..F_6,
+\end{aligned}
+$$
+
+where $\mathbf 1[\text{arm}]$ is the 7-level subtype one-hot (drop-first; arm implies cohort, so
+adding cohort would be collinear). Predictors are standardized inside each fold. Continuous
+outcomes (EQ-5D, EGF) use ridge regression ($\alpha=1$) scored by cross-validated $R^2$; the
+binary outcome (any hospitalization) uses $\ell_2$ logistic regression scored by stratified-CV
+AUC. The **incremental value** of the dimensions over diagnosis is tested in-sample by a nested
+$F$-test (continuous), $F=\dfrac{(\mathrm{SSR}_0-\mathrm{SSR}_2)/q}{\mathrm{SSR}_2/(n-p_2)}$ with
+$q=6$ added parameters, or a likelihood-ratio test (binary),
+$\Lambda=2(\ell_2-\ell_0)\sim\chi^2_q$ (returned as `NaN` if the saturated model fails to
+converge under rare-subtype separation, in which case the CV metric is primary). Per-dimension
+standardized effects $\beta$ come from the regularized M2 model.
+
+### 2.10 Temporal stability (trait–state gradient)
+
+We projected the locked V0 factor model onto each follow-up (`longitudinal_axes.py`): per visit
+we rebuilt domain scores on a common scale, restricted to the 54 V0 domains, residualized on
+**per-visit** age/sex, standardized, and applied the fixed loadings to obtain $(patient,visit)$
+axis scores. For each axis and visit we report the V0↔V$k$ Pearson and Spearman correlations and
+the **two-way random, single-rater, absolute-agreement intraclass correlation** ${\rm ICC}(2,1)$,
+
+$$
+{\rm ICC}(2,1)=\frac{\mathrm{MS}_R-\mathrm{MS}_E}
+{\mathrm{MS}_R+(k-1)\mathrm{MS}_E+\tfrac{k}{n}\,(\mathrm{MS}_C-\mathrm{MS}_E)},
+$$
+
+with $k=2$ ratings (visits), row/column/error mean-squares $\mathrm{MS}_R,\mathrm{MS}_C,\mathrm{MS}_E$
+on patients present at both visits. Refit per-visit axes matched the locked set (Tucker congruence
+$\ge0.94$).
+
+### 2.11 Site harmonization (ComBat)
+
+To rule out a multi-site batch artifact we harmonized the domain scores across the 20 sites with
+$\ge\!10$ patients by **ComBat** empirical-Bayes adjustment [13,14] (`robustness_site.py`,
+neuroHarmonize). ComBat models each feature as
+$y_{isf}=\alpha_f+X_{is}\beta_f+\gamma_{sf}+\delta_{sf}\,\varepsilon_{isf}$ for site $s$, and
+removes the empirical-Bayes-shrunk site location/scale terms $(\hat\gamma_{sf},\hat\delta_{sf})$ to
+give harmonized $y^\ast$. We re-derived the six dimensions on $y^\ast$, compared them to the locked
+set by Tucker congruence, and re-ran the head-to-head. The site batch magnitude was summarized as
+the mean $|\hat\gamma_{sf}|/\hat\sigma_f$. The head-to-head was independently **replicated** with
+V2 as the follow-up.
+
+### 2.12 Cognition (BP/SZ complementary analysis)
+
+Neuropsychology is absent in DR **by design** (0% vs BP 71% / SZ 86%), so including it in the
+3-cohort model would re-inject a cohort/availability confound; we analysed it within BP/SZ only
+(`cognition_bpsz.py`, $n=6{,}099$). Raw items were aggregated in **two levels** — items →
+instrument stem-domains → seven standard constructs (verbal memory [CVLT], executive [TMT],
+processing speed, working memory, verbal and perceptual reasoning, fluency) — because the
+composite path matches raw canonicals, so constructs must be built from stems; the Trail-Making
+items are reverse-signed so higher = better. The seven constructs were standardized,
+residualized, factor-analysed (parallel analysis for $K$), correlated with the six symptom
+dimensions, and tested for incremental prediction of V1 functioning (ridge $R^2$, as in §2.9).
 
 ---
 
@@ -222,7 +348,8 @@ a third: clusters became a sex×age stratification (cluster↔sex ARI 0.32 > clu
 myocardial infarction→older). Excluding those flags and residualizing age/sex collapsed the
 demographic signal (cluster↔sex ARI 0.32→0.005; ↔age→0.008). We report this hierarchy in
 full because each rung produces a publishable-looking but invalid "phenotype"; the controls
-in Section 2.2 are what make the downstream structure interpretable.
+in Sections 2.3–2.4 (construct aggregation and cross-fitted residualization) are what make
+the downstream structure interpretable.
 
 ### 3.2 Trans-diagnostic structure is dimensional; the only discrete structure is diagnosis
 
