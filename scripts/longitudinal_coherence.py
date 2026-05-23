@@ -68,6 +68,18 @@ CROSS_FIT = 5
 RANDOM_STATE = 0
 PALETTE = ["#3498db", "#e67e22", "#16a085", "#9b59b6", "#c0392b", "#7f8c8d"]
 
+# DSM-5 enrolled subtypes, ordered on the mood↔psychosis continuum (for the
+# DSM-5 → phenotype flow comparison).
+SPECTRUM = {"Trouble dépressif majeur": 0, "Bipolaire de type 2": 1, "Bipolaire de type 1": 2,
+            "Bipolaire non spécifié": 3, "Trouble schizo-affectif": 4,
+            "Trouble schizophréniforme": 5, "Schizophrénie": 6}
+DSM_SHORT = {"Trouble dépressif majeur": "MDD", "Bipolaire de type 2": "BP-II",
+             "Bipolaire de type 1": "BP-I", "Bipolaire non spécifié": "BP-NOS",
+             "Trouble schizo-affectif": "schizoaff.", "Trouble schizophréniforme": "schizophrenif.",
+             "Schizophrénie": "schizophr."}
+# mood (blue) → psychosis (red) gradient for the 7 DSM nodes
+DSM_COLORS = ["#2c7bb6", "#5e9fc6", "#abd9e9", "#cccccc", "#fdae61", "#f46d43", "#d7191c"]
+
 
 def _visit_index(frame_visit: pd.DataFrame, visit: str) -> pd.MultiIndex:
     code = frame_visit["cohort"].map(COHORT_TO_CODE)
@@ -197,19 +209,39 @@ def main() -> int:
         print("\nper-phenotype persistence V0→V1:",
               {int(i): round(float(x), 2) for i, x in per.items()})
 
-    _write_report(coherence, pd.DataFrame(transitions), wide, k, cv_acc)
+    # ── compare the data-driven phenotypes with the 7 DSM-5 subgroups ──
+    v0sub = df[df["visit"] == "V0"]
+    dsm_of = pd.Series(
+        v0sub["arm"].astype(str).to_numpy(),
+        index=(v0sub["cohort"].astype(str) + "::" + v0sub["usubjid_patients"].astype(str)).to_numpy(),
+        name="dsm")
+    dsm_of = dsm_of[~dsm_of.index.duplicated(keep="first")]
+    ari_dsm = float("nan")
+    if "V0" in wide.columns:
+        v0p = wide["V0"].dropna().astype(int)
+        common = v0p.index.intersection(dsm_of.index)
+        if len(common) > 20:
+            d, p2 = dsm_of.reindex(common), v0p.reindex(common)
+            ari_dsm = float(adjusted_rand_score(d.astype("category").cat.codes, p2))
+            ct = pd.crosstab(d, p2)
+            ct.to_csv(RESULTS_DIR / "longitudinal_dsm_phenotype.csv")
+            print(f"\nDSM-5 subtype ↔ V0 phenotype ARI = {ari_dsm:.3f} "
+                  f"(≈0 ⇒ phenotypes cut across DSM-5; the flow is trans-diagnostic)")
+
+    _write_report(coherence, pd.DataFrame(transitions), wide, k, cv_acc, dsm_of, ari_dsm)
 
     meta = {"min_obs": MIN_OBS, "residualize": {"spline_df": SPLINE_DF, "cross_fit": CROSS_FIT},
             "v0_classifier_cv_accuracy": cv_acc, "k": k,
             "n_patient_visits_assigned": int(len(assign)),
             "coherence": coherence.to_dict(orient="records"),
+            "dsm_phenotype_ari": ari_dsm,
             "dr_excluded_at": "V3", "site_note": "site excluded; ComBat sensitivity deferred (#43)"}
     (RESULTS_DIR / "longitudinal_meta.json").write_text(json.dumps(meta, indent=2, default=str))
     print("\nWrote results/longitudinal_* and reports/longitudinal.html. Done.")
     return 0
 
 
-def _write_report(coherence, trans, wide, k, cv_acc):
+def _write_report(coherence, trans, wide, k, cv_acc, dsm_of=None, ari_dsm=float("nan")):
     def heat(v):
         sub = trans[trans["to_visit"] == v]
         if sub.empty:
@@ -227,14 +259,30 @@ def _write_report(coherence, trans, wide, k, cv_acc):
         return pio.to_html(fig, include_plotlyjs=False, full_html=False,
                            config={"displayModeBar": False})
 
-    # Sankey V0→V1→V2
+    # Sankey: DSM-5 subtype → V0 → V1 → V2 phenotype flow
     sankey_html = ""
     stages = [s for s in ["V0", "V1", "V2"] if s in wide.columns]
     if len(stages) >= 2:
-        nodes = [f"{s}·C{c}" for s in stages for c in range(k)]
+        dsm_order = sorted(SPECTRUM, key=SPECTRUM.get)
+        has_dsm = dsm_of is not None and "V0" in wide.columns
+        dsm_labels = [DSM_SHORT[s] for s in dsm_order] if has_dsm else []
+        pheno_nodes = [f"{s}·C{c}" for s in stages for c in range(k)]
+        nodes = dsm_labels + pheno_nodes
         nidx = {n: i for i, n in enumerate(nodes)}
         src, tgt, val = [], [], []
-        for a, b in zip(stages, stages[1:]):
+        if has_dsm:                                     # DSM-5 subtype → V0 phenotype
+            v0p = wide["V0"].dropna().astype(int)
+            common = v0p.index.intersection(dsm_of.index)
+            ctd = pd.crosstab(dsm_of.reindex(common), v0p.reindex(common))
+            for s in dsm_order:
+                if s not in ctd.index:
+                    continue
+                for j in ctd.columns:
+                    n = int(ctd.loc[s, j])
+                    if n > 0:
+                        src.append(nidx[DSM_SHORT[s]]); tgt.append(nidx[f"V0·C{int(j)}"])
+                        val.append(n)
+        for a, b in zip(stages, stages[1:]):            # V0 → V1 → V2
             pair = wide[[a, b]].dropna()
             ct = pd.crosstab(pair[a].astype(int), pair[b].astype(int))
             for i in ct.index:
@@ -242,14 +290,38 @@ def _write_report(coherence, trans, wide, k, cv_acc):
                     if ct.loc[i, j] > 0:
                         src.append(nidx[f"{a}·C{int(i)}"]); tgt.append(nidx[f"{b}·C{int(j)}"])
                         val.append(int(ct.loc[i, j]))
-        node_color = [PALETTE[c % len(PALETTE)] for _ in stages for c in range(k)]
+        node_color = ([DSM_COLORS[SPECTRUM[s]] for s in dsm_order] if has_dsm else []) + \
+                     [PALETTE[c % len(PALETTE)] for _ in stages for c in range(k)]
+        title = ("Phenotype flow: DSM-5 subtype → V0 → V1 → V2 (link width = patients)"
+                 if has_dsm else "Phenotype flow V0 → V1 → V2")
         fig = go.Figure(go.Sankey(
             node=dict(label=nodes, color=node_color, pad=14, thickness=14),
             link=dict(source=src, target=tgt, value=val)))
-        fig.update_layout(title="Phenotype flow V0 → V1 → V2", height=460,
+        fig.update_layout(title=title, height=480, font=dict(size=11),
                           margin=dict(t=46, l=10, r=10, b=10))
         sankey_html = pio.to_html(fig, include_plotlyjs="cdn", full_html=False,
                                   config={"displayModeBar": False})
+
+    # DSM-5 × V0-phenotype composition (column-normalized: each phenotype's DSM mix)
+    dsm_cmp_html = ""
+    if dsm_of is not None and "V0" in wide.columns:
+        v0p = wide["V0"].dropna().astype(int)
+        common = v0p.index.intersection(dsm_of.index)
+        if len(common) > 20:
+            dsm_order = sorted(SPECTRUM, key=SPECTRUM.get)
+            ct = pd.crosstab(dsm_of.reindex(common), v0p.reindex(common))
+            ct = ct.reindex(index=[s for s in dsm_order if s in ct.index], fill_value=0)
+            colnorm = ct.div(ct.sum(0).replace(0, 1), axis=1)
+            fig = go.Figure(go.Heatmap(
+                z=colnorm.to_numpy(), x=[f"C{c}" for c in colnorm.columns],
+                y=[DSM_SHORT.get(s, s) for s in colnorm.index],
+                text=ct.to_numpy(), texttemplate="%{text}", colorscale="Purples", zmin=0, zmax=1,
+                colorbar=dict(title="col frac", thickness=12)))
+            fig.update_layout(title="DSM-5 subtype composition of each V0 phenotype (n in cells)",
+                              height=360, xaxis_title="V0 phenotype",
+                              yaxis_title="DSM-5 (mood→psychosis)", margin=dict(t=46, l=110, b=46))
+            dsm_cmp_html = pio.to_html(fig, include_plotlyjs=False, full_html=False,
+                                       config={"displayModeBar": False})
 
     css = ("body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;margin:0;"
            "padding:0 24px 60px;color:#1f2933;line-height:1.5}h1{color:#2b3a55}"
@@ -268,7 +340,16 @@ def _write_report(coherence, trans, wide, k, cv_acc):
                               pct_persist=(coherence["pct_persist"]*100).round(0))
              .to_html(index=False, border=0)]
     if sankey_html:
-        parts += ["<h2>Phenotype flow</h2>", sankey_html]
+        parts += ["<h2>Phenotype flow (DSM-5 → V0 → V1 → V2)</h2>", sankey_html]
+    if dsm_cmp_html:
+        ari_txt = f"{ari_dsm:.3f}" if ari_dsm == ari_dsm else "n/a"
+        parts += ["<h2>Comparison with the 7 DSM-5 subgroups</h2>",
+                  f"<div class='callout'>The data-driven phenotypes <b>cut across DSM-5</b>: "
+                  f"the adjusted Rand index between the 7 enrolled DSM-5 subtypes and the V0 "
+                  f"phenotypes is <b>{ari_txt}</b> (0 = independent, 1 = identical). Each "
+                  f"phenotype draws from multiple diagnoses and each diagnosis spreads across "
+                  f"phenotypes — the phenotypes are trans-diagnostic, not relabelled "
+                  f"diagnoses.</div>", dsm_cmp_html]
     parts.append("<h2>Transition matrices</h2>")
     for v in ["V1", "V2", "V3", "V4"]:
         h = heat(v)

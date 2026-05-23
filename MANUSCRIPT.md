@@ -493,7 +493,9 @@ at baseline), so its low *r* (0.08) is a data property, not instability, and it 
 treated as a baseline-only axis. This gradient unifies the cross-sectional and longitudinal
 results: the depression dimension is both moderately stable and the strongest predictor of
 functioning/quality of life, while developmental/temperamental load (ADHD/trauma) is the
-most enduring trait.
+most enduring trait. A discrete-phenotype view of the same longitudinal signal — which is
+both trans-diagnostic (ARI 0.006 with DSM-5) and temporally fluid (~38% persistence) — is
+given in Supplementary Figure S1.
 
 ### 3.7 Cognition: a semi-independent general-ability and processing-speed structure
 
@@ -725,6 +727,28 @@ correspondingly named `reports/*.html`.
 - **Figure 5. Cognition (BP/SZ)** (`fig5_cognition.png`) — (a) construct loadings on the
   *g* and processing-speed factors; (b) cognition × symptom-dimension correlations
   (max |r| 0.24).
+
+---
+
+## Supplementary material
+
+**Supplementary Figure S1. A discrete-phenotype view: the data-driven phenotypes cut across
+DSM-5 and are temporally fluid** (`reports/figures/figS1_dsm_phenotype_flow.png`,
+`figS1b_dsm_composition.png`; `scripts/longitudinal_coherence.py` +
+`export_longitudinal_figure.py`). As an *exploratory discrete view* — superseded by the
+dimensional model of the main text — we assigned every patient–visit to one of five V0
+domain-phenotypes with a NaN-native gradient-boosted classifier (5-fold V0 accuracy 0.84)
+and traced the flow **DSM-5 subtype → V0 → V1 → V2** (Sankey), with the DSM-5 composition of
+each phenotype shown as a heatmap. Two features reinforce the dimensional conclusion rather
+than contradict it: **(i) trans-diagnostic** — the five phenotypes are essentially
+independent of the seven DSM-5 subtypes (adjusted Rand index **0.006**; every phenotype
+draws from every diagnosis, Fig S1b); **(ii) fluid** — only ~**38%** of patients remain in
+their V0 phenotype at each follow-up (V0↔V$k$ ARI ≈ 0.07), and persistence is itself
+phenotype-dependent (trait-like smoking/illness-burden 0.59 vs state-like manic-activation
+0.14). Discrete phenotypes are therefore neither diagnosis-aligned nor temporally stable —
+consistent with reproducible *slices of a continuum* rather than natural kinds. The
+continuous trait–state gradient on the six dimensional axes (Figure 4, §3.6) is the stable
+representation of this same longitudinal signal.
 
 ---
 
