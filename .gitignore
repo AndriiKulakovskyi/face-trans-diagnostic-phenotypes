@@ -54,7 +54,6 @@ output/
 # duplicate data/*.csv, plus ASP). Kept on disk as a working copy but NOT
 # tracked: the engine is reused as a library, and cluster reproduction reads
 # the precomputed data/external/face_stratification/*.parquet instead.
-archive/data/
 
 # Logs
 *.log
