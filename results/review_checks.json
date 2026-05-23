@@ -29,7 +29,7 @@
   ],
   "cca_null_leading_p95": 0.063,
   "cca_null_leading_mean": 0.052,
-  "cohort_from_mask_bacc": 0.979,
+  "cohort_from_mask_bacc": 0.98,
   "cohort_from_embedding_bacc": 1.0,
   "chance_bacc": 0.333,
   "continuum_rho": 0.786,

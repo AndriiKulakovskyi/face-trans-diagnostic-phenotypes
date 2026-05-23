@@ -30,7 +30,7 @@ from scipy.stats import spearmanr  # noqa: E402
 from sklearn.cross_decomposition import CCA  # noqa: E402
 from sklearn.decomposition import PCA  # noqa: E402
 from sklearn.ensemble import HistGradientBoostingClassifier  # noqa: E402
-from sklearn.model_selection import cross_val_score  # noqa: E402
+from sklearn.model_selection import StratifiedKFold, cross_val_score  # noqa: E402
 
 from face_common import build_unified_dataframe  # noqa: E402
 
@@ -115,9 +115,10 @@ def main() -> int:
     mask = scores.reindex(final.index).notna().astype(int).to_numpy()
     y = pd.Series(cohort).astype("category").cat.codes.to_numpy()
     clf = HistGradientBoostingClassifier(random_state=0)
-    bacc_mask = float(np.mean(cross_val_score(clf, mask, y, cv=5, scoring="balanced_accuracy")))
+    cvk = StratifiedKFold(5, shuffle=True, random_state=0)   # cohort-ordered ⇒ must shuffle
+    bacc_mask = float(np.mean(cross_val_score(clf, mask, y, cv=cvk, scoring="balanced_accuracy")))
     bacc_emb = float(np.mean(cross_val_score(HistGradientBoostingClassifier(random_state=0),
-                                             emb.reindex(final.index).to_numpy(float), y, cv=5,
+                                             emb.reindex(final.index).to_numpy(float), y, cv=cvk,
                                              scoring="balanced_accuracy")))
     out["cohort_from_mask_bacc"] = round(bacc_mask, 3)
     out["cohort_from_embedding_bacc"] = round(bacc_emb, 3)

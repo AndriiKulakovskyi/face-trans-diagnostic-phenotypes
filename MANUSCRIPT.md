@@ -425,8 +425,8 @@ The formal structure test (`results/structure_test.json`; Figure 1) was unambigu
   multimodal (this is the weakest of the five lines of evidence and is reported as such).
 - **The dense structure tracks diagnosis — but partly via measurement protocol.** HDBSCAN
   found four dense regions that *were the cohorts* (cluster↔cohort ARI 0.70; 7% noise). This
-  cohort separation is **confounded by differential missingness**: cohort is **97.9%
-  predictable (balanced accuracy) from the observation mask alone**, because the three cohorts
+  cohort separation is **confounded by differential missingness**: cohort is **98%
+  predictable (balanced accuracy, shuffled CV) from the observation mask alone**, because the three cohorts
   received overlapping but not identical instrument batteries. So the only discrete structure
   reflects *which data were collected* as much as clinical content — either way it is **not
   trans-diagnostic clinical clustering**.

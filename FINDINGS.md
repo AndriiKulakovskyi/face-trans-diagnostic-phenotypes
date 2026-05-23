@@ -233,8 +233,8 @@ per-visit-age residualized; the refit axes match the locked set, Tucker congruen
   psychosis **ρ=0.79, bootstrap 95% CI [0.75, 0.86]** (but only 7 a-priori-ordered centroids).
   K-selection is **non-monotone** (figS2; K=5 min-congruence 0.31, K=6 0.95 — K chosen on
   reproducibility+interpretability, not a clean elbow). **Honest caveat:** HDBSCAN's cohort
-  recovery (ARI 0.70) is **partly a measurement-protocol artifact** — cohort is **97.9%
-  predictable from the observation mask alone** (cohorts got different instrument batteries);
+  recovery (ARI 0.70) is **partly a measurement-protocol artifact** — cohort is **98%
+  predictable from the observation mask alone** (shuffled CV) (cohorts got different instrument batteries);
   the dimensional verdict is unaffected (still no trans-diagnostic discrete clusters).
 
 ### 3h. Cognition (BP/SZ complementary analysis)
