@@ -206,6 +206,24 @@ bimodality, DSM-subtype anchor + mood↔psychosis continuum.
 - **For the paper Discussion:** we explicitly tested discrete structure and showed the
   only discrete signal is DSM diagnosis itself → motivates the dimensional/HiTOP framing.
 
+## E13 · Dimensional axis model — classical + AI — 2026-05-23
+`scripts/dimensional_axes.py` (sklearn FA, varimax) + `scripts/dimensional_ae.py`
+(PyTorch masked autoencoder, no imputation — mask fed to encoder, masked recon loss).
+- **Classical:** parallel analysis K=14 (capped 8) → **7 reproducible axes**
+  (Tucker congruence ≥0.85; 8th=0.18 noise), **confound-free** (max age/sex |corr|
+  0.002): depression-severity (6.3%), later-onset, mania/activation, illness-burden,
+  ADHD/impulsivity/trauma, **metabolic/inflammatory**, functioning. Variance diffuse
+  ⇒ multi-axial, no dominant factor.
+- **AI (masked AE):** CCA with FA = [0.93,0.84,0.80,0.74,0.63,…] → top-5 axes agree;
+  recovers **mood↔psychosis continuum |Spearman| 0.89** (best of any method). Small
+  age leak (0.15) vs FA 0.002 — note for paper.
+- **Convergent validity** across linear/nonlinear + imputed/no-imputation ⇒ the
+  dimensional axes are robust, not artifacts. This is the convincing trans-diagnostic
+  representation. Reports: `dimensional_axes.html`, `dimensional_ae.html`.
+- Note: varimax dispersed the mood↔psychosis axis (onto noise axis8); it is cleanest
+  unrotated (PCA) / in the AE. Consider an oblique rotation, or report the AE axis as
+  the mood↔psychosis dimension. Axis scores → Phase 4/5.
+
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
   attempt at *discrete*-structure discovery, in case a learned representation

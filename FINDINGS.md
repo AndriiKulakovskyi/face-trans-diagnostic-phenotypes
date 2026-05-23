@@ -127,6 +127,27 @@ reproduce the V0 spectral-embedding geometry.)
   burden) ones. Reframes "temporal coherence" from a yes/no claim to a
   phenotype-specific trait–state gradient. DR excluded at V3 (attrition).
 
+### 3d. Dimensional axis model — the convincing representation (classical + AI)
+Following the dimensional verdict (§2.4): model trans-diagnostic variation as
+continuous axes — `scripts/dimensional_axes.py` (sklearn varimax factor analysis)
+and `scripts/dimensional_ae.py` (PyTorch masked autoencoder, **no imputation**).
+- **7 reproducible, confound-free axes** (classical FA; parallel analysis K=14,
+  capped 8): (1) **depression/internalizing severity** (QIDS/MADRS/STAI/FAST/PSQI,
+  6.3% var), (2) later age-of-onset, (3) **mania/activation** (Altman/YMRS/Mathys/
+  BIS), (4) **hospitalization/illness-burden**, (5) ADHD/impulsivity/childhood-trauma
+  (WURS/BIS/CTQ), (6) **metabolic/inflammatory** (metabolic_syndrome/cholesterol/
+  inflammation), (7) functioning. Split-half **Tucker congruence ≥0.85** for all 7
+  (8th = noise, 0.18); **max |corr| with age/sex = 0.002**. Variance is diffuse (no
+  dominant factor) ⇒ genuinely multi-axial.
+- **Convergent validity (AI):** the masked autoencoder's nonlinear axes agree with
+  the classical factors (**canonical correlations 0.93/0.84/0.80/0.74/0.63** for the
+  top 5) and recover the **mood↔psychosis continuum** strongly (|Spearman| **0.89**
+  on one AE axis; PCA 0.79; varimax dispersed it). Two very different methods
+  (linear/imputed vs nonlinear/no-imputation) converge → the axes are robust.
+  Caveat: the AE has a small age leak (|corr| 0.15) vs FA's 0.002.
+- **These axis scores are the trans-diagnostic representation** carried into Phase 4
+  (do axes persist?) and Phase 5 (do axes beat DSM on outcomes?).
+
 ## 4. The scientific fork (framing)
 Two mutually-exclusive products, because **diagnosis + demographics are the
 dominant variance axes** in the data:
