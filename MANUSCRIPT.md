@@ -40,7 +40,7 @@ and consistency at a second follow-up (V2, same cohort).
 
 **Results.** Trans-diagnostic variation was **dimensional, not categorical**: the
 similarity spectrum had no eigengap, the gap statistic rose monotonically with *k* (no
-natural cluster count), top dimensions were unimodal, and the only dense discrete
+natural cluster count), top dimensions showed no clear multimodality, and the only dense discrete
 structure recovered by HDBSCAN was diagnosis itself (cluster–cohort ARI 0.70). The seven
 enrolled DSM subtypes ordered along a single mood↔psychosis continuum (|Spearman| 0.79).
 A **six-dimension model** was reproducible (split-half Tucker congruence ≥0.95),
@@ -250,9 +250,13 @@ greedily match factors by **Tucker's congruence** [12]
 $$\phi(a,b)=\frac{\big|\boldsymbol\lambda_a^{(1)\top}\boldsymbol\lambda_b^{(2)}\big|}
 {\lVert\boldsymbol\lambda_a^{(1)}\rVert\,\lVert\boldsymbol\lambda_b^{(2)}\rVert}.$$
 
-We chose the largest $K\le 8$ with $\min_a\phi\ge0.85$ (reproducibility is high only at low,
-even $K$ and erratic above, from varimax factor-splitting), giving **$K=6$**. Confounding was
-quantified as $\max_k\max\{|{\rm corr}(F_{\cdot k},a)|,|{\rm corr}(F_{\cdot k},\mathrm{sex})|\}$.
+Reproducibility is **non-monotone** in $K$ — varimax factor-splitting makes the min-congruence
+curve jagged (0.98/0.94 at K=3/4, **0.31 at K=5**, 0.95 at K=6, 0.08 at K=7; Figure S2), so
+there is no clean elbow. We took **$K=6$** as the most granular solution whose factors all
+reproduce ($\min_a\phi\ge0.85$); the choice rests on this reproducibility together with
+interpretability and downstream stability rather than on a single decisive statistic.
+Confounding was quantified as
+$\max_k\max\{|{\rm corr}(F_{\cdot k},a)|,|{\rm corr}(F_{\cdot k},\mathrm{sex})|\}$.
 
 ### 2.8 Masked autoencoder for dimensionality compression (no-imputation cross-check)
 
@@ -416,14 +420,20 @@ The formal structure test (`results/structure_test.json`; Figure 1) was unambigu
 - **Monotone gap statistic.** Real-data silhouette exceeded the Gaussian null at every *k*,
   but the gap *increased monotonically* with *k* (0.025 at k=2 → 0.39 at k=12) rather than
   peaking — the signature of a continuum, not a fixed cluster count.
-- **Unimodal dimensions.** The top principal axes were unimodal (Sarle bimodality
-  coefficients 0.36–0.56, all below the 0.625 uniform threshold).
-- **The discrete structure is diagnosis.** HDBSCAN found four dense regions, but these
-  *were the cohorts* (cluster↔cohort ARI 0.70; 7% noise) — an SZ region, a DR region and
-  two BP regions.
+- **No clearly multimodal axis.** The top principal axes had Sarle bimodality coefficients
+  0.37–0.56 — at or just below the 0.555 uniform-distribution benchmark; none is clearly
+  multimodal (this is the weakest of the five lines of evidence and is reported as such).
+- **The dense structure tracks diagnosis — but partly via measurement protocol.** HDBSCAN
+  found four dense regions that *were the cohorts* (cluster↔cohort ARI 0.70; 7% noise). This
+  cohort separation is **confounded by differential missingness**: cohort is **97.9%
+  predictable (balanced accuracy) from the observation mask alone**, because the three cohorts
+  received overlapping but not identical instrument batteries. So the only discrete structure
+  reflects *which data were collected* as much as clinical content — either way it is **not
+  trans-diagnostic clinical clustering**.
 - **A mood↔psychosis continuum.** The seven DSM subtypes ordered monotonically along the
-  leading axis (|Spearman| 0.79 on the embedding, 0.64 on raw-domain PCA): MDD → BP-II →
-  BP-I → BP-NOS → schizoaffective → schizophreniform → schizophrenia.
+  leading axis (|Spearman| 0.79, bootstrap 95% CI [0.75, 0.86] over the 7 a-priori-ordered
+  subtype centroids; 0.64 on raw-domain PCA): MDD → BP-II → BP-I → BP-NOS → schizoaffective →
+  schizophreniform → schizophrenia.
 
 The implication is that previously reported discrete trans-diagnostic "biotypes" in such
 data are reproducible **slices of a continuum** (stable but low-silhouette), and that
@@ -433,14 +443,14 @@ the data do not contain. We therefore model the trans-diagnostic variation dimen
 ### 3.3 Six reproducible, confound-free trans-diagnostic dimensions
 
 The six-dimension model (Table 2; `results/dimensional_final_loadings.csv`; Figure 2) was
-reproducible (split-half minimum Tucker congruence 0.95, mean 0.98) and essentially
-orthogonal to demographics (maximum |correlation| with age/sex ≤0.002 for all six). They are
-also largely **independent of diagnosis**: DSM-5 subtype explains only η² = 0.01–0.05 (95% CI
-upper bounds ≤0.053) of the variance of five of the six axes, and 0.14 (95% CI 0.13–0.16) of
-the most diagnosis-linked (depression) axis (Figure 6c; 2000-sample bootstrap) — the
-dimensions are genuinely trans-diagnostic, not diagnosis re-encodings. No
-single dimension dominated (variance diffuse; largest ≈6%), confirming genuinely
-multi-axial structure. The dimensions are:
+reproducible (split-half minimum Tucker congruence 0.95, mean 0.98). Orthogonality to age and
+sex (|correlation| ≤0.002) is **by construction** — they were residualized out — so the
+meaningful test is independence from variables that were *not* removed: **recruiting site
+explains ≤5% (η² ≤0.052) and cohort ≤10% (η² ≤0.103) of any axis**, and DSM-5 subtype only
+η² 0.01–0.05 of five axes and 0.14 [95% CI 0.13–0.16] of the most diagnosis-linked (depression)
+axis (Figure 6c; 2000-sample bootstrap) — the dimensions are genuinely trans-diagnostic and
+not site/diagnosis re-encodings. No single dimension dominated (variance diffuse; largest
+≈6%), confirming genuinely multi-axial structure. The dimensions are:
 
 1. **Depression / internalizing severity** — QIDS (+0.72), MADRS (+0.71), trait anxiety
    STAI (+0.63), functioning FAST (+0.57, impaired), with quality of life and global
@@ -460,7 +470,9 @@ multi-axial structure. The dimensions are:
 
 The no-imputation masked autoencoder recovered the same structure: its nonlinear latent
 axes were highly aligned with the classical factors (canonical correlations 0.93, 0.84,
-0.80, 0.74, 0.63 for the top five). The autoencoder additionally recovered the
+0.80, 0.74, 0.63 for the top five) — far above a row-permutation null (leading canonical
+correlation 0.93 vs null mean 0.05, 95th percentile 0.06; 200 permutations), so the
+agreement is genuine and not an artifact of CCA's maximization. The autoencoder additionally recovered the
 mood↔psychosis continuum strongly along one axis (|Spearman| 0.89 against the DSM-subtype
 ordering); the orthogonal varimax rotation distributes this cross-axis direction rather
 than placing it on a single factor (per-axis subtype |Spearman| ≤0.36), which we report
@@ -544,7 +556,7 @@ dimensions** (maximum |correlation| 0.24): the clearest link was lower general a
 greater illness burden (−0.24), then metabolic load (−0.16) and depression severity (−0.13)
 — consistent with the literature that cognition and symptoms are related but
 non-redundant. Cognition added a small, independent increment to 1-year functioning over
-the symptom dimensions (EGF R² 0.169 → 0.174). Cognition is reported as a complementary
+the symptom dimensions (EGF R² 0.394 → 0.398, Δ +0.004; shuffled CV). Cognition is reported as a complementary
 BP/SZ dimension rather than folded into the trans-diagnostic model, to avoid re-introducing
 the cohort-availability confound.
 
@@ -619,13 +631,12 @@ psychiatric phenotyping.
 stability, interpretability and prediction, not by separation. (2) Varimax orthogonality
 distributes the mood↔psychosis spectrum across axes rather than isolating it; an oblique
 rotation (deferred here) might localize it, and the autoencoder already recovers it at
-|Spearman| 0.89. (3) The autoencoder is a *cross-check*, not an independent estimator: it is
-trained on the same zero-filled matrix as the factor model (it only masks the loss), and
-canonical correlations are maximized by construction, so their agreement guards against a
-linear-model artifact but is not strong evidence against an imputation artifact (a permutation
-null on the canonical correlations is a needed addition); it also carries a small residual age
-leak (|r| 0.15) absent from the factor model (0.002). The factor model is the primary
-representation. (4) The
+|Spearman| 0.89. (3) The autoencoder is a *cross-check*, not a fully independent estimator: it is
+trained on the same zero-filled matrix as the factor model (it only masks the loss). Its
+agreement with the factor model is well above a row-permutation null (leading canonical
+correlation 0.93 vs 0.06), so it is not a CCA-maximization artifact, but it does not rule out
+a *shared* imputation artifact; it also carries a small residual age leak (|r| 0.15) absent
+from the factor model (0.002). The factor model is the primary representation. (4) The
 later-onset dimension is baseline-only and cannot be tracked longitudinally; metabolic
 test–retest is attenuated by sparser follow-up assays. (5) Cognition is missing in DR by
 design, so the cognitive results are BP/SZ-specific. (6) The cohort is a French
@@ -766,7 +777,8 @@ correspondingly named `reports/*.html`.
 
 - **Figure 1. Trans-diagnostic structure is dimensional** (`fig1_structure.png`). Four
   panels: (a) Laplacian eigenvalue spectrum (no gap); (b) gap statistic vs *k* rising
-  monotonically; (c) Sarle bimodality of top axes (all < 0.625, unimodal); (d) the seven
+  monotonically; (c) Sarle bimodality of top axes (0.37–0.56, around the 0.555 benchmark —
+  no clear multimodality); (d) the seven
   DSM subtypes ordered on a mood↔psychosis continuum (PC1, ρ=0.79). Title notes
   HDBSCAN↔cohort ARI 0.70.
 - **Figure 2. The six trans-diagnostic dimensions** (`fig2_loadings.png`) — salient
@@ -813,6 +825,13 @@ phenotype-dependent (trait-like smoking/illness-burden 0.59 vs state-like manic-
 consistent with reproducible *slices of a continuum* rather than natural kinds. The
 continuous trait–state gradient on the six dimensional axes (Figure 4, §3.6) is the stable
 representation of this same longitudinal signal.
+
+**Supplementary Figure S2. Factor-count selection is non-monotone**
+(`reports/figures/figS2_kcurve.png`; `scripts/review_checks.py`). Split-half Tucker congruence
+vs K: the mean stays high but the **minimum** congruence is jagged (0.98/0.94 at K=3/4, 0.31 at
+K=5, 0.95 at K=6, 0.08 at K=7) because varimax rotation splits factors unstably at some K. We
+report K=6 as the most granular reproducible solution (min congruence ≥0.85) rather than as a
+clean optimum; K=4 is a defensible, more parsimonious alternative.
 
 ---
 

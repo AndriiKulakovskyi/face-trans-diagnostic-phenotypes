@@ -119,10 +119,10 @@ def fig1_structure():
     # (c) bimodality of top PCs
     bc = np.array(st["bimodality_pc"])
     bars = ax[1, 0].bar(range(1, len(bc) + 1), bc, color="#7e57c2")
-    ax[1, 0].axhline(0.625, ls="--", color="#d62728")
-    ax[1, 0].text(len(bc) + 0.1, 0.625, "  uniform\n  threshold", va="center",
+    ax[1, 0].axhline(0.555, ls="--", color="#d62728")
+    ax[1, 0].text(len(bc) + 0.1, 0.555, "  uniform\n  benchmark", va="center",
                   color="#d62728", fontsize=8)
-    ax[1, 0].set(title="(c) Top axes are unimodal", xlabel="principal axis",
+    ax[1, 0].set(title="(c) No axis is clearly multimodal", xlabel="principal axis",
                  ylabel="Sarle bimodality coeff.", ylim=(0, 0.8))
 
     # (d) DSM-subtype mood↔psychosis continuum (PC1 of standardized domains)

@@ -1,0 +1,40 @@
+{
+  "eta_cohort": {
+    "axis1": 0.103,
+    "axis2": 0.008,
+    "axis3": 0.006,
+    "axis4": 0.098,
+    "axis5": 0.009,
+    "axis6": 0.047
+  },
+  "eta_site": {
+    "axis1": 0.052,
+    "axis2": 0.008,
+    "axis3": 0.02,
+    "axis4": 0.04,
+    "axis5": 0.018,
+    "axis6": 0.034
+  },
+  "eta_cohort_max": 0.103,
+  "eta_site_max": 0.052,
+  "cca_observed": [
+    0.935,
+    0.844,
+    0.803,
+    0.737,
+    0.627,
+    0.413,
+    0.279,
+    0.029
+  ],
+  "cca_null_leading_p95": 0.063,
+  "cca_null_leading_mean": 0.052,
+  "cohort_from_mask_bacc": 0.979,
+  "cohort_from_embedding_bacc": 1.0,
+  "chance_bacc": 0.333,
+  "continuum_rho": 0.786,
+  "continuum_rho_ci": [
+    0.75,
+    0.857
+  ]
+}

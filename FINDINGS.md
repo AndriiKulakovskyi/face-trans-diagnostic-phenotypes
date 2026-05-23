@@ -226,6 +226,16 @@ per-visit-age residualized; the refit axes match the locked set, Tucker congruen
   (split-half 0.95), **confound-free** (age/sex 0.002), **site-robust** (ComBat congruence
   ~1), **de-circularization-robust**, and **consistent across V1+V2** (same cohort) — solid
   for the manuscript, pending independent external replication.
+- **Extra robustness checks (`review_checks.py`, addresses review #5–9):** the age/sex
+  orthogonality (0.002) is by construction (residualized) — the meaningful test is independence
+  from variables NOT removed: **site η² ≤0.05, cohort η² ≤0.10** per axis. AE↔FA agreement is
+  real, not a CCA artifact (**leading canonical corr 0.93 vs permutation null 0.06**). Mood↔
+  psychosis **ρ=0.79, bootstrap 95% CI [0.75, 0.86]** (but only 7 a-priori-ordered centroids).
+  K-selection is **non-monotone** (figS2; K=5 min-congruence 0.31, K=6 0.95 — K chosen on
+  reproducibility+interpretability, not a clean elbow). **Honest caveat:** HDBSCAN's cohort
+  recovery (ARI 0.70) is **partly a measurement-protocol artifact** — cohort is **97.9%
+  predictable from the observation mask alone** (cohorts got different instrument batteries);
+  the dimensional verdict is unaffected (still no trans-diagnostic discrete clusters).
 
 ### 3h. Cognition (BP/SZ complementary analysis)
 Cognition is absent in DR **by design** (0% vs BP 71% / SZ 86%) — including it in the
@@ -242,7 +252,7 @@ perceptual reasoning, fluency; TMT reverse-signed — confirmed −0.16 vs CVLT)
   illness burden), then ↔ metabolic (−0.16) and depression-severity (−0.13). Not
   redundant with symptoms (matches the cognition-vs-symptom literature).
 - **Small, non-redundant increment to functioning** (V1 EGF, BP/SZ n=2,478): symptom-axes
-  R² 0.169 → +cognition 0.174 (Δ **+0.005**) — modest but independent.
+  R² 0.394 → +cognition 0.398 (Δ **+0.004**; shuffled CV) — modest but independent.
 
 ## 4. The scientific fork (framing)
 Two mutually-exclusive products, because **diagnosis + demographics are the

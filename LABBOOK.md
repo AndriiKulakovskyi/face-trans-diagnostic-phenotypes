@@ -299,7 +299,8 @@ test-retest r per axis.
 - **Cognition ⊥ symptom axes:** max |r| **0.24** (g ↔ illness-burden −0.24, then
   ↔ metabolic −0.16, ↔ depression −0.13). Semi-independent, not symptom-redundant.
 - **Small non-redundant increment to V1 functioning** (EGF, n=2,478): symptom-axes
-  R² 0.169 → +cognition 0.174 (Δ **+0.005**). Modest but independent.
+  R² 0.394 → +cognition 0.398 (Δ **+0.004**; shuffled CV — was 0.169→0.174 under the
+  un-shuffled-CV bug, see E15b). Modest but independent.
 - Kept OUT of the 3-cohort model (would re-inject the DR-availability confound).
 
 ## Deferred / open (do not forget)
