@@ -4,6 +4,13 @@
 > describe the current design; §9–10 the plan and refactor status; §14 the
 > course-correction log (append-only — our de-facto pre-registration trail).
 > **Update this file whenever a methodological decision is made.**
+>
+> **Status note (repo independence):** the sister `face_stratification`/`face_rlvr`
+> code and `archive/` have been **removed** — the engine pieces we use are now
+> internalized in `src/face_common/engine/`. Historical references to `archive/`
+> below describe the earlier merged layout and are kept for the record. The repo
+> is self-contained: `pip install -e ".[full]"` + `python scripts/run_all.py`
+> reproduces the manuscript.
 
 ---
 
