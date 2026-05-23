@@ -246,23 +246,64 @@ We chose the largest $K\le 8$ with $\min_a\phi\ge0.85$ (reproducibility is high 
 even $K$ and erratic above, from varimax factor-splitting), giving **$K=6$**. Confounding was
 quantified as $\max_k\max\{|{\rm corr}(F_{\cdot k},a)|,|{\rm corr}(F_{\cdot k},\mathrm{sex})|\}$.
 
-### 2.8 Masked autoencoder (no-imputation cross-check)
+### 2.8 Masked autoencoder for dimensionality compression (no-imputation cross-check)
 
-To test whether the dimensions are an artifact of linear/imputed factor analysis we trained a
-**masked-input autoencoder** (`dimensional_ae.py`, PyTorch). The encoder receives the
-mask-augmented input $[\,x^0_i\,;\,m_i\,]\in\mathbb R^{2d}$ (where $x^0$ is the standardized
-residual matrix with gaps set to $0$ and $m$ the mask), through
-$\mathbb R^{2d}\!\to\!64\!\to\!\mathrm{ReLU}\!\to\!K$; the decoder maps
-$K\!\to\!64\!\to\!\mathrm{ReLU}\!\to\!d$. Crucially the loss is a **masked MSE** that excludes
-missing entries entirely (no imputation):
+As a nonlinear counterpart to the linear factor model, we compress the $d=54$ residual domain
+scores into a $K$-dimensional latent code with an **undercomplete autoencoder** trained under a
+masked reconstruction loss (`dimensional_ae.py`, PyTorch); we set $K=6$ to match the factor model
+and ask whether the two recover the same subspace.
 
-$$\mathcal L=\frac{\sum_{i,f} m_{if}\,(\hat x_{if}-x^0_{if})^2}{\sum_{i,f} m_{if}}.$$
+*Inputs.* Let $r_i\in\mathbb R^{d}$ be patient $i$'s per-domain-standardized residual vector and
+$m_i\in\{0,1\}^{d}$ its **observation mask** ($m_{if}=1$ iff domain $f$ is observed). Define the
+zero-filled vector $x^0_i = m_i\odot r_i$ (missing entries set to the standardized mean, $0$) and
+the **mask-augmented** input $u_i=[\,x^0_i\,;\,m_i\,]\in\mathbb R^{2d}$, so the encoder can tell a
+genuine zero from a missing-then-zeroed entry.
 
-We optimized with Adam (lr $10^{-3}$, weight decay $10^{-5}$, batch 512, 300 epochs). Agreement
-between the autoencoder bottleneck and the classical factor scores was measured by **canonical
-correlation analysis** (CCA): the canonical correlations are the agreement spectrum, and a
-strong leading canonical correlation indicates the two methods recover the same axes. The locked
-classical six-dimension scores (`results/dimensional_final_scores.parquet`) were carried into all
+*Encoder / decoder.* With one hidden layer of width $h=64$, ReLU activation $\sigma$, and a
+**linear bottleneck**, the compression map $f_\theta$ and reconstruction map $g_\psi$ are
+
+$$
+z_i \;=\; W_2\,\sigma\!\big(W_1 u_i + b_1\big) + b_2 \;\in\; \mathbb R^{K}
+\qquad(\text{encoder } f_\theta:\ \mathbb R^{2d}\!\to\!\mathbb R^{K}),
+$$
+
+$$
+\hat x_i \;=\; W_4\,\sigma\!\big(W_3 z_i + b_3\big) + b_4 \;\in\; \mathbb R^{d}
+\qquad(\text{decoder } g_\psi:\ \mathbb R^{K}\!\to\!\mathbb R^{d}),
+$$
+
+with parameters $\Theta=\{W_1,b_1,\dots,W_4,b_4\}$, $W_1\in\mathbb R^{h\times 2d}$,
+$W_2\in\mathbb R^{K\times h}$, $W_3\in\mathbb R^{h\times K}$, $W_4\in\mathbb R^{d\times h}$. The
+bottleneck $z_i$ is the **compressed representation** (the learned dimensions); $K\ll d$ forces
+the network to retain only the dominant axes of co-variation.
+
+*Loss (masked / no imputation).* The reconstruction error is evaluated **only on observed
+entries**, so imputed zeros never enter the objective or its gradient:
+
+$$
+\mathcal L(\Theta)\;=\;\frac{\displaystyle\sum_{i=1}^{N}\sum_{f=1}^{d} m_{if}\,\big(\hat x_{if}-r_{if}\big)^2}
+{\displaystyle\sum_{i=1}^{N}\sum_{f=1}^{d} m_{if}}
+\;=\;\frac{\sum_{i}\big\lVert m_i\odot(\hat x_i-r_i)\big\rVert_2^2}{\sum_{i}\lVert m_i\rVert_1}.
+$$
+
+The zero-fill in $x^0_i$ is thus an *input placeholder*, flagged to the encoder by $m_i$ and
+masked out of $\mathcal L$ — no imputed value is ever fit (contrast the factor path, §2.7,
+which fits the zero-filled matrix directly).
+
+*Optimization.* We minimize $\mathcal L$ by Adam (learning rate $10^{-3}$; weight decay
+$\lambda=10^{-5}$, i.e. $\ell_2$ regularization $+\tfrac{\lambda}{2}\lVert\Theta\rVert_2^2$),
+mini-batches of $512$, $300$ epochs, fixed seed. The trained bottleneck
+$z_i=f_{\hat\theta}(u_i)$ gives each patient's $K$-dimensional code.
+
+*Agreement with the factor model.* Stacking the AE codes $Z=[z_1,\dots,z_N]^\top$ and the
+varimax factor scores $F$, we measure whether the two methods span the same subspace by
+**canonical correlation analysis**: we seek unit-variance projections maximizing
+$\rho_j=\max_{a_j,b_j}\operatorname{corr}(Za_j,\,Fb_j)$ subject to orthogonality to
+$\{a_l,b_l\}_{l<j}$; the canonical correlations $\rho_1\ge\cdots\ge\rho_K$ are the agreement
+spectrum. Because CCA maximizes correlation by construction and both representations are fit to
+the same standardized matrix, $\rho_j$ is an upper-bound-style measure and is interpreted as a
+*cross-check*, not independent confirmation (§4.2). The locked classical six-dimension scores
+(`results/dimensional_final_scores.parquet`) — not the AE codes — were carried into all
 downstream analyses.
 
 ### 2.9 Outcome prediction (head-to-head versus DSM)
@@ -539,8 +580,13 @@ psychiatric phenotyping.
 stability, interpretability and prediction, not by separation. (2) Varimax orthogonality
 distributes the mood↔psychosis spectrum across axes rather than isolating it; an oblique
 rotation (deferred here) might localize it, and the autoencoder already recovers it at
-|Spearman| 0.89. (3) The autoencoder carries a small residual age leak (|r| 0.15) absent
-from the factor model (0.002), so the factor model is the primary representation. (4) The
+|Spearman| 0.89. (3) The autoencoder is a *cross-check*, not an independent estimator: it is
+trained on the same zero-filled matrix as the factor model (it only masks the loss), and
+canonical correlations are maximized by construction, so their agreement guards against a
+linear-model artifact but is not strong evidence against an imputation artifact (a permutation
+null on the canonical correlations is a needed addition); it also carries a small residual age
+leak (|r| 0.15) absent from the factor model (0.002). The factor model is the primary
+representation. (4) The
 later-onset dimension is baseline-only and cannot be tracked longitudinally; metabolic
 test–retest is attenuated by sparser follow-up assays. (5) Cognition is missing in DR by
 design, so the cognitive results are BP/SZ-specific. (6) The cohort is a French
