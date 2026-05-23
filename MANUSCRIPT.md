@@ -331,7 +331,11 @@ $F$-test (continuous), $F=\dfrac{(\mathrm{SSR}_0-\mathrm{SSR}_2)/q}{\mathrm{SSR}
 $q=6$ added parameters, or a likelihood-ratio test (binary),
 $\Lambda=2(\ell_2-\ell_0)\sim\chi^2_q$ (returned as `NaN` if the saturated model fails to
 converge under rare-subtype separation, in which case the CV metric is primary). Per-dimension
-standardized effects $\beta$ come from the regularized M2 model.
+standardized effects $\beta$ come from the regularized M2 model. As a **de-circularization
+sensitivity** (because some axes contain the V0 outcome measures), we refit the axes after
+excluding each outcome's own measure(s) — EQ-5D outcome: drop EQ-5D/EQ-VAS; EGF: drop EGF/FAST;
+hospitalization: drop the hospitalization counts — and re-ran the head-to-head
+(`scripts/phase5_decircularized.py`; §3.5).
 
 ### 2.10 Temporal stability (trait–state gradient)
 
@@ -471,7 +475,7 @@ The pattern is interpretable: dimensions carry information diagnosis lacks for
 diagnosis — together with prior hospitalization — remains the better predictor of
 **service-use** events.
 
-### 3.5 Robustness: replication and site harmonization
+### 3.5 Robustness: replication, site harmonization, and de-circularization
 
 The head-to-head **replicated at V2** (`results/phase5_headtohead_V2.csv`): dimensions beat
 diagnosis for quality of life (R² 0.258 vs 0.217, +0.041; V1 was +0.044), complemented it
@@ -483,6 +487,18 @@ essentially unchanged (Tucker congruence with the locked set [1.0, 1.0, 1.0, 0.9
 0.99]). The outcome advantage survived harmonization (quality-of-life dimensions still beat
 diagnosis, +0.037; functioning still complemented, combined 0.262; hospitalization still
 diagnosis-dominated).
+
+**De-circularization.** Two axes contain the V0 values of outcomes (the depression axis
+loads on EQ-5D, EQ-VAS, EGF and FAST; the illness-burden axis on the lifetime-hospitalization
+counts), so predicting those outcomes from those axes is potentially circular and unfair to
+the bare DSM label. We therefore refit the axes after **excluding each outcome's own
+measure(s)** and re-ran the head-to-head (`scripts/phase5_decircularized.py`). The results
+were essentially unchanged: quality of life still beat diagnosis (R² 0.332 vs 0.289, Δ +0.043;
+circular axes gave +0.044), functioning was still complemented (combined R² 0.270 vs DSM
+0.239, +0.031; circular +0.032), and hospitalization was still diagnosis-dominated (axes AUC
+0.600). The advantage is therefore **not an artifact of outcome content in the predictors** —
+baseline adjustment already controls each outcome's own V0 value, and the depression axis is
+carried by the symptom scales (QIDS/MADRS/STAI), not the functioning/QoL items.
 
 ### 3.6 Dimensions show a trait–state gradient over four years
 
@@ -699,13 +715,16 @@ congruence, |correlation| with age/sex, and V0↔V1 test–retest *r*. Source:
 **Table 3. Head-to-head 1-year outcome prediction (nested 5-fold CV).** DSM diagnosis vs
 six dimensions vs combined; baseline+age+sex adjusted. Source:
 `results/phase5_headtohead_V1.csv` (V1), `_V2.csv` (replication),
-`results/robustness_site.json` (ComBat).
+`results/robustness_site.json` (ComBat), `results/phase5_decircularized.csv` (de-circ.).
 
-| Outcome | n | Metric | DSM | Dimensions | Combined | Dim − DSM | V2 (Dim − DSM) | ComBat (Dim − DSM) |
-|---|--:|:--:|--:|--:|--:|--:|--:|--:|
-| EQ-5D quality of life | 2,423 | R² | 0.289 | **0.333** | 0.331 | **+0.044** | +0.041 | +0.037 |
-| EGF global functioning | 3,196 | R² | 0.239 | 0.218 | **0.271** | −0.021 (combined +0.032) | combined +0.057 | combined +0.023 |
-| Any hospitalization | 3,332 | AUC | **0.743** | 0.600 | 0.752 | −0.143 | −0.126 | −0.172 |
+| Outcome | n | Metric | DSM | Dimensions | Combined | Dim − DSM | V2 | ComBat | De-circ. |
+|---|--:|:--:|--:|--:|--:|--:|--:|--:|--:|
+| EQ-5D quality of life | 2,423 | R² | 0.289 | **0.333** | 0.331 | **+0.044** | +0.041 | +0.037 | **+0.043** |
+| EGF global functioning | 3,196 | R² | 0.239 | 0.218 | **0.271** | −0.021 (comb. +0.032) | comb. +0.057 | comb. +0.023 | comb. +0.031 |
+| Any hospitalization | 3,332 | AUC | **0.743** | 0.600 | 0.752 | −0.143 | −0.126 | −0.172 | −0.143 |
+
+Columns V2 / ComBat / De-circ. report Dim − DSM (or combined − DSM for functioning) under
+replication, site harmonization, and axes refit without each outcome's own measures (§3.5).
 
 **Table 4. Cognitive structure (BP/SZ, n=6,099) and correlation with the symptom
 dimensions.** Source: `results/cognition_bpsz_loadings.csv`, `_corr.csv`. Two factors:

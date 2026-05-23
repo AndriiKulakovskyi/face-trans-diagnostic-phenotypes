@@ -184,6 +184,14 @@ predictors V0, outcome V1, baseline-adjusted):
 - This validates direction A for symptom-aligned outcomes. Deferred: site/ComBat +
   mixed-effects, V2 replication; the binary-outcome LRT didn't converge (rare
   schizophréniforme subtype) so the CV AUC is the primary evidence there.
+- **De-circularization (`phase5_decircularized.py`; addresses the review's #1 concern):** the
+  depression axis contains EQ-5D/EGF/FAST and the illness-burden axis contains the hosp counts,
+  so predicting those outcomes from those axes is potentially circular. Refitting the axes
+  **without each outcome's own measure(s)** changed essentially nothing: QoL still beats DSM
+  (R² **0.332** vs 0.289, +0.043; circular +0.044), functioning still complemented (combined
+  **0.270**, +0.031; circular +0.032), hospitalization still DSM-dominated (axes AUC 0.600).
+  ⇒ the advantage is **not** an artifact of outcome content — baseline adjustment already
+  controls each outcome's V0 value, and the depression axis is carried by QIDS/MADRS/STAI.
 
 ### 3f. Phase 4 on axes — temporal stability (trait↔state gradient)
 `scripts/longitudinal_axes.py`: project the V0 factor model onto V1–V4 (pooled scaling,
