@@ -1,0 +1,81 @@
+{
+  "K": 6,
+  "axes": [
+    "axis1",
+    "axis2",
+    "axis3",
+    "axis4",
+    "axis5",
+    "axis6"
+  ],
+  "reproducibility_curve": [
+    {
+      "k": 3,
+      "min_congruence": 0.9825505427434499,
+      "mean_congruence": 0.9909700479836382
+    },
+    {
+      "k": 4,
+      "min_congruence": 0.9416328447864308,
+      "mean_congruence": 0.9786832214681899
+    },
+    {
+      "k": 5,
+      "min_congruence": 0.3146888653233271,
+      "mean_congruence": 0.8336202109897816
+    },
+    {
+      "k": 6,
+      "min_congruence": 0.9545477783424665,
+      "mean_congruence": 0.9772599242414203
+    },
+    {
+      "k": 7,
+      "min_congruence": 0.07870822142675636,
+      "mean_congruence": 0.8485486781434778
+    },
+    {
+      "k": 8,
+      "min_congruence": 0.17628792184945563,
+      "mean_congruence": 0.8591780767472293
+    },
+    {
+      "k": 9,
+      "min_congruence": 0.8779416765182174,
+      "mean_congruence": 0.9510631602607843
+    },
+    {
+      "k": 10,
+      "min_congruence": 0.03708385020313844,
+      "mean_congruence": 0.8714895530358637
+    },
+    {
+      "k": 11,
+      "min_congruence": 0.1275395851706994,
+      "mean_congruence": 0.8876738135713236
+    },
+    {
+      "k": 12,
+      "min_congruence": 0.7719238226770989,
+      "mean_congruence": 0.9422206734185896
+    }
+  ],
+  "dsm_ordering_per_axis": [
+    0.1785714285714286,
+    0.3214285714285715,
+    0.14285714285714288,
+    0.3571428571428572,
+    0.14285714285714288,
+    0.10714285714285716
+  ],
+  "strongest_ordering_axis": "axis4",
+  "confound_max_corr": {
+    "axis1": 0.0,
+    "axis2": 0.002,
+    "axis3": 0.0,
+    "axis4": 0.002,
+    "axis5": 0.0,
+    "axis6": 0.0
+  },
+  "note": "K chosen by split-half congruence over the stable range (\u22648; higher K erratic). Orthogonal varimax axes. The mood\u2194psychosis spectrum is a cross-axis direction (AE recovers it at 0.89), not a single varimax factor; oblique rotation deferred (factor_analyzer not installed)."
+}

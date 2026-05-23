@@ -145,8 +145,17 @@ and `scripts/dimensional_ae.py` (PyTorch masked autoencoder, **no imputation**).
   on one AE axis; PCA 0.79; varimax dispersed it). Two very different methods
   (linear/imputed vs nonlinear/no-imputation) converge → the axes are robust.
   Caveat: the AE has a small age leak (|corr| 0.15) vs FA's 0.002.
-- **These axis scores are the trans-diagnostic representation** carried into Phase 4
-  (do axes persist?) and Phase 5 (do axes beat DSM on outcomes?).
+- **Refined final set (`dimensional_refine.py`):** reproducibility-vs-K (split-half
+  Tucker congruence) is high only at low K (3/4/6) and erratic above (varimax
+  factor-splitting), so the **locked set is K=6** (min congruence 0.95, confound
+  0.002): depression-severity · later-onset · mania/activation · illness-burden ·
+  metabolic/inflammatory · ADHD/impulsivity-trauma. **No single varimax axis carries
+  the mood↔psychosis ordering** (per-axis subtype |Spearman| ≤0.36) — the spectrum is
+  a *cross-axis direction* (the AE recovers it at 0.89), stated honestly rather than
+  forced into one factor.
+- **`results/dimensional_final_scores.parquet` (6 axes) is the trans-diagnostic
+  representation** carried into Phase 4 (persistence) and Phase 5 (do axes beat DSM
+  on outcomes?).
 
 ## 4. The scientific fork (framing)
 Two mutually-exclusive products, because **diagnosis + demographics are the

@@ -224,6 +224,19 @@ bimodality, DSM-subtype anchor + mood↔psychosis continuum.
   unrotated (PCA) / in the AE. Consider an oblique rotation, or report the AE axis as
   the mood↔psychosis dimension. Axis scores → Phase 4/5.
 
+**Refinement (`dimensional_refine.py`):** K chosen by reproducibility-vs-K, not my
+arbitrary cap. Split-half Tucker congruence is high only at low K (3/4/6) and
+**erratic above** (K=7 0.08, K=8 0.18, K=9 0.88 — varimax factor-splitting + greedy
+matching), so select from the stable range ≤8 → **final K=6** (min congruence 0.95,
+confound 0.002): depression-severity · later-onset · mania/activation · illness-burden
+· metabolic/inflammatory · ADHD/impulsivity-trauma. **No single varimax axis orders the
+DSM subtypes** (per-axis centroid |Spearman| ≤0.36); the mood↔psychosis spectrum is a
+*cross-axis direction* (AE 0.89), reported honestly, not forced into one factor.
+`results/dimensional_final_scores.parquet` (6 axes) is the locked Phase-4/5 input.
+Two more "don't trust the auto-pick" catches: the K-rule first grabbed K=9 off the
+erratic tail, and a patient-level (vs subtype-centroid) Spearman made the continuum
+look like 0.07 — both fixed.
+
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
   attempt at *discrete*-structure discovery, in case a learned representation
