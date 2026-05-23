@@ -28,7 +28,6 @@ import pandas as pd
 import scipy.sparse as sp
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO_ROOT / "archive"))
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 import plotly.graph_objects as go  # noqa: E402

@@ -27,7 +27,7 @@ from collections.abc import Iterable
 import numpy as np
 import pandas as pd
 
-from face_stratification.harmonization.harmonizer import HarmonizedDataset
+from .engine import HarmonizedDataset
 
 from .filters import IDENTIFIER_COLUMNS
 from .schema_gen import DEFAULT_SCHEMA_VERSION, build_feature_schema, feature_cohorts

@@ -19,7 +19,6 @@ import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
-sys.path.insert(0, str(REPO_ROOT / "archive"))
 
 from face_common import (  # noqa: E402
     build_unified_dataframe,

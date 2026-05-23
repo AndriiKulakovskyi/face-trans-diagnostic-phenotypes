@@ -1,14 +1,13 @@
-"""Pytest path bootstrap for the clean src/ layout.
+"""Pytest path bootstrap for the ``src/`` layout.
 
-`src/` holds our development packages (face_common); `archive/` holds the
-vendored sister engine (face_stratification, face_rlvr). Putting both on
-sys.path lets pytest run without installing the project.
+``face_common`` is self-contained (the stratification engine is internalized in
+``face_common.engine``), so only ``src/`` needs to be importable to run the
+tests without installing the project.
 """
 import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-for sub in ("src", "archive"):
-    p = str(REPO_ROOT / sub)
-    if p not in sys.path:
-        sys.path.insert(0, p)
+_src = str(REPO_ROOT / "src")
+if _src not in sys.path:
+    sys.path.insert(0, _src)

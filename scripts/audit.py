@@ -29,7 +29,6 @@ import numpy as np
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO_ROOT / "archive"))
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from face_common import RULES, build_unified_dataframe, load_variables  # noqa: E402

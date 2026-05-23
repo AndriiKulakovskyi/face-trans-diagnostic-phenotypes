@@ -42,7 +42,6 @@ import numpy as np
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO_ROOT / "archive"))
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from sklearn.cluster import KMeans  # noqa: E402
@@ -61,18 +60,14 @@ from face_common import (  # noqa: E402
     residualize_features,
     to_harmonized_dataset,
 )
-from face_stratification.analysis.enrichment import (  # noqa: E402
-    compute_cluster_feature_enrichment,
-)
-from face_stratification.clustering.algorithms import (  # noqa: E402
+from face_common.engine import (  # noqa: E402
+    FeatureSchema,
+    HarmonizedDataset,
+    MultipartiteSpectralEmbedding,
     bootstrap_stability,
+    compute_cluster_feature_enrichment,
     run_kmeans,
 )
-from face_stratification.graph.multipartite import (  # noqa: E402
-    MultipartiteSpectralEmbedding,
-)
-from face_stratification.harmonization.feature_schema import FeatureSchema  # noqa: E402
-from face_stratification.harmonization.harmonizer import HarmonizedDataset  # noqa: E402
 
 DATA_DIR = REPO_ROOT / "data"
 DICT_PATH = REPO_ROOT / "face-common-vars.xlsx"

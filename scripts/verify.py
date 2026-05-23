@@ -18,7 +18,6 @@ import pandas as pd
 
 # Allow running as a plain script: prepend repo root to sys.path.
 REPO_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO_ROOT / "archive"))
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from face_common import (  # noqa: E402

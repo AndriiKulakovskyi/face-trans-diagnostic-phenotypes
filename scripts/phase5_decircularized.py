@@ -32,7 +32,6 @@ import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
-sys.path.insert(0, str(REPO / "archive"))
 sys.path.insert(0, str(REPO / "scripts"))
 
 from sklearn.decomposition import FactorAnalysis  # noqa: E402

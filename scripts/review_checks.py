@@ -21,7 +21,6 @@ import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
-sys.path.insert(0, str(REPO / "archive"))
 
 import matplotlib  # noqa: E402
 matplotlib.use("Agg")

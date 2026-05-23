@@ -24,7 +24,7 @@ import re
 import unicodedata
 from collections.abc import Iterable, Sequence
 
-from face_stratification.harmonization.feature_schema import FeatureSchema
+from .engine import FeatureSchema
 
 from .variable import Variable
 
