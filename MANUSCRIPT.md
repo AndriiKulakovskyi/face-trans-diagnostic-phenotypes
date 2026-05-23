@@ -24,8 +24,10 @@ data-driven phenotyping of psychiatric records is vulnerable to confounding.
 
 **Methods.** We harmonized longitudinal data (baseline V0 to 4-year follow-up V4) from
 9,013 patients (BP 6,252; SZ 2,209; DR 552) across the multi-centre FACE cohort into a
-unified clinical–biological feature matrix, using masked pairwise-complete similarity
-with **no imputation**. After removing a hierarchy of confounds (administrative fields,
+unified clinical–biological feature matrix. The similarity, spectral embedding and
+autoencoder objective use masked, pairwise-complete operators (no imputation); the factor
+model standardizes the residual domains and mean-fills the gaps (65% of cells observed).
+After removing a hierarchy of confounds (administrative fields,
 raw scale, and age/sex carried by physical-comorbidity flags) and aggregating items to
 construct-level domain scores, we (i) formally tested for discrete versus dimensional
 structure (Laplacian eigengap, gap statistic versus a Gaussian null, HDBSCAN density
@@ -34,7 +36,7 @@ dimensional model (varimax factor analysis with split-half reproducibility selec
 cross-validated against a no-imputation masked autoencoder); and (iii) tested, in nested
 cross-validation, whether the dimensions predict 1-year patient-reported and service-use
 outcomes better than DSM diagnosis. Robustness was assessed by ComBat site harmonization
-and replication at a second follow-up (V2).
+and consistency at a second follow-up (V2, same cohort).
 
 **Results.** Trans-diagnostic variation was **dimensional, not categorical**: the
 similarity spectrum had no eigengap, the gap statistic rose monotonically with *k* (no
@@ -46,10 +48,11 @@ confound-free (|correlation| with age/sex ≤0.002), and site-robust (post-ComBa
 ≈1.0): depression/internalizing severity, later age-of-onset, mania/activation,
 illness/hospitalization burden, metabolic/inflammatory load, and ADHD/impulsivity/trauma.
 A no-imputation autoencoder recovered the same axes (canonical correlations 0.93–0.63).
-The dimensions **outperformed DSM diagnosis** for quality of life (EQ-5D R² 0.33 vs 0.29;
-Δ +0.044, *p*<1e-16) and **complemented** it for global functioning (combined R² 0.27 vs
-DSM 0.24), while diagnosis plus prior service use dominated hospitalization prediction
-(AUC 0.74). Both findings replicated at V2 and survived site harmonization. Dimensions
+The dimensions **outperformed DSM diagnosis** for quality of life (EQ-5D R² 0.34 vs 0.30;
+Δ +0.036, 95% CI [+0.033, +0.039]) and **complemented** it for global functioning (combined
+R² 0.39 vs DSM 0.37; Δ +0.029 [+0.027, +0.030]), while diagnosis plus prior service use
+dominated hospitalization prediction (AUC 0.75). Both findings were consistent at a second follow-up (V2, same cohort) and
+survived site harmonization and de-circularization. Dimensions
 showed a trait–state gradient over follow-up (ADHD/trauma most trait-like, test–retest
 *r* 0.64; symptom dimensions more state-like). A complementary BP/SZ cognitive analysis
 (cognition is missing by design in DR) recovered the classic general-ability (*g*) plus
@@ -120,10 +123,13 @@ functioning, sleep, substance use, trauma, personality/impulsivity, antecedents,
 evaluation, and laboratory biology). Patients were keyed by a globally unique identifier
 (`cohort::usubjid`) because subject identifiers collide across cohorts (970 collisions).
 
-We applied **no imputation** anywhere in the pipeline. All similarity and covariance
-quantities were computed with masked, pairwise-complete operators, so that missing values
-never enter as filled-in numbers — important because missingness in psychiatric records is
-informative and frequently differential by cohort.
+We avoided imputation wherever the method allows: the masked similarity, the spectral
+embedding and the autoencoder objective all use masked, pairwise-complete operators, so
+missing values never enter them as filled-in numbers — important because missingness in
+psychiatric records is informative and differential by cohort. The **one substantive
+exception** is the factor-analysis input (Section 2.7), which standardizes the residual
+domain matrix and fills the remaining gaps with the (zero) mean; that matrix is **65%
+observed (35% mean-filled)**, a limitation we return to in Section 4.2.
 
 ### 2.2 Notation and the no-imputation convention
 
@@ -217,10 +223,12 @@ On the embedding $Z$ (`structure_test.py`) we ran five complementary tests:
 5. **DSM-subtype ordering.** We rank the seven subtypes on an a-priori mood→psychosis scale and
    correlate (Spearman $\rho$) the rank with each subtype's PC centroid.
 
-The pre-registered verdict rule: *discrete trans-diagnostic* structure requires a peaking gap,
-dense clusters not explained by diagnosis (${\rm ARI}(\text{HDBSCAN},\text{cohort})<0.30$), and
-multimodal axes; ${\rm ARI}(\text{HDBSCAN},\text{cohort})\ge0.40$ implies the only discrete
-structure is diagnosis itself.
+The decision rule (transparently, **not pre-registered** — an initial automated heuristic
+over-called discreteness and was revised once, then fixed, before the dimensional modelling):
+*discrete trans-diagnostic* structure requires a peaking gap, dense clusters not explained by
+diagnosis (${\rm ARI}(\text{HDBSCAN},\text{cohort})<0.30$), and multimodal axes;
+${\rm ARI}(\text{HDBSCAN},\text{cohort})\ge0.40$ implies the only discrete structure is
+diagnosis itself.
 
 ### 2.7 Dimensional factor model
 
@@ -326,7 +334,9 @@ where $\mathbf 1[\text{arm}]$ is the 7-level subtype one-hot (drop-first; arm im
 adding cohort would be collinear). Predictors are standardized inside each fold. Continuous
 outcomes (EQ-5D, EGF) use ridge regression ($\alpha=1$) scored by cross-validated $R^2$; the
 binary outcome (any hospitalization) uses $\ell_2$ logistic regression scored by stratified-CV
-AUC. The **incremental value** of the dimensions over diagnosis is tested in-sample by a nested
+AUC. Folds are **shuffled** with a fixed seed (the patient matrix is cohort-ordered, so
+un-shuffled folds give cohort-imbalanced splits and distort the $R^2$), and 95% intervals are
+obtained from $R=200$ repeated CV (`phase5_ci.py`). The **incremental value** of the dimensions over diagnosis is tested in-sample by a nested
 $F$-test (continuous), $F=\dfrac{(\mathrm{SSR}_0-\mathrm{SSR}_2)/q}{\mathrm{SSR}_2/(n-p_2)}$ with
 $q=6$ added parameters, or a likelihood-ratio test (binary),
 $\Lambda=2(\ell_2-\ell_0)\sim\chi^2_q$ (returned as `NaN` if the saturated model fails to
@@ -363,8 +373,8 @@ $y_{isf}=\alpha_f+X_{is}\beta_f+\gamma_{sf}+\delta_{sf}\,\varepsilon_{isf}$ for 
 removes the empirical-Bayes-shrunk site location/scale terms $(\hat\gamma_{sf},\hat\delta_{sf})$ to
 give harmonized $y^\ast$. We re-derived the six dimensions on $y^\ast$, compared them to the locked
 set by Tucker congruence, and re-ran the head-to-head. The site batch magnitude was summarized as
-the mean $|\hat\gamma_{sf}|/\hat\sigma_f$. The head-to-head was independently **replicated** with
-V2 as the follow-up.
+the mean $|\hat\gamma_{sf}|/\hat\sigma_f$. The head-to-head was also **re-assessed at a second
+follow-up (V2)** — the same individuals, so temporal consistency, not independent replication.
 
 ### 2.12 Cognition (BP/SZ complementary analysis)
 
@@ -460,45 +470,47 @@ artifacts of a single algorithm.
 
 ### 3.4 The dimensions complement or outperform DSM diagnosis for patient-reported outcomes
 
-In leakage-safe nested cross-validation (Table 3; `results/phase5_headtohead_V1.csv`;
-Figure 3), the six dimensions **outperformed DSM diagnosis** for quality of life (EQ-5D
-R² 0.333 vs 0.289; combined 0.331; added-dimension *p*<1e-16) and **complemented** diagnosis
-for global functioning (EGF combined R² 0.271 vs DSM 0.239, +0.032 over diagnosis;
-*p*<1e-16), while **diagnosis plus prior service use dominated** hospitalization prediction
-(AUC 0.743 for diagnosis vs 0.600 for dimensions; combined 0.752). Effect directions were
-face-valid: the depression-severity dimension was the strongest predictor of worse
-functioning (standardized β −2.48 on EGF) and worse quality of life, while the
-illness-burden dimension was the strongest predictor of hospitalization (β +0.35).
+In leakage-safe, repeated (shuffled) 5-fold cross-validation (Table 3; `results/phase5_ci.csv`;
+Figure 3), the six dimensions **outperformed DSM diagnosis** for quality of life (EQ-5D R²
+0.339 vs 0.302; Δ **+0.036**, 95% CI [+0.033, +0.039]) and **complemented** diagnosis for
+global functioning (combined R² 0.394 vs DSM 0.365; Δ **+0.029** [+0.027, +0.030]; dimensions
+alone ≈ DSM, −0.003 [−0.005, −0.001]), while **diagnosis plus prior service use dominated**
+hospitalization prediction (AUC 0.747 vs 0.604 for the dimensions; Δ −0.143 [−0.158, −0.130]).
+All three intervals exclude zero in the stated direction. Effect directions were face-valid:
+the depression-severity dimension was the strongest predictor of worse functioning
+(standardized β −2.48 on EGF) and worse quality of life, while the illness-burden dimension
+was the strongest predictor of hospitalization (β +0.35).
 
 The pattern is interpretable: dimensions carry information diagnosis lacks for
 **patient-experienced** endpoints (how a patient feels and functions), whereas categorical
 diagnosis — together with prior hospitalization — remains the better predictor of
 **service-use** events.
 
-### 3.5 Robustness: replication, site harmonization, and de-circularization
+### 3.5 Robustness: follow-up consistency, site harmonization, and de-circularization
 
-The head-to-head **replicated at V2** (`results/phase5_headtohead_V2.csv`): dimensions beat
-diagnosis for quality of life (R² 0.258 vs 0.217, +0.041; V1 was +0.044), complemented it
-for functioning (combined 0.229 vs 0.172), and diagnosis dominated hospitalization
-(AUC 0.727). **Site harmonization** (`results/robustness_site.json`) confirmed the
-dimensions are not a site artifact: the site batch effect was small (mean |adjustment| =
-0.044 SD across 20 sites), and after ComBat-harmonizing the domains the six dimensions were
-essentially unchanged (Tucker congruence with the locked set [1.0, 1.0, 1.0, 0.98, 0.98,
-0.99]). The outcome advantage survived harmonization (quality-of-life dimensions still beat
-diagnosis, +0.037; functioning still complemented, combined 0.262; hospitalization still
-diagnosis-dominated).
+The head-to-head was **consistent at a second follow-up** (V2, same cohort — not independent
+replication; `results/phase5_headtohead_V2.csv`): dimensions beat
+diagnosis for quality of life (R² 0.265 vs 0.230, +0.034), complemented it for functioning
+(combined R² 0.353 vs 0.306, +0.047), and diagnosis dominated hospitalization (AUC 0.727).
+**Site harmonization** (`results/robustness_site.json`) confirmed the dimensions are not a
+site artifact: the site batch effect was small (mean |adjustment| = 0.044 SD across 20 sites),
+and after ComBat-harmonizing the domains the six dimensions were essentially unchanged (Tucker
+congruence with the locked set [1.0, 1.0, 1.0, 0.98, 0.98, 0.99]). The outcome advantage
+survived harmonization (quality-of-life dimensions still beat diagnosis, +0.032; functioning
+still complemented, combined R² 0.386 vs 0.366; hospitalization still diagnosis-dominated).
 
 **De-circularization.** Two axes contain the V0 values of outcomes (the depression axis
 loads on EQ-5D, EQ-VAS, EGF and FAST; the illness-burden axis on the lifetime-hospitalization
 counts), so predicting those outcomes from those axes is potentially circular and unfair to
 the bare DSM label. We therefore refit the axes after **excluding each outcome's own
 measure(s)** and re-ran the head-to-head (`scripts/phase5_decircularized.py`). The results
-were essentially unchanged: quality of life still beat diagnosis (R² 0.332 vs 0.289, Δ +0.043;
-circular axes gave +0.044), functioning was still complemented (combined R² 0.270 vs DSM
-0.239, +0.031; circular +0.032), and hospitalization was still diagnosis-dominated (axes AUC
-0.600). The advantage is therefore **not an artifact of outcome content in the predictors** —
-baseline adjustment already controls each outcome's own V0 value, and the depression axis is
-carried by the symptom scales (QIDS/MADRS/STAI), not the functioning/QoL items.
+were essentially unchanged: quality of life still beat diagnosis (R² 0.340 vs 0.305, Δ +0.036;
+circular axes also +0.036), functioning was still complemented (combined R² 0.392 vs DSM 0.366,
++0.026; dimensions alone ≈ DSM, −0.005), and hospitalization was still diagnosis-dominated
+(axes AUC 0.600). The advantage is therefore **not an artifact of outcome content in the
+predictors** — baseline adjustment already controls each outcome's own V0 value, and the
+depression axis is carried by the symptom scales (QIDS/MADRS/STAI), not the functioning/QoL
+items.
 
 ### 3.6 Dimensions show a trait–state gradient over four years
 
@@ -558,8 +570,9 @@ reflect the data rather than a modelling choice.
 
 The clinical case for dimensions rests on the head-to-head test. For **patient-reported**
 outcomes — quality of life and global functioning — the dimensions add information that the
-recorded diagnosis lacks, and for quality of life they outperform it; this holds in
-replication and after site harmonization. For **service-use** outcomes (hospitalization),
+recorded diagnosis lacks, and for quality of life they outperform it; this holds at a second
+follow-up, after site harmonization, and after de-circularization. For **service-use**
+outcomes (hospitalization),
 categorical diagnosis plus prior admissions remains superior. A practical reading is that
 dimensional scores are most useful precisely where categorical diagnosis is least
 informative about the patient's lived experience, supporting a *complementary* dimensional
@@ -618,7 +631,17 @@ test–retest is attenuated by sparser follow-up assays. (5) Cognition is missin
 design, so the cognitive results are BP/SZ-specific. (6) The cohort is a French
 expert-centre network; generalization to community and other healthcare systems requires
 external replication. (7) Outcomes were examined at 1 year with baseline adjustment; longer-
-horizon and causal questions are beyond this design.
+horizon and causal questions are beyond this design. (8) The factor model — the primary
+representation — is fit on a residual domain matrix that is only **65% observed**; the
+remaining 35% of cells are mean-filled (to 0 in *z*-space), so the loadings of
+sparsely-measured domains are attenuated and the imputation-free property holds for the
+similarity/embedding/autoencoder but **not** for the factor analysis itself (a
+missingness-robust factor estimator is a needed sensitivity analysis). (9) There is **no
+independent external replication**: the "V2" analysis re-uses the same individuals at a later
+visit (temporal consistency), and all sites belong to one national network. (10) The
+cross-validated metrics are reported with repeated-CV intervals (§3.4) but the unsupervised
+factor extraction is fit on the full sample rather than re-fit within each CV fold, a
+(milder) optimism that future work should remove.
 
 ### 4.3 Conclusion
 
@@ -712,19 +735,21 @@ congruence, |correlation| with age/sex, and V0↔V1 test–retest *r*. Source:
 | 5 Metabolic/inflammatory | metabolic-syndrome +0.57, cholesterol +0.38, inflammation +0.27 | ≥0.95 | 0.000 | 0.20 |
 | 6 ADHD/impulsivity/trauma | WURS +0.44, BIS +0.42, CTQ +0.23 | ≥0.95 | 0.000 | 0.64 |
 
-**Table 3. Head-to-head 1-year outcome prediction (nested 5-fold CV).** DSM diagnosis vs
-six dimensions vs combined; baseline+age+sex adjusted. Source:
-`results/phase5_headtohead_V1.csv` (V1), `_V2.csv` (replication),
-`results/robustness_site.json` (ComBat), `results/phase5_decircularized.csv` (de-circ.).
+**Table 3. Head-to-head 1-year outcome prediction (shuffled 5-fold CV).** DSM diagnosis vs
+six dimensions vs combined; baseline+age+sex adjusted. V1 values are repeated-CV means
+(R=200) with 95% intervals; V2 / ComBat / De-circ. report the single-run Δ. Source:
+`results/phase5_ci.csv` (V1), `phase5_headtohead_V2.csv`, `robustness_site.json` (ComBat),
+`phase5_decircularized.csv`.
 
-| Outcome | n | Metric | DSM | Dimensions | Combined | Dim − DSM | V2 | ComBat | De-circ. |
+| Outcome | n | Metric | DSM | Dim. | Comb. | Dim − DSM (V1) [95% CI] | V2 | ComBat | De-circ. |
 |---|--:|:--:|--:|--:|--:|--:|--:|--:|--:|
-| EQ-5D quality of life | 2,423 | R² | 0.289 | **0.333** | 0.331 | **+0.044** | +0.041 | +0.037 | **+0.043** |
-| EGF global functioning | 3,196 | R² | 0.239 | 0.218 | **0.271** | −0.021 (comb. +0.032) | comb. +0.057 | comb. +0.023 | comb. +0.031 |
-| Any hospitalization | 3,332 | AUC | **0.743** | 0.600 | 0.752 | −0.143 | −0.126 | −0.172 | −0.143 |
+| EQ-5D quality of life | 2,423 | R² | 0.302 | **0.339** | 0.341 | **+0.036** [+0.033, +0.039] | +0.034 | +0.032 | +0.036 |
+| EGF global functioning | 3,196 | R² | 0.365 | 0.362 | **0.394** | −0.003 [−0.005, −0.001] (comb. **+0.029** [+0.027, +0.030]) | comb. +0.047 | comb. +0.020 | comb. +0.026 |
+| Any hospitalization | 3,332 | AUC | **0.747** | 0.604 | 0.758 | −0.143 [−0.158, −0.130] | −0.126 | −0.172 | −0.143 |
 
-Columns V2 / ComBat / De-circ. report Dim − DSM (or combined − DSM for functioning) under
-replication, site harmonization, and axes refit without each outcome's own measures (§3.5).
+V2 / ComBat / De-circ. give Δ(Dim − DSM), or combined − DSM for functioning, under a second
+follow-up, site harmonization, and axes refit without each outcome's own measures (§3.5). The
+folds are shuffled (the matrix is cohort-ordered; un-shuffled folds distort the R²).
 
 **Table 4. Cognitive structure (BP/SZ, n=6,099) and correlation with the symptom
 dimensions.** Source: `results/cognition_bpsz_loadings.csv`, `_corr.csv`. Two factors:

@@ -220,7 +220,7 @@ def fig3_headtohead():
               "any hospitalization": "Hospitalization\n(AUC)"}
 
     fig, axs = plt.subplots(1, 2, figsize=(10, 4.4), sharey=True)
-    for ax, df, tag in zip(axs, (v1, v2), ("V1 (primary)", "V2 (replication)")):
+    for ax, df, tag in zip(axs, (v1, v2), ("V1 (primary)", "V2 (follow-up, same cohort)")):
         df = df.set_index("outcome").reindex(order)
         x = np.arange(len(order)); w = 0.26
         ax.bar(x - w, df["DSM"], w, label="DSM diagnosis", color=C_DSM)
@@ -237,7 +237,7 @@ def fig3_headtohead():
     axs[0].legend(fontsize=8, loc="upper left")
     fig.suptitle("Figure 3. Dimensions outperform DSM for quality of life, complement "
                  "it for functioning,\nand are dominated by DSM for hospitalization "
-                 "(leakage-safe nested CV; replicated at V2)", fontsize=10, y=1.02)
+                 "(leakage-safe shuffled CV; consistent at V2, same cohort)", fontsize=10, y=1.02)
     fig.tight_layout()
     save(fig, "fig3_headtohead")
 

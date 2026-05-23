@@ -15,11 +15,11 @@
       "outcome": "EGF functioning",
       "n": 3196,
       "metric": "R2",
-      "DSM": 0.239,
-      "axes": 0.201,
-      "combined": 0.262,
-      "combat_axes_minus_DSM": -0.038,
-      "orig_axes_minus_DSM": -0.021,
+      "DSM": 0.366,
+      "axes": 0.349,
+      "combined": 0.386,
+      "combat_axes_minus_DSM": -0.016,
+      "orig_axes_minus_DSM": -0.004,
       "added_axes_p": 1.1102230246251565e-16
     },
     {
@@ -37,11 +37,11 @@
       "outcome": "EQ-5D quality of life",
       "n": 2423,
       "metric": "R2",
-      "DSM": 0.289,
-      "axes": 0.327,
-      "combined": 0.33,
-      "combat_axes_minus_DSM": 0.037,
-      "orig_axes_minus_DSM": 0.044,
+      "DSM": 0.305,
+      "axes": 0.337,
+      "combined": 0.342,
+      "combat_axes_minus_DSM": 0.032,
+      "orig_axes_minus_DSM": 0.036,
       "added_axes_p": 1.1102230246251565e-16
     }
   ]

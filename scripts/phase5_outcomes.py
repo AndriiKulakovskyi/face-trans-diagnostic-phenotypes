@@ -39,7 +39,7 @@ import plotly.graph_objects as go  # noqa: E402
 import plotly.io as pio  # noqa: E402
 import statsmodels.api as sm  # noqa: E402
 from sklearn.linear_model import LogisticRegression, Ridge  # noqa: E402
-from sklearn.model_selection import StratifiedKFold, cross_val_score  # noqa: E402
+from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score  # noqa: E402
 from sklearn.preprocessing import StandardScaler  # noqa: E402
 
 from face_common import build_unified_dataframe  # noqa: E402
@@ -57,9 +57,13 @@ OUTCOMES = [
 
 
 def cv_metric(X, y, kind):
+    # NOTE: folds MUST be shuffled — the patient matrix is ordered by cohort
+    # (BP…SZ…DR), so un-shuffled KFold makes cohort-imbalanced folds and distorts
+    # the R² (e.g. EGF baseline 0.19 unshuffled vs 0.33 shuffled).
     Xs = StandardScaler().fit_transform(X)
     if kind == "continuous":
-        return float(np.mean(cross_val_score(Ridge(alpha=1.0), Xs, y, cv=5, scoring="r2")))
+        kf = KFold(5, shuffle=True, random_state=RANDOM)
+        return float(np.mean(cross_val_score(Ridge(alpha=1.0), Xs, y, cv=kf, scoring="r2")))
     skf = StratifiedKFold(5, shuffle=True, random_state=RANDOM)
     return float(np.mean(cross_val_score(LogisticRegression(max_iter=2000), Xs, y,
                                          cv=skf, scoring="roc_auc")))

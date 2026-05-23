@@ -1,4 +1,4 @@
 outcome,n,metric,DSM,axes,combined,axes_minus_DSM,added_axes_p
-EGF functioning,3196,R2,0.239,0.218,0.271,-0.021,1.1102230246251565e-16
+EGF functioning,3196,R2,0.366,0.361,0.392,-0.004,1.1102230246251565e-16
 any hospitalization,3332,AUC,0.743,0.6,0.752,-0.143,
-EQ-5D quality of life,2423,R2,0.289,0.333,0.331,0.044,1.1102230246251565e-16
+EQ-5D quality of life,2423,R2,0.305,0.341,0.343,0.036,1.1102230246251565e-16

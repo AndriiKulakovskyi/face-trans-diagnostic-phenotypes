@@ -166,15 +166,18 @@ and `scripts/dimensional_ae.py` (PyTorch masked autoencoder, **no imputation**).
   on outcomes?).
 
 ### 3e. Phase 5 — do the axes beat DSM on outcomes? (the value test)
-Nested 5-fold CV predicting V1 outcomes from V0 axes vs DSM (arm, 7 subtypes), all
-adjusting for the V0 baseline + age + sex (`scripts/phase5_outcomes.py`; leakage-safe:
-predictors V0, outcome V1, baseline-adjusted):
+**Shuffled, repeated** 5-fold CV (R=200; `phase5_outcomes.py` + `phase5_ci.py`) predicting V1
+outcomes from V0 axes vs DSM (arm, 7 subtypes), all adjusting for V0 baseline + age + sex
+(leakage-safe). **Bugfix (E15b):** the original `cv_metric` used UN-shuffled folds and the
+matrix is cohort-ordered (BP…SZ…DR) → cohort-imbalanced folds distorted the R² (EGF baseline
+0.19 unshuffled vs 0.33 shuffled). Conclusions unchanged; absolute R² corrected upward,
+notably functioning. Numbers below are repeated-CV mean [95% CI]:
 
 | outcome | n | DSM | axes | combined | verdict |
 |---|--:|--:|--:|--:|---|
-| EQ-5D quality of life (R²) | 2423 | 0.289 | **0.333** | 0.331 | **axes BEAT DSM** (+0.044, p<1e-16) |
-| EGF functioning (R²) | 3196 | 0.239 | 0.218 | **0.271** | axes **complement** DSM (+0.032 over DSM, p<1e-16) |
-| any hospitalization (AUC) | 3332 | **0.743** | 0.600 | 0.752 | DSM dominates; axes add little |
+| EQ-5D quality of life (R²) | 2423 | 0.302 | **0.339** | 0.341 | **axes BEAT DSM** (+0.036 [+0.033,+0.039]) |
+| EGF functioning (R²) | 3196 | 0.365 | 0.362 | **0.394** | axes **complement** DSM (combined +0.029 [+0.027,+0.030]) |
+| any hospitalization (AUC) | 3332 | **0.747** | 0.604 | 0.758 | DSM dominates (axes −0.143 [−0.158,−0.130]) |
 
 - **Conclusion:** the dimensional axes carry information DSM lacks for **patient-
   reported / functional** outcomes (QoL, functioning) — for QoL they *outperform*
@@ -188,8 +191,9 @@ predictors V0, outcome V1, baseline-adjusted):
   depression axis contains EQ-5D/EGF/FAST and the illness-burden axis contains the hosp counts,
   so predicting those outcomes from those axes is potentially circular. Refitting the axes
   **without each outcome's own measure(s)** changed essentially nothing: QoL still beats DSM
-  (R² **0.332** vs 0.289, +0.043; circular +0.044), functioning still complemented (combined
-  **0.270**, +0.031; circular +0.032), hospitalization still DSM-dominated (axes AUC 0.600).
+  (R² **0.340** vs 0.305, +0.036; circular +0.036), functioning still complemented (combined
+  **0.392** vs 0.366, +0.026; axes alone ≈ DSM, −0.005), hospitalization still DSM-dominated
+  (axes AUC 0.600).
   ⇒ the advantage is **not** an artifact of outcome content — baseline adjustment already
   controls each outcome's V0 value, and the depression axis is carried by QIDS/MADRS/STAI.
 
@@ -208,19 +212,20 @@ per-visit-age residualized; the refit axes match the locked set, Tucker congruen
 - **Unifies Phases 4+5:** the depression-severity axis is moderately stable *and* the
   strongest predictor of functioning/QoL; the trauma/ADHD axis is the most trait-like.
 
-### 3g. Robustness — V2 replication + site (ComBat) harmonization
-- **V2 replication:** the Phase-5 head-to-head holds at a second follow-up — QoL axes
-  beat DSM (R² 0.258 vs 0.217, **+0.041**; V1 was +0.044), functioning axes complement
-  DSM (combined 0.229 vs 0.172), hospitalization DSM-dominated.
+### 3g. Robustness — V2 follow-up + site (ComBat) harmonization (all shuffled-CV)
+- **V2 follow-up (same cohort, not independent replication):** the head-to-head holds — QoL
+  axes beat DSM (R² 0.265 vs 0.230, **+0.034**), functioning axes complement DSM (combined
+  0.353 vs 0.306, **+0.047**), hospitalization DSM-dominated (AUC 0.727).
 - **Site (ComBat, `scripts/robustness_site.py`, neuroHarmonize; 20 sites ≥10 patients):**
   the site batch effect is small (mean |adjustment| = 0.044 SD); after ComBat-harmonizing
   the domain scores, the 6 axes are essentially unchanged (Tucker congruence with the
   locked axes [1.0, 1.0, 1.0, 0.98, 0.98, 0.99]) — they are **not a site artifact**. The
-  head-to-head survives: QoL axes still beat DSM (+0.037), functioning still complements
-  (combined 0.262), hospitalization still DSM-dominated.
+  head-to-head survives: QoL axes still beat DSM (+0.032), functioning still complements
+  (combined 0.386 vs 0.366), hospitalization still DSM-dominated.
 - **Conclusion:** the dimensional model and its outcome advantage are **reproducible**
   (split-half 0.95), **confound-free** (age/sex 0.002), **site-robust** (ComBat congruence
-  ~1), and **replicated across V1+V2** — solid for the manuscript.
+  ~1), **de-circularization-robust**, and **consistent across V1+V2** (same cohort) — solid
+  for the manuscript, pending independent external replication.
 
 ### 3h. Cognition (BP/SZ complementary analysis)
 Cognition is absent in DR **by design** (0% vs BP 71% / SZ 86%) — including it in the
