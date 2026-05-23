@@ -15,6 +15,8 @@ Requires kaleido + plotly.
 """
 from __future__ import annotations
 
+import sys
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -23,6 +25,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / "src"))
+sys.path.insert(0, str(REPO / "archive"))
 RES = REPO / "results"
 FIG = REPO / "reports" / "figures"
 
@@ -34,6 +38,43 @@ PRETTY = {"depression_severity": "Depression", "later_onset": "Later onset",
 BAND_LABELS = ["Low", "Mid", "High"]
 BAND_COLORS = ["#2ca02c", "#bdbdbd", "#d62728"]   # low / mid / high
 DISCRETE_PERSIST = 0.388                            # discrete-cluster V0→V1 (Suppl. S1)
+
+# DSM-5 subtypes ordered on the mood↔psychosis continuum (for the DSM → band panel)
+SPECTRUM = {"Trouble dépressif majeur": 0, "Bipolaire de type 2": 1, "Bipolaire de type 1": 2,
+            "Bipolaire non spécifié": 3, "Trouble schizo-affectif": 4,
+            "Trouble schizophréniforme": 5, "Schizophrénie": 6}
+DSM_SHORT = {"Trouble dépressif majeur": "MDD", "Bipolaire de type 2": "BP-II",
+             "Bipolaire de type 1": "BP-I", "Bipolaire non spécifié": "BP-NOS",
+             "Trouble schizo-affectif": "schizoaff.", "Trouble schizophréniforme": "schizophrenif.",
+             "Schizophrénie": "schizophr."}
+DSM_COLORS = ["#2c7bb6", "#5e9fc6", "#abd9e9", "#cccccc", "#fdae61", "#f46d43", "#d7191c"]
+
+
+def eta_squared(values: np.ndarray, groups: np.ndarray) -> float:
+    """Proportion of variance in an axis explained by DSM subtype (one-way ANOVA η²)."""
+    m = np.isfinite(values)
+    v, g = values[m], groups[m]
+    grand = v.mean()
+    ss_tot = float(((v - grand) ** 2).sum())
+    ss_bet = float(sum(((v[g == lvl].mean() - grand) ** 2) * (g == lvl).sum()
+                       for lvl in np.unique(g)))
+    return ss_bet / ss_tot if ss_tot > 0 else float("nan")
+
+
+def load_dsm_for(index) -> pd.Series:
+    """patient (cohort, patient_id) → DSM-5 subtype, from the V0 frame."""
+    from face_common import build_unified_dataframe
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        df = build_unified_dataframe(REPO / "data", REPO / "face-common-vars.xlsx",
+                                     readiness=["READY", "PARTIAL"], format="long")
+    v0 = df[df["visit"] == "V0"]
+    dsm = pd.Series(v0["arm"].astype(str).to_numpy(),
+                    index=pd.MultiIndex.from_arrays(
+                        [v0["cohort"].str.lower().to_numpy(),
+                         v0["usubjid_patients"].astype(str).to_numpy()],
+                        names=["cohort", "patient_id"]))
+    return dsm[~dsm.index.duplicated(keep="first")].reindex(index)
 
 
 def band(series: pd.Series, edges: np.ndarray) -> pd.Series:
@@ -114,6 +155,39 @@ def main() -> int:
     for ext in ("png", "svg"):
         bar.write_image(str(FIG / f"fig6b_band_persistence.{ext}"), scale=2)
     print("  wrote reports/figures/fig6b_band_persistence.png/.svg")
+
+    # ── Fig 6c: DSM-5 → axis-band (cross-sectional, trans-diagnostic overlap) ──
+    dsm = load_dsm_for(v0.index)
+    g = dsm.to_numpy().astype(str)
+    eta = {ax: eta_squared(v0[ax].to_numpy(float), g) for ax in AXES}
+    print("\nVariance in each axis explained by DSM-5 subtype (η²; low ⇒ trans-diagnostic):")
+    for ax in AXES:
+        print(f"  {PRETTY[ax]:14s} η²={eta[ax]:.3f}")
+    best = max(AXES, key=lambda a: eta[a])              # most diagnosis-linked axis
+    bv0 = band(v0[best], edges[best])
+    pair = pd.DataFrame({"dsm": dsm.to_numpy(), "band": bv0.to_numpy()}).dropna()
+    dsm_order = [s for s in sorted(SPECTRUM, key=SPECTRUM.get) if s in set(pair["dsm"])]
+    nodes = [DSM_SHORT[s] for s in dsm_order] + [f"{PRETTY[best]}·{b}" for b in BAND_LABELS]
+    nidx = {n: i for i, n in enumerate(nodes)}
+    ct = pd.crosstab(pair["dsm"], pair["band"].astype(int))
+    src, tgt, val = [], [], []
+    for s in dsm_order:
+        for b in range(3):
+            n = int(ct.loc[s, b]) if (s in ct.index and b in ct.columns) else 0
+            if n > 0:
+                src.append(nidx[DSM_SHORT[s]]); tgt.append(nidx[f"{PRETTY[best]}·{BAND_LABELS[b]}"])
+                val.append(n)
+    node_color = [DSM_COLORS[SPECTRUM[s]] for s in dsm_order] + BAND_COLORS
+    figc = go.Figure(go.Sankey(node=dict(label=nodes, color=node_color, pad=16, thickness=16),
+                               link=dict(source=src, target=tgt, value=val)))
+    figc.update_layout(
+        title=dict(text=f"DSM-5 → {PRETTY[best]}-axis band — diagnosis explains only "
+                        f"{eta[best]*100:.0f}% of it (η²={eta[best]:.2f}); trans-diagnostic",
+                   font=dict(size=13), x=0.5, xanchor="center"),
+        height=460, width=1100, font=dict(size=12), margin=dict(t=58, l=10, r=10, b=10))
+    for ext in ("png", "svg"):
+        figc.write_image(str(FIG / f"fig6c_dsm_axis_flow.{ext}"), scale=2)
+    print(f"  wrote reports/figures/fig6c_dsm_axis_flow.png/.svg  (axis={best}, η²={eta[best]:.3f})")
     return 0
 
 

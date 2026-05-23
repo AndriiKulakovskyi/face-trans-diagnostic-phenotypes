@@ -420,7 +420,10 @@ the data do not contain. We therefore model the trans-diagnostic variation dimen
 
 The six-dimension model (Table 2; `results/dimensional_final_loadings.csv`; Figure 2) was
 reproducible (split-half minimum Tucker congruence 0.95, mean 0.98) and essentially
-orthogonal to demographics (maximum |correlation| with age/sex ≤0.002 for all six). No
+orthogonal to demographics (maximum |correlation| with age/sex ≤0.002 for all six). They are
+also largely **independent of diagnosis**: DSM-5 subtype explains only η² = 0.01–0.05 of the
+variance of five of the six axes and 14% of the most diagnosis-linked (depression) axis
+(Figure 6c) — the dimensions are genuinely trans-diagnostic, not diagnosis re-encodings. No
 single dimension dominated (variance diffuse; largest ≈6%), confirming genuinely
 multi-axial structure. The dimensions are:
 
@@ -493,7 +496,7 @@ at baseline), so its low *r* (0.08) is a data property, not instability, and it 
 treated as a baseline-only axis. This gradient unifies the cross-sectional and longitudinal
 results: the depression dimension is both moderately stable and the strongest predictor of
 functioning/quality of life, while developmental/temperamental load (ADHD/trauma) is the
-most enduring trait. Displayed as a **flow** (Figure 6), a patient's *band* on a continuous
+most enduring trait. Displayed as a **flow** (Figure 6a,b), a patient's *band* on a continuous
 axis is largely retained across visits — same-band V0→V1 persistence 0.60 (depression) and
 0.56 (ADHD/trauma), well above the 33% three-band chance level — i.e. the continuous
 *position* is stable. This is the appropriate "phenotype flow" for a dimensional model;
@@ -732,12 +735,15 @@ correspondingly named `reports/*.html`.
   *g* and processing-speed factors; (b) cognition × symptom-dimension correlations
   (max |r| 0.24).
 - **Figure 6. Dimensional phenotype flow** (`fig6_dimensional_flow.png`,
-  `fig6b_band_persistence.png`; `scripts/export_dimensional_flow.py`) — (a) continuous-axis
-  band (V0-tertile Low/Mid/High) trajectories V0→V1→V2 for a trait-like (ADHD/trauma) and a
-  state-like (mania) axis, showing in-band (diagonal) dominance; (b) same-band V0→V1
-  persistence per dimension (0.32–0.60) against the 33% three-band chance level and the
-  discrete clusters' 38% — a patient's continuous-axis *position* is retained where discrete
-  *labels* hop. This is the dimensional analogue of a phenotype-flow diagram (bands are a
+  `fig6b_band_persistence.png`, `fig6c_dsm_axis_flow.png`; `scripts/export_dimensional_flow.py`).
+  **(a)** continuous-axis band (V0-tertile Low/Mid/High) trajectories V0→V1→V2 for a trait-like
+  (ADHD/trauma) and a state-like (mania) axis, showing in-band (diagonal) dominance; **(b)**
+  same-band V0→V1 persistence per dimension (0.32–0.60) against the 33% three-band chance level
+  and the discrete clusters' 38% — a patient's continuous-axis *position* is retained where
+  discrete *labels* hop; **(c)** cross-sectional **DSM-5 → axis-band** flow for the most
+  diagnosis-linked axis (depression): every DSM-5 subtype fans across Low/Mid/High and diagnosis
+  explains only 14% of even that axis (η² 0.14; ≤0.05 for the other five) — the dimensions are
+  trans-diagnostic. This is the dimensional analogue of a phenotype-flow diagram (bands are a
   display-only discretization; the model stays continuous).
 
 ---
