@@ -165,8 +165,9 @@ patient-visit to a V0 phenotype, measure persistence.
 - **Methodology note (important):** a masked nearest-**centroid** rule could *not*
   reproduce the V0 spectral-embedding clusters (self-ARI **0.024** — centroid vs
   spectral geometry mismatch). Replaced with a **classifier** (HistGradientBoosting,
-  NaN-native) trained on V0 domain scores → V0 labels: **5-fold accuracy 0.842**
-  (k=5, chance 0.20) — phenotypes ARE recoverable from domains; rule is valid.
+  NaN-native) trained on V0 domain scores → V0 labels: **shuffled 5-fold accuracy 0.873**
+  (k=5, chance 0.20; was 0.842 under un-shuffled CV — see E15b) — phenotypes ARE
+  recoverable from domains; rule is valid.
 - **Result (now read as a NEGATIVE result):** the discrete clusters do **not**
   persist — ARI(V0↔Vk) **≈0.06–0.07**, persistence **≈37–39%** (V1 n=3782 … V4 n=697),
   barely above chance. Phenotype-dependent: smoking/illness-burden (1) **59%**,

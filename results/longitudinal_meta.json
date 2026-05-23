@@ -4,7 +4,7 @@
     "spline_df": 4,
     "cross_fit": 5
   },
-  "v0_classifier_cv_accuracy": 0.8416040726375401,
+  "v0_classifier_cv_accuracy": 0.872657742689149,
   "k": 5,
   "n_patient_visits_assigned": 17732,
   "coherence": [

@@ -115,7 +115,7 @@ spectral embedding.
 **Reframed (was "temporal coherence"):** this is the empirical demonstration that *discrete*
 clustering fails here, motivating the dimensional model — not a phenotype finding. A phenotype
 **classifier** (HistGradientBoosting, NaN-native) trained on V0 domain scores → V0 k=5 labels
-(**5-fold accuracy 0.842**) is applied to each follow-up visit. (A nearest-centroid rule failed
+(**shuffled 5-fold accuracy 0.873**) is applied to each follow-up visit. (A nearest-centroid rule failed
 — self-ARI 0.024 — because it cannot reproduce the V0 spectral-embedding geometry; that
 fragility is itself a discreteness red flag.)
 - **The discrete clusters do not persist:** ARI(V0↔Vk) **≈0.06–0.07**, persistence **≈37–39%**

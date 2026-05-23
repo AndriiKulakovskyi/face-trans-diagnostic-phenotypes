@@ -813,7 +813,7 @@ diagnosis-transcending subgroups (a negative result that motivates the dimension
 `scripts/longitudinal_coherence.py` + `export_longitudinal_figure.py`). As an *exploratory
 discrete view* — superseded by the dimensional model of the main text — we assigned every
 patient–visit to one of five V0
-domain-phenotypes with a NaN-native gradient-boosted classifier (5-fold V0 accuracy 0.84)
+domain-phenotypes with a NaN-native gradient-boosted classifier (shuffled 5-fold V0 accuracy 0.87)
 and traced the flow **DSM-5 subtype → V0 → V1 → V2** (Sankey), with the DSM-5 composition of
 each phenotype shown as a heatmap. Two features reinforce the dimensional conclusion rather
 than contradict it: **(i) trans-diagnostic** — the five phenotypes are essentially

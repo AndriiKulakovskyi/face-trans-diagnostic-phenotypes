@@ -43,7 +43,7 @@ import plotly.graph_objects as go  # noqa: E402
 import plotly.io as pio  # noqa: E402
 from sklearn.ensemble import HistGradientBoostingClassifier  # noqa: E402
 from sklearn.metrics import adjusted_rand_score  # noqa: E402
-from sklearn.model_selection import cross_val_score  # noqa: E402
+from sklearn.model_selection import StratifiedKFold, cross_val_score  # noqa: E402
 
 from face_common import (  # noqa: E402
     ADMINISTRATIVE_FEATURES,
@@ -148,7 +148,8 @@ def main() -> int:
 
     # Train a phenotype classifier on V0 (domain scores -> V0 embedding labels) and
     # apply it to every visit. HistGradientBoosting handles NaN natively (no
-    # imputation); 5-fold accuracy on V0 reports the rule's validity.
+    # imputation); 5-fold accuracy on V0 reports the rule's validity. Folds MUST be
+    # shuffled — the matrix is cohort-ordered, so un-shuffled folds distort accuracy.
     v0_rows = scores_r.xs("V0", level="visit")
     yv0 = v0_label.reindex(v0_rows.index)
     train = yv0.notna() & (v0_rows.notna().sum(axis=1) >= MIN_OBS)
@@ -156,7 +157,8 @@ def main() -> int:
     ytr = yv0[train].astype(int).to_numpy()
     k = int(len(np.unique(ytr)))
     clf = HistGradientBoostingClassifier(random_state=RANDOM_STATE)
-    cv_acc = float(cross_val_score(clf, Xtr, ytr, cv=5).mean())
+    cv = StratifiedKFold(5, shuffle=True, random_state=RANDOM_STATE)
+    cv_acc = float(cross_val_score(clf, Xtr, ytr, cv=cv).mean())
     clf.fit(Xtr, ytr)
     nobs = scores_r.notna().sum(axis=1).to_numpy()
     lab = np.where(nobs >= MIN_OBS, clf.predict(scores_r.to_numpy(np.float64)), -1)
