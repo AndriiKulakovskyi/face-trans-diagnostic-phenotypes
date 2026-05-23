@@ -56,6 +56,26 @@ MIN_DOMAINS, COV_FLOOR, RANDOM = 3, 0.30, 0
 SYMPTOM_AXES = ["depression_severity", "later_onset", "mania_activation",
                 "illness_burden", "metabolic", "adhd_impulsivity_trauma"]
 
+# Curated standard cognitive constructs (so WAIS sub-items don't dominate by count).
+# sign = +1 higher-is-better; TMT is time/error-based (higher-is-worse, sign −1,
+# confirmed: TMT-B correlates −0.16 with CVLT). The sign orients each member so every
+# domain reads "higher = better cognition".
+COGNITIVE_DOMAINS = {
+    "memory_cvlt":       [("cvlt", +1)],
+    "executive_tmt":     [("tmtb", -1), ("tmtba", -1)],
+    "proc_speed":        [("tmta", -1), ("code01_wais", +1), ("code02_wais", +1),
+                          ("code03_wais", +1), ("code04_wais", +1), ("code05_wais", +1),
+                          ("ivt01_wais", +1), ("ivt02_wais", +1), ("ivt04_wais", +1)],
+    "working_memory":    [("nbrut_w", +1), ("nstand_w", +1), ("vstand_w", +1),
+                          ("mcod_w", +1), ("mcoi_w", +1), ("mcoc_w", +1), ("mcodemp_w", +1),
+                          ("mcoiemp_w", +1), ("empdid_w", +1), ("wais_mc_end_std_wais", +1),
+                          ("wais_mc_env_std_wais", +1), ("wais_mc_cro_wais", +1),
+                          ("wais_mc_cro_std_wais", +1)],
+    "verbal_reasoning":  [("similtot_wais", +1), ("similstd_wais", +1), ("similcr_wais", +1)],
+    "percept_reasoning": [("mat_tot_w", +1), ("mat_std_w", +1), ("mat_cr_w", +1)],
+    "fluency":           [("fv", +1)],
+}
+
 
 def parallel_analysis(X, n_iter=30, seed=0, cap=4):
     rng = np.random.default_rng(seed)
@@ -80,8 +100,11 @@ def main() -> int:
                                        exclude=ADMINISTRATIVE_FEATURES, sections={SECTION})
         full = to_harmonized_dataset(df, variables, visit="V0", exclude=ADMINISTRATIVE_FEATURES)
 
-    # 1. cognitive instrument-domains
-    cog, cmeta = build_domain_scores(cog_ds.X, variables, symptom_sections={SECTION}, biology={})
+    # 1. cognitive domains — two-level: raw items → instrument stem-domains → curated
+    #    standard constructs (so WAIS sub-items don't dominate by count).
+    cog_stems, _ = build_domain_scores(cog_ds.X, variables, symptom_sections={SECTION}, biology={})
+    cog, cmeta = build_domain_scores(cog_stems, variables, symptom_sections=set(),
+                                     biology=COGNITIVE_DOMAINS)
     # keep BP/SZ patients with cognition; drop DR (all-NaN) and sparse rows
     have = cog.notna().sum(axis=1) >= MIN_DOMAINS
     cog = cog[have]

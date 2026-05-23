@@ -209,20 +209,19 @@ per-visit-age residualized; the refit axes match the locked set, Tucker congruen
 ### 3h. Cognition (BP/SZ complementary analysis)
 Cognition is absent in DR **by design** (0% vs BP 71% / SZ 86%) — including it in the
 3-cohort model would re-inject a cohort/availability confound — so it is analysed within
-BP/SZ (`scripts/cognition_bpsz.py`; 6,170 patients, 33 cognitive instrument-domains).
-- **Cognitive factors (K=4, parallel analysis):** processing speed (WAIS coding/symbol-
-  search), working memory (digit span), verbal reasoning (similarities/matrices), + a
-  span-contrast factor. WAIS-dominated structure (CVLT/TMT contributed single domains;
-  caveat — WAIS sub-items split into ~25 domains, so the factors are WAIS-internal; could
-  be refined with standard indices VCI/PSI/WMI/PRI + CVLT + TMT).
-- **Cognition is largely ORTHOGONAL to the symptom axes** (max |r| ≈ 0.2): strongest are
-  processing-speed ↔ depression-severity (−0.17) and ↔ illness-burden (−0.17) — worse
-  cognition with higher symptom burden, as expected, but weak. So cognition is a
-  semi-independent dimension, not redundant with symptoms (matches the literature).
-- **Cognition adds a small, non-redundant increment to functioning** (V1 EGF, BP/SZ
-  n=2,496): symptom-axes R² 0.173 → +cognition 0.185 (Δ **+0.012**). Modest but
-  independent — consistent with cognition being orthogonal to symptoms yet relevant to
-  function.
+BP/SZ (`scripts/cognition_bpsz.py`; 6,099 patients). To stop WAIS sub-items dominating
+by count, raw items are aggregated **items → instrument stem-domains → 7 standard
+constructs** (memory[CVLT], executive[TMT], processing speed, working memory, verbal &
+perceptual reasoning, fluency; TMT reverse-signed — confirmed −0.16 vs CVLT).
+- **Two cognitive factors** (parallel analysis K=2): a broad **general-ability factor**
+  (perceptual/verbal reasoning + working memory + memory) and a **processing-speed**
+  factor — the classic g + speed structure.
+- **Cognition is semi-independent of the symptom axes** (max |r| 0.24): the clearest
+  link is **general cognition ↔ illness-burden (−0.24)** (lower ability with more chronic
+  illness burden), then ↔ metabolic (−0.16) and depression-severity (−0.13). Not
+  redundant with symptoms (matches the cognition-vs-symptom literature).
+- **Small, non-redundant increment to functioning** (V1 EGF, BP/SZ n=2,478): symptom-axes
+  R² 0.169 → +cognition 0.174 (Δ **+0.005**) — modest but independent.
 
 ## 4. The scientific fork (framing)
 Two mutually-exclusive products, because **diagnosis + demographics are the

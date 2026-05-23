@@ -279,15 +279,24 @@ test-retest r per axis.
   V1/V2-replicated, with axes adding value over DSM for QoL/functioning. Manuscript-ready.
 
 ## E17 · Cognition BP/SZ sub-analysis — 2026-05-23
-`scripts/cognition_bpsz.py` (cognition absent in DR by design → BP/SZ only, n=6,170;
-4296 BP / 1874 SZ).
-- 4 cognitive factors (parallel analysis), WAIS-dominated: processing speed, working
-  memory, verbal reasoning, span-contrast. (CVLT/TMT under-weighted — WAIS sub-items
-  split into ~25 domains. Refine with standard indices VCI/PSI/WMI/PRI + CVLT + TMT.)
-- **Cognition ⊥ symptom axes:** max |r| ≈ 0.2 (processing-speed ↔ depression −0.17, ↔
-  illness-burden −0.17). Semi-independent dimension, not symptom-redundant.
-- **Adds a small increment to V1 functioning** (EGF) over the symptom axes: R²
-  0.173→0.185 (Δ +0.012, n=2,496). Modest but non-redundant.
+`scripts/cognition_bpsz.py` (cognition absent in DR by design → BP/SZ only, n=6,099;
+4273 BP / 1826 SZ).
+- **Polish (the fix):** v1 let WAIS sub-items dominate by count (~25 split domains →
+  4 WAIS-flavoured factors, CVLT/TMT under-weighted). Now a **two-level aggregation**
+  collapses raw items → instrument **stem-domains** → **7 standard constructs**
+  (memory[CVLT], executive[TMT], processing-speed, working-memory, verbal &
+  perceptual reasoning, fluency); TMT reverse-signed (confirmed −0.16 vs CVLT).
+  Two-level call: `build_domain_scores(X,…,biology={})` → stems, then
+  `build_domain_scores(stems,…,biology=COGNITIVE_DOMAINS)` → constructs (the
+  composite path matches raw canonicals, so constructs must be built off stems).
+- **Two cognitive factors** (parallel analysis K=2): **cog1 general-ability g**
+  (percept_reasoning +0.67, working_memory +0.59, verbal_reasoning +0.47,
+  memory_cvlt +0.41, fluency +0.26) and **cog2 processing-speed** (proc_speed +0.80,
+  executive_tmt −0.22) — the classic **g + speed** structure.
+- **Cognition ⊥ symptom axes:** max |r| **0.24** (g ↔ illness-burden −0.24, then
+  ↔ metabolic −0.16, ↔ depression −0.13). Semi-independent, not symptom-redundant.
+- **Small non-redundant increment to V1 functioning** (EGF, n=2,478): symptom-axes
+  R² 0.169 → +cognition 0.174 (Δ **+0.005**). Modest but independent.
 - Kept OUT of the 3-cohort model (would re-inject the DR-availability confound).
 
 ## Deferred / open (do not forget)

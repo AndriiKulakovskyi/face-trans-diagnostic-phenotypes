@@ -1,20 +1,18 @@
 {
-  "n_cognition": 6170,
+  "n_cognition": 6099,
   "cohort": {
-    "bp": 4296,
-    "sz": 1874
+    "bp": 4273,
+    "sz": 1826
   },
-  "K": 4,
+  "K": 2,
   "factors": [
     "cog1",
-    "cog2",
-    "cog3",
-    "cog4"
+    "cog2"
   ],
   "outcome_egf": {
-    "n": 2496,
-    "symptom_axes_R2": 0.17310626184431327,
-    "symptom_plus_cognition_R2": 0.1853545386457321,
-    "delta": 0.012248276801418823
+    "n": 2478,
+    "symptom_axes_R2": 0.1687190693749328,
+    "symptom_plus_cognition_R2": 0.17398054876528407,
+    "delta": 0.005261479390351265
   }
 }
