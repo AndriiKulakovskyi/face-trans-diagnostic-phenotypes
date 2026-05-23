@@ -44,7 +44,7 @@ from sklearn.ensemble import HistGradientBoostingClassifier  # noqa: E402
 from sklearn.metrics import adjusted_rand_score  # noqa: E402
 from sklearn.model_selection import StratifiedKFold, cross_val_score  # noqa: E402
 
-from face_common import (  # noqa: E402
+from trans_diag import (  # noqa: E402
     ADMINISTRATIVE_FEATURES,
     COHORT_TO_CODE,
     DOMAIN_SECTIONS,

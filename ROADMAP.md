@@ -7,7 +7,7 @@
 >
 > **Status note (repo independence):** the sister `face_stratification`/`face_rlvr`
 > code and `archive/` have been **removed** — the engine pieces we use are now
-> internalized in `src/face_common/engine/`. Historical references to `archive/`
+> internalized in `src/trans_diag/engine/`. Historical references to `archive/`
 > below describe the earlier merged layout and are kept for the record. The repo
 > is self-contained: `pip install -e ".[full]"` + `python scripts/run_all.py`
 > reproduces the manuscript.
@@ -111,7 +111,7 @@ data**. The sister's 4-cohort clusters are the comparison reference.
 
 ```
 face-common-vars.xlsx + data/ (BP·SZ·DR, V0–V4)
-   │  face_common: harmonize per visit → patient × feature matrix (patient_uid)
+   │  trans_diag: harmonize per visit → patient × feature matrix (patient_uid)
    ▼
    adapter → engine HarmonizedDataset(X, schema)   schema from OUR dictionary:
    │                                                block = `section`,
@@ -134,9 +134,9 @@ Status: **[locked]** committed · **[proposed]** awaiting `methodology-v1` ·
 
 | aspect | decision |
 |---|---|
-| **Feature source** | **[locked]** Our common-variables harmonization (`face_common`), 3 cohorts. Informative core (67) as the candidate set. Hold out `egf`/GAF + FAST/WHODAS. |
+| **Feature source** | **[locked]** Our common-variables harmonization (`trans_diag`), 3 cohorts. Informative core (67) as the candidate set. Hold out `egf`/GAF + FAST/WHODAS. |
 | **Schema** | **[proposed]** Built from the dictionary: **block = `section`**, **metric = by `dtype`** (continuous biology/cognition → euclidean; ordinal scale profiles → cosine; mixed/binary → Gower). One YAML, our names, 3 cohorts. |
-| **Adapter** | **[to build]** `face_common` matrix → engine `HarmonizedDataset(X, schema)`; the single new glue module. |
+| **Adapter** | **[to build]** `trans_diag` matrix → engine `HarmonizedDataset(X, schema)`; the single new glue module. |
 | **Embedding** | **[proposed]** Reuse engine `MultipartiteSpectral` — per coverage-partition spectral blocks (`bp+dr+sz`, `bp+dr`, `bp+sz`, `dr+sz` + single-cohort; no ASP), masked similarity, no imputation. |
 | **Clustering** | **[proposed]** Reuse engine consensus KMeans with composite k-selection. Report composite-optimal k *and* the k matched to the sister reference. |
 | **Imputation** | **[locked]** None (masked similarity). KNN/MICE only as sensitivity. |
@@ -164,7 +164,7 @@ code (reused by import, never developed).
 
 ```
 face-common-bp-sz-dr/
-├── src/face_common/        OUR pipeline — the only code we develop (loader, rules, filters)
+├── src/trans_diag/        OUR pipeline — the only code we develop (loader, rules, filters)
 ├── archive/                VENDORED copied sister code (do not edit)
 │   ├── face_stratification/  the reused engine (graph, models, clustering, stage_c, evaluation)
 │   ├── face_rlvr/            engine patient extractors + glossary loader
@@ -177,7 +177,7 @@ face-common-bp-sz-dr/
 ├── tests/                  OUR tests (test_filters.py)
 ├── results/ reports/       our outputs
 ├── ROADMAP.md CLAUDE.md DATA.md README.md  our docs
-└── pyproject.toml          packages: src/face_common + archive engine; pytest pythonpath = [src, archive]
+└── pyproject.toml          packages: src/trans_diag + archive engine; pytest pythonpath = [src, archive]
 ```
 
 ## 9. Phased plan
@@ -186,7 +186,7 @@ face-common-bp-sz-dr/
 - [x] Dictionary parsed; 348 feature variables PASS the audit; QA report.
 
 ### Phase 1 — Filter library + patient identity — **DONE**
-- [x] `face_common/filters.py` + `patient_uid` fix + 26 tests.
+- [x] `trans_diag/filters.py` + `patient_uid` fix + 26 tests.
 
 ### Phase 2 — Methodology, feasibility, merge — **DONE**
 - [x] Threshold sweep + sensitivity report; informative core (67); discovery
@@ -197,10 +197,10 @@ face-common-bp-sz-dr/
       engine.
 
 ### Phase 3 — V0 trans-diagnostic clustering — **DONE (direction A locked)**
-- [x] `src/face_common/schema_gen.py` — dictionary→`FeatureSchema` generator
+- [x] `src/trans_diag/schema_gen.py` — dictionary→`FeatureSchema` generator
       (`section`→block, `canonical_name`→feature id, `dtype`→`FeatureType`,
       source-column presence→`cohorts`).
-- [x] `src/face_common/adapter.py` — `to_harmonized_dataset(...)`: V0 long frame →
+- [x] `src/trans_diag/adapter.py` — `to_harmonized_dataset(...)`: V0 long frame →
       engine `HarmonizedDataset` (no imputation), with `normalize_for_embedding`
       (robust per-feature z), `residualize_features` (regress out covariates), a
       `sections` filter (`CLINICAL_SECTIONS`) and confound `exclude`. 22 tests.
@@ -280,7 +280,7 @@ face-common-bp-sz-dr/
 The merge + clean reorganization are **done** (Reading B: vendor the whole sister
 tree, no engine surgery).
 
-- [x] `src/face_common` is the sole development base; `face_common` imports from
+- [x] `src/trans_diag` is the sole development base; `trans_diag` imports from
       `src/`.
 - [x] **All copied sister code in `archive/`** — `face_stratification` (engine),
       `face_rlvr`, sister scripts/notebooks/tests/docs/output, and the 4-cohort
@@ -288,19 +288,19 @@ tree, no engine surgery).
       scripts insert both).
 - [x] `config/` kept at repo root so the engine's `parents[3]/config` schema
       resolution still works from `archive/`.
-- [x] `pyproject` packages = `src/face_common` + the archived engine;
+- [x] `pyproject` packages = `src/trans_diag` + the archived engine;
       `.gitignore` ignores `.env*`/`output/`; `.env` (secrets) never copied.
 - [x] Docs rewritten for the clean layout (CLAUDE.md, README.md, ROADMAP §8).
 - [x] Verified: 40 unit tests pass; `verify.py` runs end-to-end; both
-      `face_common` (src) and `face_stratification` (archive) import.
-- [x] **Dictionary→schema generator + `face_common → HarmonizedDataset` adapter**
-      built (`src/face_common/schema_gen.py`, `adapter.py`) — the glue between our
-      pipeline and the engine. Exposed via `face_common.{to_harmonized_dataset,
+      `trans_diag` (src) and `face_stratification` (archive) import.
+- [x] **Dictionary→schema generator + `trans_diag → HarmonizedDataset` adapter**
+      built (`src/trans_diag/schema_gen.py`, `adapter.py`) — the glue between our
+      pipeline and the engine. Exposed via `trans_diag.{to_harmonized_dataset,
       build_feature_schema}`.
 - [x] `scripts/cluster_v0.py` — our 3-cohort V0 matrix → engine → clusters
       (`results/cluster_v0_*`). See Phase 3 above for the first recovery result.
 
-Principle: develop only in `src/face_common`; reuse the engine from `archive/`
+Principle: develop only in `src/trans_diag`; reuse the engine from `archive/`
 by import; never edit vendored code. To run the engine's heavy paths:
 `pip install -e ".[stratification]"`.
 

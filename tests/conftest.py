@@ -1,7 +1,7 @@
 """Pytest path bootstrap for the ``src/`` layout.
 
-``face_common`` is self-contained (the stratification engine is internalized in
-``face_common.engine``), so only ``src/`` needs to be importable to run the
+``trans_diag`` is self-contained (the stratification engine is internalized in
+``trans_diag.engine``), so only ``src/`` needs to be importable to run the
 tests without installing the project.
 """
 import sys

@@ -27,7 +27,7 @@ from sklearn.model_selection import (KFold, StratifiedKFold,  # noqa: E402
                                      cross_val_score)
 from sklearn.preprocessing import StandardScaler  # noqa: E402
 
-from face_common import build_unified_dataframe  # noqa: E402
+from trans_diag import build_unified_dataframe  # noqa: E402
 
 RES = REPO / "results"
 AXES_PATH = RES / "dimensional_final_scores.parquet"

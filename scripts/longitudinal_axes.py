@@ -36,7 +36,7 @@ from scipy.stats import pearsonr, spearmanr  # noqa: E402
 from sklearn.decomposition import FactorAnalysis  # noqa: E402
 from sklearn.preprocessing import StandardScaler  # noqa: E402
 
-from face_common import (  # noqa: E402
+from trans_diag import (  # noqa: E402
     ADMINISTRATIVE_FEATURES,
     COHORT_TO_CODE,
     DOMAIN_SECTIONS,

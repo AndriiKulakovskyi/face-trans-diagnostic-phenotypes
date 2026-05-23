@@ -30,7 +30,7 @@ from .variable import Variable
 
 __all__ = ["build_feature_schema", "feature_cohorts", "DEFAULT_SCHEMA_VERSION"]
 
-DEFAULT_SCHEMA_VERSION = "face_common-0.1.0"
+DEFAULT_SCHEMA_VERSION = "trans_diag-0.1.0"
 
 # canonical cohort order used throughout the engine
 _COHORT_COLUMNS = (("bp", "bp_csv_col"), ("sz", "sz_csv_col"), ("dr", "dr_csv_col"))

@@ -28,7 +28,7 @@ Dates: entries before 2026-05-22 are reconstructed by phase (undated); work on
 ## E1 · Harmonization, filters, Phase-2 feasibility (prior phases)
 - Dictionary (`face-common-vars.xlsx`, 379 rows) → unified patient×feature
   matrix; **348/348 feature variables pass the audit**; QA missingness report.
-- `face_common.filters` (variable/patient completeness, V0 anchor) + the
+- `trans_diag.filters` (variable/patient completeness, V0 anchor) + the
   `patient_uid` collision fix (regression-tested).
 - Phase-2 sweeps: informative core ≈ 67 features; discovery floor 90% → ~198
   features/cohort; cohort imbalance + site distribution characterised; **no
@@ -42,7 +42,7 @@ Dates: entries before 2026-05-22 are reconstructed by phase (undated); work on
   our BP/SZ/DR the ASP cluster is empty → 6 populated reference clusters.
 
 ## E3 · Phase-3 engine bridge
-- `src/face_common/schema_gen.py` (dictionary → engine `FeatureSchema`) and
+- `src/trans_diag/schema_gen.py` (dictionary → engine `FeatureSchema`) and
   `adapter.py` (`to_harmonized_dataset`: our V0 frame → engine
   `HarmonizedDataset`, no imputation). `scripts/cluster_v0.py` drives the engine.
 
@@ -115,7 +115,7 @@ placeholder (the sister's non-ASP count) — k must be chosen on internal ground
   5. **Start with symptoms + biology** (cognition deferred — availability-confounded).
 
 ## E8 · Domain aggregation + nonlinear residualization — 2026-05-22 (done)
-- `src/face_common/domains.py` — symptom instruments auto-grouped by canonical
+- `src/trans_diag/domains.py` — symptom instruments auto-grouped by canonical
   stem (masked mean of robust-z items, min-items threshold); curated biology
   composites with explicit members + directions. 190 items → 72 domains; no
   domain > 1.4% of dims (was 30% for SUICIDE); metabolic_syndrome 90% coverage.

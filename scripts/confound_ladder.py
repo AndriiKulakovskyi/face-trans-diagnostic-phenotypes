@@ -33,14 +33,14 @@ sys.path.insert(0, str(REPO / "src"))
 
 from sklearn.metrics import adjusted_rand_score  # noqa: E402
 
-from face_common import (  # noqa: E402
+from trans_diag import (  # noqa: E402
     ADMINISTRATIVE_FEATURES,
     CLINICAL_SECTIONS,
     build_unified_dataframe,
     load_variables,
     to_harmonized_dataset,
 )
-from face_common.engine import (  # noqa: E402
+from trans_diag.engine import (  # noqa: E402
     FeatureSchema,
     HarmonizedDataset,
     MultipartiteSpectralEmbedding,

@@ -127,9 +127,9 @@ def fig1_structure():
     # (d) DSM-subtype mood↔psychosis continuum (PC1 of standardized domains)
     try:
         from sklearn.decomposition import PCA
-        from face_common import (build_unified_dataframe, load_variables,
+        from trans_diag import (build_unified_dataframe, load_variables,
                                   to_harmonized_dataset)
-        from face_common.adapter import ADMINISTRATIVE_FEATURES
+        from trans_diag.adapter import ADMINISTRATIVE_FEATURES
         sc = pd.read_parquet(RESULTS / "cluster_domains_scores.parquet")
         sc.index = pd.MultiIndex.from_arrays(
             [sc.index.get_level_values("cohort").astype(str),

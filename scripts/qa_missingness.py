@@ -33,7 +33,7 @@ import plotly.io as pio
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from face_common import build_unified_dataframe, load_variables  # noqa: E402
+from trans_diag import build_unified_dataframe, load_variables  # noqa: E402
 
 
 DATA_DIR = REPO_ROOT / "data"

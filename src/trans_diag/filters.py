@@ -15,7 +15,7 @@ Compose them into the pre-registered V0-anchored workflow via
 projects the V0 selection onto any visit's data.
 
 All functions operate on the long-format DataFrame produced by
-`face_common.build_unified_dataframe(format='long')`. Identifier columns
+`trans_diag.build_unified_dataframe(format='long')`. Identifier columns
 (`usubjid_patients`, `cohort`, `arm`, `visit`, `visitnum`, `fondacode`,
 `armcd`) are never dropped and never enter completeness calculations.
 

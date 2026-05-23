@@ -35,7 +35,7 @@ import plotly.io as pio  # noqa: E402
 from scipy.stats import spearmanr  # noqa: E402
 from sklearn.decomposition import PCA, FactorAnalysis  # noqa: E402
 
-from face_common import (  # noqa: E402
+from trans_diag import (  # noqa: E402
     ADMINISTRATIVE_FEATURES,
     build_unified_dataframe,
     load_variables,

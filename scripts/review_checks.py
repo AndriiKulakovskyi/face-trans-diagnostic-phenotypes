@@ -31,7 +31,7 @@ from sklearn.decomposition import PCA  # noqa: E402
 from sklearn.ensemble import HistGradientBoostingClassifier  # noqa: E402
 from sklearn.model_selection import StratifiedKFold, cross_val_score  # noqa: E402
 
-from face_common import build_unified_dataframe  # noqa: E402
+from trans_diag import build_unified_dataframe  # noqa: E402
 
 RES = REPO / "results"
 FIG = REPO / "reports" / "figures"

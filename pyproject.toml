@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "face-common"
+name = "trans-diag"
 version = "0.1.0"
-description = "FACE trans-diagnostic phenotyping (BP/SZ/DR): longitudinal harmonization + a confound-controlled dimensional model. Self-contained — the stratification engine is internalized in face_common.engine."
+description = "FACE trans-diagnostic phenotyping (BP/SZ/DR): longitudinal harmonization + a confound-controlled dimensional model. Self-contained — the stratification engine is internalized in trans_diag.engine."
 requires-python = ">=3.11"
 dependencies = [
     "pandas>=2.0",
@@ -30,7 +30,7 @@ dev = ["pytest>=7.0", "pytest-cov>=4.0"]
 full = ["torch>=2.2", "neuroHarmonize>=2.4", "neuroCombat>=0.2.12", "nibabel>=5.0", "kaleido>=0.2"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/face_common"]
+packages = ["src/trans_diag"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

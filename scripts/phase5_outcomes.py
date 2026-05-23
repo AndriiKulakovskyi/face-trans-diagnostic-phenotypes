@@ -41,7 +41,7 @@ from sklearn.linear_model import LogisticRegression, Ridge  # noqa: E402
 from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score  # noqa: E402
 from sklearn.preprocessing import StandardScaler  # noqa: E402
 
-from face_common import build_unified_dataframe  # noqa: E402
+from trans_diag import build_unified_dataframe  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"

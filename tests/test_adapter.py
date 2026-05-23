@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from face_common.adapter import (
+from trans_diag.adapter import (
     ADMINISTRATIVE_FEATURES,
     CLINICAL_SECTIONS,
     COHORT_TO_CODE,
@@ -26,8 +26,8 @@ from face_common.adapter import (
     residualize_features,
     to_harmonized_dataset,
 )
-from face_common.schema_gen import _slug, build_feature_schema, feature_cohorts
-from face_common.variable import Variable
+from trans_diag.schema_gen import _slug, build_feature_schema, feature_cohorts
+from trans_diag.variable import Variable
 
 
 # ---------------------------------------------------------------------------

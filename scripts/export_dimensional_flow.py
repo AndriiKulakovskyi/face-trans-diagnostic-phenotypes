@@ -62,7 +62,7 @@ def eta_squared(values: np.ndarray, groups: np.ndarray) -> float:
 
 def load_dsm_for(index) -> pd.Series:
     """patient (cohort, patient_id) → DSM-5 subtype, from the V0 frame."""
-    from face_common import build_unified_dataframe
+    from trans_diag import build_unified_dataframe
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         df = build_unified_dataframe(REPO / "data", REPO / "face-common-vars.xlsx",

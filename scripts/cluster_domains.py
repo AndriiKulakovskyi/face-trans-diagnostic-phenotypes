@@ -50,7 +50,7 @@ from sklearn.metrics import (  # noqa: E402
     silhouette_score,
 )
 
-from face_common import (  # noqa: E402
+from trans_diag import (  # noqa: E402
     ADMINISTRATIVE_FEATURES,
     DOMAIN_SECTIONS,
     build_domain_scores,
@@ -60,7 +60,7 @@ from face_common import (  # noqa: E402
     residualize_features,
     to_harmonized_dataset,
 )
-from face_common.engine import (  # noqa: E402
+from trans_diag.engine import (  # noqa: E402
     FeatureSchema,
     HarmonizedDataset,
     MultipartiteSpectralEmbedding,
@@ -209,7 +209,7 @@ def wrap_domain_dataset(scores: pd.DataFrame, metadata: pd.DataFrame,
     blocks = [{"id": b, "label_fr": b, "description": f"{b} domains"}
               for b in sorted(set(kinds.get(d, "symptom") for d in scores.columns))]
     schema = FeatureSchema.model_validate(
-        {"version": "face_common-domains-0.1", "blocks": blocks, "features": feats})
+        {"version": "trans_diag-domains-0.1", "blocks": blocks, "features": feats})
     fm = pd.DataFrame(
         [{"feature_id": f["id"], "label_fr": f["id"], "block": f["block"],
           "type": "continuous", "temporal_scope": "current", "unit": None,

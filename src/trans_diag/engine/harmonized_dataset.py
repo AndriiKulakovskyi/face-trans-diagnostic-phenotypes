@@ -3,8 +3,8 @@
 Extracted verbatim from the vendored sister engine
 (``face_stratification.harmonization.harmonizer.HarmonizedDataset``). The
 cohort-specific builder functions and their ``face_rlvr`` / ``cohort_adapters``
-dependencies are intentionally **not** carried over — ``face_common`` constructs
-this dataclass directly (see :func:`face_common.adapter.to_harmonized_dataset`).
+dependencies are intentionally **not** carried over — ``trans_diag`` constructs
+this dataclass directly (see :func:`trans_diag.adapter.to_harmonized_dataset`).
 """
 from __future__ import annotations
 

@@ -15,7 +15,7 @@ outcomes (full write-up in `MANUSCRIPT.md`).
 
 The stratification **engine** (masked similarity → multipartite-spectral embedding,
 cluster enrichment, factor scaffolding) was originally a sister project; the pieces we
-use are now **internalized** in `src/face_common/engine/` — the repo has **no external
+use are now **internalized** in `src/trans_diag/engine/` — the repo has **no external
 dependency on `face_stratification`/`face_rlvr`**.
 
 ## Repository layout
@@ -25,7 +25,7 @@ face-common-bp-sz-dr/
 ├── MANUSCRIPT.md  CLAUDE.md  ROADMAP.md  DATA.md  FINDINGS.md  LABBOOK.md  README.md
 ├── face-common-vars.xlsx            ← the common-variables dictionary (input)
 ├── data/                            ← 3-cohort longitudinal CSVs (confidential; gitignored)
-├── src/face_common/                 ← the package (all our code)
+├── src/trans_diag/                 ← the package (all our code)
 │   ├── variable.py  rules.py  loader.py  filters.py   ← harmonization
 │   ├── schema_gen.py  adapter.py  domains.py          ← matrix build + domain aggregation
 │   └── engine/                      ← internalized stratification engine
@@ -35,10 +35,10 @@ face-common-bp-sz-dr/
 ├── scripts/                         ← pipeline (run_all.py orchestrates) + verify/audit/qa infra
 ├── tests/                           ← unit tests (filters, adapter, domains)
 ├── results/  reports/               ← reproducible artifacts (CSV/JSON/parquet) + HTML + figures
-└── pyproject.toml                   ← packages = src/face_common; deps; [full] extras
+└── pyproject.toml                   ← packages = src/trans_diag; deps; [full] extras
 ```
 
-**Imports.** `face_common` resolves from `src/`. Scripts insert `src/` on `sys.path`;
+**Imports.** `trans_diag` resolves from `src/`. Scripts insert `src/` on `sys.path`;
 pytest uses `pythonpath = ["src"]`. Or `pip install -e ".[full]"`.
 
 ## Data inputs (read-only, confidential)
@@ -60,7 +60,7 @@ pytest uses `pythonpath = ["src"]`. Or `pip install -e ".[full]"`.
 **Filters** (`filters.py`) — variable/patient filters, V0 anchoring.
 **Engine bridge** (`schema_gen.py`+`adapter.py`) — `to_harmonized_dataset(df, variables,
 visit='V0', sections=…, residualize_on=('age','sex'), normalize=…, exclude=…)` → a
-`face_common.engine.HarmonizedDataset` (numeric `X`, MultiIndex `[cohort, patient_id]`);
+`trans_diag.engine.HarmonizedDataset` (numeric `X`, MultiIndex `[cohort, patient_id]`);
 `residualize_features` (spline + cross-fit) and `normalize_for_embedding` (robust z) live here.
 **Domain aggregation** (`domains.py`) — items → construct-level domain scores (masked mean
 of robust-z, min-item floor) + curated biology composites.
@@ -82,12 +82,12 @@ python3 scripts/confound_ladder.py   # reproduce the §3.1 confound ladder
 ```
 
 ```python
-from face_common import build_unified_dataframe, load_variables, to_harmonized_dataset
+from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
 df = build_unified_dataframe("data", "face-common-vars.xlsx",
                              readiness=["READY", "PARTIAL"], format="long")
 ds = to_harmonized_dataset(df, load_variables("face-common-vars.xlsx"), visit="V0")
 # ds.X: MultiIndex[cohort, patient_id] × numeric features (NaN = missing, never imputed here);
-# ds.schema: a face_common.engine.FeatureSchema generated from our dictionary.
+# ds.schema: a trans_diag.engine.FeatureSchema generated from our dictionary.
 ```
 
 ## Pipeline order (`scripts/run_all.py`)
@@ -102,7 +102,7 @@ standalone §3.1 reproducer.)
 ## Conventions
 
 - **Python ≥ 3.11.** Core deps in `pyproject.toml`; full reproduction needs `".[full]"`.
-- **Develop in `src/face_common`** (incl. `engine/` — vendored but now ours to maintain).
+- **Develop in `src/trans_diag`** (incl. `engine/` — vendored but now ours to maintain).
 - **Output paths**: scripts write to `results/` (data) or `reports/` (HTML/figures).
 - **Determinism**: fixed seeds throughout; reproduces to ≤1e-12 (BLAS round-off only).
   All CV folds are shuffled (the patient matrix is cohort-ordered).
@@ -127,4 +127,4 @@ standalone §3.1 reproducer.)
 - **The paper** → [MANUSCRIPT.md](MANUSCRIPT.md)
 - **Dictionary columns** → [DATA.md](DATA.md) · **Plan/framing** → [ROADMAP.md](ROADMAP.md)
 - **Findings (paper log)** → [FINDINGS.md](FINDINGS.md) · **Lab notebook** → [LABBOOK.md](LABBOOK.md)
-- **Engine internals** → `src/face_common/engine/` (module docstrings)
+- **Engine internals** → `src/trans_diag/engine/` (module docstrings)

@@ -1,4 +1,4 @@
-"""Unit tests for face_common.domains (item → domain aggregation).
+"""Unit tests for trans_diag.domains (item → domain aggregation).
 
 Covers: instrument-stem grouping, masked mean with a min-items threshold (no
 imputation), biology composite sign orientation, and that one multi-item
@@ -11,13 +11,13 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from face_common.domains import (
+from trans_diag.domains import (
     BIOLOGY_COMPOSITES,
     DOMAIN_SECTIONS,
     build_domain_scores,
     instrument_stem,
 )
-from face_common.variable import Variable
+from trans_diag.variable import Variable
 
 
 def _var(name, section):

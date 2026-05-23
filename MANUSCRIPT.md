@@ -844,7 +844,7 @@ clean optimum; K=4 is a defensible, more parsimonious alternative.
 
 The FACE data are confidential and governed by the cohort's data-access procedures
 (individual-level data are not shared). The full harmonization and analysis pipeline is
-available as source: harmonization (`src/face_common`), structure test
+available as source: harmonization (`src/trans_diag`), structure test
 (`scripts/structure_test.py`), dimensional model (`scripts/dimensional_axes.py`,
 `dimensional_ae.py`, `dimensional_refine.py`), outcomes (`scripts/phase5_outcomes.py`),
 longitudinal stability (`scripts/longitudinal_axes.py`), site robustness

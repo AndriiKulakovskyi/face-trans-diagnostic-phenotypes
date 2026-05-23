@@ -9,12 +9,12 @@ patient-reported outcomes. Full write-up: **[MANUSCRIPT.md](MANUSCRIPT.md)**.
 
 The repo is **self-contained** — the stratification engine (masked similarity →
 multipartite-spectral embedding, enrichment) is internalized in
-`src/face_common/engine/`; there is no external dependency on the sister
+`src/trans_diag/engine/`; there is no external dependency on the sister
 `face_stratification`/`face_rlvr` projects.
 
 ## Layout
 
-- `src/face_common/` — the package: harmonization (`variable`/`rules`/`loader`/`filters`),
+- `src/trans_diag/` — the package: harmonization (`variable`/`rules`/`loader`/`filters`),
   matrix build + domain aggregation (`schema_gen`/`adapter`/`domains`), and the
   internalized `engine/`.
 - `scripts/` — the pipeline (`run_all.py` orchestrates 18 steps) + infra
@@ -33,13 +33,13 @@ python3 scripts/verify.py          # end-to-end harmonization smoke test
 ```
 
 ```python
-from face_common import build_unified_dataframe, load_variables, to_harmonized_dataset
+from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
 df = build_unified_dataframe("data", "face-common-vars.xlsx",
                              readiness=["READY", "PARTIAL"], format="long")
 ds = to_harmonized_dataset(df, load_variables("face-common-vars.xlsx"), visit="V0")
 ```
 
-`face_common` imports from `src/` (scripts add it to `sys.path`; or `pip install -e .`).
+`trans_diag` imports from `src/` (scripts add it to `sys.path`; or `pip install -e .`).
 The pipeline is deterministic (fixed seeds) and reproduces the manuscript to ≤1e-12.
 
 ## Documentation
@@ -50,7 +50,7 @@ The pipeline is deterministic (fixed seeds) and reproduces the manuscript to ≤
 - **[FINDINGS.md](FINDINGS.md)** — running research log (paper-oriented).
 - **[LABBOOK.md](LABBOOK.md)** — chronological lab notebook (full traceability).
 - **[DATA.md](DATA.md)** — how to read the common-variables dictionary.
-- Engine internals → `src/face_common/engine/` module docstrings.
+- Engine internals → `src/trans_diag/engine/` module docstrings.
 
 > ⚠️ Internal research use only. The FACE database contains **confidential**
 > clinical data (Fondation FondaMental). The `data/*.csv` files are currently

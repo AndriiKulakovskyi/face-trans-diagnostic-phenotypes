@@ -36,7 +36,7 @@ sys.path.insert(0, str(REPO / "scripts"))
 
 from sklearn.decomposition import FactorAnalysis  # noqa: E402
 
-from face_common import build_unified_dataframe  # noqa: E402
+from trans_diag import build_unified_dataframe  # noqa: E402
 from phase5_outcomes import cv_metric  # noqa: E402  (reuse the exact CV metric)
 
 RES = REPO / "results"

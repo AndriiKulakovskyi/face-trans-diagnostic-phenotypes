@@ -71,7 +71,7 @@ def run_kmeans(
     series = pd.Series(labels, index=embedding.index, name="cluster", dtype="int64")
     if reference_labels is not None:
         raise NotImplementedError(
-            "reference-label metrics are omitted in face_common.engine.clustering; "
+            "reference-label metrics are omitted in trans_diag.engine.clustering; "
             "the FACE pipeline never passes reference_labels."
         )
 

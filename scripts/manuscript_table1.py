@@ -20,12 +20,12 @@ import pandas as pd
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from face_common import (  # noqa: E402
+from trans_diag import (  # noqa: E402
     build_unified_dataframe,
     load_variables,
     to_harmonized_dataset,
 )
-from face_common.adapter import ADMINISTRATIVE_FEATURES  # noqa: E402
+from trans_diag.adapter import ADMINISTRATIVE_FEATURES  # noqa: E402
 
 RESULTS = REPO_ROOT / "results"
 COHORTS = ["bp", "sz", "dr"]

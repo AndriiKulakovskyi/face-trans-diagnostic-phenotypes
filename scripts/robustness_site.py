@@ -34,7 +34,7 @@ from sklearn.decomposition import FactorAnalysis  # noqa: E402
 from sklearn.impute import SimpleImputer  # noqa: E402
 from sklearn.preprocessing import StandardScaler  # noqa: E402
 
-from face_common import build_unified_dataframe, load_variables  # noqa: E402
+from trans_diag import build_unified_dataframe, load_variables  # noqa: E402
 from phase5_outcomes import OUTCOMES, added_axes_test, cv_metric  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"

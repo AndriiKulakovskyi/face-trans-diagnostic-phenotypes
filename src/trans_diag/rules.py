@@ -205,7 +205,7 @@ def _siteid_city(series: pd.Series, cohort: str) -> pd.Series:
     warnings.warn(
         f"[{cohort}] 'siteid_city': no per-cohort SITEID→city lookup registered; "
         "falling back to raw numeric SITEID. Register a real mapping via "
-        "face_common.rules.register('siteid_city').",
+        "trans_diag.rules.register('siteid_city').",
         stacklevel=2,
     )
     return pd.to_numeric(series, errors="coerce").astype("float64")

@@ -1,4 +1,4 @@
-"""End-to-end smoke test for face_common.
+"""End-to-end smoke test for trans_diag.
 
 Run from the repo root:
 
@@ -20,7 +20,7 @@ import pandas as pd
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from face_common import (  # noqa: E402
+from trans_diag import (  # noqa: E402
     RULES,
     YEARLY_VISIT_MAP,
     build_unified_dataframe,

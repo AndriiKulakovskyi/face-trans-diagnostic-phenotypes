@@ -1,4 +1,4 @@
-"""Unit tests for face_common.filters.
+"""Unit tests for trans_diag.filters.
 
 Synthetic long-format frames cover:
 
@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from face_common.filters import (
+from trans_diag.filters import (
     IDENTIFIER_COLUMNS,
     PatientFilterReport,
     V0Anchor,
