@@ -278,13 +278,25 @@ test-retest r per axis.
 - Net: the dimensional model is reproducible + confound-free + site-robust +
   V1/V2-replicated, with axes adding value over DSM for QoL/functioning. Manuscript-ready.
 
+## E17 · Cognition BP/SZ sub-analysis — 2026-05-23
+`scripts/cognition_bpsz.py` (cognition absent in DR by design → BP/SZ only, n=6,170;
+4296 BP / 1874 SZ).
+- 4 cognitive factors (parallel analysis), WAIS-dominated: processing speed, working
+  memory, verbal reasoning, span-contrast. (CVLT/TMT under-weighted — WAIS sub-items
+  split into ~25 domains. Refine with standard indices VCI/PSI/WMI/PRI + CVLT + TMT.)
+- **Cognition ⊥ symptom axes:** max |r| ≈ 0.2 (processing-speed ↔ depression −0.17, ↔
+  illness-burden −0.17). Semi-independent dimension, not symptom-redundant.
+- **Adds a small increment to V1 functioning** (EGF) over the symptom axes: R²
+  0.173→0.185 (Δ +0.012, n=2,496). Modest but non-redundant.
+- Kept OUT of the 3-cohort model (would re-inject the DR-availability confound).
+
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
   attempt at *discrete*-structure discovery, in case a learned representation
   surfaces clusters the masked-cosine spectral view misses.
 - ~~ComBat site harmonization~~ — **DONE (E16)**: axes site-robust (congruence ~1).
-- **Cognition (NEUROPSYCHOLOGIE)** domains — handle non-random battery
-  availability before inclusion.
+- ~~Cognition (NEUROPSYCHOLOGIE) domains~~ — **DONE (E17)**: BP/SZ-only sub-analysis
+  (DR-missing by design); cognition ⊥ symptoms, small functioning increment.
 - **Verify the metabolic-direction sign** once biology composites are in.
 - **Outcome/trajectory validation** — the real test that A beats DSM.
 - Scrutinise / possibly down-weight the **"denial" response-style axis**.

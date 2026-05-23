@@ -1,0 +1,20 @@
+{
+  "n_cognition": 6170,
+  "cohort": {
+    "bp": 4296,
+    "sz": 1874
+  },
+  "K": 4,
+  "factors": [
+    "cog1",
+    "cog2",
+    "cog3",
+    "cog4"
+  ],
+  "outcome_egf": {
+    "n": 2496,
+    "symptom_axes_R2": 0.17310626184431327,
+    "symptom_plus_cognition_R2": 0.1853545386457321,
+    "delta": 0.012248276801418823
+  }
+}

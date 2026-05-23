@@ -206,6 +206,24 @@ per-visit-age residualized; the refit axes match the locked set, Tucker congruen
   (split-half 0.95), **confound-free** (age/sex 0.002), **site-robust** (ComBat congruence
   ~1), and **replicated across V1+V2** — solid for the manuscript.
 
+### 3h. Cognition (BP/SZ complementary analysis)
+Cognition is absent in DR **by design** (0% vs BP 71% / SZ 86%) — including it in the
+3-cohort model would re-inject a cohort/availability confound — so it is analysed within
+BP/SZ (`scripts/cognition_bpsz.py`; 6,170 patients, 33 cognitive instrument-domains).
+- **Cognitive factors (K=4, parallel analysis):** processing speed (WAIS coding/symbol-
+  search), working memory (digit span), verbal reasoning (similarities/matrices), + a
+  span-contrast factor. WAIS-dominated structure (CVLT/TMT contributed single domains;
+  caveat — WAIS sub-items split into ~25 domains, so the factors are WAIS-internal; could
+  be refined with standard indices VCI/PSI/WMI/PRI + CVLT + TMT).
+- **Cognition is largely ORTHOGONAL to the symptom axes** (max |r| ≈ 0.2): strongest are
+  processing-speed ↔ depression-severity (−0.17) and ↔ illness-burden (−0.17) — worse
+  cognition with higher symptom burden, as expected, but weak. So cognition is a
+  semi-independent dimension, not redundant with symptoms (matches the literature).
+- **Cognition adds a small, non-redundant increment to functioning** (V1 EGF, BP/SZ
+  n=2,496): symptom-axes R² 0.173 → +cognition 0.185 (Δ **+0.012**). Modest but
+  independent — consistent with cognition being orthogonal to symptoms yet relevant to
+  function.
+
 ## 4. The scientific fork (framing)
 Two mutually-exclusive products, because **diagnosis + demographics are the
 dominant variance axes** in the data:
