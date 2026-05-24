@@ -119,7 +119,7 @@ Scripts are numbered in execution order — read or run them top-to-bottom:
   DSM subtypes order on a mood↔psychosis continuum (ρ 0.79 [0.75,0.86]).
 - **Final model: K=6 imputation-free confound-free axes** (`07_dimensional_refine.py`: masked
   pairwise-complete correlation → PAF+varimax → masked posterior-mean scores, NO cell filled;
-  FA + PyTorch AE agree, CCA 0.93). Diagnosis-independent (cohort η²≤0.11, site ≤0.05). Axes:
+  FA + PyTorch AE agree, CCA 0.98). Diagnosis-independent (cohort η²≤0.11, site ≤0.05). Axes:
   depression, later-onset, mania/activation(+impulsivity), illness-burden, metabolic, work-disability.
 - **Imputation-free re-analysis (DONE).** The former FA mean-fill reweighted correlations by
   co-observation (`corr_fill≈O·corr_masked`, R²=0.999), biasing the weakest factor; re-derived

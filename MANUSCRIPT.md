@@ -50,7 +50,7 @@ confound-free (|correlation| with age/sex ≤0.017; site η² ≤0.05, cohort �
 depression/internalizing severity, later age-of-onset, mania/activation (with impulsivity),
 illness/hospitalization burden, metabolic/inflammatory load, and a socio-occupational/
 work-disability axis. A no-imputation autoencoder recovered the same axes (canonical
-correlations 0.93–0.63). The dimensions **outperformed DSM diagnosis** for quality of life
+correlations 0.98–0.69). The dimensions **outperformed DSM diagnosis** for quality of life
 (EQ-5D R² 0.34 vs 0.30; Δ +0.039, 95% CI [+0.036, +0.042]) and **complemented** it for global
 functioning (combined R² 0.40 vs DSM 0.37; Δ +0.034 [+0.033, +0.036]), while diagnosis plus
 prior service use dominated hospitalization prediction (AUC 0.75). Both findings were
@@ -734,14 +734,15 @@ confirming genuinely multi-axial structure. The dimensions are:
    imputation-free estimation that variance is occupied by this cross-cohort disability axis.)*
 
 The no-imputation masked autoencoder recovered the same structure: its nonlinear latent
-axes were highly aligned with the classical factors (canonical correlations 0.93, 0.84,
-0.80, 0.74, 0.63 for the top five) — far above a row-permutation null (leading canonical
-correlation 0.93 vs null mean 0.05, 95th percentile 0.06; 200 permutations), so the
+axes were highly aligned with the (also imputation-free) factor model (canonical correlations
+0.98, 0.86, 0.82, 0.77, 0.69 for the top five) — far above a row-permutation null (leading
+canonical correlation 0.98 vs null mean 0.05, 95th percentile 0.06; 200 permutations), so the
 agreement is genuine and not an artifact of CCA's maximization. The autoencoder additionally recovered the
 mood↔psychosis continuum strongly along one axis (|Spearman| 0.89 against the DSM-subtype
 ordering); the orthogonal varimax rotation distributes this cross-axis direction rather
-than placing it on a single factor (per-axis subtype |Spearman| ≤0.36), which we report
-honestly rather than forcing into one dimension. Agreement between a linear/imputed and a
+than placing it on a single factor (per-axis subtype-centroid |Spearman| ≤0.54, strongest on the
+metabolic axis), which we report honestly rather than forcing into one dimension. Agreement
+between a linear and a
 nonlinear/no-imputation estimator indicates the dimensions are method-robust, not
 artifacts of a single algorithm.
 
@@ -750,7 +751,7 @@ variance is **diffuse** — the largest dimension explains only ~6% — which is
 against a single dominant axis (a strong *p*-factor would concentrate variance) and in favour of
 genuinely multi-axial structure; no single dimension can be dismissed as the "real" one and the
 rest as noise. Second, the convergence of a linear factor model and a nonlinear autoencoder on
-the same subspace (canonical correlations 0.93–0.63, far above the permutation null) is a
+the same subspace (canonical correlations 0.98–0.69, far above the permutation null) is a
 **cross-validation of the representation itself**, not merely of its parameters: the two
 estimators differ in functional form (linear vs ReLU) and fitting principle (maximum likelihood
 vs stochastic gradient descent), and both are imputation-free (the factor model on the masked
@@ -871,7 +872,7 @@ formulation (and, for the metabolic axis, flagging durable physical-health risk 
 excess mortality in serious mental illness). The more state-like axes — illness burden (*r*
 0.36), mania/activation (*r* 0.29) and work-disability (*r* 0.22) — fluctuate with clinical
 course and are better read as **current-status** indicators to be re-measured at each contact.
-Later-onset is fixed by construction (*r* 0.09). A clinician should thus treat different parts
+Later-onset is fixed by construction (*r* 0.10). A clinician should thus treat different parts
 of a patient's dimensional profile differently — some as enduring vulnerabilities to plan
 around, others as moving targets to monitor and treat — which a single categorical label
 cannot express.
@@ -1167,7 +1168,7 @@ distributes the mood↔psychosis spectrum across axes rather than isolating it; 
 rotation (deferred here) might localize it, and the autoencoder already recovers it at
 |Spearman| 0.89. (3) The autoencoder is a *cross-check*, not a fully independent estimator: although both are
 now imputation-free, they share the same residual-domain inputs, so their agreement (leading
-canonical correlation 0.93 vs a row-permutation null of 0.06) rules out an *algorithm-specific*
+canonical correlation 0.98 vs a row-permutation null of 0.06) rules out an *algorithm-specific*
 artifact but not a shared *input* artifact; the AE also carries a small residual age leak
 (|r| 0.15) absent from the factor model (0.017). The factor model is the primary representation.
 (4) The later-onset dimension is baseline-only and cannot be tracked longitudinally. (The former
@@ -1304,7 +1305,7 @@ posterior-mean scores; §2.7, §3.8). Split-half congruence is the masked-covari
 | Dimension | Top loadings | Test–retest r (V0↔V1) |
 |---|---|--:|
 | 1 Depression/internalizing | QIDS +0.89, MADRS +0.84, STAI +0.78, FAST +0.73, EQ-5D −0.72 | 0.58 |
-| 2 Later onset | age-at-treatment +0.79, age-1st-episode +0.70, age-1st-hosp +0.69 | 0.09 (static) |
+| 2 Later onset | age-at-treatment +0.79, age-1st-episode +0.70, age-1st-hosp +0.69 | 0.10 (static) |
 | 3 Mania/activation (incl. impulsivity) | Altman +0.65, Mathys +0.55, YMRS +0.49, WURS +0.45, BIS +0.42 | 0.29 |
 | 4 Illness/hospitalization burden | #hosp +0.74, hosp-duration +0.67, EGF −0.31 | 0.36 |
 | 5 Metabolic/inflammatory | metabolic-syndrome +0.65, cholesterol +0.43, hepatic +0.33, inflammation +0.30 | **0.64** |
@@ -1368,12 +1369,14 @@ representation of this same longitudinal signal.
 
 ![Supplementary Figure S1b](reports/figures/figS1b_dsm_composition.png)
 
-**Supplementary Figure S2. Factor-count selection is non-monotone**
-(`reports/figures/figS2_kcurve.png`; `scripts/15_review_checks.py`). Split-half Tucker congruence
-vs K: the mean stays high but the **minimum** congruence is jagged (0.98/0.94 at K=3/4, 0.31 at
-K=5, 0.95 at K=6, 0.08 at K=7) because varimax rotation splits factors unstably at some K. We
-report K=6 as the most granular reproducible solution (min congruence ≥0.85) rather than as a
-clean optimum; K=4 is a defensible, more parsimonious alternative.
+**Supplementary Figure S2. Factor-count selection (imputation-free)**
+(`reports/figures/figS2_kcurve.png`; `scripts/15_review_checks.py`). Masked split-half Tucker
+congruence vs K on the imputation-free model: the **minimum** congruence stays ≥0.85 from K=3
+through K=7 (0.98, 0.97, 0.89, 0.89, 0.91 at K=3–7) and collapses at K=8 (0.22) — so the
+reproducible range is K≤7. We lock **K=6** for parsimony and comparability with the prior model;
+K=7 is also reproducible and K=4 a defensible, more parsimonious alternative. (Under the former
+mean-fill estimation this curve was non-monotone/jagged — a sklearn-varimax instability that the
+masked principal-axis estimator does not show.)
 
 ![Supplementary Figure S2](reports/figures/figS2_kcurve.png)
 

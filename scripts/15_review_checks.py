@@ -62,7 +62,6 @@ def main() -> int:
     final = _mi(pd.read_parquet(RES / "dimensional_final_scores.parquet"))
     scores = _mi(pd.read_parquet(RES / "cluster_domains_scores.parquet"))
     emb = _mi(pd.read_parquet(RES / "cluster_domains_embedding.parquet"))
-    fa = _mi(pd.read_parquet(RES / "dimensional_axes_scores.parquet"))
     ae = _mi(pd.read_parquet(RES / "dimensional_ae_scores.parquet"))
     axcols = list(final.columns)
 
@@ -91,9 +90,14 @@ def main() -> int:
     print(f"#6 η²(cohort) max={out['eta_cohort_max']:.3f}  η²(site) max={out['eta_site_max']:.3f}")
 
     # ── #7: AE↔FA canonical correlations + permutation null ──
-    common = ae.index.intersection(fa.index)
+    # FA side = the FINAL imputation-free model (07), not the superseded mean-fill 05.
+    # Masked scoring leaves sparsely-observed patients (<K observed domains) as NaN; drop them.
+    common = ae.index.intersection(final.index)
     A = ae.reindex(common).to_numpy(float)
-    F = fa.reindex(common).to_numpy(float)
+    F = final.reindex(common).to_numpy(float)
+    ok = np.isfinite(A).all(1) & np.isfinite(F).all(1)
+    out["cca_n_dropped_unscored"] = int((~ok).sum())
+    A, F = A[ok], F[ok]
     kc = min(A.shape[1], F.shape[1])
     cca = CCA(n_components=kc).fit(A, F)
     U, V = cca.transform(A, F)

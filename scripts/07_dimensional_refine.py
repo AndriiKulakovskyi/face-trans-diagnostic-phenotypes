@@ -162,7 +162,7 @@ def main() -> int:
     meta = {"K": K, "axes": names, "method": "imputation-free (masked pairwise-complete corr "
             "-> principal-axis factoring + varimax; posterior-mean scores on observed support)",
             "observed_fraction": round(obs_frac, 4), "min_pair": MIN_PAIR,
-            "masked_reproducibility_curve": curve,
+            "reproducibility_curve": curve,   # masked split-half (consumed by 15 for figS2)
             "dsm_ordering_per_axis": cont, "strongest_ordering_axis": f"axis{best+1}",
             "confound_max_corr": conf,
             "note": "Re-derived imputation-free (LABBOOK E19, MANUSCRIPT §3.8). 5 of 6 axes match "

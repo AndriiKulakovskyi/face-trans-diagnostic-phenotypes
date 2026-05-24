@@ -177,8 +177,10 @@ and `scripts/06_dimensional_ae.py` (PyTorch masked autoencoder, **no imputation*
   (8th = noise, 0.18); **max |corr| with age/sex = 0.002**. Variance is diffuse (no
   dominant factor) ⇒ genuinely multi-axial.
 - **Convergent validity (AI):** the masked autoencoder's nonlinear axes agree with
-  the classical factors (**canonical correlations 0.93/0.84/0.80/0.74/0.63** for the
-  top 5) and recover the **mood↔psychosis continuum** strongly (|Spearman| **0.89**
+  the imputation-free factor model (**canonical correlations 0.98/0.86/0.82/0.77/0.69**
+  for the top 5; vs 0.93 against the superseded mean-fill 05 — both estimators are now
+  imputation-free, so they agree more closely) and recover the **mood↔psychosis continuum**
+  strongly (|Spearman| **0.89**
   on one AE axis; PCA 0.79; varimax dispersed it). Two very different methods
   (linear/imputed vs nonlinear/no-imputation) converge → the axes are robust.
   Caveat: the AE has a small age leak (|corr| 0.15) vs FA's 0.002.

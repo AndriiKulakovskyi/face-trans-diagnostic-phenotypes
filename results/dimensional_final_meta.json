@@ -11,7 +11,7 @@
   "method": "imputation-free (masked pairwise-complete corr -> principal-axis factoring + varimax; posterior-mean scores on observed support)",
   "observed_fraction": 0.6488,
   "min_pair": 100,
-  "masked_reproducibility_curve": [
+  "reproducibility_curve": [
     {
       "k": 3,
       "min_congruence": 0.9804515154976841,
