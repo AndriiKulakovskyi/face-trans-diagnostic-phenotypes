@@ -184,12 +184,13 @@ fig("fig1_structure.png", "No eigengap; monotone gap; unimodal axes; HDBSCAN≈c
 md(r"""
 ## 5 · The six trans-diagnostic dimensions (§3.3)
 
-We fit a **varimax factor model** on the standardized residual domains; the factor count is set by
-**split-half Tucker congruence** (reproducibility), giving **K = 6**: depression/internalizing,
-later age-of-onset, mania/activation, illness/hospitalization burden, metabolic/inflammatory load, and
-ADHD/impulsivity/trauma. A **no-imputation masked autoencoder** recovers the same axes (canonical
-correlations 0.93–0.63, far above a permutation null). The axes are confound-free (|corr| age/sex
-≤0.002) and diagnosis-independent (cohort η²≤0.10, site ≤0.05).
+We fit an **imputation-free varimax factor model** — masked pairwise-complete correlation → principal-axis
+factoring + varimax → posterior-mean scores on each patient's observed support (no cell ever filled). The
+factor count is set by **masked split-half Tucker congruence** (reproducibility), giving **K = 6**:
+depression/internalizing, later age-of-onset, mania/activation (with impulsivity), illness/hospitalization
+burden, metabolic/inflammatory load, and socio-occupational/work-disability. A no-imputation masked
+autoencoder recovers the same axes (canonical correlations 0.98–0.69, far above a permutation null). The
+axes are confound-free (|corr| age/sex ≤0.017) and diagnosis-independent (cohort η²≤0.11, site ≤0.05).
 """)
 code(r"""
 run_step("05_dimensional_axes.py")     # classical varimax FA (AE reference)
@@ -197,8 +198,7 @@ run_step("06_dimensional_ae.py")       # masked autoencoder cross-check
 run_step("07_dimensional_refine.py")   # LOCK K=6 by split-half congruence
 fmeta = show("dimensional_final_meta.json")
 print("locked K =", fmeta["K"], "| max |corr| age/sex =", max(fmeta["confound_max_corr"].values()))
-ae = show("dimensional_ae_meta.json")
-print("AE↔FA canonical correlations (top):", [round(x, 2) for x in ae["cca_with_classical_fa"][:6]])
+print("(AE↔FA canonical correlations are reported below from review_checks — AE vs the FINAL imputation-free model.)")
 """)
 md("**Figure 2 — the six-dimension loading structure** (salient |λ|≥0.20).")
 code(r"""fig("fig2_loadings.png", "Clean block structure: each dimension is carried by a coherent set of instruments.")""")
@@ -208,22 +208,23 @@ run_step("15_review_checks.py")        # eta-squared (cohort/site), CCA permutat
 rc = show("review_checks.json")
 print("AE↔FA leading CCA:", rc["cca_observed"][0], "vs permutation null 95th pct:", rc["cca_null_leading_p95"])
 print("DSM-subtype variance explained per axis (eta^2):", rc.get("eta_cohort"))
-fig("figS2_kcurve.png", "Reproducibility-vs-K is non-monotone; K=6 is the most granular reproducible solution.")
+fig("figS2_kcurve.png", "Masked split-half reproducibility vs K: minimum congruence ≥0.85 through K=7; K=6 locked.")
 """)
-md("**Figure 6c — trans-diagnostic overlap:** even the most diagnosis-linked axis (depression) is "
+md("**Figure 6c — trans-diagnostic overlap:** even the most diagnosis-linked axis (illness burden) is "
    "only ~14 % explained by DSM-5 (η²); diagnoses fan across the whole axis.")
 code(r"""
 run_step("18_export_dimensional_flow.py")   # Figure 6 (a/b/c) + dimensional_dsm_eta_squared
 display(show("dimensional_dsm_eta_squared.csv"))
-fig("fig6c_dsm_axis_flow.png", "DSM-5 subtypes spread across Low/Mid/High of the depression axis (η²=0.14).")
+fig("fig6c_dsm_axis_flow.png", "DSM-5 subtypes spread across Low/Mid/High of the illness-burden axis (η²=0.14).")
 """)
 
 # ───────────────────────────────────────── 6 temporal stability + discrete negative result
 md(r"""
 ## 6 · Temporal stability & the discrete-flow negative result (§3.6)
 
-Projecting the locked axes onto follow-up visits gives a **trait↔state gradient**: ADHD/trauma is the
-most trait-like (test–retest r 0.64), symptom axes more state-like. The **dimensional “flow”**
+Projecting the locked axes onto follow-up visits gives a **trait↔state gradient**: metabolic load and
+depression are the most trait-like (test–retest r 0.64 and 0.58), activation and work-disability more
+state-like. The **dimensional “flow”**
 (continuous-axis band trajectories) shows a patient's *position* is largely retained, whereas forcing
 **discrete** clusters gives labels that **hop** (~38 % persistence) and are independent of DSM-5
 (ARI 0.006) — a *negative result* that motivates the dimensional model (Supplementary Figure S1).
@@ -235,7 +236,7 @@ display(show("longitudinal_axes_stability.csv").pivot(index="axis", columns="vis
 print("discrete clusters ↔ DSM-5 ARI:", show("longitudinal_meta.json").get("dsm_phenotype_ari"))
 """)
 code(r"""
-fig("fig4_traitstate.png", "Trait–state gradient across V1–V4 (ADHD/trauma trait-like; later-onset static).")
+fig("fig4_traitstate.png", "Trait–state gradient across V1–V4 (metabolic & depression trait-like; later-onset static).")
 fig("fig6_dimensional_flow.png", "Dimensional flow: continuous-axis band trajectories V0→V1→V2 (positions retained).")
 fig("fig6b_band_persistence.png", "Same-band persistence per dimension vs chance (33%) and the discrete clusters' 38%.")
 run_step("17_export_longitudinal_figure.py")   # Supplementary Figure S1 (discrete flow)

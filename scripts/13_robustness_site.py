@@ -40,7 +40,7 @@ RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
 K, RANDOM = 6, 0
 AXIS_NAMES = ["depression_severity", "later_onset", "mania_activation",
-              "illness_burden", "metabolic", "adhd_impulsivity_trauma"]
+              "illness_burden", "metabolic", "work_disability"]
 
 
 def tucker(La, Lb):

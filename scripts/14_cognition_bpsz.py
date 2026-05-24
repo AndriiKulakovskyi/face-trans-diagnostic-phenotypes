@@ -52,7 +52,7 @@ REPORTS_DIR = REPO_ROOT / "reports"
 SECTION = "NEUROPSYCHOLOGIE"
 MIN_DOMAINS, COV_FLOOR, RANDOM = 3, 0.30, 0
 SYMPTOM_AXES = ["depression_severity", "later_onset", "mania_activation",
-                "illness_burden", "metabolic", "adhd_impulsivity_trauma"]
+                "illness_burden", "metabolic", "work_disability"]
 
 # Curated standard cognitive constructs (so WAIS sub-items don't dominate by count).
 # sign = +1 higher-is-better; TMT is time/error-based (higher-is-worse, sign −1,

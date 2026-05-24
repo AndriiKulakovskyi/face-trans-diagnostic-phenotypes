@@ -5,7 +5,7 @@ largely retained — the honest "flow" for a dimensional model.
 
 Bands = V0 tertiles (Low/Mid/High), fixed and applied to every visit (display-only
 discretization; the model itself stays continuous). We show a trait-like axis
-(ADHD/impulsivity/trauma) and a state-like axis (mania/activation) side by side,
+(depression) and a state-like axis (mania/activation) side by side,
 and report same-band persistence V0→V1 for all six axes (chance = 1/3).
 
 Reads results/longitudinal_axes_scores.parquet.
