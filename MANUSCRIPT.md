@@ -26,7 +26,7 @@ data-driven phenotyping of psychiatric records is vulnerable to confounding.
 9,013 patients (BP 6,252; SZ 2,209; DR 552) across the multi-centre FACE cohort into a
 unified clinical–biological feature matrix. Every estimator — the masked similarity, the
 spectral embedding, the autoencoder objective, and the factor model itself — uses masked,
-pairwise-complete operators, so no missing value is ever imputed (the factor model is
+pairwise-complete operators, so no missing *feature* value is ever imputed (the factor model is
 estimated from the pairwise-complete correlation matrix with posterior-mean scores on each
 patient's observed support; an ablation showing why mean-filling biases the weakest factor is
 in §3.8). After removing a hierarchy of confounds (administrative fields,
@@ -1184,7 +1184,9 @@ and the §3.8 ablation shows this mattered (mean-filling had reweighted correlat
 co-observation, $\mathrm{corr}_\text{fill}\!\approx\!O\,\mathrm{corr}_\text{masked}$, $R^2=0.999$,
 biasing the sixth factor and attenuating the metabolic axis). Imputation now survives only where
 a method requires complete data by construction — the residualization-design covariates (§2.4)
-and the ComBat harmonization (§3.5). (9) There is **no
+and the ComBat harmonization (§3.5). A minor cost of the masked posterior-mean scoring is that
+**1% of patients (89/9,013) with fewer than K=6 observed domains are left unscored** (NaN)
+rather than imputed, and are excluded from the analyses that use the axis scores. (9) There is **no
 independent external replication**: the "V2" analysis re-uses the same individuals at a later
 visit (temporal consistency), and all sites belong to one national network. (10) The
 cross-validated metrics are reported with repeated-CV intervals (§3.4) but the unsupervised

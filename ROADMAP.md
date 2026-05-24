@@ -259,9 +259,10 @@ face-common-bp-sz-dr/
       site **ComBat** harmonization (axes congruence with locked ~1.0; head-to-head
       survives — QoL +0.037). The result is reproducible + confound-free + site-robust
       + V1/V2-replicated. FINDINGS §3g.
-- [x] **Phase 4 on axes (DONE):** trait↔state stability — trauma/ADHD trait-like (0.62),
-      depression intermediate (0.46), mania/illness-burden state-like; later-onset is
-      static (V0-only). FINDINGS §3f.
+- [x] **Phase 4 on axes (DONE):** trait↔state stability (imputation-free model, LABBOOK E19) —
+      metabolic (0.64) and depression (0.58) trait-like, illness-burden intermediate (0.36),
+      mania/work-disability state-like; later-onset static (V0-only). (The earlier "ADHD/trauma
+      most trait-like 0.62" was a mean-fill artifact — that axis is gone.) FINDINGS §3f.
 - [ ] Remaining: mixed-effects `(1|site)`; ISF suicidality outcome; deep graph embedding
       (discrete, in reserve); manuscript.
 
