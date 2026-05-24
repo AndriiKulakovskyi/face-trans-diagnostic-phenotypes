@@ -71,5 +71,5 @@ def axis_betas(d, cols_all, axis_cols, y, kind):
         coef = Ridge(alpha=1.0).fit(Xs, y).coef_
     else:
         coef = LogisticRegression(max_iter=2000).fit(Xs, y).coef_[0]
-    beta = dict(zip(cols_all, coef))
+    beta = dict(zip(cols_all, coef, strict=False))
     return {a: float(beta[a]) for a in axis_cols}

@@ -23,6 +23,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 import matplotlib  # noqa: E402
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from scipy.stats import spearmanr  # noqa: E402
@@ -70,7 +71,7 @@ def main() -> int:
         df = build_unified_dataframe(REPO / "data", REPO / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
     v0 = df[df["visit"] == "V0"].copy()
-    v0["key"] = list(zip(v0["cohort"].str.lower(), v0["usubjid_patients"].astype(str)))
+    v0["key"] = list(zip(v0["cohort"].str.lower(), v0["usubjid_patients"].astype(str), strict=False))
     site = pd.Series(v0["siteid_city"].astype(str).to_numpy(), index=v0["key"])
     dsm = pd.Series(v0["arm"].astype(str).to_numpy(), index=v0["key"])
     site = site[~site.index.duplicated()]; dsm = dsm[~dsm.index.duplicated()]

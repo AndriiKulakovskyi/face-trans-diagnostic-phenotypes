@@ -20,6 +20,7 @@ import warnings
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -131,8 +132,8 @@ def fig1_structure():
     # (d) DSM-subtype mood↔psychosis continuum (PC1 of standardized domains)
     try:
         from sklearn.decomposition import PCA
-        from trans_diag import (build_unified_dataframe, load_variables,
-                                  to_harmonized_dataset)
+
+        from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
         from trans_diag.adapter import ADMINISTRATIVE_FEATURES
         sc = pd.read_parquet(RESULTS / "cluster_domains_scores.parquet")
         sc.index = pd.MultiIndex.from_arrays(
@@ -223,7 +224,7 @@ def fig3_headtohead():
               "any hospitalization": "Hospitalization\n(AUC)"}
 
     fig, axs = plt.subplots(1, 2, figsize=(10, 4.4), sharey=True)
-    for ax, df, tag in zip(axs, (v1, v2), ("V1 (primary)", "V2 (follow-up, same cohort)")):
+    for ax, df, tag in zip(axs, (v1, v2), ("V1 (primary)", "V2 (follow-up, same cohort)"), strict=False):
         df = df.set_index("outcome").reindex(order)
         x = np.arange(len(order)); w = 0.26
         ax.bar(x - w, df["DSM"], w, label="DSM diagnosis", color=C_DSM)

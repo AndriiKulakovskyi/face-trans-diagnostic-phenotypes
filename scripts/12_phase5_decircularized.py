@@ -123,7 +123,7 @@ def main() -> int:
               f"combined_clean={m2_clean:.3f} (Δ{m2_clean-m0:+.3f})   [drop {excl}]")
     out = pd.DataFrame(rows)
     out.to_csv(RES / "phase5_decircularized.csv", index=False)
-    print(f"\nWrote results/phase5_decircularized.csv")
+    print("\nWrote results/phase5_decircularized.csv")
     return 0
 
 

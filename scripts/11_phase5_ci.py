@@ -23,8 +23,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from sklearn.linear_model import LogisticRegression, Ridge  # noqa: E402
-from sklearn.model_selection import (KFold, StratifiedKFold,  # noqa: E402
-                                     cross_val_score)
+from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score  # noqa: E402
 from sklearn.preprocessing import StandardScaler  # noqa: E402
 
 from trans_diag import build_unified_dataframe  # noqa: E402

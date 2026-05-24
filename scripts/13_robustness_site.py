@@ -26,14 +26,12 @@ import pandas as pd
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-import plotly.graph_objects as go  # noqa: E402
-import plotly.io as pio  # noqa: E402
 from neuroHarmonize import harmonizationLearn  # noqa: E402
 from sklearn.decomposition import FactorAnalysis  # noqa: E402
 from sklearn.impute import SimpleImputer  # noqa: E402
 from sklearn.preprocessing import StandardScaler  # noqa: E402
 
-from trans_diag import AXIS_NAMES, build_unified_dataframe, load_variables  # noqa: E402
+from trans_diag import AXIS_NAMES, build_unified_dataframe  # noqa: E402
 from trans_diag.outcomes import OUTCOMES, added_axes_test, cv_metric  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"

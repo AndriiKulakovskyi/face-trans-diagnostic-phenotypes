@@ -103,7 +103,7 @@ def main() -> int:
     print(f"matrix {N:,} x {p} | testing  corr_fill ~= O * corr_masked  (O = n_AB / sqrt(n_A n_B))")
     print(f"  identity fit:  R^2 = {r2_identity:.3f}  slope = {slope:.3f}  corr(obs,pred) = {corr_op:.3f}")
     print(f"  naive 'corr_fill ~= corr_masked' (no overlap reweight):  R^2 = {r2_naive:.3f}")
-    print(f"  --> the mean-fill correlation IS the masked one reweighted by co-observation.\n")
+    print("  --> the mean-fill correlation IS the masked one reweighted by co-observation.\n")
 
     print("co-observation block structure (mean overlap O within group vs to the rest):")
     print(f"  mean-fill 6th axis  {gf}\n      within={wf:.3f}  to-rest={af:.3f}  ratio={wf/af:.2f}")

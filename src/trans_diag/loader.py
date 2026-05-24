@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, Literal
+from typing import Literal
 
 import pandas as pd
 
 from .rules import RULES, identity_cast
 from .variable import Variable, load_variables
-
 
 YEARLY_VISIT_MAP: dict[str, str] = {
     "V0": "V0",

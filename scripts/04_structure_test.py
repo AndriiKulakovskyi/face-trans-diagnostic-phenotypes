@@ -199,7 +199,7 @@ def main() -> int:
     }
     (RESULTS_DIR / "structure_test.json").write_text(json.dumps(meta, indent=2, default=str))
     _report(vals, gv, cent, arm, meta)
-    print(f"\nWrote results/structure_test.json + reports/structure_test.html")
+    print("\nWrote results/structure_test.json + reports/structure_test.html")
     return 0
 
 

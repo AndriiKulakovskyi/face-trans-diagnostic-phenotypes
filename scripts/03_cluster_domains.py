@@ -35,7 +35,7 @@ import logging
 import subprocess
 import sys
 import warnings
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -169,7 +169,7 @@ def consensus_pac(arr: np.ndarray, k: int, *, n_boot: int = 20, frac: float = 0.
     for b in range(n_boot):
         idx = rng.choice(n, size=int(frac * n), replace=False)
         lab = KMeans(n_clusters=k, random_state=b, n_init=5).fit_predict(arr[idx])
-        keep = [(pos[v], l) for v, l in zip(idx, lab) if v in pos]
+        keep = [(pos[v], l) for v, l in zip(idx, lab, strict=False) if v in pos]
         if len(keep) < 2:
             continue
         ii = np.array([p for p, _ in keep]); ll = np.array([l for _, l in keep])
@@ -342,7 +342,7 @@ def main() -> int:
     assignments.to_csv(RESULTS_DIR / "cluster_domains_assignments.csv", index=False)
 
     meta_json = {
-        "timestamp_utc": datetime.now(timezone.utc).isoformat(), "git_rev": _git_rev(),
+        "timestamp_utc": datetime.now(UTC).isoformat(), "git_rev": _git_rev(),
         "readiness": args.readiness, "coverage_floor": COVERAGE_FLOOR,
         "residualize": {"covariates": ["age", "sex"], "spline_df": SPLINE_DF,
                         "cross_fit": CROSS_FIT},
@@ -355,8 +355,8 @@ def main() -> int:
     }
     (RESULTS_DIR / "cluster_domains_meta.json").write_text(
         json.dumps(meta_json, indent=2, ensure_ascii=False, default=str))
-    print(f"\nWrote results/cluster_domains_* (kselect, scores, embedding, "
-          f"assignments, naming, meta). Done.")
+    print("\nWrote results/cluster_domains_* (kselect, scores, embedding, "
+          "assignments, naming, meta). Done.")
     return 0
 
 

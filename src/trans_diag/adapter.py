@@ -28,7 +28,6 @@ import numpy as np
 import pandas as pd
 
 from .engine import HarmonizedDataset
-
 from .filters import IDENTIFIER_COLUMNS
 from .schema_gen import DEFAULT_SCHEMA_VERSION, build_feature_schema, feature_cohorts
 from .variable import Variable
@@ -370,7 +369,7 @@ def to_harmonized_dataset(
     # Metadata: DSM diagnosis = arm subtype when present, else cohort code.
     if "arm" in sub.columns:
         arm = sub["arm"].astype("object").where(sub["arm"].notna(), None)
-        dsm = [a if a else c.upper() for a, c in zip(arm, cohort_code)]
+        dsm = [a if a else c.upper() for a, c in zip(arm, cohort_code, strict=False)]
     else:
         dsm = [c.upper() for c in cohort_code]
     metadata = pd.DataFrame(

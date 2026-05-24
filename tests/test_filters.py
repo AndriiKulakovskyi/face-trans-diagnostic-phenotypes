@@ -22,14 +22,11 @@ import pytest
 
 from trans_diag.filters import (
     IDENTIFIER_COLUMNS,
-    PatientFilterReport,
-    V0Anchor,
     VariableFilterReport,
     filter_patients,
     filter_variables,
     select_v0_anchor,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -134,7 +131,7 @@ def test_filter_variables_no_visit_evaluates_all_rows(df_long):
     out, rep = filter_variables(df_long, threshold=0.5)
     # Across all 12 rows: var_C is always NaN, var_E is mostly NaN.
     # var_A: 10/12 present (~83%); var_B: 6/12 (50%); var_D: 11/12 (~92%); var_E: 3/12 (25%)
-    completeness = dict(zip(rep.table["variable"], rep.table["completeness"]))
+    completeness = dict(zip(rep.table["variable"], rep.table["completeness"], strict=False))
     assert completeness["var_C"] == 0.0
     assert "var_C" in rep.dropped
     assert "var_E" in rep.dropped

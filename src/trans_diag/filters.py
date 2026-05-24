@@ -25,12 +25,10 @@ direct serialization to the audit/QA reports.
 """
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass, field
-from typing import Iterable, Optional, Sequence
 
-import numpy as np
 import pandas as pd
-
 
 IDENTIFIER_COLUMNS: frozenset[str] = frozenset({
     "patient_uid", "usubjid_patients", "fondacode", "cohort", "arm", "armcd",
@@ -76,7 +74,7 @@ class VariableFilterReport:
         Sorted by completeness ascending for quick triage.
     """
     threshold: float
-    visit: Optional[str]
+    visit: str | None
     n_rows_evaluated: int
     table: pd.DataFrame
 
@@ -111,7 +109,7 @@ class PatientFilterReport:
     NOT by `usubjid_patients`, which is only unique within a cohort.
     """
     threshold: float
-    visit: Optional[str]
+    visit: str | None
     variables_used: tuple[str, ...]
     table: pd.DataFrame
     keep_other_visits: bool
@@ -148,7 +146,7 @@ def _validate_threshold(threshold: float) -> None:
 
 def _candidate_feature_columns(
     df: pd.DataFrame,
-    candidates: Optional[Sequence[str]] = None,
+    candidates: Sequence[str] | None = None,
 ) -> list[str]:
     if candidates is not None:
         missing = [c for c in candidates if c not in df.columns]
@@ -165,8 +163,8 @@ def filter_variables(
     df: pd.DataFrame,
     threshold: float,
     *,
-    visit: Optional[str] = None,
-    candidates: Optional[Sequence[str]] = None,
+    visit: str | None = None,
+    candidates: Sequence[str] | None = None,
 ) -> tuple[pd.DataFrame, VariableFilterReport]:
     """Drop feature columns with completeness below `threshold`.
 
@@ -243,8 +241,8 @@ def filter_patients(
     df: pd.DataFrame,
     threshold: float,
     *,
-    visit: Optional[str] = None,
-    variables: Optional[Sequence[str]] = None,
+    visit: str | None = None,
+    variables: Sequence[str] | None = None,
     keep_other_visits: bool = True,
 ) -> tuple[pd.DataFrame, PatientFilterReport]:
     """Drop patients whose completeness across `variables` falls below `threshold`.
@@ -371,7 +369,7 @@ class V0Anchor:
         self,
         df: pd.DataFrame,
         *,
-        restrict_visits: Optional[Sequence[str]] = None,
+        restrict_visits: Sequence[str] | None = None,
     ) -> pd.DataFrame:
         """Project the anchor onto another frame.
 

@@ -23,9 +23,7 @@ import sys
 import warnings
 from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Iterable
 
-import numpy as np
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -33,7 +31,6 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from trans_diag import RULES, build_unified_dataframe, load_variables  # noqa: E402
 from trans_diag.loader import YEARLY_VISIT_MAP  # noqa: E402
-
 
 DATA_DIR = REPO_ROOT / "data"
 DICT_PATH = REPO_ROOT / "face-common-vars.xlsx"

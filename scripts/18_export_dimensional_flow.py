@@ -86,7 +86,7 @@ def alluvial_traces(wide_band: pd.DataFrame, stages, title):
     nodes = [f"{s}·{BAND_LABELS[b]}" for s in stages for b in range(3)]
     nidx = {n: i for i, n in enumerate(nodes)}
     src, tgt, val = [], [], []
-    for a, b in zip(stages, stages[1:]):
+    for a, b in zip(stages, stages[1:], strict=False):
         pair = wide_band[[a, b]].dropna()
         ct = pd.crosstab(pair[a].astype(int), pair[b].astype(int))
         for i in ct.index:
@@ -169,7 +169,7 @@ def main() -> int:
         for j in range(len(AXES)):
             boot[b, j] = eta_squared(V[idx, j], gb)
     lo_a, hi_a = np.percentile(boot, [2.5, 97.5], axis=0)
-    eta = dict(zip(AXES, pt)); lo = dict(zip(AXES, lo_a)); hi = dict(zip(AXES, hi_a))
+    eta = dict(zip(AXES, pt, strict=False)); lo = dict(zip(AXES, lo_a, strict=False)); hi = dict(zip(AXES, hi_a, strict=False))
     print(f"\nVariance in each axis explained by DSM-5 subtype (η² [95% bootstrap CI], B={B}, "
           f"n={n}):")
     for ax in AXES:

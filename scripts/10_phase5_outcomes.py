@@ -28,7 +28,6 @@ import sys
 import warnings
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -116,7 +115,7 @@ def main() -> int:
     head = pd.DataFrame(head_rows); head.to_csv(RESULTS_DIR / f"phase5_headtohead_{suf}.csv", index=False)
     eff = pd.DataFrame(eff_rows); eff.to_csv(RESULTS_DIR / f"phase5_axis_effects_{suf}.csv", index=False)
     _report(head, eff, axis_cols, args.visit)
-    print(f"\nWrote results/phase5_* + reports/phase5.html. Done.")
+    print("\nWrote results/phase5_* + reports/phase5.html. Done.")
     return 0
 
 

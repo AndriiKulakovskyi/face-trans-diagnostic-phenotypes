@@ -29,7 +29,6 @@ from trans_diag.adapter import (
 from trans_diag.schema_gen import _slug, build_feature_schema, feature_cohorts
 from trans_diag.variable import Variable
 
-
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------

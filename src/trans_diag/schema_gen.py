@@ -25,7 +25,6 @@ import unicodedata
 from collections.abc import Iterable, Sequence
 
 from .engine import FeatureSchema
-
 from .variable import Variable
 
 __all__ = ["build_feature_schema", "feature_cohorts", "DEFAULT_SCHEMA_VERSION"]

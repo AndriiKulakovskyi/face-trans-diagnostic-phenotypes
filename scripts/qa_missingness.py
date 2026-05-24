@@ -23,7 +23,6 @@ import html
 import sys
 import warnings
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 import pandas as pd
@@ -34,7 +33,6 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from trans_diag import build_unified_dataframe, load_variables  # noqa: E402
-
 
 DATA_DIR = REPO_ROOT / "data"
 DICT_PATH = REPO_ROOT / "face-common-vars.xlsx"
@@ -201,7 +199,7 @@ def variable_metadata_table(var) -> go.Figure:
         ("harmonization rule", trunc(var.rule, 800)),
     ]
     fig = go.Figure(data=[go.Table(
-        header=dict(values=[f"<b>field</b>", f"<b>value</b>"],
+        header=dict(values=["<b>field</b>", "<b>value</b>"],
                     fill_color="#2b3a55", font_color="white",
                     align="left", height=26),
         cells=dict(

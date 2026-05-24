@@ -135,7 +135,7 @@ def main() -> int:
     for a in range(K):
         s = pd.Series(load[:, a], index=domains).sort_values(key=abs, ascending=False)
         print(f"  axis{a+1}: " + "; ".join(f"{d}({v:+.2f})" for d, v in s.head(5).items()))
-        for d, v in zip(domains, load[:, a]):
+        for d, v in zip(domains, load[:, a], strict=False):
             loadrows.append({"axis": f"axis{a+1}", "domain": d, "loading": float(v)})
 
     # 4. which axis carries the DSM mood<->psychosis ordering (subtype-centroid Spearman)

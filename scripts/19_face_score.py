@@ -24,6 +24,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 import matplotlib  # noqa: E402
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import plotly.graph_objects as go  # noqa: E402
@@ -65,7 +66,7 @@ def _face_figure(face: pd.DataFrame, axes: pd.DataFrame) -> None:
     # (c) FACE-M by diagnosis — transdiagnostic (metabolic labs collected in all three networks)
     bm = ax[1, 0].boxplot([df.loc[df["cohort"] == c, "FACE_M"].dropna().to_numpy() for c in groups],
                           patch_artist=True, widths=0.6, showfliers=False)
-    for patch, c in zip(bm["boxes"], groups):
+    for patch, c in zip(bm["boxes"], groups, strict=False):
         patch.set_facecolor(COH_COLOR[c]); patch.set_alpha(0.5)
     ax[1, 0].axhline(0, color="#999", lw=0.7)
     ax[1, 0].set_xticklabels([COH_LABEL[c] for c in groups], fontsize=8)
@@ -76,7 +77,7 @@ def _face_figure(face: pd.DataFrame, axes: pd.DataFrame) -> None:
     have = [(i + 1, c) for i, c in enumerate(groups) if len(dd[c]) > 5]
     bd = ax[1, 1].boxplot([dd[c] for _, c in have], positions=[p for p, _ in have],
                           patch_artist=True, widths=0.6, showfliers=False)
-    for patch, (_, c) in zip(bd["boxes"], have):
+    for patch, (_, c) in zip(bd["boxes"], have, strict=False):
         patch.set_facecolor(COH_COLOR[c]); patch.set_alpha(0.5)
     ax[1, 1].axhline(0, color="#999", lw=0.7)
     ax[1, 1].set_xticks([1, 2, 3]); ax[1, 1].set_xticklabels([COH_LABEL[c] for c in groups], fontsize=8)

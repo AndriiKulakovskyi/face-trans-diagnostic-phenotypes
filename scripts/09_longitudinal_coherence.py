@@ -283,7 +283,7 @@ def _write_report(coherence, trans, wide, k, cv_acc, dsm_of=None, ari_dsm=float(
                     if n > 0:
                         src.append(nidx[DSM_SHORT[s]]); tgt.append(nidx[f"V0·C{int(j)}"])
                         val.append(n)
-        for a, b in zip(stages, stages[1:]):            # V0 → V1 → V2
+        for a, b in zip(stages, stages[1:], strict=False):            # V0 → V1 → V2
             pair = wide[[a, b]].dropna()
             ct = pd.crosstab(pair[a].astype(int), pair[b].astype(int))
             for i in ct.index:

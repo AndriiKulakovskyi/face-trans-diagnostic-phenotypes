@@ -27,7 +27,6 @@ from trans_diag import (  # noqa: E402
     load_variables,
 )
 
-
 DATA_DIR = REPO_ROOT / "data"
 DICT_PATH = REPO_ROOT / "face-common-vars.xlsx"
 

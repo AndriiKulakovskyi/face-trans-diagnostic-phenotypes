@@ -174,7 +174,7 @@ def main() -> int:
           f"max={int(co_off.max())}; {thin} of {p*(p-1)//2} pairs < {MIN_PAIR} co-obs "
           f"({n_nan} undefined -> 0); masked-corr min eigenvalue {min_eig_masked:+.3f} (pre-PD).")
     print()
-    print(f"HEADLINE  cong(locked sklearn-FA[mean-fill], PAF[MASKED, no imputation]):")
+    print("HEADLINE  cong(locked sklearn-FA[mean-fill], PAF[MASKED, no imputation]):")
     print(f"          per-axis {summ(head)['per_axis']}  min={summ(head)['min']} mean={summ(head)['mean']}")
     print(f"isolate imputation  cong(PAF[mean-fill], PAF[masked]): "
           f"min={summ(imp)['min']} mean={summ(imp)['mean']}  {summ(imp)['per_axis']}")
@@ -255,7 +255,7 @@ def main() -> int:
         "reproducible_K_imputation_free": K_masked,
     }
     (RESULTS_DIR / "sensitivity_masked_fa.json").write_text(json.dumps(out, indent=2))
-    print(f"\nWrote results/sensitivity_masked_fa.json. Done.")
+    print("\nWrote results/sensitivity_masked_fa.json. Done.")
     return 0
 
 

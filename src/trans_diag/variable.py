@@ -2,10 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 import pandas as pd
-
 
 _HEADER_MAP = {
     "canonical_name": "Canonical name (merged single-cohort)",
@@ -26,9 +24,9 @@ _HEADER_MAP = {
 @dataclass(frozen=True)
 class Variable:
     canonical_name: str
-    bp_csv_col: Optional[str]
-    sz_csv_col: Optional[str]
-    dr_csv_col: Optional[str]
+    bp_csv_col: str | None
+    sz_csv_col: str | None
+    dr_csv_col: str | None
     dtype: str
     unit_or_value_set: str
     cluster_readiness: str
@@ -38,7 +36,7 @@ class Variable:
     label: str
     findings: str
 
-    def source_col(self, cohort: str) -> Optional[str]:
+    def source_col(self, cohort: str) -> str | None:
         return {
             "BP": self.bp_csv_col,
             "SZ": self.sz_csv_col,

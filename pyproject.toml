@@ -25,7 +25,7 @@ dependencies = [
 ai = ["torch>=2.2"]                                   # masked autoencoder (dimensional_ae.py)
 combat = ["neuroHarmonize>=2.4", "neuroCombat>=0.2.12", "nibabel>=5.0"]  # site harmonization (robustness_site.py)
 figures = ["kaleido>=0.2"]                            # static export of plotly figures
-dev = ["pytest>=7.0", "pytest-cov>=4.0"]
+dev = ["pytest>=7.0", "pytest-cov>=4.0", "ruff>=0.6"]
 # Convenience: everything needed to reproduce every manuscript number/figure.
 full = ["torch>=2.2", "neuroHarmonize>=2.4", "neuroCombat>=0.2.12", "nibabel>=5.0", "kaleido>=0.2"]
 
@@ -35,3 +35,16 @@ packages = ["src/trans_diag"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+# Pyflakes (real bugs / unused imports) + import order + modernization + bugbear.
+select = ["E", "F", "W", "I", "UP", "B"]
+# Ignored on purpose: E501 long lines (inline CSS / dense docstrings), E702 compact
+# one-liners, E741 single-letter math names (L, l), F601 harmless dup-coercion keys in
+# rules.py (1/1.0/True all map to the same value), F841 throwaway locals in scripts,
+# B008 (call-in-default used deliberately).
+ignore = ["E501", "E702", "E741", "F601", "F841", "B006", "B007", "B008", "B023"]

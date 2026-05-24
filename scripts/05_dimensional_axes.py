@@ -145,7 +145,7 @@ def main() -> int:
         sign = "↑" if top.iloc[0] > 0 else "↓"
         desc = "; ".join(f"{d}({'+' if v>0 else '−'}{abs(v):.2f})" for d, v in top.items())
         print(f"  axis{a+1} (var {var_prop[a]:.1%}) {sign}: {desc}")
-        for d, v in zip(domains, load[:, a]):
+        for d, v in zip(domains, load[:, a], strict=False):
             loadings_rows.append({"axis": f"axis{a+1}", "domain": d, "loading": float(v)})
     pd.DataFrame(loadings_rows).to_csv(RESULTS_DIR / "dimensional_axes_loadings.csv", index=False)
 
@@ -199,7 +199,7 @@ def _report(load, domains, names, var_prop, real_ev, thresh, k_pa, cent, cont, m
     spec_lbl = {0: "MDD", 1: "BP-II", 2: "BP-I", 3: "BP-NOS", 4: "schizoaff",
                 5: "schizophrenif", 6: "schizophr"}
     # loadings heatmap
-    f1 = go.Figure(go.Heatmap(z=load.T, x=domains, y=[f"{n} ({v:.0%})" for n, v in zip(names, var_prop)],
+    f1 = go.Figure(go.Heatmap(z=load.T, x=domains, y=[f"{n} ({v:.0%})" for n, v in zip(names, var_prop, strict=False)],
                               colorscale="RdBu", zmid=0, colorbar=dict(title="loading", thickness=12)))
     f1.update_layout(title="Factor loadings (domains × axes)", height=80+60*len(names),
                      margin=dict(t=46, l=120, b=140), xaxis_tickangle=-60)

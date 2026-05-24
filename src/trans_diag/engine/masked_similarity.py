@@ -51,7 +51,6 @@ from typing import Literal
 
 import numpy as np
 
-
 # ─── Public types ─────────────────────────────────────────────────────────────
 
 

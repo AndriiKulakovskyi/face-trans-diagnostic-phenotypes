@@ -49,7 +49,7 @@ def main() -> int:
             n = int(dsm_ct.loc[s, jc])
             if n > 0:
                 src.append(nidx[DSM_SHORT[s]]); tgt.append(nidx[f"V0·C{int(jc)}"]); val.append(n)
-    for x, y in zip(stages, stages[1:]):                 # V0 → V1 → V2
+    for x, y in zip(stages, stages[1:], strict=False):                 # V0 → V1 → V2
         pair = wide[[x, y]].dropna()
         ct = pd.crosstab(pair[x].astype(int), pair[y].astype(int))
         for i in ct.index:
