@@ -243,7 +243,7 @@ per-visit-age residualized; the refit axes match the locked set, Tucker congruen
 - **Unifies Phases 4+5:** the depression-severity axis is moderately stable *and* the
   strongest predictor of functioning/QoL; the trauma/ADHD axis is the most trait-like.
 
-### 3g. Robustness — V2 follow-up + site (ComBat) harmonization (all shuffled-CV)
+### 3g. Robustness — V2, site (ComBat), de-circularization, fold-honest refit (all shuffled-CV)
 - **V2 follow-up (same cohort, not independent replication):** the head-to-head holds — QoL
   axes beat DSM (R² 0.265 vs 0.230, **+0.034**), functioning axes complement DSM (combined
   0.353 vs 0.306, **+0.047**), hospitalization DSM-dominated (AUC 0.727).
@@ -253,17 +253,27 @@ per-visit-age residualized; the refit axes match the locked set, Tucker congruen
   locked axes [1.0, 1.0, 1.0, 0.98, 0.98, 0.99]) — they are **not a site artifact**. The
   head-to-head survives: QoL axes still beat DSM (+0.032), functioning still complements
   (combined 0.386 vs 0.366), hospitalization still DSM-dominated.
+- **De-circularization (`12`):** refitting the axes without each outcome's own V0 measure(s)
+  leaves the head-to-head essentially unchanged (QoL +0.036, functioning combined +0.026, hosp
+  AUC 0.600) → not driven by outcome content in the predictor axes.
+- **Fold-honest refit (`20`, Limitation 10):** re-deriving the masked FA *inside each training
+  fold* (train-only loadings + scaling; 5× shuffled 5-fold) leaves the advantage intact — QoL
+  axes−DSM **+0.040** [+0.039,+0.041] (vs +0.039 full-sample), functioning combined 0.400 vs DSM
+  0.365, hosp −0.139; the all-data−refit optimism is **≤0.007 AUC, ≈0 R²**. The axes are not a
+  fit-on-all-data artifact. Artifact: `results/robustness_cvrefit.json`.
 - **Conclusion:** the dimensional model and its outcome advantage are **reproducible**
-  (split-half 0.95), **confound-free** (age/sex 0.002), **site-robust** (ComBat congruence
-  ~1), **de-circularization-robust**, and **consistent across V1+V2** (same cohort) — solid
-  for the manuscript, pending independent external replication.
+  (masked split-half min congruence 0.89), **confound-free** (max |corr| age/sex 0.017),
+  **site-robust** (ComBat congruence ~1), **de-circularization-robust**, **fold-refit-robust**
+  (optimism ≤0.007), and **consistent across V1+V2** (same cohort) — solid for the manuscript,
+  pending independent external replication.
 - **Extra robustness checks (`15_review_checks.py`, addresses review #5–9):** the age/sex
   orthogonality (0.002) is by construction (residualized) — the meaningful test is independence
   from variables NOT removed: **site η² ≤0.05, cohort η² ≤0.10** per axis. AE↔FA agreement is
-  real, not a CCA artifact (**leading canonical corr 0.93 vs permutation null 0.06**). Mood↔
+  real, not a CCA artifact (**leading canonical corr 0.98 vs permutation null 0.06**). Mood↔
   psychosis **ρ=0.79, bootstrap 95% CI [0.75, 0.86]** (but only 7 a-priori-ordered centroids).
-  K-selection is **non-monotone** (figS2; K=5 min-congruence 0.31, K=6 0.95 — K chosen on
-  reproducibility+interpretability, not a clean elbow). **Honest caveat:** HDBSCAN's cohort
+  The masked split-half reproducibility curve is **smooth and high** (figS2; min Tucker
+  congruence ≥0.89 for K=3–7, collapsing to 0.22 at K=8) — K=6 (min 0.89) is chosen on
+  reproducibility + interpretability + parsimony, not a clean elbow. **Honest caveat:** HDBSCAN's cohort
   recovery (ARI 0.70) is **partly a measurement-protocol artifact** — cohort is **98%
   predictable from the observation mask alone** (shuffled CV) (cohorts got different instrument batteries);
   the dimensional verdict is unaffected (still no trans-diagnostic discrete clusters).

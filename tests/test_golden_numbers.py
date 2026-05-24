@@ -122,3 +122,15 @@ def test_face_profile_parsimony():
     p = _json("face_score_validation.json")["parsimony"]
     assert p["corr_FACE_D_depression"] >= 0.93                  # FACE-D ≈ depression axis (0.97)
     assert p["corr_FACE_M_metabolic"] >= 0.83                   # FACE-M ≈ metabolic axis (0.88)
+
+
+# ── §3.5 — fold-honest re-fit removes only negligible optimism (Limitation 10) ────────
+def test_cvrefit_robustness():
+    rows = {r["outcome"]: r for r in _json("robustness_cvrefit.json")["headtohead_cvrefit"]}
+    q = rows["EQ-5D quality of life"]
+    assert abs(q["axes_refit_minus_DSM"] - 0.039) <= 0.006      # QoL advantage survives refit (+0.040)
+    assert abs(q["optimism_alldata_minus_refit"]) <= 0.01       # ≈0 optimism for QoL
+    assert rows["EGF functioning"]["combined_refit_minus_DSM"] >= 0.02   # functioning still complemented
+    assert rows["any hospitalization"]["axes_refit_minus_DSM"] < -0.10   # DSM still dominates hosp
+    # the manuscript's "optimism ≤0.007" headline, across all outcomes
+    assert max(abs(r["optimism_alldata_minus_refit"]) for r in rows.values()) <= 0.01

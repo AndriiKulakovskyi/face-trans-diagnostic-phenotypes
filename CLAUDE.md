@@ -101,8 +101,9 @@ Scripts are numbered in execution order — read or run them top-to-bottom:
 → `11_phase5_ci` → `12_phase5_decircularized` → `13_robustness_site` (ComBat) →
 `14_cognition_bpsz` → `15_review_checks` → `16_manuscript_figures` →
 `17_export_longitudinal_figure` (Suppl. Fig S1) → `18_export_dimensional_flow` (Fig 6) →
-`19_face_score` (§3.9 FACE profile: FACE-D + FACE-M).
-`00_run_all.py` runs all 19 in this order; the unnumbered scripts (`verify`, `audit`,
+`19_face_score` (§3.9 FACE profile: FACE-D + FACE-M) → `20_robustness_cvrefit` (Limitation 10:
+axes re-fit inside CV folds).
+`00_run_all.py` runs all 20 in this order; the unnumbered scripts (`verify`, `audit`,
 `qa_missingness`, `build_notebook`, `sensitivity_masked_fa{,_mechanism}`) are utilities, not
 pipeline steps.
 

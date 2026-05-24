@@ -1,0 +1,61 @@
+{
+  "K": 6,
+  "n_repeat": 5,
+  "design": "axes re-fit (masked FA) within each training fold; train-only scaling; identical folds across DSM/axes_alldata/axes_refit",
+  "headtohead_cvrefit": [
+    {
+      "outcome": "EGF functioning",
+      "n": 3195,
+      "metric": "R2",
+      "DSM": 0.365,
+      "axes_alldata": 0.365,
+      "axes_refit": 0.365,
+      "combined_alldata": 0.4,
+      "combined_refit": 0.4,
+      "axes_refit_minus_DSM": -0.0,
+      "axes_refit_minus_DSM_range": [
+        -0.002,
+        0.001
+      ],
+      "combined_refit_minus_DSM": 0.035,
+      "optimism_alldata_minus_refit": 0.0,
+      "orig_axes_minus_DSM": -0.001
+    },
+    {
+      "outcome": "any hospitalization",
+      "n": 3332,
+      "metric": "AUC",
+      "DSM": 0.745,
+      "axes_alldata": 0.613,
+      "axes_refit": 0.606,
+      "combined_alldata": 0.756,
+      "combined_refit": 0.758,
+      "axes_refit_minus_DSM": -0.139,
+      "axes_refit_minus_DSM_range": [
+        -0.148,
+        -0.133
+      ],
+      "combined_refit_minus_DSM": 0.013,
+      "optimism_alldata_minus_refit": 0.007,
+      "orig_axes_minus_DSM": -0.128
+    },
+    {
+      "outcome": "EQ-5D quality of life",
+      "n": 2423,
+      "metric": "R2",
+      "DSM": 0.304,
+      "axes_alldata": 0.343,
+      "axes_refit": 0.343,
+      "combined_alldata": 0.346,
+      "combined_refit": 0.347,
+      "axes_refit_minus_DSM": 0.04,
+      "axes_refit_minus_DSM_range": [
+        0.039,
+        0.041
+      ],
+      "combined_refit_minus_DSM": 0.043,
+      "optimism_alldata_minus_refit": -0.0,
+      "orig_axes_minus_DSM": 0.039
+    }
+  ]
+}

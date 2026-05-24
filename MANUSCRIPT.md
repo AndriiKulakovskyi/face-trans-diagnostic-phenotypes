@@ -37,8 +37,9 @@ clustering, bimodality, and DSM-subtype ordering); (ii) fit a confound-controlle
 dimensional model (varimax factor analysis with split-half reproducibility selection,
 cross-validated against a no-imputation masked autoencoder); and (iii) tested, in nested
 cross-validation, whether the dimensions predict 1-year patient-reported and service-use
-outcomes better than DSM diagnosis. Robustness was assessed by ComBat site harmonization
-and consistency at a second follow-up (V2, same cohort).
+outcomes better than DSM diagnosis. Robustness was assessed by ComBat site harmonization,
+consistency at a second follow-up (V2, same cohort), de-circularization, and re-fitting the
+factor model within each cross-validation fold.
 
 **Results.** Trans-diagnostic variation was **dimensional, not categorical**: the
 similarity spectrum had no eigengap, the gap statistic rose monotonically with *k* (no
@@ -803,7 +804,7 @@ credible rather than the artifact of an over-flexible model that "wins everywher
 
 **Figure 3. Head-to-head outcome prediction.** DSM vs dimensions vs combined for QoL, functioning and hospitalization, with V1 (primary) and V2 (replication) panels and annotated Δ(dim−DSM).
 
-### 3.5 Robustness: follow-up consistency, site harmonization, and de-circularization
+### 3.5 Robustness: follow-up consistency, site harmonization, de-circularization, and fold-honest re-fitting
 
 The head-to-head was **consistent at a second follow-up** (V2, same cohort — not independent
 replication; `results/phase5_headtohead_V2.csv`): dimensions beat
@@ -831,14 +832,33 @@ predictors** — baseline adjustment already controls each outcome's own V0 valu
 depression axis is carried by the symptom scales (QIDS/MADRS/STAI), not the functioning/QoL
 items.
 
-Taken together, the three robustness analyses attack three distinct threats, and the result
+**Fold-honest re-fitting.** A subtler concern is optimism: the factor loadings were estimated
+once on the full sample and then used as predictors inside cross-validation, so each held-out
+fold helped fit the very axes used to score it. We tested this directly by re-deriving the
+masked factor model *inside each training fold* — train-only loadings **and** train-only
+standardization — and scoring the held-out patients from those train-only loadings
+(`scripts/20_robustness_cvrefit.py`; 5 × shuffled 5-fold; factor sign/order may differ across
+folds, which is immaterial because the ridge/logistic readouts are invariant to it). The
+incremental value was essentially unchanged: quality-of-life dimensions−DSM = **+0.040**
+[+0.039, +0.041] (vs +0.039 with full-sample loadings), functioning stayed complementary
+(combined R² 0.400 vs DSM 0.365), and hospitalization stayed diagnosis-dominated (−0.139). The
+gap between the full-sample and fold-refit estimates — exactly the optimism that honest
+refitting removes — was **≤0.007 AUC and ≈0 R²**. This near-invariance is expected: the loadings
+are a population-level covariance structure estimated over thousands of patients, so withholding
+a few hundred held-out patients from the fit barely perturbs them. We therefore retain the
+full-sample axes as the primary representation, now knowing the cross-validated advantage is not
+an artifact of fitting the dimensional model on all of the data.
+
+Taken together, the four robustness analyses attack four distinct threats, and the result
 holds against all of them: V2 tests whether the finding is a single-visit fluke (it recurs at a
 later follow-up in the same patients), ComBat tests whether it is a multi-site batch artifact
-(it survives site harmonization with the axes essentially unchanged), and de-circularization
+(it survives site harmonization with the axes essentially unchanged), de-circularization
 tests whether it is driven by outcome content leaking into the predictor axes (it survives
-refitting the axes without those measures). Convergent survival across orthogonal threats is the
+refitting the axes without those measures), and fold-honest re-fitting tests whether the
+cross-validated advantage is inflated by fitting the axes on the full sample (it is not — the
+optimism is ≤0.007). Convergent survival across orthogonal threats is the
 triangulation that separates a real effect from a pipeline artifact — with the important
-qualification that none of the three is *external* replication, which remains outstanding
+qualification that none of the four is *external* replication, which remains outstanding
 (§4.8).
 
 ### 3.6 Dimensions show a trait–state gradient over four years
@@ -1226,10 +1246,13 @@ and the ComBat harmonization (§3.5). A minor cost of the masked posterior-mean 
 **1% of patients (89/9,013) with fewer than K=6 observed domains are left unscored** (NaN)
 rather than imputed, and are excluded from the analyses that use the axis scores. (9) There is **no
 independent external replication**: the "V2" analysis re-uses the same individuals at a later
-visit (temporal consistency), and all sites belong to one national network. (10) The
-cross-validated metrics are reported with repeated-CV intervals (§3.4) but the unsupervised
-factor extraction is fit on the full sample rather than re-fit within each CV fold, a
-(milder) optimism that future work should remove. (11) Harmonizing three protocols into one
+visit (temporal consistency), and all sites belong to one national network. (10) The unsupervised
+factor extraction is fit on the full sample and then used as a predictor across CV folds; we
+*measured* the resulting optimism by re-deriving the masked factor model inside each training
+fold (§3.5) and found it negligible (≤0.007 AUC, ≈0 R²; the quality-of-life advantage was
++0.040 refit vs +0.039 full-sample), because the loadings are a population-level structure that
+a few hundred held-out patients barely move — so we retain the full-sample axes, but this is a
+within-sample check, not external replication. (11) Harmonizing three protocols into one
 schema embeds **expert judgment** about cross-cohort equivalence; residual mis-mapping would
 attenuate or distort the affected domains, though construct-level aggregation and the readiness
 grading limit the exposure, and the confound controls remove the largest such artifact (the

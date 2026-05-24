@@ -370,8 +370,28 @@ ever filled (`scripts/sensitivity_masked_fa.py`; mechanism probe `..._mechanism.
   hold/strengthen (QoL +0.039, functioning combined +0.034, hosp DSM-dominated); 5/6 loadings
   unchanged, 6th = work-disability; **trait-state flipped — metabolic now most trait-like (0.20→0.64),
   the old 0.20 was the mean-fill diluting sparse follow-up labs**; confound clean (age/sex 0.017,
-  cohort η²≤0.11, site ≤0.05); CCA(AE,FA) 0.93. Manuscript fully updated (§2.1/2.2/2.7/2.8, Tables
+  cohort η²≤0.11, site ≤0.05); CCA(AE,FA) 0.98 (vs the *final* imputation-free model; the deep verification later found 15 had
+been comparing the AE to the superseded `05` mean-fill scores → a too-low 0.93, fixed to compare
+against `07`). Manuscript fully updated (§2.1/2.2/2.7/2.8, Tables
   2–3, §3.3–3.8, Limitations, Abstract). 54 tests pass.
+
+## E20 · Fold-honest re-fit — removing the head-to-head optimism (Limitation 10) — 2026-05-24
+The head-to-head (`10`) scored patients with axis loadings fit once on the **full** sample (`07`),
+then used those scores as CV predictors — so each held-out fold helped fit its own axes (a mild
+optimism; MANUSCRIPT Limitation 10). New `scripts/20_robustness_cvrefit.py` re-derives the masked
+factor model **inside each training fold** (train-only loadings **and** train-only standardization)
+and scores the held-out patients from those train-only loadings; 5× shuffled 5-fold. To isolate the
+effect it computes, under *identical* folds, axes from full-sample loadings (`ax_all`) vs refit
+loadings (`ax_re`); the gap is exactly the optimism honest refitting removes.
+- **Result: optimism is negligible.** QoL axes−DSM **+0.040** [+0.039,+0.041] (vs +0.039 full-sample);
+  functioning combined 0.400 vs DSM 0.365 (still complementary); hospitalization −0.139 (still
+  DSM-dominated). all-data−refit gap **≤0.007 AUC, ≈0 R²**. The all-data axes reproduce the committed
+  head-to-head within rounding (EGF 0.365, hosp 0.613, QoL 0.343) → the script is validated.
+- **Why so small:** the loadings are a population-level covariance structure estimated over thousands
+  of patients, so withholding a few hundred test-fold patients barely moves them. Factor sign/order
+  differs across folds — immaterial (ridge/logistic are invariant to a sign flip or column permutation).
+- Limitation 10 reframed from "future work should remove" to "measured, negligible" (§3.5, now the
+  **fourth** robustness threat). Artifact: `results/robustness_cvrefit.json`. 78 tests pass; ruff clean.
 
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
