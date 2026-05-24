@@ -1,3 +1,4 @@
+from .axes import AXIS_INDEX_TO_NAME, AXIS_LABELS, AXIS_NAMES, AXIS_SHORT
 from .filters import (
     IDENTIFIER_COLUMNS,
     PatientFilterReport,
@@ -67,4 +68,8 @@ __all__ = [
     "BIOLOGY_COMPOSITES",
     "DOMAIN_SECTIONS",
     "DEFAULT_SCHEMA_VERSION",
+    "AXIS_NAMES",
+    "AXIS_SHORT",
+    "AXIS_LABELS",
+    "AXIS_INDEX_TO_NAME",
 ]

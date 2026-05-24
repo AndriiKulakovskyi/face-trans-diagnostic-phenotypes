@@ -36,6 +36,7 @@ from scipy.stats import pearsonr, spearmanr  # noqa: E402
 
 from trans_diag import (  # noqa: E402
     ADMINISTRATIVE_FEATURES,
+    AXIS_NAMES,
     COHORT_TO_CODE,
     DOMAIN_SECTIONS,
     build_domain_scores,
@@ -51,11 +52,7 @@ REPORTS_DIR = REPO_ROOT / "reports"
 VISITS = ["V0", "V1", "V2", "V3", "V4"]
 K = 6
 SPLINE_DF, CROSS_FIT, RANDOM = 4, 5, 0
-# axis order = SS order of the imputation-free model (07_dimensional_refine; LABBOOK E19):
-# the former ADHD/impulsivity/trauma axis is gone — impulsivity (WURS/BIS) merges into
-# mania/activation, and the 6th axis is now socio-occupational/work-disability.
-AXIS_NAMES = ["depression_severity", "later_onset", "mania_activation",
-              "illness_burden", "metabolic", "work_disability"]
+# AXIS_NAMES (axis1..6 SS order) is the shared constant in trans_diag.axes — imported above.
 
 
 def icc21(a, b):

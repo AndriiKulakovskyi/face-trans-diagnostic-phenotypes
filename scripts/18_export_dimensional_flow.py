@@ -26,14 +26,14 @@ from plotly.subplots import make_subplots
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
+
+from trans_diag import AXIS_NAMES, AXIS_SHORT  # noqa: E402
+
 RES = REPO / "results"
 FIG = REPO / "reports" / "figures"
 
-AXES = ["depression_severity", "later_onset", "mania_activation",
-        "illness_burden", "metabolic", "work_disability"]
-PRETTY = {"depression_severity": "Depression", "later_onset": "Later onset",
-          "mania_activation": "Mania", "illness_burden": "Illness burden",
-          "metabolic": "Metabolic", "work_disability": "Work-disability"}
+AXES = AXIS_NAMES        # shared constant (trans_diag.axes) — axis1..6 SS order
+PRETTY = AXIS_SHORT      # snake_case → short display label
 BAND_LABELS = ["Low", "Mid", "High"]
 BAND_COLORS = ["#2ca02c", "#bdbdbd", "#d62728"]   # low / mid / high
 DISCRETE_PERSIST = 0.388                            # discrete-cluster V0→V1 (Suppl. S1)

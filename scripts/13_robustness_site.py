@@ -33,14 +33,13 @@ from sklearn.decomposition import FactorAnalysis  # noqa: E402
 from sklearn.impute import SimpleImputer  # noqa: E402
 from sklearn.preprocessing import StandardScaler  # noqa: E402
 
-from trans_diag import build_unified_dataframe, load_variables  # noqa: E402
+from trans_diag import AXIS_NAMES, build_unified_dataframe, load_variables  # noqa: E402
 from trans_diag.outcomes import OUTCOMES, added_axes_test, cv_metric  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
 K, RANDOM = 6, 0
-AXIS_NAMES = ["depression_severity", "later_onset", "mania_activation",
-              "illness_burden", "metabolic", "work_disability"]
+# AXIS_NAMES (axis1..6 SS order) imported from trans_diag.axes — single source of truth.
 
 
 def tucker(La, Lb):

@@ -28,6 +28,10 @@ from scipy.stats import spearmanr
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from trans_diag import AXIS_INDEX_TO_NAME, AXIS_LABELS, AXIS_NAMES  # noqa: E402
+from trans_diag import AXIS_SHORT as AXIS_SHORT_MAP  # noqa: E402
+
 RESULTS = REPO_ROOT / "results"
 FIGDIR = REPO_ROOT / "reports" / "figures"
 
@@ -38,11 +42,10 @@ plt.rcParams.update({
     "font.family": "DejaVu Sans",
 })
 
-AXIS_NAME = {
-    "axis1": "Depression /\ninternalizing", "axis2": "Later onset",
-    "axis3": "Mania /\nactivation", "axis4": "Illness burden",
-    "axis5": "Metabolic /\ninflammatory", "axis6": "Socio-occupational /\nwork-disability",
-}
+# axis display labels derived from the shared constants (trans_diag.axes); the heatmap
+# wraps the descriptive label after " / " onto two lines.
+AXIS_NAME = {idx: AXIS_LABELS[n].replace(" / ", " /" + chr(10))
+             for idx, n in AXIS_INDEX_TO_NAME.items()}
 DOMAIN_LABEL = {
     "qidsr": "QIDS", "madrs": "MADRS", "staya": "STAI-trait", "fast": "FAST (impair.)",
     "egf": "EGF (funct.)", "eq5d": "EQ-5D", "eq": "EQ-VAS", "mars": "MARS (adher.)",
@@ -67,8 +70,7 @@ COG_LABEL = {
     "verbal_reasoning": "Verbal\nreasoning", "percept_reasoning": "Perceptual\nreasoning",
     "fluency": "Fluency",
 }
-AXIS_SHORT = ["Depression", "Later onset", "Mania", "Illness burden",
-              "Metabolic", "Work-disability"]
+AXIS_SHORT = [AXIS_SHORT_MAP[n] for n in AXIS_NAMES]   # shared constant (trans_diag.axes)
 SUBTYPE_SHORT = {
     "Trouble dépressif majeur": "MDD", "Bipolaire de type 2": "BP-II",
     "Bipolaire de type 1": "BP-I", "Bipolaire non spécifié": "BP-NOS",

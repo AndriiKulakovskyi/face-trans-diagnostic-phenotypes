@@ -39,6 +39,7 @@ from sklearn.preprocessing import StandardScaler  # noqa: E402
 
 from trans_diag import (  # noqa: E402
     ADMINISTRATIVE_FEATURES,
+    AXIS_NAMES,
     build_domain_scores,
     build_unified_dataframe,
     load_variables,
@@ -51,8 +52,7 @@ RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
 SECTION = "NEUROPSYCHOLOGIE"
 MIN_DOMAINS, COV_FLOOR, RANDOM = 3, 0.30, 0
-SYMPTOM_AXES = ["depression_severity", "later_onset", "mania_activation",
-                "illness_burden", "metabolic", "work_disability"]
+SYMPTOM_AXES = AXIS_NAMES   # the 6 symptom axes (shared constant, trans_diag.axes)
 
 # Curated standard cognitive constructs (so WAIS sub-items don't dominate by count).
 # sign = +1 higher-is-better; TMT is time/error-based (higher-is-worse, sign −1,
