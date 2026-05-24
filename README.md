@@ -17,8 +17,8 @@ multipartite-spectral embedding, enrichment) is internalized in
 - `src/trans_diag/` — the package: harmonization (`variable`/`rules`/`loader`/`filters`),
   matrix build + domain aggregation (`schema_gen`/`adapter`/`domains`), and the
   internalized `engine/`.
-- `scripts/` — the pipeline (`00_run_all.py` orchestrates 18 steps) + infra
-  (`verify`, `audit`, `qa_missingness`) + `02_confound_ladder.py` (reproduces §3.1).
+- `scripts/` — the pipeline (`00_run_all.py` orchestrates 19 steps, incl. `19_face_score`
+  for the FACE profile) + infra (`verify`, `audit`, `qa_missingness`).
 - `tests/` — unit tests. `results/`, `reports/` — reproducible artifacts + HTML + figures.
 - `face-common-vars.xlsx` — the common-variables dictionary (input).
 - `data/` — the 3-cohort longitudinal CSVs (**confidential**; see note below).

@@ -973,6 +973,32 @@ to zero. We report the ablation alongside the re-derivation because the finding 
 *attenuate* the apparent stability of a sparsely-measured axis — is a methodological result and a
 caution for data-driven phenotyping.
 
+### 3.9 A clinically-actionable readout: the FACE profile
+
+The six-axis model is research-grade — it needs 54 domains and the full residualization pipeline.
+For clinical follow-up (*suivi*) we therefore propose the **FACE profile**: two compact,
+fixed-weight indices computable from a handful of routine instruments (`scripts/19_face_score.py`,
+`trans_diag.face_score`). **FACE-D** (affective-distress / functional severity) is the
+sign-oriented mean of three standardized symptom scales — QIDS, MADRS and trait-anxiety STAI — and
+reproduces the depression/internalizing axis at **r = 0.97**. **FACE-M** (cardiometabolic load) is
+the mean of the metabolic-syndrome composite, cholesterol and inflammation, and reproduces the
+metabolic axis at **r = 0.88**. Both are masked (a score is left missing, not imputed, when too
+few components are observed) and standardized to the cohort (rescalable to clinical T-scores).
+
+We report the profile's boundary honestly: it is a parsimonious **measurement and monitoring**
+tool, **not** a prognostic substitute for the full model. FACE-D targets the patient-reported
+outcomes where the dimensions add value — it is, by construction, the depression axis that drives
+them — and is stable enough to track treatment response (test–retest 0.58); FACE-M is a
+trait-stable (0.64) physical-health risk flag for a monitoring gap that contributes to the excess
+mortality of serious mental illness. But added to diagnosis, the two scores recover only part of
+the full six-axis incremental prediction (functioning ΔR² +0.016 of the full +0.053; quality of
+life +0.003 of +0.037, on the FACE-measurable subsample) — because the dimensional advantage over
+diagnosis is genuinely *multi-axial*, concentrated in the less diagnosis-linked axes that two
+scores cannot carry. The value of the FACE profile is therefore as a pair of interpretable,
+trans-diagnostic readouts — one affective, one metabolic — comparable across BP, SZ and DR on a
+common scale, not as a replacement for the full dimensional model. It is a translational proposal
+requiring prospective validation before any clinical use.
+
 ---
 
 ## 4. Discussion

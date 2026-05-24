@@ -115,3 +115,10 @@ def test_confound_ladder():
 def test_cognition_semi_independent():
     c = pd.read_csv(_need("cognition_bpsz_corr.csv"), index_col=0)
     assert c.abs().to_numpy().max() <= 0.30                     # max |r| ≈ 0.26
+
+
+# ── §3.9 — FACE profile reproduces its target axes (parsimony) ────────────────────────
+def test_face_profile_parsimony():
+    p = _json("face_score_validation.json")["parsimony"]
+    assert p["corr_FACE_D_depression"] >= 0.93                  # FACE-D ≈ depression axis (0.97)
+    assert p["corr_FACE_M_metabolic"] >= 0.83                   # FACE-M ≈ metabolic axis (0.88)
