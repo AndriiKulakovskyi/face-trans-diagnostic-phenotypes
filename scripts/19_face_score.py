@@ -23,6 +23,9 @@ import pandas as pd
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
+import matplotlib  # noqa: E402
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
 import plotly.graph_objects as go  # noqa: E402
 import plotly.io as pio  # noqa: E402
 
@@ -37,6 +40,56 @@ from trans_diag.outcomes import OUTCOMES, cv_metric  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
+FIGDIR = REPORTS_DIR / "figures"
+COH_COLOR = {"bp": "#1f77b4", "sz": "#d62728", "dr": "#2ca02c"}
+COH_LABEL = {"bp": "Bipolar", "sz": "Schizophrenia", "dr": "Depression"}
+
+
+def _face_figure(face: pd.DataFrame, axes: pd.DataFrame) -> None:
+    """Fig 7 — FACE profile: parsimony (a,b), the clinical FACE plane (c), by-diagnosis (d)."""
+    df = pd.DataFrame({"FACE_D": face["FACE_D"].to_numpy(),
+                       "FACE_M": face["FACE_M"].to_numpy(),
+                       "dep": axes["depression_severity"].reindex(face.index).to_numpy(),
+                       "met": axes["metabolic"].reindex(face.index).to_numpy(),
+                       "cohort": face.index.get_level_values("cohort")})
+    fig, ax = plt.subplots(2, 2, figsize=(10, 8))
+    a = df.dropna(subset=["FACE_D", "dep"])
+    ax[0, 0].hexbin(a["dep"], a["FACE_D"], gridsize=40, cmap="Blues", mincnt=1)
+    ax[0, 0].set(xlabel="depression axis (masked-FA score)", ylabel="FACE-D",
+                 title=f"(a) FACE-D ≈ depression axis (r={np.corrcoef(a['dep'],a['FACE_D'])[0,1]:.2f})")
+    b = df.dropna(subset=["FACE_M", "met"])
+    ax[0, 1].hexbin(b["met"], b["FACE_M"], gridsize=40, cmap="Oranges", mincnt=1)
+    ax[0, 1].set(xlabel="metabolic axis (masked-FA score)", ylabel="FACE-M",
+                 title=f"(b) FACE-M ≈ metabolic axis (r={np.corrcoef(b['met'],b['FACE_M'])[0,1]:.2f})")
+    groups = ["bp", "sz", "dr"]
+    # (c) FACE-M by diagnosis — transdiagnostic (metabolic labs collected in all three networks)
+    bm = ax[1, 0].boxplot([df.loc[df["cohort"] == c, "FACE_M"].dropna().to_numpy() for c in groups],
+                          patch_artist=True, widths=0.6, showfliers=False)
+    for patch, c in zip(bm["boxes"], groups):
+        patch.set_facecolor(COH_COLOR[c]); patch.set_alpha(0.5)
+    ax[1, 0].axhline(0, color="#999", lw=0.7)
+    ax[1, 0].set_xticklabels([COH_LABEL[c] for c in groups], fontsize=8)
+    ax[1, 0].set(ylabel="FACE-M (cardiometabolic, z)",
+                 title="(c) FACE-M — transdiagnostic (all three diagnoses)")
+    # (d) FACE-D by diagnosis — BP/DR only (SZ battery has no self-report depression scales)
+    dd = {c: df.loc[df["cohort"] == c, "FACE_D"].dropna().to_numpy() for c in groups}
+    have = [(i + 1, c) for i, c in enumerate(groups) if len(dd[c]) > 5]
+    bd = ax[1, 1].boxplot([dd[c] for _, c in have], positions=[p for p, _ in have],
+                          patch_artist=True, widths=0.6, showfliers=False)
+    for patch, (_, c) in zip(bd["boxes"], have):
+        patch.set_facecolor(COH_COLOR[c]); patch.set_alpha(0.5)
+    ax[1, 1].axhline(0, color="#999", lw=0.7)
+    ax[1, 1].set_xticks([1, 2, 3]); ax[1, 1].set_xticklabels([COH_LABEL[c] for c in groups], fontsize=8)
+    for i, c in enumerate(groups):
+        if len(dd[c]) <= 5:
+            ax[1, 1].text(i + 1, 0, "not measured\n(no QIDS/MADRS/\nSTAI in SZ battery)",
+                          ha="center", va="center", fontsize=6, color="#d62728")
+    ax[1, 1].set(ylabel="FACE-D (affective distress, z)",
+                 title="(d) FACE-D — BP/DR only (SZ measurement gap)")
+    fig.tight_layout()
+    for ext in ("png", "svg"):
+        fig.savefig(FIGDIR / f"fig7_face_profile.{ext}", dpi=200, bbox_inches="tight")
+    plt.close(fig)
 
 
 def _pid_index(df: pd.DataFrame) -> pd.DataFrame:
@@ -112,7 +165,18 @@ def main() -> int:
         print(f"{name}: n={len(d)} {metric}  DSM={m_dsm:.3f}  +FACE={m_face:.3f}  +6axes={m_full:.3f}  "
               f"(FACE gain {m_face-m_dsm:+.3f} vs full {m_full-m_dsm:+.3f})")
 
+    # cohort gradients (interpretation) + static figure (Fig 7)
+    fa = pd.DataFrame({"FACE_D": face["FACE_D"].to_numpy(), "FACE_M": face["FACE_M"].to_numpy(),
+                       "cohort": face.index.get_level_values("cohort")})
+    cohmean = fa.groupby("cohort")[["FACE_D", "FACE_M"]].mean().round(3)
+    print("\nFACE means by cohort (z):\n" + cohmean.to_string())
+    _face_figure(face, axes)
+    print("  wrote reports/figures/fig7_face_profile.png/.svg")
+
     out = {"parsimony": {"corr_FACE_D_depression": round(r_d, 3), "corr_FACE_M_metabolic": round(r_m, 3)},
+           "face_means_by_cohort": {c: {"FACE_D": float(cohmean.loc[c, "FACE_D"]),
+                                        "FACE_M": float(cohmean.loc[c, "FACE_M"])}
+                                    for c in cohmean.index},
            "FACE_D_items": list(FACE_D_ITEMS),
            "FACE_M_items": list(FACE_M_ITEMS),
            "headtohead": rows,

@@ -975,29 +975,41 @@ caution for data-driven phenotyping.
 
 ### 3.9 A clinically-actionable readout: the FACE profile
 
-The six-axis model is research-grade — it needs 54 domains and the full residualization pipeline.
-For clinical follow-up (*suivi*) we therefore propose the **FACE profile**: two compact,
-fixed-weight indices computable from a handful of routine instruments (`scripts/19_face_score.py`,
-`trans_diag.face_score`). **FACE-D** (affective-distress / functional severity) is the
-sign-oriented mean of three standardized symptom scales — QIDS, MADRS and trait-anxiety STAI — and
-reproduces the depression/internalizing axis at **r = 0.97**. **FACE-M** (cardiometabolic load) is
-the mean of the metabolic-syndrome composite, cholesterol and inflammation, and reproduces the
-metabolic axis at **r = 0.88**. Both are masked (a score is left missing, not imputed, when too
-few components are observed) and standardized to the cohort (rescalable to clinical T-scores).
+The six-axis model is research-grade — 54 domains and the full residualization pipeline. For
+clinical follow-up (*suivi*) we propose the **FACE profile**: two compact, fixed-weight, masked
+indices computable from routine instruments (`scripts/19_face_score.py`, `trans_diag.face_score`),
+standardized to the cohort (rescalable to clinical T-scores). **FACE-D** (affective distress) is the
+sign-oriented mean of QIDS, MADRS and trait-anxiety STAI and reproduces the depression/internalizing
+axis at **r = 0.97**; **FACE-M** (cardiometabolic load) is the mean of the metabolic-syndrome
+composite, cholesterol and inflammation and reproduces the metabolic axis at **r = 0.88** (Figure 7a,b).
 
-We report the profile's boundary honestly: it is a parsimonious **measurement and monitoring**
-tool, **not** a prognostic substitute for the full model. FACE-D targets the patient-reported
-outcomes where the dimensions add value — it is, by construction, the depression axis that drives
-them — and is stable enough to track treatment response (test–retest 0.58); FACE-M is a
-trait-stable (0.64) physical-health risk flag for a monitoring gap that contributes to the excess
-mortality of serious mental illness. But added to diagnosis, the two scores recover only part of
-the full six-axis incremental prediction (functioning ΔR² +0.016 of the full +0.053; quality of
-life +0.003 of +0.037, on the FACE-measurable subsample) — because the dimensional advantage over
-diagnosis is genuinely *multi-axial*, concentrated in the less diagnosis-linked axes that two
-scores cannot carry. The value of the FACE profile is therefore as a pair of interpretable,
-trans-diagnostic readouts — one affective, one metabolic — comparable across BP, SZ and DR on a
-common scale, not as a replacement for the full dimensional model. It is a translational proposal
-requiring prospective validation before any clinical use.
+Two honest boundaries define what the profile is. First, **only FACE-M is fully trans-diagnostic.**
+The metabolic battery is collected across all three networks, so FACE-M is computable — and behaves
+sensibly — in BP, SZ and DR (Figure 7c). But the self-report depression/anxiety scales (QIDS, MADRS,
+STAI) are **absent from the schizophrenia battery** (0% observed), so a parsimonious FACE-D is
+computable only in BP and DR (Figure 7d), where it is face-valid (much higher in the depression
+cohort: mean +1.04 z vs −0.08 in bipolar). The affective dimension *is* recovered for schizophrenia
+by the full masked-FA model (from the domains SZ does have), but a short self-report affective index
+is not — a concrete **measurement-harmonization gap**: a trans-diagnostic affective metric would
+require the networks to adopt a shared brief affect measure. Second, the profile is a parsimonious
+**measurement/monitoring** tool, **not** a prognostic substitute: added to diagnosis the two scores
+recover only part of the full six-axis incremental prediction (functioning ΔR² +0.016 of +0.053;
+quality of life +0.003 of +0.037, on the FACE-measurable subsample), because the dimensional
+advantage over diagnosis is genuinely *multi-axial*.
+
+Within those bounds the profile is clinically useful: FACE-D tracks affective severity for BP/DR
+follow-up (and, being moderately trait-stable, treatment response; test–retest 0.58), and FACE-M is
+a trait-stable (0.64) cardiometabolic-risk flag — across all diagnoses — for a physical-health
+monitoring gap that drives the excess mortality of serious mental illness. It is a translational
+proposal requiring prospective validation before clinical use.
+
+![Figure 7](reports/figures/fig7_face_profile.png)
+
+**Figure 7. The FACE profile.** (a) FACE-D (QIDS+MADRS+STAI) reproduces the depression/internalizing
+axis (r=0.97; BP/DR). (b) FACE-M (metabolic-syndrome+cholesterol+inflammation) reproduces the
+metabolic axis (r=0.88; all cohorts). (c) FACE-M by diagnosis — **trans-diagnostic**, computable in
+BP, SZ and DR. (d) FACE-D by diagnosis — **BP/DR only** (the SZ battery lacks the self-report
+depression scales), highest in the depression cohort.
 
 ---
 

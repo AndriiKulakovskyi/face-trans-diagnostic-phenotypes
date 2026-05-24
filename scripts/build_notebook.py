@@ -275,28 +275,51 @@ md(r"""
 
 Neuropsychology is absent in DR by design, so cognition is analysed within BP/SZ only. It resolves into
 the classic **general-ability (g) + processing-speed** structure, is semi-independent of the symptom
-dimensions (max |r| 0.24, g↔illness-burden), and adds a small independent increment to functioning.
+dimensions (max |r| 0.26, g↔illness-burden), and adds a small independent increment to functioning.
 """)
 code(r"""
 run_step("14_cognition_bpsz.py")
 cm = show("cognition_bpsz_meta.json")
 print(f"cognition subset n={cm['n_cognition']} {cm['cohort']} | K={cm['K']} factors")
-print("cognition × symptom-axis correlations (max |r| ≈ 0.24):"); display(show("cognition_bpsz_corr.csv", index_col=0).round(2))
+print("cognition × symptom-axis correlations (max |r| ≈ 0.26):"); display(show("cognition_bpsz_corr.csv", index_col=0).round(2))
 fig("fig5_cognition.png", "g + processing-speed structure; semi-independent of the symptom dimensions.")
+""")
+
+# ───────────────────────────────────────── 8b the FACE profile (clinical readout)
+md(r"""
+## 9 · A clinical readout — the FACE profile (§3.9)
+
+Two compact, fixed-weight indices for clinical follow-up, derived from the model: **FACE-D**
+(QIDS+MADRS+STAI → affective distress, reproduces the depression axis at r=0.97) and **FACE-M**
+(metabolic-syndrome+cholesterol+inflammation → cardiometabolic load, r=0.88). Two honest
+boundaries: **only FACE-M is fully trans-diagnostic** — the schizophrenia battery lacks the
+self-report depression scales, so FACE-D is computable in BP/DR only (a measurement-harmonization
+gap) — and the 2-score profile is a **monitoring** tool, *not* a prognostic substitute (it recovers
+only part of the full 6-axis outcome advantage, which is genuinely multi-axial). A translational
+proposal requiring prospective validation.
+""")
+code(r"""
+run_step("19_face_score.py")
+v = show("face_score_validation.json")
+print("parsimony (corr with target axis):", v["parsimony"])
+print("FACE means by cohort (z) — note FACE-D NaN for SZ:", v["face_means_by_cohort"])
+fig("fig7_face_profile.png", "FACE profile: (a,b) short scores reproduce their axes; "
+    "(c) FACE-M transdiagnostic; (d) FACE-D BP/DR only (no depression scales in the SZ battery).")
 """)
 
 # ───────────────────────────────────────── summary
 md(r"""
-## 9 · Summary
+## 10 · Summary
 
 | Claim | Evidence (reproduced above) |
 |---|---|
 | Structure is **dimensional, not categorical** | no eigengap · monotone gap · HDBSCAN≈cohort · DSM continuum ρ 0.79 |
-| **Six** reproducible, confound-free axes | split-half congruence ≥0.95 · age/sex |corr|≤0.002 · FA≈AE (CCA 0.93 vs null 0.06) |
-| Genuinely **trans-diagnostic** | cohort η²≤0.10, site ≤0.05; even depression axis only η²0.14 of DSM |
-| Axes **beat/complement DSM** for patient-reported outcomes | QoL +0.036 [+0.033,+0.039]; functioning combined +0.029; robust to de-circularization, ComBat, V2 |
+| **Six** reproducible, confound-free, **imputation-free** axes | masked split-half congruence ≥0.89 · age/sex |corr|≤0.017 · FA≈AE (CCA 0.98 vs null 0.06) |
+| Genuinely **trans-diagnostic** | cohort η²≤0.11, site ≤0.05; even the most diagnosis-linked axis (illness burden) only η² 0.14 of DSM |
+| Axes **beat/complement DSM** for patient-reported outcomes | QoL +0.039 [+0.036,+0.042]; functioning combined +0.034; robust to de-circularization, ComBat, V2 |
 | Discrete clustering **fails** | ~38 % persistence, DSM-ARI 0.006 → slices of a continuum (Suppl. S1) |
-| Cognition = **g + speed**, semi-independent | max |r| 0.24 |
+| Cognition = **g + speed**, semi-independent | max |r| 0.26 |
+| **FACE profile** (clinical readout, §3.9) | FACE-D r=0.97 / FACE-M r=0.88 vs their axes; FACE-M transdiagnostic, FACE-D BP/DR; a monitoring tool, not a prognostic substitute |
 
 Everything above is regenerated from the raw data by the scripts in `scripts/` (orchestrated by
 `scripts/00_run_all.py`). Full prose, methods and references: **`MANUSCRIPT.md`**.

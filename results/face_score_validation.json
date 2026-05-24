@@ -3,6 +3,20 @@
     "corr_FACE_D_depression": 0.967,
     "corr_FACE_M_metabolic": 0.882
   },
+  "face_means_by_cohort": {
+    "bp": {
+      "FACE_D": -0.08,
+      "FACE_M": -0.044
+    },
+    "dr": {
+      "FACE_D": 1.042,
+      "FACE_M": 0.159
+    },
+    "sz": {
+      "FACE_D": NaN,
+      "FACE_M": 0.098
+    }
+  },
   "FACE_D_items": [
     "qidsr",
     "madrs",

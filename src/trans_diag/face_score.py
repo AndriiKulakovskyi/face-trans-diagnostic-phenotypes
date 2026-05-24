@@ -5,10 +5,14 @@ from a handful of routine instruments for clinical follow-up (*suivi*). NOT a re
 6-axis model — two actionable readouts of it, one per use case:
 
   FACE-D (affective-distress / functional severity): a 3-item proxy of the depression/internalizing
-         axis (reproduces it at r≈0.97) — the strongest predictor of patient-reported outcomes;
-         for tracking symptom burden and treatment response across BP/SZ/DR on one scale.
+         axis (reproduces it at r≈0.97) — for tracking affective symptom burden and treatment
+         response. NOTE: built from self-report depression/anxiety scales (QIDS/MADRS/STAI) that are
+         **absent from the schizophrenia battery**, so FACE-D is computable in BP and DR only — it
+         returns NaN for SZ (masked, no imputation). A trans-diagnostic affective metric awaits a
+         harmonized brief affect measure across the networks.
   FACE-M (cardiometabolic load): a proxy of the metabolic axis (r≈0.88) — a trait-stable
          physical-health risk flag for monitoring (mortality-relevant, partly iatrogenic).
+         **Fully trans-diagnostic** (the metabolic battery is collected in BP, SZ and DR).
 
 Both are **sign-oriented so higher = more severe / more risk**, computed as a masked mean of
 standardized component domains (a score is NaN if fewer than ``min_obs`` components are observed —
