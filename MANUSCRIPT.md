@@ -72,40 +72,112 @@ schizophrenia; depression; factor analysis; confounding; patient-reported outcom
 
 ## 1. Introduction
 
+### 1.1 The categorical model and its discontents
+
 The categorical model of psychiatric nosology codified in DSM-5 and ICD-11 draws sharp
-boundaries between bipolar disorder, schizophrenia and major depressive disorder. Yet
-these disorders share genetic risk [4,5], neurobiology, symptom expression and treatment
-response, and a large fraction of patients sit ambiguously between categories
-(schizoaffective disorder, mixed states, psychotic depression). This tension has driven
-two influential research programmes: the dimensional reframing of psychopathology (RDoC
-[1]; the *p*-factor [3] and hierarchical-taxonomy [2] work) and data-driven *biotyping*
-[6], which seeks discrete patient subgroups from clinical and biological data.
+boundaries between bipolar disorder, schizophrenia and major depressive disorder — a
+taxonomy whose intellectual lineage runs back to Kraepelin's nineteenth-century separation
+of *dementia praecox* from manic-depressive illness. Operationalized diagnostic criteria
+delivered a real advance in **reliability** (clinicians can be trained to agree on a label),
+but the categories were never validated against an external ground truth: there is no
+laboratory assay, pathognomonic lesion, or discrete genetic signature that cleanly separates
+them, and a former NIMH director's much-quoted verdict was that the manual's "weakness is its
+lack of validity." Three lines of evidence strain the categorical assumption. First, the
+disorders **share genetic risk** on a large scale — cross-disorder analyses by the Psychiatric
+Genomics Consortium find substantial pairwise genetic correlations and pleiotropic loci
+spanning schizophrenia, bipolar disorder and depression [4,5]. Second, they **share
+neurobiology, symptom expression and treatment response**: antipsychotics, mood stabilizers
+and antidepressants are used across diagnostic lines, as are the cognitive, sleep and
+inflammatory signatures that accompany them. Third, a large fraction of real patients sit
+**ambiguously between categories** — schizoaffective disorder, mixed affective states,
+psychotic depression and bipolar-NOS are not rare curiosities but the clinical rule, and
+their position is precisely what a categorical system handles worst. The practical cost is
+not merely taxonomic: a system that cannot represent "between" patients cannot guide their
+treatment, and a label that is reliable but not valid anchors research cohorts to a construct
+that may not carve nature at its joints.
 
-Two questions remain incompletely answered. First, **is trans-diagnostic structure
-discrete or dimensional?** Much biotyping work reports discrete clusters, but rarely tests
-the prior question of whether discrete structure exists at all, as opposed to imposing a
-cluster count on what is in fact a continuum. Second, **does any data-driven
-representation add clinical value over the diagnosis a clinician already records?** A
-representation that merely re-encodes diagnosis and demographics is not actionable.
+### 1.2 Two reform programmes: dimensions and biotypes
 
-Data-driven phenotyping of real-world psychiatric records is, moreover, treacherous.
-Unsupervised methods recover the largest-variance axis in the data, which is typically a
-nuisance (record-keeping artifacts, measurement scale, demographics) rather than
-psychopathology. Reported "novel subtypes" frequently turn out to track site, age, sex or
-diagnosis once these are examined, and prominent biotype solutions have failed to
-replicate when tested against an explicit null [7].
+These tensions have driven two influential, and partly opposing, research programmes. The
+first is the **dimensional reframing** of psychopathology. NIMH's Research Domain Criteria
+(RDoC [1]) proposed to replace disorders with trans-diagnostic functional domains (negative
+and positive valence, cognitive systems, arousal/regulatory systems) measured across units of
+analysis from genes to behaviour. The Hierarchical Taxonomy of Psychopathology (HiTOP [2])
+assembled the empirical covariance of symptoms into a hierarchy of **continuous spectra** —
+internalizing, thought disorder, detachment, externalizing, antagonism — culminating, at its
+apex, in a single general factor of psychopathology, the "*p* factor" [3], conceptually
+analogous to *g* in intelligence research. Taxometric studies of individual syndromes have
+repeatedly favoured **continuous over categorical latent structure** [18]. Orthogonal to this
+structural axis, clinical-staging models [17] reframe disorders by **temporal progression**
+(at-risk → first episode → recurrence → chronicity), making explicit that any cross-sectional
+snapshot conflates enduring *trait* with illness *state* and *stage* — a confound we revisit
+directly in our longitudinal analysis.
 
-We address both questions in the FACE multi-centre cohort of BP, SZ and DR patients,
-followed longitudinally from baseline to four years. Our contributions are: (1) a
-transparent account of the **confounding hierarchy** that defeats naïve clustering of
-psychiatric records, and the controls that remove it; (2) a formal **discrete-versus-
-dimensional test** showing that the only categorical structure the data support is
-diagnosis itself, while trans-diagnostic variation is continuous; (3) a **reproducible,
-confound-controlled, site-robust six-dimension model** of trans-diagnostic
-psychopathology, cross-validated by two methodologically independent estimators; and (4) a
-leakage-safe **head-to-head test** showing these dimensions complement or outperform DSM
-diagnosis for patient-reported outcomes. We deliberately report the dimensional model
-rather than discrete biotypes because that is what the data support.
+The second programme is data-driven **biotyping** [6]: the search for discrete patient
+subgroups — "biotypes" — from clinical and biological data, with the promise that such strata
+would predict treatment response where DSM categories do not. Its appeal for precision
+medicine is obvious, because discrete strata map naturally onto discrete treatment decisions.
+High-profile solutions followed — three psychosis biotypes from neurophysiology (Clementz et
+al. [6]); four depression biotypes from resting-state fMRI connectivity (Drysdale et al. [16])
+— but the programme has since weathered a **replication crisis**. Independent re-analysis with
+proper null comparisons and resampling showed that the four-biotype depression solution was
+**not statistically distinguishable from a continuum** [7], and that the apparent cluster
+structure was largely an artifact of imposing a fixed cluster count on smoothly distributed
+data. Whether genuinely discrete subgroups exist — and if so, whether they are *clinical* or
+only *biological* — is the central unresolved question our study targets head-on.
+
+### 1.3 Two open questions
+
+Two questions therefore remain incompletely answered. First, **is trans-diagnostic structure
+discrete or dimensional?** Most biotyping pipelines *assume* discreteness — they apply a
+clustering algorithm, which by construction always returns clusters — and rarely test the
+logically prior question of whether discrete structure exists at all, as opposed to slicing a
+continuum at arbitrary cut-points. The distinction is not academic: a continuum modelled as
+categories yields unstable, unreplicable, treatment-uninformative strata, which is exactly the
+pattern the biotype literature has produced. Second, **does any data-driven representation add
+clinical value over the diagnosis a clinician already records?** A latent representation that
+merely re-encodes diagnosis, age, sex or recruiting site is statistically interesting but
+clinically inert; the bar for a *useful* phenotype is incremental prediction of outcomes that
+matter to patients and services, over and above the label already in the chart.
+
+### 1.4 The data-science hazard: confounding and informative missingness
+
+Data-driven phenotyping of real-world psychiatric records is, moreover, treacherous in ways
+well understood in machine learning but under-appreciated in clinical applications.
+Unsupervised methods recover the **largest-variance axis** in the feature matrix, which in
+routine clinical data is almost always a **nuisance** — a record-keeping artifact, a
+measurement-scale difference, or a demographic gradient — rather than psychopathology. This is
+the clinical analogue of **shortcut learning** [20]: the model latches onto whatever signal is
+cheapest to extract, and "novel subtypes" routinely turn out to track site, age, sex or
+diagnosis once those are interrogated. The hazard is compounded by **missingness that is itself
+informative** (missing-not-at-random): different cohorts and sites receive different instrument
+batteries, so the *pattern* of what was measured silently encodes the diagnosis. Naïvely
+imputing such gaps injects the very confound one is trying to avoid — in our data, cohort is
+**98% predictable from the observation mask alone**. A credible phenotyping pipeline must
+therefore (i) avoid imputation wherever the geometry allows, (ii) explicitly strip the
+confound hierarchy before modelling, and (iii) validate against *external* outcomes rather than
+internal cluster-quality indices that reward any partition of any data.
+
+### 1.5 The present study
+
+We address both questions in the FACE multi-centre cohort of bipolar, schizophrenia and
+depression patients [9,10], deeply phenotyped at baseline and followed annually to four years.
+Its scale (9,013 patients), breadth (psychiatric scales, functioning, sleep, substance use,
+trauma, personality/impulsivity, antecedents and routine biology) and longitudinal design make
+FACE unusually well-suited to separate trait from state and structure from confound. Our
+contributions are: (1) a transparent account of the **confounding hierarchy** that defeats
+naïve clustering of psychiatric records, and the controls that remove it; (2) a formal
+**discrete-versus-dimensional test** showing that the only categorical structure the data
+support is diagnosis itself, while trans-diagnostic variation is continuous; (3) a
+**reproducible, confound-controlled, site-robust six-dimension model** of trans-diagnostic
+psychopathology, cross-validated by two methodologically independent estimators — a linear
+factor model and a nonlinear, no-imputation autoencoder; and (4) a leakage-safe **head-to-head
+test** showing these dimensions complement or outperform DSM diagnosis for patient-reported
+outcomes. We deliberately report the dimensional model rather than discrete biotypes because
+that is what the data support — and we argue that the **validation discipline** itself
+(reproducibility, confound-orthogonality, site-robustness, and prospective outcome prediction,
+rather than internal separation) is a transferable standard for data-driven psychiatric
+phenotyping.
 
 ---
 
@@ -122,6 +194,20 @@ canonical variables across 13 clinical/biological blocks (psychiatric symptom sc
 functioning, sleep, substance use, trauma, personality/impulsivity, antecedents, medical
 evaluation, and laboratory biology). Patients were keyed by a globally unique identifier
 (`cohort::usubjid`) because subject identifiers collide across cohorts (970 collisions).
+
+The harmonization is itself a non-trivial inferential step, not mere relabelling. The three
+cohorts were assembled by separate expert networks with overlapping but distinct instrument
+batteries, coding conventions and visit schedules; a *common-variables dictionary* (one row
+per harmonized variable, carrying its per-cohort source columns, value set, dtype, clinical
+section and a transformation rule) maps them onto a single canonical schema, and each variable
+is graded for cross-cohort *readiness* (READY / PARTIAL / not reconcilable). We retained the
+READY and PARTIAL variables (351 harmonized variables). The resulting matrix is **block-sparse
+by construction**: a variable collected only in the bipolar protocol is systematically missing
+for schizophrenia and depression patients, so the missingness pattern is not random noise but a
+near-deterministic fingerprint of cohort membership. This is the structural reason imputation
+is hazardous here (§1.4) and the motivation for the masked, pairwise-complete operators below —
+we want each model to see *what was measured*, never a fabricated value standing in for what a
+different protocol would have measured.
 
 We avoided imputation wherever the method allows: the masked similarity, the spectral
 embedding and the autoencoder objective all use masked, pairwise-complete operators, so
@@ -171,6 +257,22 @@ $$g_{id}=\frac{1}{|O_{id}|}\sum_{f\in O_{id}} s_f\,z_{if}
 with minimum-observed fraction $\tau=0.5$ (no imputation: under-observed domains stay missing).
 We retain domains observed in $\ge\!30\%$ of patients (54 of 72).
 
+Two choices here deserve emphasis because they are exactly where naïve pipelines fail. First,
+**aggregation to constructs is a psychometric necessity, not a convenience**: cosine and
+covariance weight each column equally, so an instrument split into many items contributes many
+near-collinear dimensions and dominates the geometry by item count alone (in the raw clinical
+set a single 15-item suicidality scale supplied ~30% of the dimensions). Collapsing items to
+one score per construct restores a one-construct-one-dimension geometry and is the
+representational counterpart of the confound control in §2.4 — both prevent a high-variance but
+clinically narrow signal from masquerading as global structure. Second, **robust scaling
+(median/MAD with winsorization) rather than mean/SD** is used because clinical and especially
+laboratory variables are heavy-tailed and contaminated with data-entry outliers; under ordinary
+*z*-scoring a single mis-keyed laboratory value can distort an entire feature's contribution to
+every patient's similarity, whereas the median and MAD have a ~50% breakdown point. The masked,
+sign-oriented domain score (above) further guarantees a construct is computed only when at least
+half its members are observed and is signed so that "higher = more pathological," so composites
+are directly comparable in direction across the biology blocks.
+
 ### 2.4 Confounder residualization (nonlinear, cross-fitted)
 
 Unsupervised structure recovers the largest-variance nuisance axis unless it is removed
@@ -188,6 +290,22 @@ cross-fitting** ($K=5$): $\hat\beta_d$ is estimated out-of-fold, so $r_{id}=g_{i
 where $\kappa(i)$ is $i$'s fold (Chernozhukov et al.). Feature `NaN`s are preserved. This drives
 the maximum $|{\rm corr}|$ of any downstream dimension with age/sex to $\le 0.002$ (Section 3.3).
 
+Three features of this residualization are deliberate. (i) **Cross-fitting** (out-of-fold
+estimation of $\hat\beta_d$) implements the Neyman-orthogonal, double/debiased-ML principle
+[19]: estimating the nuisance adjustment on the same rows to which it is applied over-fits the
+confounder and *over-corrects*, draining genuine signal into the residual; out-of-fold
+estimation makes the residual first-order insensitive to small errors in the nuisance fit. (ii)
+**Nonlinear (spline) covariate expansion** matters because the confound is nonlinear — age
+relates to laboratory biology, lifetime hospitalization counts and onset variables through
+curved, often sex-specific trajectories that a single linear term would leave partly in the
+residual to re-emerge as a spurious "axis." (iii) We residualize **only age and sex, not cohort
+or site**, by design: cohort and site are precisely what we later want to test the dimensions
+*against* (a dimension that survives is one not reducible to them), and aggressive
+residualization is itself a trap — partialling out a variable on the causal path can induce
+collider/over-control bias and *manufacture* orthogonality. We therefore strip only the
+demographic nuisances that §3.1 shows actively hijack the geometry, and **measure** residual
+cohort/site dependence afterwards (η², §3.3) rather than assuming it away.
+
 ### 2.5 Masked similarity and spectral embedding
 
 For the structure test and the (superseded) consensus clustering we embed patients with the
@@ -203,6 +321,19 @@ cohort-coverage partition, computes a per-partition spectral embedding (8 compon
 **symmetric normalized Laplacian** $L=I-D^{-1/2}WD^{-1/2}$ (with $D=\operatorname{diag}(W\mathbf 1)$),
 weights each partition by $\sqrt{n_{\text{features}}\,n_{\text{patients}}}$, $L_2$-normalizes, and
 concatenates. Missing values never enter $\operatorname{sim}$, so the embedding is imputation-free.
+
+The rationale for a **graph-spectral** embedding rather than PCA on a filled matrix is twofold.
+First, masked pairwise-complete cosine compares each patient pair on **exactly the features both
+have**, so no imputed value ever enters a distance — PCA has no masked analogue without first
+fabricating the missing cells. Second, partitioning by **cohort-coverage** before embedding (the
+*multipartite* construction) stops the block-sparse missingness from dominating: patients are
+compared most strongly with others measured on the same battery, and the per-partition spectral
+coordinates are then weighted by information content and concatenated, so a densely-measured
+block does not drown a sparsely-measured one. The symmetric normalized Laplacian
+$L=I-D^{-1/2}WD^{-1/2}$ is the canonical operator whose low-lying eigenvectors give a
+distortion-minimizing embedding of a similarity graph (its quadratic form penalizes assigning
+distant coordinates to strongly-connected patients); its eigenvalue **spectrum** is, not
+coincidentally, the very object the structure test (§2.6) interrogates for a discrete gap.
 
 ### 2.6 Discrete-versus-dimensional structure test
 
@@ -232,6 +363,21 @@ diagnosis (${\rm ARI}(\text{HDBSCAN},\text{cohort})<0.30$), and multimodal axes;
 ${\rm ARI}(\text{HDBSCAN},\text{cohort})\ge0.40$ implies the only discrete structure is
 diagnosis itself.
 
+The deeper motivation for a *battery* of five tests is that "clusters versus continuum" is only
+weakly identifiable from a finite sample: a clustering algorithm always returns clusters, and
+any continuum can be diced into groups with non-trivial internal cohesion, so no single index
+settles the question. We therefore triangulate properties that a *genuine* discrete geometry
+must exhibit and a continuum cannot counterfeit. A true $k$-cluster graph has $k$ near-zero
+Laplacian eigenvalues and then a **jump** (the eigengap); a continuum's spectrum rises
+smoothly. A true $k$ shows **excess within-cluster compactness over a unimodal null at that $k$
+and not beyond** (a peaking gap statistic); a continuum's gap rises monotonically because each
+extra cut keeps helping. A discrete mixture shows **multimodal marginals**; a continuum is
+flat/unimodal. And genuine subgroups are **density-separated** (HDBSCAN); a continuum has, at
+most, density structure that coincides with a label already known (here, diagnosis) rather than
+a novel one. Reading the four signatures together — rather than trusting any one — is what makes
+the verdict robust, and is the discipline that the biotype literature, which typically reports
+only an internal cluster-quality index, most often omits.
+
 ### 2.7 Dimensional factor model
 
 We model the residual domain matrix as continuous latent dimensions (`05_dimensional_axes.py`,
@@ -259,6 +405,26 @@ reproduce ($\min_a\phi\ge0.85$); the choice rests on this reproducibility togeth
 interpretability and downstream stability rather than on a single decisive statistic.
 Confounding was quantified as
 $\max_k\max\{|{\rm corr}(F_{\cdot k},a)|,|{\rm corr}(F_{\cdot k},\mathrm{sex})|\}$.
+
+We use **maximum-likelihood factor analysis** rather than PCA because the question is
+generative and latent: we posit a small number of unobserved dimensions whose linear influence,
+plus item-specific noise, produces the observed domain covariance ($X=F\Lambda^\top+\varepsilon$),
+and FA — unlike PCA — separates shared (common-factor) from unique variance, which is the right
+model when domains are noisy *indicators* of latent psychopathology rather than quantities of
+interest in themselves. The **varimax** rotation is applied because the solution is identified
+only up to an orthogonal rotation; varimax chooses the rotation maximizing loading kurtosis
+("simple structure"), so each domain loads on few factors and the axes become interpretable as
+named dimensions. The unconventional choice is **how the number of factors is fixed**. Horn's
+parallel analysis [11] — the field standard — over-extracted here (~14 factors), because with 54
+domains many tiny construct-specific factors clear the permutation null without being
+*reproducible*. We therefore select $K$ by **out-of-sample reproducibility** (split-half Tucker
+congruence [12]): a factor that is real should reappear when the model is re-fit on an
+independent half of patients. This reframes factor-count selection from "how much variance is
+explained" to "what replicates" — the property that actually matters for a clinical phenotype,
+and the one the biotype literature most conspicuously lacked. That the reproducibility curve is
+**non-monotone** in $K$ (Figure S2) is itself informative: it reflects varimax re-splitting
+factors unstably at some $K$, so we report $K=6$ as the most granular *reproducible* solution
+rather than a unique optimum, and flag $K=4$ as a defensible, more parsimonious alternative.
 
 ### 2.8 Masked autoencoder for dimensionality compression (no-imputation cross-check)
 
@@ -320,6 +486,23 @@ the same standardized matrix, $\rho_j$ is an upper-bound-style measure and is in
 (`results/dimensional_final_scores.parquet`) — not the AE codes — were carried into all
 downstream analyses.
 
+The autoencoder plays a specific epistemic role: it is a **methodologically independent
+estimator** of the same latent subspace under a different inductive bias. Where the factor
+model is linear, Gaussian and fit by maximum likelihood, the autoencoder is a nonlinear (ReLU)
+function approximator fit by stochastic gradient descent under an explicitly **masked**
+reconstruction loss, so imputed zeros never enter its objective (contrast the factor path,
+which fits the zero-filled matrix directly). The **mask-augmented input** $u_i=[x^0_i;m_i]$ lets
+the encoder condition on *which* entries are observed, so a missing-then-zeroed value is
+distinguishable from a true zero — a learned analogue of the masked operators used elsewhere.
+The logic is **convergent validity**: if two estimators with such different assumptions recover
+the same axes, those axes are unlikely to be artifacts of either modelling choice. Because CCA
+maximizes alignment by construction and both models see the same standardized matrix, we
+benchmark the canonical correlations against a **row-permutation null** and treat the agreement
+as a cross-check, not independent confirmation (§4.2). The linear factor model, being
+inspectable and free of the AE's residual age leak, remains the primary representation; the
+autoencoder is reported because a *negative* result there (disagreement) would have undermined
+confidence in the factors, and it did not.
+
 ### 2.9 Outcome prediction (head-to-head versus DSM)
 
 We tested whether the dimensions predict 1-year outcomes beyond diagnosis in **nested 5-fold
@@ -353,6 +536,26 @@ excluding each outcome's own measure(s) — EQ-5D outcome: drop EQ-5D/EQ-VAS; EG
 hospitalization: drop the hospitalization counts — and re-ran the head-to-head
 (`scripts/12_phase5_decircularized.py`; §3.5).
 
+This design encodes three commitments. First, **out-of-sample prediction, not in-sample fit**:
+a representation earns its place only if it predicts unseen patients' outcomes, so the primary
+metric is cross-validated $R^2$/AUC, with the in-sample nested $F$/likelihood-ratio test
+reported as a secondary mechanism-level check. Second, **leakage-safety by trajectory framing**:
+because two axes contain the V0 values of outcomes (the depression axis loads on EQ-5D/EGF/FAST;
+the illness-burden axis on hospitalization counts), predicting those outcomes from those axes
+would be circular without adjustment — so every model conditions on the V0 baseline of the
+outcome, recasting the task as predicting *change* (a trajectory) rather than re-reading a
+contemporaneous value, and the de-circularization re-fit (axes rebuilt without each outcome's
+own measures) confirms the result is not an artifact of outcome content in the predictors.
+Third, **a fair nested comparison**: M0 (diagnosis), M1 (dimensions) and M2 (both) are identical
+except for the contrast of interest, so $\Delta$ isolates the incremental information in the
+dimensions over the recorded subtype. The three outcomes were chosen to span the clinically
+meaningful range from **patient-experienced** endpoints (EQ-5D quality of life and EGF global
+functioning — how a patient feels and functions day to day) to a hard **service-use** event
+(any psychiatric hospitalization — a costly, objective health-system outcome). That dimensions
+and categories might carry information about *different kinds* of outcome is itself a
+hypothesis, and the contrast between patient-reported and service-use endpoints is the sharpest
+test of it.
+
 ### 2.10 Temporal stability (trait–state gradient)
 
 We projected the locked V0 factor model onto each follow-up (`08_longitudinal_axes.py`): per visit
@@ -370,6 +573,18 @@ with $k=2$ ratings (visits), row/column/error mean-squares $\mathrm{MS}_R,\mathr
 on patients present at both visits. Refit per-visit axes matched the locked set (Tucker congruence
 $\ge0.94$).
 
+We report both the Pearson correlation and ICC(2,1) because they answer different questions: the
+correlation measures whether patients keep their *rank order* on an axis across visits (relative
+stability), whereas the absolute-agreement ICC additionally penalizes systematic *level* shifts
+(e.g. a cohort-wide improvement), so a dimension can be rank-stable yet show mean drift.
+Interpreting the resulting $r$ as a **trait–state gradient** rests on classical state–trait
+theory: a purely trait-like construct (a stable individual difference) yields a high test–retest
+correlation, a purely state-like one (fluctuating with episode) a low one, and most
+psychopathology lies between — so the gradient across the six axes is an empirical estimate of
+how trait- versus state-like each dimension is. Two caveats bias $r$ *downward*: ordinary
+measurement error, and sparser follow-up sampling for some instruments — so the observed
+correlations are a floor on, not an over-estimate of, true stability.
+
 ### 2.11 Site harmonization (ComBat)
 
 To rule out a multi-site batch artifact we harmonized the domain scores across the 20 sites with
@@ -382,6 +597,17 @@ set by Tucker congruence, and re-ran the head-to-head. The site batch magnitude 
 the mean $|\hat\gamma_{sf}|/\hat\sigma_f$. The head-to-head was also **re-assessed at a second
 follow-up (V2)** — the same individuals, so temporal consistency, not independent replication.
 
+ComBat originates in genomics, where it removes technical *batch* effects across microarray and
+sequencing runs while preserving biological signal; the same logic transfers to multi-site
+clinical data, where each site is a batch that can differ in case mix, instrument calibration
+and rater convention. Its empirical-Bayes shrinkage is what makes it usable with many small
+sites — a site with few patients borrows strength from the others rather than over-fitting its
+own noise. We use it here as a **stress test**: were the six dimensions a multi-site artifact,
+harmonizing the sites away would deform them; that they survive with Tucker congruence ≈1.0 is
+the relevant negative result. The test is deliberately conservative in that we do not insulate
+diagnosis from the adjustment, so any site-correlated diagnostic signal is also at risk of
+removal, yet the axes and their outcome advantage persist.
+
 ### 2.12 Cognition (BP/SZ complementary analysis)
 
 Neuropsychology is absent in DR **by design** (0% vs BP 71% / SZ 86%), so including it in the
@@ -393,6 +619,16 @@ composite path matches raw canonicals, so constructs must be built from stems; t
 items are reverse-signed so higher = better. The seven constructs were standardized,
 residualized, factor-analysed (parallel analysis for $K$), correlated with the six symptom
 dimensions, and tested for incremental prediction of V1 functioning (ridge $R^2$, as in §2.9).
+
+The two-level aggregation (items → instrument stem-domains → seven constructs) is necessary
+because the cognitive battery is dominated by one heavily-itemized instrument family (the
+Wechsler scales); collapsing items directly to constructs would let item count, not cognitive
+content, drive the factors — the itemization bias addressed for symptoms in §2.3. We keep
+cognition **out of the main trans-diagnostic model** on principle: because it is absent in DR by
+design, including it would re-introduce exactly the cohort-by-missingness confound the whole
+pipeline is built to remove. The complementary analysis therefore asks a narrower, cleaner
+question — whether cognition is *redundant* with the symptom dimensions — rather than attempting
+to add a seventh trans-diagnostic axis the data cannot support across all three cohorts.
 
 ---
 
@@ -411,6 +647,23 @@ demographic signal (cluster↔sex ARI 0.32→0.005; ↔age→0.008). We report t
 full because each rung produces a publishable-looking but invalid "phenotype"; the controls
 in Sections 2.3–2.4 (construct aggregation and cross-fitted residualization) are what make
 the downstream structure interpretable.
+
+The hierarchy is worth dissecting, because each rung is a different failure mode. The first
+(birth date stored as a ~10¹⁷-magnitude integer) is a **scale** artifact: cosine similarity is
+invariant to a patient's overall magnitude but not to a single feature's magnitude, so one
+enormous column collapses every patient onto the date axis — the lesson is that *units* must be
+neutralized before any distance is computed. The second (raw laboratory and anthropometric
+values dominating once the date is gone) is the same pathology at smaller scale, fixed by robust
+per-feature scaling (§2.3). The third is subtler and the most instructive: after scaling, the
+clusters became a **demographic stratification** carried by *physical-comorbidity occurrence
+flags* — variables such as a lupus or myocardial-infarction history that are themselves strongly
+sex- and age-linked, so they re-import demographics even after age and sex are nominally
+controlled elsewhere. Only excluding those flags *and* residualizing age/sex nonlinearly (§2.4)
+collapsed the demographic signal to ARI ≈0.005. The general principle is that **confounds in
+clinical data are layered**: removing the obvious one merely exposes the next, so a phenotype
+must be shown to survive the *whole* ladder rather than the first rung — which is precisely why
+we validate by confound-orthogonality and outcome prediction, not by the internal stability
+(ARI 0.96) that the entirely spurious first solution proudly displayed.
 
 ### 3.2 Trans-diagnostic structure is dimensional; the only discrete structure is diagnosis
 
@@ -444,6 +697,10 @@ The implication is that previously reported discrete trans-diagnostic "biotypes"
 data are reproducible **slices of a continuum** (stable but low-silhouette), and that
 increasing *k* or changing the clustering algorithm cannot manufacture discrete clusters
 the data do not contain. We therefore model the trans-diagnostic variation dimensionally.
+
+![Figure 1](reports/figures/fig1_structure.png)
+
+**Figure 1. Trans-diagnostic structure is dimensional.** Four panels: (a) Laplacian eigenvalue spectrum (no gap); (b) gap statistic vs *k* rising monotonically; (c) Sarle bimodality of top axes (0.37–0.56, around the 0.555 benchmark — no clear multimodality); (d) the seven DSM subtypes ordered on a mood↔psychosis continuum (PC1, ρ=0.79). Title notes HDBSCAN↔cohort ARI 0.70.
 
 ### 3.3 Six reproducible, confound-free trans-diagnostic dimensions
 
@@ -485,6 +742,26 @@ honestly rather than forcing into one dimension. Agreement between a linear/impu
 nonlinear/no-imputation estimator indicates the dimensions are method-robust, not
 artifacts of a single algorithm.
 
+Two features of this solution are notable from a representation-learning standpoint. First, the
+variance is **diffuse** — the largest dimension explains only ~6% — which is itself evidence
+against a single dominant axis (a strong *p*-factor would concentrate variance) and in favour of
+genuinely multi-axial structure; no single dimension can be dismissed as the "real" one and the
+rest as noise. Second, the convergence of a linear factor model and a nonlinear autoencoder on
+the same subspace (canonical correlations 0.93–0.63, far above the permutation null) is a
+**cross-validation of the representation itself**, not merely of its parameters: the two
+estimators differ in functional form (linear vs ReLU), in fitting principle (maximum likelihood
+vs stochastic gradient descent), and — most importantly — in their treatment of missingness
+(zero-fill vs masked loss), so their agreement makes a shared artifact unlikely. The one place
+they diverge is informative rather than contradictory: the autoencoder concentrates the
+mood↔psychosis ordering on a single latent axis (|Spearman| 0.89) whereas the orthogonal varimax
+rotation distributes it across axes, signalling that the spectrum is a *general* direction
+cutting across the specific dimensions — exactly the structure an oblique or bifactor model
+would localize (§4.6).
+
+![Figure 2](reports/figures/fig2_loadings.png)
+
+**Figure 2. The six trans-diagnostic dimensions.** Salient varimax domain loadings (|λ|≥0.20), showing the clean block structure per dimension.
+
 ### 3.4 The dimensions complement or outperform DSM diagnosis for patient-reported outcomes
 
 In leakage-safe, repeated (shuffled) 5-fold cross-validation (Table 3; `results/phase5_ci.csv`;
@@ -502,6 +779,24 @@ The pattern is interpretable: dimensions carry information diagnosis lacks for
 **patient-experienced** endpoints (how a patient feels and functions), whereas categorical
 diagnosis — together with prior hospitalization — remains the better predictor of
 **service-use** events.
+
+To calibrate these effect sizes: a gain of ΔR² ≈ +0.036 for quality of life, on a
+baseline-adjusted model already explaining ~30% of the variance, is roughly a 12% relative
+increase in explained variance — obtained from six numbers added to a model that *already*
+contains the diagnosis, age, sex and the outcome's own V0 baseline, against a deliberately
+strong comparator, and stable across 200 repeated-CV splits (the 95% interval excludes zero).
+The per-dimension effects are mechanistically coherent: the depression/internalizing axis is
+the dominant predictor of worse functioning (standardized β −2.48 on EGF) and quality of life,
+while the illness-burden axis dominates hospitalization (β +0.35) — the axis built from past
+admissions predicts future admissions, and the axis built from current distress predicts the
+trajectory of functioning. The hospitalization result is best read not as a failure of the
+dimensions but as a **correct negative**: a head-to-head that can identify where categorical
+diagnosis-plus-history genuinely wins is one whose quality-of-life and functioning gains are
+credible rather than the artifact of an over-flexible model that "wins everywhere."
+
+![Figure 3](reports/figures/fig3_headtohead.png)
+
+**Figure 3. Head-to-head outcome prediction.** DSM vs dimensions vs combined for QoL, functioning and hospitalization, with V1 (primary) and V2 (replication) panels and annotated Δ(dim−DSM).
 
 ### 3.5 Robustness: follow-up consistency, site harmonization, and de-circularization
 
@@ -529,6 +824,16 @@ predictors** — baseline adjustment already controls each outcome's own V0 valu
 depression axis is carried by the symptom scales (QIDS/MADRS/STAI), not the functioning/QoL
 items.
 
+Taken together, the three robustness analyses attack three distinct threats, and the result
+holds against all of them: V2 tests whether the finding is a single-visit fluke (it recurs at a
+later follow-up in the same patients), ComBat tests whether it is a multi-site batch artifact
+(it survives site harmonization with the axes essentially unchanged), and de-circularization
+tests whether it is driven by outcome content leaking into the predictor axes (it survives
+refitting the axes without those measures). Convergent survival across orthogonal threats is the
+triangulation that separates a real effect from a pipeline artifact — with the important
+qualification that none of the three is *external* replication, which remains outstanding
+(§4.8).
+
 ### 3.6 Dimensions show a trait–state gradient over four years
 
 Test–retest correlations across V1–V4 (`results/longitudinal_axes_stability.csv`; Figure 4)
@@ -550,6 +855,30 @@ forcing *discrete* clusters on the same data instead yields labels that hop (~38
 persistence) and that are independent of DSM-5 (ARI 0.006) — a negative result shown in
 Supplementary Figure S1 and discussed as motivation for modelling dimensionally.
 
+Clinically, the gradient maps onto the trait/state distinction directly and is more actionable
+than a single verdict on whether "the clustering is stable over time." The two most enduring
+axes — ADHD/impulsivity/trauma (*r* 0.64) and, less strongly, depression severity (*r* 0.49) —
+behave as **traits**: stable individual differences a single baseline visit captures well, which
+should anchor long-run case formulation. The more state-like axes — mania/activation (*r* 0.36)
+and illness burden (*r* 0.30) — fluctuate with clinical episode and are better read as
+**current-status** indicators to be re-measured at each contact. The later-onset axis is fixed
+by construction (*r* 0.08) and is a baseline covariate, not a tracked state. The practical
+message is that a clinician should treat different parts of a patient's dimensional profile
+differently — some as enduring vulnerabilities to plan around, others as moving targets to
+monitor and treat — which a single categorical label cannot express.
+
+![Figure 4](reports/figures/fig4_traitstate.png)
+
+**Figure 4. Trait–state gradient.** Per-dimension V0↔Vk test–retest across V1–V4; later-onset shown greyed/dashed (baseline-only, static).
+
+![Figure 6a](reports/figures/fig6_dimensional_flow.png)
+
+![Figure 6b](reports/figures/fig6b_band_persistence.png)
+
+![Figure 6c](reports/figures/fig6c_dsm_axis_flow.png)
+
+**Figure 6. Dimensional phenotype flow.** **(a)** continuous-axis band (V0-tertile Low/Mid/High) trajectories V0→V1→V2 for a trait-like (ADHD/trauma) and a state-like (mania) axis, showing in-band (diagonal) dominance; **(b)** same-band V0→V1 persistence per dimension (0.32–0.60) against the 33% three-band chance level and the discrete clusters' 38% — a patient's continuous-axis *position* is retained where discrete *labels* hop; **(c)** cross-sectional **DSM-5 → axis-band** flow for the most diagnosis-linked axis (depression): every DSM-5 subtype fans across Low/Mid/High and diagnosis explains only 14% of even that axis (η² 0.14, 95% CI 0.13–0.16; ≤0.05 for the other five) — the dimensions are trans-diagnostic. This is the dimensional analogue of a phenotype-flow diagram (bands are a display-only discretization; the model stays continuous).
+
 ### 3.7 Cognition: a semi-independent general-ability and processing-speed structure
 
 Within BP/SZ (n=6,099; BP 4,273 / SZ 1,826), the seven cognitive constructs resolved into
@@ -565,9 +894,27 @@ the symptom dimensions (EGF R² 0.394 → 0.398, Δ +0.004; shuffled CV). Cognit
 BP/SZ dimension rather than folded into the trans-diagnostic model, to avoid re-introducing
 the cohort-availability confound.
 
+That cognition resolves into the canonical *g*-plus-processing-speed structure is a useful
+internal-validity check: the same machinery used for symptoms recovers a well-established
+cognitive architecture, so the pipeline is not manufacturing structure. The more substantive
+finding is the **semi-independence** (max |*r*| 0.24) of cognition from the symptom dimensions —
+cognitive ability and symptom load are related but far from redundant, so a symptom-based
+dimensional profile does not implicitly encode cognition, and the small but independent
+increment cognition adds to functioning prediction implies the two index partly distinct routes
+to disability. For BP/SZ this argues for measuring cognition *alongside*, not in place of, the
+symptom dimensions; the absence of cognitive data in DR is a data-collection gap rather than a
+substantive null, and closing it would let a genuinely trans-diagnostic cognitive axis be
+tested.
+
+![Figure 5](reports/figures/fig5_cognition.png)
+
+**Figure 5. Cognition (BP/SZ).** (a) construct loadings on the *g* and processing-speed factors; (b) cognition × symptom-dimension correlations (max |r| 0.24).
+
 ---
 
 ## 4. Discussion
+
+### 4.1 Principal findings
 
 Across bipolar disorder, schizophrenia and depression, the categorical boundary that the
 data actually support is the **diagnosis itself**: density-based clustering recovers the
@@ -601,7 +948,63 @@ trans-diagnostic signal is concentrated in the developmental/temperamental (ADHD
 and, to a lesser degree, depressive dimensions. This reframes "temporal coherence" from a
 yes/no property of a clustering to a dimension-specific gradient.
 
-**Relation to prior work.** Our conclusion is consistent with, and extends, several
+### 4.2 Clinical interpretation of the six dimensions
+
+Each dimension is clinically legible, and reading them as a clinician rather than a
+statistician sharpens what the model has found. **Dimension 1 (depression/internalizing
+severity)** — anchored by QIDS, MADRS and STAI, with functioning and quality of life loading
+negatively — is the trans-diagnostic *distress/severity* axis closest to HiTOP's internalizing
+spectrum; its negative coupling to EGF/EQ-5D is precisely why it dominates prediction of
+patient-reported functioning and well-being, and clinically it indexes the affective-symptom
+burden a clinician treats with pharmacotherapy, psychotherapy and psychosocial support
+regardless of the categorical label. **Dimension 3 (mania/activation)** — Altman, YMRS, Mathys
+activation, with sleep and impulsivity — is the bipolar-spectrum *activation* pole; together
+with Dimension 1 it spans the classical mood space, and the orthogonal rotation deliberately
+keeps depression and mania as separate axes rather than two ends of one line, consistent with
+the modern view that depressive and manic features co-occur (mixed states) rather than being
+mutually exclusive. **Dimension 4 (illness/hospitalization burden)** — number and duration of
+lifetime admissions, suicidality, with functioning and education negative — is a
+*severity-of-course/chronicity* axis, the clinical-staging signal embedded in a cross-sectional
+model; built from prior service use, it is unsurprisingly the strongest dimensional predictor of
+*future* service use. **Dimension 2 (later age-of-onset)** captures a developmental contrast and
+behaves as a baseline *trait* by construction; since earlier onset is a well-established marker
+of more severe, more familial illness, isolating onset as its own axis orthogonal to current
+severity is clinically meaningful. **Dimension 5 (metabolic/inflammatory load)** is the *somatic
+comorbidity* axis, and its trans-diagnostic prominence is double-edged: metabolic burden both
+drives the ~15-year mortality gap in serious mental illness and is, in part, an **iatrogenic**
+consequence of antipsychotic and mood-stabilizer treatment — so it is simultaneously a
+health-risk marker and a target for medical co-management. **Dimension 6
+(ADHD/impulsivity/childhood trauma)** — Wender-Utah, Barratt impulsivity, CTQ — is a
+*neurodevelopmental/temperamental and early-adversity* axis; that it emerges as the **most
+trait-like** dimension over four years (test–retest *r* 0.64) fits its developmental nature as
+an enduring vulnerability rather than an episodic state. Read together, the axes recapitulate,
+bottom-up and from routine data, much of the structure that top-down frameworks posit on
+theoretical grounds — HiTOP's internalizing and thought-disorder spectra, RDoC's
+valence/arousal domains, clinical staging's course axis, and the developmental-trauma
+literature — a convergence we find reassuring rather than circular, because nothing in the
+pipeline was told to look for it.
+
+### 4.3 The outcome dissociation: patient experience versus service use
+
+The most clinically informative result is not that dimensions "beat" diagnosis but **where**
+they do. Dimensions add information the recorded diagnosis lacks for **patient-reported**
+endpoints — quality of life and global functioning, the things a patient lives — and outperform
+diagnosis outright for quality of life; for a **service-use** event (hospitalization),
+categorical diagnosis together with prior admissions remains superior. This dissociation is
+mechanistically sensible: hospitalization is driven by acute risk and prior service-use
+patterns that the diagnosis-plus-history model captures directly, whereas day-to-day
+functioning and well-being are graded, multiply-determined quantities that a graded, multi-axial
+representation describes better than a single categorical label. The clinical reading is that
+**dimensional scores are most useful exactly where categorical diagnosis is least informative
+about the patient's lived experience** — the regime measurement-based care most needs to
+quantify. It also disciplines any over-claim: the dimensions are a *complement*, valuable for
+some decisions (titrating psychosocial and functional support, tracking recovery on a common
+metric) and not others (anticipating imminent admission), not a replacement for the categorical
+system.
+
+### 4.4 Relation to prior work
+
+Our conclusion is consistent with, and extends, several
 strands of evidence. Clementz et al. [6] derived three psychosis *biotypes* from
 neurobiological markers (EEG, saccades, neuropsychology) that cut across diagnosis, yet
 found that when DSM diagnoses themselves were used as the criterion the best description
@@ -618,7 +1021,65 @@ level deviation, and to latent-class trajectory work in the same FACE-BD cohort 
 which stratified *functioning over time* into a few classes; our dimensions instead
 describe the cross-sectional symptom space and predict those functional outcomes.
 
-### 4.1 Methodological contribution
+### 4.5 Toward clinical translation
+
+What would it take to use these dimensions at the point of care? Three properties of the design
+are encouraging. First, the dimensions are **computable from routinely collected scales** — the
+loadings in Table 2 are a fixed linear scoring of standard instruments (QIDS, MADRS, YMRS,
+Altman, STAI, plus onset and admission history), so a clinic already practising
+measurement-based care could compute approximate dimensional scores from data it *already*
+gathers, with no new assessment burden; the representation is an aggregation of existing
+measurement, not an addition to it. Second, because the model is **dimensional and additive**,
+it integrates with the categorical system rather than competing with it: a patient keeps their
+ICD/DSM diagnosis *and* carries a six-number profile, much as a cardiology patient has a
+diagnosis and a lipid panel. This "augmentation, not replacement" stance is the pragmatic route
+to adoption and matches how RDoC and HiTOP are increasingly positioned. Third, the dimensions
+support **continuous monitoring**: because several axes move with clinical state (§3.6),
+repeated scoring could track treatment response on a metric that is *comparable across
+diagnoses* — a single yardstick for a mixed clinic, where today a bipolar and a schizophrenia
+patient are followed on incommensurable scales. Realizing any of this requires a validated,
+parsimonious scoring instrument (the 54-domain research input must be distilled), prospective
+calibration against outcomes, and decision support that renders the profile interpretably to a
+busy clinician; we present these as the natural translational steps, not as claims of present
+readiness.
+
+### 4.6 Future directions and open questions
+
+Several lines of work follow directly. (1) **Biological validation.** The dimensions come from
+clinical and routine-biology data; partitioning polygenic risk by dimension, and relating the
+axes to neuroimaging and inflammatory markers, would test whether they index distinct biology —
+the metabolic/inflammatory axis is the most immediately tractable, with measurable, modifiable
+markers. (2) **Treatment-response prediction.** The decisive test of any precision-psychiatry
+representation is whether it predicts *differential* response; a dimensional profile is a
+natural moderator to test in trial re-analyses and prospective designs, and the partly-iatrogenic
+metabolic axis poses the specific, testable question of whether baseline metabolic load should
+inform antipsychotic choice. (3) **Causal inference.** Our design is associational and
+baseline-adjusted; target-trial emulation and Mendelian-randomization approaches would move from
+"predicts" to "influences." (4) **Resolving trait from state.** The four-visit gradient is
+coarse; digital phenotyping and ecological momentary assessment could resolve the fast (state)
+and slow (trait) components of each axis far more finely, and a formal latent state–trait
+decomposition is a clear next step. (5) **Missingness-robust estimation.** The factor model is
+the one step that mean-fills gaps (65% observed); refitting it with a missingness-aware estimator
+(probabilistic FA with an EM treatment of the mask, or multiple imputation as a sensitivity
+analysis) would test whether the loadings of sparsely-measured domains are attenuated — the most
+important methodological loose end. (6) **Recovering the general factor.** The orthogonal varimax
+rotation deliberately distributes the mood↔psychosis spectrum across axes; an oblique or
+**bifactor** model could isolate a general severity/*p*-like factor plus specific dimensions,
+directly connecting our bottom-up axes to the *p*-factor [3] and HiTOP [2] hierarchy. (7)
+**External and prospective replication.** The strongest current claim is *temporal consistency*
+within one national expert-centre network; genuine external replication in community samples and
+other health systems — ideally prospective — is required before clinical use, and the
+harmonization dictionary and pipeline we release are intended to make such cross-cohort
+replication feasible. (8) **Equity and fairness.** The confound-stripping discipline that removes
+age/sex/site artifacts is also an algorithmic-fairness tool; auditing the dimensions for
+differential measurement or predictive bias across demographic and site strata is a natural and
+necessary extension before any deployment. (9) **Normative and staging integration.** Combining
+the cross-sectional dimensions with normative modelling [8] (individual-level deviation) and
+clinical staging [17] (longitudinal stage) could yield a representation that is simultaneously
+dimensional, person-specific and stage-aware — arguably the form precision psychiatry ultimately
+needs.
+
+### 4.7 Methodological contribution
 
 Beyond the substantive findings, the **confound hierarchy** (Section 3.1) is itself a
 result. Each nuisance rung — an administrative date stored as a large number, raw
@@ -630,7 +1091,7 @@ by **reproducibility, confound-orthogonality, site-robustness and outcome predic
 rather than internal cluster quality, is, we argue, a necessary standard for data-driven
 psychiatric phenotyping.
 
-### 4.2 Limitations
+### 4.8 Limitations
 
 (1) Dimensional structure means modest internal separation (silhouette ≈0.2); we validate by
 stability, interpretability and prediction, not by separation. (2) Varimax orthogonality
@@ -657,9 +1118,17 @@ independent external replication**: the "V2" analysis re-uses the same individua
 visit (temporal consistency), and all sites belong to one national network. (10) The
 cross-validated metrics are reported with repeated-CV intervals (§3.4) but the unsupervised
 factor extraction is fit on the full sample rather than re-fit within each CV fold, a
-(milder) optimism that future work should remove.
+(milder) optimism that future work should remove. (11) Harmonizing three protocols into one
+schema embeds **expert judgment** about cross-cohort equivalence; residual mis-mapping would
+attenuate or distort the affected domains, though construct-level aggregation and the readiness
+grading limit the exposure, and the confound controls remove the largest such artifact (the
+cohort-by-missingness gradient). (12) The factor count is defensible but **not unique** ($K=4$ is
+a reasonable, more parsimonious alternative; §2.7, Fig S2), and the orthogonal varimax rotation
+is a modelling choice that *shapes* — without creating — the specific axes; an oblique or
+bifactor solution (§4.6) would apportion the shared mood↔psychosis variance differently and may
+be preferable for connecting to the *p*-factor.
 
-### 4.3 Conclusion
+### 4.9 Conclusion
 
 In a large trans-diagnostic psychiatric cohort, categorical structure exists only at the
 level of diagnosis; trans-diagnostic psychopathology is dimensional. Six reproducible,
@@ -719,6 +1188,22 @@ to be validated prospectively and externally.
     Disorders cohort. *Aust N Z J Psychiatry.* 2020;54(10):985-996.
     doi:10.1177/0004867420945796
 
+*References 16–20 were added for this expanded draft; confirm bibliographic details before submission.*
+
+16. Drysdale AT, Grosenick L, Downar J, et al. Resting-state connectivity biomarkers define
+    neurophysiological subtypes of depression. *Nat Med.* 2017;23(1):28-38. doi:10.1038/nm.4246
+17. McGorry PD, Hickie IB, Yung AR, Pantelis C, Jackson HJ. Clinical staging of psychiatric
+    disorders: a heuristic framework for choosing earlier, safer and more effective
+    interventions. *Aust N Z J Psychiatry.* 2006;40(8):616-622.
+    doi:10.1080/j.1440-1614.2006.01860.x
+18. Haslam N, Holland E, Kuppens P. Categories versus dimensions in personality and
+    psychopathology: a quantitative review of taxometric research. *Psychol Med.*
+    2012;42(5):903-920. doi:10.1017/S0033291711001966
+19. Chernozhukov V, Chetverikov D, Demirer M, et al. Double/debiased machine learning for
+    treatment and structural parameters. *Econom J.* 2018;21(1):C1-C68. doi:10.1111/ectj.12097
+20. Geirhos R, Jacobsen JH, Michaelis C, et al. Shortcut learning in deep neural networks.
+    *Nat Mach Intell.* 2020;2(11):665-673. doi:10.1038/s42256-020-00257-z
+
 ---
 
 ## Tables
@@ -777,36 +1262,10 @@ dimension 0.24 (g↔illness-burden).
 ## Figures
 
 Static publication figures (PNG + SVG, 300 dpi) are generated by
-`scripts/16_manuscript_figures.py` → `reports/figures/`. Interactive versions are the
-correspondingly named `reports/*.html`.
-
-- **Figure 1. Trans-diagnostic structure is dimensional** (`fig1_structure.png`). Four
-  panels: (a) Laplacian eigenvalue spectrum (no gap); (b) gap statistic vs *k* rising
-  monotonically; (c) Sarle bimodality of top axes (0.37–0.56, around the 0.555 benchmark —
-  no clear multimodality); (d) the seven
-  DSM subtypes ordered on a mood↔psychosis continuum (PC1, ρ=0.79). Title notes
-  HDBSCAN↔cohort ARI 0.70.
-- **Figure 2. The six trans-diagnostic dimensions** (`fig2_loadings.png`) — salient
-  varimax domain loadings (|λ|≥0.20), showing the clean block structure per dimension.
-- **Figure 3. Head-to-head outcome prediction** (`fig3_headtohead.png`) — DSM vs
-  dimensions vs combined for QoL, functioning and hospitalization, with V1 (primary) and
-  V2 (replication) panels and annotated Δ(dim−DSM).
-- **Figure 4. Trait–state gradient** (`fig4_traitstate.png`) — per-dimension V0↔Vk
-  test–retest across V1–V4; later-onset shown greyed/dashed (baseline-only, static).
-- **Figure 5. Cognition (BP/SZ)** (`fig5_cognition.png`) — (a) construct loadings on the
-  *g* and processing-speed factors; (b) cognition × symptom-dimension correlations
-  (max |r| 0.24).
-- **Figure 6. Dimensional phenotype flow** (`fig6_dimensional_flow.png`,
-  `fig6b_band_persistence.png`, `fig6c_dsm_axis_flow.png`; `scripts/18_export_dimensional_flow.py`).
-  **(a)** continuous-axis band (V0-tertile Low/Mid/High) trajectories V0→V1→V2 for a trait-like
-  (ADHD/trauma) and a state-like (mania) axis, showing in-band (diagonal) dominance; **(b)**
-  same-band V0→V1 persistence per dimension (0.32–0.60) against the 33% three-band chance level
-  and the discrete clusters' 38% — a patient's continuous-axis *position* is retained where
-  discrete *labels* hop; **(c)** cross-sectional **DSM-5 → axis-band** flow for the most
-  diagnosis-linked axis (depression): every DSM-5 subtype fans across Low/Mid/High and diagnosis
-  explains only 14% of even that axis (η² 0.14, 95% CI 0.13–0.16; ≤0.05 for the other five) —
-  the dimensions are trans-diagnostic. This is the dimensional analogue of a phenotype-flow diagram (bands are a
-  display-only discretization; the model stays continuous).
+`scripts/16_manuscript_figures.py` → `reports/figures/` (interactive versions are the
+correspondingly named `reports/*.html`). **Figures 1–6 are embedded inline at their first
+mention in §3.2–§3.7 above**; Supplementary Figures S1–S2 appear with their captions in the
+Supplementary material section below.
 
 ---
 
@@ -831,12 +1290,18 @@ consistent with reproducible *slices of a continuum* rather than natural kinds. 
 continuous trait–state gradient on the six dimensional axes (Figure 4, §3.6) is the stable
 representation of this same longitudinal signal.
 
+![Supplementary Figure S1](reports/figures/figS1_dsm_phenotype_flow.png)
+
+![Supplementary Figure S1b](reports/figures/figS1b_dsm_composition.png)
+
 **Supplementary Figure S2. Factor-count selection is non-monotone**
 (`reports/figures/figS2_kcurve.png`; `scripts/15_review_checks.py`). Split-half Tucker congruence
 vs K: the mean stays high but the **minimum** congruence is jagged (0.98/0.94 at K=3/4, 0.31 at
 K=5, 0.95 at K=6, 0.08 at K=7) because varimax rotation splits factors unstably at some K. We
 report K=6 as the most granular reproducible solution (min congruence ≥0.85) rather than as a
 clean optimum; K=4 is a defensible, more parsimonious alternative.
+
+![Supplementary Figure S2](reports/figures/figS2_kcurve.png)
 
 ---
 
