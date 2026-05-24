@@ -464,6 +464,16 @@ Reviewer-prompted deep-dive that started from an AE reconciliation bug and ended
   Full `00_run_all` reproduces (22 steps OK, 366 s); 75 tests + `verify.py` pass. Manuscript (title →
   "seven", §2.7/2.8/3.3–3.8/4.1–4.2/4.8, Tables 2–4, abstract), CLAUDE, FINDINGS §3i all updated.
 
+## E24 · De-circularization (`12`) migrated to the masked imputation-free estimator — 2026-05-24
+`12_phase5_decircularized.py` had re-fit its de-circularized axes with sklearn `FactorAnalysis` +
+`z.fillna(0)` — the very mean-fill §3.8 shows biases the weakest factor — so the robustness check was
+probing a mean-fill model, not the published masked one. Swapped `fit_axes` to `masked_loadings` +
+`masked_scores` (identical estimator to `07`). Result is unchanged/slightly cleaner and now
+apples-to-apples: QoL de-circularized **+0.038** (= the headline), functioning combined **+0.029**,
+hosp axes AUC 0.611; `axes_full` (drop nothing) now ≈ the locked model. Updated MANUSCRIPT §3.5 +
+Table 3 De-circ column. 75 tests + ruff still pass. (`13` ComBat keeps median-impute *by
+construction* — ComBat requires complete data; that imputation is unavoidable, not an oversight.)
+
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
   attempt at *discrete*-structure discovery, in case a learned representation

@@ -845,10 +845,11 @@ loads on EQ-5D, EQ-VAS, EGF and FAST; the illness-burden axis on the lifetime-ho
 counts), so predicting those outcomes from those axes is potentially circular and unfair to
 the bare DSM label. We therefore refit the axes after **excluding each outcome's own
 measure(s)** and re-ran the head-to-head (`scripts/12_phase5_decircularized.py`). The results
-were essentially unchanged: quality of life still beat diagnosis (R² 0.341 vs 0.305, Δ +0.036;
-circular axes also +0.036), functioning was still complemented (combined R² 0.391 vs DSM 0.366,
-+0.025; dimensions alone ≈ DSM, −0.005), and hospitalization was still diagnosis-dominated
-(axes AUC 0.605). The advantage is therefore **not an artifact of outcome content in the
+were essentially unchanged (the refit uses the **same imputation-free masked estimator as the
+locked model**, not a mean-filled sklearn fit, so it de-circularizes the published axes): quality
+of life still beat diagnosis (R² 0.343 vs 0.305, Δ +0.038; circular axes also +0.038), functioning
+was still complemented (combined R² 0.394 vs DSM 0.365, +0.029; dimensions alone ≈ DSM, −0.004),
+and hospitalization was still diagnosis-dominated (axes AUC 0.611). The advantage is therefore **not an artifact of outcome content in the
 predictors** — baseline adjustment already controls each outcome's own V0 value, and the
 depression axis is carried by the symptom scales (QIDS/MADRS/STAI), not the functioning/QoL
 items.
@@ -1432,9 +1433,9 @@ seven dimensions vs combined; baseline+age+sex adjusted. V1 values are repeated-
 
 | Outcome | n | Metric | DSM | Dim. | Comb. | Dim − DSM (V1) [95% CI] | V2 | ComBat | De-circ. |
 |---|--:|:--:|--:|--:|--:|--:|--:|--:|--:|
-| EQ-5D quality of life | 2,423 | R² | 0.302 | **0.341** | 0.344 | **+0.038** [+0.035, +0.042] | +0.032 | +0.033 | +0.036 |
-| EGF global functioning | 3,195 | R² | 0.365 | 0.364 | **0.399** | −0.001 [−0.003, +0.002] (comb. **+0.034** [+0.032, +0.036]) | comb. +0.049 | comb. +0.021 | comb. +0.025 |
-| Any hospitalization | 3,332 | AUC | **0.747** | 0.613 | 0.757 | −0.134 [−0.146, −0.124] | −0.091 | −0.175 | −0.138 |
+| EQ-5D quality of life | 2,423 | R² | 0.302 | **0.341** | 0.344 | **+0.038** [+0.035, +0.042] | +0.032 | +0.033 | +0.038 |
+| EGF global functioning | 3,195 | R² | 0.365 | 0.364 | **0.399** | −0.001 [−0.003, +0.002] (comb. **+0.034** [+0.032, +0.036]) | comb. +0.049 | comb. +0.021 | comb. +0.029 |
+| Any hospitalization | 3,332 | AUC | **0.747** | 0.613 | 0.757 | −0.134 [−0.146, −0.124] | −0.091 | −0.175 | −0.133 |
 
 V2 / ComBat / De-circ. give Δ(Dim − DSM), or combined − DSM for functioning, under a second
 follow-up, site harmonization, and axes refit without each outcome's own measures (§3.5). The

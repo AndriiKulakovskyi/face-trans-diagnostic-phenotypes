@@ -33,9 +33,11 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-from sklearn.decomposition import FactorAnalysis  # noqa: E402
-
 from trans_diag import build_unified_dataframe  # noqa: E402
+from trans_diag.masked_fa import (  # noqa: E402  (same estimator as 07)
+    masked_loadings,
+    masked_scores,
+)
 from trans_diag.outcomes import cv_metric  # noqa: E402  (reuse the exact CV metric)
 
 RES = REPO / "results"
@@ -51,16 +53,25 @@ OUTCOMES = [
 
 
 def fit_axes(scores_df: pd.DataFrame, exclude) -> pd.DataFrame:
-    """Refit the K=7 varimax axes on the residualized domains minus `exclude`."""
+    """Refit the K=7 varimax axes IMPUTATION-FREE on the residualized domains minus `exclude`.
+
+    Uses the SAME estimator as the locked model (07): masked pairwise-complete correlation ->
+    principal-axis factoring + varimax -> masked posterior-mean scores on each patient's observed
+    support (no cell ever filled). The previous version mean-filled (z.fillna(0) + sklearn FA),
+    which §3.8 shows reweights correlations by co-observation and biases the weakest factor — so
+    the de-circularization now probes the published masked model, not a superseded mean-fill one.
+    """
     cols = [c for c in scores_df.columns if c not in set(exclude)]
     sub = scores_df[cols]
+    load = masked_loadings(sub, K)
+    for a in range(K):                                       # orient: defining domain positive
+        j = int(np.argmax(np.abs(load[:, a])))
+        if load[j, a] < 0:
+            load[:, a] = -load[:, a]
+    load = load[:, np.argsort(-(load ** 2).sum(0))]          # order by sum-of-squares (as in 07)
     z = (sub - sub.mean()) / sub.std(ddof=0)
-    X = z.fillna(0.0).to_numpy(np.float64)
-    fa = FactorAnalysis(n_components=K, rotation="varimax", random_state=0).fit(X)
-    sc = fa.transform(X)
-    order = np.argsort(-(fa.components_.T ** 2).sum(0))      # by SS loading
-    sc = sc[:, order]
-    out = pd.DataFrame(sc, index=scores_df.index, columns=[f"axis{i+1}" for i in range(K)])
+    scores = masked_scores(z, load)                          # NaN for <K observed (no imputation)
+    out = pd.DataFrame(scores, index=scores_df.index, columns=[f"axis{i+1}" for i in range(K)])
     out.index = [f"{c}::{p}" for c, p in scores_df.index]
     return out
 
