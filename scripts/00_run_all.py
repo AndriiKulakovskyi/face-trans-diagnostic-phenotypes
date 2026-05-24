@@ -40,8 +40,9 @@ STEPS: list[tuple[str, list[str]]] = [
     ("16_manuscript_figures.py", []),       # Figures 1–5 (static)
     ("17_export_longitudinal_figure.py", []),   # Suppl. Fig S1 (discrete flow)
     ("18_export_dimensional_flow.py", []),  # Figure 6 (dimensional flow + DSM η²)
-    ("19_face_score.py", []),               # §3.9 FACE profile (FACE-D + FACE-M) + validation
+    ("19_pfactor.py", []),                  # §4.6 general-factor ('p') check — confound-free axes ≈ orthogonal
     ("20_robustness_cvrefit.py", []),       # Limitation 10: re-fit axes inside CV folds (optimism)
+    ("21_replication_holdout.py", []),      # Limitation 9: within-FACE leave-one-cohort/site replication
 ]
 
 

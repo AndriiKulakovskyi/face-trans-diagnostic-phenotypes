@@ -261,11 +261,19 @@ per-visit-age residualized; the refit axes match the locked set, Tucker congruen
   axes−DSM **+0.040** [+0.039,+0.041] (vs +0.039 full-sample), functioning combined 0.400 vs DSM
   0.365, hosp −0.139; the all-data−refit optimism is **≤0.007 AUC, ≈0 R²**. The axes are not a
   fit-on-all-data artifact. Artifact: `results/robustness_cvrefit.json`.
+- **Within-FACE held-out replication (`21`, Limitation 9):** transportability, *not* external
+  replication. Leave-one-cohort-out **structure**: hold out DR min congruence 0.98, SZ mean 0.93,
+  BP underdetermines (SZ+DR n=2,761 → metabolic/mania not recovered; depression/onset/work-disability
+  ≥0.74). Leave-one-site-out **outcomes** (pooled out-of-site): QoL axes−DSM **+0.042**, functioning
+  combined +0.033, hosp −0.147. Leave-one-cohort-out **outcomes** (predict unseen diagnosis): QoL
+  transports (BP +0.029, SZ +0.058 R²), functioning transports for BP (+0.050) but not SZ (−0.14).
+  Artifact: `results/replication_holdout.json`.
 - **Conclusion:** the dimensional model and its outcome advantage are **reproducible**
   (masked split-half min congruence 0.89), **confound-free** (max |corr| age/sex 0.017),
   **site-robust** (ComBat congruence ~1), **de-circularization-robust**, **fold-refit-robust**
-  (optimism ≤0.007), and **consistent across V1+V2** (same cohort) — solid for the manuscript,
-  pending independent external replication.
+  (optimism ≤0.007), **held-out-transportable** (QoL +0.042 to unseen sites; structure congruence
+  ≥0.93 holding out DR/SZ), and **consistent across V1+V2** (same cohort) — solid for the
+  manuscript, pending independent external replication.
 - **Extra robustness checks (`15_review_checks.py`, addresses review #5–9):** the age/sex
   orthogonality (0.002) is by construction (residualized) — the meaningful test is independence
   from variables NOT removed: **site η² ≤0.05, cohort η² ≤0.10** per axis. AE↔FA agreement is

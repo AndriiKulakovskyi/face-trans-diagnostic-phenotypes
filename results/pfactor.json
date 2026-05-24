@@ -1,0 +1,57 @@
+{
+  "K": 6,
+  "oblique_phi_mean_offdiag": -0.065,
+  "phi_positive_frac": 0.333,
+  "general_factor_var_share": 0.114,
+  "general_factor_top_domains": {
+    "qidsr": 0.881,
+    "madrs": 0.812,
+    "staya": 0.762,
+    "fast": 0.748,
+    "eq": -0.735,
+    "eq5d": -0.706,
+    "egf": -0.668,
+    "prism": 0.649,
+    "psqi": 0.543,
+    "mars": -0.42
+  },
+  "corr_with_axes": {
+    "depression_severity": 0.99,
+    "later_onset": -0.04,
+    "mania_activation": 0.05,
+    "illness_burden": 0.12,
+    "metabolic": 0.09,
+    "work_disability": -0.01
+  },
+  "n_scored": 8987,
+  "headtohead_p_score": [
+    {
+      "outcome": "EGF functioning",
+      "n": 3196,
+      "metric": "R2",
+      "DSM": 0.366,
+      "p_score": 0.35,
+      "DSM+p_score": 0.389,
+      "p_score_minus_DSM": -0.016
+    },
+    {
+      "outcome": "any hospitalization",
+      "n": 3332,
+      "metric": "AUC",
+      "DSM": 0.743,
+      "p_score": 0.612,
+      "DSM+p_score": 0.754,
+      "p_score_minus_DSM": -0.131
+    },
+    {
+      "outcome": "EQ-5D quality of life",
+      "n": 2423,
+      "metric": "R2",
+      "DSM": 0.305,
+      "p_score": 0.317,
+      "DSM+p_score": 0.321,
+      "p_score_minus_DSM": 0.013
+    }
+  ],
+  "note": "Exploratory general ('p') factor. Phi mean off-diagonal quantifies inter-axis correlation (g-saturation); the index is the first unrotated masked PAF factor, scored masked. One-number severity vs the 7-subtype DSM."
+}

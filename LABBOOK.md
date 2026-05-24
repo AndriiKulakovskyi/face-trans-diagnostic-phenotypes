@@ -393,6 +393,47 @@ loadings (`ax_re`); the gap is exactly the optimism honest refitting removes.
 - Limitation 10 reframed from "future work should remove" to "measured, negligible" (§3.5, now the
   **fourth** robustness threat). Artifact: `results/robustness_cvrefit.json`. 78 tests pass; ruff clean.
 
+## E21 · Within-FACE held-out replication — transportability (Limitation 9) — 2026-05-24
+External replication is unavailable (FACE = one national network); `scripts/21_replication_holdout.py`
+tests **transportability** by deriving the model on a held-out partition and applying it to unseen data.
+- **Leave-one-cohort-out structure (congruence vs locked axes):** hold out DR → min **0.98**
+  (near-identical); hold out SZ → mean 0.93 (work-disability dips to 0.63); hold out **BP** → the
+  small SZ+DR partition (n=2,761) underdetermines the 6-factor model — depression/onset/work-disability
+  transport (≥0.74) but mania/illness/metabolic don't (0.36/0.67/**0.08**). Honest read: the well-measured
+  cross-cohort axes transport; the BP-concentrated-instrument axes (metabolic/mania) need BP in the
+  training set — a measurement-coverage effect, not a BP artifact (§3.1 theme).
+- **Leave-one-site-out outcomes (LeaveOneGroupOut over 15–18 sites ≥10; axes refit on other sites;
+  pooled out-of-site predictions):** QoL axes−DSM **+0.042** (transports to unseen centres), functioning
+  combined−DSM +0.033, hosp −0.147. The headline survives site-blocked CV.
+- **Leave-one-cohort-out outcomes (predict an UNSEEN diagnosis; axes increment over age+sex+baseline):**
+  QoL transports across diagnoses (predict BP +0.029, SZ **+0.058** R²); functioning transports for BP
+  (+0.050) but NOT SZ (−0.14 domain-shift) — consistent with functioning being complement-only.
+- **Net:** strong within-network transportability for QoL + the well-measured structure; honestly bounded
+  for metabolic/mania (without BP) and functioning-in-SZ. Wired into MANUSCRIPT §3.5 + Limitation 9,
+  FINDINGS §3g, golden test. Artifact: `results/replication_holdout.json`. **Not** external replication —
+  still the #1 outstanding step.
+
+## E22 · FACE clinical scores — explored, then cut — 2026-05-24
+Tested whether the 6-axis model reduces to simple clinical scores (the "FACE profile": FACE-D =
+QIDS+MADRS+STAI; FACE-M = metabolic-syndrome+cholesterol+inflammation) and to a single
+general-severity ("p") score. **Verdict: no usable predictive instrument; cut from the manuscript
+(§3.9 removed), keeping only the p-factor negative in §4.6.**
+- **FACE-D**: tautological (a depression score from depression scales) and not trans-diagnostic
+  (QIDS/MADRS/STAI 0% observed in SZ). No clinical value beyond the MADRS itself.
+- **FACE-M**: reproduces the metabolic axis (r=0.88), but near-circularly. Prospectively it does
+  NOT forecast metabolic deterioration (confident null on ≥7% weight gain) and only weakly forecasts
+  worse QoL/functioning (ΔR²≈0.003). Within-BP it is associated with antipsychotic exposure
+  cross-sectionally (β≈0.12 SD, p=.001) but confounded (antidepressant equally large; no clean
+  longitudinal effect) — iatrogenicity not isolable with these data (BP-only; prevalent exposure).
+- **General ('p') factor**: an oblique (promax) rotation of the masked axes gives mean inter-factor
+  *r* ≈ −0.06 → **no general factor**; the dominant single dimension is depression-specific, and a
+  one-number score under-performs both DSM and the full model. **Kept** as a §4.6 discussion result
+  (confound control + no imputation may dissolve the literature's *p*-factor), backed by
+  `scripts/19_pfactor.py` (`results/pfactor.json`) + a golden test.
+- **Cleanup**: deleted `19_face_score`/`22_face_m_prospective`/`23_face_m_iatrogenic`, `face_score.py`,
+  its tests/exports, artifacts and Fig 7; renamed `24_pfactor`→`19_pfactor`; removed manuscript §3.9
+  and updated §4.6 + the rotation limitations; scrubbed the notebook and docs.
+
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
   attempt at *discrete*-structure discovery, in case a learned representation

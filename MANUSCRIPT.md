@@ -38,8 +38,9 @@ dimensional model (varimax factor analysis with split-half reproducibility selec
 cross-validated against a no-imputation masked autoencoder); and (iii) tested, in nested
 cross-validation, whether the dimensions predict 1-year patient-reported and service-use
 outcomes better than DSM diagnosis. Robustness was assessed by ComBat site harmonization,
-consistency at a second follow-up (V2, same cohort), de-circularization, and re-fitting the
-factor model within each cross-validation fold.
+consistency at a second follow-up (V2, same cohort), de-circularization, re-fitting the
+factor model within each cross-validation fold, and within-FACE held-out replication
+(leave-one-cohort and leave-one-site).
 
 **Results.** Trans-diagnostic variation was **dimensional, not categorical**: the
 similarity spectrum had no eigengap, the gap statistic rose monotonically with *k* (no
@@ -760,9 +761,9 @@ covariance, the autoencoder via its masked loss), so their agreement makes a sha
 unlikely. The one place
 they diverge is informative rather than contradictory: the autoencoder concentrates the
 mood↔psychosis ordering on a single latent axis (|Spearman| 0.89) whereas the orthogonal varimax
-rotation distributes it across axes, signalling that the spectrum is a *general* direction
-cutting across the specific dimensions — exactly the structure an oblique or bifactor model
-would localize (§4.6).
+rotation distributes it across axes, signalling that the spectrum is a specific cross-axis
+*direction* rather than one of the orthogonal axes — though, as §4.6 shows, the axes stay
+near-orthogonal even under an oblique rotation, so this direction is not a general *p*-factor.
 
 ![Figure 2](reports/figures/fig2_loadings.png)
 
@@ -860,6 +861,39 @@ optimism is ≤0.007). Convergent survival across orthogonal threats is the
 triangulation that separates a real effect from a pipeline artifact — with the important
 qualification that none of the four is *external* replication, which remains outstanding
 (§4.8).
+
+**Within-FACE held-out replication.** Because FACE is a single national network, external
+replication is unavailable (§4.8); we instead tested *transportability* directly by deriving the
+model on a held-out partition and applying it to data it never saw
+(`scripts/21_replication_holdout.py`). **(i) Leave-one-cohort-out structure.** Re-fitting the
+masked loadings *without an entire diagnostic cohort* and comparing to the locked axes (Tucker
+congruence) showed the structure is near-identical without depression (DR held out: min
+congruence **0.98**) and largely preserved without schizophrenia (SZ held out: mean 0.93, only
+the work-disability axis attenuating to 0.63). When bipolar disorder — the largest, most richly
+phenotyped cohort — is held out, however, the remaining two-cohort partition (SZ+DR, $n=2{,}761$)
+*underdetermines* the six-factor solution: the depression, later-onset and work-disability axes
+still transport ($\ge\!0.74$), but mania/activation, illness-burden and especially the metabolic
+axis do not ($0.36/0.67/0.08$). This is best read as a sample-size-and-coverage limit — BP is
+69% of the cohort and carries much of the instrument coverage for these constructs, so the
+smaller, sparser SZ+DR partition cannot stably re-estimate the weaker factors — the same
+cohort-by-missingness theme as §3.1; crucially, the axes that *are* well measured across cohorts
+(depression, later-onset) transport whichever cohort is held out, so this is a coverage limit,
+not evidence that the well-measured axes are a single-cohort artifact. **(ii) Leave-one-site-out outcomes.** Under
+site-blocked cross-validation (LeaveOneGroupOut over the 15–18 centres with $\ge\!10$ patients;
+axes re-fit on the *other* sites, predictions pooled across held-out sites), the quality-of-life
+advantage held on centres the model never saw (axes−DSM **+0.042**), functioning still
+complemented diagnosis (combined−DSM +0.033), and hospitalization remained diagnosis-dominated
+(−0.147). **(iii) Leave-one-cohort-out outcomes.** Predicting an *unseen diagnosis* from axes and
+an outcome model trained only on the other cohorts, the quality-of-life increment over an
+age+sex+baseline model transported across diagnostic boundaries (predicting BP +0.029 R²;
+predicting SZ **+0.058** R²); functioning transported for bipolar disorder (+0.050) but not for
+schizophrenia (−0.14 — a domain-shift failure consistent with functioning being the outcome where
+the axes only *complement* rather than beat diagnosis). Within-network transportability is
+therefore strong for the patient-reported quality-of-life finding and for the dimensional
+structure's well-measured axes, and is explicitly bounded where measurement coverage (the
+metabolic/mania axes without BP) or cohort-specific outcome relationships (functioning in SZ)
+limit it — but none of this substitutes for external replication, which remains the single most
+important outstanding step (§4.8).
 
 ### 3.6 Dimensions show a trait–state gradient over four years
 
@@ -992,46 +1026,6 @@ to zero. We report the ablation alongside the re-derivation because the finding 
 35% mean-fill can reintroduce a structured confound at the noise-floor factor, and can also
 *attenuate* the apparent stability of a sparsely-measured axis — is a methodological result and a
 caution for data-driven phenotyping.
-
-### 3.9 A clinically-actionable readout: the FACE profile
-
-The six-axis model is research-grade — 54 domains and the full residualization pipeline. For
-clinical follow-up (*suivi*) we propose the **FACE profile**: two compact, fixed-weight, masked
-indices computable from routine instruments (`scripts/19_face_score.py`, `trans_diag.face_score`),
-standardized to the cohort (rescalable to clinical T-scores). **FACE-D** (affective distress) is the
-sign-oriented mean of QIDS, MADRS and trait-anxiety STAI and reproduces the depression/internalizing
-axis at **r = 0.97**; **FACE-M** (cardiometabolic load) is the mean of the metabolic-syndrome
-composite, cholesterol and inflammation and reproduces the metabolic axis at **r = 0.88** (Figure 7a,b).
-
-Two honest boundaries define what the profile is. First, **only FACE-M is fully trans-diagnostic.**
-The metabolic battery is collected across all three networks, so FACE-M is computable — and behaves
-sensibly — in BP, SZ and DR (Figure 7c). But the self-report depression/anxiety scales (QIDS, MADRS,
-STAI) are **absent from the schizophrenia battery** (0% observed), so a parsimonious FACE-D is
-computable only in BP and DR (Figure 7d), where it is face-valid (much higher in the depression
-cohort: mean +1.04 z vs −0.08 in bipolar). The affective dimension *is* recovered for schizophrenia
-by the full masked-FA model (from the domains SZ does have), but a short self-report affective index
-is not — a concrete **measurement-harmonization gap**: a trans-diagnostic affective metric would
-require the networks to adopt a shared brief affect measure. Second, the profile is a parsimonious
-**measurement/monitoring** tool, **not** a prognostic substitute: added to diagnosis the two scores
-recover only part of the full six-axis incremental prediction (functioning ΔR² +0.016 of +0.053;
-quality of life +0.003 of +0.037, on the FACE-measurable subsample), because the dimensional
-advantage over diagnosis is genuinely *multi-axial*.
-
-Within those bounds the profile is clinically useful: FACE-D tracks affective severity for BP/DR
-follow-up (and, being moderately trait-stable, treatment response; test–retest 0.58), and FACE-M is
-a trait-stable (0.64) cardiometabolic-risk flag — across all diagnoses — for a physical-health
-monitoring gap that drives the excess mortality of serious mental illness. It is a translational
-proposal requiring prospective validation before clinical use.
-
-![Figure 7](reports/figures/fig7_face_profile.png)
-
-**Figure 7. The FACE profile.** (a) FACE-D (QIDS+MADRS+STAI) reproduces the depression/internalizing
-axis (r=0.97; BP/DR). (b) FACE-M (metabolic-syndrome+cholesterol+inflammation) reproduces the
-metabolic axis (r=0.88; all cohorts). (c) FACE-M by diagnosis — **trans-diagnostic**, computable in
-BP, SZ and DR. (d) FACE-D by diagnosis — **BP/DR only** (the SZ battery lacks the self-report
-depression scales), highest in the depression cohort.
-
----
 
 ## 4. Discussion
 
@@ -1189,10 +1183,18 @@ loose end is now closed: the primary factor model is estimated imputation-free (
 pairwise-complete covariance + observed-support scores; §2.7, §3.8), and the ablation confirms it
 mattered — mean-filling had biased the sixth factor and attenuated the metabolic axis's apparent
 stability. The remaining substitutions are confined to the residualization-design covariates
-(§2.4) and ComBat (§3.5), which require complete data by construction. (6) **Recovering the general factor.** The orthogonal varimax
-rotation deliberately distributes the mood↔psychosis spectrum across axes; an oblique or
-**bifactor** model could isolate a general severity/*p*-like factor plus specific dimensions,
-directly connecting our bottom-up axes to the *p*-factor [3] and HiTOP [2] hierarchy. (7)
+(§2.4) and ComBat (§3.5), which require complete data by construction. (6) **The general ('p')
+factor — tested, and largely absent.** We no longer defer this. Applying an oblique (promax)
+rotation to the six masked factors, the confound-controlled axes are essentially uncorrelated
+(mean inter-factor *r* ≈ −0.06), and the single dominant dimension is depression-specific (it
+loads on 12 of 54 domains), not a broad general factor; a one-number "overall severity" score
+consequently collapses onto the depression axis and *under-performs* both the seven-subtype DSM
+and the full six-axis model out-of-sample (`scripts/19_pfactor.py`). This is itself a result: the
+*p*-factor reported pervasively in the literature [3] may be inflated in part by the shared-method
+and missingness variance that our confound-stripped, imputation-free pipeline removes — so the
+trans-diagnostic signal here is genuinely *multi-dimensional*, not reducible to a single severity
+index. A formal bifactor model linking to the *p*-factor/HiTOP hierarchy [2,3] remains worthwhile,
+but the oblique result already indicates a weak general factor in confound-free data. (7)
 **External and prospective replication.** The strongest current claim is *temporal consistency*
 within one national expert-centre network; genuine external replication in community samples and
 other health systems — ideally prospective — is required before clinical use, and the
@@ -1222,9 +1224,10 @@ psychiatric phenotyping.
 
 (1) Dimensional structure means modest internal separation (silhouette ≈0.2); we validate by
 stability, interpretability and prediction, not by separation. (2) Varimax orthogonality
-distributes the mood↔psychosis spectrum across axes rather than isolating it; an oblique
-rotation (deferred here) might localize it, and the autoencoder already recovers it at
-|Spearman| 0.89. (3) The autoencoder is a *cross-check*, not a fully independent estimator: although both are
+distributes the mood↔psychosis spectrum across axes rather than isolating it; an oblique rotation
+(§4.6) does not change the picture — even allowed to correlate, the confound-controlled axes
+remain near-orthogonal — so the spectrum is a specific cross-axis *direction* (the autoencoder
+recovers it at |Spearman| 0.89), not a general factor. (3) The autoencoder is a *cross-check*, not a fully independent estimator: although both are
 now imputation-free, they share the same residual-domain inputs, so their agreement (leading
 canonical correlation 0.98 vs a row-permutation null of 0.06) rules out an *algorithm-specific*
 artifact but not a shared *input* artifact; the AE also carries a small residual age leak
@@ -1246,7 +1249,12 @@ and the ComBat harmonization (§3.5). A minor cost of the masked posterior-mean 
 **1% of patients (89/9,013) with fewer than K=6 observed domains are left unscored** (NaN)
 rather than imputed, and are excluded from the analyses that use the axis scores. (9) There is **no
 independent external replication**: the "V2" analysis re-uses the same individuals at a later
-visit (temporal consistency), and all sites belong to one national network. (10) The unsupervised
+visit (temporal consistency), and all sites belong to one national network. Within FACE,
+leave-one-cohort-out and leave-one-site-out tests (§3.5) show the quality-of-life advantage and
+the well-measured axes (depression, onset, work-disability) transport to held-out diagnoses and
+unseen centres, while the metabolic/mania axes and the functioning relationship in schizophrenia
+do not fully transport — but this is within-network transportability, not external replication,
+which remains the key outstanding step. (10) The unsupervised
 factor extraction is fit on the full sample and then used as a predictor across CV folds; we
 *measured* the resulting optimism by re-deriving the masked factor model inside each training
 fold (§3.5) and found it negligible (≤0.007 AUC, ≈0 R²; the quality-of-life advantage was
@@ -1258,9 +1266,9 @@ attenuate or distort the affected domains, though construct-level aggregation an
 grading limit the exposure, and the confound controls remove the largest such artifact (the
 cohort-by-missingness gradient). (12) The factor count is defensible but **not unique** ($K=4$ is
 a reasonable, more parsimonious alternative; §2.7, Fig S2), and the orthogonal varimax rotation
-is a modelling choice that *shapes* — without creating — the specific axes; an oblique or
-bifactor solution (§4.6) would apportion the shared mood↔psychosis variance differently and may
-be preferable for connecting to the *p*-factor.
+is a modelling choice that *shapes* — without creating — the specific axes; the oblique solution we
+examined (§4.6) apportions the shared mood↔psychosis variance differently but leaves the axes
+near-orthogonal and surfaces no general *p*-factor.
 
 ### 4.9 Conclusion
 

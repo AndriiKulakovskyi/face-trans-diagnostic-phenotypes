@@ -117,11 +117,14 @@ def test_cognition_semi_independent():
     assert c.abs().to_numpy().max() <= 0.30                     # max |r| ≈ 0.26
 
 
-# ── §3.9 — FACE profile reproduces its target axes (parsimony) ────────────────────────
-def test_face_profile_parsimony():
-    p = _json("face_score_validation.json")["parsimony"]
-    assert p["corr_FACE_D_depression"] >= 0.93                  # FACE-D ≈ depression axis (0.97)
-    assert p["corr_FACE_M_metabolic"] >= 0.83                   # FACE-M ≈ metabolic axis (0.88)
+# ── §4.6 — no general ('p') factor: confound-free axes are near-orthogonal ────────────
+def test_pfactor_no_general_factor():
+    m = _json("pfactor.json")
+    assert m["oblique_phi_mean_offdiag"] <= 0.10                # axes near-orthogonal → weak/no general factor
+    # the single dominant dimension collapses onto depression, not a broad general factor
+    assert m["corr_with_axes"]["depression_severity"] >= 0.90
+    others = [v for k, v in m["corr_with_axes"].items() if k != "depression_severity"]
+    assert max(abs(v) for v in others) <= 0.30                 # ≈0 with the other five axes
 
 
 # ── §3.5 — fold-honest re-fit removes only negligible optimism (Limitation 10) ────────
@@ -134,3 +137,14 @@ def test_cvrefit_robustness():
     assert rows["any hospitalization"]["axes_refit_minus_DSM"] < -0.10   # DSM still dominates hosp
     # the manuscript's "optimism ≤0.007" headline, across all outcomes
     assert max(abs(r["optimism_alldata_minus_refit"]) for r in rows.values()) <= 0.01
+
+
+# ── §3.5 — within-FACE held-out replication (transportability; Limitation 9) ──────────
+def test_replication_holdout():
+    m = _json("replication_holdout.json")
+    struct = {r["held_out_cohort"]: r for r in m["loco_structure"]}
+    assert struct["dr"]["min_congruence"] >= 0.95          # structure near-identical without DR (0.98)
+    assert struct["sz"]["mean_congruence"] >= 0.85          # mostly preserved without SZ (0.93)
+    loso = {r["outcome"]: r for r in m["loso_outcomes"]}
+    assert loso["EQ-5D quality of life"]["axes_minus_DSM"] >= 0.03   # QoL advantage transports to unseen sites (+0.042)
+    assert loso["any hospitalization"]["axes_minus_DSM"] < -0.10     # hospitalization stays DSM-dominated
