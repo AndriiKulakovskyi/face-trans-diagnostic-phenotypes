@@ -1,4 +1,4 @@
 outcome,n,metric,excluded,DSM,axes_full,axes_clean,combined_clean,full_minus_DSM,clean_minus_DSM,combined_minus_DSM
-EQ-5D quality of life,2423,R2,eq5d+eq,0.305,0.341,0.34,0.343,0.036,0.036,0.038
-EGF functioning,3196,R2,egf+fast,0.366,0.361,0.361,0.392,-0.004,-0.005,0.026
-any hospitalization,3332,AUC,nboccur_hospitalisation_lt+hodur_hospitalisation_lt,0.743,0.6,0.6,0.759,-0.143,-0.143,0.016
+EQ-5D quality of life,2423,R2,eq5d+eq,0.305,0.341,0.341,0.343,0.036,0.036,0.039
+EGF functioning,3196,R2,egf+fast,0.366,0.361,0.361,0.391,-0.005,-0.005,0.025
+any hospitalization,3332,AUC,nboccur_hospitalisation_lt+hodur_hospitalisation_lt,0.743,0.602,0.605,0.755,-0.142,-0.138,0.012

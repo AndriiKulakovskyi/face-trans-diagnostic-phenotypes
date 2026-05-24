@@ -1,12 +1,13 @@
 {
-  "K": 6,
+  "K": 7,
   "axes": [
     "axis1",
     "axis2",
     "axis3",
     "axis4",
     "axis5",
-    "axis6"
+    "axis6",
+    "axis7"
   ],
   "method": "imputation-free (masked pairwise-complete corr -> principal-axis factoring + varimax; posterior-mean scores on observed support)",
   "observed_fraction": 0.6488,
@@ -41,24 +42,46 @@
       "k": 8,
       "min_congruence": 0.2162383523006628,
       "mean_congruence": 0.8095794564287985
+    },
+    {
+      "k": 9,
+      "min_congruence": 0.8068390870386823,
+      "mean_congruence": 0.929093418730326
+    },
+    {
+      "k": 10,
+      "min_congruence": 0.7970414552213188,
+      "mean_congruence": 0.9210805198069119
+    },
+    {
+      "k": 11,
+      "min_congruence": 0.7613254283340166,
+      "mean_congruence": 0.9214737514001019
+    },
+    {
+      "k": 12,
+      "min_congruence": 0.4324895788892588,
+      "mean_congruence": 0.8933726061190552
     }
   ],
   "dsm_ordering_per_axis": [
     0.14285714285714288,
-    0.03571428571428572,
     0.10714285714285716,
     0.3571428571428572,
+    0.03571428571428572,
+    0.10714285714285716,
     0.5357142857142858,
     0.3214285714285715
   ],
-  "strongest_ordering_axis": "axis5",
+  "strongest_ordering_axis": "axis6",
   "confound_max_corr": {
     "axis1": 0.016,
-    "axis2": 0.005,
-    "axis3": 0.013,
-    "axis4": 0.017,
-    "axis5": 0.005,
-    "axis6": 0.005
+    "axis2": 0.004,
+    "axis3": 0.018,
+    "axis4": 0.007,
+    "axis5": 0.016,
+    "axis6": 0.004,
+    "axis7": 0.007
   },
-  "note": "Re-derived imputation-free (LABBOOK E19, MANUSCRIPT \u00a73.8). 5 of 6 axes match the former mean-fill model; the 6th is now a socio-occupational/work-disability axis (the former ADHD/impulsivity/trauma axis was a mean-fill co-observation artifact). Orthogonal varimax; the mood<->psychosis spectrum is a cross-axis direction (AE recovers it at 0.89)."
+  "note": "Imputation-free; locked at K=7 = maximum reproducible dimensionality (masked split-half min >=0.85 through K=7; K>=8 collapse). K=7 splits the K=6 mania/activation+impulsivity axis into a pure mania axis and a distinct externalizing/neurodevelopmental axis (WURS/BIS/CTQ + family history) - the genuine imputation-free counterpart of the ADHD/trauma signal that mean-fill rendered artifactual at K=6 (LABBOOK E19, MANUSCRIPT \u00a73.8). Orthogonal varimax; the mood<->psychosis spectrum is a cross-axis direction."
 }

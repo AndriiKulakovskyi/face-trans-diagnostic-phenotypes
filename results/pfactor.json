@@ -1,7 +1,7 @@
 {
-  "K": 6,
-  "oblique_phi_mean_offdiag": -0.065,
-  "phi_positive_frac": 0.333,
+  "K": 7,
+  "oblique_phi_mean_offdiag": -0.01,
+  "phi_positive_frac": 0.571,
   "general_factor_var_share": 0.114,
   "general_factor_top_domains": {
     "qidsr": 0.881,
@@ -18,10 +18,11 @@
   "corr_with_axes": {
     "depression_severity": 0.99,
     "later_onset": -0.04,
-    "mania_activation": 0.05,
     "illness_burden": 0.12,
-    "metabolic": 0.09,
-    "work_disability": -0.01
+    "mania_activation": -0.02,
+    "externalizing": 0.13,
+    "metabolic": 0.08,
+    "work_disability": -0.0
   },
   "n_scored": 8987,
   "headtohead_p_score": [

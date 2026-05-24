@@ -160,10 +160,10 @@ def main() -> int:
     ax.plot(cur["k"], cur["min_congruence"], "o-", label="min congruence", color="#1f77b4")
     ax.plot(cur["k"], cur["mean_congruence"], "s--", label="mean congruence", color="#999")
     ax.axhline(0.85, ls=":", color="#d62728", label="0.85 threshold")
-    ax.axvline(6, ls="-", color="#2ca02c", alpha=0.4, lw=6, label="selected K=6")
+    ax.axvline(7, ls="-", color="#2ca02c", alpha=0.4, lw=6, label="selected K=7")
     ax.set(xlabel="number of factors K", ylabel="split-half Tucker congruence",
            ylim=(0, 1.02), title="Figure S2. Reproducibility-vs-K is non-monotone (varimax\n"
-           "factor-splitting); K=6 is the most granular reproducible solution")
+           "factor-splitting); K=7 is the maximum reproducible solution (K>=8 collapse)")
     ax.legend(fontsize=8, loc="lower left")
     fig.tight_layout()
     for ext in ("png", "svg"):

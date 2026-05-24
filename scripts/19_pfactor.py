@@ -5,14 +5,14 @@ general factor *among the axis scores*. But the axes can still share variance at
 and that shared variance is the general psychopathology factor ('p'). We test and extract it
 imputation-free:
 
-  1. **Does a general factor exist?** Apply an OBLIQUE (promax) rotation to the K=6 masked-FA
+  1. **Does a general factor exist?** Apply an OBLIQUE (promax) rotation to the K=7 masked-FA
      solution and inspect the factor-correlation matrix Phi: broadly positive inter-factor
      correlations ⇒ a general factor. Quantify with the mean off-diagonal of Phi.
   2. **Extract it.** The first *unrotated* principal-axis factor of the masked correlation matrix
      is the dominant shared dimension (the classic general factor that varimax then splits into
      group factors); orient it so higher = more severe.
   3. **Score it** per patient (masked posterior mean → p-score), and validate: correlation with the
-     six orthogonal axes (a general factor should load on all), and a *one-number* outcome
+     seven orthogonal axes (a general factor should load on all), and a *one-number* outcome
      head-to-head vs the 7-subtype DSM (can a single severity score rival the diagnosis?).
 
 Artifacts: results/pfactor.json, reports/pfactor.html.
@@ -42,7 +42,7 @@ from trans_diag.outcomes import OUTCOMES, cv_metric  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
-K = 6
+K = 7
 
 
 def promax_phi(L: np.ndarray, power: int = 4) -> np.ndarray:
@@ -91,12 +91,12 @@ def main() -> int:
     p = masked_scores(z.to_numpy(float), g.reshape(-1, 1))[:, 0]
     pf = pd.Series(p, index=sc.index, name="p_score")
 
-    # validation A: correlation with the six orthogonal axes (a general factor loads on all)
+    # validation A: correlation with the seven orthogonal axes (a general factor loads on all)
     axes = pd.read_parquet(RESULTS_DIR / "dimensional_final_scores.parquet")
     axes.index = pf.index
     axes.columns = AXIS_NAMES
     corr_axes = {}
-    print("\ncorrelation of p-score with the six orthogonal axes:")
+    print("\ncorrelation of p-score with the seven orthogonal axes:")
     for a in AXIS_NAMES:
         m = pf.notna() & axes[a].notna()
         r = float(np.corrcoef(pf[m], axes[a][m])[0, 1])
@@ -180,7 +180,7 @@ def _report(mean_off, pos_frac, var_general, gpos, ndom, top, corr_axes, hh):
             f"explains {var_general*100:.0f}% of total domain variance.</div>",
             "<h2>Top domains of the general factor</h2>",
             "<table><tr><th>domain</th><th>loading</th></tr>", tr, "</table>",
-            "<h2>Correlation with the six orthogonal axes</h2>",
+            "<h2>Correlation with the seven orthogonal axes</h2>",
             "<table><tr><th>axis</th><th>r with p-score</th></tr>", ca, "</table>",
             "<h2>One-number head-to-head: p-score vs the 7-subtype DSM</h2>",
             "<table><tr><th>outcome</th><th>n</th><th>metric</th><th>DSM (7 subtypes)</th>"

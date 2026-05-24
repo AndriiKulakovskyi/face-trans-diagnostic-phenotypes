@@ -50,9 +50,9 @@ from trans_diag.masked_fa import masked_scores  # noqa: E402
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
 VISITS = ["V0", "V1", "V2", "V3", "V4"]
-K = 6
+K = 7
 SPLINE_DF, CROSS_FIT, RANDOM = 4, 5, 0
-# AXIS_NAMES (axis1..6 SS order) is the shared constant in trans_diag.axes — imported above.
+# AXIS_NAMES (axis1..7 SS order) is the shared constant in trans_diag.axes — imported above.
 
 
 def icc21(a, b):

@@ -6,7 +6,7 @@ largely retained — the honest "flow" for a dimensional model.
 Bands = V0 tertiles (Low/Mid/High), fixed and applied to every visit (display-only
 discretization; the model itself stays continuous). We show a trait-like axis
 (depression) and a state-like axis (mania/activation) side by side,
-and report same-band persistence V0→V1 for all six axes (chance = 1/3).
+and report same-band persistence V0→V1 for all seven axes (chance = 1/3).
 
 Reads results/longitudinal_axes_scores.parquet.
 Writes reports/figures/fig6_dimensional_flow.{png,svg}      (axis-band alluvial)
@@ -32,7 +32,7 @@ from trans_diag import AXIS_NAMES, AXIS_SHORT  # noqa: E402
 RES = REPO / "results"
 FIG = REPO / "reports" / "figures"
 
-AXES = AXIS_NAMES        # shared constant (trans_diag.axes) — axis1..6 SS order
+AXES = AXIS_NAMES        # shared constant (trans_diag.axes) — axis1..7 SS order
 PRETTY = AXIS_SHORT      # snake_case → short display label
 BAND_LABELS = ["Low", "Mid", "High"]
 BAND_COLORS = ["#2ca02c", "#bdbdbd", "#d62728"]   # low / mid / high

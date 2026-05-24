@@ -5,7 +5,7 @@ dimensional axes and the Phase-5 head-to-head robust to site batch effects?
 
   1. ComBat-harmonize the V0 domain scores across sites (neuroHarmonize), preserving
      cohort + age + sex as biological covariates.
-  2. Re-derive the 6 axes (FA, varimax) on the harmonized domains → Tucker congruence
+  2. Re-derive the 7 axes (FA, varimax) on the harmonized domains → Tucker congruence
      with the locked axes (≈1 ⇒ axes are not a site artifact).
   3. Re-run the Phase-5 V1 head-to-head on the ComBat axes → does "axes add over DSM"
      survive site harmonization?
@@ -36,8 +36,8 @@ from trans_diag.outcomes import OUTCOMES, added_axes_test, cv_metric  # noqa: E4
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
-K, RANDOM = 6, 0
-# AXIS_NAMES (axis1..6 SS order) imported from trans_diag.axes — single source of truth.
+K, RANDOM = 7, 0
+# AXIS_NAMES (axis1..7 SS order) imported from trans_diag.axes — single source of truth.
 
 
 def tucker(La, Lb):

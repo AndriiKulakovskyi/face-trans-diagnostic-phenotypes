@@ -5,12 +5,12 @@ The autoencoder reconstructs the standardized domain scores with a MASKED loss �
 missing entries never contribute, and the observed-mask is fed to the encoder, so
 nothing is imputed. The K-dim bottleneck is the learned dimensional representation.
 
-We then ask: do the AE's nonlinear axes agree with the classical factor axes?
-(canonical correlations via CCA). High agreement ⇒ the dimensional structure is
-robust to the method; the AE may add nonlinear refinement.
+We then ask: do the AE's nonlinear axes agree with the LOCKED masked factor axes?
+(canonical correlations via CCA, against a row-permutation null). High agreement ⇒ the
+dimensional structure is robust to the method; the AE may add nonlinear refinement.
 
 Artifacts: results/dimensional_ae_{scores.parquet,meta.json}, reports/dimensional_ae.html.
-Run:  python3 scripts/06_dimensional_ae.py            # K = #classical factors
+Run:  python3 scripts/06_dimensional_ae.py            # K = locked dimensionality (07; default 7)
       python3 scripts/06_dimensional_ae.py --k 5 --epochs 300
 """
 from __future__ import annotations
@@ -40,11 +40,12 @@ from trans_diag import (  # noqa: E402
     load_variables,
     to_harmonized_dataset,
 )
+from trans_diag.masked_fa import masked_loadings, masked_scores  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
 SCORES_PATH = RESULTS_DIR / "cluster_domains_scores.parquet"
-FA_SCORES = RESULTS_DIR / "dimensional_axes_scores.parquet"
+FINAL_META = RESULTS_DIR / "dimensional_final_meta.json"   # locked K from 07 (fallback 7)
 SEED = 0
 SPECTRUM = {"Trouble dépressif majeur": 0, "Bipolaire de type 2": 1,
             "Bipolaire de type 1": 2, "Bipolaire non spécifié": 3,
@@ -82,9 +83,11 @@ def main() -> int:
     x0 = z.fillna(0.0).to_numpy(np.float32)
     d = x0.shape[1]
 
-    fa = pd.read_parquet(FA_SCORES).reindex(sc.index) if FA_SCORES.exists() else None
-    k = args.k or (fa.shape[1] if fa is not None else 5)
-    print(f"masked AE: {x0.shape[0]:,} patients × {d} domains → K={k} latent")
+    # K = the locked dimensionality (07); the masked-FA reference is recomputed below so the
+    # cross-check is order-independent and compares AE vs the SAME masked model at matched K.
+    locked_k = json.loads(FINAL_META.read_text())["K"] if FINAL_META.exists() else 7
+    k = args.k or locked_k
+    print(f"masked AE: {x0.shape[0]:,} patients × {d} domains → K={k} latent (vs locked masked-FA K={k})")
 
     X0 = torch.tensor(x0); M = torch.tensor(mask)
     model = MaskedAE(d, k)
@@ -128,21 +131,34 @@ def main() -> int:
     conf_age = max(abs(float(np.corrcoef(latent[m, a], age[m])[0, 1])) for a in range(k))
     print(f"  max |corr| AE axis vs age = {conf_age:.3f}")
 
-    # agreement with classical FA axes (canonical correlations)
-    can = None
-    if fa is not None:
-        kc = min(k, fa.shape[1])
-        cca = CCA(n_components=kc).fit(latent, fa.to_numpy())
-        U, V = cca.transform(latent, fa.to_numpy())
-        can = [float(np.corrcoef(U[:, i], V[:, i])[0, 1]) for i in range(kc)]
-        print(f"  canonical correlations AE vs classical FA: {[round(c,2) for c in can]} "
-              f"(high ⇒ same axes)")
+    # agreement with the LOCKED masked factor model (canonical correlations) + row-permutation
+    # null. The masked-FA reference is recomputed at the same K (identical to 07's loadings up to
+    # orientation/order, which CCA is invariant to); rows unscored by either model are dropped.
+    fa_ref = masked_scores(z, masked_loadings(sc, k))
+    valid = np.isfinite(fa_ref).all(1) & np.isfinite(latent).all(1)
+    Zc, Fc = latent[valid], fa_ref[valid]
+    cca = CCA(n_components=k).fit(Zc, Fc)
+    U, V = cca.transform(Zc, Fc)
+    can = [float(np.corrcoef(U[:, i], V[:, i])[0, 1]) for i in range(k)]
+    rng = np.random.default_rng(SEED)
+    null = []
+    for _ in range(200):
+        p = rng.permutation(len(Fc))
+        cc = CCA(n_components=k).fit(Zc, Fc[p])
+        Un, Vn = cc.transform(Zc, Fc[p])
+        null.append(abs(float(np.corrcoef(Un[:, 0], Vn[:, 0])[0, 1])))
+    can_null = {"leading_mean": float(np.mean(null)), "leading_p95": float(np.percentile(null, 95))}
+    print(f"  canonical correlations AE vs locked masked-FA: {[round(c, 2) for c in can]}")
+    print(f"  leading {abs(can[0]):.3f} vs row-permutation null {can_null['leading_mean']:.3f} "
+          f"(p95 {can_null['leading_p95']:.3f}) — high ⇒ same axes")
 
     meta = {"k": k, "epochs": args.epochs, "final_masked_mse": losses[-1],
             "continuum_spearman_per_axis": cont, "mood_axis": f"ae{best+1}",
             "max_confound_corr_age": conf_age,
-            "cca_with_classical_fa": can,
-            "note": "masked-loss AE → no imputation; mask fed to encoder."}
+            "cca_with_locked_fa": can, "cca_leading": abs(can[0]),
+            "cca_permutation_null": can_null,
+            "note": "masked-loss AE (no imputation; mask fed to encoder), compared to the LOCKED "
+                    "masked factor model at matched K via CCA with a 200x row-permutation null."}
     (RESULTS_DIR / "dimensional_ae_meta.json").write_text(json.dumps(meta, indent=2, default=str))
 
     _report(losses, cent, names, cont, best, can)

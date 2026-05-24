@@ -49,7 +49,7 @@ RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
 DOMAINS_PATH = RESULTS_DIR / "cluster_domains_scores.parquet"
 AXES_PATH = RESULTS_DIR / "dimensional_final_scores.parquet"
-K = 6                 # locked number of axes (matches 07)
+K = 7                 # locked number of axes (matches 07)
 N_REPEAT = 5          # shuffled 5-fold repeats (different seeds) for a stable estimate
 RANDOM = 0
 

@@ -40,7 +40,7 @@ from trans_diag.outcomes import cv_metric  # noqa: E402  (reuse the exact CV met
 
 RES = REPO / "results"
 SCORES = RES / "cluster_domains_scores.parquet"     # residualized 54 domains
-K = 6
+K = 7
 # (name, kind, outcome_col, transform, exclude_from_axes)
 OUTCOMES = [
     ("EQ-5D quality of life", "continuous", "eq5d", None, ["eq5d", "eq"]),
@@ -51,7 +51,7 @@ OUTCOMES = [
 
 
 def fit_axes(scores_df: pd.DataFrame, exclude) -> pd.DataFrame:
-    """Refit the K=6 varimax axes on the residualized domains minus `exclude`."""
+    """Refit the K=7 varimax axes on the residualized domains minus `exclude`."""
     cols = [c for c in scores_df.columns if c not in set(exclude)]
     sub = scores_df[cols]
     z = (sub - sub.mean()) / sub.std(ddof=0)

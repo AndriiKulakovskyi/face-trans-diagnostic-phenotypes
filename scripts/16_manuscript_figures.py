@@ -5,7 +5,7 @@ results/ (not from the interactive HTML reports), so the manuscript figures are
 self-contained and version-controlled.
 
   Fig 1  structure is dimensional   (results/structure_test.json + domain scores)
-  Fig 2  six-dimension loadings     (results/dimensional_final_loadings.csv)
+  Fig 2  seven-dimension loadings   (results/dimensional_final_loadings.csv)
   Fig 3  head-to-head outcomes      (results/phase5_headtohead_V1/_V2.csv)
   Fig 4  trait-state gradient       (results/longitudinal_axes_stability.csv)
   Fig 5  cognition g + speed        (results/cognition_bpsz_loadings.csv + _corr.csv)
@@ -186,29 +186,31 @@ def fig1_structure():
 def fig2_loadings():
     L = pd.read_csv(RESULTS / "dimensional_final_loadings.csv")
     W = L.pivot(index="domain", columns="axis", values="loading")
-    W = W[[f"axis{i}" for i in range(1, 7)]]
+    nax = len(AXIS_NAMES)
+    axord = [f"axis{i}" for i in range(1, nax + 1)]
+    W = W[axord]
     salient = W[(W.abs() >= 0.20).any(axis=1)].copy()
     salient["_a"] = salient.values.argmax(axis=1)
-    salient["_m"] = salient[[f"axis{i}" for i in range(1, 7)]].max(axis=1)
+    salient["_m"] = salient[axord].max(axis=1)
     salient = salient.sort_values(["_a", "_m"], ascending=[True, False]).drop(
         columns=["_a", "_m"])
     labels = [DOMAIN_LABEL.get(d, d) for d in salient.index]
 
-    fig, ax = plt.subplots(figsize=(7.2, max(6, 0.28 * len(salient))))
+    fig, ax = plt.subplots(figsize=(8.0, max(6, 0.28 * len(salient))))
     im = ax.imshow(salient.values, cmap="RdBu_r", vmin=-0.8, vmax=0.8, aspect="auto")
-    ax.set_xticks(range(6))
-    ax.set_xticklabels([AXIS_NAME[f"axis{i}"] for i in range(1, 7)], fontsize=8)
+    ax.set_xticks(range(nax))
+    ax.set_xticklabels([AXIS_NAME[f"axis{i}"] for i in range(1, nax + 1)], fontsize=8)
     ax.set_yticks(range(len(salient)))
     ax.set_yticklabels(labels, fontsize=7.5)
     for i in range(len(salient)):
-        for j in range(6):
+        for j in range(nax):
             v = salient.values[i, j]
             if abs(v) >= 0.20:
                 ax.text(j, i, f"{v:.2f}", ha="center", va="center", fontsize=6.5,
                         color="white" if abs(v) > 0.45 else "#222")
     cb = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.02)
     cb.set_label("varimax loading", fontsize=8)
-    ax.set_title("Figure 2. Six reproducible, confound-free trans-diagnostic\n"
+    ax.set_title("Figure 2. Seven reproducible, confound-free trans-diagnostic\n"
                  "dimensions (salient domain loadings, |λ|≥0.20)", fontsize=10)
     fig.tight_layout()
     save(fig, "fig2_loadings")

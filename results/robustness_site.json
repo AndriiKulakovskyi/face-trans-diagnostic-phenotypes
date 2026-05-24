@@ -5,10 +5,11 @@
   "axes_congruence_with_locked": [
     0.99,
     0.98,
-    0.91,
-    0.96,
-    0.2,
-    0.95
+    0.99,
+    0.95,
+    0.89,
+    0.95,
+    0.08
   ],
   "headtohead_combat": [
     {
@@ -16,9 +17,9 @@
       "n": 3196,
       "metric": "R2",
       "DSM": 0.366,
-      "axes": 0.349,
-      "combined": 0.386,
-      "combat_axes_minus_DSM": -0.016,
+      "axes": 0.351,
+      "combined": 0.387,
+      "combat_axes_minus_DSM": -0.014,
       "orig_axes_minus_DSM": -0.001,
       "added_axes_p": 1.1102230246251565e-16
     },
@@ -27,21 +28,21 @@
       "n": 6749,
       "metric": "AUC",
       "DSM": 0.75,
-      "axes": 0.578,
-      "combined": 0.742,
-      "combat_axes_minus_DSM": -0.172,
-      "orig_axes_minus_DSM": -0.128,
-      "added_axes_p": 0.04900990051616516
+      "axes": 0.576,
+      "combined": 0.74,
+      "combat_axes_minus_DSM": -0.175,
+      "orig_axes_minus_DSM": -0.132,
+      "added_axes_p": 0.06822560035787095
     },
     {
       "outcome": "EQ-5D quality of life",
       "n": 2423,
       "metric": "R2",
       "DSM": 0.305,
-      "axes": 0.337,
-      "combined": 0.342,
-      "combat_axes_minus_DSM": 0.032,
-      "orig_axes_minus_DSM": 0.039,
+      "axes": 0.338,
+      "combined": 0.343,
+      "combat_axes_minus_DSM": 0.033,
+      "orig_axes_minus_DSM": 0.038,
       "added_axes_p": 1.1102230246251565e-16
     }
   ]

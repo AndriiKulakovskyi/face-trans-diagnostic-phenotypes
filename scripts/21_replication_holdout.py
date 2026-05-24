@@ -47,7 +47,7 @@ RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
 DOMAINS_PATH = RESULTS_DIR / "cluster_domains_scores.parquet"
 LOADINGS_PATH = RESULTS_DIR / "dimensional_final_loadings.csv"
-K = 6
+K = 7
 MIN_SITE = 10          # a held-out site must have ≥10 patients (matches 13_robustness_site)
 MIN_COHORT_TEST = 150  # min held-out-cohort follow-up n to report a transport R²
 
@@ -81,7 +81,8 @@ def _refit_axes(D: pd.DataFrame, tr: np.ndarray, te: np.ndarray):
     """Masked-FA loadings on the TRAIN rows only → posterior-mean scores for train + test."""
     Dtr = D.iloc[tr]
     mu, sd = Dtr.mean(), Dtr.std(ddof=0)
-    sd = sd.where(sd > 0, 1.0)
+    mu = mu.fillna(0.0)                       # a domain unobserved in this fold → mean 0 (no NaN contamination)
+    sd = sd.where(sd > 0, 1.0).fillna(1.0)
     load = orient_order(masked_loadings(Dtr, K))
     ztr = ((Dtr - mu) / sd).to_numpy(float)
     zte = ((D.iloc[te] - mu) / sd).to_numpy(float)

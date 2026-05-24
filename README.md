@@ -4,7 +4,7 @@ Across bipolar disorder, schizophrenia and major depression in the FACE cohort,
 the categorical boundary the data support is **diagnosis itself** — every
 *trans-diagnostic* axis of variation is **continuous**. We harmonize the 3-cohort
 longitudinal data (baseline V0 → 4-year V4) and fit a confound-controlled
-**six-dimension** model that complements/outperforms DSM diagnosis for
+**seven-dimension** model that complements/outperforms DSM diagnosis for
 patient-reported outcomes. Full write-up: **[MANUSCRIPT.md](MANUSCRIPT.md)**.
 
 The repo is **self-contained** — the stratification engine (masked similarity →

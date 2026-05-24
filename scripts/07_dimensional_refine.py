@@ -10,14 +10,19 @@ estimate the model WITHOUT any imputation:
   1. **Loadings** from the pairwise-complete (masked) correlation matrix — each correlation
      uses only patients who have BOTH domains, so no cell is ever filled. Principal-axis
      factoring (iterated communalities) + varimax rotation (simple structure).
-  2. **K by masked split-half reproducibility** — locked at K=6 (masked split-half min
-     Tucker congruence ~0.89; K=7 also reproduces, K=8 collapses — we retain 6 for parsimony
-     and comparability with the mean-fill model).
+  2. **K by masked split-half reproducibility** — locked at K=7, the MAXIMUM reproducible
+     dimensionality: masked split-half min Tucker congruence stays >=0.85 through K=7 (K=7
+     min ~0.91, a local peak above K=5/6) and collapses at K>=8 (K=8 min ~0.22). K=7 splits
+     the K=6 mania/activation+impulsivity axis into a *pure* mania axis and a distinct
+     externalizing/neurodevelopmental axis (WURS/BIS/CTQ + family history) — the latter the
+     genuine, imputation-free counterpart of the ADHD/trauma signal that mean-fill had
+     rendered artifactual at K=6 (§3.8). Parallel analysis/Kaiser over-extract at this N;
+     we select on cross-sample reproducibility, not eigenvalue rules (§4.7).
   3. **Per-patient scores** = the factor-analysis posterior mean computed on each patient's
      OBSERVED support only (regression/Thomson scores; no imputation):
         f_i = (I + L_o' Psi_o^-1 L_o)^-1 L_o' Psi_o^-1 z_{i,o},  Psi = 1 - communalities.
 
-Final representation = 6 reproducible, confound-controlled, imputation-free varimax axes.
+Final representation = 7 reproducible, confound-controlled, imputation-free varimax axes.
 These scores feed Phase 5 (outcomes), Phase 4 (longitudinal), cognition and the figures.
 
 Artifacts: results/dimensional_final_{scores.parquet,loadings.csv,meta.json},
@@ -53,7 +58,7 @@ RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
 SCORES_PATH = RESULTS_DIR / "cluster_domains_scores.parquet"
 RANDOM = 0
-K = 6                # locked (masked split-half reproducible; see docstring)
+K = 7                # locked: maximum reproducible dimensionality (split-half min >=0.85 through K=7; K>=8 collapse)
 MIN_PAIR = 100       # min co-observed patients to trust a pairwise correlation
 PSI_FLOOR = 0.05     # floor on uniquenesses (guards Heywood cases) for scoring
 SPECTRUM = {"Trouble dépressif majeur": 0, "Bipolaire de type 2": 1,
@@ -111,11 +116,11 @@ def main() -> int:
     A, B = sc.iloc[perm[:h]], sc.iloc[perm[h:]]
     print("masked split-half reproducibility (min/mean Tucker congruence):")
     curve = []
-    for k in range(3, 9):
+    for k in range(3, 13):
         m = tucker_min(masked_loadings(A, k), masked_loadings(B, k))
         curve.append({"k": k, "min_congruence": float(np.min(m)), "mean_congruence": float(np.mean(m))})
         print(f"  K={k:>2}  min={np.min(m):.2f}  mean={np.mean(m):.2f}")
-    print(f"\nlocked K = {K} (masked split-half reproducible; K=7 also reproduces, K=8 collapses)")
+    print(f"\nlocked K = {K} (maximum reproducible: split-half min >=0.85 through K=7; K>=8 collapse)")
 
     # 2. final masked varimax loadings at K, oriented + ordered by sum-of-squares
     load = masked_loadings(sc, K)
@@ -165,11 +170,13 @@ def main() -> int:
             "reproducibility_curve": curve,   # masked split-half (consumed by 15 for figS2)
             "dsm_ordering_per_axis": cont, "strongest_ordering_axis": f"axis{best+1}",
             "confound_max_corr": conf,
-            "note": "Re-derived imputation-free (LABBOOK E19, MANUSCRIPT §3.8). 5 of 6 axes match "
-                    "the former mean-fill model; the 6th is now a socio-occupational/work-disability "
-                    "axis (the former ADHD/impulsivity/trauma axis was a mean-fill co-observation "
-                    "artifact). Orthogonal varimax; the mood<->psychosis spectrum is a cross-axis "
-                    "direction (AE recovers it at 0.89)."}
+            "note": "Imputation-free; locked at K=7 = maximum reproducible dimensionality "
+                    "(masked split-half min >=0.85 through K=7; K>=8 collapse). K=7 splits the K=6 "
+                    "mania/activation+impulsivity axis into a pure mania axis and a distinct "
+                    "externalizing/neurodevelopmental axis (WURS/BIS/CTQ + family history) - the "
+                    "genuine imputation-free counterpart of the ADHD/trauma signal that mean-fill "
+                    "rendered artifactual at K=6 (LABBOOK E19, MANUSCRIPT §3.8). Orthogonal varimax; "
+                    "the mood<->psychosis spectrum is a cross-axis direction."}
     (RESULTS_DIR / "dimensional_final_meta.json").write_text(json.dumps(meta, indent=2, default=str))
 
     # report

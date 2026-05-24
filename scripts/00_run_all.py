@@ -27,7 +27,7 @@ STEPS: list[tuple[str, list[str]]] = [
     ("04_structure_test.py", []),           # discrete-vs-dimensional verdict (uses embedding)
     ("05_dimensional_axes.py", []),         # classical varimax FA (parallel analysis) — AE reference
     ("06_dimensional_ae.py", []),           # masked autoencoder (no-imputation cross-check)
-    ("07_dimensional_refine.py", []),       # LOCKED K=6 axes (split-half congruence) → final scores
+    ("07_dimensional_refine.py", []),       # LOCKED K=7 axes (max reproducible; split-half) → final scores
     ("08_longitudinal_axes.py", []),        # trait–state stability V0→V4
     ("09_longitudinal_coherence.py", []),   # discrete-flow negative result + DSM contingency
     ("10_phase5_outcomes.py", ["--visit", "V1"]),   # head-to-head (primary)

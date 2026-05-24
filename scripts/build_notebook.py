@@ -33,7 +33,7 @@ figure, with an explanation of the method and what to look for.
 
 **The thesis.** Across bipolar disorder (BP), schizophrenia (SZ) and major depression (DR), the
 only categorical structure the data support is *diagnosis itself* — all trans-diagnostic variation
-is **continuous**. We recover six reproducible, confound-controlled symptom **dimensions** that
+is **continuous**. We recover seven reproducible, confound-controlled symptom **dimensions** that
 complement/outperform DSM diagnosis for patient-reported outcomes.
 
 **Requirements.** `pip install -e ".[full]"` (adds `torch`, `neuroHarmonize`, `kaleido`) and the
@@ -180,27 +180,29 @@ run_step("16_manuscript_figures.py")   # generates Figures 1–5 from the artifa
 fig("fig1_structure.png", "No eigengap; monotone gap; unimodal axes; HDBSCAN≈cohort; DSM mood↔psychosis continuum.")
 """)
 
-# ───────────────────────────────────────── 5 the six dimensions
+# ───────────────────────────────────────── 5 the seven dimensions
 md(r"""
-## 5 · The six trans-diagnostic dimensions (§3.3)
+## 5 · The seven trans-diagnostic dimensions (§3.3)
 
 We fit an **imputation-free varimax factor model** — masked pairwise-complete correlation → principal-axis
 factoring + varimax → posterior-mean scores on each patient's observed support (no cell ever filled). The
-factor count is set by **masked split-half Tucker congruence** (reproducibility), giving **K = 6**:
-depression/internalizing, later age-of-onset, mania/activation (with impulsivity), illness/hospitalization
-burden, metabolic/inflammatory load, and socio-occupational/work-disability. A no-imputation masked
-autoencoder recovers the same axes (canonical correlations 0.98–0.69, far above a permutation null). The
-axes are confound-free (|corr| age/sex ≤0.017) and diagnosis-independent (cohort η²≤0.11, site ≤0.05).
+factor count is set by **masked split-half Tucker congruence** (reproducibility), giving **K = 7** (the
+maximum reproducible dimensionality; K≥8 collapses): depression/internalizing, later age-of-onset,
+illness/hospitalization burden, mania/activation (pure), an externalizing/neurodevelopmental axis
+(impulsivity, childhood-ADHD, early adversity), metabolic/inflammatory load, and
+socio-occupational/work-disability. A no-imputation masked autoencoder recovers the same structure
+(leading canonical correlation 0.97 vs a permutation null of 0.05). The axes are confound-free
+(|corr| age/sex ≤0.018) and diagnosis-independent (cohort η²≤0.113, site ≤0.053).
 """)
 code(r"""
 run_step("05_dimensional_axes.py")     # classical varimax FA (AE reference)
 run_step("06_dimensional_ae.py")       # masked autoencoder cross-check
-run_step("07_dimensional_refine.py")   # LOCK K=6 by split-half congruence
+run_step("07_dimensional_refine.py")   # LOCK K=7 by split-half congruence
 fmeta = show("dimensional_final_meta.json")
 print("locked K =", fmeta["K"], "| max |corr| age/sex =", max(fmeta["confound_max_corr"].values()))
 print("(AE↔FA canonical correlations are reported below from review_checks — AE vs the FINAL imputation-free model.)")
 """)
-md("**Figure 2 — the six-dimension loading structure** (salient |λ|≥0.20).")
+md("**Figure 2 — the seven-dimension loading structure** (salient |λ|≥0.20).")
 code(r"""fig("fig2_loadings.png", "Clean block structure: each dimension is carried by a coherent set of instruments.")""")
 md("Per-dimension reproducibility (split-half min Tucker congruence) and the K curve:")
 code(r"""
@@ -208,7 +210,7 @@ run_step("15_review_checks.py")        # eta-squared (cohort/site), CCA permutat
 rc = show("review_checks.json")
 print("AE↔FA leading CCA:", rc["cca_observed"][0], "vs permutation null 95th pct:", rc["cca_null_leading_p95"])
 print("DSM-subtype variance explained per axis (eta^2):", rc.get("eta_cohort"))
-fig("figS2_kcurve.png", "Masked split-half reproducibility vs K: minimum congruence ≥0.85 through K=7; K=6 locked.")
+fig("figS2_kcurve.png", "Masked split-half reproducibility vs K: minimum congruence ≥0.85 through K=7; K=7 locked (K≥8 collapse).")
 """)
 md("**Figure 6c — trans-diagnostic overlap:** even the most diagnosis-linked axis (illness burden) is "
    "only ~14 % explained by DSM-5 (η²); diagnoses fan across the whole axis.")
@@ -292,7 +294,7 @@ md(r"""
 | Claim | Evidence (reproduced above) |
 |---|---|
 | Structure is **dimensional, not categorical** | no eigengap · monotone gap · HDBSCAN≈cohort · DSM continuum ρ 0.79 |
-| **Six** reproducible, confound-free, **imputation-free** axes | masked split-half congruence ≥0.89 · age/sex |corr|≤0.017 · FA≈AE (CCA 0.98 vs null 0.06) |
+| **Seven** reproducible, confound-free, **imputation-free** axes | masked split-half congruence 0.91 (K=7) · age/sex |corr|≤0.018 · FA≈AE (CCA 0.97 vs null 0.06) |
 | Genuinely **trans-diagnostic** | cohort η²≤0.11, site ≤0.05; even the most diagnosis-linked axis (illness burden) only η² 0.14 of DSM |
 | Axes **beat/complement DSM** for patient-reported outcomes | QoL +0.039 [+0.036,+0.042]; functioning combined +0.034; robust to de-circularization, ComBat, V2 |
 | Discrete clustering **fails** | ~38 % persistence, DSM-ARI 0.006 → slices of a continuum (Suppl. S1) |

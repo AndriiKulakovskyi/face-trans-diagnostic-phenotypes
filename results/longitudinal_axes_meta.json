@@ -1,10 +1,11 @@
 {
-  "K": 6,
+  "K": 7,
   "axis_names": [
     "depression_severity",
     "later_onset",
-    "mania_activation",
     "illness_burden",
+    "mania_activation",
+    "externalizing",
     "metabolic",
     "work_disability"
   ],
@@ -12,9 +13,10 @@
   "trait_state_meanr_V1V2": {
     "metabolic": 0.627,
     "depression_severity": 0.55,
-    "illness_burden": 0.357,
-    "mania_activation": 0.284,
-    "work_disability": 0.22,
-    "later_onset": 0.087
+    "illness_burden": 0.354,
+    "externalizing": 0.29,
+    "mania_activation": 0.248,
+    "work_disability": 0.243,
+    "later_onset": 0.092
   }
 }

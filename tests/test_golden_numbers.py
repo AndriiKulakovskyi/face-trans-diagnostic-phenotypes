@@ -49,7 +49,7 @@ def test_outcomes_headtohead():
     assert _lead(h["dim_minus_DSM"]) < -0.10              # DSM dominates hospitalization
 
 
-# ── Table 2 — top loadings of the six imputation-free axes ────────────────────────────
+# ── Table 2 — top loadings of the seven imputation-free axes ──────────────────────────
 def test_axis_loadings():
     L = pd.read_csv(_need("dimensional_final_loadings.csv"))
     top = {a: g.set_index("domain")["loading"].abs().idxmax()
@@ -58,20 +58,22 @@ def test_axis_loadings():
            for a, g in L.groupby("axis")}
     assert top["axis1"] == "qidsr" and abs(val["axis1"] - 0.89) <= 0.04        # depression
     assert top["axis2"] == "agetrt" and abs(val["axis2"] - 0.79) <= 0.04        # later onset
-    assert top["axis4"] == "nboccur_hospitalisation_lt"                          # illness burden
-    assert top["axis5"] == "metabolic_syndrome"                                  # metabolic
-    assert top["axis6"] == "hooccur_arret_travail_actuel"                        # work-disability
+    assert top["axis3"] == "nboccur_hospitalisation_lt"                          # illness burden
+    assert top["axis4"] == "altman"                                              # mania (pure)
+    assert top["axis5"] == "wurs"                                                # externalizing (new at K=7)
+    assert top["axis6"] == "metabolic_syndrome"                                  # metabolic
+    assert top["axis7"] == "hooccur_arret_travail_actuel"                        # work-disability
 
 
 # ── §3.3 — confound independence + AE↔FA agreement + structure ────────────────────────
 def test_confound_and_agreement():
     meta = _json("dimensional_final_meta.json")
-    assert meta["K"] == 6
-    assert max(meta["confound_max_corr"].values()) <= 0.02      # age/sex ≤0.017
+    assert meta["K"] == 7
+    assert max(meta["confound_max_corr"].values()) <= 0.02      # age/sex ≤0.018
     rc = _json("review_checks.json")
-    assert rc["eta_cohort_max"] <= 0.12                          # cohort ≤0.112
-    assert rc["eta_site_max"] <= 0.055                           # site ≤0.051
-    assert rc["cca_observed"][0] >= 0.95                         # AE↔FA leading CCA 0.98
+    assert rc["eta_cohort_max"] <= 0.12                          # cohort ≤0.113
+    assert rc["eta_site_max"] <= 0.055                           # site ≤0.053
+    assert rc["cca_observed"][0] >= 0.95                         # AE↔FA leading CCA 0.97
     assert rc["cca_observed"][0] > rc["cca_null_leading_p95"] + 0.5   # far above null
     assert abs(rc["continuum_rho"] - 0.786) <= 0.02             # mood↔psychosis ρ 0.79
     assert rc["cohort_from_mask_bacc"] >= 0.95                   # 98% from mask
@@ -80,9 +82,12 @@ def test_confound_and_agreement():
 # ── §3.3 / Fig 6c — DSM-subtype variance per axis ─────────────────────────────────────
 def test_dsm_eta_squared():
     e = pd.read_csv(_need("dimensional_dsm_eta_squared.csv")).set_index("axis")["eta_sq"]
-    assert abs(e["illness_burden"] - 0.140) <= 0.01            # most diagnosis-linked
-    assert abs(e["depression_severity"] - 0.123) <= 0.01
-    assert e.drop(["illness_burden", "depression_severity"]).max() <= 0.08   # others ≤0.07
+    assert abs(e["illness_burden"] - 0.134) <= 0.01            # most diagnosis-linked
+    assert abs(e["depression_severity"] - 0.127) <= 0.01
+    assert abs(e["work_disability"] - 0.103) <= 0.01           # third diagnosis-linked axis (K=7)
+    # the remaining four axes are minimally diagnosis-bound; the new externalizing axis least of all
+    assert e.drop(["illness_burden", "depression_severity", "work_disability"]).max() <= 0.04
+    assert e["externalizing"] <= 0.03
 
 
 # ── §3.6 / Table 2 — trait–state gradient (V0↔V1) ─────────────────────────────────────

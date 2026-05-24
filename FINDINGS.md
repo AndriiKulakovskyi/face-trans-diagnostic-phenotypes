@@ -303,6 +303,31 @@ perceptual reasoning, fluency; TMT reverse-signed — confirmed −0.16 vs CVLT)
 - **Small, non-redundant increment to functioning** (V1 EGF, BP/SZ n=2,478): symptom-axes
   R² 0.394 → +cognition 0.398 (Δ **+0.004**; shuffled CV) — modest but independent.
 
+### 3i. K=7 re-lock — the externalizing axis (CURRENT headline; supersedes the K=6 framing in §3d–§3g)
+The masked split-half curve is non-monotone: K=6 dips (min 0.886) and **K=7 recovers (min 0.911)** — a
+local maximum and the **maximum reproducible dimensionality** (K≥8 collapse, K=8 min 0.22; parallel
+analysis over-extracts to ~14 at this N, so we select on cross-sample reproducibility, not eigenvalues).
+We therefore re-locked the headline at **K=7** (`07_dimensional_refine.py`). The seventh axis is *not* a
+splinter: it **splits the K=6 mania+impulsivity factor** into a **pure mania** axis and a genuine
+**externalizing/neurodevelopmental** axis — WURS (childhood ADHD) +0.53, BIS +0.40, CTQ +0.38, + family
+loading — anchored by well-observed instruments (CTQ 91%), mapping to the HiTOP externalizing/disinhibition
+spectrum, and the **least diagnosis-bound** axis (DSM η² 0.017). It is the imputation-free counterpart of
+the ADHD/trauma signal that mean-fill had mis-selected as the K=6 sixth axis (§2.5): real content, wrong
+slot under under-extraction + co-observation reweighting.
+- **Seven axes (SS order):** depression · later-onset · illness-burden · mania (pure) · externalizing ·
+  metabolic · work-disability. Confound-clean (age/sex ≤0.018), cohort η²≤0.113, site ≤0.053.
+- **AE↔FA:** leading CCA **0.97** vs perm-null **0.05** (`06` now compares vs the LOCKED model + a 200×
+  permutation null; the committed K=8 / CCA-0.93 staleness that misreported the manuscript's 0.98 is
+  fixed). The AE recovers the mood↔psychosis spectrum at |Spearman| 0.93; the 7th canonical corr is weak
+  (0.13) — the two estimators agree on six directions, weakly on the externalizing↔work-disability pair
+  (the two lowest-coverage axes).
+- **Prediction is K-robust (parity, not gain):** QoL axes−DSM **+0.038** [+0.035,+0.042], functioning
+  combined +0.034, hosp DSM-dominated — unchanged from K=6 within CV noise (fold-honest +0.039; ComBat
+  +0.033; V2 +0.032; leave-site +0.042). The pivot is a **structural/novelty** win (better reproducibility +
+  the externalizing axis + purified mania + resolving §2.5), **not** a predictive one.
+- **Trait-state (mean V0↔V1/V2):** metabolic 0.63 & depression 0.55 trait-like; externalizing 0.29, mania
+  0.25, work-disability 0.24 state-like; later-onset 0.09 (static). See MANUSCRIPT §3.3/§3.8; LABBOOK E23.
+
 ## 4. The scientific fork (framing)
 Two mutually-exclusive products, because **diagnosis + demographics are the
 dominant variance axes** in the data:

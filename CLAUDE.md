@@ -9,7 +9,7 @@
 A **self-contained** project that harmonizes the 3-cohort FACE psychiatric data
 (Bipolar, Schizophrenia, Depression; baseline V0 → 4-year V4) and models
 **trans-diagnostic** structure across DSM-5. Headline result: trans-diagnostic
-variation is **dimensional, not categorical** — six reproducible, confound-controlled
+variation is **dimensional, not categorical** — seven reproducible, confound-controlled
 symptom dimensions that complement/outperform DSM diagnosis for patient-reported
 outcomes (full write-up in `MANUSCRIPT.md`).
 
@@ -96,7 +96,7 @@ Scripts are numbered in execution order — read or run them top-to-bottom:
 `01_manuscript_table1` (Table 1) → `02_confound_ladder` (§3.1 confound trap) →
 `03_cluster_domains` (residualized scores + embedding) → `04_structure_test`
 (discrete-vs-dimensional) → `05_dimensional_axes` (varimax FA) → `06_dimensional_ae`
-(autoencoder cross-check) → `07_dimensional_refine` (locked K=6 axes) →
+(autoencoder cross-check) → `07_dimensional_refine` (locked K=7 axes) →
 `08_longitudinal_axes` → `09_longitudinal_coherence` → `10_phase5_outcomes` (V1 then V2)
 → `11_phase5_ci` → `12_phase5_decircularized` → `13_robustness_site` (ComBat) →
 `14_cognition_bpsz` → `15_review_checks` → `16_manuscript_figures` →
@@ -121,19 +121,24 @@ pipeline steps.
 - **Trans-diagnostic structure is DIMENSIONAL, not discrete** (structure test: no eigengap,
   monotone gap, HDBSCAN≈cohort ARI 0.70; the only discrete structure is diagnosis). The 7
   DSM subtypes order on a mood↔psychosis continuum (ρ 0.79 [0.75,0.86]).
-- **Final model: K=6 imputation-free confound-free axes** (`07_dimensional_refine.py`: masked
+- **Final model: K=7 imputation-free confound-free axes** (`07_dimensional_refine.py`: masked
   pairwise-complete correlation → PAF+varimax → masked posterior-mean scores, NO cell filled;
-  FA + PyTorch AE agree, CCA 0.98). Diagnosis-independent (cohort η²≤0.11, site ≤0.05). Axes:
-  depression, later-onset, mania/activation(+impulsivity), illness-burden, metabolic, work-disability.
-- **Imputation-free re-analysis (DONE).** The former FA mean-fill reweighted correlations by
+  K=7 = max reproducible dimensionality, split-half min 0.91, K≥8 collapse; FA + PyTorch AE agree,
+  leading CCA 0.97 vs perm-null 0.05). Diagnosis-independent (cohort η²≤0.113, site ≤0.053). Axes:
+  depression, later-onset, illness-burden, mania/activation(pure), externalizing/neurodevelopmental
+  (impulsivity/childhood-ADHD/trauma), metabolic, work-disability.
+- **Imputation-free + K=7 re-lock (DONE).** The former FA mean-fill reweighted correlations by
   co-observation (`corr_fill≈O·corr_masked`, R²=0.999), biasing the weakest factor; re-derived
   imputation-free (`scripts/sensitivity_masked_fa*.py` ablation → `src/trans_diag/masked_fa.py`;
-  MANUSCRIPT §3.8, LABBOOK E19). 5/6 axes unchanged; the 6th (was ADHD/trauma, a mean-fill
-  artifact) is now **work-disability**, and impulsivity (WURS/BIS) merged into mania/activation.
-- **Outcomes (shuffled CV + repeated-CV CIs):** axes beat DSM on QoL (+0.039 [+0.036,+0.042]),
+  MANUSCRIPT §3.8, LABBOOK E19, E23). At the max-reproducible K=7 the conflated weak structure
+  separates cleanly: mania becomes **pure**, and a genuine **externalizing/neurodevelopmental**
+  axis (WURS/BIS/CTQ + family history) emerges — the imputation-free counterpart of the ADHD/trauma
+  signal that mean-fill mis-selected as the K=6 sixth axis. Prediction is K-robust (parity), so the
+  pivot is a structural/novelty gain, not a predictive one.
+- **Outcomes (shuffled CV + repeated-CV CIs):** axes beat DSM on QoL (+0.038 [+0.035,+0.042]),
   complement functioning (combined +0.034), DSM dominates hospitalization. Robust to
-  de-circularization, ComBat, and V2 (same cohort). Trait-state: metabolic (0.64) & depression
-  (0.58) most trait-like (masked scoring; the old metabolic 0.20 was a mean-fill artifact).
+  de-circularization, ComBat, fold-honest re-fit, and V2 (same cohort). Trait-state: metabolic (0.63)
+  & depression (0.55) most trait-like (masked scoring; the old metabolic 0.20 was a mean-fill artifact).
 - **Discrete clustering = negative result** (~38% persistence, DSM-ARI 0.006) — slices of a
   continuum; supplement only.
 - **Repo independence:** engine internalized (`engine/`); full pipeline reproduces the

@@ -434,6 +434,36 @@ general-severity ("p") score. **Verdict: no usable predictive instrument; cut fr
   its tests/exports, artifacts and Fig 7; renamed `24_pfactor`→`19_pfactor`; removed manuscript §3.9
   and updated §4.6 + the rotation limitations; scrubbed the notebook and docs.
 
+## E23 · K=7 re-lock — the externalizing/neurodevelopmental axis — 2026-05-24
+Reviewer-prompted deep-dive that started from an AE reconciliation bug and ended in a headline change.
+- **AE staleness found.** `06_dimensional_ae.py` defaulted its latent K off the *exploratory* 8-factor
+  `05` output and CCA'd against it (committed artifact: K=8, leading CCA 0.935) — so the manuscript's
+  "K=6, CCA 0.98, null 0.06, AE age-leak 0.15, AE mood 0.89" was a mix of K=8 values and an
+  unreproducible 0.98. Fixed `06` to recompute the masked-FA reference internally at the locked K and
+  CCA against it + a 200× row-permutation null (order-independent; no `00_run_all` reorder needed).
+- **Non-monotone reproducibility → K=7.** Masked split-half min Tucker congruence: K3 0.98, K4 0.97,
+  K5 0.89, **K6 0.886**, **K7 0.911**, K8 0.22 (collapse), K9–11 0.76–0.81, K12 0.43. K=7 is a *local
+  maximum* and the last reproducible K. Horn's parallel analysis over-extracts to ~14 at N=9,013; we
+  select on cross-sample reproducibility (as the paper already argued), not eigenvalue rules.
+- **What the 7th axis is.** At K=7 the K=6 mania/activation+impulsivity factor **splits** (6a3→7a4
+  congruence 0.93, 6a3→7a5 0.68) into **pure mania** (Altman/Mathys/YMRS) and a new
+  **externalizing/neurodevelopmental** axis (WURS +0.53, BIS +0.40, CTQ +0.38, maternal-suicide +0.23,
+  edu −0.23). Anchored by well-observed instruments (CTQ 91%), confound-clean (0.018), near-orthogonal
+  (max off-diag r 0.14), the **least diagnosis-bound** axis (DSM η² 0.017). It is the genuine,
+  imputation-free counterpart of the ADHD/trauma signal that mean-fill mis-selected as the K=6 6th axis
+  (E19/§3.8): the *content* was real; its *selection over work-disability at K=6* was the artifact.
+- **Decision gate = parity, not gain.** Predictive head-to-head at K=7 vs K=6: QoL +0.038 vs +0.039,
+  functioning combined +0.033 vs +0.034, hosp DSM-dominated — identical within CV noise (a finer
+  rotation of nearly the same variance predicts the same). The pivot is justified on **structural
+  validity + novelty + reproducibility**, prediction K-robust (a robustness point, not a loss). User
+  chose the full pivot with this caveat explicit.
+- **Blast radius.** K flipped in `07/08/12/13/19/20/21`; `axes.py` remapped to 7 (new SS order:
+  illness-burden now precedes the pure mania axis, externalizing at 5, work-disability at 7); figures
+  `15/16/18` generalized to `len(AXIS_NAMES)`; `06` reconciled; golden tests re-derived. Fixed a latent
+  leave-one-cohort NaN bug in `21` (`_refit_axes` now NaN-safe when a domain is unobserved in a fold).
+  Full `00_run_all` reproduces (22 steps OK, 366 s); 75 tests + `verify.py` pass. Manuscript (title →
+  "seven", §2.7/2.8/3.3–3.8/4.1–4.2/4.8, Tables 2–4, abstract), CLAUDE, FINDINGS §3i all updated.
+
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
   attempt at *discrete*-structure discovery, in case a learned representation
