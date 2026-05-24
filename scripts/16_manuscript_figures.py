@@ -41,7 +41,7 @@ plt.rcParams.update({
 AXIS_NAME = {
     "axis1": "Depression /\ninternalizing", "axis2": "Later onset",
     "axis3": "Mania /\nactivation", "axis4": "Illness burden",
-    "axis5": "Metabolic /\ninflammatory", "axis6": "ADHD /\nimpulsivity / trauma",
+    "axis5": "Metabolic /\ninflammatory", "axis6": "Socio-occupational /\nwork-disability",
 }
 DOMAIN_LABEL = {
     "qidsr": "QIDS", "madrs": "MADRS", "staya": "STAI-trait", "fast": "FAST (impair.)",
@@ -58,6 +58,8 @@ DOMAIN_LABEL = {
     "inflammation": "inflammation", "hepatic": "hepatic", "renal": "renal",
     "prolactin": "prolactin", "cardiac_qtc": "QTc",
     "hooccur_arret_travail_actuel": "current sick-leave",
+    "hooccur_arret_travail": "lifetime sick-leave", "stprof": "professional status",
+    "pregnn_rporres": "pregnancies", "fagers": "age",
 }
 COG_LABEL = {
     "memory_cvlt": "Verbal memory\n(CVLT)", "executive_tmt": "Executive\n(TMT)",
@@ -66,7 +68,7 @@ COG_LABEL = {
     "fluency": "Fluency",
 }
 AXIS_SHORT = ["Depression", "Later onset", "Mania", "Illness burden",
-              "Metabolic", "ADHD/trauma"]
+              "Metabolic", "Work-disability"]
 SUBTYPE_SHORT = {
     "Trouble dépressif majeur": "MDD", "Bipolaire de type 2": "BP-II",
     "Bipolaire de type 1": "BP-I", "Bipolaire non spécifié": "BP-NOS",

@@ -30,10 +30,10 @@ RES = REPO / "results"
 FIG = REPO / "reports" / "figures"
 
 AXES = ["depression_severity", "later_onset", "mania_activation",
-        "illness_burden", "metabolic", "adhd_impulsivity_trauma"]
+        "illness_burden", "metabolic", "work_disability"]
 PRETTY = {"depression_severity": "Depression", "later_onset": "Later onset",
           "mania_activation": "Mania", "illness_burden": "Illness burden",
-          "metabolic": "Metabolic", "adhd_impulsivity_trauma": "ADHD/trauma"}
+          "metabolic": "Metabolic", "work_disability": "Work-disability"}
 BAND_LABELS = ["Low", "Mid", "High"]
 BAND_COLORS = ["#2ca02c", "#bdbdbd", "#d62728"]   # low / mid / high
 DISCRETE_PERSIST = 0.388                            # discrete-cluster V0→V1 (Suppl. S1)
@@ -124,9 +124,9 @@ def main() -> int:
     fig = make_subplots(rows=1, cols=2, horizontal_spacing=0.10,
                         specs=[[{"type": "sankey"}, {"type": "sankey"}]],
                         subplot_titles=(
-                            f"ADHD/trauma (trait) · {persist['adhd_impulsivity_trauma']*100:.0f}% stay in band",
+                            f"Depression (trait) · {persist['depression_severity']*100:.0f}% stay in band",
                             f"Mania (state) · {persist['mania_activation']*100:.0f}% stay in band"))
-    for col, ax in [(1, "adhd_impulsivity_trauma"), (2, "mania_activation")]:
+    for col, ax in [(1, "depression_severity"), (2, "mania_activation")]:
         wb = pd.DataFrame({st: band(s.xs(st, level="visit")[ax], edges[ax]) for st in stages})
         sankey, _ = alluvial_traces(wb, stages, ax)
         fig.add_trace(sankey, row=1, col=col)

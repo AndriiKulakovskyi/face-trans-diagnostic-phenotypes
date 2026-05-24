@@ -112,16 +112,24 @@ Scripts are numbered in execution order — read or run them top-to-bottom:
 - **Determinism**: fixed seeds throughout; reproduces to ≤1e-12 (BLAS round-off only).
   All CV folds are shuffled (the patient matrix is cohort-ordered).
 
-## Status (manuscript-complete)
+## Status (manuscript draft; imputation-free model)
 
 - **Trans-diagnostic structure is DIMENSIONAL, not discrete** (structure test: no eigengap,
   monotone gap, HDBSCAN≈cohort ARI 0.70; the only discrete structure is diagnosis). The 7
   DSM subtypes order on a mood↔psychosis continuum (ρ 0.79 [0.75,0.86]).
-- **Final model: K=6 confound-free axes** (`07_dimensional_refine.py`; FA + PyTorch AE agree,
-  CCA 0.93 vs permutation null 0.06). Diagnosis-independent (cohort η²≤0.10, site ≤0.05).
-- **Outcomes (shuffled CV + repeated-CV CIs):** axes beat DSM on QoL (+0.036 [+0.033,+0.039]),
-  complement functioning (combined +0.029), DSM dominates hospitalization. Robust to
-  de-circularization, ComBat, and V2 (same cohort).
+- **Final model: K=6 imputation-free confound-free axes** (`07_dimensional_refine.py`: masked
+  pairwise-complete correlation → PAF+varimax → masked posterior-mean scores, NO cell filled;
+  FA + PyTorch AE agree, CCA 0.93). Diagnosis-independent (cohort η²≤0.11, site ≤0.05). Axes:
+  depression, later-onset, mania/activation(+impulsivity), illness-burden, metabolic, work-disability.
+- **Imputation-free re-analysis (DONE).** The former FA mean-fill reweighted correlations by
+  co-observation (`corr_fill≈O·corr_masked`, R²=0.999), biasing the weakest factor; re-derived
+  imputation-free (`scripts/sensitivity_masked_fa*.py` ablation → `src/trans_diag/masked_fa.py`;
+  MANUSCRIPT §3.8, LABBOOK E19). 5/6 axes unchanged; the 6th (was ADHD/trauma, a mean-fill
+  artifact) is now **work-disability**, and impulsivity (WURS/BIS) merged into mania/activation.
+- **Outcomes (shuffled CV + repeated-CV CIs):** axes beat DSM on QoL (+0.039 [+0.036,+0.042]),
+  complement functioning (combined +0.034), DSM dominates hospitalization. Robust to
+  de-circularization, ComBat, and V2 (same cohort). Trait-state: metabolic (0.64) & depression
+  (0.58) most trait-like (masked scoring; the old metabolic 0.20 was a mean-fill artifact).
 - **Discrete clustering = negative result** (~38% persistence, DSM-ARI 0.006) — slices of a
   continuum; supplement only.
 - **Repo independence:** engine internalized (`engine/`); full pipeline reproduces the

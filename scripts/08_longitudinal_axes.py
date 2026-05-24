@@ -4,15 +4,15 @@ The cluster version (09_longitudinal_coherence.py) needed a classifier and discr
 a continuum. Axes are continuous, so we ask the cleaner question directly: does a
 patient keep their score on each axis across annual visits?
 
-Pipeline (consistent with the cluster longitudinal + the dimensional model):
+Pipeline (imputation-free, consistent with the dimensional model; LABBOOK E19):
   per visit → to_harmonized_dataset(DOMAIN_SECTIONS) → pool → build_domain_scores
   (common scale) → restrict to the 54 V0 domains → residualize on per-visit age+sex
-  (spline + cross-fit) → standardize → fit Factor Analysis (K=6, varimax) on V0 rows,
-  transform every (patient, visit) → axis scores.
+  (spline + cross-fit) → standardize per domain (NaN kept, NO imputation) → PROJECT the
+  locked imputation-free V0 loadings (dimensional_final_loadings.csv) onto every
+  (patient, visit) via masked posterior-mean scoring → axis scores.
 
 Then per axis, per visit: V0↔Vk test-retest correlation (Pearson/Spearman) + ICC(2,1)
-on patients present at both → a trait↔state gradient. We also confirm the refit axes
-match the locked set (Tucker congruence with dimensional_final_loadings).
+on patients present at both → a trait↔state gradient.
 
 Artifacts: results/longitudinal_axes_{stability.csv,scores.parquet}, reports/longitudinal_axes.html.
 Run:  python3 scripts/08_longitudinal_axes.py
@@ -33,8 +33,6 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 import plotly.graph_objects as go  # noqa: E402
 import plotly.io as pio  # noqa: E402
 from scipy.stats import pearsonr, spearmanr  # noqa: E402
-from sklearn.decomposition import FactorAnalysis  # noqa: E402
-from sklearn.preprocessing import StandardScaler  # noqa: E402
 
 from trans_diag import (  # noqa: E402
     ADMINISTRATIVE_FEATURES,
@@ -46,15 +44,18 @@ from trans_diag import (  # noqa: E402
     residualize_features,
     to_harmonized_dataset,
 )
+from trans_diag.masked_fa import masked_scores  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "reports"
 VISITS = ["V0", "V1", "V2", "V3", "V4"]
 K = 6
 SPLINE_DF, CROSS_FIT, RANDOM = 4, 5, 0
-# names from dimensional_refine (axes ordered by SS loadings)
+# axis order = SS order of the imputation-free model (07_dimensional_refine; LABBOOK E19):
+# the former ADHD/impulsivity/trauma axis is gone — impulsivity (WURS/BIS) merges into
+# mania/activation, and the 6th axis is now socio-occupational/work-disability.
 AXIS_NAMES = ["depression_severity", "later_onset", "mania_activation",
-              "illness_burden", "metabolic", "adhd_impulsivity_trauma"]
+              "illness_burden", "metabolic", "work_disability"]
 
 
 def icc21(a, b):
@@ -67,21 +68,6 @@ def icc21(a, b):
             / ((n - 1) * (k - 1)))
     denom = ms_r + (k - 1) * ms_e + k * (ms_c - ms_e) / n
     return float((ms_r - ms_e) / denom) if denom > 0 else float("nan")
-
-
-def tucker(La, Lb):
-    out, used = [], set()
-    for a in range(La.shape[1]):
-        best, bj = 0.0, -1
-        for b in range(Lb.shape[1]):
-            if b in used:
-                continue
-            den = np.linalg.norm(La[:, a]) * np.linalg.norm(Lb[:, b])
-            phi = abs(float(La[:, a] @ Lb[:, b])) / den if den > 0 else 0.0
-            if phi > best:
-                best, bj = phi, b
-        out.append(best); used.add(bj)
-    return out
 
 
 def main() -> int:
@@ -122,24 +108,18 @@ def main() -> int:
     scores = scores.reindex(columns=v0_domains)
     scores_r = residualize_features(scores, covars, spline_df=SPLINE_DF,
                                     cross_fit=CROSS_FIT, random_state=RANDOM)
-    Z = pd.DataFrame(StandardScaler().fit_transform(
-        ((scores_r - scores_r.mean()) / scores_r.std(ddof=0)).fillna(0.0)),
-        index=scores_r.index, columns=v0_domains)
-
-    # fit FA on V0 rows, transform all visits
-    v0mask = Z.index.get_level_values("visit") == "V0"
-    fa = FactorAnalysis(n_components=K, rotation="varimax", random_state=RANDOM).fit(Z[v0mask].to_numpy())
-    load = fa.components_.T
-    order = np.argsort(-(load ** 2).sum(0))
-    load = load[:, order]
-    axis = pd.DataFrame(fa.transform(Z.to_numpy())[:, order], index=Z.index, columns=AXIS_NAMES)
-    axis.to_parquet(RESULTS_DIR / "longitudinal_axes_scores.parquet")
-
-    # confirm these are the locked axes
+    # standardize per domain, KEEPING NaN (no imputation), then project the LOCKED
+    # imputation-free V0 loadings onto every (patient, visit) via masked posterior-mean scoring
+    # — the same loadings applied to every visit (cf. Methods §2.10), not a per-visit refit.
+    Z = (scores_r - scores_r.mean()) / scores_r.std(ddof=0)
     final_load = (pd.read_csv(RESULTS_DIR / "dimensional_final_loadings.csv")
-                  .pivot(index="domain", columns="axis", values="loading").reindex(v0_domains).to_numpy())
-    cong = tucker(load, final_load)
-    print(f"refit-vs-locked axes Tucker congruence: {[round(c,2) for c in cong]} (≈1 ⇒ same axes)")
+                  .pivot(index="domain", columns="axis", values="loading").reindex(v0_domains))
+    load = final_load[sorted(final_load.columns, key=lambda c: int(str(c).replace("axis", "")))].to_numpy()
+    axis = pd.DataFrame(masked_scores(Z.to_numpy(), load), index=Z.index, columns=AXIS_NAMES)
+    axis.to_parquet(RESULTS_DIR / "longitudinal_axes_scores.parquet")
+    n_scored = int(axis["depression_severity"].notna().sum())
+    print(f"projected the {K} locked imputation-free V0 axes onto {n_scored:,} (patient,visit) rows "
+          f"via masked scoring (no imputation).")
 
     # test-retest stability per axis per visit
     print("\ntest-retest stability (V0↔Vk Pearson r):")
@@ -169,7 +149,8 @@ def main() -> int:
         tag = "TRAIT-like" if r >= 0.5 else "intermediate" if r >= 0.35 else "STATE-like"
         print(f"  {a:24s} {r:.2f}  {tag}")
 
-    meta = {"K": K, "axis_names": AXIS_NAMES, "congruence_with_locked": cong,
+    meta = {"K": K, "axis_names": AXIS_NAMES,
+            "method": "locked imputation-free V0 loadings projected via masked scoring (no imputation)",
             "trait_state_meanr_V1V2": {a: round(float(r), 3) for a, r in early.items()}}
     (RESULTS_DIR / "longitudinal_axes_meta.json").write_text(json.dumps(meta, indent=2, default=str))
     _report(stab, early)

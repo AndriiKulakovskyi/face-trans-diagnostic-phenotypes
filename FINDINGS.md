@@ -84,6 +84,31 @@ prompted by an unconvincing k=5 (flat silhouette, arbitrary-looking UMAP):
   over-generous heuristic, overturned by the HDBSCAN-vs-cohort check + standardized
   PCA; the heuristic was fixed to key off HDBSCAN↔cohort ARI + gap monotonicity.
 
+### 2.5 The factor-analysis mean-fill reweights correlations by co-observation (6th-axis ablation)
+
+The dimensional model's one imputation (the FA input is 65% observed, 35% mean-filled to 0;
+§2.7) is **not innocuous at the weakest factor**. Re-deriving the loadings from the
+**pairwise-complete (masked) correlation matrix** — no cell filled — shows:
+- **Exact mechanism.** `corr_fill ≈ O ∘ corr_masked`, `O_AB = n_AB/√(n_A·n_B) ≤ 1` (R²=**0.999**;
+  naive no-reweight R²=0.91). Mean-fill = the true correlations reweighted by co-observation, so it
+  **differentially attenuates** cross-cohort-measured pairs and **partially re-imports the
+  cohort-by-missingness confound** the masked operators exclude.
+- **5 of 6 axes reproduce imputation-free** (congruence 0.91–0.99). The **6th
+  (ADHD/impulsivity/trauma, WURS/BIS/CTQ) does not** (0.23) — imputation-free it becomes a
+  **work-disability/socio-occupational** axis. WURS is BP-only, BIS/PRISM/ESS absent in SZ →
+  co-administered → high overlap (0.84); the mean-fill keeps that cohort-linked cluster and
+  suppresses the lower-overlap (0.57) cross-cohort work-disability cluster. PAF-on-mean-fill ≈
+  published sklearn axes (≥0.97) → it's the imputation, not the extraction method.
+- **K stays ~6** (masked split-half min 0.89, collapse at K=8); only the 6th axis's identity
+  changes.
+- **DONE — now the primary model.** Re-derived imputation-free (masked-covariance FA + masked
+  posterior-mean scores; `src/trans_diag/masked_fa.py`, `07_dimensional_refine.py`, `08_*`). 5/6
+  axes unchanged; 6th → **work-disability** (impulsivity WURS/BIS merged into mania). **Outcomes
+  hold/strengthen** (QoL +0.039, functioning combined +0.034, hosp DSM-dominated; robust to V2 /
+  ComBat / de-circ). **Trait-state revised**: metabolic (0.64) & depression (0.58) most trait-like
+  — the old metabolic 0.20 was a mean-fill artifact (filling missing follow-up labs with 0).
+  See MANUSCRIPT §2.7 + §3.8 + Limitation 8; LABBOOK E19. Ablation: `sensitivity_masked_fa{,_mechanism}.py`.
+
 ## 3. Result
 
 ### 3a. v1 (item-level clinical, residualized, k=6) — intermediate

@@ -329,6 +329,50 @@ name now-deleted exploratory scripts like `cluster_v0.py`, `cluster_v0_profile.p
 - **Verified:** every manuscript number reproduces to ≤**1.8e-12** (BLAS round-off); 54 tests
   pass with no `archive/` on the path; the engine still reproduces the sister contingency.
 
+## E19 · Imputation-free factor model — the 6th-axis ablation — 2026-05-24
+Follow-up to the §2.7 mean-fill caveat (the FA input is 65% observed; 35% mean-filled to 0,
+the one imputation on the dimensional path). Asked: do the six varimax axes survive WITHOUT the
+fill? Re-derived loadings from the **pairwise-complete (masked) correlation matrix** — no cell
+ever filled (`scripts/sensitivity_masked_fa.py`; mechanism probe `..._mechanism.py`).
+- **Mechanism (the real problem).** For standardized data filled to 0, the fill correlation is
+  *exactly* the masked one reweighted by co-observation: `corr_fill ≈ O ∘ corr_masked`,
+  `O_AB = n_AB/√(n_A·n_B) ≤ 1` (R²=**0.999**, slope 0.99; naive no-reweight R²=0.91). So mean-fill
+  **differentially attenuates** correlations between domains measured in *different* patients —
+  partially **re-importing the cohort-by-missingness confound** the masked operators were built to
+  exclude (cohort is 98% predictable from the mask).
+- **Effect.** 5 of 6 axes reproduce imputation-free (Tucker congruence: depression 0.99, onset
+  0.98, mania 0.91, illness-burden 0.97, metabolic 0.96). The **6th — ADHD/impulsivity/trauma
+  (WURS/BIS/CTQ) — does NOT** (0.23). Imputation-free, that slot is a **work-disability /
+  socio-occupational** factor (arrêt-travail +0.47/+0.45, prof. status +0.32, education +0.20).
+  PAF-on-mean-fill reproduces the published sklearn axes at ≥0.97 on all six → it's the
+  imputation, not the extraction method.
+- **Why the 6th flips.** WURS is BP-only (BP .93 / DR .00 / SZ .10); BIS/PRISM/ESS are BP+DR but
+  absent in SZ — co-administered → high mutual overlap (within-O 0.84). Mean-fill preserves their
+  cluster while attenuating the lower-overlap cross-cohort work-disability cluster (within-O 0.57).
+  The 6th factor under fill is thus partly a *which-battery-was-run* artifact; the masked criterion
+  selects the cross-cohort-robust cluster instead. Both are real correlated clusters; the mean-fill
+  biases the *selection* of the weakest factor.
+- **K is not the issue.** Masked split-half reproducibility supports K=6 (min congruence 0.89),
+  collapsing at K=8 like the mean-fill model → the honest model stays ~6-dimensional; only the
+  6th axis's identity changes. (Exact K is mildly extraction-dependent: sklearn ML-FA showed a K=5
+  dip / K=7 collapse that PAF doesn't — lock the method in the re-analysis.)
+- **Decision → final re-analysis.** Adopt the imputation-free (masked-covariance) FA as the
+  primary model to remove the residual cohort bias: re-derive loadings + **masked per-patient
+  scores** (pairwise-complete, no fill), re-characterize/confound-check the new 6th axis, re-run
+  the head-to-head / longitudinal / cognition, report honest deltas (QoL & hospitalization expected
+  unchanged — depression & illness-burden axes are clean; functioning's axis-6 contribution should
+  transfer to the work-disability axis). Documented as MANUSCRIPT §3.8 (ablation) + Limitation 8.
+- Artifacts: `results/sensitivity_masked_fa{,_mechanism}.json`.
+- **✅ Re-derivation DONE (steps 2–4).** Masked FA promoted to the package (`src/trans_diag/masked_fa.py`)
+  and made the primary model (`07_dimensional_refine.py` rewritten: masked corr → PAF+varimax →
+  masked posterior-mean scores; `08_longitudinal_axes.py` now projects the locked loadings by
+  masked scoring, not a per-visit refit). Re-ran 07/08/10/11/12/13/14/15/16/18. Results: outcomes
+  hold/strengthen (QoL +0.039, functioning combined +0.034, hosp DSM-dominated); 5/6 loadings
+  unchanged, 6th = work-disability; **trait-state flipped — metabolic now most trait-like (0.20→0.64),
+  the old 0.20 was the mean-fill diluting sparse follow-up labs**; confound clean (age/sex 0.017,
+  cohort η²≤0.11, site ≤0.05); CCA(AE,FA) 0.93. Manuscript fully updated (§2.1/2.2/2.7/2.8, Tables
+  2–3, §3.3–3.8, Limitations, Abstract). 54 tests pass.
+
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
   attempt at *discrete*-structure discovery, in case a learned representation

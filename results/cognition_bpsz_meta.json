@@ -10,9 +10,9 @@
     "cog2"
   ],
   "outcome_egf": {
-    "n": 2478,
-    "symptom_axes_R2": 0.3944111431619536,
-    "symptom_plus_cognition_R2": 0.39800200438927613,
-    "delta": 0.0035908612273225504
+    "n": 2477,
+    "symptom_axes_R2": 0.40210760569170734,
+    "symptom_plus_cognition_R2": 0.40459465632779634,
+    "delta": 0.0024870506360890055
   }
 }

@@ -1,14 +1,14 @@
 {
   "n": 9008,
   "n_sites": 20,
-  "site_batch_magnitude": 0.04355686677080663,
+  "site_batch_magnitude": 0.04355686677080662,
   "axes_congruence_with_locked": [
-    1.0,
-    1.0,
-    1.0,
+    0.99,
     0.98,
-    0.98,
-    0.99
+    0.91,
+    0.96,
+    0.2,
+    0.95
   ],
   "headtohead_combat": [
     {
@@ -19,7 +19,7 @@
       "axes": 0.349,
       "combined": 0.386,
       "combat_axes_minus_DSM": -0.016,
-      "orig_axes_minus_DSM": -0.004,
+      "orig_axes_minus_DSM": -0.001,
       "added_axes_p": 1.1102230246251565e-16
     },
     {
@@ -30,8 +30,8 @@
       "axes": 0.578,
       "combined": 0.742,
       "combat_axes_minus_DSM": -0.172,
-      "orig_axes_minus_DSM": -0.143,
-      "added_axes_p": 0.049009900516161164
+      "orig_axes_minus_DSM": -0.128,
+      "added_axes_p": 0.04900990051616516
     },
     {
       "outcome": "EQ-5D quality of life",
@@ -41,7 +41,7 @@
       "axes": 0.337,
       "combined": 0.342,
       "combat_axes_minus_DSM": 0.032,
-      "orig_axes_minus_DSM": 0.036,
+      "orig_axes_minus_DSM": 0.039,
       "added_axes_p": 1.1102230246251565e-16
     }
   ]
