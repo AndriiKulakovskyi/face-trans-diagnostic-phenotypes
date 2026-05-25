@@ -1,0 +1,7 @@
+panel,outcome,n,metric,DSM,panel_axes,panel_axes_minus_DSM
+questionnaire,EGF functioning,3195,R2,0.365,0.355,-0.009
+questionnaire,any hospitalization,3330,AUC,0.743,0.61,-0.134
+questionnaire,EQ-5D quality of life,2423,R2,0.305,0.337,0.032
+questionnaire+labs,EGF functioning,3195,R2,0.365,0.353,-0.012
+questionnaire+labs,any hospitalization,3330,AUC,0.743,0.609,-0.135
+questionnaire+labs,EQ-5D quality of life,2423,R2,0.305,0.34,0.035

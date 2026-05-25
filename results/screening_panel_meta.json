@@ -1,0 +1,49 @@
+{
+  "n_teacher": 8907,
+  "n_items_total": 177,
+  "headline_cap": 15,
+  "n_questionnaire_items": 11,
+  "questionnaire_items": [
+    "altman",
+    "qidsr120",
+    "ctq39",
+    "bis10",
+    "wurs",
+    "egf",
+    "madrs",
+    "ymrs",
+    "agetrt",
+    "agedebutpremier_episode",
+    "nboccur_hospitalisation_lt"
+  ],
+  "metabolic_panel_addon": [
+    "bmi",
+    "wstcir",
+    "trig",
+    "hdl",
+    "gluc",
+    "hba1c",
+    "sysbpsupine",
+    "diabpsupine"
+  ],
+  "recon_r2_questionnaire": {
+    "depression_severity": 0.828,
+    "later_onset": 0.515,
+    "illness_burden": 0.75,
+    "mania_activation": 0.853,
+    "externalizing": 0.713,
+    "metabolic": 0.031,
+    "work_disability": 0.086
+  },
+  "recon_r2_questionnaire_plus_labs": {
+    "depression_severity": 0.828,
+    "later_onset": 0.521,
+    "illness_burden": 0.751,
+    "mania_activation": 0.853,
+    "externalizing": 0.714,
+    "metabolic": 0.292,
+    "work_disability": 0.082
+  },
+  "qol_panel_axes_minus_DSM": 0.032,
+  "note": "Item->axis sparse distillation (MultiTaskElasticNet, in-fold selection). Panel = questionnaire items + a flagged routine metabolic-panel add-on; the metabolic axis is not questionnaire-recoverable. Deployment surrogate (mean-imputes its items); the research model stays imputation-free."
+}

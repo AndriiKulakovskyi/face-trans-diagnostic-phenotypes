@@ -1,0 +1,20 @@
+item,instrument,block
+altman,AUTO-QUESTIONNAIRES,questionnaire
+qidsr120,AUTO-QUESTIONNAIRES,questionnaire
+ctq39,AUTO-QUESTIONNAIRES,questionnaire
+bis10,AUTO-QUESTIONNAIRES,questionnaire
+wurs,AUTO-QUESTIONNAIRES,questionnaire
+egf,HETERO-QUESTIONNAIRES,questionnaire
+madrs,HETERO-QUESTIONNAIRES,questionnaire
+ymrs,HETERO-QUESTIONNAIRES,questionnaire
+agetrt,EVALUATION MEDICALE,questionnaire
+agedebutpremier_episode,EVALUATION MEDICALE,questionnaire
+nboccur_hospitalisation_lt,SOIN SUIVI HOSP ARRET TRAVAIL,questionnaire
+bmi,CONSTANTES ET ECG,metabolic-panel
+wstcir,CONSTANTES ET ECG,metabolic-panel
+trig,BILAN BIOLOGIQUE,metabolic-panel
+hdl,BILAN BIOLOGIQUE,metabolic-panel
+gluc,BILAN BIOLOGIQUE,metabolic-panel
+hba1c,BILAN BIOLOGIQUE,metabolic-panel
+sysbpsupine,CONSTANTES ET ECG,metabolic-panel
+diabpsupine,CONSTANTES ET ECG,metabolic-panel

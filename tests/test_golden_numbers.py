@@ -153,3 +153,15 @@ def test_replication_holdout():
     loso = {r["outcome"]: r for r in m["loso_outcomes"]}
     assert loso["EQ-5D quality of life"]["axes_minus_DSM"] >= 0.03   # QoL advantage transports to unseen sites (+0.042)
     assert loso["any hospitalization"]["axes_minus_DSM"] < -0.10     # hospitalization stays DSM-dominated
+
+
+# ── §4.5 / Table 5 — parsimonious screening panel (sparse distillation) ────────────────
+def test_screening_panel():
+    m = _json("screening_panel_meta.json")
+    assert m["n_questionnaire_items"] <= 15                          # parsimonious (<=15 features)
+    rq = m["recon_r2_questionnaire"]
+    assert rq["depression_severity"] >= 0.78 and rq["mania_activation"] >= 0.78   # symptom axes recover
+    assert rq["metabolic"] <= 0.20                                   # not questionnaire-recoverable (needs labs)
+    # the flagged routine metabolic-panel add-on lifts the metabolic axis
+    assert m["recon_r2_questionnaire_plus_labs"]["metabolic"] > rq["metabolic"] + 0.10
+    assert m["qol_panel_axes_minus_DSM"] > 0.0                       # panel preserves the QoL advantage over DSM

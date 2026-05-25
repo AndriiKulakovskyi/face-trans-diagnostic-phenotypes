@@ -103,8 +103,9 @@ Scripts are numbered in execution order — read or run them top-to-bottom:
 `17_export_longitudinal_figure` (Suppl. Fig S1) → `18_export_dimensional_flow` (Fig 6) →
 `19_pfactor` (§4.6 general-factor 'p' check) → `20_robustness_cvrefit` (Limitation 10:
 axes re-fit inside CV folds) → `21_replication_holdout` (Limitation 9: within-FACE
-leave-one-cohort / leave-one-site replication).
-`00_run_all.py` runs all 21 in this order; the unnumbered scripts (`verify`, `audit`,
+leave-one-cohort / leave-one-site replication) → `22_screening_panel` (§4.5 parsimonious
+screening panel: sparse item→axis distillation).
+`00_run_all.py` runs all 22 in this order; the unnumbered scripts (`verify`, `audit`,
 `qa_missingness`, `build_notebook`, `sensitivity_masked_fa{,_mechanism}`) are utilities, not
 pipeline steps.
 

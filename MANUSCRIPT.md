@@ -639,6 +639,25 @@ pipeline is built to remove. The complementary analysis therefore asks a narrowe
 question — whether cognition is *redundant* with the symptom dimensions — rather than attempting
 to add a seventh trans-diagnostic axis the data cannot support across all three cohorts.
 
+### 2.13 Parsimonious screening panel (sparse distillation)
+
+To address feasibility (§4.5), we distil the 54-domain research battery into a short clinical panel
+(`22_screening_panel.py`). The seven locked axis scores (§2.7) are the fixed **teacher**; the raw V0
+item matrix (the ~225 items in the domain sections, before aggregation) is the candidate predictor
+set, split into a **questionnaire pool** (symptom/history items) and a **lab pool** (BILAN
+BIOLOGIQUE / CONSTANTES ET ECG). On the questionnaire pool we fit a **multi-task elastic-net**
+($\ell_1$ ratio 0.8) whose row-wise $\ell_1$ selects each item *in or out for all seven axes
+jointly*, giving a single shared panel; we sweep the item budget and take the densest panel within
+a $\le$15-item cap, then refit unpenalized OLS for the per-axis weights. Because the metabolic axis
+loads on labs no questionnaire can produce, we report it with a fixed, flagged **routine
+metabolic-panel** add-on (BMI, waist, triglycerides, HDL, glucose, HbA1c, blood pressure). The panel
+is a *deployment surrogate* that mean-imputes its few items (scaling/imputation fit on training data
+only) — a disclosed choice, distinct from the imputation-free research model. Fidelity is
+leakage-safe: the elastic-net **selection is re-run inside each cross-validation fold** (as in the
+§3.5 fold-honest re-fit), and we report per-axis out-of-fold reconstruction $R^2$ (panel score vs
+teacher axis). The decisive test re-runs the §2.9 head-to-head with the panel's surrogate axes in
+place of the full scores: does the cheap panel **preserve the dimensions' advantage over DSM**?
+
 ---
 
 ## 3. Results
@@ -1195,11 +1214,22 @@ to adoption and matches how RDoC and HiTOP are increasingly positioned. Third, t
 support **continuous monitoring**: because several axes move with clinical state (§3.6),
 repeated scoring could track treatment response on a metric that is *comparable across
 diagnoses* — a single yardstick for a mixed clinic, where today a bipolar and a schizophrenia
-patient are followed on incommensurable scales. Realizing any of this requires a validated,
-parsimonious scoring instrument (the 54-domain research input must be distilled), prospective
-calibration against outcomes, and decision support that renders the profile interpretably to a
-busy clinician; we present these as the natural translational steps, not as claims of present
-readiness.
+patient are followed on incommensurable scales. We took a concrete step toward the first
+requirement — a **sparse distillation** of the 54-domain battery into a short panel (§2.13,
+Table 5, Figure 7). A single **11-feature** panel — Altman and YMRS (mania), MADRS and a QIDS item
+(depression), CTQ/BIS/WURS (externalizing/neurodevelopmental), plus age-of-onset and
+lifetime-admission count — reconstructs the symptom and illness-burden axes with good fidelity
+(leakage-safe in-fold R² 0.85 mania, 0.83 depression, 0.75 illness-burden, 0.71 externalizing) and,
+decisively, **preserves the dimensions' quality-of-life advantage over DSM** (panel EQ-5D axes−DSM
++0.032, or +0.035 with a routine metabolic panel, vs +0.038 for the full 54-domain model). The
+limits are explicit: the **metabolic axis is not questionnaire-recoverable** (R² 0.03) and needs a
+short routine metabolic panel (BMI, waist, lipids, glucose, HbA1c, blood pressure; R² → 0.29),
+while **work-disability** and (partly) **later-onset** require their own brief work-status /
+age-of-onset fields that a symptom-optimized shared panel does not prioritize. A clinic could
+therefore compute most of the dimensional profile — including the part that predicts
+patient-reported outcomes — from a sub-15-feature panel plus routine labs. This remains a
+research-grade draft, not a validated, calibrated instrument; prospective calibration against
+outcomes and clinician-facing decision support are the further translational steps.
 
 ### 4.6 Future directions and open questions
 
@@ -1446,6 +1476,30 @@ dimensions.** Source: `results/cognition_bpsz_loadings.csv`, `_corr.csv`. Two fa
 general ability (*g*) and processing speed; maximum |correlation| with any symptom
 dimension 0.26 (g↔illness-burden).
 
+**Table 5. Parsimonious screening panel (sparse distillation of the 54-domain battery).**
+Source: `results/screening_panel_*` + `screening_panel_meta.json` (`scripts/22_screening_panel.py`).
+A multi-task elastic-net selects **one 11-feature questionnaire panel** for all seven axes
+(Altman, YMRS, MADRS, a QIDS item, CTQ, BIS, WURS, EGF, age-at-treatment, age-at-first-episode,
+lifetime-admission count); per-axis reconstruction R² is leakage-safe (selection re-run in each CV
+fold). The metabolic axis is recovered only by a flagged **routine metabolic-panel** add-on (BMI,
+waist, triglycerides, HDL, glucose, HbA1c, blood pressure).
+
+| Axis | Reconstruction R² (questionnaire) | + metabolic panel |
+|---|--:|--:|
+| Mania / activation | 0.85 | 0.85 |
+| Depression / internalizing | 0.83 | 0.83 |
+| Illness / hospitalization burden | 0.75 | 0.75 |
+| Externalizing / neurodevelopmental | 0.71 | 0.71 |
+| Later onset | 0.51 | 0.52 |
+| Work-disability | 0.09 | 0.08 |
+| Metabolic / inflammatory | 0.03 | **0.29** |
+
+*Head-to-head (V1, vs DSM): the panel **preserves the quality-of-life advantage** — EQ-5D axes−DSM
+**+0.032** (questionnaire) / **+0.035** (+ metabolic panel) vs **+0.038** for the full 54-domain
+model; functioning complements and hospitalization stays DSM-dominated, as in Table 3. Work-disability
+and (partly) later-onset need their own brief work-status / age-of-onset fields a symptom-optimized
+shared panel does not prioritize; the metabolic axis needs labs, not a questionnaire.*
+
 ---
 
 ## Figures
@@ -1455,6 +1509,15 @@ Static publication figures (PNG + SVG, 300 dpi) are generated by
 correspondingly named `reports/*.html`). **Figures 1–6 are embedded inline at their first
 mention in §3.2–§3.7 above**; Supplementary Figures S1–S2 appear with their captions in the
 Supplementary material section below.
+
+![Figure 7](reports/figures/fig7_screening_panel.png)
+
+**Figure 7. Parsimonious screening panel (§4.5, §2.13).** *Left:* leakage-safe in-fold
+reconstruction R² of each axis from the 11-feature questionnaire panel, with and without the
+routine metabolic-panel add-on — symptom and illness-burden axes recover well; the metabolic axis
+needs labs; work-disability/later-onset need their own brief fields. *Right:* the panel preserves
+the dimensions' quality-of-life advantage over DSM (EQ-5D axes−DSM > 0). Generated by
+`scripts/22_screening_panel.py` (interactive: `reports/screening_panel.html`).
 
 ---
 

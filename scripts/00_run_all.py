@@ -43,6 +43,7 @@ STEPS: list[tuple[str, list[str]]] = [
     ("19_pfactor.py", []),                  # §4.6 general-factor ('p') check — confound-free axes ≈ orthogonal
     ("20_robustness_cvrefit.py", []),       # Limitation 10: re-fit axes inside CV folds (optimism)
     ("21_replication_holdout.py", []),      # Limitation 9: within-FACE leave-one-cohort/site replication
+    ("22_screening_panel.py", []),          # §4.5 parsimonious screening panel (sparse item→axis distillation)
 ]
 
 

@@ -474,6 +474,26 @@ hosp axes AUC 0.611; `axes_full` (drop nothing) now ≈ the locked model. Update
 Table 3 De-circ column. 75 tests + ruff still pass. (`13` ComBat keeps median-impute *by
 construction* — ComBat requires complete data; that imputation is unavoidable, not an oversight.)
 
+## E25 · Parsimonious screening panel — sparse item→axis distillation (§4.5, reviewer 2.1) — 2026-05-25
+Clinical-feasibility step: distil the 54-domain battery into a short panel. MultiTaskElasticNet
+(l1_ratio 0.8) over the ~225 raw V0 items (questionnaire pool); teacher = the 7 locked axis scores;
+row-wise L1 → one shared panel; densest support within a ≤15-item cap; in-fold-honest reconstruction
+R² (selection re-run per CV fold, as in `20`). `22_screening_panel.py`.
+- **Panel = 11 features**: Altman, YMRS, MADRS, a QIDS item, CTQ, BIS, WURS, EGF, age-at-treatment,
+  age-at-first-episode, lifetime-admission count (several are brief instrument *totals*, not single
+  questions — stated honestly) + a fixed routine **metabolic-panel** add-on (BMI/waist/trig/HDL/
+  glucose/HbA1c/BP) for the metabolic axis.
+- **In-fold R²**: mania 0.85, depression 0.83, illness-burden 0.75, externalizing 0.71 (recover);
+  later-onset 0.51 (partial); **work-disability 0.09** and **metabolic 0.03** NOT recovered by the
+  shared questionnaire (metabolic → 0.29 with the labs add-on). Honest tier: a symptom-optimized
+  shared L1 panel drops the axes whose defining items (work-status, labs) it does not share.
+- **Decisive**: the panel **preserves the QoL advantage over DSM** — EQ-5D axes−DSM +0.032
+  (questionnaire) / +0.035 (+labs) vs +0.038 full — so the cheap panel keeps the part that predicts
+  patient-reported outcomes.
+- Wired step 22 into `00_run_all`; MANUSCRIPT §2.13 + §4.5 + Table 5 + Figure 7; golden test added.
+  Research-grade draft, not a validated instrument (stated). State/trait (reviewer 2.2) deferred to
+  a follow-up per "one gap at a time" (designed: MixedLM variance-components on the longitudinal scores).
+
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
   attempt at *discrete*-structure discovery, in case a learned representation
