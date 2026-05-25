@@ -1,15 +1,28 @@
 item,instrument,block
-altman,AUTO-QUESTIONNAIRES,questionnaire
-qidsr120,AUTO-QUESTIONNAIRES,questionnaire
-ctq39,AUTO-QUESTIONNAIRES,questionnaire
-bis10,AUTO-QUESTIONNAIRES,questionnaire
-wurs,AUTO-QUESTIONNAIRES,questionnaire
-egf,HETERO-QUESTIONNAIRES,questionnaire
-madrs,HETERO-QUESTIONNAIRES,questionnaire
-ymrs,HETERO-QUESTIONNAIRES,questionnaire
-agetrt,EVALUATION MEDICALE,questionnaire
-agedebutpremier_episode,EVALUATION MEDICALE,questionnaire
-nboccur_hospitalisation_lt,SOIN SUIVI HOSP ARRET TRAVAIL,questionnaire
+altman,AUTO-QUESTIONNAIRES,shared
+qidsr120,AUTO-QUESTIONNAIRES,shared
+ctq39,AUTO-QUESTIONNAIRES,shared
+bis10,AUTO-QUESTIONNAIRES,shared
+wurs,AUTO-QUESTIONNAIRES,shared
+egf,HETERO-QUESTIONNAIRES,shared
+madrs,HETERO-QUESTIONNAIRES,shared
+ymrs,HETERO-QUESTIONNAIRES,shared
+agetrt,EVALUATION MEDICALE,shared
+agedebutpremier_episode,EVALUATION MEDICALE,shared
+nboccur_hospitalisation_lt,SOIN SUIVI HOSP ARRET TRAVAIL,shared
+madrs,HETERO-QUESTIONNAIRES,per-axis
+egf,HETERO-QUESTIONNAIRES,per-axis
+agetrt,EVALUATION MEDICALE,per-axis
+agedebutpremier_episode,EVALUATION MEDICALE,per-axis
+nboccur_hospitalisation_lt,SOIN SUIVI HOSP ARRET TRAVAIL,per-axis
+hodur_hospitalisation_lt,SOIN SUIVI HOSP ARRET TRAVAIL,per-axis
+altman,AUTO-QUESTIONNAIRES,per-axis
+ymrs,HETERO-QUESTIONNAIRES,per-axis
+wurs,AUTO-QUESTIONNAIRES,per-axis
+bis10,AUTO-QUESTIONNAIRES,per-axis
+fagers,AUTO-QUESTIONNAIRES,per-axis
+hooccur_arret_travail_actuel,SOIN SUIVI HOSP ARRET TRAVAIL,per-axis
+hooccur_arret_travail,SOIN SUIVI HOSP ARRET TRAVAIL,per-axis
 bmi,CONSTANTES ET ECG,metabolic-panel
 wstcir,CONSTANTES ET ECG,metabolic-panel
 trig,BILAN BIOLOGIQUE,metabolic-panel

@@ -2,8 +2,11 @@
   "n_teacher": 8907,
   "n_items_total": 177,
   "headline_cap": 15,
+  "k_per_axis": 2,
+  "R_ci": 200,
   "n_questionnaire_items": 11,
-  "questionnaire_items": [
+  "n_peraxis_items": 13,
+  "shared_items": [
     "altman",
     "qidsr120",
     "ctq39",
@@ -15,6 +18,21 @@
     "agetrt",
     "agedebutpremier_episode",
     "nboccur_hospitalisation_lt"
+  ],
+  "peraxis_items": [
+    "madrs",
+    "egf",
+    "agetrt",
+    "agedebutpremier_episode",
+    "nboccur_hospitalisation_lt",
+    "hodur_hospitalisation_lt",
+    "altman",
+    "ymrs",
+    "wurs",
+    "bis10",
+    "fagers",
+    "hooccur_arret_travail_actuel",
+    "hooccur_arret_travail"
   ],
   "metabolic_panel_addon": [
     "bmi",
@@ -44,6 +62,18 @@
     "metabolic": 0.292,
     "work_disability": 0.082
   },
+  "recon_r2_peraxis_plus_labs": {
+    "depression_severity": 0.751,
+    "later_onset": 0.522,
+    "illness_burden": 0.794,
+    "mania_activation": 0.851,
+    "externalizing": 0.617,
+    "metabolic": 0.311,
+    "work_disability": 0.473
+  },
   "qol_panel_axes_minus_DSM": 0.032,
-  "note": "Item->axis sparse distillation (MultiTaskElasticNet, in-fold selection). Panel = questionnaire items + a flagged routine metabolic-panel add-on; the metabolic axis is not questionnaire-recoverable. Deployment surrogate (mean-imputes its items); the research model stays imputation-free."
+  "qol_panel_axes_minus_DSM_ci": "+0.032 [+0.028,+0.035]",
+  "egf_panel_combined_minus_DSM_ci": "+0.024 [+0.022,+0.025]",
+  "qol_peraxis_axes_minus_DSM_ci": "+0.025 [+0.022,+0.028]",
+  "note": "Item->axis sparse distillation (MultiTaskElasticNet, in-fold selection). Two panels: a <=15-item SHARED panel and a group-aware PER-AXIS panel (top-2 items/axis), each + a flagged routine metabolic-panel add-on (the metabolic axis is not questionnaire-recoverable). Head-to-head under repeated 5-fold CV (R=200, 95% CI), M1 (axes) and M2 (combined). Deployment surrogate (mean-imputes its items); the research model stays imputation-free."
 }

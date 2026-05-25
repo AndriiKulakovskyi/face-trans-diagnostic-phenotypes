@@ -333,11 +333,13 @@ Distil the 54-domain battery into a short clinical panel (`22_screening_panel.py
 MultiTaskElasticNet over ~225 raw V0 items → one shared **11-feature** panel (teacher = the 7 locked
 axes; selection re-run in-fold, so reconstruction R² is leakage-safe). Recovers the symptom +
 illness-burden axes (in-fold R²: mania 0.85, depression 0.83, illness-burden 0.75, externalizing
-0.71) and — decisively — **preserves the QoL advantage over DSM** (panel EQ-5D axes−DSM +0.032, or
-+0.035 with a routine metabolic panel, vs +0.038 full). Honest limits: metabolic is **not**
-questionnaire-recoverable (0.03 → 0.29 with the flagged metabolic-panel add-on); work-disability
-(0.09) and later-onset (0.51) need their own brief work-status / age-of-onset fields a shared
-symptom-optimized panel doesn't prioritize. A research-grade draft, not a validated instrument.
+0.71) and — under repeated 5-fold CV (R=200) — **beats DSM on QoL** (panel EQ-5D axes−DSM +0.032
+[+0.028,+0.035], CI excludes 0) and **complements** it on functioning (combined−DSM +0.024
+[+0.022,+0.025], M2). Honest limits: metabolic is **not** questionnaire-recoverable (0.03 → 0.29
+with the flagged metabolic-panel add-on); the shared panel also drops **work-disability** (0.09) —
+a **group-aware per-axis panel** (top-2 items/axis, 13 features) recovers it (0.47) and
+illness-burden (0.79) at a small cost to depression (0.75)/externalizing (0.62) and a slightly
+smaller QoL edge (+0.025 [+0.022,+0.028]). An explicit parsimony-vs-coverage trade-off. A research-grade draft, not a validated instrument.
 MANUSCRIPT §2.13/§4.5/Table 5/Fig 7; LABBOOK E25. (State/trait — reviewer 2.2 — deferred to a
 follow-up: MixedLM variance-components on the longitudinal scores.)
 

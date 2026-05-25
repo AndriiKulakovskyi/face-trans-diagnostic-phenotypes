@@ -493,6 +493,13 @@ R² (selection re-run per CV fold, as in `20`). `22_screening_panel.py`.
 - Wired step 22 into `00_run_all`; MANUSCRIPT §2.13 + §4.5 + Table 5 + Figure 7; golden test added.
   Research-grade draft, not a validated instrument (stated). State/trait (reviewer 2.2) deferred to
   a follow-up per "one gap at a time" (designed: MixedLM variance-components on the longitudinal scores).
+- **Update (2026-05-25) — three additions** (user-requested): (i) repeated-CV 95% CIs — QoL axes−DSM
+  **+0.032 [+0.028,+0.035]** (excludes 0); (ii) the **combined model** — functioning combined−DSM
+  **+0.024 [+0.022,+0.025]**, so the panel *complements* DSM on functioning, not just QoL; (iii) a
+  **group-aware per-axis panel** (top-2 items/axis, 13 features incl. arret_travail) that recovers
+  work-disability (0.09→**0.47**) and illness-burden (0.79) at a small cost to depression
+  (0.83→0.75)/externalizing (0.71→0.62) and a slightly smaller QoL edge (+0.025 [+0.022,+0.028]).
+  Reframed §2.13/§4.5/Table 5/Fig 7 as a parsimony-vs-coverage trade-off; golden test extended.
 
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future

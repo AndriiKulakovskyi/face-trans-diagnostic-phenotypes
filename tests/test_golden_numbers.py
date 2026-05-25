@@ -165,3 +165,9 @@ def test_screening_panel():
     # the flagged routine metabolic-panel add-on lifts the metabolic axis
     assert m["recon_r2_questionnaire_plus_labs"]["metabolic"] > rq["metabolic"] + 0.10
     assert m["qol_panel_axes_minus_DSM"] > 0.0                       # panel preserves the QoL advantage over DSM
+    # the group-aware per-axis panel recovers work-disability the shared panel drops
+    assert m["recon_r2_peraxis_plus_labs"]["work_disability"] > 0.3
+    # repeated-CV (R=200): the QoL advantage is robust — 95% CI excludes 0
+    assert float(m["qol_panel_axes_minus_DSM_ci"].split("[")[1].split(",")[0]) > 0
+    # functioning: the panel COMPLEMENTS DSM (combined − DSM CI lower bound > 0)
+    assert float(m["egf_panel_combined_minus_DSM_ci"].split("[")[1].split(",")[0]) > 0

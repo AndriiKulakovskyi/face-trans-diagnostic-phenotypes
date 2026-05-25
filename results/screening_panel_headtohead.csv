@@ -1,7 +1,7 @@
-panel,outcome,n,metric,DSM,panel_axes,panel_axes_minus_DSM
-questionnaire,EGF functioning,3195,R2,0.365,0.355,-0.009
-questionnaire,any hospitalization,3330,AUC,0.743,0.61,-0.134
-questionnaire,EQ-5D quality of life,2423,R2,0.305,0.337,0.032
-questionnaire+labs,EGF functioning,3195,R2,0.365,0.353,-0.012
-questionnaire+labs,any hospitalization,3330,AUC,0.743,0.609,-0.135
-questionnaire+labs,EQ-5D quality of life,2423,R2,0.305,0.34,0.035
+panel,outcome,n,metric,DSM,axes,combined,axes_minus_DSM,combined_minus_DSM,axes_minus_DSM_mean,combined_minus_DSM_mean,axes_excludes_0,combined_excludes_0
+shared (questionnaire),EGF functioning,3195,R2,0.365,0.355,0.389,"-0.009 [-0.012,-0.007]","+0.024 [+0.022,+0.025]",-0.009,0.024,True,True
+shared (questionnaire),any hospitalization,3330,AUC,0.747,0.613,0.754,"-0.134 [-0.147,-0.122]","+0.007 [+0.001,+0.013]",-0.134,0.007,True,True
+shared (questionnaire),EQ-5D quality of life,2423,R2,0.302,0.334,0.337,"+0.032 [+0.028,+0.035]","+0.034 [+0.031,+0.037]",0.032,0.034,True,True
+per-axis (+ labs),EGF functioning,3195,R2,0.365,0.355,0.388,"-0.009 [-0.012,-0.007]","+0.023 [+0.021,+0.024]",-0.009,0.023,True,True
+per-axis (+ labs),any hospitalization,3330,AUC,0.747,0.61,0.757,"-0.137 [-0.152,-0.126]","+0.009 [+0.002,+0.015]",-0.137,0.009,True,True
+per-axis (+ labs),EQ-5D quality of life,2423,R2,0.302,0.328,0.332,"+0.025 [+0.022,+0.028]","+0.029 [+0.026,+0.032]",0.025,0.029,True,True
