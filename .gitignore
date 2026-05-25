@@ -80,7 +80,7 @@ Thumbs.db
 
 # Transient analysis scratch
 results/_scratch/
-reports/_scratch/
+results/reports/_scratch/
 
 # Confidential patient data — never commit
 data/*.csv

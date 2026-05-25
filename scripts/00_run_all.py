@@ -1,6 +1,6 @@
 """Reproduce the entire FACE manuscript pipeline from the raw data, in order.
 
-Each step writes to results/ + reports/; later steps consume earlier outputs.
+Each step writes to results/ + results/reports/; later steps consume earlier outputs.
 Run from the repo root:  python3 scripts/00_run_all.py
 Requires the full extras:  pip install -e ".[full]"   (torch, neuroHarmonize, kaleido)
 

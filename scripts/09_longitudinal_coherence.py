@@ -17,7 +17,7 @@ Pipeline:
 
 DR is excluded at V3 (attrition cliff: only ~2 patients).
 
-Artifacts (results/ + reports/):
+Artifacts (results/ + results/reports/):
     longitudinal_assignments.csv   patient_uid × visit → phenotype
     longitudinal_coherence.csv     per-visit n_paired / ARI-vs-V0 / % persistence
     longitudinal_transitions.csv   V0→Vk transition counts (long form)
@@ -56,9 +56,9 @@ from trans_diag import (  # noqa: E402
 )
 
 DATA_DIR = REPO_ROOT / "data"
-DICT_PATH = REPO_ROOT / "face-common-vars.xlsx"
+DICT_PATH = REPO_ROOT / "data" / "face-common-vars.xlsx"
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
 
 VISITS = ["V0", "V1", "V2", "V3", "V4"]
 MIN_OBS = 10            # min observed domains to assign a patient-visit
@@ -238,7 +238,7 @@ def main() -> int:
             "dsm_phenotype_ari": ari_dsm,
             "dr_excluded_at": "V3", "site_note": "site excluded; ComBat sensitivity deferred (#43)"}
     (RESULTS_DIR / "longitudinal_meta.json").write_text(json.dumps(meta, indent=2, default=str))
-    print("\nWrote results/longitudinal_* and reports/longitudinal.html. Done.")
+    print("\nWrote results/longitudinal_* and results/reports/longitudinal.html. Done.")
     return 0
 
 

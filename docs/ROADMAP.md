@@ -91,7 +91,7 @@ a structural cliff; exclude DR from V3 metrics.
   (`usubjid_patients` is reused across cohorts; 970 collisions). All
   patient-level ops key on it. The sister engine independently uses the same
   `(cohort, patient_id)` key.
-- **Common-variables dictionary** (`face-common-vars.xlsx`): 379 rows; each
+- **Common-variables dictionary** (`data/face-common-vars.xlsx`): 379 rows; each
   carries `section` (13 clinical blocks), `dtype`, value-set, readiness.
   **This is our feature source.** READY (130) / PARTIAL (221) / NOT USABLE.
 - **Informative core (67 features)** — READY minus near-constants minus
@@ -110,7 +110,7 @@ its modelling *algorithms*, but **drive them with our 3-cohort common-variables
 data**. The sister's 4-cohort clusters are the comparison reference.
 
 ```
-face-common-vars.xlsx + data/ (BP·SZ·DR, V0–V4)
+data/face-common-vars.xlsx + data/*.csv (BP·SZ·DR, V0–V4)
    │  trans_diag: harmonize per visit → patient × feature matrix (patient_uid)
    ▼
    adapter → engine HarmonizedDataset(X, schema)   schema from OUR dictionary:
@@ -159,25 +159,23 @@ Status: **[locked]** committed · **[proposed]** awaiting `methodology-v1` ·
 
 ## 8. Repository structure
 
-Clean split: `src/` = our development base; `archive/` = vendored copied sister
-code (reused by import, never developed).
+Self-contained: the stratification engine is **internalized** in `src/trans_diag/engine/`
+(no `archive/`, no external `face_stratification`/`face_rlvr` dependency). Confidential
+patient CSVs are gitignored; only aggregates + rendered reports are tracked.
 
 ```
 face-common-bp-sz-dr/
-├── src/trans_diag/        OUR pipeline — the only code we develop (loader, rules, filters)
-├── archive/                VENDORED copied sister code (do not edit)
-│   ├── face_stratification/  the reused engine (graph, models, clustering, stage_c, evaluation)
-│   ├── face_rlvr/            engine patient extractors + glossary loader
-│   ├── data/                 sister 4-cohort V0 CSVs (BP/SZ/DR/ASP)
-│   ├── scripts/ notebooks/ tests_face_stratification/ docs/ output/
-│   └── README_sister.md
-├── config/                 engine config (feature schema + glossary; kept at repo root for parents[3] resolution)
-├── data/                   OUR BP/SZ/DR V0–V4 CSVs + data/external (engine reference artifacts)
-├── scripts/                OUR scripts only (verify, audit, qa, v0_anchor, phase2*, reproduce_v0_clusters)
-├── tests/                  OUR tests (test_filters.py)
-├── results/ reports/       our outputs
-├── ROADMAP.md CLAUDE.md DATA.md README.md  our docs
-└── pyproject.toml          packages: src/trans_diag + archive engine; pytest pythonpath = [src, archive]
+├── MANUSCRIPT.md CLAUDE.md README.md   paper + guides (root)
+├── data/                   inputs: face-common-vars.xlsx + thesaurus/ (tracked);
+│                           {bipolar,schizophrenia,depression}.csv (confidential; gitignored)
+├── src/trans_diag/         the package — harmonization, FA (masked_fa), engine/ (internalized)
+├── scripts/                pipeline (00_run_all orchestrates 01–22) + verify/audit/qa infra
+├── tests/                  unit + golden-number regression tests
+├── results/                AGGREGATE artifacts (CSV/JSON; tracked)
+│   └── reports/            rendered HTML + figures/ (tracked)
+├── notebooks/              FACE_reproduction.ipynb
+├── docs/                   ROADMAP · DATA · FINDINGS · LABBOOK
+└── pyproject.toml          packages: src/trans_diag; pytest pythonpath = [src]
 ```
 
 ## 9. Phased plan
@@ -228,7 +226,7 @@ face-common-bp-sz-dr/
   (cluster↔sex Cramér's V **0.041**, age-tertile ARI 0.006, **cohort ARI 0.002**).
   Five trans-diagnostic phenotypes: **metabolic/later-onset, smoking/illness-
   burden, high-functioning, manic-activation, somatic/medication-burden**
-  (`reports/cluster_domains.html`; FINDINGS §3b). The metabolic axis is recovered
+  (`results/reports/cluster_domains.html`; FINDINGS §3b). The metabolic axis is recovered
   with explicit composite direction (resolves the §3 ⚠️ for our data).
 - [ ] Remaining: age-dCor residual (0.117); cognition domains; READY-only
       ablation; negative controls (§7).
@@ -238,7 +236,7 @@ face-common-bp-sz-dr/
       (pooled scaling, per-visit-age residualized) → V0 phenotype **classifier**
       (HistGradientBoosting, 5-fold acc **0.842**; a nearest-centroid rule was
       invalid, self-ARI 0.024) → coherence + transition Sankey
-      (`reports/longitudinal.html`).
+      (`results/reports/longitudinal.html`).
 - **Result:** modest, stable coherence (ARI V0↔Vk **≈0.06–0.07**, persistence
   **≈37–39%** across V1–V4); a phenotype-specific **trait↔state gradient** —
   trait-like axes persist (smoking/illness-burden 59%, functioning 48%, metabolic
@@ -384,7 +382,7 @@ the §3 paper framing, flagging the **metabolic-direction sign** as a must-verif
 ## 15. Glossary
 
 - **`patient_uid`** — `cohort::usubjid_patients`, globally-unique patient key.
-- **Common-variables dictionary** — `face-common-vars.xlsx`; our feature source.
+- **Common-variables dictionary** — `data/face-common-vars.xlsx`; our feature source.
 - **Informative core** — 67-feature candidate clustering set.
 - **HarmonizedDataset** — the engine's data contract: a patient × feature matrix
   + schema, MultiIndexed by `(cohort, patient_id)`.

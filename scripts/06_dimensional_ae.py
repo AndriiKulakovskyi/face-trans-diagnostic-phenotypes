@@ -9,7 +9,7 @@ We then ask: do the AE's nonlinear axes agree with the LOCKED masked factor axes
 (canonical correlations via CCA, against a row-permutation null). High agreement ⇒ the
 dimensional structure is robust to the method; the AE may add nonlinear refinement.
 
-Artifacts: results/dimensional_ae_{scores.parquet,meta.json}, reports/dimensional_ae.html.
+Artifacts: results/dimensional_ae_{scores.parquet,meta.json}, results/reports/dimensional_ae.html.
 Run:  python3 scripts/06_dimensional_ae.py            # K = locked dimensionality (07; default 7)
       python3 scripts/06_dimensional_ae.py --k 5 --epochs 300
 """
@@ -43,7 +43,7 @@ from trans_diag import (  # noqa: E402
 from trans_diag.masked_fa import masked_loadings, masked_scores  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
 SCORES_PATH = RESULTS_DIR / "cluster_domains_scores.parquet"
 FINAL_META = RESULTS_DIR / "dimensional_final_meta.json"   # locked K from 07 (fallback 7)
 SEED = 0
@@ -116,9 +116,9 @@ def main() -> int:
     # subtype continuum + confound on the AE axes
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
-        full = to_harmonized_dataset(df, load_variables(REPO_ROOT / "face-common-vars.xlsx"),
+        full = to_harmonized_dataset(df, load_variables(REPO_ROOT / "data" / "face-common-vars.xlsx"),
                                      visit="V0", exclude=ADMINISTRATIVE_FEATURES)
     rank = full.metadata.reindex(sc.index)["dsm_diagnosis"].map(SPECTRUM).to_numpy()
     age = full.X.reindex(sc.index)["age"].to_numpy(float)
@@ -162,7 +162,7 @@ def main() -> int:
     (RESULTS_DIR / "dimensional_ae_meta.json").write_text(json.dumps(meta, indent=2, default=str))
 
     _report(losses, cent, names, cont, best, can)
-    print("\nWrote results/dimensional_ae_* + reports/dimensional_ae.html. Done.")
+    print("\nWrote results/dimensional_ae_* + results/reports/dimensional_ae.html. Done.")
     return 0
 
 

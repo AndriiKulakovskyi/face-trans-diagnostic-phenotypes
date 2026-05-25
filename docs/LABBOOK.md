@@ -26,7 +26,7 @@ Dates: entries before 2026-05-22 are reconstructed by phase (undated); work on
   (masked pairwise-complete similarity).
 
 ## E1 · Harmonization, filters, Phase-2 feasibility (prior phases)
-- Dictionary (`face-common-vars.xlsx`, 379 rows) → unified patient×feature
+- Dictionary (`data/face-common-vars.xlsx`, 379 rows) → unified patient×feature
   matrix; **348/348 feature variables pass the audit**; QA missingness report.
 - `trans_diag.filters` (variable/patient completeness, V0 anchor) + the
   `patient_uid` collision fix (regression-tested).
@@ -135,7 +135,7 @@ residualize on age+sex → robust-z → engine masked-cosine spectral embedding 
   ARI **0.006**, age **dCor 0.117** (small residual), **cohort ARI 0.002** —
   clusters independent of sex, age and diagnosis.
 - **Five trans-diagnostic phenotypes** (cohort mix ≈ proportional to sample;
-  standardized domain profiles in `reports/cluster_domains.html`):
+  standardized domain profiles in `results/reports/cluster_domains.html`):
   0 **metabolic / later-onset** (metabolic_syndrome +0.41σ, later age-of-onset);
   1 **heavy-smoking / hospitalization burden** (smoking +0.76σ, hospitalizations↑,
   low YMRS); 2 **high-functioning / low burden** (EGF/education/QoL↑,
@@ -145,7 +145,7 @@ residualize on age+sex → robust-z → engine masked-cosine spectral embedding 
   a single strong axis; 0-2 are multivariate.
 
 ## E10 · Phenotype profile report — 2026-05-22
-- `scripts/cluster_domains_profile.py` → `reports/cluster_domains.html`:
+- `scripts/03_cluster_domains.py` → `results/reports/cluster_domains.html`:
   cluster×domain signature heatmap, UMAP (cluster/cohort), per-cluster enrichment
   bars, medoid vignettes, k-selection figure, independence callout.
 - Bug fixed: a CSV→parquet round-trip had coerced `patient_id` int (lost the str

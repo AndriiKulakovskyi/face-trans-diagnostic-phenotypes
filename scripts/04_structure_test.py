@@ -13,7 +13,7 @@ tell discrete from dimensional structure, on the domain embedding:
   5. DSM-subtype anchor — ARI(clusters, 7 DSM subtypes) AND whether subtype centroids
      order along a mood↔psychosis continuum (the dimensional signature).
 
-Writes results/structure_test.json + reports/structure_test.html.
+Writes results/structure_test.json + results/reports/structure_test.html.
 Run:  python3 scripts/04_structure_test.py
 """
 from __future__ import annotations
@@ -50,7 +50,7 @@ from trans_diag import (  # noqa: E402
 )
 
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
 EMB_PATH = RESULTS_DIR / "cluster_domains_embedding.parquet"
 RANDOM = 0
 # clinical mood↔psychosis spectrum order for the continuum test
@@ -119,9 +119,9 @@ def main() -> int:
     # subtype anchor (arm) via metadata MultiIndex (robust to id formatting)
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
-        full = to_harmonized_dataset(df, load_variables(REPO_ROOT / "face-common-vars.xlsx"),
+        full = to_harmonized_dataset(df, load_variables(REPO_ROOT / "data" / "face-common-vars.xlsx"),
                                      visit="V0", exclude=ADMINISTRATIVE_FEATURES)
     arm = full.metadata.reindex(emb.index)["dsm_diagnosis"]
     rank = arm.map(SPECTRUM)
@@ -199,7 +199,7 @@ def main() -> int:
     }
     (RESULTS_DIR / "structure_test.json").write_text(json.dumps(meta, indent=2, default=str))
     _report(vals, gv, cent, arm, meta)
-    print("\nWrote results/structure_test.json + reports/structure_test.html")
+    print("\nWrote results/structure_test.json + results/reports/structure_test.html")
     return 0
 
 

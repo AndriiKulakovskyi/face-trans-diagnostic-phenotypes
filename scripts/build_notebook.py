@@ -57,7 +57,7 @@ warnings.filterwarnings("ignore")
 REPO = Path.cwd()
 if not (REPO / "scripts").exists() and (REPO.parent / "scripts").exists():
     REPO = REPO.parent
-SCRIPTS, RESULTS, FIGS = REPO / "scripts", REPO / "results", REPO / "reports" / "figures"
+SCRIPTS, RESULTS, FIGS = REPO / "scripts", REPO / "results", REPO / "results" / "reports" / "figures"
 sys.path.insert(0, str(REPO / "src"))
 
 # Set False to skip re-running and just display already-computed artifacts (fast browse).
@@ -77,7 +77,7 @@ def run_step(script, *args):
         raise RuntimeError(f"{script} failed (exit {r.returncode})")
 
 def fig(name, caption=""):
-    "Embed a figure from reports/figures/ inline."
+    "Embed a figure from results/reports/figures/ inline."
     p = FIGS / name
     display(Image(str(p))) if p.exists() else print(f"[missing] {name} — run its figure step")
     if caption:
@@ -105,8 +105,8 @@ code(r"""
 from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
 from trans_diag.adapter import ADMINISTRATIVE_FEATURES
 
-variables = load_variables(REPO / "face-common-vars.xlsx")
-df = build_unified_dataframe(REPO / "data", REPO / "face-common-vars.xlsx",
+variables = load_variables(REPO / "data" / "face-common-vars.xlsx")
+df = build_unified_dataframe(REPO / "data", REPO / "data" / "face-common-vars.xlsx",
                              readiness=["READY", "PARTIAL"], format="long")
 v0 = df[df["visit"] == "V0"]
 ds = to_harmonized_dataset(df, variables, visit="V0", exclude=ADMINISTRATIVE_FEATURES)

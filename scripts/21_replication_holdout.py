@@ -18,7 +18,7 @@ by deriving the model on a held-out partition and applying it to data it never s
     age+sex+baseline model (DSM is degenerate within a single held-out cohort). The strongest
     trans-diagnostic transport test: predict an unseen diagnosis from axes learned without it.
 
-Artifacts: results/replication_holdout.json, reports/replication_holdout.html.
+Artifacts: results/replication_holdout.json, results/reports/replication_holdout.html.
 Run:  python3 scripts/21_replication_holdout.py
 """
 from __future__ import annotations
@@ -44,7 +44,7 @@ from trans_diag.masked_fa import masked_loadings, masked_scores  # noqa: E402
 from trans_diag.outcomes import OUTCOMES  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
 DOMAINS_PATH = RESULTS_DIR / "cluster_domains_scores.parquet"
 LOADINGS_PATH = RESULTS_DIR / "dimensional_final_loadings.csv"
 K = 7
@@ -132,7 +132,7 @@ def main() -> int:
     D_all = domf.set_index("pid")[domains]
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
     df["pid"] = df["cohort"].str.lower() + "::" + df["usubjid_patients"].astype(str)
     v0 = df[df["visit"] == "V0"].set_index("pid")
@@ -224,7 +224,7 @@ def main() -> int:
             "loco_structure": loco_struct, "loso_outcomes": loso, "loco_outcomes": loco_out}
     (RESULTS_DIR / "replication_holdout.json").write_text(json.dumps(meta, indent=2, default=str))
     _report(loco_struct, loso, loco_out)
-    print("\nWrote results/replication_holdout.json + reports/replication_holdout.html. Done.")
+    print("\nWrote results/replication_holdout.json + results/reports/replication_holdout.html. Done.")
     return 0
 
 

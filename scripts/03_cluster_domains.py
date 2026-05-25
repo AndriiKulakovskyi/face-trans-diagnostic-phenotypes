@@ -32,10 +32,8 @@ from __future__ import annotations
 import argparse
 import json
 import logging
-import subprocess
 import sys
 import warnings
-from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -70,7 +68,7 @@ from trans_diag.engine import (  # noqa: E402
 )
 
 DATA_DIR = REPO_ROOT / "data"
-DICT_PATH = REPO_ROOT / "face-common-vars.xlsx"
+DICT_PATH = REPO_ROOT / "data" / "face-common-vars.xlsx"
 RESULTS_DIR = REPO_ROOT / "results"
 
 COVERAGE_FLOOR = 0.30      # drop domains observed in < 30% of patients
@@ -83,15 +81,6 @@ EMBED_CONFIG = dict(
     k_neighbours=10, include_4way=True, include_mask_columns=True,
     l2_normalize=True, feature_mode="cumulative", partition_weighting="sqrt_info",
 )
-
-
-def _git_rev() -> str | None:
-    try:
-        out = subprocess.run(["git", "rev-parse", "--short", "HEAD"],
-                             cwd=REPO_ROOT, capture_output=True, text=True, check=True)
-        return out.stdout.strip()
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return None
 
 
 def parse_args() -> argparse.Namespace:
@@ -342,7 +331,6 @@ def main() -> int:
     assignments.to_csv(RESULTS_DIR / "cluster_domains_assignments.csv", index=False)
 
     meta_json = {
-        "timestamp_utc": datetime.now(UTC).isoformat(), "git_rev": _git_rev(),
         "readiness": args.readiness, "coverage_floor": COVERAGE_FLOOR,
         "residualize": {"covariates": ["age", "sex"], "spline_df": SPLINE_DF,
                         "cross_fit": CROSS_FIT},

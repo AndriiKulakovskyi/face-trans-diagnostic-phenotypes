@@ -18,7 +18,7 @@ Outcomes (feasible follow-up coverage): EGF/GAF functioning, any-hospitalization
 EQ-5D quality of life. (Work disability dropped — not measured at follow-up.)
 
 Artifacts: results/phase5_headtohead.csv, results/phase5_axis_effects.csv,
-reports/phase5.html.
+results/reports/phase5.html.
 Run:  python3 scripts/10_phase5_outcomes.py [--visit V1]
 """
 from __future__ import annotations
@@ -45,7 +45,7 @@ from trans_diag.outcomes import (  # noqa: E402  shared head-to-head helpers
 )
 
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
 AXES_PATH = RESULTS_DIR / "dimensional_final_scores.parquet"
 
 
@@ -65,7 +65,7 @@ def main() -> int:
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
     df["pid"] = df["cohort"].str.lower() + "::" + df["usubjid_patients"].astype(str)
     v0 = df[df["visit"] == "V0"].set_index("pid")
@@ -115,7 +115,7 @@ def main() -> int:
     head = pd.DataFrame(head_rows); head.to_csv(RESULTS_DIR / f"phase5_headtohead_{suf}.csv", index=False)
     eff = pd.DataFrame(eff_rows); eff.to_csv(RESULTS_DIR / f"phase5_axis_effects_{suf}.csv", index=False)
     _report(head, eff, axis_cols, args.visit)
-    print("\nWrote results/phase5_* + reports/phase5.html. Done.")
+    print("\nWrote results/phase5_* + results/reports/phase5.html. Done.")
     return 0
 
 

@@ -14,7 +14,7 @@ Pipeline (imputation-free, consistent with the dimensional model; LABBOOK E19):
 Then per axis, per visit: V0↔Vk test-retest correlation (Pearson/Spearman) + ICC(2,1)
 on patients present at both → a trait↔state gradient.
 
-Artifacts: results/longitudinal_axes_{stability.csv,scores.parquet}, reports/longitudinal_axes.html.
+Artifacts: results/longitudinal_axes_{stability.csv,scores.parquet}, results/reports/longitudinal_axes.html.
 Run:  python3 scripts/08_longitudinal_axes.py
 """
 from __future__ import annotations
@@ -48,7 +48,7 @@ from trans_diag import (  # noqa: E402
 from trans_diag.masked_fa import masked_scores  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
 VISITS = ["V0", "V1", "V2", "V3", "V4"]
 K = 7
 SPLINE_DF, CROSS_FIT, RANDOM = 4, 5, 0
@@ -69,7 +69,7 @@ def icc21(a, b):
 
 def main() -> int:
     REPORTS_DIR.mkdir(exist_ok=True)
-    variables = load_variables(REPO_ROOT / "face-common-vars.xlsx")
+    variables = load_variables(REPO_ROOT / "data" / "face-common-vars.xlsx")
     exclude = set(ADMINISTRATIVE_FEATURES) | {v.canonical_name for v in variables
                                               if v.canonical_name.endswith("_mhoccur")}
     v0_domains = list(pd.read_parquet(RESULTS_DIR / "cluster_domains_scores.parquet").columns)
@@ -77,7 +77,7 @@ def main() -> int:
     print("Building per-visit domain scores...")
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
         items, covs = [], []
         for v in VISITS:
@@ -151,7 +151,7 @@ def main() -> int:
             "trait_state_meanr_V1V2": {a: round(float(r), 3) for a, r in early.items()}}
     (RESULTS_DIR / "longitudinal_axes_meta.json").write_text(json.dumps(meta, indent=2, default=str))
     _report(stab, early)
-    print("\nWrote results/longitudinal_axes_* + reports/longitudinal_axes.html. Done.")
+    print("\nWrote results/longitudinal_axes_* + results/reports/longitudinal_axes.html. Done.")
     return 0
 
 

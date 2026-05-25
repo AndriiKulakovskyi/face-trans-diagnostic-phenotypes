@@ -10,7 +10,7 @@ self-contained and version-controlled.
   Fig 4  trait-state gradient       (results/longitudinal_axes_stability.csv)
   Fig 5  cognition g + speed        (results/cognition_bpsz_loadings.csv + _corr.csv)
 
-Output: reports/figures/*.png and *.svg
+Output: results/reports/figures/*.png and *.svg
 """
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ from trans_diag import AXIS_INDEX_TO_NAME, AXIS_LABELS, AXIS_NAMES  # noqa: E402
 from trans_diag import AXIS_SHORT as AXIS_SHORT_MAP  # noqa: E402
 
 RESULTS = REPO_ROOT / "results"
-FIGDIR = REPO_ROOT / "reports" / "figures"
+FIGDIR = REPO_ROOT / "results" / "reports" / "figures"
 
 plt.rcParams.update({
     "font.size": 9, "axes.titlesize": 10, "axes.titleweight": "bold",
@@ -90,7 +90,7 @@ def save(fig, name):
     for ext in ("png", "svg"):
         fig.savefig(FIGDIR / f"{name}.{ext}", bbox_inches="tight")
     plt.close(fig)
-    print(f"  wrote reports/figures/{name}.png + .svg")
+    print(f"  wrote results/reports/figures/{name}.png + .svg")
 
 
 # ---------------------------------------------------------------- Fig 1
@@ -145,10 +145,10 @@ def fig1_structure():
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             long = build_unified_dataframe(REPO_ROOT / "data",
-                                           REPO_ROOT / "face-common-vars.xlsx",
+                                           REPO_ROOT / "data" / "face-common-vars.xlsx",
                                            readiness=["READY", "PARTIAL"], format="long")
             full = to_harmonized_dataset(long, load_variables(
-                REPO_ROOT / "face-common-vars.xlsx"), visit="V0",
+                REPO_ROOT / "data" / "face-common-vars.xlsx"), visit="V0",
                 exclude=ADMINISTRATIVE_FEATURES)
         dsm = full.metadata.reindex(sc.index)["dsm_diagnosis"].astype(str)
         rank = dsm.map(SPECTRUM).to_numpy(float)

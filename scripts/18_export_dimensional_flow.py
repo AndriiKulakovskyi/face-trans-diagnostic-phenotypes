@@ -9,8 +9,8 @@ discretization; the model itself stays continuous). We show a trait-like axis
 and report same-band persistence V0→V1 for all seven axes (chance = 1/3).
 
 Reads results/longitudinal_axes_scores.parquet.
-Writes reports/figures/fig6_dimensional_flow.{png,svg}      (axis-band alluvial)
-       reports/figures/fig6b_band_persistence.{png,svg}     (per-axis persistence)
+Writes results/reports/figures/fig6_dimensional_flow.{png,svg}      (axis-band alluvial)
+       results/reports/figures/fig6b_band_persistence.{png,svg}     (per-axis persistence)
 Requires kaleido + plotly.
 """
 from __future__ import annotations
@@ -30,7 +30,7 @@ sys.path.insert(0, str(REPO / "src"))
 from trans_diag import AXIS_NAMES, AXIS_SHORT  # noqa: E402
 
 RES = REPO / "results"
-FIG = REPO / "reports" / "figures"
+FIG = REPO / "results" / "reports" / "figures"
 
 AXES = AXIS_NAMES        # shared constant (trans_diag.axes) — axis1..7 SS order
 PRETTY = AXIS_SHORT      # snake_case → short display label
@@ -65,7 +65,7 @@ def load_dsm_for(index) -> pd.Series:
     from trans_diag import build_unified_dataframe
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO / "data", REPO / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO / "data", REPO / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
     v0 = df[df["visit"] == "V0"]
     dsm = pd.Series(v0["arm"].astype(str).to_numpy(),
@@ -137,7 +137,7 @@ def main() -> int:
         margin=dict(t=104, l=10, r=10, b=10))
     for ext in ("png", "svg"):
         fig.write_image(str(FIG / f"fig6_dimensional_flow.{ext}"), scale=2)
-    print("  wrote reports/figures/fig6_dimensional_flow.png/.svg")
+    print("  wrote results/reports/figures/fig6_dimensional_flow.png/.svg")
 
     # ── Fig 6b: per-axis band persistence vs chance vs discrete ──
     order = sorted(persist, key=persist.get, reverse=True)
@@ -153,7 +153,7 @@ def main() -> int:
                       yaxis_range=[0, 0.78], margin=dict(t=54, l=64, r=24, b=80))
     for ext in ("png", "svg"):
         bar.write_image(str(FIG / f"fig6b_band_persistence.{ext}"), scale=2)
-    print("  wrote reports/figures/fig6b_band_persistence.png/.svg")
+    print("  wrote results/reports/figures/fig6b_band_persistence.png/.svg")
 
     # ── Fig 6c: DSM-5 → axis-band (cross-sectional, trans-diagnostic overlap) ──
     dsm = load_dsm_for(v0.index)
@@ -201,7 +201,7 @@ def main() -> int:
         height=460, width=1040, font=dict(size=12), margin=dict(t=58, l=10, r=10, b=10))
     for ext in ("png", "svg"):
         figc.write_image(str(FIG / f"fig6c_dsm_axis_flow.{ext}"), scale=2)
-    print(f"  wrote reports/figures/fig6c_dsm_axis_flow.png/.svg  (axis={best}, η²={eta[best]:.3f})")
+    print(f"  wrote results/reports/figures/fig6c_dsm_axis_flow.png/.svg  (axis={best}, η²={eta[best]:.3f})")
     return 0
 
 

@@ -38,11 +38,11 @@ def fmt_msd(x: np.ndarray) -> str:
 
 
 def main() -> int:
-    variables = load_variables(REPO_ROOT / "face-common-vars.xlsx")
+    variables = load_variables(REPO_ROOT / "data" / "face-common-vars.xlsx")
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         long = build_unified_dataframe(
-            REPO_ROOT / "data", REPO_ROOT / "face-common-vars.xlsx",
+            REPO_ROOT / "data", REPO_ROOT / "data" / "face-common-vars.xlsx",
             readiness=["READY", "PARTIAL"], format="long")
         full = to_harmonized_dataset(long, variables, visit="V0",
                                      exclude=ADMINISTRATIVE_FEATURES)

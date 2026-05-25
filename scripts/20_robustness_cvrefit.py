@@ -20,7 +20,7 @@ irrelevant: Ridge/logistic are invariant to a sign flip or a column permutation.
 
 Repeated over N_REPEAT shuffled 5-fold splits (continuous → Ridge R²; binary → logistic AUC).
 
-Artifacts: results/robustness_cvrefit.json, reports/robustness_cvrefit.html.
+Artifacts: results/robustness_cvrefit.json, results/reports/robustness_cvrefit.html.
 Run:  python3 scripts/20_robustness_cvrefit.py
 """
 from __future__ import annotations
@@ -46,7 +46,7 @@ from trans_diag.masked_fa import masked_loadings, masked_scores  # noqa: E402
 from trans_diag.outcomes import OUTCOMES  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
 DOMAINS_PATH = RESULTS_DIR / "cluster_domains_scores.parquet"
 AXES_PATH = RESULTS_DIR / "dimensional_final_scores.parquet"
 K = 7                 # locked number of axes (matches 07)
@@ -113,7 +113,7 @@ def main() -> int:
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
     df["pid"] = df["cohort"].str.lower() + "::" + df["usubjid_patients"].astype(str)
     v0 = df[df["visit"] == "V0"].set_index("pid")
@@ -208,7 +208,7 @@ def main() -> int:
             "headtohead_cvrefit": head.to_dict(orient="records")}
     (RESULTS_DIR / "robustness_cvrefit.json").write_text(json.dumps(meta, indent=2, default=str))
     _report(head)
-    print("Wrote results/robustness_cvrefit.json + reports/robustness_cvrefit.html. Done.")
+    print("Wrote results/robustness_cvrefit.json + results/reports/robustness_cvrefit.html. Done.")
     return 0
 
 

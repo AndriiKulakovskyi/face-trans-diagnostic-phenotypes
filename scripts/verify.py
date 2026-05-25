@@ -28,7 +28,7 @@ from trans_diag import (  # noqa: E402
 )
 
 DATA_DIR = REPO_ROOT / "data"
-DICT_PATH = REPO_ROOT / "face-common-vars.xlsx"
+DICT_PATH = REPO_ROOT / "data" / "face-common-vars.xlsx"
 
 EXPECTED_PATIENTS = {"BP": 6252, "SZ": 2209, "DR": 552}
 EXPECTED_ARMS = {

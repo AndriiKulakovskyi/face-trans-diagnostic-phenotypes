@@ -26,7 +26,7 @@ Final representation = 7 reproducible, confound-controlled, imputation-free vari
 These scores feed Phase 5 (outcomes), Phase 4 (longitudinal), cognition and the figures.
 
 Artifacts: results/dimensional_final_{scores.parquet,loadings.csv,meta.json},
-reports/dimensional_final.html.
+results/reports/dimensional_final.html.
 Run:  python3 scripts/07_dimensional_refine.py
 """
 from __future__ import annotations
@@ -55,7 +55,7 @@ from trans_diag import (  # noqa: E402
 from trans_diag.masked_fa import masked_loadings, masked_scores  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
 SCORES_PATH = RESULTS_DIR / "cluster_domains_scores.parquet"
 RANDOM = 0
 K = 7                # locked: maximum reproducible dimensionality (split-half min >=0.85 through K=7; K>=8 collapse)
@@ -100,9 +100,9 @@ def main() -> int:
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
-        full = to_harmonized_dataset(df, load_variables(REPO_ROOT / "face-common-vars.xlsx"),
+        full = to_harmonized_dataset(df, load_variables(REPO_ROOT / "data" / "face-common-vars.xlsx"),
                                      visit="V0", exclude=ADMINISTRATIVE_FEATURES)
     rank = full.metadata.reindex(sc.index)["dsm_diagnosis"].map(SPECTRUM).to_numpy()
     age = full.X.reindex(sc.index)["age"].to_numpy(float)
@@ -201,7 +201,7 @@ def main() -> int:
             pio.to_html(f1, include_plotlyjs="cdn", full_html=False),
             pio.to_html(f2, include_plotlyjs=False, full_html=False), "</body></html>"]
     (REPORTS_DIR / "dimensional_final.html").write_text("\n".join(html), encoding="utf-8")
-    print("\nWrote results/dimensional_final_* (imputation-free) + reports/dimensional_final.html. Done.")
+    print("\nWrote results/dimensional_final_* (imputation-free) + results/reports/dimensional_final.html. Done.")
     return 0
 
 

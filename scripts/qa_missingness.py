@@ -12,7 +12,7 @@ Generates a single self-contained HTML file:
     each cohort (BP/SZ/DR). Cohorts without a source CSV column show a
     distinct grey 'no source' bar.
 
-Outputs: reports/qa_missingness.html (single file, plotly.js loaded via CDN)
+Outputs: results/reports/qa_missingness.html (single file, plotly.js loaded via CDN)
          results/qa_missingness.csv  (raw numbers — useful for downstream tooling)
 
 Run: python3 scripts/qa_missingness.py
@@ -35,9 +35,9 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 from trans_diag import build_unified_dataframe, load_variables  # noqa: E402
 
 DATA_DIR = REPO_ROOT / "data"
-DICT_PATH = REPO_ROOT / "face-common-vars.xlsx"
+DICT_PATH = REPO_ROOT / "data" / "face-common-vars.xlsx"
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
 
 VISITS = ["V0", "V1", "V2", "V3", "V4"]
 COHORTS = ["BP", "SZ", "DR"]

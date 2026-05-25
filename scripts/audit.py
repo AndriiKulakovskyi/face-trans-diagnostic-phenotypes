@@ -33,7 +33,7 @@ from trans_diag import RULES, build_unified_dataframe, load_variables  # noqa: E
 from trans_diag.loader import YEARLY_VISIT_MAP  # noqa: E402
 
 DATA_DIR = REPO_ROOT / "data"
-DICT_PATH = REPO_ROOT / "face-common-vars.xlsx"
+DICT_PATH = REPO_ROOT / "data" / "face-common-vars.xlsx"
 RESULTS_DIR = REPO_ROOT / "results"
 _YEARLY = set(YEARLY_VISIT_MAP)
 

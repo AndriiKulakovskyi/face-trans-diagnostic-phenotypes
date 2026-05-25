@@ -3,8 +3,8 @@ longitudinal artifacts — no pipeline re-run. Requires kaleido + plotly.
 
 Reads results/longitudinal_assignments.csv, longitudinal_dsm_phenotype.csv,
 longitudinal_meta.json; writes:
-  reports/figures/figS1_dsm_phenotype_flow.{png,svg}   DSM-5 → V0 → V1 → V2 Sankey
-  reports/figures/figS1b_dsm_composition.{png,svg}     DSM-5 composition per phenotype
+  results/reports/figures/figS1_dsm_phenotype_flow.{png,svg}   DSM-5 → V0 → V1 → V2 Sankey
+  results/reports/figures/figS1b_dsm_composition.{png,svg}     DSM-5 composition per phenotype
 """
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ import plotly.graph_objects as go
 
 REPO = Path(__file__).resolve().parents[1]
 RES = REPO / "results"
-FIG = REPO / "reports" / "figures"
+FIG = REPO / "results" / "reports" / "figures"
 
 SPECTRUM = {"Trouble dépressif majeur": 0, "Bipolaire de type 2": 1, "Bipolaire de type 1": 2,
             "Bipolaire non spécifié": 3, "Trouble schizo-affectif": 4,
@@ -67,7 +67,7 @@ def main() -> int:
         height=520, width=1100, font=dict(size=12), margin=dict(t=54, l=10, r=10, b=10))
     for ext in ("png", "svg"):
         fig.write_image(str(FIG / f"figS1_dsm_phenotype_flow.{ext}"), scale=2)
-    print(f"  wrote reports/figures/figS1_dsm_phenotype_flow.png/.svg  (ARI={ari:.3f})")
+    print(f"  wrote results/reports/figures/figS1_dsm_phenotype_flow.png/.svg  (ARI={ari:.3f})")
 
     # ── heatmap: DSM-5 composition of each phenotype ──
     colnorm = dsm_ct.div(dsm_ct.sum(0).replace(0, 1), axis=1)
@@ -81,7 +81,7 @@ def main() -> int:
                        yaxis_title="DSM-5 (mood→psychosis)", margin=dict(t=50, l=120, b=46))
     for ext in ("png", "svg"):
         fig2.write_image(str(FIG / f"figS1b_dsm_composition.{ext}"), scale=2)
-    print("  wrote reports/figures/figS1b_dsm_composition.png/.svg")
+    print("  wrote results/reports/figures/figS1b_dsm_composition.png/.svg")
     return 0
 
 

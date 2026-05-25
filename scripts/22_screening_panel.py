@@ -25,7 +25,7 @@ Validation (leakage-safe):
      +0.034 (§3.4).
 
 Artifacts: results/screening_panel_{items,fidelity,headtohead}.csv + meta.json;
-reports/screening_panel.html + reports/figures/fig7_screening_panel.{png,svg}.
+results/reports/screening_panel.html + results/reports/figures/fig7_screening_panel.{png,svg}.
 Run:  python3 scripts/22_screening_panel.py
 """
 from __future__ import annotations
@@ -67,8 +67,8 @@ from trans_diag.domains import BIOLOGY_COMPOSITES, BIOLOGY_SECTIONS  # noqa: E40
 from trans_diag.outcomes import OUTCOMES  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
-DICT = REPO_ROOT / "face-common-vars.xlsx"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
+DICT = REPO_ROOT / "data" / "face-common-vars.xlsx"
 SEED = 0
 BUDGETS = [5, 8, 10, 12, 15, 20, 25]      # questionnaire-item budgets to sweep
 L1_RATIO = 0.8                             # mostly-L1 elastic net (sparse, collinearity-stable)
@@ -312,7 +312,7 @@ def main() -> int:
     (RESULTS_DIR / "screening_panel_meta.json").write_text(json.dumps(meta, indent=2, default=str))
 
     _report(sweep_df, recon, shared_sel, peraxis_sel, labs, h2h_df)
-    print("\nWrote results/screening_panel_* + reports/screening_panel.html. Done.")
+    print("\nWrote results/screening_panel_* + results/reports/screening_panel.html. Done.")
     return 0
 
 
@@ -350,7 +350,7 @@ def _report(sweep_df, recon, shared_sel, peraxis_sel, labs, h2h_df):
         g.update_xaxes(tickangle=-30)
         for ext in ("png", "svg"):
             g.write_image(str(figdir / f"fig7_screening_panel.{ext}"), width=1150, height=440, scale=2)
-        print("  wrote reports/figures/fig7_screening_panel.png/.svg")
+        print("  wrote results/reports/figures/fig7_screening_panel.png/.svg")
     except Exception as e:  # kaleido optional
         print(f"  (static fig7 skipped: {e})")
 

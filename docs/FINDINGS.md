@@ -127,7 +127,7 @@ spectral embedding.
   **0.006**, age dCor **0.117**, **cohort ARI 0.002** — independent of sex, age,
   and diagnosis (genuinely trans-diagnostic).
 - **Five phenotypes** cutting across BP/SZ/DR (standardized domain profiles,
-  `reports/cluster_domains.html`): (0) **metabolic / later-onset**
+  `results/reports/cluster_domains.html`): (0) **metabolic / later-onset**
   (metabolic_syndrome↑, later age-of-onset↑, somatic↓); (1) **heavy-smoking /
   hospitalization burden** (smoking↑, hospitalizations↑, YMRS↓); (2)
   **high-functioning / low burden** (EGF↑, education↑, QoL↑; metabolic↓,

@@ -48,7 +48,7 @@ from trans_diag.engine import (  # noqa: E402
     run_kmeans,
 )
 
-DATA, DICT = REPO / "data", REPO / "face-common-vars.xlsx"
+DATA, DICT = REPO / "data", REPO / "data" / "face-common-vars.xlsx"
 RESULTS = REPO / "results"
 K = 6
 N_BOOT = 25

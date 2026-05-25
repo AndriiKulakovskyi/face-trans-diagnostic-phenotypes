@@ -6,11 +6,11 @@ files into one merged single-cohort dataset for data-driven clustering, then
 compare clusters against DSM-5 diagnostics.
 
 ## Files
-- `face-common-vars.xlsx` — the dictionary (Sheet1, 379 rows × 20 columns)
+- `data/face-common-vars.xlsx` — the dictionary (Sheet1, 379 rows × 20 columns)
 - `data/bipolar.csv` — BP visit-level (21,343 rows)
 - `data/schizophrenia.csv` — SZ visit-level (6,203 rows)
 - `data/depression.csv` — DR visit-level (1,953 rows)
-- `thesaurus/` — original thesaurus reference (BP / SZ / DR)
+- `data/thesaurus/` — original thesaurus reference (BP / SZ / DR)
 
 ## How to read each row of the dictionary (left → right)
 1. **What is this variable?** Cols A–G: Section, BP/SZ/DR thesaurus codes,
@@ -65,7 +65,7 @@ import pandas as pd
 bp = pd.read_csv('data/bipolar.csv', low_memory=False)
 sz = pd.read_csv('data/schizophrenia.csv', low_memory=False)
 dr = pd.read_csv('data/depression.csv', low_memory=False)
-dico = pd.read_excel('face-common-vars.xlsx', sheet_name='Sheet1')
+dico = pd.read_excel('data/face-common-vars.xlsx', sheet_name='Sheet1')
 ```
 
 ### Step 1 — Decide visit-aggregation strategy

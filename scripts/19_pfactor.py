@@ -15,7 +15,7 @@ imputation-free:
      seven orthogonal axes (a general factor should load on all), and a *one-number* outcome
      head-to-head vs the 7-subtype DSM (can a single severity score rival the diagnosis?).
 
-Artifacts: results/pfactor.json, reports/pfactor.html.
+Artifacts: results/pfactor.json, results/reports/pfactor.html.
 Run:  python3 scripts/19_pfactor.py
 """
 from __future__ import annotations
@@ -41,7 +41,7 @@ from trans_diag.masked_fa import (  # noqa: E402
 from trans_diag.outcomes import OUTCOMES, cv_metric  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
 K = 7
 
 
@@ -106,7 +106,7 @@ def main() -> int:
     # validation B: one-number outcome head-to-head vs the 7-subtype DSM
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
     df["pid"] = df["cohort"].str.lower() + "::" + df["usubjid_patients"].astype(str)
     pf_pid = pd.Series(pf.to_numpy(), index=(pf.index.get_level_values("cohort") + "::" +
@@ -156,7 +156,7 @@ def main() -> int:
                     "scored masked. One-number severity vs the 7-subtype DSM."}
     (RESULTS_DIR / "pfactor.json").write_text(json.dumps(meta, indent=2, default=str))
     _report(mean_off, pos_frac, var_general, gpos, len(domains), top, corr_axes, hh)
-    print("\nWrote results/pfactor.json + reports/pfactor.html. Done.")
+    print("\nWrote results/pfactor.json + results/reports/pfactor.html. Done.")
     return 0
 
 

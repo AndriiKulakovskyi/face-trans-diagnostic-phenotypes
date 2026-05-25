@@ -1,8 +1,8 @@
 # CLAUDE.md — FACE trans-diagnostic dimensional phenotyping (BP · SZ · DR)
 
 > Guide for collaborators and AI assistants. Keep it short. Paper draft:
-> [MANUSCRIPT.md](MANUSCRIPT.md). Plan: [ROADMAP.md](ROADMAP.md). Dictionary guide:
-> [DATA.md](DATA.md). Findings log: [FINDINGS.md](FINDINGS.md) · [LABBOOK.md](LABBOOK.md).
+> [MANUSCRIPT.md](MANUSCRIPT.md). Plan: [docs/ROADMAP.md](docs/ROADMAP.md). Dictionary guide:
+> [docs/DATA.md](docs/DATA.md). Findings log: [docs/FINDINGS.md](docs/FINDINGS.md) · [docs/LABBOOK.md](docs/LABBOOK.md).
 
 ## What this is
 
@@ -22,19 +22,25 @@ dependency on `face_stratification`/`face_rlvr`**.
 
 ```
 face-common-bp-sz-dr/
-├── MANUSCRIPT.md  CLAUDE.md  ROADMAP.md  DATA.md  FINDINGS.md  LABBOOK.md  README.md
-├── face-common-vars.xlsx            ← the common-variables dictionary (input)
-├── data/                            ← 3-cohort longitudinal CSVs (confidential; gitignored)
+├── MANUSCRIPT.md  CLAUDE.md  README.md   ← paper + guides (kept at root)
+├── data/                            ← inputs (read-only)
+│   ├── face-common-vars.xlsx        ← common-variables dictionary (tracked)
+│   ├── thesaurus/                   ← per-cohort source dictionaries (tracked, reference)
+│   └── {bipolar,schizophrenia,depression}.csv  ← longitudinal data (confidential; gitignored)
 ├── src/trans_diag/                 ← the package (all our code)
 │   ├── variable.py  rules.py  loader.py  filters.py   ← harmonization
 │   ├── schema_gen.py  adapter.py  domains.py          ← matrix build + domain aggregation
+│   ├── masked_fa.py  axes.py  outcomes.py             ← imputation-free FA, axis names, outcome models
 │   └── engine/                      ← internalized stratification engine
 │       ├── feature_schema.py  harmonized_dataset.py   ← data contracts
 │       ├── masked_similarity.py  spectral_base.py  multipartite.py  ← embedding (no imputation)
 │       ├── enrichment.py  clustering.py               ← enrichment + kmeans/bootstrap
-├── scripts/                         ← pipeline (00_run_all.py orchestrates) + verify/audit/qa infra
-├── tests/                           ← unit tests (filters, adapter, domains)
-├── results/  reports/               ← reproducible artifacts (CSV/JSON/parquet) + HTML + figures
+├── scripts/                         ← pipeline (00_run_all.py orchestrates 01–22) + verify/audit/qa infra
+├── tests/                           ← unit + golden-number regression tests (76)
+├── results/                         ← reproducible AGGREGATE artifacts (CSV/JSON; tracked)
+│   └── reports/                     ← rendered HTML + figures/ (PNG/SVG; tracked)
+├── notebooks/                       ← FACE_reproduction.ipynb
+├── docs/                            ← ROADMAP · DATA · FINDINGS · LABBOOK
 └── pyproject.toml                   ← packages = src/trans_diag; deps; [full] extras
 ```
 
@@ -43,11 +49,13 @@ pytest uses `pythonpath = ["src"]`. Or `pip install -e ".[full]"`.
 
 ## Data inputs (read-only, confidential)
 
-- `face-common-vars.xlsx` — dictionary: one row per harmonized variable (per-cohort
-  source columns, `dtype`, value set, `section`, `cluster_readiness`, rule).
+- `data/face-common-vars.xlsx` — dictionary: one row per harmonized variable (per-cohort
+  source columns, `dtype`, value set, `section`, `cluster_readiness`, rule). Small (103 KB);
+  tracked and safe to share. `data/thesaurus/` holds the per-cohort source dictionaries (reference).
 - `data/{bipolar,schizophrenia,depression}.csv` — 6,252 / 2,209 / 552 patients,
-  visit-level rows (V0–V4). **Confidential.** ⚠️ Currently *tracked* in git — must be
-  removed (gitignore + history scrub) before sharing the repo externally.
+  visit-level rows (V0–V4). **Confidential.** ✅ gitignored and **never committed**
+  (`git log --all --full-history -- 'data/*.csv'` is empty) — a local working copy only,
+  safe to share the repo as-is.
 - `results/v0_clusters_anchor.csv` — the sister 4-cohort clusters projected onto our
   ids; a reference used only by `02_confound_ladder.py` (ARI-vs-sister in §3.1).
 
@@ -67,25 +75,27 @@ of robust-z, min-item floor) + curated biology composites.
 **`patient_uid = cohort::usubjid_patients`** — globally-unique key (usubjid collides across
 cohorts; 970 collisions). **Identifiers (never modelled on):** `patient_uid`, `usubjid_patients`,
 `cohort`, `arm`, `visit`, `visitnum`.
-**No imputation** on the masked-similarity embedding and the autoencoder objective; the
-factor-analysis input is the one place gaps are mean-filled (the residual matrix is ~65%
-observed — see MANUSCRIPT §2.1).
+**No imputation** anywhere in the final model: the masked-similarity embedding, the
+autoencoder objective, AND the factor analysis all operate on observed cells only
+(`masked_fa.py`: pairwise-complete correlation → masked posterior-mean scores; the residual
+matrix is ~65% observed — see MANUSCRIPT §2.1, §3.8). The superseded FA mean-fill survives
+only as an ablation (`scripts/sensitivity_masked_fa*.py`).
 
 ## Quick start
 
 ```bash
 pip install -e ".[full]"             # core + torch (AE) + neuroHarmonize (ComBat) + kaleido (figures)
-python3 scripts/00_run_all.py           # reproduce the whole manuscript pipeline (~5 min)
-python3 -m pytest tests/ -q          # unit tests (54)
+python3 scripts/00_run_all.py           # reproduce the whole manuscript pipeline (~5 min, steps 01–22)
+python3 -m pytest tests/ -q          # unit + golden-number tests (76)
 python3 scripts/verify.py            # end-to-end harmonization smoke test
 python3 scripts/02_confound_ladder.py   # reproduce the §3.1 confound ladder
 ```
 
 ```python
 from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
-df = build_unified_dataframe("data", "face-common-vars.xlsx",
+df = build_unified_dataframe("data", "data/face-common-vars.xlsx",
                              readiness=["READY", "PARTIAL"], format="long")
-ds = to_harmonized_dataset(df, load_variables("face-common-vars.xlsx"), visit="V0")
+ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), visit="V0")
 # ds.X: MultiIndex[cohort, patient_id] × numeric features (NaN = missing, never imputed here);
 # ds.schema: a trans_diag.engine.FeatureSchema generated from our dictionary.
 ```
@@ -113,7 +123,7 @@ pipeline steps.
 
 - **Python ≥ 3.11.** Core deps in `pyproject.toml`; full reproduction needs `".[full]"`.
 - **Develop in `src/trans_diag`** (incl. `engine/` — vendored but now ours to maintain).
-- **Output paths**: scripts write to `results/` (data) or `reports/` (HTML/figures).
+- **Output paths**: scripts write aggregates to `results/` and HTML/figures to `results/reports/`.
 - **Determinism**: fixed seeds throughout; reproduces to ≤1e-12 (BLAS round-off only).
   All CV folds are shuffled (the patient matrix is cohort-ordered).
 
@@ -143,11 +153,11 @@ pipeline steps.
 - **Discrete clustering = negative result** (~38% persistence, DSM-ARI 0.006) — slices of a
   continuum; supplement only.
 - **Repo independence:** engine internalized (`engine/`); full pipeline reproduces the
-  manuscript to ≤1e-12; 54 tests pass with no `archive/` dependency.
+  manuscript to ≤1e-12; 76 tests pass with no `archive/` dependency.
 
 ## Where to read next
 
 - **The paper** → [MANUSCRIPT.md](MANUSCRIPT.md)
-- **Dictionary columns** → [DATA.md](DATA.md) · **Plan/framing** → [ROADMAP.md](ROADMAP.md)
-- **Findings (paper log)** → [FINDINGS.md](FINDINGS.md) · **Lab notebook** → [LABBOOK.md](LABBOOK.md)
+- **Dictionary columns** → [docs/DATA.md](docs/DATA.md) · **Plan/framing** → [docs/ROADMAP.md](docs/ROADMAP.md)
+- **Findings (paper log)** → [docs/FINDINGS.md](docs/FINDINGS.md) · **Lab notebook** → [docs/LABBOOK.md](docs/LABBOOK.md)
 - **Engine internals** → `src/trans_diag/engine/` (module docstrings)

@@ -84,7 +84,7 @@ def main() -> int:
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO / "data", REPO / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO / "data", REPO / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
     df["pid"] = df["cohort"].str.lower() + "::" + df["usubjid_patients"].astype(str)
     v0 = df[df["visit"] == "V0"].set_index("pid")

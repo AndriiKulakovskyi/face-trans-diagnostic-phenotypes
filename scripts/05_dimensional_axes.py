@@ -16,7 +16,7 @@ Each patient gets a score on each axis — the trans-diagnostic representation w
 carry into Phase 4 (do axes persist?) and Phase 5 (do axes beat DSM on outcomes?).
 
 Artifacts: results/dimensional_axes_{loadings.csv,scores.parquet,meta.json},
-reports/dimensional_axes.html.
+results/reports/dimensional_axes.html.
 Run:  python3 scripts/05_dimensional_axes.py [--max-k 8]
 """
 from __future__ import annotations
@@ -46,7 +46,7 @@ from trans_diag import (  # noqa: E402
 )
 
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
 SCORES_PATH = RESULTS_DIR / "cluster_domains_scores.parquet"
 RANDOM = 0
 SPECTRUM = {"Trouble dépressif majeur": 0, "Bipolaire de type 2": 1,
@@ -112,9 +112,9 @@ def main() -> int:
     # subtype anchor
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
-        full = to_harmonized_dataset(df, load_variables(REPO_ROOT / "face-common-vars.xlsx"),
+        full = to_harmonized_dataset(df, load_variables(REPO_ROOT / "data" / "face-common-vars.xlsx"),
                                      visit="V0", exclude=ADMINISTRATIVE_FEATURES)
     arm = full.metadata.reindex(sc.index)["dsm_diagnosis"]
     rank = arm.map(SPECTRUM).to_numpy()
@@ -191,7 +191,7 @@ def main() -> int:
     (RESULTS_DIR / "dimensional_axes_meta.json").write_text(json.dumps(meta, indent=2, default=str))
 
     _report(load, domains, names, var_prop, real_ev, thresh, k_pa, cent, cont, mood_axis, cong)
-    print("\nWrote results/dimensional_axes_* + reports/dimensional_axes.html. Done.")
+    print("\nWrote results/dimensional_axes_* + results/reports/dimensional_axes.html. Done.")
     return 0
 
 

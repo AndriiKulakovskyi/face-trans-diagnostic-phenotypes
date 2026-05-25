@@ -7,7 +7,7 @@
 #8  HDBSCAN≈cohort may be missingness: can cohort be predicted from the observation MASK alone?
 #9  the mood↔psychosis ρ rests on 7 subtype centroids → bootstrap 95% CI.
 
-Writes results/review_checks.json + reports/figures/figS2_kcurve.{png,svg}.
+Writes results/review_checks.json + results/reports/figures/figS2_kcurve.{png,svg}.
 """
 from __future__ import annotations
 
@@ -35,7 +35,7 @@ from sklearn.model_selection import StratifiedKFold, cross_val_score  # noqa: E4
 from trans_diag import build_unified_dataframe  # noqa: E402
 
 RES = REPO / "results"
-FIG = REPO / "reports" / "figures"
+FIG = REPO / "results" / "reports" / "figures"
 SPECTRUM = {"Trouble dépressif majeur": 0, "Bipolaire de type 2": 1, "Bipolaire de type 1": 2,
             "Bipolaire non spécifié": 3, "Trouble schizo-affectif": 4,
             "Trouble schizophréniforme": 5, "Schizophrénie": 6}
@@ -68,7 +68,7 @@ def main() -> int:
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO / "data", REPO / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO / "data", REPO / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
     v0 = df[df["visit"] == "V0"].copy()
     v0["key"] = list(zip(v0["cohort"].str.lower(), v0["usubjid_patients"].astype(str), strict=False))
@@ -169,7 +169,7 @@ def main() -> int:
     for ext in ("png", "svg"):
         fig.savefig(FIG / f"figS2_kcurve.{ext}", dpi=200, bbox_inches="tight")
     plt.close(fig)
-    print("#5 wrote reports/figures/figS2_kcurve.png/.svg")
+    print("#5 wrote results/reports/figures/figS2_kcurve.png/.svg")
     print("\nWrote results/review_checks.json")
     return 0
 

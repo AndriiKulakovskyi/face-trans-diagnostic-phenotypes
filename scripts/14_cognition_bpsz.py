@@ -15,7 +15,7 @@ Three steps:
      predicting V1 functioning (EGF)? Nested 5-fold CV ΔR².
 
 Artifacts: results/cognition_bpsz_{loadings.csv,scores.parquet,corr.csv,meta.json},
-reports/cognition_bpsz.html.
+results/reports/cognition_bpsz.html.
 Run:  python3 scripts/14_cognition_bpsz.py
 """
 from __future__ import annotations
@@ -49,7 +49,7 @@ from trans_diag import (  # noqa: E402
 from trans_diag.outcomes import cv_metric  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
 SECTION = "NEUROPSYCHOLOGIE"
 MIN_DOMAINS, COV_FLOOR, RANDOM = 3, 0.30, 0
 SYMPTOM_AXES = AXIS_NAMES   # the 6 symptom axes (shared constant, trans_diag.axes)
@@ -88,11 +88,11 @@ def parallel_analysis(X, n_iter=30, seed=0, cap=4):
 
 def main() -> int:
     REPORTS_DIR.mkdir(exist_ok=True)
-    variables = load_variables(REPO_ROOT / "face-common-vars.xlsx")
+    variables = load_variables(REPO_ROOT / "data" / "face-common-vars.xlsx")
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
         cog_ds = to_harmonized_dataset(df, variables, visit="V0",
                                        exclude=ADMINISTRATIVE_FEATURES, sections={SECTION})
@@ -180,7 +180,7 @@ def main() -> int:
                             "symptom_plus_cognition_R2": r_symcog, "delta": r_symcog - r_sym}}
     (RESULTS_DIR / "cognition_bpsz_meta.json").write_text(json.dumps(meta, indent=2, default=str))
     _report(load, list(cog.columns), names, corr, r_sym, r_symcog, len(common))
-    print("\nWrote results/cognition_bpsz_* + reports/cognition_bpsz.html. Done.")
+    print("\nWrote results/cognition_bpsz_* + results/reports/cognition_bpsz.html. Done.")
     return 0
 
 

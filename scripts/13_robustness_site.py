@@ -10,7 +10,7 @@ dimensional axes and the Phase-5 head-to-head robust to site batch effects?
   3. Re-run the Phase-5 V1 head-to-head on the ComBat axes → does "axes add over DSM"
      survive site harmonization?
 
-Artifacts: results/robustness_site.json, reports/robustness_site.html.
+Artifacts: results/robustness_site.json, results/reports/robustness_site.html.
 Run:  python3 scripts/13_robustness_site.py
 """
 from __future__ import annotations
@@ -35,7 +35,7 @@ from trans_diag import AXIS_NAMES, build_unified_dataframe  # noqa: E402
 from trans_diag.outcomes import OUTCOMES, added_axes_test, cv_metric  # noqa: E402
 
 RESULTS_DIR = REPO_ROOT / "results"
-REPORTS_DIR = REPO_ROOT / "reports"
+REPORTS_DIR = REPO_ROOT / "results" / "reports"
 K, RANDOM = 7, 0
 # AXIS_NAMES (axis1..7 SS order) imported from trans_diag.axes — single source of truth.
 
@@ -65,7 +65,7 @@ def main() -> int:
 
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "face-common-vars.xlsx",
+        df = build_unified_dataframe(REPO_ROOT / "data", REPO_ROOT / "data" / "face-common-vars.xlsx",
                                      readiness=["READY", "PARTIAL"], format="long")
     df["pid"] = df["cohort"].str.lower() + "::" + df["usubjid_patients"].astype(str)
     v0 = df[df["visit"] == "V0"].drop_duplicates("pid").set_index("pid")
@@ -143,7 +143,7 @@ def main() -> int:
             "headtohead_combat": head.to_dict(orient="records")}
     (RESULTS_DIR / "robustness_site.json").write_text(json.dumps(meta, indent=2, default=str))
     _report(cong, site_shift, head)
-    print("\nWrote results/robustness_site.json + reports/robustness_site.html. Done.")
+    print("\nWrote results/robustness_site.json + results/reports/robustness_site.html. Done.")
     return 0
 
 
