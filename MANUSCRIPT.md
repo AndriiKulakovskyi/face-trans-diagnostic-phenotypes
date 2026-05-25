@@ -522,8 +522,8 @@ sex, so outcomes that also feed the dimensions (functioning, hospitalization) ar
 $$
 \begin{aligned}
 \textbf{M0 (DSM)}&: \ Y_{V1}\sim \text{baseline}(Y_{V0})+a+\mathrm{sex}+\mathbf 1[\text{arm}],\\
-\textbf{M1 (axes)}&: \ Y_{V1}\sim \text{baseline}(Y_{V0})+a+\mathrm{sex}+F_1..F_6,\\
-\textbf{M2 (both)}&: \ Y_{V1}\sim \text{baseline}(Y_{V0})+a+\mathrm{sex}+\mathbf 1[\text{arm}]+F_1..F_6,
+\textbf{M1 (axes)}&: \ Y_{V1}\sim \text{baseline}(Y_{V0})+a+\mathrm{sex}+F_1..F_7,\\
+\textbf{M2 (both)}&: \ Y_{V1}\sim \text{baseline}(Y_{V0})+a+\mathrm{sex}+\mathbf 1[\text{arm}]+F_1..F_7,
 \end{aligned}
 $$
 
@@ -535,7 +535,7 @@ AUC. Folds are **shuffled** with a fixed seed (the patient matrix is cohort-orde
 un-shuffled folds give cohort-imbalanced splits and distort the $R^2$), and 95% intervals are
 obtained from $R=200$ repeated CV (`11_phase5_ci.py`). The **incremental value** of the dimensions over diagnosis is tested in-sample by a nested
 $F$-test (continuous), $F=\dfrac{(\mathrm{SSR}_0-\mathrm{SSR}_2)/q}{\mathrm{SSR}_2/(n-p_2)}$ with
-$q=6$ added parameters, or a likelihood-ratio test (binary),
+$q=7$ added parameters, or a likelihood-ratio test (binary),
 $\Lambda=2(\ell_2-\ell_0)\sim\chi^2_q$ (returned as `NaN` if the saturated model fails to
 converge under rare-subtype separation, in which case the CV metric is primary). Per-dimension
 standardized effects $\beta$ come from the regularized M2 model. As a **de-circularization
@@ -1264,7 +1264,7 @@ stability. The remaining substitutions are confined to the residualization-desig
 (§2.4) and ComBat (§3.5), which require complete data by construction. (6) **The general ('p')
 factor — tested, and largely absent.** We no longer defer this. Applying an oblique (promax)
 rotation to the seven masked factors, the confound-controlled axes are essentially uncorrelated
-(mean inter-factor *r* ≈ −0.06), and the single dominant dimension is depression-specific (it
+(mean inter-factor *r* ≈ −0.01), and the single dominant dimension is depression-specific (it
 loads on 12 of 54 domains), not a broad general factor; a one-number "overall severity" score
 consequently collapses onto the depression axis and *under-performs* both the seven-subtype DSM
 and the full seven-axis model out-of-sample (`scripts/19_pfactor.py`). This is itself a result: the
