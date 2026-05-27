@@ -19,6 +19,7 @@ multipartite-spectral embedding, enrichment, factor scaffolding) is internalized
 face-common-bp-sz-dr/
 ├── MANUSCRIPT.md             ← the paper (methods, results, figures, references)
 ├── README.md  CLAUDE.md      ← this file + the concise project/AI-assistant guide
+├── install.py                ← one-step setup: creates .venv and installs .[full]
 ├── pyproject.toml            ← packages = src/trans_diag; deps; ".[full]" extras
 │
 ├── data/                     ← inputs (read-only)
@@ -53,9 +54,22 @@ pytest uses `pythonpath = ["src"]`. Or install editable: `pip install -e ".[full
 ## Quick start
 
 ```bash
-pip install -e ".[full]"             # core + torch (AE) + neuroHarmonize (ComBat) + kaleido (figures)
+python3 install.py                   # create .venv and install .[full] + dev tools
+source .venv/bin/activate            # Windows: .venv\Scripts\activate
 python3 scripts/00_run_all.py        # reproduce the whole manuscript pipeline (~5 min, steps 01–22)
 ```
+
+`install.py` requires Python ≥ 3.11 and creates an isolated `.venv` in the project root.
+Pass `--no-dev` to skip pytest/ruff, `--check` to verify every import after install,
+or `--force` to wipe the existing `.venv` and reinstall from scratch.
+
+<details>
+<summary>Manual install (no .venv)</summary>
+
+```bash
+pip install -e ".[full]"             # core + torch + neuroHarmonize (ComBat) + kaleido + ipython + nbformat
+```
+</details>
 
 ```python
 from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
@@ -81,6 +95,7 @@ python3 -m pytest tests/ -q          # 76 tests: unit (filters, adapter, domains
                                      #           + golden-numbers regression against results/
 python3 scripts/verify.py            # end-to-end harmonization smoke test
 python3 scripts/00_run_all.py        # full reproduction → writes results/ + results/reports/
+python3 install.py --check           # re-verify every import in the .venv
 ```
 
 - **Golden numbers** (`tests/test_golden_numbers.py`) pin every headline value in the
