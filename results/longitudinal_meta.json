@@ -1,0 +1,39 @@
+{
+  "min_obs": 10,
+  "residualize": {
+    "spline_df": 4,
+    "cross_fit": 5
+  },
+  "v0_classifier_cv_accuracy": 0.869383457841599,
+  "k": 5,
+  "n_patient_visits_assigned": 17732,
+  "coherence": [
+    {
+      "visit": "V1",
+      "n_paired": 3782,
+      "ari_vs_V0": 0.07043104506430999,
+      "pct_persist": 0.3897408778424114
+    },
+    {
+      "visit": "V2",
+      "n_paired": 2612,
+      "ari_vs_V0": 0.07066382997806749,
+      "pct_persist": 0.38935681470137823
+    },
+    {
+      "visit": "V3",
+      "n_paired": 1739,
+      "ari_vs_V0": 0.061681692288355176,
+      "pct_persist": 0.3737780333525014
+    },
+    {
+      "visit": "V4",
+      "n_paired": 697,
+      "ari_vs_V0": 0.05557259016913399,
+      "pct_persist": 0.3601147776183644
+    }
+  ],
+  "dsm_phenotype_ari": 0.0060480665640295726,
+  "dr_excluded_at": "V3",
+  "site_note": "site excluded; ComBat sensitivity deferred (#43)"
+}

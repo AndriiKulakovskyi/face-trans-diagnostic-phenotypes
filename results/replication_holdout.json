@@ -1,0 +1,128 @@
+{
+  "K": 7,
+  "min_site": 10,
+  "loco_structure": [
+    {
+      "held_out_cohort": "bp",
+      "n_train": 2761,
+      "min_congruence": 0.41,
+      "mean_congruence": 0.67,
+      "per_axis": [
+        0.85,
+        0.94,
+        0.46,
+        0.72,
+        0.41,
+        0.9,
+        0.43
+      ]
+    },
+    {
+      "held_out_cohort": "dr",
+      "n_train": 8461,
+      "min_congruence": 0.97,
+      "mean_congruence": 0.99,
+      "per_axis": [
+        0.99,
+        0.99,
+        0.99,
+        1.0,
+        0.98,
+        0.99,
+        0.97
+      ]
+    },
+    {
+      "held_out_cohort": "sz",
+      "n_train": 6804,
+      "min_congruence": 0.81,
+      "mean_congruence": 0.95,
+      "per_axis": [
+        1.0,
+        0.99,
+        0.97,
+        0.99,
+        0.99,
+        0.92,
+        0.81
+      ]
+    }
+  ],
+  "loso_outcomes": [
+    {
+      "outcome": "EGF functioning",
+      "n": 3189,
+      "n_sites": 18,
+      "metric": "R2",
+      "DSM": 0.355,
+      "axes": 0.352,
+      "combined": 0.387,
+      "axes_minus_DSM": -0.003,
+      "combined_minus_DSM": 0.032
+    },
+    {
+      "outcome": "any hospitalization",
+      "n": 3317,
+      "n_sites": 18,
+      "metric": "AUC",
+      "DSM": 0.735,
+      "axes": 0.594,
+      "combined": 0.754,
+      "axes_minus_DSM": -0.141,
+      "combined_minus_DSM": 0.019
+    },
+    {
+      "outcome": "EQ-5D quality of life",
+      "n": 2411,
+      "n_sites": 15,
+      "metric": "R2",
+      "DSM": 0.3,
+      "axes": 0.342,
+      "combined": 0.344,
+      "axes_minus_DSM": 0.042,
+      "combined_minus_DSM": 0.044
+    }
+  ],
+  "loco_outcomes": [
+    {
+      "outcome": "EGF functioning",
+      "held_out_cohort": "bp",
+      "n_test": 2143,
+      "baseline_R2": 0.101,
+      "axes_R2": 0.15,
+      "axes_minus_baseline": 0.049
+    },
+    {
+      "outcome": "EGF functioning",
+      "held_out_cohort": "dr",
+      "n_test": 201,
+      "baseline_R2": 0.065,
+      "axes_R2": 0.056,
+      "axes_minus_baseline": -0.009
+    },
+    {
+      "outcome": "EGF functioning",
+      "held_out_cohort": "sz",
+      "n_test": 851,
+      "baseline_R2": -0.008,
+      "axes_R2": -0.145,
+      "axes_minus_baseline": -0.136
+    },
+    {
+      "outcome": "EQ-5D quality of life",
+      "held_out_cohort": "bp",
+      "n_test": 1792,
+      "baseline_R2": 0.255,
+      "axes_R2": 0.271,
+      "axes_minus_baseline": 0.016
+    },
+    {
+      "outcome": "EQ-5D quality of life",
+      "held_out_cohort": "sz",
+      "n_test": 631,
+      "baseline_R2": 0.253,
+      "axes_R2": 0.311,
+      "axes_minus_baseline": 0.058
+    }
+  ]
+}

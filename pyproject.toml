@@ -18,6 +18,7 @@ dependencies = [
     "statsmodels>=0.14",  # nested F-test / LRT in the outcome head-to-head
     "plotly>=5.18",       # interactive HTML reports
     "matplotlib>=3.7",    # static manuscript figures
+    "pyarrow>=14.0",      # parquet read/write (used throughout the pipeline)
 ]
 
 [project.optional-dependencies]
