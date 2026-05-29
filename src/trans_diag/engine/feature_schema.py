@@ -24,7 +24,7 @@ without extra indirection.
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -35,7 +35,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 # ─── Enums ────────────────────────────────────────────────────────────────────
 
 
-class FeatureType(str, Enum):
+class FeatureType(StrEnum):
     """Statistical type of a unified feature."""
 
     CONTINUOUS = "continuous"
@@ -44,7 +44,7 @@ class FeatureType(str, Enum):
     CATEGORICAL = "categorical"
 
 
-class TemporalScope(str, Enum):
+class TemporalScope(StrEnum):
     """Temporal interpretation of a feature value relative to the baseline visit.
 
     ``trajectory`` is *intentionally absent* — this sub-project is cross-sectional
