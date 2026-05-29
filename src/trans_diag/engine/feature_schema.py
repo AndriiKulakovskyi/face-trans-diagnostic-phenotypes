@@ -57,6 +57,8 @@ class TemporalScope(StrEnum):
 
 
 # Canonical cohort codes used across face_rlvr.
+# ASP (autism spectrum) is the 4th cohort from the sister project — not present in this
+# project's CSV files, but kept here so the sister's YAML schema files can be validated as-is.
 _VALID_COHORTS: frozenset[str] = frozenset({"bp", "sz", "dr", "asp"})
 
 
@@ -80,6 +82,8 @@ class FeatureBlock(BaseModel):
     Both are enforced by the graph builder; none of them trigger imputation.
     """
 
+    # extra="forbid": any unrecognised field in the YAML fails loudly — catches typos immediately.
+    # frozen=True: makes instances immutable and hashable, safe to cache and share across threads.
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     id: str = Field(..., description="Short machine id, e.g. 'cognition'")
@@ -196,6 +200,8 @@ class UnifiedFeature(BaseModel):
     @field_validator("id")
     @classmethod
     def _id_snake_case(cls, v: str) -> str:
+        # Feature IDs become DataFrame column names — snake_case ensures they work safely
+        # as Python identifiers and dictionary keys without quoting or escaping.
         if not v.islower() or " " in v:
             raise ValueError(f"Feature id must be snake_case lowercase: {v!r}")
         return v
@@ -208,7 +214,7 @@ class UnifiedFeature(BaseModel):
             raise ValueError(
                 f"Unknown cohort code(s) {bad}. Valid cohorts: {sorted(_VALID_COHORTS)}"
             )
-        return tuple(dict.fromkeys(v))  # dedupe while preserving order
+        return tuple(dict.fromkeys(v))  # dedupe while preserving order (set() would randomise it)
 
     @field_validator("id")
     @classmethod
@@ -279,6 +285,9 @@ class FeatureSchema(BaseModel):
         return self
 
     # ─── Query helpers ────────────────────────────────────────────────────────
+    # Convenience accessors so callers don't have to iterate the raw tuples.
+    # Used heavily by the multipartite embedding to look up which features
+    # belong to which partition and which cohorts can provide them.
 
     def feature_ids(self) -> tuple[str, ...]:
         return tuple(f.id for f in self.features)
@@ -290,12 +299,16 @@ class FeatureSchema(BaseModel):
         return {f.id: f for f in self.features}
 
     def features_by_block(self) -> dict[str, tuple[UnifiedFeature, ...]]:
+        # Groups features by block — used by the graph builder to know which
+        # features form each clinical partition (e.g. all cognition features together).
         out: dict[str, list[UnifiedFeature]] = {b.id: [] for b in self.blocks}
         for f in self.features:
             out[f.block].append(f)
         return {k: tuple(v) for k, v in out.items()}
 
     def features_for_cohort(self, cohort: str) -> tuple[UnifiedFeature, ...]:
+        # Returns only features available for a given cohort — e.g. MADRS is only
+        # in BP and DR, so features_for_cohort("sz") would not return it.
         c = cohort.lower()
         return tuple(f for f in self.features if c in f.cohorts)
 

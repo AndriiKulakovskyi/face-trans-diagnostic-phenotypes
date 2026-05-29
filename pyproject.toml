@@ -50,3 +50,8 @@ select = ["E", "F", "W", "I", "UP", "B"]
 # rules.py (1/1.0/True all map to the same value), F841 throwaway locals in scripts,
 # B008 (call-in-default used deliberately).
 ignore = ["E501", "E702", "E741", "F601", "F841", "B006", "B007", "B008", "B023"]
+
+[dependency-groups]
+dev = [
+    "ipykernel (>=7.2.0,<8.0.0)"
+]
