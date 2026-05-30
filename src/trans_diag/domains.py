@@ -79,36 +79,25 @@ BIOLOGY_COMPOSITES: dict[str, list[tuple[str, int]]] = {
     "cardiac_qtc": [("qtc", +1)],
 }
 
-# Curated cognitive constructs: construct -> [(instrument-stem, sign), ...].
-# sign = +1 if higher = better cognition. Members are *instrument stems* (the output of
-# instrument_stem on a canonical), aggregated from the per-instrument stem-domains in a
-# second pass so that a heavily-itemized test (e.g. the WAIS family) counts once, not
-# once-per-item (LABBOOK E17). Members a cohort lacks are masked (a construct needs
-# >=1 observed member), so DR scores on digit span / verbal fluency while BP/SZ also use
-# their richer batteries.
+# Curated cognitive constructs: construct -> [(feature, sign), ...].
+# sign = +1 if higher = better cognition (WAIS standard scores), -1 for TMT times (higher = worse).
 #
-# Scope (decided 2026-05, after the DR neuropsych extraction gap was closed and a confound
-# battery was run on every emergent cognitive axis — see LABBOOK / MANUSCRIPT §2.12):
-#   * INCLUDED — working memory (digit span + WAIS WM) and verbal reasoning (similarities):
-#     together they form ONE reproducible, confound-clean trans-diagnostic cognitive axis
-#     (verbal/crystallized ability; cohort eta^2 ~0.07, transports leave-cohort-out).
-#   * EXCLUDED, BP/SZ-only — CVLT verbal memory and matrix (perceptual) reasoning: DR never
-#     administered them, so admitting them would re-inject a cohort/availability confound.
-#   * EXCLUDED, incoherent across cohorts — processing speed (TMT-A, coding, IVT) and
-#     executive (TMT-B): each cohort ran different timed subtests; the pooled constructs are
-#     extreme-tailed with ~0 communality and destabilise the solution (split-half congruence
-#     collapses when included).
-#   * EXCLUDED, cohort artifact — verbal fluency: its axis was a cohort proxy (cohort eta^2
-#     0.46, survived within-cohort data permutation at congruence 0.95, and collapsed
-#     leave-one-cohort-out) — fluency coverage/scale differs systematically by cohort.
+# v2 (2026-05-30, from neuropsy_features.yaml): the NEUROPSYCHOLOGIE features are already
+# construct-level WAIS *standard* scores (1-19) / processing-speed indices / TMT seconds — not
+# raw items — so each construct maps directly to its feature(s); no item->stem aggregation is
+# needed. Cross-cohort comparability comes from using standard scores (edition-independent) and
+# per-cohort source columns (e.g. SZ uses SDMT for processing speed). Six primary 3-cohort
+# features form five constructs (processing speed pools WAIS-coding + IVT index). The 2-cohort
+# sensitivity tests (matrices, arithmetic, symbols, CVLT, commissions) are held OUT of the main
+# matrix (marked NOT USABLE in the dictionary). Unlike v1, processing speed and executive are
+# INCLUDED as candidates here — the v2 dimensional model re-derives structure from zero and the
+# confound battery (15_review_checks) re-tests each axis; no v1 cognition result is assumed.
 COGNITIVE_COMPOSITES: dict[str, list[tuple[str, int]]] = {
-    "working_memory": [
-        ("nbrut_w", +1), ("nstand_w", +1), ("vstand_w", +1), ("mcod_w", +1), ("mcoi_w", +1),
-        ("mcoc_w", +1), ("mcodemp_w", +1), ("mcoiemp_w", +1), ("empdid_w", +1),
-        ("wais_mc_end_std_wais", +1), ("wais_mc_env_std_wais", +1), ("wais_mc_cro_wais", +1),
-        ("wais_mc_cro_std_wais", +1),
-    ],
-    "verbal_reasoning": [("similtot_wais", +1), ("similstd_wais", +1), ("similcr_wais", +1)],
+    "verbal_reasoning": [("wais_similitudes_std", +1)],
+    "working_memory": [("wais_digitspan_std", +1)],
+    "processing_speed": [("wais_code_std", +1), ("wais_ivt_index", +1)],
+    "psychomotor_speed": [("tmt_a_time_sec", -1)],
+    "executive": [("tmt_b_time_sec", -1)],
 }
 
 _STEM_RE = re.compile(r"\d+[a-z]*$")

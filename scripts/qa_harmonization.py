@@ -49,7 +49,7 @@ from trans_diag.loader import (  # noqa: E402
 )
 
 DATA_DIR = REPO_ROOT / "data"
-DICT_PATH = DATA_DIR / "face-common-vars-v2.xlsx"
+DICT_PATH = DATA_DIR / "face-common-vars.xlsx"
 REPORTS_DIR = REPO_ROOT / "results" / "reports"
 
 COHORTS = ("BP", "SZ", "DR")
