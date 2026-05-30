@@ -267,6 +267,31 @@ def _qtc(series, cohort):
     return _ms_to_seconds(series, cohort)
 
 
+# ----- BILAN BIOLOGIQUE (hematology: within-column unit mixing) --------------
+# MCHC and HCT mix scales within the same column (data-entry / lab-system unit).
+# MCHC: mostly g/dL (~30-37) but ~6 % BP / ~30 % DR recorded in g/L (~300-370 = x10)
+#   -> any value > 100 is g/L and is divided by 10. Canonical output: g/dL.
+# HCT: mostly % (~35-50) but ~4-20 % recorded in L/L (~0.35-0.50 = /100) -> any value
+#   < 1 is L/L and is multiplied by 100. Canonical output: %. Gross sentinels (e.g.
+#   3704) are left for the dictionary sanity bound to null. Bounds applied after this.
+
+def _mchc_to_gdl(series, cohort):
+    numeric = pd.to_numeric(series, errors="coerce")
+    return numeric.where(~(numeric > 100), numeric / 10.0).astype("float64")
+
+@register("mchc_lbstresc")
+def _mchc(series, cohort):
+    return _mchc_to_gdl(series, cohort)
+
+def _hct_to_pct(series, cohort):
+    numeric = pd.to_numeric(series, errors="coerce")
+    return numeric.where(~(numeric < 1), numeric * 100.0).astype("float64")
+
+@register("hct_lbstresc")
+def _hct(series, cohort):
+    return _hct_to_pct(series, cohort)
+
+
 # ----- SOCIAL (education: SZ stores grade labels as text) --------------------
 # BP/DR: clean ordinal (CP-CM2=1-5, collège=6-9, lycée=10-12, CAP=13, BEP=14,
 # BAC+1..BAC+5=15-19, Doctorat=20). SZ: ~22 % stored as text tokens. Map the

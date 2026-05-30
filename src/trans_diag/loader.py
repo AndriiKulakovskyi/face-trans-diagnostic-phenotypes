@@ -48,7 +48,7 @@ _SIBLING_RAW_COLS: dict[str, tuple[str, ...]] = {
 # loading v1 so the legacy pipeline stays byte-identical; for v1 these canonicals
 # fall back to identity_cast (their previous behaviour).
 _V2_ONLY_RULES: frozenset[str] = frozenset({
-    "qt", "rr", "qtc", "edulevel",
+    "qt", "rr", "qtc", "edulevel", "mchc_lbstresc", "hct_lbstresc",
     # SUICIDE attempt-detail items: BP text → code, newly mapped for v2.
     "ltsv02", "ltsv04", "ltsv05", "ltsv06", "ltsg03", "ltsg05", "ltsg06",
 })
