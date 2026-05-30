@@ -82,7 +82,7 @@ BIOLOGY_COMPOSITES: dict[str, list[tuple[str, int]]] = {
 # Curated cognitive constructs: construct -> [(feature, sign), ...].
 # sign = +1 if higher = better cognition (WAIS standard scores), -1 for TMT times (higher = worse).
 #
-# v2 (2026-05-30, from neuropsy_features.yaml): the NEUROPSYCHOLOGIE features are already
+# v2 (2026-05-30, from docs/neuropsy_features.yaml): the NEUROPSYCHOLOGIE features are already
 # construct-level WAIS *standard* scores (1-19) / processing-speed indices / TMT seconds — not
 # raw items — so each construct maps directly to its feature(s); no item->stem aggregation is
 # needed. Cross-cohort comparability comes from using standard scores (edition-independent) and
