@@ -78,30 +78,39 @@ def normalize_for_embedding(
     *,
     min_unique: int = _MIN_UNIQUE_CONTINUOUS,
     winsor: tuple[float, float] = (0.01, 0.99),
+    clip: float = 5.0,
 ) -> pd.DataFrame:
-    """Robust per-feature scaling so cosine similarity isn't dominated by scale.
+    """Type-aware per-feature scaling to a bounded **[-1, 1]** range, so the masked cosine
+    embedding isn't dominated by scale and every feature is comparable & ML-ready. NaNs are
+    preserved — no imputation.
 
-    Cosine is scale-invariant *per patient* but not *per feature*: a raw column
-    with large magnitude (a date encoded as 1e17, a lab count in the thousands)
-    swamps binary 0/1 flags and z-scored scales. We rescale every empirically
-    **continuous** column (> ``min_unique`` distinct values) by winsorizing to
-    the 1st/99th percentile and robust z-scoring (median / MAD). Genuinely
-    discrete columns (binary, ordinal, low-cardinality categorical) pass through
-    on their native small scale. NaNs are preserved — no imputation.
+    Per column, by empirical cardinality:
+      * binary / ordinal / Likert (<= ``min_unique`` distinct) -> min-max to [-1, 1];
+      * continuous (> ``min_unique``) -> winsorize (1/99) + robust z (median / MAD), clipped to
+        ±``clip`` (guards explosive z on tiny-MAD log-normal columns such as prolactin), then
+        divided by ``clip`` -> [-1, 1].
+    All outputs lie in [-1, 1]; a constant column maps to 0 (NaN kept). Previously discrete
+    columns were left on their native scale, mixing 0/1 flags with unbounded z-scores.
     """
     lo_q, hi_q = winsor
     out = X.copy()
     for c in out.columns:
         col = out[c]
-        if col.nunique(dropna=True) <= min_unique:
-            continue  # discrete: leave on its native small scale
-        lo, hi = col.quantile(lo_q), col.quantile(hi_q)
-        if np.isfinite(lo) and np.isfinite(hi) and hi > lo:
-            col = col.clip(lower=lo, upper=hi)
-        med = col.median()
-        mad = (col - med).abs().median()
-        scale = 1.4826 * mad if mad and mad > 0 else (col.std() or 1.0)
-        out[c] = (col - med) / (scale if scale > 0 else 1.0)
+        nu = int(col.nunique(dropna=True))
+        if nu == 0:
+            continue
+        if nu <= min_unique:                        # binary / ordinal / Likert -> [-1, 1]
+            lo, hi = col.min(), col.max()
+            out[c] = (2.0 * (col - lo) / (hi - lo) - 1.0) if hi > lo else col * 0.0
+        else:                                       # continuous -> robust-z-clip -> [-1, 1]
+            lo, hi = col.quantile(lo_q), col.quantile(hi_q)
+            if np.isfinite(lo) and np.isfinite(hi) and hi > lo:
+                col = col.clip(lower=lo, upper=hi)
+            med = col.median()
+            mad = (col - med).abs().median()
+            scale = 1.4826 * mad if mad and mad > 0 else (col.std() or 1.0)
+            z = (col - med) / (scale if scale > 0 else 1.0)
+            out[c] = z.clip(lower=-clip, upper=clip) / clip
     return out.replace([np.inf, -np.inf], np.nan)
 
 

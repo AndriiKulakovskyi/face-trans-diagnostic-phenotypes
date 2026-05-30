@@ -114,15 +114,24 @@ def instrument_stem(name: str) -> str:
     return stem or name
 
 
-def _robust_z(s: pd.Series) -> pd.Series:
-    """Winsorize (1/99) + robust z-score (median / 1.4826·MAD). NaN preserved."""
+def _robust_z(s: pd.Series, clip: float = 5.0) -> pd.Series:
+    """Winsorize (1/99) + robust z-score (median / 1.4826·MAD), clipped to ±``clip``. NaN preserved.
+
+    Heavy right-skewed non-negative columns (log-normal labs — prolactin, CRP, triglycerides,
+    counts) are log1p-compressed first: otherwise their tiny MAD lets a single high value reach
+    z≈100 and dominate every correlation/aggregate (the ``prolactin`` explosion). The ±``clip``
+    is a final guard against any residual blow-up. Both keep the masked, no-imputation design.
+    """
+    x = s.dropna()
+    if len(x) and (x >= 0).all() and x.median() > 0 and x.quantile(0.99) > 10 * x.median():
+        s = np.log1p(s.clip(lower=0))
     lo, hi = s.quantile(0.01), s.quantile(0.99)
     if pd.notna(lo) and pd.notna(hi) and hi > lo:
         s = s.clip(lower=lo, upper=hi)
     med = s.median()
     mad = (s - med).abs().median()
     scale = 1.4826 * mad if mad and mad > 0 else (s.std() or 1.0)
-    return (s - med) / (scale if scale > 0 else 1.0)
+    return ((s - med) / (scale if scale > 0 else 1.0)).clip(lower=-clip, upper=clip)
 
 
 def _masked_mean(z: pd.DataFrame, *, min_frac: float | None = None,

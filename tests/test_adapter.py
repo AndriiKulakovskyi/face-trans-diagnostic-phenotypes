@@ -217,18 +217,24 @@ def test_duplicate_patient_rows_warn_and_dedupe():
 # normalization + confound exclusion
 # ---------------------------------------------------------------------------
 
-def test_normalize_scales_continuous_passes_through_discrete():
+def test_normalize_typeaware_bounded():
     rng = np.random.default_rng(0)
     X = pd.DataFrame({
         "labval": rng.normal(1000.0, 50.0, 300),    # large-scale continuous (>10 unique)
-        "flag": np.tile([0, 1], 150),               # binary → unchanged
+        "flag": np.tile([0, 1], 150),               # binary
+        "likert": np.tile([0, 1, 2, 3], 75),        # ordinal / Likert (<=10 unique)
     })
     Xn = normalize_for_embedding(X)
-    # binary passes through untouched
-    assert (Xn["flag"].to_numpy() == X["flag"].to_numpy()).all()
-    # continuous is centred (~0) and on ~unit scale (no longer ~1000)
-    assert abs(float(Xn["labval"].median())) < 0.5
-    assert 0.5 < float(Xn["labval"].std()) < 2.0
+    # type-aware scaling bounds EVERY feature to [-1, 1]
+    assert Xn.to_numpy().min() >= -1.0 - 1e-9
+    assert Xn.to_numpy().max() <= 1.0 + 1e-9
+    # binary {0,1} -> {-1, +1}
+    assert set(np.unique(Xn["flag"].to_numpy())) == {-1.0, 1.0}
+    # ordinal min-maxed to span the full [-1, 1]
+    assert float(Xn["likert"].min()) == -1.0 and float(Xn["likert"].max()) == 1.0
+    # continuous centred near 0 (no longer ~1000) and bounded into [-1, 1]
+    assert abs(float(Xn["labval"].median())) < 0.3
+    assert float(Xn["labval"].abs().max()) <= 1.0
 
 
 def test_normalize_preserves_nan():
