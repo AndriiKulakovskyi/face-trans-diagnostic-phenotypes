@@ -1,14 +1,17 @@
 """Publication-quality static figures for the manuscript (PNG + SVG, 300 dpi).
 
-Regenerates Figures 1-5 directly from the reproducible result artifacts in
+Regenerates Figures 1-4 directly from the reproducible result artifacts in
 results/ (not from the interactive HTML reports), so the manuscript figures are
 self-contained and version-controlled.
 
   Fig 1  structure is dimensional   (results/structure_test.json + domain scores)
-  Fig 2  seven-dimension loadings   (results/dimensional_final_loadings.csv)
+  Fig 2  six-dimension loadings     (results/dimensional_final_loadings.csv; incl. cognition)
   Fig 3  head-to-head outcomes      (results/phase5_headtohead_V1/_V2.csv)
   Fig 4  trait-state gradient       (results/longitudinal_axes_stability.csv)
-  Fig 5  cognition g + speed        (results/cognition_bpsz_loadings.csv + _corr.csv)
+
+Cognition is now one of the six main dimensions (cognition_verbal), shown in Fig 2 and the
+η² panel (Fig 6, script 18); the former standalone BP/SZ cognition figure was removed when
+neuropsychology was folded into the main model (DR extraction gap closed, 2026-05).
 
 Output: results/reports/figures/*.png and *.svg
 """
@@ -31,7 +34,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from trans_diag import AXIS_INDEX_TO_NAME, AXIS_LABELS, AXIS_NAMES  # noqa: E402
-from trans_diag import AXIS_SHORT as AXIS_SHORT_MAP  # noqa: E402
 
 RESULTS = REPO_ROOT / "results"
 FIGDIR = REPO_ROOT / "results" / "reports" / "figures"
@@ -62,16 +64,10 @@ DOMAIN_LABEL = {
     "inflammation": "inflammation", "hepatic": "hepatic", "renal": "renal",
     "prolactin": "prolactin", "cardiac_qtc": "QTc",
     "hooccur_arret_travail_actuel": "current sick-leave",
-    "hooccur_arret_travail": "lifetime sick-leave", "stprof": "professional status",
+    "hooccur_arret_travail": "lifetime sick-leave",
     "pregnn_rporres": "pregnancies", "fagers": "age",
+    "verbal_reasoning": "verbal reasoning (cog)", "working_memory": "working memory (cog)",
 }
-COG_LABEL = {
-    "memory_cvlt": "Verbal memory\n(CVLT)", "executive_tmt": "Executive\n(TMT)",
-    "proc_speed": "Processing\nspeed", "working_memory": "Working\nmemory",
-    "verbal_reasoning": "Verbal\nreasoning", "percept_reasoning": "Perceptual\nreasoning",
-    "fluency": "Fluency",
-}
-AXIS_SHORT = [AXIS_SHORT_MAP[n] for n in AXIS_NAMES]   # shared constant (trans_diag.axes)
 SUBTYPE_SHORT = {
     "Trouble dépressif majeur": "MDD", "Bipolaire de type 2": "BP-II",
     "Bipolaire de type 1": "BP-I", "Bipolaire non spécifié": "BP-NOS",
@@ -210,8 +206,8 @@ def fig2_loadings():
                         color="white" if abs(v) > 0.45 else "#222")
     cb = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.02)
     cb.set_label("varimax loading", fontsize=8)
-    ax.set_title("Figure 2. Seven reproducible, confound-free trans-diagnostic\n"
-                 "dimensions (salient domain loadings, |λ|≥0.20)", fontsize=10)
+    ax.set_title("Figure 2. Six reproducible, confound-free trans-diagnostic dimensions\n"
+                 "(incl. one cognitive axis; salient domain loadings, |λ|≥0.20)", fontsize=10)
     fig.tight_layout()
     save(fig, "fig2_loadings")
 
@@ -225,25 +221,27 @@ def fig3_headtohead():
               "EGF functioning": "Functioning\n(EGF, R²)",
               "any hospitalization": "Hospitalization\n(AUC)"}
 
+    # Post-audit: the headline 'axes' column is now ``axes_fair`` (cohort-controlled);
+    # ``axes_orig`` (no cohort in M1, biased) is kept for back-compat. See FINDINGS §3k.
     fig, axs = plt.subplots(1, 2, figsize=(10, 4.4), sharey=True)
     for ax, df, tag in zip(axs, (v1, v2), ("V1 (primary)", "V2 (follow-up, same cohort)"), strict=False):
         df = df.set_index("outcome").reindex(order)
         x = np.arange(len(order)); w = 0.26
         ax.bar(x - w, df["DSM"], w, label="DSM diagnosis", color=C_DSM)
-        ax.bar(x, df["axes"], w, label="6 dimensions", color=C_AX)
+        ax.bar(x, df["axes_fair"], w, label="6 dimensions (+ cohort)", color=C_AX)
         ax.bar(x + w, df["combined"], w, label="combined", color=C_COMB)
         for xi, oc in enumerate(order):
-            d = df.loc[oc, "axes"] - df.loc[oc, "DSM"]
-            ax.text(xi, max(df.loc[oc, ["DSM", "axes", "combined"]]) + 0.015,
+            d = df.loc[oc, "axes_fair"] - df.loc[oc, "DSM"]
+            ax.text(xi, max(df.loc[oc, ["DSM", "axes_fair", "combined"]]) + 0.015,
                     f"Δ(dim−DSM)\n{d:+.3f}", ha="center", fontsize=7.5,
                     color="#2e7d32" if d > 0 else "#b71c1c")
         ax.set_xticks(x); ax.set_xticklabels([pretty[o] for o in order], fontsize=8)
         ax.set_title(tag); ax.set_ylim(0, 0.9)
     axs[0].set_ylabel("cross-validated R² / AUC")
     axs[0].legend(fontsize=8, loc="upper left")
-    fig.suptitle("Figure 3. Dimensions outperform DSM for quality of life, complement "
-                 "it for functioning,\nand are dominated by DSM for hospitalization "
-                 "(leakage-safe shuffled CV; consistent at V2, same cohort)", fontsize=10, y=1.02)
+    fig.suptitle("Figure 3. Dimensions outperform DSM for quality of life and functioning, "
+                 "and tie\nDSM for hospitalization (post-audit, cohort-controlled CV; "
+                 "consistent at V2, same cohort)", fontsize=10, y=1.02)
     fig.tight_layout()
     save(fig, "fig3_headtohead")
 
@@ -277,52 +275,11 @@ def fig4_traitstate():
     save(fig, "fig4_traitstate")
 
 
-# ---------------------------------------------------------------- Fig 5
-def fig5_cognition():
-    L = pd.read_csv(RESULTS / "cognition_bpsz_loadings.csv")
-    C = pd.read_csv(RESULTS / "cognition_bpsz_corr.csv", index_col=0)
-    fig, (a0, a1) = plt.subplots(1, 2, figsize=(11, 4.3),
-                                 gridspec_kw={"width_ratios": [1.25, 1]})
-
-    # (a) construct loadings on g and speed
-    W = L.pivot(index="domain", columns="factor", values="loading")
-    constructs = ["percept_reasoning", "verbal_reasoning", "working_memory",
-                  "memory_cvlt", "fluency", "proc_speed", "executive_tmt"]
-    W = W.reindex(constructs)
-    x = np.arange(len(constructs)); w = 0.38
-    a0.bar(x - w / 2, W["cog1"], w, label="cog1: general ability (g)", color="#1f77b4")
-    a0.bar(x + w / 2, W["cog2"], w, label="cog2: processing speed", color="#ff7f0e")
-    a0.axhline(0, color="#888", lw=0.8)
-    a0.set_xticks(x)
-    a0.set_xticklabels([COG_LABEL[c] for c in constructs], fontsize=7.5)
-    a0.set_ylabel("factor loading"); a0.legend(fontsize=8)
-    a0.set_title("(a) Cognitive structure: g + processing speed", fontsize=10)
-
-    # (b) cognition × symptom-axis correlations
-    C = C.loc[["cog1", "cog2"], [c for c in C.columns]]
-    im = a1.imshow(C.values, cmap="RdBu_r", vmin=-0.3, vmax=0.3, aspect="auto")
-    a1.set_xticks(range(C.shape[1]))
-    a1.set_xticklabels(AXIS_SHORT, rotation=40, ha="right", fontsize=7.5)
-    a1.set_yticks([0, 1]); a1.set_yticklabels(["g", "speed"])
-    for i in range(C.shape[0]):
-        for j in range(C.shape[1]):
-            a1.text(j, i, f"{C.values[i, j]:.2f}", ha="center", va="center",
-                    fontsize=7, color="white" if abs(C.values[i, j]) > 0.2 else "#222")
-    fig.colorbar(im, ax=a1, fraction=0.046, pad=0.04).set_label("Pearson r", fontsize=8)
-    a1.set_title("(b) Cognition vs symptom axes (max |r|=0.24)", fontsize=10)
-
-    fig.suptitle("Figure 5. Cognition (BP/SZ, n=6,099) recovers g + speed and is "
-                 "semi-independent of the symptom dimensions", fontsize=10, y=1.04)
-    fig.tight_layout()
-    save(fig, "fig5_cognition")
-
-
 def main() -> int:
     print("generating manuscript figures →", FIGDIR)
     fig2_loadings()
     fig3_headtohead()
     fig4_traitstate()
-    fig5_cognition()
     fig1_structure()  # last (heaviest: rebuilds harmonized dataset for panel d)
     print("done.")
     return 0

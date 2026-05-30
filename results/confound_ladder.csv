@@ -1,5 +1,5 @@
 rung,config,n,dims,bootstrap_ari,ari_sister,ari_sex,ari_cohort,ari_age
-1,"all feat, RAW, +brthdtc(1e17)",9013,36,0.966,0.316,0.045,0.339,0.192
-2,"all feat, robust-scaled",9013,36,0.747,0.155,0.243,0.125,0.166
-3,"clinical, resid, +mhoccur",9013,36,0.969,0.14,0.317,0.188,0.116
-4,"clinical, resid, -mhoccur (129 feat)",9013,36,0.889,0.03,0.005,0.024,0.008
+1,"all feat, RAW, +brthdtc(1e17)",9013,36,0.978,0.314,0.045,0.33,0.187
+2,"all feat, robust-scaled",9013,36,0.906,0.14,0.119,0.134,0.145
+3,"clinical, resid, +mhoccur",9013,36,0.958,0.142,0.319,0.189,0.117
+4,"clinical, resid, -mhoccur (129 feat)",9013,36,0.796,0.094,0.02,0.116,0.009

@@ -1,15 +1,14 @@
 {
   "n": 9008,
   "n_sites": 20,
-  "site_batch_magnitude": 0.04355686677080662,
+  "site_batch_magnitude": 0.04391922192779943,
   "axes_congruence_with_locked": [
     0.99,
     0.98,
-    0.99,
-    0.95,
-    0.89,
-    0.95,
-    0.08
+    0.9,
+    0.98,
+    0.23,
+    0.91
   ],
   "headtohead_combat": [
     {
@@ -17,10 +16,11 @@
       "n": 3196,
       "metric": "R2",
       "DSM": 0.366,
-      "axes": 0.351,
-      "combined": 0.387,
-      "combat_axes_minus_DSM": -0.014,
-      "orig_axes_minus_DSM": -0.001,
+      "axes_orig": 0.35,
+      "axes_fair": 0.388,
+      "combined": 0.386,
+      "combat_axes_orig_minus_DSM": -0.016,
+      "combat_axes_fair_minus_DSM": 0.022,
       "added_axes_p": 1.1102230246251565e-16
     },
     {
@@ -28,21 +28,23 @@
       "n": 6749,
       "metric": "AUC",
       "DSM": 0.75,
-      "axes": 0.576,
-      "combined": 0.74,
-      "combat_axes_minus_DSM": -0.175,
-      "orig_axes_minus_DSM": -0.132,
-      "added_axes_p": 0.06822560035787095
+      "axes_orig": 0.575,
+      "axes_fair": 0.735,
+      "combined": 0.741,
+      "combat_axes_orig_minus_DSM": -0.175,
+      "combat_axes_fair_minus_DSM": -0.015,
+      "added_axes_p": 0.03750650570397607
     },
     {
       "outcome": "EQ-5D quality of life",
       "n": 2423,
       "metric": "R2",
       "DSM": 0.305,
-      "axes": 0.338,
-      "combined": 0.343,
-      "combat_axes_minus_DSM": 0.033,
-      "orig_axes_minus_DSM": 0.038,
+      "axes_orig": 0.337,
+      "axes_fair": 0.34,
+      "combined": 0.342,
+      "combat_axes_orig_minus_DSM": 0.032,
+      "combat_axes_fair_minus_DSM": 0.035,
       "added_axes_p": 1.1102230246251565e-16
     }
   ]

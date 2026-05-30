@@ -501,13 +501,48 @@ R² (selection re-run per CV fold, as in `20`). `22_screening_panel.py`.
   (0.83→0.75)/externalizing (0.71→0.62) and a slightly smaller QoL edge (+0.025 [+0.022,+0.028]).
   Reframed §2.13/§4.5/Table 5/Fig 7 as a parsimony-vs-coverage trade-off; golden test extended.
 
+## E26 · DR neuropsychology recovered → cognition integrated into the main model; K=6 re-lock — 2026-05-27
+
+The manuscript's "neuropsychology absent in DR by design (0% vs BP 71% / SZ 86%)" was a data-EXTRACTION
+artifact, not a real absence. A full DR export recovered the NEUROPSYCHOLOGIE block (V0 coverage ~57%,
+comparable to BP ~68% / SZ ~80%).
+
+- **Enable (Stage 1):** `scripts/build_dr_neuropsych_mapping.py` populates the dictionary's "DR column in
+  CSV" for 55 neuropsych rows (48 from the thesaurus `Variable DR`, + 7 fluency `fv01-07` the dictionary
+  had omitted), validated against `depression.csv` at ≥0.30 V0 coverage, and re-tiers the stale
+  `Cluster readiness` labels from per-cohort data presence. Audit: `results/dr_neuropsych_mapping_audit.csv`.
+  Non-neuropsych loading is byte-identical before/after (regression guard passed).
+- **Wire (Stage 2):** cognition enters as curated constructs via `domains.COGNITIVE_COMPOSITES`
+  (two-level items→instrument-stems→constructs; lenient ≥1-member floor for cross-cohort instrument
+  heterogeneity; a per-cohort coverage gate keeps constructs present in ≥2 cohorts). `03` builds them into
+  `cluster_domains_scores.parquet`.
+- **Re-lock K (Stage 3):** `07` now derives K via `select_k` from the deterministic single-split masked
+  split-half curve (max reproducible before collapse), with a 25-split robustness curve reported as a caveat.
+- **Confound battery (Stage 4 — the GO/NO-GO):** `15` #10 + `21` Part 1. Verdict was a SPLIT:
+  - **processing speed + executive/TMT** — incoherent across cohorts (each ran different timed subtests),
+    extreme-tailed, ~0 communality, destabilised the solution (single-split congruence collapsed
+    0.91→0.07 when included). EXCLUDED.
+  - **verbal fluency** — formed an axis, but the battery flagged it as a COHORT ARTIFACT (cohort η² 0.46,
+    survived within-cohort data permutation at congruence 0.95, collapsed leave-BP-out 0.10). EXCLUDED.
+  - **verbal reasoning + working memory** — ONE genuine, confound-clean axis (`cognition_verbal`): cohort
+    η² 0.072, site 0.043, R²(axis~#tests-done) 0.002, transports leave-DR-out 1.0 / leave-SZ-out 0.91. ADMITTED.
+  - CVLT memory + matrix reasoning are BP/SZ-only (DR never administered them) → excluded.
+- **Result:** locked **K=6** = depression, later-onset, mania/activation (+externalizing re-merged),
+  illness-burden, **cognition_verbal**, metabolic. Versus the symptom-only K=7, the pure-mania/externalizing
+  split re-merges and work-disability is no longer separately resolved. Outcomes UNCHANGED (QoL +0.037,
+  functioning combined +0.035, hosp DSM-dominated −0.141). Two honest side-effects: the embedding
+  mood↔psychosis ρ drops 0.79→0.50 (cognition now shares PC1) and HDBSCAN↔cohort ARI 0.70→0.64.
+- **Removed:** `scripts/14_cognition_bpsz.py` (the standalone BP/SZ analysis) + its `00_run_all` step +
+  Figure 5; the six `K=7` literals across `08/12/13/19/20/21` now read the locked K from `07`'s meta.
+
 ## Deferred / open (do not forget)
 - **Deep graph embedding** (engine `stage_b2` VGAE/DGI/contrastive) — a future
   attempt at *discrete*-structure discovery, in case a learned representation
   surfaces clusters the masked-cosine spectral view misses.
 - ~~ComBat site harmonization~~ — **DONE (E16)**: axes site-robust (congruence ~1).
-- ~~Cognition (NEUROPSYCHOLOGIE) domains~~ — **DONE (E17)**: BP/SZ-only sub-analysis
-  (DR-missing by design); cognition ⊥ symptoms, small functioning increment.
+- ~~Cognition (NEUROPSYCHOLOGIE) domains~~ — **DONE (E17 → superseded by E26)**: DR neuropsych
+  recovered 2026-05; cognition is now one of the K=6 trans-diagnostic axes (`cognition_verbal`,
+  confound-clean), not a BP/SZ-only sub-analysis.
 - **Verify the metabolic-direction sign** once biology composites are in.
 - **Outcome/trajectory validation** — the real test that A beats DSM.
 - Scrutinise / possibly down-weight the **"denial" response-style axis**.

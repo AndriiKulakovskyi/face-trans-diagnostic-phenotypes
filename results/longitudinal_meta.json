@@ -4,36 +4,36 @@
     "spline_df": 4,
     "cross_fit": 5
   },
-  "v0_classifier_cv_accuracy": 0.872657742689149,
-  "k": 5,
-  "n_patient_visits_assigned": 17732,
+  "v0_classifier_cv_accuracy": 0.9953593661573288,
+  "k": 2,
+  "n_patient_visits_assigned": 17708,
   "coherence": [
     {
       "visit": "V1",
-      "n_paired": 3782,
-      "ari_vs_V0": 0.06890831798628817,
-      "pct_persist": 0.3878900052882073
+      "n_paired": 3780,
+      "ari_vs_V0": 0.09902393570831995,
+      "pct_persist": 0.7835978835978836
     },
     {
       "visit": "V2",
-      "n_paired": 2612,
-      "ari_vs_V0": 0.07016071127727433,
-      "pct_persist": 0.38667687595712097
+      "n_paired": 2610,
+      "ari_vs_V0": 0.09877415389764767,
+      "pct_persist": 0.7850574712643679
     },
     {
       "visit": "V3",
-      "n_paired": 1739,
-      "ari_vs_V0": 0.06142471719609914,
-      "pct_persist": 0.37492811960897066
+      "n_paired": 1738,
+      "ari_vs_V0": 0.09853363225819917,
+      "pct_persist": 0.7750287686996548
     },
     {
       "visit": "V4",
-      "n_paired": 697,
-      "ari_vs_V0": 0.06467722740487404,
-      "pct_persist": 0.37302725968436157
+      "n_paired": 696,
+      "ari_vs_V0": 0.07796488618188231,
+      "pct_persist": 0.7672413793103449
     }
   ],
-  "dsm_phenotype_ari": 0.006081029890253045,
+  "dsm_phenotype_ari": 0.0011173339011129155,
   "dr_excluded_at": "V3",
   "site_note": "site excluded; ComBat sensitivity deferred (#43)"
 }

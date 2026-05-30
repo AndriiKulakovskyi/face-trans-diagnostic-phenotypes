@@ -48,11 +48,14 @@ COHORT_TO_CODE = {"BP": "bp", "SZ": "sz", "DR": "dr"}
 # confound, not a clinical axis). Scripts pass these via ``exclude=``.
 ADMINISTRATIVE_FEATURES = frozenset({"siteid_city"})
 
-# Dictionary sections that carry psychiatric phenotype (symptoms, illness course,
-# functioning, history). Used via ``sections=`` to cluster on clinical signal and
-# drop physiology (labs, vitals/anthropometry), cognition (neuropsych — strongly
-# missingness/availability-confounded) and raw demographics, which otherwise
-# dominate cosine similarity and produce sex×age strata rather than phenotypes.
+# Dictionary sections that carry psychiatric *symptom* phenotype (symptoms, illness
+# course, functioning, history). Used via ``sections=`` to cluster on clinical signal and
+# drop raw demographics, which otherwise dominate similarity and produce sex×age strata.
+# Biology (labs/vitals) and cognition (neuropsych) are deliberately NOT in this set: each
+# has its own curated-aggregation path (BIOLOGY_COMPOSITES, COGNITIVE_COMPOSITES in
+# domains.py) so item-count and units don't distort them. Cognition was excluded entirely
+# before 2026 because DR coverage was 0% (an extraction artifact); with DR recovered it now
+# enters the model as curated constructs and its availability is checked explicitly (15).
 CLINICAL_SECTIONS = frozenset({
     "AUTO-QUESTIONNAIRES",
     "HETERO-QUESTIONNAIRES",

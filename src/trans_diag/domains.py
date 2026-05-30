@@ -38,15 +38,24 @@ from .variable import Variable
 __all__ = [
     "build_domain_scores",
     "BIOLOGY_COMPOSITES",
+    "COGNITIVE_COMPOSITES",
     "DOMAIN_SECTIONS",
     "BIOLOGY_SECTIONS",
+    "COGNITION_SECTIONS",
 ]
 
 BIOLOGY_SECTIONS = frozenset({"BILAN BIOLOGIQUE", "CONSTANTES ET ECG"})
 
-# Sections to pull raw features from when building domain scores (symptom +
-# biology). Pass this as `sections=` to to_harmonized_dataset (raw, no residualize).
-DOMAIN_SECTIONS = frozenset(CLINICAL_SECTIONS) | BIOLOGY_SECTIONS
+# Cognition (neuropsychology) lives in its own section group, parallel to biology, so its
+# items aggregate into curated cognitive constructs (COGNITIVE_COMPOSITES) rather than the
+# generic symptom-stem path (which would let WAIS sub-items dominate by count — LABBOOK E17).
+# DR neuropsychology was recovered 2026-05 (scripts/build_dr_neuropsych_mapping.py); only the
+# constructs measured in all three cohorts enter the model.
+COGNITION_SECTIONS = frozenset({"NEUROPSYCHOLOGIE"})
+
+# Sections to pull raw features from when building domain scores (symptom + biology +
+# cognition). Pass this as `sections=` to to_harmonized_dataset (raw, no residualize).
+DOMAIN_SECTIONS = frozenset(CLINICAL_SECTIONS) | BIOLOGY_SECTIONS | COGNITION_SECTIONS
 
 # Curated biology composites: domain -> [(canonical, sign), ...].
 # sign = +1 if higher is more pathological, -1 if lower is more pathological.
@@ -68,6 +77,38 @@ BIOLOGY_COMPOSITES: dict[str, list[tuple[str, int]]] = {
         ("creatclr_lbstresc", -1),
     ],
     "cardiac_qtc": [("qtc", +1)],
+}
+
+# Curated cognitive constructs: construct -> [(instrument-stem, sign), ...].
+# sign = +1 if higher = better cognition. Members are *instrument stems* (the output of
+# instrument_stem on a canonical), aggregated from the per-instrument stem-domains in a
+# second pass so that a heavily-itemized test (e.g. the WAIS family) counts once, not
+# once-per-item (LABBOOK E17). Members a cohort lacks are masked (a construct needs
+# >=1 observed member), so DR scores on digit span / verbal fluency while BP/SZ also use
+# their richer batteries.
+#
+# Scope (decided 2026-05, after the DR neuropsych extraction gap was closed and a confound
+# battery was run on every emergent cognitive axis — see LABBOOK / MANUSCRIPT §2.12):
+#   * INCLUDED — working memory (digit span + WAIS WM) and verbal reasoning (similarities):
+#     together they form ONE reproducible, confound-clean trans-diagnostic cognitive axis
+#     (verbal/crystallized ability; cohort eta^2 ~0.07, transports leave-cohort-out).
+#   * EXCLUDED, BP/SZ-only — CVLT verbal memory and matrix (perceptual) reasoning: DR never
+#     administered them, so admitting them would re-inject a cohort/availability confound.
+#   * EXCLUDED, incoherent across cohorts — processing speed (TMT-A, coding, IVT) and
+#     executive (TMT-B): each cohort ran different timed subtests; the pooled constructs are
+#     extreme-tailed with ~0 communality and destabilise the solution (split-half congruence
+#     collapses when included).
+#   * EXCLUDED, cohort artifact — verbal fluency: its axis was a cohort proxy (cohort eta^2
+#     0.46, survived within-cohort data permutation at congruence 0.95, and collapsed
+#     leave-one-cohort-out) — fluency coverage/scale differs systematically by cohort.
+COGNITIVE_COMPOSITES: dict[str, list[tuple[str, int]]] = {
+    "working_memory": [
+        ("nbrut_w", +1), ("nstand_w", +1), ("vstand_w", +1), ("mcod_w", +1), ("mcoi_w", +1),
+        ("mcoc_w", +1), ("mcodemp_w", +1), ("mcoiemp_w", +1), ("empdid_w", +1),
+        ("wais_mc_end_std_wais", +1), ("wais_mc_env_std_wais", +1), ("wais_mc_cro_wais", +1),
+        ("wais_mc_cro_std_wais", +1),
+    ],
+    "verbal_reasoning": [("similtot_wais", +1), ("similstd_wais", +1), ("similcr_wais", +1)],
 }
 
 _STEM_RE = re.compile(r"\d+[a-z]*$")
@@ -95,12 +136,30 @@ def _robust_z(s: pd.Series) -> pd.Series:
     return (s - med) / (scale if scale > 0 else 1.0)
 
 
+def _masked_mean(z: pd.DataFrame, *, min_frac: float | None = None,
+                 min_count: int | None = None) -> pd.Series:
+    """Row-wise mean of a signed-z frame, NaN unless enough members are observed.
+
+    Gate on a fraction of members (``min_frac``) or an absolute count (``min_count``).
+    No imputation: unobserved members are simply excluded from the mean.
+    """
+    n_obs = z.notna().sum(axis=1)
+    score = z.mean(axis=1)
+    if min_count is not None:
+        return score.where(n_obs >= min_count, np.nan)
+    obs_frac = z.notna().mean(axis=1)
+    return score.where(obs_frac >= (min_frac if min_frac is not None else 0.5), np.nan)
+
+
 def build_domain_scores(
     X: pd.DataFrame,
     variables: Iterable[Variable],
     *,
     symptom_sections: Iterable[str] = CLINICAL_SECTIONS,
     biology: dict[str, list[tuple[str, int]]] | None = None,
+    cognition: dict[str, list[tuple[str, int]]] | None = None,
+    cognition_sections: Iterable[str] = COGNITION_SECTIONS,
+    cognition_min_items: int = 1,
     min_items_frac: float = 0.5,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Aggregate ``X`` item columns into domain scores.
@@ -117,9 +176,22 @@ def build_domain_scores(
         Sections whose features are auto-grouped by instrument stem.
     biology:
         Curated biology composites (defaults to :data:`BIOLOGY_COMPOSITES`).
+    cognition:
+        Curated cognitive constructs (e.g. :data:`COGNITIVE_COMPOSITES`). When given,
+        ``NEUROPSYCHOLOGIE``-section items are aggregated two-level — items → instrument
+        stems → constructs — so a heavily-itemized test counts once. ``None`` (default)
+        leaves cognition out, reproducing the pre-2026 symptom+biology matrix.
+    cognition_sections:
+        Sections whose items feed the cognitive constructs (default
+        :data:`COGNITION_SECTIONS`).
+    cognition_min_items:
+        A construct score is ``NaN`` unless at least this many of its member instrument
+        stems are observed (default 1). Lenient because instrument coverage is
+        heterogeneous across cohorts (e.g. DR has digit span but not the full WAIS
+        working-memory battery); a single observed indicator still estimates the ability.
     min_items_frac:
-        A domain score is ``NaN`` for a patient unless at least this fraction of
-        the domain's member items are observed (no imputation).
+        A symptom/biology/instrument-stem score is ``NaN`` for a patient unless at least
+        this fraction of its member items are observed (no imputation).
 
     Returns
     -------
@@ -168,6 +240,46 @@ def build_domain_scores(
             "coverage": float(score.notna().mean()),
             "members": ",".join(c for c, _ in members),
         })
+
+    # cognition constructs (curated, two-level: items → instrument stems → constructs).
+    # Kept separate from the symptom-stem path so heavily-itemized tests count once, and so
+    # the construct floor can be lenient (≥ cognition_min_items observed stems) under the
+    # cross-cohort instrument heterogeneity of the neuropsych battery.
+    if cognition:
+        cog_sections = set(cognition_sections)
+        referenced = {stem for members in cognition.values() for stem, _ in members}
+        stem_items: dict[str, list[str]] = {}
+        for c in X.columns:
+            v = by_name.get(c)
+            if v is None or v.section not in cog_sections:
+                continue
+            stem = instrument_stem(c)
+            if stem in referenced:
+                stem_items.setdefault(stem, []).append(c)
+        # Stem aggregation is also lenient (>= cognition_min_items observed items): the
+        # neuropsych battery is partially administered across cohorts (e.g. DR has verbal
+        # fluency items fv01-07 but not fv08-19), so a fractional floor over all items of a
+        # stem would null whichever cohort ran the shorter version.
+        stem_scores = {
+            stem: _masked_mean(
+                pd.DataFrame({c: _robust_z(X[c]) for c in cols}, index=X.index),
+                min_count=cognition_min_items)
+            for stem, cols in stem_items.items()
+        }
+        stem_df = pd.DataFrame(stem_scores, index=X.index)
+        for dom, members in cognition.items():
+            present = [(s, sgn) for s, sgn in members if s in stem_df.columns]
+            if not present:
+                continue
+            z = pd.DataFrame({s: _robust_z(stem_df[s]) * sgn for s, sgn in present},
+                             index=X.index)
+            score = _masked_mean(z, min_count=cognition_min_items)
+            scores[dom] = score
+            meta_rows.append({
+                "domain": dom, "kind": "cognition", "n_items": len(present),
+                "coverage": float(score.notna().mean()),
+                "members": ",".join(s for s, _ in present),
+            })
 
     scores_df = pd.DataFrame(scores, index=X.index)
     meta_df = pd.DataFrame(meta_rows).set_index("domain").sort_values(

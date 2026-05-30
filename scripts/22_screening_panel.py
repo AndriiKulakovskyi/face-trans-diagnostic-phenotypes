@@ -1,17 +1,17 @@
-"""§4.5 — parsimonious screening panel: distil the 7 axes into a short item set.
+"""§4.5 — parsimonious screening panel: distil the 6 axes into a short item set.
 
-Clinical-translation step (reviewer 2.1). The 7 locked dimensional axes are scored from a
-54-domain research battery — too long for routine care. We distil them into **short panels**:
+Clinical-translation step (reviewer 2.1). The 6 locked dimensional axes are scored from a
+56-domain research battery — too long for routine care. We distil them into **short panels**:
 a sparse item->axis map that reconstructs the axis scores from a handful of routinely collected
 items, so a clinic could compute approximate dimensional scores in a fraction of the time.
 
 Two panels (the research model is never filled; a PANEL is a deployment surrogate that *does*
 mean-impute its few items — a disclosed, separate choice):
-  - **Shared panel** — a multi-task elastic-net selects ONE shared item set for all 7 axes
+  - **Shared panel** — a multi-task elastic-net selects ONE shared item set for all 6 axes
     (row-wise L1); densest support within a <=15-item cap. Parsimony-optimal, but a symptom-
-    optimized shared L1 drops items unique to low-variance axes (work-disability, onset).
+    optimized shared L1 drops items unique to low-variance axes (later-onset, cognition).
   - **Per-axis (group-aware) panel** — the top-2 elastic-net items *per axis*, unioned, so every
-    axis contributes its defining items (covers work-disability/onset within a similar budget).
+    axis contributes its defining items (covers later-onset/cognition within a similar budget).
 Both report a flagged **routine metabolic-panel** add-on (BMI, waist, triglycerides, HDL, glucose,
 HbA1c, BP), because the metabolic axis loads on labs no questionnaire can produce.
 
@@ -64,7 +64,11 @@ from trans_diag import (  # noqa: E402
     to_harmonized_dataset,
 )
 from trans_diag.domains import BIOLOGY_COMPOSITES, BIOLOGY_SECTIONS  # noqa: E402
-from trans_diag.outcomes import OUTCOMES  # noqa: E402
+from trans_diag.outcomes import (  # noqa: E402
+    OUTCOMES,
+    apply_outcome_tf,
+    cohort_dummies,
+)
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "results" / "reports"
@@ -76,7 +80,7 @@ ITEM_COVERAGE_FLOOR = 0.20                 # drop items observed in < 20% of pat
 HEADLINE_CAP = 15                          # reviewer-requested <=15-item shared panel
 K_PER_AXIS = 2                             # per-axis (group-aware) panel: top items per axis
 PERAXIS_ALPHA = 0.02                       # dense elastic-net for per-axis coefficient ranking
-R_CI = 200                                 # repeated-CV repeats for the head-to-head intervals
+R_CI = 100                                 # repeated-CV repeats for the head-to-head intervals (post-audit: halved for the added fair comparator)
 # Fixed, flagged routine metabolic-panel add-on (recovers the metabolic axis a questionnaire can't)
 LAB_ADDON = [c for c, _ in BIOLOGY_COMPOSITES["metabolic_syndrome"]]
 
@@ -190,9 +194,10 @@ def main() -> int:
         Xsel, _ = _standardize_impute(X[sel], X[sel])
         r2 = _r2(Y, _ols_reconstruct(Xsel, Y, Xsel))
         sweep.append({"budget": len(sel), **{a: round(float(r2[i]), 3) for i, a in enumerate(AXIS_NAMES)}})
+        d2 = {a: r2[i] for i, a in enumerate(AXIS_NAMES)}
         print(f"  cap {B:>2} -> {len(sel):>2} items; in-sample R2 "
-              f"depression={r2[0]:.2f} mania={r2[3]:.2f} externalizing={r2[4]:.2f} "
-              f"metabolic={r2[metab_idx]:.2f}")
+              f"depression={d2['depression_severity']:.2f} mania={d2['mania_activation']:.2f} "
+              f"cognition={d2['cognition_verbal']:.2f} metabolic={d2['metabolic']:.2f}")
     sweep_df = pd.DataFrame(sweep)
 
     # ── 3. define the two panels (full sample) ──────────────────────────────────
@@ -239,6 +244,9 @@ def main() -> int:
     dsm = pd.get_dummies(v0["arm"].astype(str), drop_first=True).astype(float)
     dsm_cols = list(dsm.columns)
     base = base.join(dsm)
+    # post-audit fair head-to-head: cohort dummies for parity with arm
+    cohort_dum, cohort_cols = cohort_dummies(v0["cohort"])
+    base = base.join(cohort_dum)
 
     def to_pid(p):
         p = p.reset_index()
@@ -253,28 +261,37 @@ def main() -> int:
             if col not in df.columns:
                 continue
             y0 = pd.to_numeric(v0[col], errors="coerce").rename("baseline")
-            yk = pd.to_numeric(vk[col], errors="coerce")
+            yk = pd.to_numeric(vk[col], errors="coerce").reindex(y0.index)
             if tf is not None:
-                yk = tf(yk)
+                yk = apply_outcome_tf(y0, yk, tf)
             d = base.join(y0).join(P).join(yk.rename("y")).dropna(
                 subset=["y", "baseline", "age", "sex"] + acols)
             if (kind == "binary" and (d["y"].nunique() < 2 or d["y"].mean() < 0.02)) or len(d) < 200:
                 continue
             yv = d["y"].to_numpy(float); bc = ["baseline", "age", "sex"]
             m0 = _repeated_cv(d[bc + dsm_cols].to_numpy(float), yv, kind)
-            m1 = _repeated_cv(d[bc + acols].to_numpy(float), yv, kind)
+            m1_orig = _repeated_cv(d[bc + acols].to_numpy(float), yv, kind)
+            m1_fair = _repeated_cv(d[bc + cohort_cols + acols].to_numpy(float), yv, kind)
             m2 = _repeated_cv(d[bc + dsm_cols + acols].to_numpy(float), yv, kind)
-            (dd, dl, dh) = _ci(m1 - m0); (cd, cl, ch) = _ci(m2 - m0)
+            (dd_o, dl_o, dh_o) = _ci(m1_orig - m0)
+            (dd_f, dl_f, dh_f) = _ci(m1_fair - m0)
+            (cd, cl, ch) = _ci(m2 - m0)
             metric = "R2" if kind == "continuous" else "AUC"
             h2h.append({"panel": label, "outcome": name, "n": len(d), "metric": metric,
-                        "DSM": round(float(np.mean(m0)), 3), "axes": round(float(np.mean(m1)), 3),
+                        "DSM": round(float(np.mean(m0)), 3),
+                        "axes_orig": round(float(np.mean(m1_orig)), 3),
+                        "axes_fair": round(float(np.mean(m1_fair)), 3),
                         "combined": round(float(np.mean(m2)), 3),
-                        "axes_minus_DSM": f"{dd:+.3f} [{dl:+.3f},{dh:+.3f}]",
+                        "axes_orig_minus_DSM": f"{dd_o:+.3f} [{dl_o:+.3f},{dh_o:+.3f}]",
+                        "axes_fair_minus_DSM": f"{dd_f:+.3f} [{dl_f:+.3f},{dh_f:+.3f}]",
                         "combined_minus_DSM": f"{cd:+.3f} [{cl:+.3f},{ch:+.3f}]",
-                        "axes_minus_DSM_mean": round(dd, 3), "combined_minus_DSM_mean": round(cd, 3),
-                        "axes_excludes_0": bool(dl > 0 or dh < 0),
+                        "axes_orig_minus_DSM_mean": round(dd_o, 3),
+                        "axes_fair_minus_DSM_mean": round(dd_f, 3),
+                        "combined_minus_DSM_mean": round(cd, 3),
+                        "axes_fair_excludes_0": bool(dl_f > 0 or dh_f < 0),
                         "combined_excludes_0": bool(cl > 0 or ch < 0)})
-            print(f"  [{label}] {name}: axes−DSM {dd:+.3f}[{dl:+.3f},{dh:+.3f}]  "
+            print(f"  [{label}] {name}: axes(orig)−DSM {dd_o:+.3f}[{dl_o:+.3f},{dh_o:+.3f}]  "
+                  f"axes(fair)−DSM {dd_f:+.3f}[{dl_f:+.3f},{dh_f:+.3f}]  "
                   f"combined−DSM {cd:+.3f}[{cl:+.3f},{ch:+.3f}]")
     h2h_df = pd.DataFrame(h2h)
 
@@ -300,10 +317,10 @@ def main() -> int:
             "recon_r2_questionnaire": axdict(recon["shared_q"]),
             "recon_r2_questionnaire_plus_labs": axdict(recon["shared_ql"]),
             "recon_r2_peraxis_plus_labs": axdict(recon["peraxis_ql"]),
-            "qol_panel_axes_minus_DSM": h2hpick("shared (questionnaire)", "EQ-5D quality of life", "axes_minus_DSM_mean"),
-            "qol_panel_axes_minus_DSM_ci": h2hpick("shared (questionnaire)", "EQ-5D quality of life", "axes_minus_DSM"),
+            "qol_panel_axes_minus_DSM": h2hpick("shared (questionnaire)", "EQ-5D quality of life", "axes_fair_minus_DSM_mean"),
+            "qol_panel_axes_minus_DSM_ci": h2hpick("shared (questionnaire)", "EQ-5D quality of life", "axes_fair_minus_DSM"),
             "egf_panel_combined_minus_DSM_ci": h2hpick("shared (questionnaire)", "EGF functioning", "combined_minus_DSM"),
-            "qol_peraxis_axes_minus_DSM_ci": h2hpick("per-axis (+ labs)", "EQ-5D quality of life", "axes_minus_DSM"),
+            "qol_peraxis_axes_minus_DSM_ci": h2hpick("per-axis (+ labs)", "EQ-5D quality of life", "axes_fair_minus_DSM"),
             "note": "Item->axis sparse distillation (MultiTaskElasticNet, in-fold selection). Two panels: "
                     "a <=15-item SHARED panel and a group-aware PER-AXIS panel (top-2 items/axis), each + a "
                     "flagged routine metabolic-panel add-on (the metabolic axis is not questionnaire-recoverable). "
@@ -318,7 +335,7 @@ def main() -> int:
 
 def _report(sweep_df, recon, shared_sel, peraxis_sel, labs, h2h_df):
     f1 = go.Figure()
-    for a in ("depression_severity", "mania_activation", "externalizing", "metabolic"):
+    for a in ("depression_severity", "mania_activation", "cognition_verbal", "metabolic"):
         f1.add_scatter(x=sweep_df["budget"], y=sweep_df[a], mode="lines+markers", name=a)
     f1.update_layout(title="Reconstruction fidelity vs panel length (shared, in-sample)", height=320,
                      xaxis_title="# questionnaire items", yaxis_title="R²", margin=dict(t=44))
@@ -328,7 +345,7 @@ def _report(sweep_df, recon, shared_sel, peraxis_sel, labs, h2h_df):
     f2.update_layout(title="In-fold reconstruction R² per axis (honest)", barmode="group",
                      height=360, yaxis_title="R²", xaxis_tickangle=-30, margin=dict(t=44, b=130))
     f3 = go.Figure()
-    for field, nm in (("axes_minus_DSM_mean", "axes − DSM"), ("combined_minus_DSM_mean", "combined − DSM")):
+    for field, nm in (("axes_fair_minus_DSM_mean", "axes − DSM"), ("combined_minus_DSM_mean", "combined − DSM")):
         sub = h2h_df[h2h_df.panel == "shared (questionnaire)"]
         f3.add_bar(x=sub["outcome"], y=sub[field], name=nm)
     f3.add_hline(y=0, line_dash="dash")
@@ -342,7 +359,7 @@ def _report(sweep_df, recon, shared_sel, peraxis_sel, labs, h2h_df):
         for key, nm in (("shared_q", "shared"), ("peraxis_ql", "per-axis+labs")):
             g.add_bar(x=list(AXIS_NAMES), y=list(recon[key]), name=nm, row=1, col=1)
         sub = h2h_df[h2h_df.panel == "shared (questionnaire)"]
-        g.add_bar(x=sub["outcome"], y=sub["axes_minus_DSM_mean"], name="axes−DSM", row=1, col=2)
+        g.add_bar(x=sub["outcome"], y=sub["axes_fair_minus_DSM_mean"], name="axes−DSM", row=1, col=2)
         g.add_bar(x=sub["outcome"], y=sub["combined_minus_DSM_mean"], name="combined−DSM", row=1, col=2)
         g.add_hline(y=0, line_dash="dash", row=1, col=2)
         g.update_layout(title="Figure 7. Parsimonious screening panel", barmode="group",
@@ -356,7 +373,7 @@ def _report(sweep_df, recon, shared_sel, peraxis_sel, labs, h2h_df):
 
     css = "body{font-family:-apple-system,Segoe UI,sans-serif;margin:0;padding:0 24px 60px}h1{color:#2b3a55}.c{background:#eef6fb;border-left:4px solid #2b8cbe;padding:10px 14px;margin:12px 0}code{font-size:12px}table{border-collapse:collapse;font-size:12px;margin:10px 0}th,td{border:1px solid #e5e7eb;padding:4px 8px}th{background:#eef2f7}"
     hrows = "".join(
-        f"<tr><td>{r.panel}</td><td>{r.outcome}</td><td>{r.axes_minus_DSM}</td>"
+        f"<tr><td>{r.panel}</td><td>{r.outcome}</td><td>{r.axes_fair_minus_DSM}</td>"
         f"<td>{r.combined_minus_DSM}</td></tr>" for r in h2h_df.itertuples())
     html = [f"<!DOCTYPE html><html><head><meta charset='utf-8'><style>{css}</style></head><body>",
             "<h1>Parsimonious screening panel (§4.5)</h1>",

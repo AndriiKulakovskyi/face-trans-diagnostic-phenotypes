@@ -36,7 +36,7 @@ SCORES_PATH = RESULTS_DIR / "cluster_domains_scores.parquet"
 # the two competing 6th-axis domain groups (from sensitivity_masked_fa.py output)
 G_FILL = ["wurs", "bis", "ctq", "prism", "ess", "isf"]                     # mean-fill axis6 (ADHD/impuls./trauma)
 G_MASK = ["hooccur_arret_travail_actuel", "hooccur_arret_travail",          # masked axis6 (work-disability)
-          "stprof", "edulevel", "pregnn_rporres", "fagers"]
+          "edulevel", "pregnn_rporres", "fagers"]   # stprof dropped 2026-05 (nominal SOCIAL descriptor)
 
 
 def main() -> int:

@@ -43,13 +43,17 @@ from sklearn.preprocessing import StandardScaler  # noqa: E402
 
 from trans_diag import build_unified_dataframe  # noqa: E402
 from trans_diag.masked_fa import masked_loadings, masked_scores  # noqa: E402
-from trans_diag.outcomes import OUTCOMES  # noqa: E402
+from trans_diag.outcomes import (  # noqa: E402
+    OUTCOMES,
+    apply_outcome_tf,
+    cohort_dummies,
+)
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "results" / "reports"
 DOMAINS_PATH = RESULTS_DIR / "cluster_domains_scores.parquet"
 AXES_PATH = RESULTS_DIR / "dimensional_final_scores.parquet"
-K = 7                 # locked number of axes (matches 07)
+K = json.loads((RESULTS_DIR / "dimensional_final_meta.json").read_text())["K"]  # locked by 07
 N_REPEAT = 5          # shuffled 5-fold repeats (different seeds) for a stable estimate
 RANDOM = 0
 
@@ -125,6 +129,8 @@ def main() -> int:
     dsm = pd.get_dummies(v0["arm"].astype(str), drop_first=True).astype(float)
     dsm_cols = list(dsm.columns)
     base = base.join(dsm)
+    cohort_dum, cohort_cols = cohort_dummies(v0["cohort"])
+    base = base.join(cohort_dum)
 
     orig = pd.read_csv(RESULTS_DIR / "phase5_headtohead_V1.csv").set_index("outcome")
 
@@ -134,9 +140,9 @@ def main() -> int:
         if col not in df.columns:
             continue
         y0 = pd.to_numeric(v0[col], errors="coerce").rename("baseline")
-        yk = pd.to_numeric(vk[col], errors="coerce")
+        yk = pd.to_numeric(vk[col], errors="coerce").reindex(y0.index)
         if tf is not None:
-            yk = tf(yk)
+            yk = apply_outcome_tf(y0, yk, tf)
         d = base.join(y0).join(yk.rename("y")).dropna(subset=["y", "baseline", "age", "sex"])
         D = D_all.reindex(d.index)
         A = A_all.reindex(d.index)
@@ -150,10 +156,17 @@ def main() -> int:
         yv = d["y"].to_numpy(float)
         bm = d[["baseline", "age", "sex"]].to_numpy(float)
         dm = d[dsm_cols].to_numpy(float)
+        cm = d[cohort_cols].to_numpy(float)   # cohort dummies for fair head-to-head
         Am = A.to_numpy(float)
         idx = np.arange(len(d))
 
-        acc = {kk: [] for kk in ("dsm", "ax_all", "ax_re", "comb_all", "comb_re")}
+        # Five model variants per fold:
+        #   dsm           = baseline + arm                     (M0)
+        #   ax_all        = baseline + axes(full)              (M1 orig — pre-audit)
+        #   ax_re         = baseline + axes(refit)             (M1 orig + fold-honest)
+        #   ax_re_fair    = baseline + cohort + axes(refit)    (M1 fair, post-audit + fold-honest)
+        #   comb_re       = baseline + arm + axes(refit)       (M2)
+        acc = {kk: [] for kk in ("dsm", "ax_all", "ax_re", "ax_re_fair", "comb_re")}
         for r in range(N_REPEAT):
             if kind == "continuous":
                 splits = list(KFold(5, shuffle=True, random_state=RANDOM + r).split(idx))
@@ -166,7 +179,8 @@ def main() -> int:
                     "dsm": (np.hstack([bm[tr], dm[tr]]), np.hstack([bm[te], dm[te]])),
                     "ax_all": (np.hstack([bm[tr], Am[tr]]), np.hstack([bm[te], Am[te]])),
                     "ax_re": (np.hstack([bm[tr], f_tr]), np.hstack([bm[te], f_te])),
-                    "comb_all": (np.hstack([bm[tr], dm[tr], Am[tr]]), np.hstack([bm[te], dm[te], Am[te]])),
+                    "ax_re_fair": (np.hstack([bm[tr], cm[tr], f_tr]),
+                                   np.hstack([bm[te], cm[te], f_te])),
                     "comb_re": (np.hstack([bm[tr], dm[tr], f_tr]), np.hstack([bm[te], dm[te], f_te])),
                 }
                 for kk, (Xtr, Xte) in m.items():
@@ -177,28 +191,38 @@ def main() -> int:
         def mm(a):
             return float(np.mean(a)), float(np.min(a)), float(np.max(a))
         dsm_m = mm(acc["dsm"]); axa = mm(acc["ax_all"]); axr = mm(acc["ax_re"])
-        cba = mm(acc["comb_all"]); cbr = mm(acc["comb_re"])
+        axr_fair = mm(acc["ax_re_fair"])
+        cbr = mm(acc["comb_re"])
         ax_re_minus_dsm = mm([a - b for a, b in zip(acc["ax_re"], acc["dsm"], strict=True)])
+        ax_re_fair_minus_dsm = mm([a - b for a, b in zip(acc["ax_re_fair"], acc["dsm"], strict=True)])
         cb_re_minus_dsm = mm([a - b for a, b in zip(acc["comb_re"], acc["dsm"], strict=True)])
         optimism = mm([a - b for a, b in zip(acc["ax_all"], acc["ax_re"], strict=True)])
         metric = "R2" if kind == "continuous" else "AUC"
-        o_axd = float(orig.loc[name, "axes_minus_DSM"]) if name in orig.index else np.nan
+        # accept either old (axes_minus_DSM) or new (axes_orig_minus_DSM) column
+        o_axd_col = "axes_orig_minus_DSM" if "axes_orig_minus_DSM" in orig.columns else "axes_minus_DSM"
+        o_axd = float(orig.loc[name, o_axd_col]) if name in orig.index else np.nan
 
         rows.append({
             "outcome": name, "n": int(len(d)), "metric": metric,
             "DSM": round(dsm_m[0], 3),
-            "axes_alldata": round(axa[0], 3), "axes_refit": round(axr[0], 3),
-            "combined_alldata": round(cba[0], 3), "combined_refit": round(cbr[0], 3),
-            "axes_refit_minus_DSM": round(ax_re_minus_dsm[0], 3),
-            "axes_refit_minus_DSM_range": [round(ax_re_minus_dsm[1], 3), round(ax_re_minus_dsm[2], 3)],
+            "axes_alldata": round(axa[0], 3),
+            "axes_refit_orig": round(axr[0], 3),
+            "axes_refit_fair": round(axr_fair[0], 3),
+            "combined_refit": round(cbr[0], 3),
+            "axes_refit_orig_minus_DSM": round(ax_re_minus_dsm[0], 3),
+            "axes_refit_fair_minus_DSM": round(ax_re_fair_minus_dsm[0], 3),
+            "axes_refit_fair_minus_DSM_range": [round(ax_re_fair_minus_dsm[1], 3),
+                                                round(ax_re_fair_minus_dsm[2], 3)],
             "combined_refit_minus_DSM": round(cb_re_minus_dsm[0], 3),
             "optimism_alldata_minus_refit": round(optimism[0], 3),
             "orig_axes_minus_DSM": round(o_axd, 3) if np.isfinite(o_axd) else None,
         })
         print(f"{name}: n={len(d)} {metric}\n"
-              f"  DSM={dsm_m[0]:.3f}  axes(all-data)={axa[0]:.3f}  axes(refit)={axr[0]:.3f}  "
-              f"combined(refit)={cbr[0]:.3f}\n"
-              f"  axes(refit)−DSM = {ax_re_minus_dsm[0]:+.3f} [{ax_re_minus_dsm[1]:+.3f},{ax_re_minus_dsm[2]:+.3f}]"
+              f"  DSM={dsm_m[0]:.3f}  axes(all-data)={axa[0]:.3f}  axes(refit,orig)={axr[0]:.3f}  "
+              f"axes(refit,fair)={axr_fair[0]:.3f}  combined(refit)={cbr[0]:.3f}\n"
+              f"  axes(refit,orig)−DSM = {ax_re_minus_dsm[0]:+.3f}  "
+              f"axes(refit,fair)−DSM = {ax_re_fair_minus_dsm[0]:+.3f} "
+              f"[{ax_re_fair_minus_dsm[1]:+.3f},{ax_re_fair_minus_dsm[2]:+.3f}]"
               f"  (orig all-data {o_axd:+.3f}); optimism removed = {optimism[0]:+.3f}\n")
 
     head = pd.DataFrame(rows)
@@ -215,8 +239,10 @@ def main() -> int:
 def _report(head: pd.DataFrame):
     rows = "".join(
         f"<tr><td>{r.outcome}</td><td>{r.n}</td><td>{r.metric}</td><td>{r.DSM}</td>"
-        f"<td>{r.axes_alldata}</td><td>{r.axes_refit}</td><td>{r.combined_refit}</td>"
-        f"<td><b>{r.axes_refit_minus_DSM:+}</b></td><td>{r.orig_axes_minus_DSM:+}</td>"
+        f"<td>{r.axes_alldata}</td><td>{r.axes_refit_orig}</td><td>{r.axes_refit_fair}</td>"
+        f"<td>{r.combined_refit}</td>"
+        f"<td>{r.axes_refit_orig_minus_DSM:+}</td>"
+        f"<td><b>{r.axes_refit_fair_minus_DSM:+}</b></td>"
         f"<td>{r.optimism_alldata_minus_refit:+}</td></tr>"
         for r in head.itertuples())
     css = ("body{font-family:-apple-system,Segoe UI,sans-serif;margin:0;padding:0 24px 60px}"
@@ -226,13 +252,13 @@ def _report(head: pd.DataFrame):
     html = [f"<!DOCTYPE html><html><head><meta charset='utf-8'><style>{css}</style></head><body>",
             "<h1>Robustness — re-fit axes inside CV folds (Limitation 10)</h1>",
             "<div class='c'>The masked factor model is re-derived on each training fold and used to "
-            "score the held-out fold (train-only loadings <i>and</i> scaling). 'axes(refit)−DSM' is "
-            "the fold-honest incremental value; compare to the original all-data 'orig axes−DSM'. "
-            "'optimism' = all-data minus refit (how much the full-sample loadings inflated the "
-            "estimate).</div>",
+            "score the held-out fold (train-only loadings <i>and</i> scaling). 'axes(refit,fair)−DSM' "
+            "is the fold-honest, cohort-controlled (post-audit) incremental value; the 'orig' column "
+            "is the pre-audit comparator without cohort dummies. 'optimism' = all-data minus refit "
+            "(how much the full-sample loadings inflated the estimate).</div>",
             "<table><tr><th>outcome</th><th>n</th><th>metric</th><th>DSM</th>"
-            "<th>axes (all-data)</th><th>axes (refit)</th><th>combined (refit)</th>"
-            "<th>axes(refit)−DSM</th><th>orig axes−DSM</th><th>optimism</th></tr>",
+            "<th>axes (all-data)</th><th>axes (refit, orig)</th><th>axes (refit, fair)</th>"
+            "<th>combined (refit)</th><th>orig−DSM</th><th>fair−DSM</th><th>optimism</th></tr>",
             rows, "</table></body></html>"]
     (REPORTS_DIR / "robustness_cvrefit.html").write_text("\n".join(html), encoding="utf-8")
 

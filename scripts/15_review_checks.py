@@ -32,7 +32,12 @@ from sklearn.decomposition import PCA  # noqa: E402
 from sklearn.ensemble import HistGradientBoostingClassifier  # noqa: E402
 from sklearn.model_selection import StratifiedKFold, cross_val_score  # noqa: E402
 
-from trans_diag import build_unified_dataframe  # noqa: E402
+from trans_diag import (  # noqa: E402
+    AXIS_INDEX_TO_NAME,
+    COGNITIVE_COMPOSITES,
+    build_unified_dataframe,
+)
+from trans_diag.masked_fa import masked_loadings  # noqa: E402
 
 RES = REPO / "results"
 FIG = REPO / "results" / "reports" / "figures"
@@ -151,19 +156,77 @@ def main() -> int:
                                round(float(np.percentile(boot, 97.5)), 3)]
     print(f"#9 mood↔psychosis |ρ|={obs_rho:.2f} (n=7 centroids) 95% CI {out['continuum_rho_ci']}")
 
+    # ── #10: cognition availability/confound battery (DR neuropsych recovered 2026-05) ──
+    # Decide whether the cognitive axes are genuine trans-diagnostic dimensions or merely
+    # track "was cognition tested" (a cohort/availability proxy — the original exclusion reason).
+    cog_domains = [d for d in COGNITIVE_COMPOSITES if d in scores.columns]
+    Lpiv = (pd.read_csv(RES / "dimensional_final_loadings.csv")
+            .pivot(index="domain", columns="axis", values="loading"))
+    cog_share = {}
+    for ax in axcols:
+        col = Lpiv[ax]
+        ss_tot = float((col ** 2).sum())
+        cog_share[ax] = round(float((col.reindex(cog_domains) ** 2).sum()) / ss_tot, 3) if ss_tot > 0 else 0.0
+    cog_axes = [ax for ax in axcols if cog_share[ax] >= 0.30]   # cognition-loaded axes
+    nm = lambda ax: AXIS_INDEX_TO_NAME.get(ax, ax)
+    out["cognition_loading_share"] = {nm(a): cog_share[a] for a in axcols}
+    out["cognition_axes"] = [nm(a) for a in cog_axes]
+    out["cognition_axis_eta_cohort"] = {nm(a): eta_c[a] for a in cog_axes}
+    out["cognition_axis_eta_site"] = {nm(a): eta_s[a] for a in cog_axes}
+
+    # (b) availability test — does the NUMBER of cognition tests done (0..len) predict the axis?
+    #     A high R² would mean the axis tracks availability, not ability.
+    n_obs = scores.reindex(final.index)[cog_domains].notna().sum(axis=1).to_numpy(float)
+    avail = {}
+    for ax in cog_axes:
+        s = final[ax].to_numpy(float); ok = np.isfinite(s)
+        r = float(np.corrcoef(s[ok], n_obs[ok])[0, 1]) if ok.sum() > 2 else float("nan")
+        avail[nm(ax)] = round(r ** 2, 3)
+    out["cognition_axis_r2_from_availability"] = avail
+
+    # (c) permutation placebo — row-permute the cognition domains WITHIN cohort, refit masked
+    #     loadings, and measure how well each real cognition axis reproduces. If the cognitive
+    #     structure is genuine it should COLLAPSE (best congruence with any permuted factor ≪ 1).
+    sc_perm = scores.copy()
+    coh_lv = sc_perm.index.get_level_values("cohort")
+    rngp = np.random.default_rng(0)
+    for d in cog_domains:
+        for cl in pd.unique(coh_lv):
+            m = (np.asarray(coh_lv) == cl)
+            vals = sc_perm.loc[m, d].to_numpy().copy()
+            sc_perm.loc[m, d] = vals[rngp.permutation(len(vals))]
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        Lperm = masked_loadings(sc_perm, len(axcols))
+    placebo = {}
+    for ax in cog_axes:
+        rc = Lpiv[ax].reindex(scores.columns).to_numpy(float)
+        na = np.linalg.norm(rc)
+        placebo[nm(ax)] = round(max(abs(float(rc @ Lperm[:, b])) / (na * np.linalg.norm(Lperm[:, b]) + 1e-12)
+                                    for b in range(Lperm.shape[1])), 3)
+    out["cognition_axis_permutation_congruence"] = placebo
+    print(f"#10 cognition axes {out['cognition_axes']} (loading share {[cog_share[a] for a in cog_axes]})")
+    print(f"    η²(cohort)={out['cognition_axis_eta_cohort']}  η²(site)={out['cognition_axis_eta_site']}")
+    print(f"    R²(axis~#tests-done)={avail}  permutation-collapse-congruence={placebo}")
+
     (RES / "review_checks.json").write_text(json.dumps(out, indent=2))
 
     # ── #5: K-selection curve figure (honest, jagged) ──
     meta = json.loads((RES / "dimensional_final_meta.json").read_text())
+    Kloc = int(meta["K"])
     cur = pd.DataFrame(meta["reproducibility_curve"])
     fig, ax = plt.subplots(figsize=(6.4, 4))
-    ax.plot(cur["k"], cur["min_congruence"], "o-", label="min congruence", color="#1f77b4")
+    ax.plot(cur["k"], cur["min_congruence"], "o-", label="min congruence (single split)", color="#1f77b4")
     ax.plot(cur["k"], cur["mean_congruence"], "s--", label="mean congruence", color="#999")
+    if "reproducibility_robustness" in meta:
+        rob = pd.DataFrame(meta["reproducibility_robustness"])
+        ax.plot(rob["k"], rob["mean_min_congruence"], "^:", color="#ff7f0e",
+                label="min congruence (25-split mean)")
     ax.axhline(0.85, ls=":", color="#d62728", label="0.85 threshold")
-    ax.axvline(7, ls="-", color="#2ca02c", alpha=0.4, lw=6, label="selected K=7")
+    ax.axvline(Kloc, ls="-", color="#2ca02c", alpha=0.4, lw=6, label=f"selected K={Kloc}")
     ax.set(xlabel="number of factors K", ylabel="split-half Tucker congruence",
-           ylim=(0, 1.02), title="Figure S2. Reproducibility-vs-K is non-monotone (varimax\n"
-           "factor-splitting); K=7 is the maximum reproducible solution (K>=8 collapse)")
+           ylim=(0, 1.02), title=f"Figure S2. Reproducibility-vs-K is non-monotone (varimax\n"
+           f"factor-splitting); K={Kloc} is the maximum reproducible solution (K>={Kloc+1} collapse)")
     ax.legend(fontsize=8, loc="lower left")
     fig.tight_layout()
     for ext in ("png", "svg"):

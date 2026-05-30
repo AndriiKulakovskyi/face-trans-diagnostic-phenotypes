@@ -25,6 +25,8 @@ try:  # pragma: no cover - exercised in integration, not unit tests
     )
     from .domains import (
         BIOLOGY_COMPOSITES,
+        COGNITION_SECTIONS,
+        COGNITIVE_COMPOSITES,
         DOMAIN_SECTIONS,
         build_domain_scores,
     )
@@ -38,7 +40,9 @@ except ImportError:  # engine not importable in this environment
     to_harmonized_dataset = None  # type: ignore[assignment]
     build_domain_scores = None  # type: ignore[assignment]
     BIOLOGY_COMPOSITES = None  # type: ignore[assignment]
+    COGNITIVE_COMPOSITES = None  # type: ignore[assignment]
     DOMAIN_SECTIONS = None  # type: ignore[assignment]
+    COGNITION_SECTIONS = None  # type: ignore[assignment]
     build_feature_schema = None  # type: ignore[assignment]
     DEFAULT_SCHEMA_VERSION = None  # type: ignore[assignment]
 
@@ -66,7 +70,9 @@ __all__ = [
     "ADMINISTRATIVE_FEATURES",
     "CLINICAL_SECTIONS",
     "BIOLOGY_COMPOSITES",
+    "COGNITIVE_COMPOSITES",
     "DOMAIN_SECTIONS",
+    "COGNITION_SECTIONS",
     "DEFAULT_SCHEMA_VERSION",
     "AXIS_NAMES",
     "AXIS_SHORT",

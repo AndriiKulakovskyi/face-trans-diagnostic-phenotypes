@@ -1,4 +1,4 @@
-# Trans-diagnostic psychopathology across bipolar disorder, schizophrenia and depression is dimensional, not categorical: seven reproducible symptom dimensions that complement DSM diagnosis for patient-reported outcomes
+# Trans-diagnostic psychopathology across bipolar disorder, schizophrenia and depression is dimensional, not categorical: six reproducible symptom-and-cognition dimensions that complement DSM diagnosis for patient-reported outcomes
 
 **Authors.** [TO CONFIRM — author list, affiliations, corresponding author]
 
@@ -45,30 +45,32 @@ factor model within each cross-validation fold, and within-FACE held-out replica
 **Results.** Trans-diagnostic variation was **dimensional, not categorical**: the
 similarity spectrum had no eigengap, the gap statistic rose monotonically with *k* (no
 natural cluster count), top dimensions showed no clear multimodality, and the only dense discrete
-structure recovered by HDBSCAN was diagnosis itself (cluster–cohort ARI 0.70). The seven
-enrolled DSM subtypes ordered along a single mood↔psychosis continuum (|Spearman| 0.79).
-A **seven-dimension model** was reproducible (masked split-half Tucker congruence 0.91 at $K=7$,
-the maximum reproducible dimensionality), confound-free (|correlation| with age/sex ≤0.018; site
-η² ≤0.053, cohort ≤0.113): depression/internalizing severity, later age-of-onset,
-illness/hospitalization burden, mania/activation, an **externalizing/neurodevelopmental** axis
-(impulsivity, childhood-ADHD, early adversity), metabolic/inflammatory load, and a
-socio-occupational/work-disability axis. A no-imputation autoencoder recovered the same structure
-(leading canonical correlation 0.97 vs a row-permutation null of 0.05). The dimensions
-**outperformed DSM diagnosis** for quality of life (EQ-5D R² 0.34 vs 0.30; Δ +0.038, 95% CI
-[+0.035, +0.042]) and **complemented** it for global functioning (combined R² 0.40 vs DSM 0.37;
-Δ +0.034 [+0.032, +0.036]), while diagnosis plus prior service use dominated hospitalization
-prediction (AUC 0.75). Both findings were
+structure recovered by HDBSCAN was diagnosis itself (cluster–cohort ARI 0.64). The seven
+enrolled DSM subtypes still ordered along a mood↔psychosis continuum, but more weakly once
+cognition entered the feature space (|Spearman| 0.50, 95% CI [0.36, 0.61]): cognition contributes
+variance orthogonal to mood↔psychosis, so the embedding's leading dimension no longer captures the
+subtype ordering on its own. A **six-dimension model** was reproducible (masked split-half Tucker
+congruence 0.87 at $K=6$, the maximum reproducible dimensionality), confound-free (|correlation|
+with age/sex ≤0.017; site η² ≤0.049, cohort ≤0.106): depression/internalizing severity, later
+age-of-onset, mania/activation (incorporating childhood-ADHD/impulsivity externalizing items),
+illness/hospitalization burden, a **verbal/working-memory cognitive** axis, and metabolic/inflammatory
+load. A no-imputation autoencoder recovered the same structure (leading canonical correlation 0.94
+vs a row-permutation null of 0.05). The dimensions **outperformed DSM diagnosis** for quality of
+life (EQ-5D R² 0.34 vs 0.30; Δ +0.037, 95% CI [+0.034, +0.040]) and **complemented** it for global
+functioning (combined R² 0.40 vs DSM 0.37; Δ +0.035 [+0.033, +0.036]), while diagnosis plus prior
+service use dominated hospitalization prediction (AUC 0.75). Both findings were
 consistent at a second follow-up (V2, same cohort) and survived site harmonization and
 de-circularization. Dimensions showed a trait–state gradient over follow-up (metabolic load
-and depression most trait-like, test–retest *r* 0.63 and 0.55; activation, externalizing and
-work-disability more state-like). A complementary BP/SZ cognitive analysis
-(cognition is missing by design in DR) recovered the classic general-ability (*g*) plus
-processing-speed structure, which was semi-independent of the symptom dimensions
-(max |*r*| 0.26) and added a small independent increment to functioning.
+and depression most trait-like, test–retest *r* 0.63 and 0.58; cognition moderately trait-like,
+*r* 0.31; illness burden, mania and onset more state-like). Closing a data-extraction gap that
+had left neuropsychology unavailable for the depression cohort (now ~57% V0 coverage, comparable
+to BP ~68% and SZ ~80%), cognition entered the trans-diagnostic model directly as a
+verbal/working-memory ability dimension — confound-clean (cohort η² 0.072, leave-DR-out congruence
+1.00) and semi-independent of the symptom axes (|*r*| ≤0.13).
 
 **Conclusions.** Across BP, SZ and DR the categorical boundary that data support is the
-diagnosis itself; everything trans-diagnostic is continuous. Seven reproducible,
-confound-controlled symptom dimensions carry outcome-relevant information that diagnosis
+diagnosis itself; everything trans-diagnostic is continuous. Six reproducible,
+confound-controlled symptom-and-cognition dimensions carry outcome-relevant information that diagnosis
 lacks for patient-reported endpoints, supporting a dimensional augmentation of categorical
 psychiatric nosology.
 
@@ -176,9 +178,10 @@ contributions are: (1) a transparent account of the **confounding hierarchy** th
 naïve clustering of psychiatric records, and the controls that remove it; (2) a formal
 **discrete-versus-dimensional test** showing that the only categorical structure the data
 support is diagnosis itself, while trans-diagnostic variation is continuous; (3) a
-**reproducible, confound-controlled, site-robust seven-dimension model** of trans-diagnostic
-psychopathology, cross-validated by two methodologically independent estimators — a linear
-factor model and a nonlinear, no-imputation autoencoder; and (4) a leakage-safe **head-to-head
+**reproducible, confound-controlled, site-robust six-dimension model** of trans-diagnostic
+psychopathology — spanning symptoms, course and cognition — cross-validated by two
+methodologically independent estimators — a linear factor model and a nonlinear, no-imputation
+autoencoder; and (4) a leakage-safe **head-to-head
 test** showing these dimensions complement or outperform DSM diagnosis for patient-reported
 outcomes. We deliberately report the dimensional model rather than discrete biotypes because
 that is what the data support — and we argue that the **validation discipline** itself
@@ -222,7 +225,7 @@ operators, so missing feature values never enter any estimator as filled-in numb
 important because missingness in psychiatric records is informative and differential by
 cohort. The factor model is estimated from the pairwise-complete correlation matrix with
 posterior-mean scores on each patient's observed support (§2.7); the residual domain matrix
-is **65% observed**, but those gaps are never filled. An earlier mean-filled factor analysis
+is **~64% observed**, but those gaps are never filled. An earlier mean-filled factor analysis
 was superseded once an ablation showed the fill reweights correlations by co-observation and
 biases the weakest factor (§3.8).
 
@@ -233,8 +236,10 @@ for an observed value and define the **observation mask** $m_{if}=\mathbb{1}[x_{
 We apply **no imputation**: every similarity, covariance and reconstruction is computed on
 the observed support only (pairwise-complete / masked), so a missing entry never enters as a
 filled-in number. This matters because missingness in psychiatric records is informative and
-differential by cohort (e.g. neuropsychology is absent in DR by design). The only place a feature
-value is substituted is mean-imputation of *covariates* in the residualization design matrix
+differential by cohort (e.g. neuropsychology coverage is somewhat lower in the depression cohort,
+~57% at V0 versus ~68%/~80% in bipolar/schizophrenia — a differential the masked operators handle
+without imputation, never substituting a value a different protocol would have produced). The only
+place a feature value is substituted is mean-imputation of *covariates* in the residualization design matrix
 (§2.4); it never touches the domain values themselves. The autoencoder is fed zeros for missing
 entries but flags them through the input mask and excludes them from the reconstruction loss
 (§2.8), and the factor model uses the pairwise-complete correlation matrix with posterior-mean
@@ -258,14 +263,17 @@ one domain per **instrument stem** (canonical name with the trailing item index 
 `\d+[a-z]*$`: `madrs07`→`madrs`); biology items are grouped into curated composites
 $d$ with member set $M_d$ and clinical signs $s_f\in\{\pm1\}$ ("higher = more pathological":
 metabolic syndrome [BMI, waist, triglycerides, HDL$^-$, glucose, HbA1c, blood pressure],
-cholesterol, inflammation, hepatic, renal, prolactin, cardiac/QTc). For observed members
+cholesterol, inflammation, hepatic, renal, prolactin, cardiac/QTc). Neuropsychological items are
+aggregated the same way into curated cognitive constructs (working memory, verbal reasoning,
+fluency), now admitted to the main matrix after the depression-cohort extraction gap was closed
+(§2.12). For observed members
 $O_{id}=\{f\in M_d:m_{if}=1\}$ the masked, sign-oriented domain score is
 
 $$g_{id}=\frac{1}{|O_{id}|}\sum_{f\in O_{id}} s_f\,z_{if}
 \quad\text{if } \frac{|O_{id}|}{|M_d|}\ge \tau,\ \text{else } \texttt{NaN},$$
 
 with minimum-observed fraction $\tau=0.5$ (no imputation: under-observed domains stay missing).
-We retain domains observed in $\ge\!30\%$ of patients (54 of 72).
+We retain domains observed in $\ge\!30\%$ of patients (56 of 74).
 
 Two choices here deserve emphasis because they are exactly where naïve pipelines fail. First,
 **aggregation to constructs is a psychometric necessity, not a convenience**: cosine and
@@ -415,7 +423,7 @@ where $o$ indexes patient $i$'s observed domains and $z_{i,o}$ their standardize
 values (uniquenesses floored at 0.05 to guard Heywood cases). The longitudinal projection
 (§2.10) applies the locked V0 loadings to each follow-up visit by the same masked scoring.
 
-*Number of factors.* Horn's **parallel analysis** [11] over-extracted ($K\approx14$: with 54
+*Number of factors.* Horn's **parallel analysis** [11] over-extracted ($K\approx14$: with 56
 domains many tiny construct-specific factors clear the permutation null without being
 *reproducible*), so $K$ was fixed by **out-of-sample reproducibility** — split-half Tucker
 congruence [12] on the masked covariance,
@@ -423,21 +431,26 @@ $\phi(a,b)=|\boldsymbol\lambda_a^{(1)\top}\boldsymbol\lambda_b^{(2)}|/(\lVert\bo
 a real factor should reappear when the model is re-fit on an independent half of patients. This
 reframes factor-count selection from "how much variance is explained" to "what replicates" — the
 property that matters for a clinical phenotype and the one the biotype literature most
-conspicuously lacked. The masked split-half minimum congruence is $\ge0.85$ through $K=7$ (a local maximum, 0.91) and
-collapses at $K\ge8$ (the $K=8$ minimum falls to 0.22); we therefore lock **$K=7$** as the
-**maximum reproducible dimensionality**. Relative to the prior $K=6$ solution the seventh axis
-*splits* the conflated mania/activation+impulsivity factor into a *pure* mania axis and a distinct
-externalizing/neurodevelopmental axis (childhood-ADHD, impulsivity, early adversity; §3.3) — the
-genuine, imputation-free counterpart of the ADHD/trauma signal that mean-filling had rendered
-artifactual at $K=6$ (§3.8); $K=4$ and $K=6$ remain defensible, more parsimonious alternatives.
-Confounding was quantified as
+conspicuously lacked. On the deterministic single fixed-split masked split-half, the minimum
+congruence stays $\ge0.85$ through $K=6$ (0.87) and collapses at $K=7$ (the minimum falls to 0.21);
+we therefore lock **$K=6$** as the **maximum reproducible dimensionality** before collapse. A
+multi-seed robustness curve (25 random splits) is reported as a caveat (§2.7, Fig S2): it confirms
+that the six-axis core is the most split-stable solution and that the weakest (metabolic) axis is
+the most split-sensitive, but is not used to lock $K$. This is the re-derived model after the
+depression-cohort neuropsychology extraction gap was closed and three curated cognitive constructs
+were admitted (§2.12): relative to the prior cognition-free seven-axis solution, the formerly
+separate *pure* mania and externalizing/neurodevelopmental axes **re-merge** into a single
+mania/activation axis (Altman/Mathys/YMRS with childhood-ADHD and impulsivity items), the
+socio-occupational work-disability axis is no longer separately resolved (its variance absorbed),
+and a new **verbal/working-memory cognitive** axis is gained — a net 7→6 (§3.3); $K=4$ and $K=5$
+remain defensible, more parsimonious alternatives. Confounding was quantified as
 $\max_k\max\{|{\rm corr}(F_{\cdot k},a)|,|{\rm corr}(F_{\cdot k},\mathrm{sex})|\}$.
 
 ### 2.8 Masked autoencoder for dimensionality compression (no-imputation cross-check)
 
-As a nonlinear counterpart to the linear factor model, we compress the $d=54$ residual domain
+As a nonlinear counterpart to the linear factor model, we compress the $d=56$ residual domain
 scores into a $K$-dimensional latent code with an **undercomplete autoencoder** trained under a
-masked reconstruction loss (`06_dimensional_ae.py`, PyTorch); we set $K=7$ to match the factor model
+masked reconstruction loss (`06_dimensional_ae.py`, PyTorch); we set $K=6$ to match the factor model
 and ask whether the two recover the same subspace.
 
 *Inputs.* Let $r_i\in\mathbb R^{d}$ be patient $i$'s per-domain-standardized residual vector and
@@ -489,7 +502,7 @@ $\rho_j=\max_{a_j,b_j}\operatorname{corr}(Za_j,\,Fb_j)$ subject to orthogonality
 $\{a_l,b_l\}_{l<j}$; the canonical correlations $\rho_1\ge\cdots\ge\rho_K$ are the agreement
 spectrum. Because CCA maximizes correlation by construction and both representations are fit to
 the same standardized matrix, $\rho_j$ is an upper-bound-style measure and is interpreted as a
-*cross-check*, not independent confirmation (§4.2). The locked classical seven-dimension scores
+*cross-check*, not independent confirmation (§4.2). The locked classical six-dimension scores
 (`results/dimensional_final_scores.parquet`) — not the AE codes — were carried into all
 downstream analyses.
 
@@ -522,8 +535,8 @@ sex, so outcomes that also feed the dimensions (functioning, hospitalization) ar
 $$
 \begin{aligned}
 \textbf{M0 (DSM)}&: \ Y_{V1}\sim \text{baseline}(Y_{V0})+a+\mathrm{sex}+\mathbf 1[\text{arm}],\\
-\textbf{M1 (axes)}&: \ Y_{V1}\sim \text{baseline}(Y_{V0})+a+\mathrm{sex}+F_1..F_7,\\
-\textbf{M2 (both)}&: \ Y_{V1}\sim \text{baseline}(Y_{V0})+a+\mathrm{sex}+\mathbf 1[\text{arm}]+F_1..F_7,
+\textbf{M1 (axes)}&: \ Y_{V1}\sim \text{baseline}(Y_{V0})+a+\mathrm{sex}+F_1..F_6,\\
+\textbf{M2 (both)}&: \ Y_{V1}\sim \text{baseline}(Y_{V0})+a+\mathrm{sex}+\mathbf 1[\text{arm}]+F_1..F_6,
 \end{aligned}
 $$
 
@@ -535,7 +548,7 @@ AUC. Folds are **shuffled** with a fixed seed (the patient matrix is cohort-orde
 un-shuffled folds give cohort-imbalanced splits and distort the $R^2$), and 95% intervals are
 obtained from $R=200$ repeated CV (`11_phase5_ci.py`). The **incremental value** of the dimensions over diagnosis is tested in-sample by a nested
 $F$-test (continuous), $F=\dfrac{(\mathrm{SSR}_0-\mathrm{SSR}_2)/q}{\mathrm{SSR}_2/(n-p_2)}$ with
-$q=7$ added parameters, or a likelihood-ratio test (binary),
+$q=6$ added parameters, or a likelihood-ratio test (binary),
 $\Lambda=2(\ell_2-\ell_0)\sim\chi^2_q$ (returned as `NaN` if the saturated model fails to
 converge under rare-subtype separation, in which case the CV metric is primary). Per-dimension
 standardized effects $\beta$ come from the regularized M2 model. As a **de-circularization
@@ -567,7 +580,7 @@ test of it.
 ### 2.10 Temporal stability (trait–state gradient)
 
 We projected the locked V0 factor model onto each follow-up (`08_longitudinal_axes.py`): per visit
-we rebuilt domain scores on a common scale, restricted to the 54 V0 domains, residualized on
+we rebuilt domain scores on a common scale, restricted to the 56 V0 domains, residualized on
 **per-visit** age/sex, standardized, and applied the fixed loadings to obtain $(patient,visit)$
 axis scores. For each axis and visit we report the V0↔V$k$ Pearson and Spearman correlations and
 the **two-way random, single-rater, absolute-agreement intraclass correlation** ${\rm ICC}(2,1)$,
@@ -589,7 +602,7 @@ stability), whereas the absolute-agreement ICC additionally penalizes systematic
 Interpreting the resulting $r$ as a **trait–state gradient** rests on classical state–trait
 theory: a purely trait-like construct (a stable individual difference) yields a high test–retest
 correlation, a purely state-like one (fluctuating with episode) a low one, and most
-psychopathology lies between — so the gradient across the seven axes is an empirical estimate of
+psychopathology lies between — so the gradient across the six axes is an empirical estimate of
 how trait- versus state-like each dimension is. Two caveats bias $r$ *downward*: ordinary
 measurement error, and sparser follow-up sampling for some instruments — so the observed
 correlations are a floor on, not an over-estimate of, true stability.
@@ -601,7 +614,7 @@ $\ge\!10$ patients by **ComBat** empirical-Bayes adjustment [13,14] (`13_robustn
 neuroHarmonize). ComBat models each feature as
 $y_{isf}=\alpha_f+X_{is}\beta_f+\gamma_{sf}+\delta_{sf}\,\varepsilon_{isf}$ for site $s$, and
 removes the empirical-Bayes-shrunk site location/scale terms $(\hat\gamma_{sf},\hat\delta_{sf})$ to
-give harmonized $y^\ast$. We re-derived the seven dimensions on $y^\ast$, compared them to the locked
+give harmonized $y^\ast$. We re-derived the six dimensions on $y^\ast$, compared them to the locked
 set by Tucker congruence, and re-ran the head-to-head. The site batch magnitude was summarized as
 the mean $|\hat\gamma_{sf}|/\hat\sigma_f$. The head-to-head was also **re-assessed at a second
 follow-up (V2)** — the same individuals, so temporal consistency, not independent replication.
@@ -611,42 +624,62 @@ sequencing runs while preserving biological signal; the same logic transfers to 
 clinical data, where each site is a batch that can differ in case mix, instrument calibration
 and rater convention. Its empirical-Bayes shrinkage is what makes it usable with many small
 sites — a site with few patients borrows strength from the others rather than over-fitting its
-own noise. We use it here as a **stress test**: were the seven dimensions a multi-site artifact,
+own noise. We use it here as a **stress test**: were the six dimensions a multi-site artifact,
 harmonizing the sites away would deform them; that they survive with Tucker congruence ≈1.0 is
 the relevant negative result. The test is deliberately conservative in that we do not insulate
 diagnosis from the adjustment, so any site-correlated diagnostic signal is also at risk of
 removal, yet the axes and their outcome advantage persist.
 
-### 2.12 Cognition (BP/SZ complementary analysis)
+### 2.12 Integrating cognition (extraction gap closed; confound battery)
 
-Neuropsychology is absent in DR **by design** (0% vs BP 71% / SZ 86%), so including it in the
-3-cohort model would re-inject a cohort/availability confound; we analysed it within BP/SZ only
-(`14_cognition_bpsz.py`, $n=6{,}099$). Raw items were aggregated in **two levels** — items →
-instrument stem-domains → seven standard constructs (verbal memory [CVLT], executive [TMT],
-processing speed, working memory, verbal and perceptual reasoning, fluency) — because the
-composite path matches raw canonicals, so constructs must be built from stems; the Trail-Making
-items are reverse-signed so higher = better. The seven constructs were standardized,
-residualized, factor-analysed (parallel analysis for $K$), correlated with the seven symptom
-dimensions, and tested for incremental prediction of V1 functioning (ridge $R^2$, as in §2.9).
+An earlier version of this work treated neuropsychology as **absent in the depression cohort
+by design** and analysed it within BP/SZ only. That absence was a **data-extraction artifact**,
+not a real one: a corrected extraction recovers DR cognition at ~57% V0 coverage (working memory
+0.56, verbal reasoning 0.55), comparable to bipolar (~68%) and schizophrenia (~80%). With the gap
+closed, cognition is **brought into the primary trans-diagnostic model** as curated constructs
+(§2.3) rather than analysed separately, and the masked, no-imputation operators (§2.2, §2.7) make
+this safe despite the somewhat lower DR coverage — no cell is ever filled, so a differential
+coverage rate does not become an imputed signal.
 
-The two-level aggregation (items → instrument stem-domains → seven constructs) is necessary
-because the cognitive battery is dominated by one heavily-itemized instrument family (the
-Wechsler scales); collapsing items directly to constructs would let item count, not cognitive
-content, drive the factors — the itemization bias addressed for symptoms in §2.3. We keep
-cognition **out of the main trans-diagnostic model** on principle: because it is absent in DR by
-design, including it would re-introduce exactly the cohort-by-missingness confound the whole
-pipeline is built to remove. The complementary analysis therefore asks a narrower, cleaner
-question — whether cognition is *redundant* with the symptom dimensions — rather than attempting
-to add a seventh trans-diagnostic axis the data cannot support across all three cohorts.
+Admitting cognition could nonetheless re-inject a cohort/availability confound if a construct were
+collected unevenly or measured non-equivalently across cohorts, so each candidate cognitive
+construct is put through an explicit **confound battery** before it is allowed into the model:
+cohort and site η², the variance an axis shares with *how many tests a patient completed*
+(R²(axis ~ #tests-done)), survival of a *within-cohort* data permutation (a genuine axis collapses
+when the cross-cohort signal is destroyed; a cohort artifact survives), and leave-one-cohort-out
+structure congruence. The verdict:
+
+- **Admitted — one verbal/working-memory cognitive axis.** Working memory (digit span + Wechsler
+  working-memory subtests) and verbal reasoning (WAIS similarities) cohere across all three cohorts
+  and are **confound-clean**: cohort η² 0.072, site η² 0.043, R²(axis ~ #tests-done) 0.002, and the
+  structure transports leave-one-cohort-out (leave-DR-out congruence 1.00, leave-SZ-out 0.91). This
+  becomes the cognitive dimension of the main model.
+- **Excluded — processing speed and executive function.** Each cohort administered *different* timed
+  subtests (Trail-Making A/B, digit-symbol coding, IVT), so the pooled processing-speed and
+  executive (TMT-B) constructs are extreme-tailed with ~0 communality (uncorrelated with everything)
+  and destabilized the factor solution. They could not be harmonized across cohorts.
+- **Excluded — verbal fluency.** Fluency *formed* an axis, but the confound battery flagged it as a
+  **cohort artifact**: cohort η² 0.46, it survived the within-cohort data permutation (congruence
+  0.95 — i.e. the axis re-formed even after the cross-cohort signal was destroyed), and it collapsed
+  leave-one-cohort-out. Fluency coverage and scale differ systematically by cohort, so it was
+  dropped (the masked machinery is precisely what let us catch and reject this pseudo-axis; §3.8).
+- **Excluded — CVLT verbal memory and matrix (perceptual) reasoning.** These are BP/SZ-only (DR was
+  never administered them); admitting them would re-inject the cohort/availability confound the
+  pipeline exists to remove.
+
+The construct aggregation is two-level (items → instrument stem-domains → constructs) because the
+cognitive battery is dominated by one heavily-itemized instrument family (the Wechsler scales);
+collapsing items directly to constructs would let item count, not cognitive content, drive the
+factors — the itemization bias addressed for symptoms in §2.3.
 
 ### 2.13 Parsimonious screening panel (sparse distillation)
 
-To address feasibility (§4.5), we distil the 54-domain research battery into a short clinical panel
-(`22_screening_panel.py`). The seven locked axis scores (§2.7) are the fixed **teacher**; the raw V0
+To address feasibility (§4.5), we distil the 56-domain research battery into a short clinical panel
+(`22_screening_panel.py`). The six locked axis scores (§2.7) are the fixed **teacher**; the raw V0
 item matrix (the ~225 items in the domain sections, before aggregation) is the candidate predictor
 set, split into a **questionnaire pool** (symptom/history items) and a **lab pool** (BILAN
 BIOLOGIQUE / CONSTANTES ET ECG). On the questionnaire pool we fit a **multi-task elastic-net**
-($\ell_1$ ratio 0.8) whose row-wise $\ell_1$ selects each item *in or out for all seven axes
+($\ell_1$ ratio 0.8) whose row-wise $\ell_1$ selects each item *in or out for all six axes
 jointly*, giving a single shared panel; we sweep the item budget and take the densest panel within
 a $\le$15-item cap, then refit unpenalized OLS for the per-axis weights. As an alternative that
 guarantees coverage of every axis, we also build a **group-aware per-axis panel** — the union of
@@ -703,28 +736,32 @@ we validate by confound-orthogonality and outcome prediction, not by the interna
 The formal structure test (`results/structure_test.json`; Figure 1) was unambiguous:
 
 - **No eigengap.** Laplacian eigenvalues rose smoothly from ≈0 with no jump (the leading
-  values 0.0007, 0.0024, 0.0039, 0.0052, 0.0095 … increase gradually), indicating no
+  values 0.0006, 0.0013, 0.0035, 0.0037, 0.0075 … increase gradually), indicating no
   natural number of clusters.
 - **Monotone gap statistic.** Real-data silhouette exceeded the Gaussian null at every *k*,
-  but the gap *increased monotonically* with *k* (0.025 at k=2 → 0.39 at k=12) rather than
+  but the gap *increased monotonically* with *k* (0.029 at k=2 → 0.42 at k=12) rather than
   peaking — the signature of a continuum, not a fixed cluster count.
-- **No axis approaches bimodality.** Sarle bimodality coefficients were 0.37–0.56; even the
-  highest (PC1 = 0.56) is essentially the **uniform-distribution value (0.556)** — an
+- **No axis approaches bimodality.** Sarle bimodality coefficients were 0.40–0.59; even the
+  highest (PC1 = 0.59) is close to the **uniform-distribution value (0.556)** — an
   approximately flat marginal, far from the bimodal regime (BC → 1; a normal would be ≈0.33).
   This rules out two-mode/cluster structure along the principal axes, but it is the weakest
-  and least decisive of the five lines (a value at the uniform benchmark is ambiguous), so we
+  and least decisive of the five lines (a value near the uniform benchmark is ambiguous), so we
   rest the verdict on the eigengap, monotone gap, and HDBSCAN results.
 - **The dense structure tracks diagnosis — but partly via measurement protocol.** HDBSCAN
-  found four dense regions that *were the cohorts* (cluster↔cohort ARI 0.70; 7% noise). This
+  found five dense regions that *were the cohorts* (cluster↔cohort ARI 0.64; 10% noise). This
   cohort separation is **confounded by differential missingness**: cohort is **98%
   predictable (balanced accuracy, shuffled CV) from the observation mask alone**, because the three cohorts
   received overlapping but not identical instrument batteries. So the only discrete structure
   reflects *which data were collected* as much as clinical content — either way it is **not
   trans-diagnostic clinical clustering**.
-- **A mood↔psychosis continuum.** The seven DSM subtypes ordered monotonically along the
-  leading axis (|Spearman| 0.79, bootstrap 95% CI [0.75, 0.86] over the 7 a-priori-ordered
-  subtype centroids; 0.64 on raw-domain PCA): MDD → BP-II → BP-I → BP-NOS → schizoaffective →
-  schizophreniform → schizophrenia.
+- **A mood↔psychosis continuum — now sharing the lead with cognition.** The seven DSM subtypes
+  still ordered along the leading axis (|Spearman| 0.50, bootstrap 95% CI [0.36, 0.61] over the 7
+  a-priori-ordered subtype centroids): MDD → BP-II → BP-I → BP-NOS → schizoaffective →
+  schizophreniform → schizophrenia. With cognition now in the feature space, the embedding's leading
+  dimension (PC1) is **no longer purely mood↔psychosis** — verbal/working-memory ability contributes
+  variance orthogonal to the mood↔psychosis direction, so PC1 captures less of the subtype ordering
+  than in the cognition-free model (where it was 0.79). The continuum still exists (its CI excludes
+  0) but shares the leading dimension with the cognitive axis.
 
 The implication is that previously reported discrete trans-diagnostic "biotypes" in such
 data are reproducible **slices of a continuum** (stable but low-silhouette), and that
@@ -733,94 +770,93 @@ the data do not contain. We therefore model the trans-diagnostic variation dimen
 
 ![Figure 1](results/reports/figures/fig1_structure.png)
 
-**Figure 1. Trans-diagnostic structure is dimensional.** Four panels: (a) Laplacian eigenvalue spectrum (no gap); (b) gap statistic vs *k* rising monotonically; (c) Sarle bimodality of top axes (0.37–0.56, around the 0.555 benchmark — no clear multimodality); (d) the seven DSM subtypes ordered on a mood↔psychosis continuum (PC1, ρ=0.79). Title notes HDBSCAN↔cohort ARI 0.70.
+**Figure 1. Trans-diagnostic structure is dimensional.** Four panels: (a) Laplacian eigenvalue spectrum (no gap); (b) gap statistic vs *k* rising monotonically; (c) Sarle bimodality of top axes (0.40–0.59, around the 0.555 benchmark — no clear multimodality); (d) the seven DSM subtypes ordered on a mood↔psychosis continuum (PC1, ρ=0.50; weaker than in the cognition-free model because cognition now shares the leading dimension). Title notes HDBSCAN↔cohort ARI 0.64.
 
-### 3.3 Seven reproducible, confound-free trans-diagnostic dimensions
+### 3.3 Six reproducible, confound-free trans-diagnostic dimensions
 
-The seven-dimension model (Table 2; `results/dimensional_final_loadings.csv`; Figure 2) is
+The six-dimension model (Table 2; `results/dimensional_final_loadings.csv`; Figure 2) is
 estimated **imputation-free** — from the masked, pairwise-complete correlation matrix, with
-no cell ever filled (§2.7; this is the re-analysis motivated by the §3.8 ablation, now the
-primary model). $K=7$ is the **maximum reproducible dimensionality** (masked split-half minimum
-Tucker congruence 0.91, a local maximum above $K=5/6$; the minimum collapses to 0.22 at $K=8$),
-confound-clean (max |correlation| with age/sex 0.018, **by construction** — they were
-residualized out), and independent of variables that were *not* removed: **recruiting site
-explains ≤5% (η² ≤0.053) and cohort ≤11% (η² ≤0.113) of any axis**, and DSM-5 subtype only
-η² ≤0.03 of four axes and 0.10–0.13 of the three most diagnosis-linked (depression 0.127, illness
-burden 0.134 [95% CI 0.121–0.148], work-disability 0.103; Figure 6c, 2000-sample bootstrap) —
-notably the **new externalizing axis is among the *least* diagnosis-bound** (η² 0.017),
-underscoring that the dimensions are genuinely trans-diagnostic, not site/diagnosis re-encodings.
+no cell ever filled (§2.7; the re-analysis motivated by the §3.8 ablation, re-derived after the
+cognition extraction gap was closed, now the primary model). $K=6$ is the **maximum reproducible
+dimensionality** (masked split-half minimum Tucker congruence 0.87; the minimum collapses to 0.21
+at $K=7$ on the deterministic single-split curve), confound-clean (max |correlation| with age/sex
+0.017, **by construction** — they were residualized out), and independent of variables that were
+*not* removed: **recruiting site explains ≤5% (η² ≤0.049) and cohort ≤11% (η² ≤0.106) of any
+axis**, and DSM-5 subtype only η² ≤0.05 of three axes and 0.11–0.13 of the three most
+diagnosis-linked (verbal cognition 0.13 — schizophrenia scores lower on verbal ability — depression
+0.12 and illness burden 0.11; Figure 6c, 2000-sample bootstrap), underscoring that the dimensions
+are genuinely trans-diagnostic, not site/diagnosis re-encodings.
 No single dimension dominated, confirming genuinely multi-axial structure. The dimensions are:
 
-1. **Depression / internalizing severity** — QIDS (+0.89), MADRS (+0.85), trait anxiety
-   STAI (+0.78), functioning FAST (+0.74, impaired), with quality of life and global functioning
-   loading strongly negative (EQ-5D −0.72, EGF −0.68).
+1. **Depression / internalizing severity** — QIDS (+0.89), MADRS (+0.84), trait anxiety
+   STAI (+0.78), functioning FAST (+0.73, impaired), with quality of life and global functioning
+   loading strongly negative (EQ-5D −0.73, EGF −0.64).
 2. **Later age-of-onset** — age at treatment (+0.79), age at first hospitalization (+0.71),
    age at first episode (+0.70).
-3. **Illness / hospitalization burden** — number (+0.75) and duration (+0.67) of lifetime
-   hospitalizations, with functioning and education negative (EGF −0.29, education −0.28).
-4. **Mania / activation** — Altman self-rated mania (+0.73), Mathys activation (+0.60), YMRS
-   (+0.58). *At $K=6$ this factor absorbed impulsivity and childhood-ADHD items; at $K=7$ that
-   variance separates into axis 5, leaving a* **pure** *manic-activation dimension.*
-5. **Externalizing / neurodevelopmental** *(new at $K=7$)* — Wender-Utah retrospective childhood
-   ADHD (+0.53), Barratt impulsivity (+0.40), childhood trauma CTQ (+0.38), with familial
-   psychiatric loading (maternal suicide +0.23) and lower educational attainment (−0.23). The
-   axis is **anchored by well-measured instruments** (CTQ 91%, BIS/WURS ~68% observed), so it is
-   not a co-missingness artifact, and the masked correlation guards against one in any case. It is
-   the genuine, imputation-free counterpart of the ADHD/impulsivity/trauma signal that
-   mean-filling had rendered artifactual at $K=6$ (§3.8); it maps onto the HiTOP
-   **externalizing/disinhibition** spectrum and is among the *least* diagnosis-bound axes
-   (DSM-subtype η² 0.017) — a genuinely trans-diagnostic developmental-risk dimension.
-6. **Metabolic / inflammatory load** — metabolic-syndrome composite (+0.64), cholesterol
-   (+0.42), hepatic (+0.33), inflammation (+0.29).
-7. **Socio-occupational / work-disability** — current and lifetime work-stoppage (+0.43, +0.41),
-   professional status (+0.33).
+3. **Mania / activation** — Altman self-rated mania (+0.64), Mathys activation (+0.55), YMRS
+   (+0.48), together with **externalizing** content — Wender-Utah retrospective childhood ADHD
+   (+0.45), Barratt impulsivity (+0.42) and childhood trauma CTQ (+0.29). In the cognition-free
+   seven-axis model these two clusters split into a *pure* mania axis and a separate
+   externalizing/neurodevelopmental axis; in the re-derived six-axis solution they **re-merge** into
+   one activation-and-disinhibition dimension spanning the HiTOP externalizing spectrum and the
+   bipolar activation pole.
+4. **Illness / hospitalization burden** — number (+0.80) and duration (+0.70) of lifetime
+   hospitalizations, with functioning and education negative (EGF −0.25, education −0.17).
+5. **Verbal / working-memory cognition** *(new — admitted after the DR extraction gap was closed,
+   §2.12)* — verbal reasoning (WAIS similarities +0.81), educational attainment (+0.54), working
+   memory (digit span / Wechsler WM +0.45) and global functioning (EGF +0.26). It is **confound-clean**
+   (cohort η² 0.072, site η² 0.043, variance shared with #tests-done R² 0.002, leave-DR-out structure
+   congruence 1.00 / leave-SZ-out 0.91) and **semi-independent of the symptom axes** (|correlation|
+   with the general severity direction ≤0.13; §3.7) — a genuinely trans-diagnostic cognitive-ability
+   dimension. The former cognition-free model could not resolve this axis because neuropsychology was
+   (artifactually) treated as absent in depression; processing-speed/executive and fluency constructs
+   were tested and **excluded** for the reasons in §2.12 (incoherence across cohorts and a fluency
+   cohort artifact, respectively).
+6. **Metabolic / inflammatory load** — metabolic-syndrome composite (+0.62), cholesterol
+   (+0.43), hepatic (+0.32), inflammation (+0.28).
 
 The no-imputation masked autoencoder recovered the same structure: its nonlinear latent
-axes were highly aligned with the (also imputation-free) factor model (leading canonical
-correlations 0.97, 0.89, 0.87, 0.75, 0.62, 0.54 for the top six) — far above a row-permutation
-null (leading canonical correlation 0.97 vs null mean 0.05, 95th percentile 0.06; 200
-permutations), so the agreement is genuine and not an artifact of CCA's maximization. The
-*seventh* canonical correlation is weak (0.13): the two estimators agree strongly on six
-directions and only weakly on the externalizing↔work-disability pair — the two lowest-coverage
-axes, where the autoencoder's zero-filled input is most penalizing — which we report honestly.
-The autoencoder additionally recovered the mood↔psychosis continuum strongly along one latent
-axis (|Spearman| 0.93 against the DSM-subtype ordering); the orthogonal varimax rotation
-distributes this cross-axis direction across the factor axes rather than placing it on a single
-factor (per-axis subtype-centroid |Spearman| ≤0.54, strongest on the metabolic axis), which we
-report honestly rather than forcing into one dimension. Agreement between a linear and a
-nonlinear/no-imputation estimator indicates the dimensions are method-robust, not
-artifacts of a single algorithm.
+axes were aligned with the (also imputation-free) factor model (canonical
+correlations 0.94, 0.87, 0.86, 0.70, 0.47, 0.23 across the six) — the leading values far above a
+row-permutation null (leading canonical correlation 0.94 vs null mean 0.04, 95th percentile 0.05;
+200 permutations), so the agreement is genuine and not an artifact of CCA's maximization. The two
+estimators agree strongly on the four leading directions (≥0.70) and more weakly on the last two —
+the lowest-coverage cognitive and metabolic axes, where the autoencoder's zero-filled input is most
+penalizing — which we report honestly.
+The orthogonal varimax rotation distributes the cross-axis mood↔psychosis direction across the
+factor axes rather than placing it on a single factor (per-axis subtype-centroid |Spearman| ≤0.54,
+strongest on the cognitive axis), which we report honestly rather than forcing into one dimension.
+Agreement between a linear and a nonlinear/no-imputation estimator indicates the dimensions are
+method-robust, not artifacts of a single algorithm.
 
 Two features of this solution are notable from a representation-learning standpoint. First, the
 variance is **diffuse** — the largest dimension explains only ~6% — which is itself evidence
 against a single dominant axis (a strong *p*-factor would concentrate variance) and in favour of
 genuinely multi-axial structure; no single dimension can be dismissed as the "real" one and the
 rest as noise. Second, the convergence of a linear factor model and a nonlinear autoencoder on
-the same subspace (leading canonical correlations 0.97–0.54 for six of the seven axes, far above the permutation null) is a
+the same subspace (leading canonical correlations 0.94–0.70 for the four leading axes, far above the permutation null) is a
 **cross-validation of the representation itself**, not merely of its parameters: the two
 estimators differ in functional form (linear vs ReLU) and fitting principle (maximum likelihood
 vs stochastic gradient descent), and both are imputation-free (the factor model on the masked
 covariance, the autoencoder via its masked loss), so their agreement makes a shared artifact
-unlikely. The one place
-they diverge is informative rather than contradictory: the autoencoder concentrates the
-mood↔psychosis ordering on a single latent axis (|Spearman| 0.93) whereas the orthogonal varimax
-rotation distributes it across axes, signalling that the spectrum is a specific cross-axis
-*direction* rather than one of the orthogonal axes — though, as §4.6 shows, the axes stay
-near-orthogonal even under an oblique rotation, so this direction is not a general *p*-factor.
+unlikely. The mood↔psychosis ordering is a specific cross-axis *direction* rather than one of the
+orthogonal axes — and, as §4.6 shows, the axes stay near-orthogonal even under an oblique rotation,
+so this direction is not a general *p*-factor.
 
 ![Figure 2](results/reports/figures/fig2_loadings.png)
 
-**Figure 2. The seven trans-diagnostic dimensions.** Salient varimax domain loadings (|λ|≥0.20), showing the clean block structure per dimension.
+**Figure 2. The six trans-diagnostic dimensions.** Salient varimax domain loadings (|λ|≥0.20), showing the clean block structure per dimension, including the new verbal/working-memory cognitive axis.
 
 ### 3.4 The dimensions complement or outperform DSM diagnosis for patient-reported outcomes
 
 In leakage-safe, repeated (shuffled) 5-fold cross-validation (Table 3; `results/phase5_ci.csv`;
-Figure 3), the seven dimensions **outperformed DSM diagnosis** for quality of life (EQ-5D R²
-0.341 vs 0.302; Δ **+0.038**, 95% CI [+0.035, +0.042]) and **complemented** diagnosis for
-global functioning (combined R² 0.399 vs DSM 0.365; Δ **+0.034** [+0.032, +0.036]; dimensions
-alone ≈ DSM, −0.001 [−0.003, +0.002]), while **diagnosis plus prior service use dominated**
-hospitalization prediction (AUC 0.747 vs 0.613 for the dimensions; Δ −0.134 [−0.146, −0.124]).
-All three intervals exclude zero in the stated direction. Effect directions were face-valid:
+Figure 3), the six dimensions **outperformed DSM diagnosis** for quality of life (EQ-5D R²
+0.340 vs 0.302; Δ **+0.037**, 95% CI [+0.034, +0.040]) and **complemented** diagnosis for
+global functioning (combined R² 0.399 vs DSM 0.365; Δ **+0.035** [+0.033, +0.036]; dimensions
+alone ≈ DSM, −0.000 [−0.002, +0.002]), while **diagnosis plus prior service use dominated**
+hospitalization prediction (AUC 0.747 vs 0.606 for the dimensions; Δ −0.141 [−0.152, −0.130]).
+The quality-of-life and hospitalization intervals exclude zero in the stated direction (functioning
+is a complement, not a dimensions-alone win). Effect directions were face-valid:
 the depression-severity dimension was the strongest predictor of worse functioning
 (standardized β −3.60 on EGF) and worse quality of life, while the illness-burden dimension
 was the strongest predictor of hospitalization (β +0.45).
@@ -830,9 +866,9 @@ The pattern is interpretable: dimensions carry information diagnosis lacks for
 diagnosis — together with prior hospitalization — remains the better predictor of
 **service-use** events.
 
-To calibrate these effect sizes: a gain of ΔR² ≈ +0.038 for quality of life, on a
+To calibrate these effect sizes: a gain of ΔR² ≈ +0.037 for quality of life, on a
 baseline-adjusted model already explaining ~30% of the variance, is roughly a 12% relative
-increase in explained variance — obtained from seven numbers added to a model that *already*
+increase in explained variance — obtained from six numbers added to a model that *already*
 contains the diagnosis, age, sex and the outcome's own V0 baseline, against a deliberately
 strong comparator, and stable across 200 repeated-CV splits (the 95% interval excludes zero).
 The per-dimension effects are mechanistically coherent: the depression/internalizing axis is
@@ -852,16 +888,16 @@ credible rather than the artifact of an over-flexible model that "wins everywher
 
 The head-to-head was **consistent at a second follow-up** (V2, same cohort — not independent
 replication; `results/phase5_headtohead_V2.csv`): dimensions beat
-diagnosis for quality of life (R² 0.264 vs 0.233, +0.032), complemented it for functioning
-(combined R² 0.357 vs 0.308, +0.049), and diagnosis dominated hospitalization (AUC 0.726).
+diagnosis for quality of life (R² 0.262 vs 0.230, +0.031), complemented it for functioning
+(combined R² 0.360 vs 0.306, +0.054), and diagnosis dominated hospitalization (AUC 0.727).
 **Site harmonization** (`results/robustness_site.json`) confirmed the dimensions are not a
-site artifact: the site batch effect was small (mean |adjustment| = 0.044 SD across 20 sites),
-and after ComBat-harmonizing the domains six of the seven dimensions were essentially unchanged
-(Tucker congruence with the locked set 0.89–0.99); one axis (the weakest, most sparsely-measured
-factor) fails to transport (0.08), but only because ComBat requires complete data and so
-median-imputes the missing values — the same imputation sensitivity documented in §3.8, not a
+site artifact: the site batch effect was small (mean |adjustment| = 0.043 SD across 20 sites),
+and after ComBat-harmonizing the domains five of the six dimensions were essentially unchanged
+(Tucker congruence with the locked set 0.90–0.99); one axis (the new cognitive axis, the most
+sparsely-measured factor) fails to transport (0.20), but only because ComBat requires complete data
+and so median-imputes the missing values — the same imputation sensitivity documented in §3.8, not a
 site effect. The outcome advantage survived harmonization (quality-of-life dimensions still beat
-diagnosis, +0.033; functioning still complemented, combined R² 0.387; hospitalization still
+diagnosis, +0.032; functioning still complemented, combined R² 0.386; hospitalization still
 diagnosis-dominated, −0.175).
 
 **De-circularization.** Two axes contain the V0 values of outcomes (the depression axis
@@ -871,9 +907,9 @@ the bare DSM label. We therefore refit the axes after **excluding each outcome's
 measure(s)** and re-ran the head-to-head (`scripts/12_phase5_decircularized.py`). The results
 were essentially unchanged (the refit uses the **same imputation-free masked estimator as the
 locked model**, not a mean-filled sklearn fit, so it de-circularizes the published axes): quality
-of life still beat diagnosis (R² 0.343 vs 0.305, Δ +0.038; circular axes also +0.038), functioning
-was still complemented (combined R² 0.394 vs DSM 0.365, +0.029; dimensions alone ≈ DSM, −0.004),
-and hospitalization was still diagnosis-dominated (axes AUC 0.611). The advantage is therefore **not an artifact of outcome content in the
+of life still beat diagnosis (R² 0.343 vs 0.305, Δ +0.038; circular axes +0.037), functioning
+was still complemented (combined R² 0.395 vs DSM 0.366, +0.030; dimensions alone ≈ DSM, −0.003),
+and hospitalization was still diagnosis-dominated (axes AUC 0.602). The advantage is therefore **not an artifact of outcome content in the
 predictors** — baseline adjustment already controls each outcome's own V0 value, and the
 depression axis is carried by the symptom scales (QIDS/MADRS/STAI), not the functioning/QoL
 items.
@@ -885,11 +921,11 @@ masked factor model *inside each training fold* — train-only loadings **and** 
 standardization — and scoring the held-out patients from those train-only loadings
 (`scripts/20_robustness_cvrefit.py`; 5 × shuffled 5-fold; factor sign/order may differ across
 folds, which is immaterial because the ridge/logistic readouts are invariant to it). The
-incremental value was essentially unchanged: quality-of-life dimensions−DSM = **+0.039**
-[+0.039, +0.039] (vs +0.038 with full-sample loadings), functioning stayed complementary
-(combined R² 0.400 vs DSM 0.365), and hospitalization stayed diagnosis-dominated (−0.140). The
+incremental value was essentially unchanged: quality-of-life dimensions−DSM = **+0.038**
+[+0.037, +0.039] (vs +0.037 with full-sample loadings), functioning stayed complementary
+(combined R² 0.401 vs DSM 0.366), and hospitalization stayed diagnosis-dominated (−0.142). The
 gap between the full-sample and fold-refit estimates — exactly the optimism that honest
-refitting removes — was **≤0.004 AUC and ≈0 R²**. This near-invariance is expected: the loadings
+refitting removes — was **≤0.002 AUC and ≈0 R²**. This near-invariance is expected: the loadings
 are a population-level covariance structure estimated over thousands of patients, so withholding
 a few hundred held-out patients from the fit barely perturbs them. We therefore retain the
 full-sample axes as the primary representation, now knowing the cross-validated advantage is not
@@ -902,7 +938,7 @@ later follow-up in the same patients), ComBat tests whether it is a multi-site b
 tests whether it is driven by outcome content leaking into the predictor axes (it survives
 refitting the axes without those measures), and fold-honest re-fitting tests whether the
 cross-validated advantage is inflated by fitting the axes on the full sample (it is not — the
-optimism is ≤0.007). Convergent survival across orthogonal threats is the
+optimism is ≤0.002). Convergent survival across orthogonal threats is the
 triangulation that separates a real effect from a pipeline artifact — with the important
 qualification that none of the four is *external* replication, which remains outstanding
 (§4.8).
@@ -913,12 +949,12 @@ model on a held-out partition and applying it to data it never saw
 (`scripts/21_replication_holdout.py`). **(i) Leave-one-cohort-out structure.** Re-fitting the
 masked loadings *without an entire diagnostic cohort* and comparing to the locked axes (Tucker
 congruence) showed the structure is near-identical without depression (DR held out: min
-congruence **0.97**, mean 0.99) and well preserved without schizophrenia (SZ held out: min 0.81,
-mean 0.95). When bipolar disorder — the largest, most richly phenotyped cohort — is held out,
+congruence **0.97**, mean 0.99) and well preserved without schizophrenia (SZ held out: min 0.91,
+mean 0.98). When bipolar disorder — the largest, most richly phenotyped cohort — is held out,
 however, the remaining two-cohort partition (SZ+DR, $n=2{,}761$) *underdetermines* the
-seven-factor solution: the depression, later-onset and metabolic axes still transport
-($\ge\!0.85$), but illness-burden, mania, externalizing and work-disability do not
-($0.46/0.72/0.41/0.43$). This is best read as a sample-size-and-coverage limit — BP is
+six-factor solution: the depression, later-onset and illness-burden axes still transport
+($\ge\!0.81$), but the mania, cognitive and metabolic axes do not
+($0.37/0.65/0.66$). This is best read as a sample-size-and-coverage limit — BP is
 69% of the cohort and carries much of the instrument coverage for these constructs, so the
 smaller, sparser SZ+DR partition cannot stably re-estimate the weaker factors — the same
 cohort-by-missingness theme as §3.1; crucially, the axes that *are* well measured across cohorts
@@ -926,13 +962,13 @@ cohort-by-missingness theme as §3.1; crucially, the axes that *are* well measur
 not evidence that the well-measured axes are a single-cohort artifact. **(ii) Leave-one-site-out outcomes.** Under
 site-blocked cross-validation (LeaveOneGroupOut over the 15–18 centres with $\ge\!10$ patients;
 axes re-fit on the *other* sites, predictions pooled across held-out sites), the quality-of-life
-advantage held on centres the model never saw (axes−DSM **+0.042**), functioning still
-complemented diagnosis (combined−DSM +0.032), and hospitalization remained diagnosis-dominated
-(−0.141). **(iii) Leave-one-cohort-out outcomes.** Predicting an *unseen diagnosis* from axes and
+advantage held on centres the model never saw (axes−DSM **+0.039**), functioning still
+complemented diagnosis (combined−DSM +0.033), and hospitalization remained diagnosis-dominated
+(−0.147). **(iii) Leave-one-cohort-out outcomes.** Predicting an *unseen diagnosis* from axes and
 an outcome model trained only on the other cohorts, the quality-of-life increment over an
-age+sex+baseline model transported across diagnostic boundaries (predicting BP +0.016 R²;
-predicting SZ **+0.058** R²); functioning transported for bipolar disorder (+0.049) but not for
-schizophrenia (−0.14 — a domain-shift failure consistent with functioning being the outcome where
+age+sex+baseline model transported across diagnostic boundaries (predicting BP +0.019 R²;
+predicting SZ **+0.051** R²); functioning transported for bipolar disorder (+0.049) but not for
+schizophrenia (−0.10 — a domain-shift failure consistent with functioning being the outcome where
 the axes only *complement* rather than beat diagnosis). Within-network transportability is
 therefore strong for the patient-reported quality-of-life finding and for the dimensional
 structure's well-measured axes, and is explicitly bounded where measurement coverage (the
@@ -944,12 +980,12 @@ important outstanding step (§4.8).
 
 Test–retest correlations across V1–V4 (`results/longitudinal_axes_stability.csv`; Figure 4 —
 the locked imputation-free V0 axes projected onto each visit by masked scoring, §2.10) revealed
-a **trait–state gradient** (mean V0↔V1/V2 Pearson *r*): **metabolic/inflammatory load was the most
-trait-like (*r* 0.63)**, with depression/internalizing severity next (*r* 0.55), then illness
-burden (*r* 0.35, intermediate), the new externalizing/neurodevelopmental axis (*r* 0.29), and the
-more state-like mania/activation (*r* 0.25) and socio-occupational/work-disability axis (*r* 0.24).
+a **trait–state gradient** (V0↔V1 Pearson *r*): **metabolic/inflammatory load was the most
+trait-like (*r* 0.63)**, with depression/internalizing severity next (*r* 0.58), the new
+verbal/working-memory cognitive axis moderately trait-like (*r* 0.31), then illness burden
+(*r* 0.30) and the more state-like mania/activation (*r* 0.29).
 The later-onset dimension is **static by construction** (its variables — age of onset, age at
-first hospitalization — are recorded only at baseline), so its low *r* (0.09) is a data property,
+first hospitalization — are recorded only at baseline), so its low *r* (0.11) is a data property,
 not instability. The imputation-free scoring notably **revises the metabolic axis from apparently
 state-like (*r* 0.20 under the former mean-fill) to the most trait-like (*r* 0.63)**: filling missing follow-up assays with
 zero had diluted its stability, whereas masked scoring on the observed labs recovers what is
@@ -965,13 +1001,14 @@ Supplementary Figure S1 and discussed as motivation for modelling dimensionally.
 
 Clinically, the gradient maps onto the trait/state distinction directly and is more actionable
 than a single verdict on whether "the clustering is stable over time." The most enduring axes —
-**metabolic load (*r* 0.63) and depression severity (*r* 0.55)** — behave as **traits**: stable
+**metabolic load (*r* 0.63) and depression severity (*r* 0.58)** — behave as **traits**: stable
 individual differences that a single baseline visit captures well, anchoring long-run case
 formulation (and, for the metabolic axis, flagging durable physical-health risk that drives
-excess mortality in serious mental illness). The more state-like axes — illness burden (*r*
-0.35), externalizing (*r* 0.29), mania/activation (*r* 0.25) and work-disability (*r* 0.24) —
+excess mortality in serious mental illness). Verbal/working-memory cognition is intermediate
+(*r* 0.31), consistent with a partly trait-like ability that nonetheless tracks clinical state.
+The more state-like axes — illness burden (*r* 0.30) and mania/activation (*r* 0.29) —
 fluctuate with clinical course and are better read as **current-status** indicators to be
-re-measured at each contact. Later-onset is fixed by construction (*r* 0.09). A clinician should thus treat different parts
+re-measured at each contact. Later-onset is fixed by construction (*r* 0.11). A clinician should thus treat different parts
 of a patient's dimensional profile differently — some as enduring vulnerabilities to plan
 around, others as moving targets to monitor and treat — which a single categorical label
 cannot express.
@@ -986,48 +1023,44 @@ cannot express.
 
 ![Figure 6c](results/reports/figures/fig6c_dsm_axis_flow.png)
 
-**Figure 6. Dimensional phenotype flow.** **(a)** continuous-axis band (V0-tertile Low/Mid/High) trajectories V0→V1→V2 for a trait-like (depression) and a state-like (mania) axis, showing in-band (diagonal) dominance; **(b)** same-band V0→V1 persistence per dimension (0.36–0.58; depression 0.55, metabolic 0.58) against the 33% three-band chance level and the discrete clusters' 38% — a patient's continuous-axis *position* is retained where discrete *labels* hop; **(c)** cross-sectional **DSM-5 → axis-band** flow for the most diagnosis-linked axis (illness burden): every DSM-5 subtype fans across Low/Mid/High and diagnosis explains only 13% of even that axis (η² 0.134, 95% CI 0.121–0.148; ≤0.03 for four of the seven axes) — the dimensions are trans-diagnostic. This is the dimensional analogue of a phenotype-flow diagram (bands are a display-only discretization; the model stays continuous).
+**Figure 6. Dimensional phenotype flow.** **(a)** continuous-axis band (V0-tertile Low/Mid/High) trajectories V0→V1→V2 for a trait-like (depression) and a state-like (mania) axis, showing in-band (diagonal) dominance; **(b)** same-band V0→V1 persistence per dimension (depression and metabolic most persistent) against the 33% three-band chance level and the discrete clusters' 38% — a patient's continuous-axis *position* is retained where discrete *labels* hop; **(c)** cross-sectional **DSM-5 → axis-band** flow for a diagnosis-linked axis (illness burden): every DSM-5 subtype fans across Low/Mid/High and diagnosis explains only ~11% of even that axis (η² 0.11; the most diagnosis-linked axis, verbal cognition, reaches only 0.13, and three of the six axes are ≤0.05) — the dimensions are trans-diagnostic. This is the dimensional analogue of a phenotype-flow diagram (bands are a display-only discretization; the model stays continuous).
 
-### 3.7 Cognition: a semi-independent general-ability and processing-speed structure
+### 3.7 The cognitive axis is semi-independent of the symptom dimensions
 
-Within BP/SZ (n=6,099; BP 4,273 / SZ 1,826), the seven cognitive constructs resolved into
-the classic **two-factor** structure (`results/cognition_bpsz_loadings.csv`; Figure 5): a
-broad **general-ability (g)** factor (perceptual reasoning +0.67, working memory +0.59,
-verbal reasoning +0.47, verbal memory +0.41, fluency +0.26) and a **processing-speed**
-factor (+0.80; executive/TMT −0.22). Cognition was **semi-independent of the symptom
-dimensions** (maximum |correlation| 0.26): the clearest link was lower general ability with
-greater illness burden (−0.26), then depression severity (−0.17), metabolic load (−0.14) and
-the work-disability axis (+0.16) — consistent with the literature that cognition and symptoms
-are related but non-redundant. Cognition added a small, independent increment to 1-year
-functioning over the symptom dimensions (EGF R² 0.402 → 0.405, Δ +0.002; shuffled CV). Cognition is reported as a complementary
-BP/SZ dimension rather than folded into the trans-diagnostic model, to avoid re-introducing
-the cohort-availability confound.
+With the depression-cohort extraction gap closed (§2.12), cognition is no longer a separate BP/SZ
+analysis but a **dimension of the main trans-diagnostic model** (axis 5; §3.3): a
+verbal/working-memory ability axis spanning all three cohorts. Two properties of this axis are
+worth drawing out. First, it is **semi-independent of the symptom axes**: its correlation with the
+general severity direction is only −0.13 (§4.6), and it loads on a near-disjoint set of domains
+(verbal reasoning, working memory, education) from the symptom and biology axes — so a symptom-based
+dimensional profile does not implicitly encode cognitive ability, and the two index partly distinct
+routes to disability (the cognitive axis also carries a positive loading on global functioning, EGF
++0.26). Second, it is the **most diagnosis-linked** axis in the model (DSM-subtype η² 0.13), driven
+by schizophrenia patients scoring lower on verbal cognition — the one place where the dimensional
+structure most reflects the categorical distinction, consistent with the established cognitive
+literature, yet still leaving ~87% of the axis variance trans-diagnostic.
 
-That cognition resolves into the canonical *g*-plus-processing-speed structure is a useful
-internal-validity check: the same machinery used for symptoms recovers a well-established
-cognitive architecture, so the pipeline is not manufacturing structure. The more substantive
-finding is the **semi-independence** (max |*r*| 0.26) of cognition from the symptom dimensions —
-cognitive ability and symptom load are related but far from redundant, so a symptom-based
-dimensional profile does not implicitly encode cognition, and the small but independent
-increment cognition adds to functioning prediction implies the two index partly distinct routes
-to disability. For BP/SZ this argues for measuring cognition *alongside*, not in place of, the
-symptom dimensions; the absence of cognitive data in DR is a data-collection gap rather than a
-substantive null, and closing it would let a genuinely trans-diagnostic cognitive axis be
-tested.
-
-![Figure 5](results/reports/figures/fig5_cognition.png)
-
-**Figure 5. Cognition (BP/SZ).** (a) construct loadings on the *g* and processing-speed factors; (b) cognition × symptom-dimension correlations (max |r| 0.26).
+Unlike the symptom axes, the cognitive axis is only **partly recoverable from routine questionnaire
+items** (§4.5): the sparse screening panel reconstructs it at R² 0.57, because it loads partly on
+education and functioning that a questionnaire panel captures, but its verbal-reasoning and
+working-memory core requires the neuropsychological battery. That cognition resolves as a clean,
+confound-clean axis using the **same masked machinery** as the symptoms is a useful internal-validity
+check — and the same machinery is what let the confound battery reject the fluency pseudo-axis and
+the cross-cohort-incoherent processing-speed/executive constructs (§2.12, §3.8) rather than admit a
+cohort artifact. Measuring cognition therefore adds genuinely orthogonal trans-diagnostic information
+*alongside* the symptom dimensions, now across all three diagnoses rather than BP/SZ only.
 
 ### 3.8 Ablation: imputation-free re-estimation, dimensionality, and the externalizing axis
 
-The factor model is the one step that imputes (§2.7): it standardizes the 54 residual domains
-and mean-fills the 35% missing cells with the (zero) mean before extraction. We tested whether
-the axes survive *without* that fill by re-deriving the loadings from the **pairwise-complete
-(masked) correlation matrix** — each correlation estimated only from the patients who have both
-domains, so no cell is ever filled (`sensitivity_masked_fa.py`). Co-observation is ample (every
-domain pair ≥1,001 patients, median 4,160), so the masked correlation is well-estimated and
-positive-definite.
+The superseded mean-filled factor model was the one step that imputed (§2.7): it standardized the
+residual domains and mean-filled the ~36% missing cells with the (zero) mean before extraction. We
+tested whether the axes survive *without* that fill by re-deriving the loadings from the
+**pairwise-complete (masked) correlation matrix** — each correlation estimated only from the
+patients who have both domains, so no cell is ever filled (`sensitivity_masked_fa.py`).
+Co-observation is ample (every domain pair ≥1,001 patients, median 4,160), so the masked
+correlation is well-estimated and positive-definite. The diagnostic below was run on the original
+**cognition-free** symptom-and-biology battery; the same masked machinery later made it safe to
+admit cognition to the model (below).
 
 At a fixed $K=6$, **five of the six axes reproduce essentially unchanged** imputation-free —
 Tucker congruence 0.99 (depression), 0.98 (later onset), 0.91 (mania), 0.97 (illness burden), 0.96
@@ -1056,29 +1089,30 @@ work-disability cluster (0.57) is suppressed under the fill and recovered only w
 genuine correlated clusters; what the mean-fill biases is the **selection** of the sixth factor —
 toward co-administered, cohort-linked constructs.
 
-Masked split-half reproducibility, however, shows the *dimensionality* itself exceeds six: the
-minimum congruence stays ≥0.85 through $K=7$ (0.91, a local maximum) and collapses only at $K=8$
-(0.22). **We therefore re-derived the entire dimensional model imputation-free at the maximum
-reproducible $K=7$** — loadings from the masked correlation and per-patient scores by masked
-posterior-mean estimation (no cell filled anywhere) — and adopted it as the **primary model used
-throughout this paper** (§2.7; Table 2; the numbers in §3.3–§3.7 are from it). This resolves the
-$K=6$ disagreement cleanly: at $K=7$ the conflated weak structure separates into **three** distinct
-axes — a *pure* mania/activation factor, the cross-cohort **work-disability** factor, and a genuine
-**externalizing/neurodevelopmental** factor (WURS/BIS/CTQ + familial loading). The externalizing
-axis is the bona-fide, imputation-free counterpart of the very ADHD/impulsivity/trauma content that
-mean-filling had mis-selected as the $K=6$ sixth axis: its *content* is real (it is anchored by the
-well-observed CTQ, 91% coverage), but its *appearance as the $K=6$ sixth axis ahead of
-work-disability* was an artifact of mean-fill co-observation reweighting compounded by
-under-extraction. Crucially, the head-to-head conclusions are **unchanged** (quality-of-life Δ
-+0.038, functioning combined +0.034, hospitalization DSM-dominated; §3.4), because the depression
-and illness-burden axes that carry them are confound-clean and stable under every estimator and at
-every $K$. The **trait–state gradient is also revised** relative to the mean-fill model (§3.6):
-metabolic load becomes the most trait-like axis (*r* 0.20→0.63) once its sparsely-measured
-follow-up labs are no longer mean-filled to zero. We report the ablation alongside the
-re-derivation because the finding itself — that a 35% mean-fill can both *re-import a structured
+We therefore moved the entire pipeline to **imputation-free estimation** — loadings from the masked
+correlation and per-patient scores by masked posterior-mean estimation (no cell filled anywhere) —
+which is now the **primary model used throughout this paper** (§2.7; Table 2). The same masked
+machinery then made it safe to **admit cognition** once the depression-cohort extraction gap was
+closed (§2.12): because no cell is ever filled, a construct collected at a somewhat lower rate in
+one cohort cannot become an imputed signal, so cognitive constructs could be entered and adjudicated
+on their own merits. It also supplied the **confound battery** that policed which cognitive
+constructs entered: the masked operators are what let us catch and **reject the fluency pseudo-axis**
+(a cohort artifact: cohort η² 0.46, surviving a within-cohort permutation, collapsing
+leave-one-cohort-out) and the cross-cohort-incoherent processing-speed/executive constructs (§2.12),
+while admitting the genuinely trans-diagnostic verbal/working-memory axis. With cognition in the
+feature space the model **re-locks at the maximum reproducible $K=6$**: relative to the cognition-free
+imputation-free solution, the formerly separate *pure* mania and externalizing axes **re-merge** into
+one mania/activation dimension, the cross-cohort work-disability factor is no longer separately
+resolved (its low-variance signal absorbed), and the new verbal/working-memory cognitive axis is
+gained (§3.3). Crucially, the head-to-head conclusions are **unchanged** across all of these
+re-derivations (quality-of-life Δ +0.037, functioning combined +0.035, hospitalization DSM-dominated;
+§3.4), because the depression and illness-burden axes that carry them are confound-clean and stable
+under every estimator and at every $K$. The **trait–state gradient is also revised** relative to the
+mean-fill model (§3.6): metabolic load becomes the most trait-like axis (*r* 0.20→0.63) once its
+sparsely-measured follow-up labs are no longer mean-filled to zero. We report the ablation alongside
+the re-derivation because the finding itself — that a ~36% mean-fill can both *re-import a structured
 confound* at the noise-floor factor and *attenuate* the apparent stability of a sparsely-measured
-axis, and that under-extraction compounds it — is a methodological result and a caution for
-data-driven phenotyping.
+axis — is a methodological result and a caution for data-driven phenotyping.
 
 ## 4. Discussion
 
@@ -1087,16 +1121,16 @@ data-driven phenotyping.
 Across bipolar disorder, schizophrenia and depression, the categorical boundary that the
 data actually support is the **diagnosis itself**: density-based clustering recovers the
 cohorts and nothing finer, while every trans-diagnostic axis of variation is **continuous**.
-The seven enrolled DSM subtypes do not form islands but order along a single mood↔psychosis
-spectrum. This argues against the search for discrete trans-diagnostic *biotypes* in this
-kind of data and in favour of a dimensional description, echoing RDoC [1] and hierarchical-
-taxonomy [2] frameworks but reached here bottom-up from a formal structure test rather than
-assumed.
+The seven enrolled DSM subtypes do not form islands but order along a mood↔psychosis
+spectrum (now sharing the leading dimension with cognitive ability). This argues against the
+search for discrete trans-diagnostic *biotypes* in this kind of data and in favour of a
+dimensional description, echoing RDoC [1] and hierarchical-taxonomy [2] frameworks but reached
+here bottom-up from a formal structure test rather than assumed.
 
-The seven dimensions we recover are clinically legible — depression/internalizing, later
-age-of-onset, illness/hospitalization burden, mania/activation, externalizing/neurodevelopmental
-(impulsivity, childhood-ADHD, early adversity), metabolic/inflammatory load, and
-socio-occupational work-disability — and, crucially, **reproducible, confound-free and
+The six dimensions we recover are clinically legible — depression/internalizing, later
+age-of-onset, mania/activation (with externalizing impulsivity/childhood-ADHD content),
+illness/hospitalization burden, a verbal/working-memory cognitive axis, and metabolic/inflammatory
+load — and, crucially, **reproducible, confound-free and
 site-robust**, three properties
 that data-driven psychiatric phenotypes frequently fail. That a linear factor model and a
 nonlinear no-imputation autoencoder converge on the same axes is reassurance that they
@@ -1115,11 +1149,12 @@ augmentation of nosology rather than a replacement.
 The longitudinal trait–state gradient adds nuance often missing from cross-sectional
 phenotyping: a single-visit model captures **state as well as trait**, and the durable
 trans-diagnostic signal is concentrated in the **metabolic and depressive** dimensions (the
-most trait-like), while symptomatic activation, externalizing and work-disability are more state-like. This
+most trait-like, with verbal cognition intermediate), while symptomatic activation and
+illness burden are more state-like. This
 reframes "temporal coherence" from a yes/no property of a clustering to a dimension-specific
 gradient.
 
-### 4.2 Clinical interpretation of the seven dimensions
+### 4.2 Clinical interpretation of the six dimensions
 
 Each dimension is clinically legible, and reading them as a clinician rather than a
 statistician sharpens what the model has found. **Dimension 1 (depression/internalizing
@@ -1131,39 +1166,37 @@ burden a clinician treats with pharmacotherapy, psychotherapy and psychosocial s
 regardless of the categorical label. **Dimension 2 (later age-of-onset)** captures a
 developmental contrast and behaves as a baseline *trait* by construction; since earlier onset is
 a well-established marker of more severe, more familial illness, isolating onset as its own axis
-orthogonal to current severity is clinically meaningful. **Dimension 3 (illness/hospitalization
-burden)** — number and duration of lifetime admissions, with functioning and education negative —
-is a *severity-of-course/chronicity* axis, the clinical-staging signal embedded in a
-cross-sectional model; built from prior service use, it is unsurprisingly the strongest
-dimensional predictor of *future* service use. **Dimension 4 (mania/activation)** — Altman, Mathys
-activation and YMRS — is the bipolar-spectrum activation pole; at $K=7$ it is a **pure**
-manic-activation axis, the impulsivity and childhood-ADHD content that contaminated it at $K=6$
-having separated into its own dimension (below). Together with Dimension 1 it spans the classical
-mood space, and the orthogonal rotation deliberately keeps depression and mania as separate axes
-rather than two ends of one line, consistent with the modern view that depressive and manic
-features co-occur (mixed states) rather than being mutually exclusive. **Dimension 5
-(externalizing/neurodevelopmental)** — new at $K=7$, anchored by retrospective childhood ADHD
-(Wender-Utah +0.53), trait impulsivity (Barratt +0.40) and childhood trauma (CTQ +0.38), with
-familial psychiatric loading and lower educational attainment — maps onto the HiTOP
-*externalizing/disinhibition* spectrum crossed with early adversity. It is the **least
-diagnosis-bound** axis in the model (DSM-subtype η² 0.017), a genuinely trans-diagnostic
-developmental-risk dimension that separates *trait* disinhibition from *state* manic activation —
-a distinction with direct bearing on suicidality, substance-use risk and the balance between
-pharmacological and psychotherapeutic targets. Its emergence as a *bona-fide* axis, distinct from
-the mean-fill artifact of §3.8, is one of the substantive gains of the imputation-free $K=7$ model.
-**Dimension 6 (metabolic/inflammatory load)** is the *somatic comorbidity* axis, and its
-trans-diagnostic prominence is double-edged: metabolic burden both drives the ~15-year mortality
-gap in serious mental illness and is, in part, an **iatrogenic** consequence of antipsychotic and
-mood-stabilizer treatment — so it is simultaneously a health-risk marker and a target for medical
-co-management; it is also the **most temporally stable** axis (test–retest *r* 0.63), as expected
-for body-composition and laboratory measures. **Dimension 7 (socio-occupational /
-work-disability)** — current and lifetime work-stoppage (+0.43, +0.41) and professional status
-(+0.33) — is a *functional-disability* axis that cuts across diagnoses and is partly separable from
-symptom severity, capturing social and occupational impairment the symptom scales miss. Read
+orthogonal to current severity is clinically meaningful. **Dimension 3 (mania/activation)** —
+Altman, Mathys activation and YMRS, together with retrospective childhood ADHD (Wender-Utah),
+trait impulsivity (Barratt) and childhood trauma (CTQ) — is the bipolar-spectrum activation pole
+fused with the HiTOP *externalizing/disinhibition* spectrum. In the cognition-free seven-axis
+model these split into a *pure* mania axis and a separate externalizing/neurodevelopmental axis; in
+the re-derived six-axis solution they share one dimension. Together with Dimension 1 it spans the
+classical mood space, and the orthogonal rotation deliberately keeps depression and mania as
+separate axes rather than two ends of one line, consistent with the modern view that depressive and
+manic features co-occur (mixed states) rather than being mutually exclusive. **Dimension 4
+(illness/hospitalization burden)** — number and duration of lifetime admissions, with functioning
+and education negative — is a *severity-of-course/chronicity* axis, the clinical-staging signal
+embedded in a cross-sectional model; built from prior service use, it is unsurprisingly the
+strongest dimensional predictor of *future* service use. **Dimension 5 (verbal/working-memory
+cognition)** — verbal reasoning (WAIS similarities), working memory (digit span / Wechsler WM),
+education and functioning — is the *cognitive-ability* axis, admitted to the trans-diagnostic model
+once the depression-cohort extraction gap was closed (§2.12). It is semi-independent of the symptom
+axes (|*r*| ≤0.13) yet the **most diagnosis-linked** axis (DSM-subtype η² 0.13), driven by lower
+verbal cognition in schizophrenia — the cognitive impairment long recognized as a core feature of
+psychotic illness, here placed on a common trans-diagnostic metric and shown to carry information
+distinct from symptom severity. Its admission is a substantive gain of the corrected extraction;
+the confound-incoherent processing-speed/executive constructs and the cohort-artifact fluency
+construct were tested and excluded (§3.8). **Dimension 6 (metabolic/inflammatory load)** is the
+*somatic comorbidity* axis, and its trans-diagnostic prominence is double-edged: metabolic burden
+both drives the ~15-year mortality gap in serious mental illness and is, in part, an **iatrogenic**
+consequence of antipsychotic and mood-stabilizer treatment — so it is simultaneously a health-risk
+marker and a target for medical co-management; it is also the **most temporally stable** axis
+(test–retest *r* 0.63), as expected for body-composition and laboratory measures. Read
 together, the axes recapitulate, bottom-up and from routine data, much of the structure that
 top-down frameworks posit on theoretical grounds — HiTOP's internalizing, externalizing and
-thought-disorder spectra, RDoC's valence/arousal domains, and clinical staging's
-course-and-functioning axes — a convergence we
+thought-disorder spectra, RDoC's valence/arousal and cognitive-systems domains, and clinical
+staging's course-and-functioning axes — a convergence we
 find reassuring rather than circular, because nothing in the pipeline was told to look for it.
 
 ### 4.3 The outcome dissociation: patient experience versus service use
@@ -1213,29 +1246,29 @@ measurement-based care could compute approximate dimensional scores from data it
 gathers, with no new assessment burden; the representation is an aggregation of existing
 measurement, not an addition to it. Second, because the model is **dimensional and additive**,
 it integrates with the categorical system rather than competing with it: a patient keeps their
-ICD/DSM diagnosis *and* carries a seven-number profile, much as a cardiology patient has a
+ICD/DSM diagnosis *and* carries a six-number profile, much as a cardiology patient has a
 diagnosis and a lipid panel. This "augmentation, not replacement" stance is the pragmatic route
 to adoption and matches how RDoC and HiTOP are increasingly positioned. Third, the dimensions
 support **continuous monitoring**: because several axes move with clinical state (§3.6),
 repeated scoring could track treatment response on a metric that is *comparable across
 diagnoses* — a single yardstick for a mixed clinic, where today a bipolar and a schizophrenia
 patient are followed on incommensurable scales. We took a concrete step toward the first
-requirement — a **sparse distillation** of the 54-domain battery into a short panel (§2.13,
-Table 5, Figure 7). A single **11-feature** panel — Altman and YMRS (mania), MADRS and a QIDS item
-(depression), CTQ/BIS/WURS (externalizing/neurodevelopmental), plus age-of-onset and
-lifetime-admission count — reconstructs the symptom and illness-burden axes with good fidelity
-(leakage-safe in-fold R² 0.85 mania, 0.83 depression, 0.75 illness-burden, 0.71 externalizing) and,
+requirement — a **sparse distillation** of the 56-domain battery into a short panel (§2.13,
+Table 5, Figure 7). A single **14-feature** shared panel — Altman and YMRS (mania), MADRS and a QIDS item
+(depression), STAI/PSQI/WURS, plus age-of-treatment, age-of-onset, lifetime-admission count and
+education — reconstructs the symptom and illness-burden axes with good fidelity
+(leakage-safe in-fold R² 0.85 depression, 0.79 mania, 0.81 illness-burden) and,
 under repeated 5-fold cross-validation, **preserves the dimensions' advantage over DSM**: it
-**outperforms** diagnosis for quality of life (panel EQ-5D axes−DSM **+0.032 [95% CI +0.028,
-+0.035]**, vs +0.038 for the full 54-domain model — the interval excludes zero) and **complements**
-it for functioning (combined−DSM **+0.024 [+0.022, +0.025]**, vs +0.034 full), while hospitalization
-stays diagnosis-dominated. The limits are explicit. The **metabolic axis is not
-questionnaire-recoverable** (R² 0.03) and needs a short routine metabolic panel (BMI, waist, lipids,
-glucose, HbA1c, blood pressure; R² → 0.29). A *single* symptom-optimized shared panel also
-under-serves the low-variance **work-disability** axis (R² 0.09); a **group-aware per-axis panel**
-(the top two items per axis, 13 features) recovers it (R² 0.47) and illness-burden (0.79) at a
-modest cost to depression (0.75) and externalizing (0.62) and a slightly smaller — but still
-significant — quality-of-life advantage (+0.025 [+0.022, +0.028]). The choice is an explicit
+**outperforms** diagnosis for quality of life (panel EQ-5D axes−DSM **+0.031 [95% CI +0.028,
++0.034]**, vs +0.037 for the full 56-domain model — the interval excludes zero) and **complements**
+it for functioning (combined−DSM **+0.023 [+0.022, +0.024]**, vs +0.035 full), while hospitalization
+stays diagnosis-dominated. The limits are explicit and differ by axis. The new **cognitive axis is
+only partly questionnaire-recoverable** (R² 0.57): it loads on education and functioning that the
+panel captures, but its verbal-reasoning and working-memory core needs the neuropsychological
+battery. The **metabolic axis is not questionnaire-recoverable** (R² 0.05) and needs a short routine
+metabolic panel (BMI, waist, lipids, glucose, HbA1c, blood pressure; R² → 0.27). A **group-aware
+per-axis panel** (the top two items per axis, 11 features) keeps a slightly smaller — but still
+significant — quality-of-life advantage (+0.023 [+0.020, +0.026]). The choice is an explicit
 parsimony-vs-coverage trade-off, not a failure: a sub-15-feature panel plus routine labs computes
 most of the dimensional profile, including the part that predicts patient-reported outcomes. This
 remains a research-grade draft, not a validated, calibrated instrument; prospective calibration
@@ -1259,15 +1292,15 @@ and slow (trait) components of each axis far more finely, and a formal latent st
 decomposition is a clear next step. (5) **Missingness-robust estimation (done).** This
 loose end is now closed: the primary factor model is estimated imputation-free (masked
 pairwise-complete covariance + observed-support scores; §2.7, §3.8), and the ablation confirms it
-mattered — mean-filling had biased the sixth factor and attenuated the metabolic axis's apparent
+mattered — mean-filling had biased the weakest factor and attenuated the metabolic axis's apparent
 stability. The remaining substitutions are confined to the residualization-design covariates
 (§2.4) and ComBat (§3.5), which require complete data by construction. (6) **The general ('p')
 factor — tested, and largely absent.** We no longer defer this. Applying an oblique (promax)
-rotation to the seven masked factors, the confound-controlled axes are essentially uncorrelated
-(mean inter-factor *r* ≈ −0.01), and the single dominant dimension is depression-specific (it
-loads on 12 of 54 domains), not a broad general factor; a one-number "overall severity" score
-consequently collapses onto the depression axis and *under-performs* both the seven-subtype DSM
-and the full seven-axis model out-of-sample (`scripts/19_pfactor.py`). This is itself a result: the
+rotation to the six masked factors, the confound-controlled axes are only weakly correlated
+(mean inter-factor *r* ≈ 0.07), and the single dominant dimension is depression-specific (it
+loads on a handful of internalizing domains), not a broad general factor; a one-number "overall
+severity" score consequently collapses onto the depression axis (corr 0.99) and *under-performs*
+both the seven-subtype DSM and the full six-axis model out-of-sample (`scripts/19_pfactor.py`). This is itself a result: the
 *p*-factor reported pervasively in the literature [3] may be inflated in part by the shared-method
 and missingness variance that our confound-stripped, imputation-free pipeline removes — so the
 trans-diagnostic signal here is genuinely *multi-dimensional*, not reducible to a single severity
@@ -1304,49 +1337,59 @@ psychiatric phenotyping.
 stability, interpretability and prediction, not by separation. (2) Varimax orthogonality
 distributes the mood↔psychosis spectrum across axes rather than isolating it; an oblique rotation
 (§4.6) does not change the picture — even allowed to correlate, the confound-controlled axes
-remain near-orthogonal — so the spectrum is a specific cross-axis *direction* (the autoencoder
-recovers it at |Spearman| 0.93), not a general factor. (3) The autoencoder is a *cross-check*, not a fully independent estimator: although both are
+remain near-orthogonal — so the spectrum is a specific cross-axis *direction* (the embedding's
+leading dimension orders the subtypes at |Spearman| 0.50, now sharing that lead with cognition),
+not a general factor. (3) The autoencoder is a *cross-check*, not a fully independent estimator: although both are
 now imputation-free, they share the same residual-domain inputs, so their agreement (leading
-canonical correlation 0.97 vs a row-permutation null of 0.06) rules out an *algorithm-specific*
+canonical correlation 0.94 vs a row-permutation null of 0.05) rules out an *algorithm-specific*
 artifact but not a shared *input* artifact; the AE also carries a small residual age leak
-(|r| 0.11) absent from the factor model (0.018), concentrated on the two lowest-coverage axes.
+absent from the factor model (max |r| 0.017), concentrated on the lowest-coverage axes.
 The factor model is the primary representation.
 (4) The later-onset dimension is baseline-only and cannot be tracked longitudinally. (The former
 report that the metabolic axis was the least stable, *r* 0.20, was an imputation artifact —
-masked scoring gives *r* 0.63, the most trait-like; §3.6.) (5) Cognition is missing in DR by
-design, so the cognitive results are BP/SZ-specific. (6) The cohort is a French
+masked scoring gives *r* 0.63, the most trait-like; §3.6.) (5) **Cognition is measured non-equivalently
+across cohorts.** A corrected extraction recovers depression-cohort neuropsychology (closing the
+artifactual "absent by design" gap), but DR coverage (~57% at V0) is lower than BP (~68%) / SZ (~80%)
+and the three batteries are not identical: processing-speed and executive subtests differ by cohort
+and could not be harmonized (excluded for ~0 communality), and verbal fluency proved a cohort artifact
+(excluded; §2.12). We address this with masked, no-imputation estimation plus the confound battery —
+which admitted only the confound-clean verbal/working-memory axis — but residual cross-cohort
+measurement non-equivalence in the cognitive domain remains a limitation, and CVLT memory and matrix
+reasoning stay BP/SZ-only and outside the model. (6) The cohort is a French
 expert-centre network; generalization to community and other healthcare systems requires
 external replication. (7) Outcomes were examined at 1 year with baseline adjustment; longer-
-horizon and causal questions are beyond this design. (8) The residual domain matrix is only **65% observed** — but this is now **addressed by
+horizon and causal questions are beyond this design. (8) The residual domain matrix is only **~64% observed** — but this is now **addressed by
 design**: the primary factor model is estimated imputation-free (masked pairwise-complete
 covariance + observed-support scores; §2.7), so neither loadings nor scores use a filled cell,
 and the §3.8 ablation shows this mattered (mean-filling had reweighted correlations by
 co-observation, $\mathrm{corr}_\text{fill}\!\approx\!O\,\mathrm{corr}_\text{masked}$, $R^2=0.999$,
-biasing the sixth factor and attenuating the metabolic axis). Imputation now survives only where
+biasing the weakest factor and attenuating the metabolic axis). Imputation now survives only where
 a method requires complete data by construction — the residualization-design covariates (§2.4)
 and the ComBat harmonization (§3.5). A minor cost of the masked posterior-mean scoring is that
-**~1% of patients (106/9,013) with fewer than K=7 observed domains are left unscored** (NaN)
+**~1% of patients (83/9,013) with fewer than K=6 observed domains are left unscored** (NaN)
 rather than imputed, and are excluded from the analyses that use the axis scores. (9) There is **no
 independent external replication**: the "V2" analysis re-uses the same individuals at a later
 visit (temporal consistency), and all sites belong to one national network. Within FACE,
 leave-one-cohort-out and leave-one-site-out tests (§3.5) show the quality-of-life advantage and
-the well-measured axes (depression, onset, metabolic) transport to held-out diagnoses and
-unseen centres, while the illness-burden/mania/externalizing/work-disability axes and the
-functioning relationship in schizophrenia do not fully transport — but this is within-network
+the well-measured axes (depression, onset, illness burden) transport to held-out diagnoses and
+unseen centres, while the mania, cognitive and metabolic axes (when bipolar disorder is held out)
+and the functioning relationship in schizophrenia do not fully transport — but this is within-network
 transportability, not external replication,
 which remains the key outstanding step. (10) The unsupervised
 factor extraction is fit on the full sample and then used as a predictor across CV folds; we
 *measured* the resulting optimism by re-deriving the masked factor model inside each training
-fold (§3.5) and found it negligible (≤0.004 AUC, ≈0 R²; the quality-of-life advantage was
-+0.039 refit vs +0.038 full-sample), because the loadings are a population-level structure that
+fold (§3.5) and found it negligible (≤0.002 AUC, ≈0 R²; the quality-of-life advantage was
++0.038 refit vs +0.037 full-sample), because the loadings are a population-level structure that
 a few hundred held-out patients barely move — so we retain the full-sample axes, but this is a
 within-sample check, not external replication. (11) Harmonizing three protocols into one
 schema embeds **expert judgment** about cross-cohort equivalence; residual mis-mapping would
 attenuate or distort the affected domains, though construct-level aggregation and the readiness
 grading limit the exposure, and the confound controls remove the largest such artifact (the
-cohort-by-missingness gradient). (12) The factor count is defensible but **not unique** — we lock $K=7$ as the maximum
-reproducible dimensionality, but $K=4$ and $K=6$ are reasonable, more parsimonious alternatives
-($K\le7$ all split-half reproduce; §2.7, Fig S2) — and the orthogonal varimax rotation
+cohort-by-missingness gradient). (12) The factor count is defensible but **not unique** — we lock $K=6$ as the maximum
+reproducible dimensionality, but $K=4$ and $K=5$ are reasonable, more parsimonious alternatives
+($K\le6$ all split-half reproduce; §2.7, Fig S2). The multi-seed robustness curve (25 random splits)
+shows the **6-axis core is the most split-stable** solution, with the weakest (metabolic) axis the
+most split-sensitive — a caveat we report but do not use to lower $K$. The orthogonal varimax rotation
 is a modelling choice that *shapes* — without creating — the specific axes; the oblique solution we
 examined (§4.6) apportions the shared mood↔psychosis variance differently but leaves the axes
 near-orthogonal and surfaces no general *p*-factor.
@@ -1354,8 +1397,9 @@ near-orthogonal and surfaces no general *p*-factor.
 ### 4.9 Conclusion
 
 In a large trans-diagnostic psychiatric cohort, categorical structure exists only at the
-level of diagnosis; trans-diagnostic psychopathology is dimensional. Seven reproducible,
-confound-controlled, site-robust dimensions complement or outperform DSM diagnosis for
+level of diagnosis; trans-diagnostic psychopathology is dimensional. Six reproducible,
+confound-controlled, site-robust dimensions — spanning symptoms, course and cognition —
+complement or outperform DSM diagnosis for
 patient-reported outcomes and exhibit an interpretable trait–state gradient over four
 years. These dimensions are a candidate quantitative augmentation of categorical diagnosis,
 to be validated prospectively and externally.
@@ -1445,73 +1489,73 @@ Sex coded female = 1. DR shows near-total attrition at V3 (n=3) and is excluded 
 longitudinal analyses. The SZ cohort is younger and more male; DR is older — confirming
 that age/sex must be removed before clustering (Section 3.1).
 
-**Table 2. The seven trans-diagnostic dimensions** — top loadings, split-half Tucker
-congruence, |correlation| with age/sex, and mean V0↔V1/V2 test–retest *r*. Source:
+**Table 2. The six trans-diagnostic dimensions** — top loadings, split-half Tucker
+congruence, |correlation| with age/sex, and V0↔V1 test–retest *r*. Source:
 `results/dimensional_final_loadings.csv`, `results/dimensional_final_meta.json`,
 `results/longitudinal_axes_stability.csv`.
 
 *Imputation-free model (masked pairwise-complete correlation → PAF + varimax; masked
-posterior-mean scores; §2.7, §3.8); locked at $K=7$, the maximum reproducible dimensionality.
-Split-half congruence is the masked-covariance minimum (0.91); max |correlation| with age/sex
-across axes is 0.018.*
+posterior-mean scores; §2.7, §3.8); locked at $K=6$, the maximum reproducible dimensionality,
+re-derived after the depression-cohort cognition extraction gap was closed (§2.12). Split-half
+congruence is the masked-covariance minimum (0.87); max |correlation| with age/sex across axes is
+0.017.*
 
-| Dimension | Top loadings | Test–retest r (mean V0↔V1/V2) |
+| Dimension | Top loadings | Test–retest r (V0↔V1) |
 |---|---|--:|
-| 1 Depression/internalizing | QIDS +0.89, MADRS +0.85, STAI +0.78, FAST +0.74, EQ-5D −0.72 | 0.55 |
-| 2 Later onset | age-at-treatment +0.79, age-1st-hosp +0.71, age-1st-episode +0.70 | 0.09 (static) |
-| 3 Illness/hospitalization burden | #hosp +0.75, hosp-duration +0.67, EGF −0.29 | 0.35 |
-| 4 Mania/activation (pure) | Altman +0.73, Mathys +0.60, YMRS +0.58 | 0.25 |
-| 5 Externalizing/neurodevelopmental | WURS +0.53, BIS +0.40, CTQ +0.38, maternal-suicide +0.23 | 0.29 |
-| 6 Metabolic/inflammatory | metabolic-syndrome +0.64, cholesterol +0.42, hepatic +0.33, inflammation +0.29 | **0.63** |
-| 7 Work-disability/socio-occupational | work-stoppage +0.43/+0.41, professional status +0.33 | 0.24 |
+| 1 Depression/internalizing | QIDS +0.89, MADRS +0.84, STAI +0.78, FAST +0.73, EQ-5D −0.73 | 0.58 |
+| 2 Later onset | age-at-treatment +0.79, age-1st-hosp +0.71, age-1st-episode +0.70 | 0.11 (static) |
+| 3 Mania/activation (with externalizing) | Altman +0.64, Mathys +0.55, YMRS +0.48, WURS +0.45, BIS +0.42 | 0.29 |
+| 4 Illness/hospitalization burden | #hosp +0.80, hosp-duration +0.70, EGF −0.25 | 0.30 |
+| 5 Verbal/working-memory cognition | verbal reasoning +0.81, education +0.54, working memory +0.45, EGF +0.26 | 0.31 |
+| 6 Metabolic/inflammatory | metabolic-syndrome +0.62, cholesterol +0.43, hepatic +0.32, inflammation +0.28 | **0.63** |
 
 **Table 3. Head-to-head 1-year outcome prediction (shuffled 5-fold CV).** DSM diagnosis vs
-seven dimensions vs combined; baseline+age+sex adjusted. V1 values are repeated-CV means
+six dimensions vs combined; baseline+age+sex adjusted. V1 values are repeated-CV means
 (R=200) with 95% intervals; V2 / ComBat / De-circ. report the single-run Δ. Source:
 `results/phase5_ci.csv` (V1), `phase5_headtohead_V2.csv`, `robustness_site.json` (ComBat),
 `phase5_decircularized.csv`.
 
 | Outcome | n | Metric | DSM | Dim. | Comb. | Dim − DSM (V1) [95% CI] | V2 | ComBat | De-circ. |
 |---|--:|:--:|--:|--:|--:|--:|--:|--:|--:|
-| EQ-5D quality of life | 2,423 | R² | 0.302 | **0.341** | 0.344 | **+0.038** [+0.035, +0.042] | +0.032 | +0.033 | +0.038 |
-| EGF global functioning | 3,195 | R² | 0.365 | 0.364 | **0.399** | −0.001 [−0.003, +0.002] (comb. **+0.034** [+0.032, +0.036]) | comb. +0.049 | comb. +0.021 | comb. +0.029 |
-| Any hospitalization | 3,332 | AUC | **0.747** | 0.613 | 0.757 | −0.134 [−0.146, −0.124] | −0.091 | −0.175 | −0.133 |
+| EQ-5D quality of life | 2,423 | R² | 0.302 | **0.340** | 0.344 | **+0.037** [+0.034, +0.040] | +0.031 | +0.032 | +0.038 |
+| EGF global functioning | 3,196 | R² | 0.365 | 0.364 | **0.399** | −0.000 [−0.002, +0.002] (comb. **+0.035** [+0.033, +0.036]) | comb. +0.054 | comb. +0.020 | comb. +0.030 |
+| Any hospitalization | 3,332 | AUC | **0.747** | 0.606 | 0.760 | −0.141 [−0.152, −0.130] | −0.126 | −0.175 | −0.141 |
 
 V2 / ComBat / De-circ. give Δ(Dim − DSM), or combined − DSM for functioning, under a second
 follow-up, site harmonization, and axes refit without each outcome's own measures (§3.5). The
 folds are shuffled (the matrix is cohort-ordered; un-shuffled folds distort the R²).
 
-**Table 4. Cognitive structure (BP/SZ, n=6,099) and correlation with the symptom
-dimensions.** Source: `results/cognition_bpsz_loadings.csv`, `_corr.csv`. Two factors:
-general ability (*g*) and processing speed; maximum |correlation| with any symptom
-dimension 0.26 (g↔illness-burden).
+**Table 4. (Removed.)** Cognition is no longer a separate BP/SZ analysis: with the
+depression-cohort extraction gap closed it is now the verbal/working-memory dimension of the main
+model (axis 5 in Table 2; loadings in Figure 2; DSM-subtype η² in the Figure 6c panel), so the
+former standalone cognitive-structure table is superseded by §3.3 and §3.7.
 
-**Table 5. Parsimonious screening panel (sparse distillation of the 54-domain battery).**
+**Table 5. Parsimonious screening panel (sparse distillation of the 56-domain battery).**
 Source: `results/screening_panel_*` + `screening_panel_meta.json` (`scripts/22_screening_panel.py`).
-A multi-task elastic-net distils the seven locked axes into a short panel; reconstruction R² is
-leakage-safe (selection re-run in each CV fold). The **shared** panel (11 questionnaire features:
-Altman, YMRS, MADRS, a QIDS item, CTQ, BIS, WURS, EGF, age-at-treatment, age-at-first-episode,
-lifetime-admission count) is parsimony-optimal; the **per-axis** panel (13 features, top-2/axis)
+A multi-task elastic-net distils the six locked axes into a short panel; reconstruction R² is
+leakage-safe (selection re-run in each CV fold). The **shared** panel (14 questionnaire features:
+Altman, YMRS, MADRS, a QIDS item, STAI, PSQI, WURS, EGF, age-at-treatment, age-at-first-episode,
+lifetime-admission count, education) is parsimony-optimal; the **per-axis** panel (11 features, top-2/axis)
 guarantees coverage of every axis. A flagged **routine metabolic-panel** add-on (BMI, waist,
 triglycerides, HDL, glucose, HbA1c, blood pressure) recovers the metabolic axis, which no
 questionnaire can.
 
 | Axis | Shared (questionnaire) | Shared + labs | Per-axis + labs |
 |---|--:|--:|--:|
-| Mania / activation | 0.85 | 0.85 | 0.85 |
-| Depression / internalizing | 0.83 | 0.83 | 0.75 |
-| Illness / hospitalization burden | 0.75 | 0.75 | 0.79 |
-| Externalizing / neurodevelopmental | 0.71 | 0.71 | 0.62 |
-| Later onset | 0.51 | 0.52 | 0.52 |
-| Work-disability | 0.09 | 0.08 | **0.47** |
-| Metabolic / inflammatory | 0.03 | **0.29** | 0.31 |
+| Depression / internalizing | 0.85 | 0.85 | 0.75 |
+| Later onset | 0.51 | 0.51 | 0.49 |
+| Mania / activation | 0.79 | 0.79 | 0.65 |
+| Illness / hospitalization burden | 0.81 | 0.81 | 0.83 |
+| Verbal / working-memory cognition | 0.57 | 0.57 | 0.59 |
+| Metabolic / inflammatory | 0.05 | **0.27** | 0.28 |
 
 *Head-to-head vs DSM (V1, repeated 5-fold CV, R=200, 95% CI). The **shared** panel **outperforms**
-DSM on quality of life (EQ-5D axes−DSM **+0.032 [+0.028, +0.035]**, vs +0.038 full) and
-**complements** it on functioning (combined−DSM **+0.024 [+0.022, +0.025]**, vs +0.034 full) — both
+DSM on quality of life (EQ-5D axes−DSM **+0.031 [+0.028, +0.034]**, vs +0.037 full) and
+**complements** it on functioning (combined−DSM **+0.023 [+0.022, +0.024]**, vs +0.035 full) — both
 intervals exclude zero; hospitalization stays DSM-dominated. The **per-axis** panel keeps a
-significant QoL advantage (+0.025 [+0.022, +0.028]) while additionally covering work-disability — an
-explicit parsimony-vs-coverage trade-off.*
+significant QoL advantage (+0.023 [+0.020, +0.026]). The cognitive axis is only partly recoverable
+(~0.57) because its verbal/working-memory core needs the neuropsychological battery, and the metabolic
+axis needs the routine labs add-on — an explicit parsimony-vs-coverage trade-off.*
 
 ---
 
@@ -1519,16 +1563,19 @@ explicit parsimony-vs-coverage trade-off.*
 
 Static publication figures (PNG + SVG, 300 dpi) are generated by
 `scripts/16_manuscript_figures.py` → `results/reports/figures/` (interactive versions are the
-correspondingly named `results/reports/*.html`). **Figures 1–6 are embedded inline at their first
-mention in §3.2–§3.7 above**; Supplementary Figures S1–S2 appear with their captions in the
+correspondingly named `results/reports/*.html`). **Figures 1–4 and 6 are embedded inline at their first
+mention in §3.2–§3.6 above** (the former Figure 5, a BP/SZ-only cognitive panel, is removed now that
+cognition is the verbal/working-memory axis shown in Figure 2 and the Figure 6c η² panel);
+Supplementary Figures S1–S2 appear with their captions in the
 Supplementary material section below.
 
 ![Figure 7](results/reports/figures/fig7_screening_panel.png)
 
 **Figure 7. Parsimonious screening panel (§4.5, §2.13).** *Left:* leakage-safe in-fold
-reconstruction R² per axis for the **shared** 11-feature panel and the **per-axis** 13-feature panel
-(+ routine labs) — the shared panel recovers the symptom/illness axes; the per-axis panel
-additionally recovers work-disability; the metabolic axis needs the labs add-on. *Right:* the shared
+reconstruction R² per axis for the **shared** 14-feature panel and the **per-axis** 11-feature panel
+(+ routine labs) — both recover the symptom/illness axes well; the cognitive axis is only partly
+recoverable (verbal/working-memory core needs the neuropsychological battery) and the metabolic axis
+needs the labs add-on. *Right:* the shared
 panel vs DSM on 1-year outcomes (repeated-CV means) — it **outperforms** diagnosis on quality of
 life (axes−DSM) and **complements** it on functioning (combined−DSM), while hospitalization stays
 DSM-dominated. Generated by `scripts/22_screening_panel.py` (interactive: `results/reports/screening_panel.html`).
@@ -1553,21 +1600,24 @@ their V0 phenotype at each follow-up (V0↔V$k$ ARI ≈ 0.07), and persistence i
 phenotype-dependent (trait-like smoking/illness-burden 0.59 vs state-like manic-activation
 0.14). Discrete phenotypes are therefore neither diagnosis-aligned nor temporally stable —
 consistent with reproducible *slices of a continuum* rather than natural kinds. The
-continuous trait–state gradient on the seven dimensional axes (Figure 4, §3.6) is the stable
+continuous trait–state gradient on the six dimensional axes (Figure 4, §3.6) is the stable
 representation of this same longitudinal signal.
 
 ![Supplementary Figure S1](results/reports/figures/figS1_dsm_phenotype_flow.png)
 
 ![Supplementary Figure S1b](results/reports/figures/figS1b_dsm_composition.png)
 
-**Supplementary Figure S2. Factor-count selection (imputation-free)**
+**Supplementary Figure S2. Factor-count selection (imputation-free, cognition-integrated)**
 (`results/reports/figures/figS2_kcurve.png`; `scripts/15_review_checks.py`). Masked split-half Tucker
-congruence vs K on the imputation-free model: the **minimum** congruence stays ≥0.85 from K=3
-through K=7 (0.98, 0.97, 0.89, 0.89, 0.91 at K=3–7) and collapses at K=8 (0.22) — so the
-reproducible range is K≤7. We lock **K=7** as the maximum reproducible dimensionality (a local
-maximum, 0.91); K=4 and K=6 are defensible, more parsimonious alternatives. (Under the former
-mean-fill estimation this curve was non-monotone/jagged — a sklearn-varimax instability that the
-masked principal-axis estimator does not show.)
+congruence vs K on the imputation-free model: on the deterministic single fixed-split, the
+**minimum** congruence stays ≥0.85 from K=3 through K=6 (0.96, 0.95, 0.94, 0.87 at K=3–6) and
+collapses at K=7 (0.21) — so the reproducible range is K≤6. We lock **K=6** as the maximum
+reproducible dimensionality; K=4 and K=5 are defensible, more parsimonious alternatives. A
+multi-seed robustness curve (25 random splits) confirms the **6-axis core is the most split-stable**
+solution (mean minimum congruence 0.86 at K=6, the most stable beyond the small-K solutions) and that
+the weakest (metabolic) axis is the most split-sensitive — reported as a caveat, not used to lock K.
+(Under the former mean-fill estimation this curve was non-monotone/jagged — a sklearn-varimax
+instability that the masked principal-axis estimator does not show.)
 
 ![Supplementary Figure S2](results/reports/figures/figS2_kcurve.png)
 
@@ -1579,9 +1629,10 @@ The FACE data are confidential and governed by the cohort's data-access procedur
 (individual-level data are not shared). The full harmonization and analysis pipeline is
 available as source: harmonization (`src/trans_diag`), structure test
 (`scripts/04_structure_test.py`), dimensional model (`scripts/05_dimensional_axes.py`,
-`06_dimensional_ae.py`, `07_dimensional_refine.py`), outcomes (`scripts/10_phase5_outcomes.py`),
-longitudinal stability (`scripts/08_longitudinal_axes.py`), site robustness
-(`scripts/13_robustness_site.py`), and cognition (`scripts/14_cognition_bpsz.py`). Reproducible
+`06_dimensional_ae.py`, `07_dimensional_refine.py`; cognition is built into the domain
+aggregation and the locked model, `scripts/03_cluster_domains.py` + `07_dimensional_refine.py`),
+outcomes (`scripts/10_phase5_outcomes.py`), longitudinal stability (`scripts/08_longitudinal_axes.py`),
+and site robustness (`scripts/13_robustness_site.py`). Reproducible
 result artifacts are written to `results/` and interactive reports to `results/reports/`.
 
 ## Author contributions / Funding / Ethics

@@ -109,16 +109,22 @@ Pruned 8 -> 5. Hospitalization burden is comparable across cohorts (BP unsuffixe
   - `hooccur_arret_travail` (r227) — **temporal mismatch**: BP thesaurus = general lifetime Y/N/U, DR = "au cours de l'année" Y/N/NA; SZ uses a different `_LY` column not mapped here.
   - `hodur_arret_travail` (r228) — **different time window + scale**: BP "durée totale" (max 208 wk, 2% >52) vs DR "semaines sur l'année" (med 41, 15% >52); also a `-4` invalid value in BP.
 
-## SOCIAL — sociodemographics (3 dropped)
-Pruned 7 -> 4. BP/DR use uniform numeric codes; SZ stores several as text and lives in a different tab ('SOCIAL - PERINATALITE').
-- **Statut professionnel — `stprof`** `[0,6]`: same grid all 3 (0=sans emploi,1=actif,2=retraité,3=étudiant,4=pension,5=foyer,6=autres). SZ folds lycéen into 3. Comparable.
-- **Emploi temps plein — `jobclas`** `[0,1]`: "Oui"/"Non" (BP/SZ) vs 0/1 (DR). Encode Oui->1/Non->0.
-- **Mode de vie — `lvsbjind`(BP/DR) / `vie`(SZ)** `[1,8]`: BP/DR numeric 1-8 (seul/parents/foyer/...); **SZ stores TEXT** ("Chez ses parents","Seul",...) -> encode SZ text to the 1-8 scheme before use.
-- **Éducation — `edulevel`** `[1,20]`: BP/DR uniform ordinal (CP-CM2=1-5...BAC+n=15-19,Doctorat=20). **SZ is MIXED text/number** (~23% numeric; rest "BAC" etc.) -> parse SZ text to the ordinal, else SZ unusable.
-- **Dropped — not comparable (3):**
-  - `maristat` — **SZ is missing the 'marié/concubin/pacsé' category entirely** (code 2 = 0 of 1652 in SZ, vs 48% BP / 58% DR). Either not collected or text->code dropped it -> near-perfect cohort discriminator. Not usable until SZ source is re-checked.
-  - `jobdur` — **units differ**: BP years (as text bands "entre 10 et 20 ans"), SZ free text, DR months (numeric). Three incompatible formats.
-  - `empjob` (INSEE class) — nominal 1-8, **very sparse** (BP n=359, SZ n=46) and BP only has classes 1/4/5; not usable as a comparable feature.
+## SOCIAL — sociodemographics (4 nominal dropped 2026-05-30; 3 kept)
+Pruned 7 -> 3 kept (`edulevel`, `jobdur`, `jobclas`). The 4 **nominal-unordered** descriptors
+(`maristat`, `stprof`, `empjob`, `lvsbjind`) were dropped 2026-05-30 — marked NOT USABLE in the
+dictionary, so `build_unified_dataframe` no longer loads them. Rationale: an unordered code
+robust-z'd as interval is mis-specified, and the trans-diagnostic axes are symptom/biology/cognition,
+not social (low phenotypic signal); `maristat` is additionally a near-perfect cohort confound. See
+LABBOOK E27. BP/DR use uniform numeric codes; SZ stores several as text and lives in a different tab
+('SOCIAL - PERINATALITE').
+- **KEPT — `edulevel`** `[1,20]`: BP/DR uniform ordinal (CP-CM2=1-5...BAC+n=15-19,Doctorat=20). **SZ is MIXED text/number** (~23% numeric; rest "BAC" etc.) -> parsed to the ordinal (rule `edulevel`).
+- **KEPT — `jobdur`**: BP years (text bands "entre 10 et 20 ans"), SZ free text, DR months -> parsed to years (rule `jobdur` / `_parse_jobdur_text`).
+- **KEPT — `jobclas`** `[0,1]`: "Oui"/"Non" (BP/SZ) vs 0/1 (DR). Encode Oui->1/Non->0.
+- **DROPPED — nominal-unordered (4), 2026-05-30:**
+  - `maristat` — **SZ is missing the 'marié/concubin/pacsé' category entirely** (code 2 = 0 of 1652 in SZ, vs 48% BP / 58% DR) -> near-perfect cohort discriminator (a confound, not phenotype).
+  - `stprof` (statut professionnel `[0,6]`) — unordered status codes (0=sans emploi,1=actif,2=retraité,...); no defensible interval ordering.
+  - `empjob` (INSEE class) — nominal 1-8, **very sparse** (BP n=359, SZ n=46; BP only classes 1/4/5).
+  - `lvsbjind` (mode de vie `[1,8]`) — unordered living-arrangement codes; SZ stored as text.
 
 ## SITEID ("Numéro du centre principal") — decode via fondacode, not raw siteid
 The per-cohort SITEID codebooks are partial and disjoint (BP/SZ list different site subsets; DR has NO codebook), and raw `siteid` is occasionally mislabeled. **Solution: the site code = the 1-2 leading digits of `fondacode`** (the FONDAMENTAL network-wide patient ID) — the SAME numbering scheme in all 3 cohorts.

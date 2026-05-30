@@ -4,6 +4,18 @@ Extracted from the Phase-5 script so the numbered pipeline scripts can reuse the
 *exact* same CV metric / incremental-value test without importing one another
 (digit-prefixed module names are not importable in Python). Used by the
 head-to-head, CI, de-circularization, ComBat and cognition steps.
+
+The transform signature is ``tf(y0, yk)`` (post-audit 2026-05); pass-through
+callers via ``apply_outcome_tf`` so legacy ``tf(yk)`` signatures still work.
+
+NOTE on the hospitalization outcome: the column is named ``_lt`` (lifetime) but the
+empirical V0 vs V1 distribution makes clear it is **a lifetime tally only at V0**
+— at follow-up visits the question becomes an interval count ("since last visit"):
+V0 mean = 2.73 (P(>0)=0.81), V1 mean = 0.18 (P(>0)=0.14). So the outcome
+``(V1_lt > 0)`` is in practice "any incident hospitalization since V0", with the
+V0 lifetime count entering the model as prior-history baseline (NOT a tautological
+predictor of V1, despite the shared column name). The transform retains the legacy
+``yk -> (yk>0)`` form.
 """
 from __future__ import annotations
 
@@ -12,10 +24,12 @@ import numpy as np
 RANDOM = 0
 
 # (name, kind, source_col, transform) — the 1-year outcomes.
+# `transform`, when set, is called as ``tf(y0, yk)`` and returns the modelled outcome.
+# `None` means use yk as-is (continuous outcome).
 OUTCOMES = [
     ("EGF functioning", "continuous", "egf", None),
     ("any hospitalization", "binary", "nboccur_hospitalisation_lt",
-     lambda s: (s > 0).astype(float)),
+     lambda y0, yk: (yk > 0).astype(float)),   # at V1, this column is incident-since-V0
     ("EQ-5D quality of life", "continuous", "eq5d", None),
 ]
 
@@ -73,3 +87,40 @@ def axis_betas(d, cols_all, axis_cols, y, kind):
         coef = LogisticRegression(max_iter=2000).fit(Xs, y).coef_[0]
     beta = dict(zip(cols_all, coef, strict=False))
     return {a: float(beta[a]) for a in axis_cols}
+
+
+def apply_outcome_tf(y0, yk, tf):
+    """Apply an outcome transform with the post-audit (y0, yk) signature.
+
+    Supports both ``tf(y0, yk)`` (the current spec — needed for the incident
+    hospitalization outcome) and the legacy ``tf(yk)`` callers in case any
+    survive. Used as: ``yk = apply_outcome_tf(y0, yk, tf)`` if ``tf is not None``.
+    """
+    import inspect
+    try:
+        sig = inspect.signature(tf)
+        n_params = len([p for p in sig.parameters.values()
+                        if p.kind in (inspect.Parameter.POSITIONAL_ONLY,
+                                      inspect.Parameter.POSITIONAL_OR_KEYWORD)
+                        and p.default is inspect.Parameter.empty])
+    except (TypeError, ValueError):
+        n_params = 2
+    return tf(y0, yk) if n_params >= 2 else tf(yk)
+
+
+COHORT_DUMMY_PREFIX = "cohort_"
+
+
+def cohort_dummies(cohort_series):
+    """Build cohort dummies (2 of 3 levels, drop-first) for fair head-to-head comparators.
+
+    Returns a (DataFrame, list_of_columns) tuple. The original head-to-head
+    misspecified M1 by omitting cohort, while M0 always carried arm (a 7-level
+    proxy that encodes cohort + subtype). To restore comparator parity the
+    fair head-to-head adds these cohort dummies to M1 (and M2 already has arm,
+    which subsumes cohort).
+    """
+    import pandas as pd
+    dum = pd.get_dummies(cohort_series.astype(str).str.lower(), drop_first=True).astype(float)
+    dum.columns = [f"{COHORT_DUMMY_PREFIX}{c}" for c in dum.columns]
+    return dum, list(dum.columns)

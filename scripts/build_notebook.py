@@ -180,29 +180,30 @@ run_step("16_manuscript_figures.py")   # generates Figures 1–5 from the artifa
 fig("fig1_structure.png", "No eigengap; monotone gap; unimodal axes; HDBSCAN≈cohort; DSM mood↔psychosis continuum.")
 """)
 
-# ───────────────────────────────────────── 5 the seven dimensions
+# ───────────────────────────────────────── 5 the six dimensions
 md(r"""
-## 5 · The seven trans-diagnostic dimensions (§3.3)
+## 5 · The six trans-diagnostic dimensions (§3.3)
 
 We fit an **imputation-free varimax factor model** — masked pairwise-complete correlation → principal-axis
 factoring + varimax → posterior-mean scores on each patient's observed support (no cell ever filled). The
-factor count is set by **masked split-half Tucker congruence** (reproducibility), giving **K = 7** (the
-maximum reproducible dimensionality; K≥8 collapses): depression/internalizing, later age-of-onset,
-illness/hospitalization burden, mania/activation (pure), an externalizing/neurodevelopmental axis
-(impulsivity, childhood-ADHD, early adversity), metabolic/inflammatory load, and
-socio-occupational/work-disability. A no-imputation masked autoencoder recovers the same structure
-(leading canonical correlation 0.97 vs a permutation null of 0.05). The axes are confound-free
-(|corr| age/sex ≤0.018) and diagnosis-independent (cohort η²≤0.113, site ≤0.053).
+factor count is set by **masked split-half Tucker congruence** (reproducibility), giving **K = 6** (the
+maximum reproducible dimensionality before collapse; K≥7 collapses): depression/internalizing, later
+age-of-onset, mania/activation (with externalizing: impulsivity, childhood-ADHD), illness/hospitalization
+burden, a **cognitive axis** (verbal reasoning + working memory), and metabolic/inflammatory load. Once the
+DR neuropsychology extraction gap was closed (2026-05), cognition entered the main model as one
+confound-clean trans-diagnostic dimension. A no-imputation masked autoencoder recovers the same structure
+(leading canonical correlation 0.94 vs a permutation null of 0.05). The axes are confound-free
+(|corr| age/sex ≤0.017) and diagnosis-independent (cohort η²≤0.106, site ≤0.049).
 """)
 code(r"""
 run_step("05_dimensional_axes.py")     # classical varimax FA (AE reference)
 run_step("06_dimensional_ae.py")       # masked autoencoder cross-check
-run_step("07_dimensional_refine.py")   # LOCK K=7 by split-half congruence
+run_step("07_dimensional_refine.py")   # LOCK K=6 by split-half congruence (data-driven)
 fmeta = show("dimensional_final_meta.json")
 print("locked K =", fmeta["K"], "| max |corr| age/sex =", max(fmeta["confound_max_corr"].values()))
 print("(AE↔FA canonical correlations are reported below from review_checks — AE vs the FINAL imputation-free model.)")
 """)
-md("**Figure 2 — the seven-dimension loading structure** (salient |λ|≥0.20).")
+md("**Figure 2 — the six-dimension loading structure** (salient |λ|≥0.20; incl. the cognitive axis).")
 code(r"""fig("fig2_loadings.png", "Clean block structure: each dimension is carried by a coherent set of instruments.")""")
 md("Per-dimension reproducibility (split-half min Tucker congruence) and the K curve:")
 code(r"""
@@ -210,7 +211,7 @@ run_step("15_review_checks.py")        # eta-squared (cohort/site), CCA permutat
 rc = show("review_checks.json")
 print("AE↔FA leading CCA:", rc["cca_observed"][0], "vs permutation null 95th pct:", rc["cca_null_leading_p95"])
 print("DSM-subtype variance explained per axis (eta^2):", rc.get("eta_cohort"))
-fig("figS2_kcurve.png", "Masked split-half reproducibility vs K: minimum congruence ≥0.85 through K=7; K=7 locked (K≥8 collapse).")
+fig("figS2_kcurve.png", "Masked split-half reproducibility vs K: minimum congruence ≥0.85 through K=6; K=6 locked (K≥7 collapse).")
 """)
 md("**Figure 6c — trans-diagnostic overlap:** even the most diagnosis-linked axis (illness burden) is "
    "only ~14 % explained by DSM-5 (η²); diagnoses fan across the whole axis.")
@@ -271,20 +272,23 @@ run_step("16_manuscript_figures.py")   # refresh Fig 3 with the latest head-to-h
 fig("fig3_headtohead.png", "QoL: dimensions beat DSM; functioning: combined wins; hospitalization: DSM dominates.")
 """)
 
-# ───────────────────────────────────────── 8 cognition
+# ───────────────────────────────────────── 8 cognition (integrated)
 md(r"""
-## 8 · Cognition (BP/SZ complementary analysis — §3.7)
+## 8 · Cognition is now one of the trans-diagnostic dimensions (§2.12, §3.7)
 
-Neuropsychology is absent in DR by design, so cognition is analysed within BP/SZ only. It resolves into
-the classic **general-ability (g) + processing-speed** structure, is semi-independent of the symptom
-dimensions (max |r| 0.26, g↔illness-burden), and adds a small independent increment to functioning.
+The depression cohort's neuropsychology was recovered (the old "absent in DR" was a data-extraction
+artifact), so cognition now enters the **main** model as curated constructs. A confound battery
+(`15_review_checks` #10 + the leave-one-cohort holdout in `21`) admits exactly ONE genuine
+trans-diagnostic cognitive axis — **verbal reasoning + working memory** — that is confound-clean
+(cohort η² 0.072, not predictable from test-availability) and transports leave-DR-out (congruence 1.0).
+It is semi-independent of the symptom dimensions and ~57% reconstructable from routine items (education +
+functioning). Processing speed/executive (incoherent across cohorts), verbal fluency (a cohort artifact),
+and CVLT memory / matrix reasoning (BP/SZ-only) were excluded.
 """)
 code(r"""
-run_step("14_cognition_bpsz.py")
-cm = show("cognition_bpsz_meta.json")
-print(f"cognition subset n={cm['n_cognition']} {cm['cohort']} | K={cm['K']} factors")
-print("cognition × symptom-axis correlations (max |r| ≈ 0.26):"); display(show("cognition_bpsz_corr.csv", index_col=0).round(2))
-fig("fig5_cognition.png", "g + processing-speed structure; semi-independent of the symptom dimensions.")
+rc = show("review_checks.json")
+print("cognitive axis:", rc["cognition_axes"], "| cohort eta^2:", rc["cognition_axis_eta_cohort"])
+print("availability R^2 (axis ~ # tests done):", rc["cognition_axis_r2_from_availability"])
 """)
 
 # ───────────────────────────────────────── summary

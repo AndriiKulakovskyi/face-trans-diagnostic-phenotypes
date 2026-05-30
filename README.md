@@ -4,9 +4,10 @@ Across bipolar disorder, schizophrenia and major depression in the FACE cohort,
 the only categorical boundary the data support is **diagnosis itself** — every
 *trans-diagnostic* axis of variation is **continuous**. We harmonize the 3-cohort
 longitudinal data (baseline V0 → 4-year V4) and fit a confound-controlled,
-imputation-free **seven-dimension** model that complements or outperforms DSM
-diagnosis for patient-reported outcomes, and distill it into a parsimonious
-(≤15-item) screening panel. Full write-up: **[MANUSCRIPT.md](MANUSCRIPT.md)**.
+imputation-free **six-dimension** model — five symptom/biology axes plus one
+cognitive axis (after the depression cohort's neuropsychology was recovered) — that
+complements or outperforms DSM diagnosis for patient-reported outcomes, and distill it
+into a parsimonious (≤15-item) screening panel. Full write-up: **[MANUSCRIPT.md](MANUSCRIPT.md)**.
 
 The repo is **self-contained** — the stratification engine (masked similarity →
 multipartite-spectral embedding, enrichment, factor scaffolding) is internalized in
@@ -81,12 +82,14 @@ ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), vis
 ```
 
 The pipeline is numbered in execution order — read or run the scripts top-to-bottom.
-`00_run_all.py` runs steps **01–22**: Table 1 → confound ladder (§3.1) → residualized
-domain scores + embedding → discrete-vs-dimensional structure test → varimax FA →
-autoencoder cross-check → **locked K=7 axes** → longitudinal stability → outcome
-head-to-heads + CIs + de-circularization → ComBat/site robustness → cognition → review
-checks → manuscript figures → general-factor ('p') check → fold-honest CV re-fit →
-within-FACE held-out replication → **parsimonious screening panel**.
+`00_run_all.py` runs steps **01–22** (step 14, the old BP/SZ-only cognition analysis, was
+removed when neuropsychology was folded into the main model): Table 1 → confound ladder (§3.1)
+→ residualized domain scores + embedding (incl. cognitive constructs) → discrete-vs-dimensional
+structure test → varimax FA → autoencoder cross-check → **locked K=6 axes (incl. one cognitive
+axis)** → longitudinal stability → outcome head-to-heads + CIs + de-circularization →
+ComBat/site robustness → review checks (incl. the cognition confound battery) → manuscript
+figures → general-factor ('p') check → fold-honest CV re-fit → within-FACE held-out replication
+→ **parsimonious screening panel**.
 
 ## Verify / reproduce
 

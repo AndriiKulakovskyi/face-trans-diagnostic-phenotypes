@@ -41,13 +41,17 @@ from sklearn.preprocessing import StandardScaler  # noqa: E402
 
 from trans_diag import build_unified_dataframe  # noqa: E402
 from trans_diag.masked_fa import masked_loadings, masked_scores  # noqa: E402
-from trans_diag.outcomes import OUTCOMES  # noqa: E402
+from trans_diag.outcomes import (  # noqa: E402
+    OUTCOMES,
+    apply_outcome_tf,
+    cohort_dummies,
+)
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "results" / "reports"
 DOMAINS_PATH = RESULTS_DIR / "cluster_domains_scores.parquet"
 LOADINGS_PATH = RESULTS_DIR / "dimensional_final_loadings.csv"
-K = 7
+K = json.loads((RESULTS_DIR / "dimensional_final_meta.json").read_text())["K"]  # locked by 07
 MIN_SITE = 10          # a held-out site must have ≥10 patients (matches 13_robustness_site)
 MIN_COHORT_TEST = 150  # min held-out-cohort follow-up n to report a transport R²
 
@@ -143,6 +147,9 @@ def main() -> int:
     dsm = pd.get_dummies(v0["arm"].astype(str), drop_first=True).astype(float)
     dsm_cols = list(dsm.columns)
     base = base.join(dsm)
+    # post-audit: cohort dummies for fair head-to-head parity
+    cohort_dum, cohort_cols = cohort_dummies(v0["cohort"])
+    base = base.join(cohort_dum)
     site_all = pd.to_numeric(v0["siteid_city"], errors="coerce")
 
     # ── Part 2: leave-one-site-out outcome prediction (pooled out-of-site) ──
@@ -152,9 +159,9 @@ def main() -> int:
         if col not in df.columns:
             continue
         y0 = pd.to_numeric(v0[col], errors="coerce").rename("baseline")
-        yk = pd.to_numeric(vk[col], errors="coerce")
+        yk = pd.to_numeric(vk[col], errors="coerce").reindex(y0.index)
         if tf is not None:
-            yk = tf(yk)
+            yk = apply_outcome_tf(y0, yk, tf)
         d = base.join(y0).join(yk.rename("y")).dropna(subset=["y", "baseline", "age", "sex"])
         D = D_all.reindex(d.index)
         ssite = site_all.reindex(d.index)
@@ -170,21 +177,34 @@ def main() -> int:
         yv = d["y"].to_numpy(float)
         bm = d[["baseline", "age", "sex"]].to_numpy(float)
         dm = d[dsm_cols].to_numpy(float)
+        cm = d[cohort_cols].to_numpy(float)
         groups = ssite.astype(int).to_numpy()
         idx = np.arange(len(d))
-        p_dsm, p_ax, p_cb = (np.full(len(d), np.nan) for _ in range(3))
+        p_dsm, p_ax_orig, p_ax_fair, p_cb = (np.full(len(d), np.nan) for _ in range(4))
         for tr, te in LeaveOneGroupOut().split(idx, yv, groups=groups):
             f_tr, f_te = _refit_axes(D, tr, te)
             p_dsm[te] = _fit_predict(np.hstack([bm[tr], dm[tr]]), yv[tr], np.hstack([bm[te], dm[te]]), kind)
-            p_ax[te] = _fit_predict(np.hstack([bm[tr], f_tr]), yv[tr], np.hstack([bm[te], f_te]), kind)
-            p_cb[te] = _fit_predict(np.hstack([bm[tr], dm[tr], f_tr]), yv[tr], np.hstack([bm[te], dm[te], f_te]), kind)
-        m0, m1, m2 = _score(yv, p_dsm, kind), _score(yv, p_ax, kind), _score(yv, p_cb, kind)
+            p_ax_orig[te] = _fit_predict(np.hstack([bm[tr], f_tr]), yv[tr],
+                                         np.hstack([bm[te], f_te]), kind)
+            p_ax_fair[te] = _fit_predict(np.hstack([bm[tr], cm[tr], f_tr]), yv[tr],
+                                         np.hstack([bm[te], cm[te], f_te]), kind)
+            p_cb[te] = _fit_predict(np.hstack([bm[tr], dm[tr], f_tr]), yv[tr],
+                                    np.hstack([bm[te], dm[te], f_te]), kind)
+        m0 = _score(yv, p_dsm, kind)
+        m1_orig = _score(yv, p_ax_orig, kind)
+        m1_fair = _score(yv, p_ax_fair, kind)
+        m2 = _score(yv, p_cb, kind)
         metric = "R2" if kind == "continuous" else "AUC"
         loso.append({"outcome": name, "n": int(len(d)), "n_sites": int(ssite.nunique()), "metric": metric,
-                     "DSM": round(m0, 3), "axes": round(m1, 3), "combined": round(m2, 3),
-                     "axes_minus_DSM": round(m1 - m0, 3), "combined_minus_DSM": round(m2 - m0, 3)})
+                     "DSM": round(m0, 3),
+                     "axes_orig": round(m1_orig, 3), "axes_fair": round(m1_fair, 3),
+                     "combined": round(m2, 3),
+                     "axes_orig_minus_DSM": round(m1_orig - m0, 3),
+                     "axes_fair_minus_DSM": round(m1_fair - m0, 3),
+                     "combined_minus_DSM": round(m2 - m0, 3)})
         print(f"  {name}: n={len(d)} over {ssite.nunique()} sites  {metric}  DSM={m0:.3f} "
-              f"axes={m1:.3f} combined={m2:.3f}  (axes−DSM {m1-m0:+.3f}, comb−DSM {m2-m0:+.3f})")
+              f"axes(orig)={m1_orig:.3f}  axes(fair)={m1_fair:.3f}  combined={m2:.3f}  "
+              f"(orig−DSM {m1_orig-m0:+.3f}, fair−DSM {m1_fair-m0:+.3f}, comb−DSM {m2-m0:+.3f})")
 
     # ── Part 3: leave-one-cohort-out outcome prediction (axes increment over baseline) ──
     print("\nPart 3 — leave-one-cohort-out outcome prediction (predict an UNSEEN diagnosis):")
@@ -193,9 +213,9 @@ def main() -> int:
         if kind != "continuous" or col not in df.columns:   # DSM degenerate within one cohort
             continue
         y0 = pd.to_numeric(v0[col], errors="coerce").rename("baseline")
-        yk = pd.to_numeric(vk[col], errors="coerce")
+        yk = pd.to_numeric(vk[col], errors="coerce").reindex(y0.index)
         if tf is not None:
-            yk = tf(yk)
+            yk = apply_outcome_tf(y0, yk, tf)
         d = base.join(y0).join(yk.rename("y")).dropna(subset=["y", "baseline", "age", "sex"])
         D = D_all.reindex(d.index)
         keep = (D.notna().sum(axis=1) >= K)
@@ -235,8 +255,10 @@ def _report(loco_struct, loso, loco_out):
         f"<td>{r['per_axis']}</td></tr>" for r in loco_struct)
     o_rows = "".join(
         f"<tr><td>{r['outcome']}</td><td>{r['n']}</td><td>{r['n_sites']}</td><td>{r['metric']}</td>"
-        f"<td>{r['DSM']}</td><td>{r['axes']}</td><td>{r['combined']}</td>"
-        f"<td><b>{r['axes_minus_DSM']:+}</b></td><td>{r['combined_minus_DSM']:+}</td></tr>" for r in loso)
+        f"<td>{r['DSM']}</td><td>{r['axes_orig']}</td><td>{r['axes_fair']}</td><td>{r['combined']}</td>"
+        f"<td>{r['axes_orig_minus_DSM']:+}</td>"
+        f"<td><b>{r['axes_fair_minus_DSM']:+}</b></td>"
+        f"<td>{r['combined_minus_DSM']:+}</td></tr>" for r in loso)
     c_rows = "".join(
         f"<tr><td>{r['outcome']}</td><td>{r['held_out_cohort'].upper()}</td><td>{r['n_test']}</td>"
         f"<td>{r['baseline_R2']}</td><td>{r['axes_R2']}</td><td><b>{r['axes_minus_baseline']:+}</b></td></tr>"
@@ -256,7 +278,8 @@ def _report(loco_struct, loso, loco_out):
             "<th>mean</th><th>per-axis</th></tr>", s_rows, "</table>",
             "<h2>Part 2 — leave-one-site-out outcome prediction (pooled out-of-site)</h2>",
             "<table><tr><th>outcome</th><th>n</th><th>sites</th><th>metric</th><th>DSM</th>"
-            "<th>axes</th><th>combined</th><th>axes−DSM</th><th>comb−DSM</th></tr>", o_rows, "</table>",
+            "<th>axes (orig)</th><th>axes (fair)</th><th>combined</th>"
+            "<th>orig−DSM</th><th>fair−DSM</th><th>comb−DSM</th></tr>", o_rows, "</table>",
             "<h2>Part 3 — leave-one-cohort-out outcome prediction (predict an unseen diagnosis)</h2>",
             "<table><tr><th>outcome</th><th>held-out cohort</th><th>n</th><th>baseline R²</th>"
             "<th>+axes R²</th><th>Δ axes</th></tr>", c_rows, "</table></body></html>"]

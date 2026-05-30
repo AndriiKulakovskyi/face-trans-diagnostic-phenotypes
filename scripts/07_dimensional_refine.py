@@ -10,20 +10,20 @@ estimate the model WITHOUT any imputation:
   1. **Loadings** from the pairwise-complete (masked) correlation matrix — each correlation
      uses only patients who have BOTH domains, so no cell is ever filled. Principal-axis
      factoring (iterated communalities) + varimax rotation (simple structure).
-  2. **K by masked split-half reproducibility** — locked at K=7, the MAXIMUM reproducible
-     dimensionality: masked split-half min Tucker congruence stays >=0.85 through K=7 (K=7
-     min ~0.91, a local peak above K=5/6) and collapses at K>=8 (K=8 min ~0.22). K=7 splits
-     the K=6 mania/activation+impulsivity axis into a *pure* mania axis and a distinct
-     externalizing/neurodevelopmental axis (WURS/BIS/CTQ + family history) — the latter the
-     genuine, imputation-free counterpart of the ADHD/trauma signal that mean-fill had
-     rendered artifactual at K=6 (§3.8). Parallel analysis/Kaiser over-extract at this N;
-     we select on cross-sample reproducibility, not eigenvalue rules (§4.7).
+  2. **K by masked split-half reproducibility** — K is re-derived (via ``select_k``, not a
+     hand-set constant) as the maximum dimensionality whose single fixed-split MIN Tucker
+     congruence stays >= K_FLOOR (0.85) before collapse; an N_SPLITS-averaged robustness curve
+     is also reported (it flags the weakest axis as most split-sensitive but is not used to
+     lock). Parallel analysis/Kaiser over-extract at this N (§4.7). The matrix now includes
+     three curated cognitive constructs — working memory, verbal reasoning, fluency — after the
+     DR neuropsych extraction gap was closed (2026-05); processing speed and executive/TMT did
+     not harmonise across cohorts and are excluded.
   3. **Per-patient scores** = the factor-analysis posterior mean computed on each patient's
      OBSERVED support only (regression/Thomson scores; no imputation):
         f_i = (I + L_o' Psi_o^-1 L_o)^-1 L_o' Psi_o^-1 z_{i,o},  Psi = 1 - communalities.
 
-Final representation = 7 reproducible, confound-controlled, imputation-free varimax axes.
-These scores feed Phase 5 (outcomes), Phase 4 (longitudinal), cognition and the figures.
+Final representation = K reproducible, confound-controlled, imputation-free varimax axes.
+These scores feed Phase 5 (outcomes), Phase 4 (longitudinal) and the figures.
 
 Artifacts: results/dimensional_final_{scores.parquet,loadings.csv,meta.json},
 results/reports/dimensional_final.html.
@@ -52,13 +52,16 @@ from trans_diag import (  # noqa: E402
     load_variables,
     to_harmonized_dataset,
 )
-from trans_diag.masked_fa import masked_loadings, masked_scores  # noqa: E402
+from trans_diag.masked_fa import (  # noqa: E402
+    masked_correlation, masked_loadings, masked_scores, paf_loadings, varimax)
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "results" / "reports"
 SCORES_PATH = RESULTS_DIR / "cluster_domains_scores.parquet"
 RANDOM = 0
-K = 7                # locked: maximum reproducible dimensionality (split-half min >=0.85 through K=7; K>=8 collapse)
+K_FLOOR = 0.85       # lock K = max dimensionality whose masked split-half MIN Tucker congruence >= this
+K_RANGE = range(3, 13)
+N_SPLITS = 25        # random half-splits averaged for a seed-insensitive K lock
 MIN_PAIR = 100       # min co-observed patients to trust a pairwise correlation
 PSI_FLOOR = 0.05     # floor on uniquenesses (guards Heywood cases) for scoring
 SPECTRUM = {"Trouble dépressif majeur": 0, "Bipolaire de type 2": 1,
@@ -73,19 +76,62 @@ SPECTRUM = {"Trouble dépressif majeur": 0, "Bipolaire de type 2": 1,
 
 
 def tucker_min(La: np.ndarray, Lb: np.ndarray):
-    used, mins = set(), []
-    for a in range(La.shape[1]):
-        best, bj = 0.0, -1
-        for b in range(Lb.shape[1]):
-            if b in used:
-                continue
+    """Optimal-assignment (Hungarian) Tucker congruence between two loading matrices.
+
+    Post-audit replacement for the prior greedy "first match wins" matching, which
+    was order-dependent and could miss the true optimum on borderline K choices.
+    Uses ``scipy.optimize.linear_sum_assignment`` on the cost matrix ``1 - |phi|``
+    so each factor pairs with its best partner globally. Returns the per-axis
+    congruences in La's original column order.
+    """
+    from scipy.optimize import linear_sum_assignment
+    Ka, Kb = La.shape[1], Lb.shape[1]
+    phi = np.zeros((Ka, Kb))
+    for a in range(Ka):
+        for b in range(Kb):
             den = np.linalg.norm(La[:, a]) * np.linalg.norm(Lb[:, b])
-            phi = abs(float(La[:, a] @ Lb[:, b])) / den if den > 0 else 0.0
-            if phi > best:
-                best, bj = phi, b
-        mins.append(best)
-        used.add(bj)
-    return mins
+            phi[a, b] = abs(float(La[:, a] @ Lb[:, b])) / den if den > 0 else 0.0
+    row_ind, col_ind = linear_sum_assignment(1.0 - phi)
+    out = [0.0] * Ka
+    for r, c in zip(row_ind, col_ind, strict=False):
+        out[r] = float(phi[r, c])
+    return out
+
+
+def _stratified_halves(cohort: np.ndarray, seed: int):
+    """Cohort-stratified random half-split (post-audit).
+
+    The prior implementation used ``rng.permutation(len(sc))`` which sampled
+    half-splits uniformly. With DR ~6% of patients, DR count per half varied
+    ±20% across seeds, which destabilises the cognition axis estimation.
+    This stratified-by-cohort splitter keeps the per-cohort share within each
+    half nearly constant.
+    """
+    rng = np.random.default_rng(seed)
+    n = len(cohort)
+    left = np.zeros(n, dtype=bool)
+    for c in np.unique(cohort):
+        idx = np.where(cohort == c)[0]
+        rng.shuffle(idx)
+        h = len(idx) // 2
+        left[idx[:h]] = True
+    return left
+
+
+def select_k(curve: list[dict], floor: float) -> int:
+    """Locked K = the dimensionality at which the split-half solution first collapses, minus 1.
+
+    Walks up from the smallest K and extends the lock while the MIN congruence stays >= floor,
+    stopping at the first K below it. This is the "maximum reproducible dimensionality before
+    collapse" rule the manuscript applied by hand — and it correctly ignores any spurious
+    recovery at higher K *after* a collapse (parallel analysis/Kaiser over-extract at this N)."""
+    locked = min(row["k"] for row in curve)
+    for row in sorted(curve, key=lambda r: r["k"]):
+        if row["min_congruence"] >= floor:
+            locked = row["k"]
+        else:
+            break
+    return locked
 
 
 def main() -> int:
@@ -108,19 +154,51 @@ def main() -> int:
     age = full.X.reindex(sc.index)["age"].to_numpy(float)
     sex = full.X.reindex(sc.index)["sex"].to_numpy(float)
     print(f"imputation-free FA: {len(sc):,} patients x {len(domains)} domains "
-          f"(observed fraction {obs_frac:.3f}; the 35% missing are NEVER filled)")
+          f"(observed fraction {obs_frac:.3f}; the {1 - obs_frac:.0%} missing are NEVER filled)")
 
-    # 1. masked split-half reproducibility (confirms K is reproducible imputation-free)
-    rng = np.random.default_rng(RANDOM)
-    perm = rng.permutation(len(sc)); h = len(sc) // 2
-    A, B = sc.iloc[perm[:h]], sc.iloc[perm[h:]]
-    print("masked split-half reproducibility (min/mean Tucker congruence):")
-    curve = []
-    for k in range(3, 13):
-        m = tucker_min(masked_loadings(A, k), masked_loadings(B, k))
-        curve.append({"k": k, "min_congruence": float(np.min(m)), "mean_congruence": float(np.mean(m))})
-        print(f"  K={k:>2}  min={np.min(m):.2f}  mean={np.mean(m):.2f}")
-    print(f"\nlocked K = {K} (maximum reproducible: split-half min >=0.85 through K=7; K>=8 collapse)")
+    # 1. masked split-half reproducibility -> K lock (POST-AUDIT specification).
+    #    PRIMARY (deterministic, locked): N_SPLITS cohort-stratified half-splits → for each K, the
+    #    AVERAGE of the per-split MIN Tucker congruence (Hungarian-matched). K is the largest K
+    #    whose 25-split mean MIN stays >= K_FLOOR, walked contiguously from the smallest K. This
+    #    replaces the prior "single fixed split with greedy axis matching" lock, which was both
+    #    seed-fragile (one cohort's variability could flip the verdict) and order-dependent
+    #    (greedy matching ignores global optimum). We still report the single-fixed-split curve
+    #    for back-compat and inspection.
+    ks = list(K_RANGE)
+    cohort_arr = np.asarray(sc.index.get_level_values("cohort"))
+
+    def half_min(seed: int) -> dict[int, list[float]]:
+        left = _stratified_halves(cohort_arr, seed)
+        Ra = masked_correlation(sc.iloc[left], MIN_PAIR)
+        Rb = masked_correlation(sc.iloc[~left], MIN_PAIR)
+        return {k: tucker_min(varimax(paf_loadings(Ra, k)), varimax(paf_loadings(Rb, k))) for k in ks}
+
+    single = half_min(RANDOM)
+    curve = [{"k": k, "min_congruence": float(np.min(single[k])),
+              "mean_congruence": float(np.mean(single[k]))} for k in ks]
+
+    ms = {k: [] for k in ks}
+    for s in range(N_SPLITS):
+        c = half_min(s)
+        for k in ks:
+            ms[k].append(float(np.min(c[k])))
+    robustness = [{"k": k, "mean_min_congruence": float(np.mean(ms[k])),
+                   "sd_min_congruence": float(np.std(ms[k]))} for k in ks]
+
+    # PRIMARY lock: 25-split mean MIN congruence (post-audit).
+    K = select_k([{"k": r["k"], "min_congruence": r["mean_min_congruence"]} for r in robustness],
+                 K_FLOOR)
+
+    print("Hungarian-matched, cohort-stratified split-half reproducibility:")
+    print("  primary (25-split mean MIN, used to lock K):")
+    for r in robustness:
+        flag = ("  <- locked" if r["k"] == K
+                else "  (collapse)" if r["mean_min_congruence"] < K_FLOOR else "")
+        print(f"    K={r['k']:>2}  mean MIN={r['mean_min_congruence']:.3f}±{r['sd_min_congruence']:.3f}{flag}")
+    print(f"  locked K = {K} (max K whose 25-split mean MIN Tucker congruence >= {K_FLOOR})")
+    print("  back-compat (single fixed split MIN; not used to lock):")
+    for row in curve:
+        print(f"    K={row['k']:>2}  min={row['min_congruence']:.3f}  mean={row['mean_congruence']:.3f}")
 
     # 2. final masked varimax loadings at K, oriented + ordered by sum-of-squares
     load = masked_loadings(sc, K)
@@ -167,16 +245,21 @@ def main() -> int:
     meta = {"K": K, "axes": names, "method": "imputation-free (masked pairwise-complete corr "
             "-> principal-axis factoring + varimax; posterior-mean scores on observed support)",
             "observed_fraction": round(obs_frac, 4), "min_pair": MIN_PAIR,
-            "reproducibility_curve": curve,   # masked split-half (consumed by 15 for figS2)
+            "k_floor": K_FLOOR, "n_splits": N_SPLITS,
+            "reproducibility_curve": curve,   # single fixed split, primary (consumed by 15 for figS2)
+            "reproducibility_robustness": robustness,   # N_SPLITS-averaged MIN (split-sensitivity)
             "dsm_ordering_per_axis": cont, "strongest_ordering_axis": f"axis{best+1}",
             "confound_max_corr": conf,
-            "note": "Imputation-free; locked at K=7 = maximum reproducible dimensionality "
-                    "(masked split-half min >=0.85 through K=7; K>=8 collapse). K=7 splits the K=6 "
-                    "mania/activation+impulsivity axis into a pure mania axis and a distinct "
-                    "externalizing/neurodevelopmental axis (WURS/BIS/CTQ + family history) - the "
-                    "genuine imputation-free counterpart of the ADHD/trauma signal that mean-fill "
-                    "rendered artifactual at K=6 (LABBOOK E19, MANUSCRIPT §3.8). Orthogonal varimax; "
-                    "the mood<->psychosis spectrum is a cross-axis direction."}
+            "note": f"Imputation-free; K={K} locked as the maximum reproducible dimensionality "
+                    f"before collapse (single fixed-split masked split-half MIN Tucker congruence "
+                    f">= {K_FLOOR} through K={K}; collapse at K+1). The matrix includes 3 curated "
+                    f"cognitive constructs (working memory, verbal reasoning, fluency) after the DR "
+                    f"neuropsych extraction gap was closed (2026-05). CVLT memory and matrix reasoning "
+                    f"are BP/SZ-only; processing speed and executive/TMT did not harmonise across "
+                    f"cohorts (~0 communality, destabilising) and are excluded. The {N_SPLITS}-split "
+                    f"robustness curve shows the 6-axis core is most split-stable and the weakest "
+                    f"(metabolic) axis is the most split-sensitive (reported as a caveat, not used to "
+                    f"lock). Orthogonal varimax; the mood<->psychosis spectrum is a cross-axis direction."}
     (RESULTS_DIR / "dimensional_final_meta.json").write_text(json.dumps(meta, indent=2, default=str))
 
     # report

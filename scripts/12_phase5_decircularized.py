@@ -23,6 +23,7 @@ Writes results/phase5_decircularized.csv. Run: python3 scripts/12_phase5_decircu
 """
 from __future__ import annotations
 
+import json
 import sys
 import warnings
 from pathlib import Path
@@ -38,17 +39,22 @@ from trans_diag.masked_fa import (  # noqa: E402  (same estimator as 07)
     masked_loadings,
     masked_scores,
 )
-from trans_diag.outcomes import cv_metric  # noqa: E402  (reuse the exact CV metric)
+from trans_diag.outcomes import (  # noqa: E402  (reuse the exact CV metric)
+    apply_outcome_tf,
+    cohort_dummies,
+    cv_metric,
+)
 
 RES = REPO / "results"
-SCORES = RES / "cluster_domains_scores.parquet"     # residualized 54 domains
-K = 7
+SCORES = RES / "cluster_domains_scores.parquet"     # residualized domain scores
+K = json.loads((RES / "dimensional_final_meta.json").read_text())["K"]  # locked by 07
 # (name, kind, outcome_col, transform, exclude_from_axes)
 OUTCOMES = [
     ("EQ-5D quality of life", "continuous", "eq5d", None, ["eq5d", "eq"]),
     ("EGF functioning", "continuous", "egf", None, ["egf", "fast"]),
     ("any hospitalization", "binary", "nboccur_hospitalisation_lt",
-     lambda s: (s > 0).astype(float), ["nboccur_hospitalisation_lt", "hodur_hospitalisation_lt"]),
+     lambda y0, yk: (yk > 0).astype(float),
+     ["nboccur_hospitalisation_lt", "hodur_hospitalisation_lt"]),
 ]
 
 
@@ -96,6 +102,11 @@ def main() -> int:
     dsm = pd.get_dummies(v0["arm"].astype(str), drop_first=True).astype(float)
     dsm_cols = list(dsm.columns)
     base = base.join(dsm)
+    # Post-audit: add cohort dummies for fair head-to-head parity (M0_arm
+    # encodes cohort via the 7-level arm; the axes model without cohort was
+    # forced to act as a cohort surrogate). See 10_phase5_outcomes.py for context.
+    cohort_dum, cohort_cols = cohort_dummies(v0["cohort"])
+    base = base.join(cohort_dum)
 
     axes_full = fit_axes(sc, exclude=[])               # ≈ locked (circular) axes
     axis_cols = list(axes_full.columns)
@@ -106,8 +117,10 @@ def main() -> int:
             continue
         axes_clean = fit_axes(sc, exclude=excl)
         y0 = pd.to_numeric(v0[col], errors="coerce").rename("baseline")
-        yk = pd.to_numeric(v1[col], errors="coerce")
-        yk = tf(yk) if tf is not None else yk
+        # align V1 to V0's patient index (different patient sets)
+        yk = pd.to_numeric(v1[col], errors="coerce").reindex(y0.index)
+        if tf is not None:
+            yk = apply_outcome_tf(y0, yk, tf)
         bc = ["baseline", "age", "sex"]
         d = (base.join(y0).join(yk.rename("y"))
              .join(axes_full.add_suffix("_f")).join(axes_clean.add_suffix("_c"))
@@ -119,18 +132,28 @@ def main() -> int:
             continue
         n = len(d); y = d["y"].to_numpy(float)
         m0 = cv_metric(d[bc + dsm_cols].to_numpy(float), y, kind)
-        m1_full = cv_metric(d[bc + [f"{a}_f" for a in axis_cols]].to_numpy(float), y, kind)
-        m1_clean = cv_metric(d[bc + [f"{a}_c" for a in axis_cols]].to_numpy(float), y, kind)
+        # axes_full / axes_clean with cohort parity (post-audit fair comparator)
+        m1_full = cv_metric(d[bc + cohort_cols + [f"{a}_f" for a in axis_cols]].to_numpy(float),
+                            y, kind)
+        m1_clean = cv_metric(d[bc + cohort_cols + [f"{a}_c" for a in axis_cols]].to_numpy(float),
+                             y, kind)
+        # Also keep an axes-alone (no cohort) row for backward comparison
+        m1_clean_orig = cv_metric(d[bc + [f"{a}_c" for a in axis_cols]].to_numpy(float), y, kind)
         m2_clean = cv_metric(d[bc + dsm_cols + [f"{a}_c" for a in axis_cols]].to_numpy(float), y, kind)
         metric = "R2" if kind == "continuous" else "AUC"
         rows.append({"outcome": name, "n": n, "metric": metric, "excluded": "+".join(excl),
-                     "DSM": round(m0, 3), "axes_full": round(m1_full, 3),
-                     "axes_clean": round(m1_clean, 3), "combined_clean": round(m2_clean, 3),
-                     "full_minus_DSM": round(m1_full - m0, 3),
-                     "clean_minus_DSM": round(m1_clean - m0, 3),
+                     "DSM": round(m0, 3),
+                     "axes_full_fair": round(m1_full, 3),
+                     "axes_clean_fair": round(m1_clean, 3),
+                     "axes_clean_orig": round(m1_clean_orig, 3),
+                     "combined_clean": round(m2_clean, 3),
+                     "full_fair_minus_DSM": round(m1_full - m0, 3),
+                     "clean_fair_minus_DSM": round(m1_clean - m0, 3),
+                     "clean_orig_minus_DSM": round(m1_clean_orig - m0, 3),
                      "combined_minus_DSM": round(m2_clean - m0, 3)})
-        print(f"{name}: n={n} {metric}  DSM={m0:.3f} | axes_full={m1_full:.3f} "
-              f"(Δ{m1_full-m0:+.3f}) → axes_clean={m1_clean:.3f} (Δ{m1_clean-m0:+.3f}) | "
+        print(f"{name}: n={n} {metric}  DSM={m0:.3f} | axes_full(fair)={m1_full:.3f} "
+              f"(Δ{m1_full-m0:+.3f}) → axes_clean(fair)={m1_clean:.3f} "
+              f"(Δ{m1_clean-m0:+.3f}; orig {m1_clean_orig:.3f} Δ{m1_clean_orig-m0:+.3f}) | "
               f"combined_clean={m2_clean:.3f} (Δ{m2_clean-m0:+.3f})   [drop {excl}]")
     out = pd.DataFrame(rows)
     out.to_csv(RES / "phase5_decircularized.csv", index=False)

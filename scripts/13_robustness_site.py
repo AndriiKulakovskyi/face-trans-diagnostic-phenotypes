@@ -32,11 +32,18 @@ from sklearn.impute import SimpleImputer  # noqa: E402
 from sklearn.preprocessing import StandardScaler  # noqa: E402
 
 from trans_diag import AXIS_NAMES, build_unified_dataframe  # noqa: E402
-from trans_diag.outcomes import OUTCOMES, added_axes_test, cv_metric  # noqa: E402
+from trans_diag.outcomes import (  # noqa: E402
+    OUTCOMES,
+    added_axes_test,
+    apply_outcome_tf,
+    cohort_dummies,
+    cv_metric,
+)
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "results" / "reports"
-K, RANDOM = 7, 0
+K = json.loads((RESULTS_DIR / "dimensional_final_meta.json").read_text())["K"]  # locked by 07
+RANDOM = 0
 # AXIS_NAMES (axis1..7 SS order) imported from trans_diag.axes — single source of truth.
 
 
@@ -112,30 +119,37 @@ def main() -> int:
     vk = df[df["visit"] == "V1"].drop_duplicates("pid").set_index("pid")
     arm = pd.get_dummies(v0["arm"].reindex(sc.index).astype(str), drop_first=True).astype(float)
     dsm_cols = list(arm.columns)
-    base = pd.DataFrame({"age": age, "sex": sex}, index=sc.index).join(arm).join(axes_c)
+    # post-audit: cohort dummies for fair head-to-head parity
+    cohort_dum, cohort_cols = cohort_dummies(cohort)
+    base = (pd.DataFrame({"age": age, "sex": sex}, index=sc.index)
+            .join(arm).join(cohort_dum).join(axes_c))
     orig = pd.read_csv(RESULTS_DIR / "phase5_headtohead_V1.csv").set_index("outcome")
     rows = []
     for name, kind, col, tf in OUTCOMES:
         y0 = pd.to_numeric(v0[col], errors="coerce").reindex(sc.index).rename("baseline")
         yk = pd.to_numeric(vk[col], errors="coerce").reindex(sc.index)
         if tf is not None:
-            yk = tf(yk)
+            yk = apply_outcome_tf(y0, yk, tf)
         d = base.join(y0).join(yk.rename("y")).dropna(subset=["y", "baseline", "age", "sex"] + AXIS_NAMES)
         if len(d) < 200 or (kind == "binary" and d["y"].nunique() < 2):
             continue
         bc = ["baseline", "age", "sex"]
         yv = d["y"].to_numpy(float)
         m0 = cv_metric(d[bc + dsm_cols].to_numpy(float), yv, kind)
-        m1 = cv_metric(d[bc + AXIS_NAMES].to_numpy(float), yv, kind)
+        m1_orig = cv_metric(d[bc + AXIS_NAMES].to_numpy(float), yv, kind)
+        m1_fair = cv_metric(d[bc + cohort_cols + AXIS_NAMES].to_numpy(float), yv, kind)
         m2 = cv_metric(d[bc + dsm_cols + AXIS_NAMES].to_numpy(float), yv, kind)
         p = added_axes_test(d, bc, dsm_cols, AXIS_NAMES, yv, kind)
         rows.append({"outcome": name, "n": len(d), "metric": orig.loc[name, "metric"] if name in orig.index else "",
-                     "DSM": round(m0, 3), "axes": round(m1, 3), "combined": round(m2, 3),
-                     "combat_axes_minus_DSM": round(m1 - m0, 3),
-                     "orig_axes_minus_DSM": orig.loc[name, "axes_minus_DSM"] if name in orig.index else np.nan,
+                     "DSM": round(m0, 3),
+                     "axes_orig": round(m1_orig, 3),
+                     "axes_fair": round(m1_fair, 3),
+                     "combined": round(m2, 3),
+                     "combat_axes_orig_minus_DSM": round(m1_orig - m0, 3),
+                     "combat_axes_fair_minus_DSM": round(m1_fair - m0, 3),
                      "added_axes_p": p})
-        print(f"  {name}: ComBat axes−DSM {m1-m0:+.3f} (orig {orig.loc[name,'axes_minus_DSM']:+}); "
-              f"combined={m2:.3f}")
+        print(f"  {name}: ComBat axes(orig)−DSM {m1_orig-m0:+.3f}  "
+              f"axes(fair)−DSM {m1_fair-m0:+.3f};  combined={m2:.3f}")
     head = pd.DataFrame(rows)
 
     meta = {"n": int(len(sc)), "n_sites": int(site.nunique()),
@@ -149,19 +163,23 @@ def main() -> int:
 
 def _report(cong, site_shift, head):
     rows = "".join(
-        f"<tr><td>{r.outcome}</td><td>{r.n}</td><td>{r.DSM}</td><td>{r.axes}</td>"
-        f"<td>{r.combined}</td><td><b>{r.combat_axes_minus_DSM:+}</b></td>"
-        f"<td>{r.orig_axes_minus_DSM:+}</td><td>{r.added_axes_p:.1e}</td></tr>"
+        f"<tr><td>{r.outcome}</td><td>{r.n}</td><td>{r.DSM}</td>"
+        f"<td>{r.axes_orig}</td><td>{r.axes_fair}</td><td>{r.combined}</td>"
+        f"<td>{r.combat_axes_orig_minus_DSM:+}</td>"
+        f"<td><b>{r.combat_axes_fair_minus_DSM:+}</b></td>"
+        f"<td>{r.added_axes_p:.1e}</td></tr>"
         for r in head.itertuples())
     css = "body{font-family:-apple-system,Segoe UI,sans-serif;margin:0;padding:0 24px 60px}h1{color:#2b3a55}table{border-collapse:collapse;font-size:13px;margin:12px 0}th,td{border:1px solid #e5e7eb;padding:5px 10px}th{background:#eef2f7}.c{background:#f2fbf6;border-left:4px solid #16a085;padding:10px 14px;margin:12px 0}"
     html = [f"<!DOCTYPE html><html><head><meta charset='utf-8'><style>{css}</style></head><body>",
             "<h1>Robustness — site (ComBat) harmonization</h1>",
             f"<div class='c'>Axes survive site harmonization (Tucker congruence with the "
             f"locked axes: {cong}). Site batch magnitude = {site_shift:.3f} of an SD. "
-            "Phase-5 head-to-head re-run on ComBat axes below (compare ComBat vs original "
-            "'axes−DSM').</div>",
-            "<table><tr><th>outcome</th><th>n</th><th>DSM</th><th>axes</th><th>combined</th>"
-            "<th>ComBat axes−DSM</th><th>orig axes−DSM</th><th>added-axes p</th></tr>",
+            "Phase-5 head-to-head re-run on ComBat axes below. <b>axes(orig)</b> = axes "
+            "alone (pre-audit, biased — no cohort); <b>axes(fair)</b> = axes + cohort dummies "
+            "(post-audit, cohort parity with DSM).</div>",
+            "<table><tr><th>outcome</th><th>n</th><th>DSM</th>"
+            "<th>axes (orig)</th><th>axes (fair)</th><th>combined</th>"
+            "<th>orig−DSM</th><th>fair−DSM</th><th>added-axes p</th></tr>",
             rows, "</table></body></html>"]
     (REPORTS_DIR / "robustness_site.html").write_text("\n".join(html), encoding="utf-8")
 

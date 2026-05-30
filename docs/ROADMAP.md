@@ -228,8 +228,9 @@ face-common-bp-sz-dr/
   burden, high-functioning, manic-activation, somatic/medication-burden**
   (`results/reports/cluster_domains.html`; FINDINGS §3b). The metabolic axis is recovered
   with explicit composite direction (resolves the §3 ⚠️ for our data).
-- [ ] Remaining: age-dCor residual (0.117); cognition domains; READY-only
-      ablation; negative controls (§7).
+- [x] Cognition domains — **DONE (LABBOOK E26, 2026-05)**: DR neuropsych recovered; one
+      confound-clean cognitive axis (`cognition_verbal`) folded into the main model (now K=6).
+- [ ] Remaining: age-dCor residual (0.117); READY-only ablation; negative controls (§7).
 
 ### Phase 4 — Longitudinal coherence (our core) — **DONE**
 - [x] `scripts/09_longitudinal_coherence.py`: SAME domain scores at every visit

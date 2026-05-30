@@ -8,6 +8,14 @@ this file is the "what we actually learned". (Early-phase exploratory scripts
 named in §2–§3 — `cluster_v0*.py`, `reproduce_v0_clusters.py` — were superseded
 and removed in the independence refactor; see LABBOOK E18.)
 
+> **2026-05 POST-AUDIT REVISION — see §3k.** A methodological audit revealed
+> that the original V1 head-to-head specification was unfair: M0 carried 7-level
+> ``arm`` dummies (which encode cohort + within-cohort subtype) but M1 omitted
+> cohort entirely, forcing the axes to act as cohort surrogate when competing
+> with arm. Restoring cohort parity (adding 2 cohort dummies to M1) **changes the
+> EGF and hospitalization conclusions but preserves the QoL headline**. New numbers
+> in §3k; the §3e / §3g paragraphs below reflect the corrected story.
+
 ## 1. Data & reconciliation
 - **9,013 V0 patients**: BP 6,252 / SZ 2,209 / DR 552.
 - `patient_uid = cohort::usubjid_patients` — `usubjid` collides across cohorts
@@ -286,27 +294,33 @@ per-visit-age residualized; the refit axes match the locked set, Tucker congruen
   predictable from the observation mask alone** (shuffled CV) (cohorts got different instrument batteries);
   the dimensional verdict is unaffected (still no trans-diagnostic discrete clusters).
 
-### 3h. Cognition (BP/SZ complementary analysis)
-Cognition is absent in DR **by design** (0% vs BP 71% / SZ 86%) — including it in the
-3-cohort model would re-inject a cohort/availability confound — so it is analysed within
-BP/SZ (`scripts/14_cognition_bpsz.py`; 6,099 patients). To stop WAIS sub-items dominating
-by count, raw items are aggregated **items → instrument stem-domains → 7 standard
-constructs** (memory[CVLT], executive[TMT], processing speed, working memory, verbal &
-perceptual reasoning, fluency; TMT reverse-signed — confirmed −0.16 vs CVLT).
-- **Two cognitive factors** (parallel analysis K=2): a broad **general-ability factor**
-  (perceptual/verbal reasoning + working memory + memory) and a **processing-speed**
-  factor — the classic g + speed structure.
-- **Cognition is semi-independent of the symptom axes** (max |r| 0.24): the clearest
-  link is **general cognition ↔ illness-burden (−0.24)** (lower ability with more chronic
-  illness burden), then ↔ metabolic (−0.16) and depression-severity (−0.13). Not
-  redundant with symptoms (matches the cognition-vs-symptom literature).
-- **Small, non-redundant increment to functioning** (V1 EGF, BP/SZ n=2,478): symptom-axes
-  R² 0.394 → +cognition 0.398 (Δ **+0.004**; shuffled CV) — modest but independent.
+### 3h. Cognition — now one of the trans-diagnostic dimensions (DR gap closed 2026-05; §2.12/§3.7; LABBOOK E26)
+The earlier "cognition absent in DR **by design** (0% vs BP 71% / SZ 86%)" was a data-EXTRACTION artifact;
+a full DR export recovered the NEUROPSYCHOLOGIE block (V0 coverage ~57%, vs BP ~68% / SZ ~80%). Cognition
+now enters the **main** masked-FA model as curated constructs (items → instrument stem-domains →
+constructs, so WAIS sub-items don't dominate by count). A confound battery (`15` #10 + `21`) decided which
+constructs are admissible across all three cohorts:
+- **Admitted — one genuine cognitive axis (`cognition_verbal`)**: verbal reasoning + working memory
+  (+ education + functioning load). Confound-clean: cohort η² 0.072, site 0.043, not predictable from
+  test-availability (R² 0.002), transports leave-DR-out (congruence 1.0) / leave-SZ-out (0.91).
+- **Excluded — processing speed & executive/TMT**: each cohort ran different timed subtests; the pooled
+  constructs have ~0 communality and destabilise the solution (could not be harmonised across cohorts).
+- **Excluded — verbal fluency**: its axis was a cohort artifact (cohort η² 0.46, survived within-cohort
+  data permutation at 0.95, collapsed leave-BP-out 0.10).
+- **Excluded — CVLT memory & matrix reasoning**: BP/SZ-only (DR never administered them).
+- **Semi-independent of the symptom axes** and ~57% reconstructable from routine items (education +
+  functioning) — a clinic can approximate it without neuropsych testing. Moderately trait-like (V0↔V1
+  r 0.31). DSM-subtype η² 0.13 (the highest of the six axes — SZ scores lower on verbal cognition).
 
-### 3i. K=7 re-lock — the externalizing axis (CURRENT headline; supersedes the K=6 framing in §3d–§3g)
-The masked split-half curve is non-monotone: K=6 dips (min 0.886) and **K=7 recovers (min 0.911)** — a
-local maximum and the **maximum reproducible dimensionality** (K≥8 collapse, K=8 min 0.22; parallel
-analysis over-extracts to ~14 at this N, so we select on cross-sample reproducibility, not eigenvalues).
+### 3i. K=6 re-lock — cognition integrated (CURRENT headline; supersedes the symptom-only K=7 framing below and in §3d–§3g)
+With cognition in the matrix, the deterministic single-split masked split-half curve gives **K=6** (min
+0.94 through K=6; **K≥7 collapses**, K=7 min 0.21; a 25-split robustness curve corroborates the 6-axis core
+and is reported as a caveat). The six axes: depression, later-onset, mania/activation (+externalizing
+re-merged), illness-burden, **cognition_verbal**, metabolic. *Historical note (symptom-only model, pre-2026
+cognition integration):* without cognition the curve recovered a 7th symptom axis — a pure-mania axis split
+from a separate externalizing/neurodevelopmental axis, with a distinct work-disability axis — but that K=7
+was seed-fragile under multi-seed resampling; admitting cognition re-merges mania/externalizing and absorbs
+work-disability, leaving the reproducible K=6.
 We therefore re-locked the headline at **K=7** (`07_dimensional_refine.py`). The seventh axis is *not* a
 splinter: it **splits the K=6 mania+impulsivity factor** into a **pure mania** axis and a genuine
 **externalizing/neurodevelopmental** axis — WURS (childhood ADHD) +0.53, BIS +0.40, CTQ +0.38, + family
@@ -342,6 +356,104 @@ illness-burden (0.79) at a small cost to depression (0.75)/externalizing (0.62) 
 smaller QoL edge (+0.025 [+0.022,+0.028]). An explicit parsimony-vs-coverage trade-off. A research-grade draft, not a validated instrument.
 MANUSCRIPT §2.13/§4.5/Table 5/Fig 7; LABBOOK E25. (State/trait — reviewer 2.2 — deferred to a
 follow-up: MixedLM variance-components on the longitudinal scores.)
+
+### 3k. Post-audit head-to-head (2026-05) — comparator parity changes the story
+**Issue (audit S1).** The Phase-5 head-to-head reported a 0.141 AUC gap on
+hospitalization ("DSM dominates") and a near-zero EGF gap ("axes complement
+DSM but do not beat it alone"). Audit of `10_phase5_outcomes.py` showed M0 included
+the 7-level ``arm`` dummies (which encode cohort + within-cohort subtype) while
+M1 omitted cohort entirely. The axes thus had to act as a cohort surrogate when
+competing against arm, which is exactly the kind of nuisance the dimensional model
+was supposed to control. To restore comparator parity, M1 now includes 2 cohort
+dummies (drop-first), and the full head-to-head is reported with both the
+**original** specification (no cohort in M1, ``axes_orig``) and the **fair**
+specification (cohort dummies added to M1, ``axes_fair``). Same arm dummies on
+M0/M2 (no change).
+
+**Hospitalization data interpretation (audit S2 — partial reversal).** The audit
+initially proposed redefining hospitalization as "incident" between V0 and V1
+(``V1_lt > V0_lt``) on the assumption that ``nboccur_hospitalisation_lt`` is a
+true lifetime count. Investigation revealed the column is **mixed**: at V0 it is
+lifetime (mean 2.73, P(>0)=0.81), at V1 onwards it is an **interval count since
+last visit** (mean 0.18, P(>0)=0.14). So the original outcome ``(V1_lt > 0)``
+was already capturing incident hospitalization, and the V0 lifetime baseline is
+genuine prior-history information, not a near-tautological predictor. The outcome
+spec is therefore retained; the documentation in `outcomes.py` is updated to
+explain the column semantics.
+
+**Numbers (V1, post-audit `10_phase5_outcomes.py`).**
+
+| outcome | n | DSM | axes(orig) | axes(fair) | combined | axes(orig)−DSM | axes(fair)−DSM |
+|---|--:|--:|--:|--:|--:|--:|--:|
+| EQ-5D quality of life (R²) | 2,423 | 0.305 | 0.342 | **0.343** | 0.346 | +0.037 | **+0.039** |
+| EGF functioning (R²) | 3,196 | 0.366 | 0.364 | **0.400** | 0.399 | -0.001 | **+0.035** |
+| any hospitalization (AUC) | 6,753 | 0.749 | 0.585 | **0.743** | 0.747 | -0.165 | **-0.006** |
+
+The fair head-to-head **strengthens the QoL finding** (+0.039 vs +0.037), **flips
+the EGF finding** from "complement only" to "axes beat DSM by +0.035 (alone, not
+combined)", and **collapses the hospitalization gap** from -0.165 to -0.006 — the
+0.141 AUC gap was almost entirely a cohort-omission artifact, not a genuine "DSM
+dominates service use" result. (Hospitalization is now best read as: the axes and
+DSM are *equivalent* predictors once cohort is controlled.) V2 reproduces the
+pattern with an even stronger EGF gain (+0.055). The added-axes p remains
+significant for hospitalization (p=6.5e-3): axes still carry information not in
+arm, but on the M2-vs-M0 axis rather than M1-vs-M0.
+
+**Raw clinical-scales comparator (audit T3 #12).** A new ``scales`` comparator
+in `10_phase5_outcomes.py` adds raw QIDS, MADRS, STAI domain scores to DSM (on
+the patient subset where all three are observed). Findings:
+
+| outcome | n (scales subset) | scales−DSM | axes(fair)−scales |
+|---|--:|--:|--:|
+| EQ-5D quality of life (R²) | 1,760 | +0.007 | **+0.034** |
+| EGF functioning (R²) | 2,285 | +0.025 | **+0.034** |
+| any hospitalization (AUC) | 4,768 | +0.007 | -0.014 |
+
+The dimensional axes add **+0.034** beyond raw QIDS+MADRS+STAI on both QoL and
+EGF — so the dimensional model is not just a re-labelling of standard depression
+scales. (For hospitalization, axes ≈ scales ≈ DSM, all within ±0.014.)
+
+**Robustness (post-audit, all using the fair M1).**
+
+- *V2 follow-up* (`10 --visit V2`; same patients): EGF axes(fair)−DSM = **+0.055**,
+  QoL +0.031, hosp -0.012 — same qualitative pattern as V1, often stronger.
+- *De-circularization* (`12_phase5_decircularized.py`, drop each outcome's own
+  measures from the FA): EGF +0.031, QoL +0.039, hosp -0.005. Robust.
+- *Site harmonization* (`13_robustness_site.py`, ComBat on the 20 sites with ≥10
+  patients): EGF +0.022, QoL +0.034, hosp -0.015. The cognition axis individually
+  fails to transport under ComBat (per-axis congruence 0.20; ComBat's
+  median-imputation hits its sparser cells), but the head-to-head holds.
+- *Fold-honest refit* (`20_robustness_cvrefit.py`, refit masked FA inside each
+  training fold, 5× shuffled 5-fold): EGF +0.036 [+0.035,+0.037], QoL +0.040
+  [+0.038,+0.041], hosp -0.001 [-0.005,+0.003] — optimism removed is **≈0**.
+- *Leave-one-site-out* (`21_replication_holdout.py`): EGF +0.034, QoL +0.040,
+  hosp -0.000. Transports cleanly to unseen sites.
+
+**Caveats / open work after audit.**
+
+- *Hospitalization tie* is genuine: once cohort is controlled, the axes and DSM
+  carry the same incremental information for incident hospitalization risk
+  (p_added 6.5e-3 says they contain a *little* non-overlapping signal, but the
+  AUC delta is in the noise).
+- *Leave-one-cohort-out structure* still breaks when BP is held out (min
+  congruence 0.37 across axes). BP is 69% of the sample and carries most of the
+  mania/cognition/metabolic coverage, so SZ+DR alone cannot stably re-estimate
+  these axes. Unchanged from the pre-audit pipeline.
+- *Patient-cluster bootstrap CIs* added to `11_phase5_ci.py` alongside the
+  fold-partition CIs. The headline +0.04 QoL gap survives the broader bootstrap
+  interval (see `phase5_ci.csv` columns ``dim_minus_DSM_boot`` and
+  ``combined_minus_DSM_boot``).
+- *Residualization in-fold* (audit T1 #3) and *Thomson-score rescaling* (T2 #5)
+  are not implemented: the CV-refit optimism is already ≈0 (so per-fold
+  age/sex residualization would not move numbers measurably), and the cohort
+  dummies in M1 absorb the cohort-magnitude effect that the rescaling would
+  address. Both flagged in CLAUDE.md as future v2 methodology upgrades.
+
+**K-selection (audit T2 #6).** ``07_dimensional_refine.py`` now uses Hungarian
+(optimal-assignment) Tucker matching and cohort-stratified half-splits, and
+locks K on the **25-split mean** MIN congruence (not a single fixed split).
+Lock confirmed at **K=6**: see ``results/dimensional_final_meta.json`` for the
+new ``reproducibility_robustness`` curve.
 
 ## 4. The scientific fork (framing)
 Two mutually-exclusive products, because **diagnosis + demographics are the

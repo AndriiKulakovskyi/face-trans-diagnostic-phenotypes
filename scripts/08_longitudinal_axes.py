@@ -50,7 +50,7 @@ from trans_diag.masked_fa import masked_scores  # noqa: E402
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "results" / "reports"
 VISITS = ["V0", "V1", "V2", "V3", "V4"]
-K = 7
+K = json.loads((RESULTS_DIR / "dimensional_final_meta.json").read_text())["K"]  # locked by 07
 SPLINE_DF, CROSS_FIT, RANDOM = 4, 5, 0
 # AXIS_NAMES (axis1..7 SS order) is the shared constant in trans_diag.axes — imported above.
 

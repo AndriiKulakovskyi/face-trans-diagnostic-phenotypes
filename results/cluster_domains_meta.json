@@ -12,7 +12,7 @@
     "spline_df": 4,
     "cross_fit": 5
   },
-  "n_domains": 54,
+  "n_domains": 53,
   "dropped_domains": [
     "agefin_cigarettes_lt",
     "cedecodtrouble_humeur_actuel",
@@ -21,7 +21,6 @@
     "chrontrouble_humeur_actuel",
     "cssrs",
     "dysthyro_mhmodify",
-    "empjob",
     "hodur_arret_travail",
     "hodur_arret_travail_actuel",
     "hormonal_rporres",
@@ -33,20 +32,30 @@
     "mdq",
     "pparttrouble_humeur_actuel"
   ],
+  "n_cognition_domains": 2,
+  "cognition_cohort_coverage": {
+    "working_memory": {
+      "bp": 0.677,
+      "dr": 0.556,
+      "sz": 0.82
+    },
+    "verbal_reasoning": {
+      "bp": 0.071,
+      "dr": 0.549,
+      "sz": 0.811
+    }
+  },
   "embedding_dim": 36,
-  "headline_k": 5,
+  "headline_k": 2,
   "cluster_sizes": {
-    "0": 1962,
-    "1": 2252,
-    "2": 1267,
-    "3": 1430,
-    "4": 2102
+    "0": 1942,
+    "1": 7071
   },
   "independence": {
-    "sex_cramersV": 0.041477922784239646,
-    "age_dcor": 0.11713795487907723,
-    "age_tertile_ari": 0.005545742780459529,
-    "cohort_ari": 0.001664277220429034
+    "sex_cramersV": 0.0037581310505091763,
+    "age_dcor": 0.07081644002858763,
+    "age_tertile_ari": 0.0006237881508678975,
+    "cohort_ari": 0.00459311104613889
   },
   "site_note": "site (siteid_city) excluded; ComBat sensitivity analysis deferred (task #43)"
 }

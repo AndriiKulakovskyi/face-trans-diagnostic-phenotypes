@@ -1,22 +1,20 @@
 {
-  "K": 7,
+  "K": 6,
   "axis_names": [
     "depression_severity",
     "later_onset",
-    "illness_burden",
     "mania_activation",
-    "externalizing",
-    "metabolic",
-    "work_disability"
+    "illness_burden",
+    "cognition_verbal",
+    "metabolic"
   ],
   "method": "locked imputation-free V0 loadings projected via masked scoring (no imputation)",
   "trait_state_meanr_V1V2": {
-    "metabolic": 0.627,
-    "depression_severity": 0.55,
-    "illness_burden": 0.354,
-    "externalizing": 0.29,
-    "mania_activation": 0.248,
-    "work_disability": 0.243,
-    "later_onset": 0.092
+    "metabolic": 0.612,
+    "depression_severity": 0.547,
+    "cognition_verbal": 0.329,
+    "illness_burden": 0.3,
+    "mania_activation": 0.284,
+    "later_onset": 0.088
   }
 }

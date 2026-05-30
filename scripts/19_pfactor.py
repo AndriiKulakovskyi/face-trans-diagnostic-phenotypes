@@ -38,11 +38,15 @@ from trans_diag.masked_fa import (  # noqa: E402
     paf_loadings,
     varimax,
 )
-from trans_diag.outcomes import OUTCOMES, cv_metric  # noqa: E402
+from trans_diag.outcomes import (  # noqa: E402
+    OUTCOMES,
+    apply_outcome_tf,
+    cv_metric,
+)
 
 RESULTS_DIR = REPO_ROOT / "results"
 REPORTS_DIR = REPO_ROOT / "results" / "reports"
-K = 7
+K = json.loads((RESULTS_DIR / "dimensional_final_meta.json").read_text())["K"]  # locked by 07
 
 
 def promax_phi(L: np.ndarray, power: int = 4) -> np.ndarray:
@@ -126,9 +130,9 @@ def main() -> int:
         if col not in df.columns:
             continue
         y0 = pd.to_numeric(v0[col], errors="coerce").rename("baseline")
-        yk = pd.to_numeric(vk[col], errors="coerce")
+        yk = pd.to_numeric(vk[col], errors="coerce").reindex(y0.index)
         if tf is not None:
-            yk = tf(yk)
+            yk = apply_outcome_tf(y0, yk, tf)
         d = base.join(y0).join(yk.rename("y")).dropna(subset=["y", "baseline", "age", "sex", "p_score"])
         if kind == "binary" and (d["y"].nunique() < 2 or d["y"].mean() < 0.02):
             continue

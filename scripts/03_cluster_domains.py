@@ -50,6 +50,7 @@ from sklearn.metrics import (  # noqa: E402
 
 from trans_diag import (  # noqa: E402
     ADMINISTRATIVE_FEATURES,
+    COGNITIVE_COMPOSITES,
     DOMAIN_SECTIONS,
     build_domain_scores,
     build_unified_dataframe,
@@ -227,14 +228,40 @@ def main() -> int:
         full = to_harmonized_dataset(df, variables, visit="V0",
                                      exclude=ADMINISTRATIVE_FEATURES)  # for age/sex covariates
 
-    scores, meta = build_domain_scores(raw.X, variables)
+    scores, meta = build_domain_scores(raw.X, variables, cognition=COGNITIVE_COMPOSITES)
     kinds = meta["kind"].to_dict()
+    # Per-cohort coverage of the cognitive constructs — documents that the recovered
+    # neuropsych block is genuinely 3-cohort (input to the availability-confound check, 15).
+    cog_domains = [d for d, k in kinds.items() if k == "cognition"]
+    cog_cohort_cov = {}
+    if cog_domains:
+        coh = scores.index.get_level_values("cohort")
+        cog_cohort_cov = {
+            d: {str(c): round(float(scores.loc[coh == c, d].notna().mean()), 3)
+                for c in sorted(set(coh))}
+            for d in cog_domains
+        }
     print(f"  domain scores: {scores.shape[1]} ({(meta.kind=='symptom').sum()} symptom, "
-          f"{(meta.kind=='biology').sum()} biology)")
+          f"{(meta.kind=='biology').sum()} biology, {(meta.kind=='cognition').sum()} cognition)")
+    for d in cog_domains:
+        print(f"    cognition {d:18s} per-cohort V0 cov: "
+              + "  ".join(f"{c}={v:.2f}" for c, v in cog_cohort_cov[d].items()))
 
     # ── 2. coverage floor ───────────────────────────────────────────────────
+    # Symptom/biology domains use pooled coverage. Cognition constructs use a per-cohort
+    # rule (kept if observed >= floor in >=2 of 3 cohorts), because cross-cohort instrument
+    # heterogeneity makes pooled coverage misleading — e.g. verbal reasoning is ~0.55/0.81 in
+    # DR/SZ but ~0.07 in BP (pooled <0.30), yet is a sound SZ+DR construct the pairwise-
+    # complete FA can use.
     cov = scores.notna().mean()
-    keep = cov[cov >= COVERAGE_FLOOR].index
+
+    def _keep(d: str) -> bool:
+        if kinds.get(d) == "cognition":
+            pc = cog_cohort_cov.get(d, {})
+            return sum(v >= COVERAGE_FLOOR for v in pc.values()) >= 2
+        return bool(cov[d] >= COVERAGE_FLOOR)
+
+    keep = [d for d in scores.columns if _keep(d)]
     dropped = sorted(set(scores.columns) - set(keep))
     scores = scores[keep]
     print(f"  coverage floor {COVERAGE_FLOOR:.0%}: kept {len(keep)}, "
@@ -335,6 +362,8 @@ def main() -> int:
         "residualize": {"covariates": ["age", "sex"], "spline_df": SPLINE_DF,
                         "cross_fit": CROSS_FIT},
         "n_domains": int(scores.shape[1]), "dropped_domains": dropped,
+        "n_cognition_domains": len(cog_domains),
+        "cognition_cohort_coverage": cog_cohort_cov,
         "embedding_dim": int(emb.shape[1]), "headline_k": int(k),
         "cluster_sizes": labels.value_counts().sort_index().to_dict(),
         "independence": {"sex_cramersV": sexv, "age_dcor": dcor_age,

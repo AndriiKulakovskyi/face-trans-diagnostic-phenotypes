@@ -1,38 +1,40 @@
 {
-  "n_teacher": 8907,
-  "n_items_total": 177,
+  "n_teacher": 8927,
+  "n_items_total": 265,
   "headline_cap": 15,
   "k_per_axis": 2,
-  "R_ci": 200,
-  "n_questionnaire_items": 11,
-  "n_peraxis_items": 13,
+  "R_ci": 100,
+  "n_questionnaire_items": 15,
+  "n_peraxis_items": 11,
   "shared_items": [
+    "staya",
     "altman",
     "qidsr120",
-    "ctq39",
-    "bis10",
+    "psqi",
+    "eq5d",
     "wurs",
     "egf",
     "madrs",
     "ymrs",
-    "agetrt",
-    "agedebutpremier_episode",
-    "nboccur_hospitalisation_lt"
-  ],
-  "peraxis_items": [
-    "madrs",
-    "egf",
+    "nstand_w",
+    "vstand_w",
     "agetrt",
     "agedebutpremier_episode",
     "nboccur_hospitalisation_lt",
-    "hodur_hospitalisation_lt",
+    "edulevel"
+  ],
+  "peraxis_items": [
+    "qidsr120",
+    "madrs",
+    "agetrt",
+    "agedebutpremier_episode",
     "altman",
     "ymrs",
-    "wurs",
-    "bis10",
-    "fagers",
-    "hooccur_arret_travail_actuel",
-    "hooccur_arret_travail"
+    "nboccur_hospitalisation_lt",
+    "hodur_hospitalisation_lt",
+    "edulevel",
+    "similcr_wais4",
+    "fagers"
   ],
   "metabolic_panel_addon": [
     "bmi",
@@ -45,35 +47,32 @@
     "diabpsupine"
   ],
   "recon_r2_questionnaire": {
-    "depression_severity": 0.828,
-    "later_onset": 0.515,
-    "illness_burden": 0.75,
-    "mania_activation": 0.853,
-    "externalizing": 0.713,
-    "metabolic": 0.031,
-    "work_disability": 0.086
+    "depression_severity": 0.859,
+    "later_onset": 0.514,
+    "mania_activation": 0.799,
+    "illness_burden": 0.812,
+    "cognition_verbal": 0.551,
+    "metabolic": 0.057
   },
   "recon_r2_questionnaire_plus_labs": {
-    "depression_severity": 0.828,
-    "later_onset": 0.521,
-    "illness_burden": 0.751,
-    "mania_activation": 0.853,
-    "externalizing": 0.714,
-    "metabolic": 0.292,
-    "work_disability": 0.082
+    "depression_severity": 0.859,
+    "later_onset": 0.519,
+    "mania_activation": 0.799,
+    "illness_burden": 0.812,
+    "cognition_verbal": 0.553,
+    "metabolic": 0.325
   },
   "recon_r2_peraxis_plus_labs": {
-    "depression_severity": 0.751,
-    "later_onset": 0.522,
-    "illness_burden": 0.794,
-    "mania_activation": 0.851,
-    "externalizing": 0.617,
-    "metabolic": 0.311,
-    "work_disability": 0.473
+    "depression_severity": 0.766,
+    "later_onset": 0.497,
+    "mania_activation": 0.656,
+    "illness_burden": 0.836,
+    "cognition_verbal": 0.613,
+    "metabolic": 0.333
   },
-  "qol_panel_axes_minus_DSM": 0.032,
-  "qol_panel_axes_minus_DSM_ci": "+0.032 [+0.028,+0.035]",
-  "egf_panel_combined_minus_DSM_ci": "+0.024 [+0.022,+0.025]",
-  "qol_peraxis_axes_minus_DSM_ci": "+0.025 [+0.022,+0.028]",
+  "qol_panel_axes_minus_DSM": 0.033,
+  "qol_panel_axes_minus_DSM_ci": "+0.033 [+0.030,+0.036]",
+  "egf_panel_combined_minus_DSM_ci": "+0.027 [+0.026,+0.028]",
+  "qol_peraxis_axes_minus_DSM_ci": "+0.024 [+0.021,+0.027]",
   "note": "Item->axis sparse distillation (MultiTaskElasticNet, in-fold selection). Two panels: a <=15-item SHARED panel and a group-aware PER-AXIS panel (top-2 items/axis), each + a flagged routine metabolic-panel add-on (the metabolic axis is not questionnaire-recoverable). Head-to-head under repeated 5-fold CV (R=200, 95% CI), M1 (axes) and M2 (combined). Deployment surrogate (mean-imputes its items); the research model stays imputation-free."
 }
