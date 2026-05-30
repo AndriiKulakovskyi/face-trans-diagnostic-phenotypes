@@ -118,3 +118,12 @@ Pruned 7 -> 4. BP/DR use uniform numeric codes; SZ stores several as text and li
   - `maristat` — **SZ is missing the 'marié/concubin/pacsé' category entirely** (code 2 = 0 of 1652 in SZ, vs 48% BP / 58% DR). Either not collected or text->code dropped it -> near-perfect cohort discriminator. Not usable until SZ source is re-checked.
   - `jobdur` — **units differ**: BP years (as text bands "entre 10 et 20 ans"), SZ free text, DR months (numeric). Three incompatible formats.
   - `empjob` (INSEE class) — nominal 1-8, **very sparse** (BP n=359, SZ n=46) and BP only has classes 1/4/5; not usable as a comparable feature.
+
+## SITEID ("Numéro du centre principal") — decode via fondacode, not raw siteid
+The per-cohort SITEID codebooks are partial and disjoint (BP/SZ list different site subsets; DR has NO codebook), and raw `siteid` is occasionally mislabeled. **Solution: the site code = the 1-2 leading digits of `fondacode`** (the FONDAMENTAL network-wide patient ID) — the SAME numbering scheme in all 3 cohorts.
+- Canonical lookup written to **`data/site_lookup.csv`** (site_code -> city + per-cohort presence). 21 sites; codes 1-3,6,10,13 are the shared (all-3) sites.
+- Raw `siteid` agrees with the fondacode head 99.2% (BP) / 99.9% (SZ) / 100% (DR); the few mismatches are data-entry errors -> **prefer fondacode-derived code**.
+- One real mislabel: SZ `siteid=16` is tagged "CHU Toulouse" but its fondacode says network code **19** (=Toulouse); BP/DR `16`=Besançon. Decoding via fondacode resolves this collision.
+- Same city, two hospitals: codes 4 and 15 both = Grenoble (collapse to city). Code 3 = Montpellier (Lapeyronie in BP, Colombière in SZ).
+- DR-only sites **17, 18** have no BP/SZ text label yet — assign their city names (network codes are unambiguous).
+- Pipeline: `rules.py::_siteid_city` currently warns + falls back to raw numeric (the bug). Register a real mapping that derives the code from fondacode and joins `site_lookup.csv`. Site is used as the ComBat batch / confound (scripts 13, 15, 21), so this matters for harmonization.
