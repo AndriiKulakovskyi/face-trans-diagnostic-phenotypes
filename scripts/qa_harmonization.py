@@ -424,6 +424,30 @@ def slug(s: str) -> str:
     return "".join(ch if ch.isalnum() else "-" for ch in s.lower()).strip("-")
 
 
+def v0_missingness(df: pd.DataFrame, variables: list) -> dict:
+    """Per-variable V0 missingness: pooled (all patients) and within expected cohorts.
+
+    Within-cohort is the fair measure — a 2-cohort variable isn't 'missing' for the cohort that
+    never collected it. Reported, not dropped: the masked methods consume these as-is.
+    """
+    v0 = df[df["visit"] == "V0"] if "visit" in df.columns else df
+    n = len(v0)
+    sizes = v0["cohort"].value_counts().to_dict()
+    coh = v0["cohort"]
+    out: dict[str, dict] = {}
+    for v in variables:
+        c = v.canonical_name
+        if c not in v0.columns:
+            continue
+        s = v0[c]
+        exp = _expected_cohorts(v)
+        n_obs_w = sum(int(s[coh == ch].notna().sum()) for ch in exp)
+        size_w = sum(int(sizes.get(ch, 0)) for ch in exp)
+        out[c] = {"pooled": 1 - int(s.notna().sum()) / n if n else 1.0,
+                  "within": 1 - n_obs_w / size_w if size_w else 1.0}
+    return out
+
+
 def build_html(records: list[dict], df: pd.DataFrame, vars_by_name: dict,
                counts: dict, n_pass: int, n_fail: int,
                domain_records: list[dict] | None = None) -> str:
@@ -462,6 +486,27 @@ def build_html(records: list[dict], df: pd.DataFrame, vars_by_name: dict,
                    f"<div class='muted'>{c} rows</div></div>")
     out.append("</div></div>")
 
+    # preprocessing & scaling + V0 missingness overview
+    mrecs = [r for r in records if r.get("miss")]
+    m25 = sum(1 for r in mrecs if r["miss"]["within"] > 0.25)
+    m50 = sum(1 for r in mrecs if r["miss"]["within"] > 0.50)
+    out.append(
+        "<div class='summary'><b>Preprocessing &amp; scaling (by data type)</b>"
+        "<div class='muted' style='margin-top:6px;line-height:1.7'>"
+        "<b>Continuous</b> (float): rules + sanity bounds &rarr; log1p if heavy right-skewed "
+        "(prolactin/CRP/&hellip;) &rarr; winsorize 1/99 + robust-z (median/MAD) clipped &plusmn;5 "
+        "&rarr; <b>[&minus;1,1]</b>. &nbsp; <b>Binary / ordinal / Likert</b>: bounds &rarr; min-max "
+        "&rarr; <b>[&minus;1,1]</b>. &nbsp; Items &rarr; masked-mean of robust-z &rarr; domain scores "
+        "(&le;&plusmn;5, Part 2). <b>No imputation</b>; missingness is handled by the masked "
+        "similarity / masked FA (no hard drop)."
+        "</div><div class='cohort-row' style='margin-top:10px'>"
+        f"<div><div class='big'>{m25}</div><div class='muted'>vars &gt;25% missing<br>(V0, within-cohort)</div></div>"
+        f"<div><div class='big'>{m50}</div><div class='muted'>vars &gt;50% missing</div></div>"
+        "<div><div class='muted' style='max-width:360px'>Flagged for awareness only &mdash; not "
+        "dropped. Within-cohort missingness ignores structural cohort-absence (a 2-cohort variable "
+        "isn't 'missing' where it was never collected).</div></div>"
+        "</div></div>")
+
     for sec, recs in sections.items():
         recs.sort(key=lambda r: r["name"])
         out.append(f"<h2 id='{slug(sec)}'>{html.escape(sec)}</h2><div class='cards'>")
@@ -487,6 +532,12 @@ def build_html(records: list[dict], df: pd.DataFrame, vars_by_name: dict,
             out.append(f"<div class='bounds'>sanity min = <b>{smin}</b> &nbsp; "
                        f"sanity max = <b>{smax}</b>{null_txt}<br>"
                        f"<span class='muted'>{html.escape(r['dtype'])}</span></div>")
+            m = r.get("miss")
+            if m:
+                wc, pc = m["within"] * 100, m["pooled"] * 100
+                hi = " style='color:#9a6700;font-weight:700'" if m["within"] > 0.5 else ""
+                out.append(f"<div class='bounds'>missing (V0): within-cohort "
+                           f"<b{hi}>{wc:.0f}%</b> &middot; pooled {pc:.0f}%</div>")
             out.append("<div class='checks'>")
             for level, msg in r["checks"]:
                 out.append(f"<div class='{level}'>{level}: {html.escape(msg)}</div>")
@@ -527,6 +578,10 @@ def main() -> int:
             continue
         seen.add(v.canonical_name)
         records.append(verify_variable(v, df, df, sanity_report))
+
+    miss = v0_missingness(df, variables)
+    for r in records:
+        r["miss"] = miss.get(r["name"])
 
     n_fail = sum(1 for r in records if not r["ok"])
     n_pass = len(records) - n_fail
