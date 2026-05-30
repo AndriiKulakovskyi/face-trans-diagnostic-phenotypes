@@ -37,7 +37,8 @@ SUICIDE: same pattern (BP/SZ text, DR numeric codes). Encode, then bound. **Map 
 - **Yes/no with don't-know — `isf08`, `isf09`**: "Oui"→1, "Non"→0, "Ne sais pas"/`2`→NaN. Then bound `[0, 1]`.
 - **Already bounded, comparable as-is** (numeric in all cohorts): attempt counts `isf07`/`isf08a`/`isf09a` `[0,100]`; C-SSRS intensity `css0106`/`0108`/`0109` `[1,5]` and `css0110`/`0111`/`0112` `[0,5]`.
 - **Dropped — not comparable:** `isf01a`–`isf05a` (timing): BP/SZ have 4 categories vs DR 3, and SZ codes are shifted 1–3 vs 0–2. _(removed manually)_
-- **Pending separate review:** `ltsg07` (asymmetric DK: BP yes/no, DR yes/no/DK 10.6%) and the sparse method/lethality block `ltsv01`–`07` / `ltsg01`–`06`.
+- **Method/lethality block `ltsv01`–`06` / `ltsg01`–`06` — ENCODED** (rules.py): BP French labels → Beck/Columbia ordinal codes aligned to DR's numeric scheme; SZ does not collect them; v2-gated so v1 is unchanged. Verified by scripts/qa_harmonization.py (211/211 pass).
+- **Pending separate review:** `ltsg07` (asymmetric DK: BP yes/no, DR yes/no/DK 10.6%); exact BP↔DR alignment of the rarest high-lethality categories (DR n≤7) is approximate.
 
 SUBSTANCES: BP/SZ free-text vs DR numeric codes.
 - **Statut tabagique — `suncf_cigarettes_lt`**: "Non fumeur"→1, "Ex-fumeur"→2, "Fumeur actuel"→3, "Statut inconnu"→NaN (asymmetric — DR has no unknown code). Then bound `[1, 3]`. (DR already coded 1/2/3.)

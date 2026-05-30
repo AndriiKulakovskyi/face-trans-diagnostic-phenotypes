@@ -43,10 +43,15 @@ _SIBLING_RAW_COLS: dict[str, tuple[str, ...]] = {
     "siteid_city": ("fondacode",),
 }
 
-# Transformers introduced for the curated v2 dictionary (unit/scale fixes the v1
-# pipeline never had). They are skipped when loading v1 so the legacy pipeline
-# stays byte-identical; for v1 these canonicals fall back to identity_cast.
-_V2_ONLY_RULES: frozenset[str] = frozenset({"qt", "rr", "qtc", "edulevel"})
+# Transformers introduced for the curated v2 dictionary (unit/scale fixes and
+# new text→code encodings the v1 pipeline never had). They are skipped when
+# loading v1 so the legacy pipeline stays byte-identical; for v1 these canonicals
+# fall back to identity_cast (their previous behaviour).
+_V2_ONLY_RULES: frozenset[str] = frozenset({
+    "qt", "rr", "qtc", "edulevel",
+    # SUICIDE attempt-detail items: BP text → code, newly mapped for v2.
+    "ltsv02", "ltsv04", "ltsv05", "ltsv06", "ltsg03", "ltsg05", "ltsg06",
+})
 
 
 def _matches_readiness(value: str, prefixes: Iterable[str]) -> bool:

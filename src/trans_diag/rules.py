@@ -603,3 +603,73 @@ def _ltsg02(series, cohort):
 @register("ltsg04")
 def _ltsg04(series, cohort):
     return _textual_recode(series, _LTSG04_CONSCIOUSNESS_MAP, pd_dtype="Int16")
+
+
+# --- Additional LTSV / LTSG attempt-detail items (BP text → code; DR already
+#     numeric; SZ does not collect them). Like ltsv01/ltsg01-04 above these are
+#     very sparse (a few dozen attempters at yearly visits). Lethality items
+#     follow the Beck/Columbia medical-lethality ordinal (0 = no damage →
+#     increasing severity → death); jump-height and drug-type are ordinal /
+#     nominal. DR is already pre-numericized; exact BP↔DR code alignment for the
+#     rare high-lethality categories remains a follow-up clinical task.
+
+_LTSV02_JUMP_HEIGHT_MAP = {       # height of the jump (ordinal, low → high)
+    "Hauteur d'homme": 1,
+    "Hauteur modérée": 2,
+    "D'un endroit élevé": 3,
+}
+
+_LTSV04_FIREARM_LETHALITY_MAP = {  # lethality if method = firearm
+    "Pas de dommage": 0,
+    "Balle logée dans une extrémité, légères hémorragies": 2,
+    "Balle dans l'abdomen ou la poitrine, hémorragies importantes, signes vitaux instables": 5,
+}
+
+_LTSV05_IMMOLATION_LETHALITY_MAP = {  # lethality if method = self-immolation
+    "Pas de dommage": 0,
+    "Brûlures du premier degré": 1,
+    "Brûlures du second degré": 2,
+    "Brûlures du troisième degré sur 20% de la surface du corps": 4,
+}
+
+_LTSV06_DROWNING_LETHALITY_MAP = {  # lethality if method = drowning
+    "Pas de dommage": 0,
+    "Conscient - légère détresse respiratoire mais sans besoin de réanimation": 2,
+    "Inconscient - efforts de réanimation très importants indispensables pour la survie": 4,
+}
+
+_LTSG03_DRUG_NONSEDATIVE_MAP = {   # non-sedative drug type used in overdose
+    "Médicament en vente libre": 1,
+    "Prescription autre que psychotrope": 2,
+    "Autres substances ingérées": 3,
+    "Lithium": 5,
+    "Inconnu": pd.NA,
+}
+
+_LTSG05_OVERDOSE_LETHALITY_MAP = {  # lethality if method = medication overdose
+    "Pas de conséquences médicales ou de traitement, ou minime": 0,
+    "Quelques blessures (ex : bouche brûlée) et traitement en urgence ou en ambulatoire (ex : lavage gastrique)": 1,
+    "Blessures suffisantes pour l'hospitalisation - signes vitaux et niveau de conscience peuvent être affectés": 3,
+    "Effets majeures systématiques - tels que perforation gastro-intestinale, défaillance rénale, hémolyse, ou choc; signes vitaux instables": 4,
+    "Mort": 6,
+}
+
+_LTSG06_PHLEBOTOMY_LETHALITY_MAP = {  # lethality if method = phlebotomy (cutting)
+    "Surfaces griffées, pas ou peu de saignements, pas ou peu de soins requis pour les blessures": 1,
+    "Saignement modéré avec caillot avant qu'il n'y ait perte de sang significative; simples soins requis": 2,
+    "Saignement des veines majeures, danger de perte de sang considérable sans intervention chirurgicale - suture nécessaire mais pas de transfusion, zones vitales intactes et pas de changement dans les signes vitaux, soins en ambulatoire": 3,
+    "Perte de sang importante, suture, transfusion nécessaire, réparation de tendons requise, blessures possibles sur la tête, le thorax, ou l'abdomen mais organes vitaux intacts et signes vitaux stables; rétablissement attendu après hospitalisation": 4,
+}
+
+for _canon, _map in (
+    ("ltsv02", _LTSV02_JUMP_HEIGHT_MAP),
+    ("ltsv04", _LTSV04_FIREARM_LETHALITY_MAP),
+    ("ltsv05", _LTSV05_IMMOLATION_LETHALITY_MAP),
+    ("ltsv06", _LTSV06_DROWNING_LETHALITY_MAP),
+    ("ltsg03", _LTSG03_DRUG_NONSEDATIVE_MAP),
+    ("ltsg05", _LTSG05_OVERDOSE_LETHALITY_MAP),
+    ("ltsg06", _LTSG06_PHLEBOTOMY_LETHALITY_MAP),
+):
+    @register(_canon)
+    def _ltsx(series, cohort, _m=_map):
+        return _textual_recode(series, _m, pd_dtype="Int16")

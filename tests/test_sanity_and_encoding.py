@@ -166,3 +166,36 @@ def test_siteid_city_falls_back_to_raw_when_fondacode_missing():
     fonda = pd.Series([np.nan, "bad"])  # unparseable -> fall back to raw siteid
     out = derive_siteid_city(siteid, fonda, "DR")
     assert out.tolist() == [7.0, 3.0]
+
+
+# ---------------------------------------------------------------------------
+# SUICIDE attempt-detail items: BP text → code, DR numeric passthrough
+# ---------------------------------------------------------------------------
+
+def test_suicide_method_rules_encode_bp_text():
+    # ltsg05 (overdose lethality): BP French labels → Beck ordinal; "Mort" = 6.
+    rule = RULES["ltsg05"]
+    s = pd.Series([
+        "Pas de conséquences médicales ou de traitement, ou minime",
+        "Mort",
+        "unmapped label",
+        np.nan,
+    ])
+    out = rule(s, "BP")
+    assert out.iloc[0] == 0
+    assert out.iloc[1] == 6
+    assert pd.isna(out.iloc[2]) and pd.isna(out.iloc[3])
+
+
+def test_suicide_method_rules_pass_dr_codes_through():
+    # DR is already numeric; the rule must leave its codes intact.
+    rule = RULES["ltsg05"]
+    out = rule(pd.Series([1.0, 3.0, 4.0]), "DR")
+    assert out.dropna().tolist() == [1, 3, 4]
+
+
+def test_suicide_method_rules_are_v2_gated():
+    from trans_diag.loader import _V2_ONLY_RULES
+    for canon in ("ltsv02", "ltsv04", "ltsv05", "ltsv06",
+                  "ltsg03", "ltsg05", "ltsg06"):
+        assert canon in _V2_ONLY_RULES  # never alters the v1 pipeline
