@@ -16,6 +16,13 @@ What it checks, per harmonized variable (canonical name), across BP / SZ / DR:
 It loads v2 twice — once WITHOUT and once WITH the sanity stage — so the report
 can show how many cells each bound nulled (the harmonization actually firing).
 
+Part 2 (post-preprocessing) then shows the construct-level DOMAIN SCORES — the
+encoded features that actually enter the dimensional factor analysis and the
+stratification embedding (items robust-z scored → masked-mean aggregated, no
+imputation). Per domain: the pooled cross-cohort distribution plus degeneracy
+checks (near-zero variance, sub-30%-floor coverage, single-cohort, scale spread)
+so data bugs are caught before analysis, not after.
+
 Output: results/reports/qa_harmonization.html  (single self-contained file;
 plots are base64-embedded PNGs — no network needed). Per variable: a 3-cohort
 overlaid distribution, the sanity min/max printed below the plot, and a
@@ -42,7 +49,14 @@ import pandas as pd
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from trans_diag import build_unified_dataframe, load_variables  # noqa: E402
+from trans_diag import (  # noqa: E402
+    COGNITIVE_COMPOSITES,
+    DOMAIN_SECTIONS,
+    build_domain_scores,
+    build_unified_dataframe,
+    load_variables,
+    to_harmonized_dataset,
+)
 from trans_diag.loader import (  # noqa: E402
     _IDENTIFIER_CANONICALS,
     YEARLY_VISIT_MAP,
@@ -256,6 +270,131 @@ def _plot_png(var, df: pd.DataFrame) -> str | None:
 
 
 # ---------------------------------------------------------------------------
+# Part 2 — encoded modelling features (domain scores, post-preprocessing)
+# ---------------------------------------------------------------------------
+
+def compute_domain_records(df: pd.DataFrame, variables: list) -> list[dict]:
+    """Build the V0 construct-level domain scores — the representation that enters
+    the dimensional FA and the stratification embedding — plus per-domain degeneracy
+    checks. Items are robust-z scored then masked-mean aggregated (no imputation)."""
+    ds = to_harmonized_dataset(df, variables, visit="V0", sections=DOMAIN_SECTIONS)
+    scores, meta = build_domain_scores(ds.X, variables, cognition=COGNITIVE_COMPOSITES)
+    # domain-score indices carry lowercase cohort codes (bp/sz/dr); match COHORTS (BP/SZ/DR)
+    cohort = pd.Index(scores.index.get_level_values("cohort")).str.upper()
+    records: list[dict] = []
+    for dom in scores.columns:
+        s = pd.to_numeric(scores[dom], errors="coerce")
+        by_cohort = {c: s[cohort == c].dropna() for c in COHORTS}
+        present = [c for c in COHORTS if len(by_cohort[c]) > 0]
+        nonnull = s.dropna()
+        std = float(nonnull.std()) if len(nonnull) > 1 else 0.0
+        cov = float(s.notna().mean())
+        rec = {"name": dom, "kind": str(meta.loc[dom, "kind"]),
+               "n_items": int(meta.loc[dom, "n_items"]),
+               "members": str(meta.loc[dom, "members"]), "coverage": cov,
+               "by_cohort": by_cohort, "checks": [], "ok": True}
+        # near-zero variance — degenerate, breaks the correlation / FA
+        if std < 1e-6:
+            rec["checks"].append(("FAIL", "near-zero variance — degenerate"))
+            rec["ok"] = False
+        else:
+            rec["checks"].append(("PASS", f"variance ok (sd={std:.2f})"))
+        # coverage vs the 30% modelling floor (03_cluster_domains drops below it)
+        if cov < 0.05:
+            rec["checks"].append(("FAIL", f"coverage {cov:.0%} — far too sparse to model"))
+            rec["ok"] = False
+        elif cov < 0.30:
+            rec["checks"].append(("WARN", f"low pooled coverage {cov:.0%} (< 30% floor; symptom/biology auto-dropped by 03, cognition uses a per-cohort rule)"))
+        else:
+            rec["checks"].append(("PASS", f"coverage {cov:.0%}"))
+        # cohort presence / cross-cohort scale (scores are pooled robust-z, ~centred at 0)
+        if len(present) < 2:
+            rec["checks"].append(("WARN", f"observed in only {present or ['none']} — cohort-missingness / confound risk"))
+        else:
+            meds = {c: round(float(by_cohort[c].median()), 2) for c in present}
+            spread = max(meds.values()) - min(meds.values())
+            if spread > 2.0:
+                rec["checks"].append(("WARN", f"cross-cohort median spread {spread:.1f} ({meds}) — strong cohort signal or residual scale"))
+            else:
+                rec["checks"].append(("PASS", f"cohort medians comparable ({meds})"))
+        records.append(rec)
+    return records
+
+
+def _domain_plot_png(rec: dict) -> str | None:
+    data = {c: x for c, x in rec["by_cohort"].items() if len(x) > 0}
+    if not data:
+        return None
+    allvals = pd.concat(data.values())
+    fig, ax = plt.subplots(figsize=(5.2, 2.6))
+    lo, hi = allvals.quantile(0.005), allvals.quantile(0.995)
+    if not np.isfinite(lo) or not np.isfinite(hi) or hi <= lo:
+        lo, hi = float(allvals.min()), float(allvals.max()) + 1e-9
+    bins = np.linspace(lo, hi, 31)
+    for c, x in data.items():
+        ax.hist(x.clip(lo, hi), bins=bins, density=True, histtype="stepfilled",
+                alpha=0.45, label=f"{c} (n={len(x)})", color=COHORT_COLOR[c])
+    ax.axvline(0.0, color="#555", ls="--", lw=0.8)  # robust-z centre
+    ax.set_ylabel("density", fontsize=8)
+    ax.legend(fontsize=7, frameon=False)
+    ax.tick_params(labelsize=7)
+    ax.set_title(rec["name"], fontsize=9)
+    fig.tight_layout()
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=110, bbox_inches="tight")
+    plt.close(fig)
+    return base64.b64encode(buf.getvalue()).decode("ascii")
+
+
+def render_part2(domain_records: list[dict]) -> str:
+    by_kind: dict[str, list] = {}
+    for r in domain_records:
+        by_kind.setdefault(r["kind"], []).append(r)
+    n = len(domain_records)
+    n_flag = sum(1 for r in domain_records if not r["ok"])
+    cov = float(np.mean([r["coverage"] for r in domain_records])) if domain_records else 0.0
+    flag_color = "#cf222e" if n_flag else "#1a7f37"
+    o = ["<h2 id='part2' style='border-color:#3a9367'>Part 2 — Encoded modelling features "
+         "(V0 domain scores)</h2>",
+         "<div class='summary'><div class='muted'>The Part-1 harmonized items are robust-z "
+         "scored and masked-mean aggregated into construct-level <b>domain scores</b> "
+         "(no imputation) — the representation that feeds the dimensional factor analysis and "
+         "the stratification embedding (after age/sex residualization). Each card: the pooled "
+         "cross-cohort distribution of one domain score (dashed line = 0), its members and "
+         "coverage, and degeneracy checks.</div>"
+         "<div class='cohort-row' style='margin-top:10px'>",
+         f"<div><div class='big'>{n}</div><div class='muted'>domain scores</div></div>",
+         f"<div><div class='big' style='color:{flag_color}'>{n_flag}</div>"
+         "<div class='muted'>flagged</div></div>",
+         f"<div><div class='big'>{cov:.0%}</div><div class='muted'>mean coverage</div></div>",
+         "</div></div>"]
+    for kind in ("cognition", "biology", "symptom"):
+        recs = sorted(by_kind.get(kind, []), key=lambda r: -r["coverage"])
+        if not recs:
+            continue
+        o.append(f"<h2 id='dom-{kind}'>{html.escape(kind)} domains ({len(recs)})</h2><div class='cards'>")
+        for r in recs:
+            st = ("ok", "OK") if r["ok"] else ("bad", "CHECK")
+            o.append("<div class='card'>")
+            o.append(f"<h3>{html.escape(r['name'])} <span class='pill {st[0]}'>{st[1]}</span> "
+                     f"<span class='pill ready'>{html.escape(r['kind'])}</span></h3>")
+            png = _domain_plot_png(r)
+            if png:
+                o.append(f"<img alt='{html.escape(r['name'])}' src='data:image/png;base64,{png}'/>")
+            else:
+                o.append("<div class='muted'>(no data to plot)</div>")
+            o.append(f"<div class='bounds'>coverage = <b>{r['coverage']:.0%}</b> &nbsp; "
+                     f"items = <b>{r['n_items']}</b><br><span class='muted'>"
+                     f"{html.escape(r['members'][:120])}</span></div>")
+            o.append("<div class='checks'>")
+            for level, msg in r["checks"]:
+                o.append(f"<div class='{level}'>{level}: {html.escape(msg)}</div>")
+            o.append("</div></div>")
+        o.append("</div>")
+    return "".join(o)
+
+
+# ---------------------------------------------------------------------------
 # HTML
 # ---------------------------------------------------------------------------
 
@@ -286,7 +425,8 @@ def slug(s: str) -> str:
 
 
 def build_html(records: list[dict], df: pd.DataFrame, vars_by_name: dict,
-               counts: dict, n_pass: int, n_fail: int) -> str:
+               counts: dict, n_pass: int, n_fail: int,
+               domain_records: list[dict] | None = None) -> str:
     sections: dict[str, list] = {}
     for r in records:
         sections.setdefault(r["section"] or "—", []).append(r)
@@ -296,13 +436,16 @@ def build_html(records: list[dict], df: pd.DataFrame, vars_by_name: dict,
                       "<title>FACE Common QA — Harmonization</title>",
                       f"<style>{CSS}</style></head><body>"]
     out.append("<header><h1>FACE Common QA — Variable Harmonization &amp; Sanity</h1>")
-    out.append("<div class='muted'>Every harmonized variable loaded from "
-               "<code>face-common-vars-v2.xlsx</code> across BP / SZ / DR. Each card: a "
-               "cross-cohort distribution of the pooled (encoded) values, the sanity "
-               "min/max below it, and per-variable verification.</div>")
+    out.append("<div class='muted'>Part 1 — every harmonized variable loaded from "
+               "<code>face-common-vars.xlsx</code> across BP / SZ / DR: a cross-cohort "
+               "distribution of the pooled (encoded) values, the sanity min/max, and "
+               "per-variable verification. Part 2 — the construct-level domain scores that "
+               "actually enter the analysis.</div>")
     out.append("<nav class='toc'>")
     for s in sections:
         out.append(f"<a href='#{slug(s)}'>{html.escape(s)} ({len(sections[s])})</a>")
+    if domain_records:
+        out.append("<a href='#part2' style='background:#e6f3ec;color:#3a9367'>&#9656; Part 2: domain scores</a>")
     out.append("</nav></header>")
 
     # overview
@@ -350,6 +493,8 @@ def build_html(records: list[dict], df: pd.DataFrame, vars_by_name: dict,
             out.append("</div></div>")
         out.append("</div>")
 
+    if domain_records:
+        out.append(render_part2(domain_records))
     out.append("</body></html>")
     return "".join(out)
 
@@ -392,8 +537,16 @@ def main() -> int:
                 msgs = "; ".join(m for lvl, m in r["checks"] if lvl == "FAIL")
                 print(f"    FAIL  {r['name']}: {msgs}")
 
+    print("Building Part 2 — encoded modelling features (domain scores) ...")
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        domain_records = compute_domain_records(df, variables)
+    n_dom_flag = sum(1 for r in domain_records if not r["ok"])
+    print(f"  {len(domain_records)} domain scores; {n_dom_flag} flagged")
+
     print("Rendering HTML ...")
-    html_str = build_html(records, df, vars_by_name, counts, n_pass, n_fail)
+    html_str = build_html(records, df, vars_by_name, counts, n_pass, n_fail,
+                          domain_records=domain_records)
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     out_path = REPORTS_DIR / "qa_harmonization.html"
     out_path.write_text(html_str, encoding="utf-8")
