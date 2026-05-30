@@ -55,6 +55,7 @@ from trans_diag import (  # noqa: E402
     build_domain_scores,
     build_unified_dataframe,
     load_variables,
+    normalize_for_embedding,
     to_harmonized_dataset,
 )
 from trans_diag.loader import (  # noqa: E402
@@ -346,7 +347,7 @@ def _domain_plot_png(rec: dict) -> str | None:
     return base64.b64encode(buf.getvalue()).decode("ascii")
 
 
-def render_part2(domain_records: list[dict]) -> str:
+def render_part3(domain_records: list[dict]) -> str:
     by_kind: dict[str, list] = {}
     for r in domain_records:
         by_kind.setdefault(r["kind"], []).append(r)
@@ -354,8 +355,8 @@ def render_part2(domain_records: list[dict]) -> str:
     n_flag = sum(1 for r in domain_records if not r["ok"])
     cov = float(np.mean([r["coverage"] for r in domain_records])) if domain_records else 0.0
     flag_color = "#cf222e" if n_flag else "#1a7f37"
-    o = ["<h2 id='part2' style='border-color:#3a9367'>Part 2 — Encoded modelling features "
-         "(V0 domain scores)</h2>",
+    o = ["<h2 id='part3' style='border-color:#3a9367'>Part 3 — Encoded modelling features "
+         "(aggregated V0 domain scores)</h2>",
          "<div class='summary'><div class='muted'>The Part-1 harmonized items are robust-z "
          "scored and masked-mean aggregated into construct-level <b>domain scores</b> "
          "(no imputation) — the representation that feeds the dimensional factor analysis and "
@@ -424,6 +425,95 @@ def slug(s: str) -> str:
     return "".join(ch if ch.isalnum() else "-" for ch in s.lower()).strip("-")
 
 
+def _scaled_plot_png(name: str, col: pd.Series, cohort: pd.Series) -> str | None:
+    """Per-cohort distribution of one type-aware-scaled variable (bars if few distinct,
+    else histogram), with dashed guides at +/-1."""
+    data = {c: col[cohort == c].dropna() for c in COHORTS}
+    data = {c: x for c, x in data.items() if len(x) > 0}
+    if not data:
+        return None
+    allv = pd.concat(data.values())
+    fig, ax = plt.subplots(figsize=(5.2, 2.6))
+    if int(allv.nunique()) <= 12:                  # discrete (binary/ordinal scaled) -> bars
+        cats = sorted(allv.unique())
+        width = 0.8 / max(len(data), 1)
+        for i, (c, x) in enumerate(data.items()):
+            props = x.value_counts(normalize=True).reindex(cats, fill_value=0)
+            ax.bar(np.arange(len(cats)) + i * width, props.values, width,
+                   label=f"{c} (n={len(x)})", color=COHORT_COLOR[c], alpha=0.85)
+        ax.set_xticks(np.arange(len(cats)) + width * (len(data) - 1) / 2)
+        ax.set_xticklabels([f"{v:.2g}" for v in cats], fontsize=7)
+        ax.set_ylabel("proportion", fontsize=8)
+    else:                                          # continuous scaled -> histogram in [-1, 1]
+        bins = np.linspace(-1, 1, 31)
+        for c, x in data.items():
+            ax.hist(x.clip(-1, 1), bins=bins, density=True, histtype="stepfilled",
+                    alpha=0.45, label=f"{c} (n={len(x)})", color=COHORT_COLOR[c])
+        ax.set_ylabel("density", fontsize=8)
+    for b in (-1.0, 1.0):
+        ax.axvline(b, color="#555", ls="--", lw=0.8)
+    ax.legend(fontsize=7, frameon=False)
+    ax.tick_params(labelsize=7)
+    ax.set_title(f"{name} (scaled)", fontsize=9)
+    fig.tight_layout()
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=110, bbox_inches="tight")
+    plt.close(fig)
+    return base64.b64encode(buf.getvalue()).decode("ascii")
+
+
+def render_part2_scaled(records: list[dict], scaled: pd.DataFrame, df: pd.DataFrame,
+                        vars_by_name: dict) -> str:
+    """Part 2: every Part-1 variable AFTER type-aware scaling to [-1, 1] — same sections + order."""
+    sections: dict[str, list] = {}
+    for r in records:
+        sections.setdefault(r["section"] or "—", []).append(r)
+    cohort = df["cohort"]
+    out_of_range = 0
+    body: list[str] = []
+    for sec, recs in sections.items():
+        recs = sorted(recs, key=lambda r: r["name"])
+        body.append(f"<h2 id='s2-{slug(sec)}'>{html.escape(sec)} — scaled</h2><div class='cards'>")
+        for r in recs:
+            name = r["name"]
+            if name not in scaled.columns:
+                continue
+            col = scaled[name]
+            obs = col.dropna()
+            lo, hi = (float(obs.min()), float(obs.max())) if len(obs) else (float("nan"), float("nan"))
+            inrange = len(obs) == 0 or (lo >= -1.0001 and hi <= 1.0001)
+            if not inrange:
+                out_of_range += 1
+            st = ("ok", "in [-1,1]") if inrange else ("bad", "OUT OF RANGE")
+            v = vars_by_name.get(name)
+            decl = (v.unit_or_value_set or "").strip() if v else ""
+            if not decl or decl.lower().startswith("free text"):
+                decl = (f"[{r['smin']:g}, {r['smax']:g}]"
+                        if r["smin"] is not None and r["smax"] is not None else str(r["dtype"]))
+            body.append("<div class='card'>")
+            body.append(f"<h3>{html.escape(name)} <span class='pill {st[0]}'>{st[1]}</span></h3>")
+            png = _scaled_plot_png(name, col, cohort)
+            body.append(f"<img alt='{html.escape(name)} scaled' src='data:image/png;base64,{png}'/>"
+                        if png else "<div class='muted'>(no data to plot)</div>")
+            body.append(f"<div class='bounds'>declared: <b>{html.escape(str(decl)[:46])}</b><br>"
+                        f"scaled range: <b>[{lo:.2f}, {hi:.2f}]</b> &middot; "
+                        f"<span class='muted'>{html.escape(str(r['dtype']))}</span></div>")
+            body.append("</div>")
+        body.append("</div>")
+    color = "#cf222e" if out_of_range else "#1a7f37"
+    head = ("<h2 id='part2' style='border-color:#9a6700'>Part 2 — Post-processed variables "
+            "(type-aware scaling to [&minus;1,&nbsp;1])</h2>"
+            "<div class='summary'><div class='muted'>Every Part-1 variable after the type-aware "
+            "scaler — binary/ordinal &rarr; min-max; continuous &rarr; log (if skewed) + winsorize + "
+            "robust-z clipped &plusmn;5, /5. Same variables, same order as Part 1. Each card: the scaled "
+            "cross-cohort distribution (dashed = &plusmn;1), the declared range, and the realised scaled "
+            "range — every feature must land in [&minus;1,&nbsp;1].</div>"
+            f"<div class='cohort-row' style='margin-top:10px'><div>"
+            f"<div class='big' style='color:{color}'>{out_of_range}</div>"
+            "<div class='muted'>variables out of [-1,1]</div></div></div></div>")
+    return head + "".join(body)
+
+
 def v0_missingness(df: pd.DataFrame, variables: list) -> dict:
     """Per-variable V0 missingness: pooled (all patients) and within expected cohorts.
 
@@ -450,7 +540,8 @@ def v0_missingness(df: pd.DataFrame, variables: list) -> dict:
 
 def build_html(records: list[dict], df: pd.DataFrame, vars_by_name: dict,
                counts: dict, n_pass: int, n_fail: int,
-               domain_records: list[dict] | None = None) -> str:
+               domain_records: list[dict] | None = None,
+               scaled: pd.DataFrame | None = None) -> str:
     sections: dict[str, list] = {}
     for r in records:
         sections.setdefault(r["section"] or "—", []).append(r)
@@ -460,16 +551,18 @@ def build_html(records: list[dict], df: pd.DataFrame, vars_by_name: dict,
                       "<title>FACE Common QA — Harmonization</title>",
                       f"<style>{CSS}</style></head><body>"]
     out.append("<header><h1>FACE Common QA — Variable Harmonization &amp; Sanity</h1>")
-    out.append("<div class='muted'>Part 1 — every harmonized variable loaded from "
-               "<code>face-common-vars.xlsx</code> across BP / SZ / DR: a cross-cohort "
-               "distribution of the pooled (encoded) values, the sanity min/max, and "
-               "per-variable verification. Part 2 — the construct-level domain scores that "
-               "actually enter the analysis.</div>")
+    out.append("<div class='muted'>Part 1 — every harmonized variable (native scale): "
+               "cross-cohort distribution, sanity bounds, missingness, verification. "
+               "Part 2 — the same variables after type-aware scaling to [&minus;1, 1] "
+               "(ML-ready), same order. Part 3 — the aggregated domain scores that enter "
+               "the factor analysis &amp; embedding.</div>")
     out.append("<nav class='toc'>")
     for s in sections:
         out.append(f"<a href='#{slug(s)}'>{html.escape(s)} ({len(sections[s])})</a>")
+    if scaled is not None:
+        out.append("<a href='#part2' style='background:#fff4e0;color:#9a6700'>&#9656; Part 2: scaled variables</a>")
     if domain_records:
-        out.append("<a href='#part2' style='background:#e6f3ec;color:#3a9367'>&#9656; Part 2: domain scores</a>")
+        out.append("<a href='#part3' style='background:#e6f3ec;color:#3a9367'>&#9656; Part 3: domain scores</a>")
     out.append("</nav></header>")
 
     # overview
@@ -544,8 +637,10 @@ def build_html(records: list[dict], df: pd.DataFrame, vars_by_name: dict,
             out.append("</div></div>")
         out.append("</div>")
 
+    if scaled is not None:
+        out.append(render_part2_scaled(records, scaled, df, vars_by_name))
     if domain_records:
-        out.append(render_part2(domain_records))
+        out.append(render_part3(domain_records))
     out.append("</body></html>")
     return "".join(out)
 
@@ -599,9 +694,20 @@ def main() -> int:
     n_dom_flag = sum(1 for r in domain_records if not r["ok"])
     print(f"  {len(domain_records)} domain scores; {n_dom_flag} flagged")
 
+    print("Scaling variables (type-aware -> [-1,1]) for Part 2 ...")
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        num = pd.DataFrame(
+            {r["name"]: pd.to_numeric(df[r["name"]], errors="coerce").astype("float64")
+             for r in records if r["name"] in df.columns},
+            index=df.index)
+        scaled = normalize_for_embedding(num)
+    print(f"  scaled {scaled.shape[1]} variables; overall range "
+          f"[{float(np.nanmin(scaled.to_numpy())):.2f}, {float(np.nanmax(scaled.to_numpy())):.2f}]")
+
     print("Rendering HTML ...")
     html_str = build_html(records, df, vars_by_name, counts, n_pass, n_fail,
-                          domain_records=domain_records)
+                          domain_records=domain_records, scaled=scaled)
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     out_path = REPORTS_DIR / "qa_harmonization.html"
     out_path.write_text(html_str, encoding="utf-8")
