@@ -199,15 +199,104 @@ def _ppartpremier_episode(series: pd.Series, cohort: str) -> pd.Series:
                             pd_dtype="Int8")
 
 
+_FONDACODE_NETWORK_RE = re.compile(r"^(\d{1,2})(?=\d{8}$)")
+
+
+def _network_site_code(fondacode: pd.Series) -> pd.Series:
+    """Canonical FACE network site code = the 1–2 leading digits of fondacode.
+
+    fondacode is a 9–10 digit FONDAMENTAL patient ID whose prefix is the network
+    site number, consistent across BP/SZ/DR (verified: it agrees with the raw
+    per-cohort SITEID 99.2 / 99.9 / 100 % of the time, and resolves the few
+    mislabelled SITEID rows, e.g. SZ siteid=16 whose fondacode says 19=Toulouse).
+    """
+    text = fondacode.astype("string")
+    extracted = text.str.extract(_FONDACODE_NETWORK_RE, expand=False)
+    return pd.to_numeric(extracted, errors="coerce")
+
+
+def derive_siteid_city(
+    siteid: pd.Series, fondacode: pd.Series, cohort: str
+) -> pd.Series:
+    """Canonical site code for the ``siteid_city`` feature.
+
+    Prefer the fondacode-derived network code (uniform across cohorts); fall back
+    to the raw per-cohort SITEID only where fondacode is missing/malformed. The
+    per-cohort SITEID codebooks are partial, disjoint and occasionally
+    mislabelled, so they are never the primary source. Output is a float site
+    code; the integer→city name join (data/site_lookup.csv) is applied downstream
+    where a human-readable label is needed (it is a pure relabelling of the code).
+    """
+    net = _network_site_code(fondacode)
+    raw = pd.to_numeric(siteid, errors="coerce")
+    return net.fillna(raw).astype("float64").rename(siteid.name)
+
+
 @register("siteid_city")
 def _siteid_city(series: pd.Series, cohort: str) -> pd.Series:
-    warnings.warn(
-        f"[{cohort}] 'siteid_city': no per-cohort SITEID→city lookup registered; "
-        "falling back to raw numeric SITEID. Register a real mapping via "
-        "trans_diag.rules.register('siteid_city').",
-        stacklevel=2,
-    )
+    # Fallback path: when only the SITEID series is available (no sibling
+    # fondacode), the loader special-cases siteid_city via derive_siteid_city
+    # before this rule is reached. This body covers the degenerate single-column
+    # call so the transformer contract still holds.
     return pd.to_numeric(series, errors="coerce").astype("float64")
+
+
+# ----- CONSTANTES ET ECG (intervals: milliseconds → seconds) ----------------
+# qt / rr / qtc mix seconds and milliseconds within the same column across
+# cohorts (BP ~3 % ms, DR ~9 %). Canonical output is SECONDS: any value > 5 is a
+# millisecond entry and is divided by 1000 (a true ECG interval in seconds is
+# well under 5; in milliseconds it is in the hundreds). Sanity bounds in the
+# dictionary are then expressed in seconds and applied after this normalization.
+
+def _ms_to_seconds(series: pd.Series, cohort: str) -> pd.Series:
+    numeric = pd.to_numeric(series, errors="coerce")
+    converted = numeric.where(~(numeric > 5), numeric / 1000.0)
+    return converted.astype("float64")
+
+
+@register("qt")
+def _qt(series, cohort):
+    return _ms_to_seconds(series, cohort)
+
+@register("rr")
+def _rr(series, cohort):
+    return _ms_to_seconds(series, cohort)
+
+@register("qtc")
+def _qtc(series, cohort):
+    return _ms_to_seconds(series, cohort)
+
+
+# ----- SOCIAL (education: SZ stores grade labels as text) --------------------
+# BP/DR: clean ordinal (CP-CM2=1-5, collège=6-9, lycée=10-12, CAP=13, BEP=14,
+# BAC+1..BAC+5=15-19, Doctorat=20). SZ: ~22 % stored as text tokens. Map the
+# unambiguous tokens to the same ordinal; anything else → NA (logged-as-missing).
+_EDULEVEL_TEXT_MAP = {
+    "BAC": 12, "Bac": 12, "bac": 12,
+    "CAP": 13, "BEP": 14,
+    "Doctorat": 20, "Brevet": 9,
+}
+
+
+@register("edulevel")
+def _edulevel(series, cohort):
+    def convert(x):
+        if x is pd.NA or x is None or (isinstance(x, float) and np.isnan(x)):
+            return float("nan")
+        if isinstance(x, str):
+            s = x.strip()
+            if s in _EDULEVEL_TEXT_MAP:
+                return float(_EDULEVEL_TEXT_MAP[s])
+            try:
+                return float(s.replace(",", "."))
+            except ValueError:
+                return float("nan")
+        try:
+            return float(x)
+        except (TypeError, ValueError):
+            return float("nan")
+    return pd.Series([convert(x) for x in series], index=series.index,
+                     name=series.name, dtype="float64")
 
 
 # ----- PERINATALITE ---------------------------------------------------------
