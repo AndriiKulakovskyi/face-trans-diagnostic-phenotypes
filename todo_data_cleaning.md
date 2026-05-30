@@ -127,3 +127,10 @@ The per-cohort SITEID codebooks are partial and disjoint (BP/SZ list different s
 - Same city, two hospitals: codes 4 and 15 both = Grenoble (collapse to city). Code 3 = Montpellier (Lapeyronie in BP, Colombière in SZ).
 - DR-only sites **17, 18** have no BP/SZ text label yet — assign their city names (network codes are unambiguous).
 - Pipeline: `rules.py::_siteid_city` currently warns + falls back to raw numeric (the bug). Register a real mapping that derives the code from fondacode and joins `site_lookup.csv`. Site is used as the ComBat batch / confound (scripts 13, 15, 21), so this matters for harmonization.
+
+## VISIT scheduling — already harmonized in loader.YEARLY_VISIT_MAP (no new lookup needed)
+Cohorts schedule visits differently (BP/DR collect sub-annual `V6_mois`/`V18_mois`/`V30_mois`...; SZ only screening + annual), but harmonization is already centralized — do NOT build a parallel lookup table.
+- **`visitnum`** is NOT a timing code: it is a per-patient sequence ID (10001,10002,...). An identifier; never modelled on. Visit timing is in the **`visit`** text column.
+- **`visit`** labels are uniform across all 3 cohorts. `src/trans_diag/loader.py::YEARLY_VISIT_MAP` keeps **baseline + annual only** (V0, V1_an->V1, ..., V10_ans->V10) and **drops** `screening` + every sub-annual `_mois` visit (line 77 `isin` filter). This single map is the source of truth for both stratification (V0 cross-section) and the longitudinal/dimensional analysis.
+- Rows kept/dropped: BP 14159/7184, SZ 4622/1581, DR 996/957.
+- **Follow-up depth differs (study design, not a coding bug):** BP & SZ reach V10; **DR only ~V2** (V5 max, very sparse: V3 n=3, V5 n=4). For any cross-cohort *longitudinal* claim, cap at the common horizon (~V0-V2) in the analysis script — not in the loader.
