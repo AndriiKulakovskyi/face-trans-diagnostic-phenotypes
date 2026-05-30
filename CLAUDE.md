@@ -1,95 +1,123 @@
-# CLAUDE.md — FACE trans-diagnostic dimensional phenotyping (BP · SZ · DR)
+# CLAUDE.md — FACE trans-diagnostic phenotyping (BP · SZ · DR) — v2 study
 
-> Guide for collaborators and AI assistants. Keep it short. Paper draft:
-> [MANUSCRIPT.md](MANUSCRIPT.md). Plan: [docs/ROADMAP.md](docs/ROADMAP.md). Dictionary guide:
-> [docs/DATA.md](docs/DATA.md). Findings log: [docs/FINDINGS.md](docs/FINDINGS.md) · [docs/LABBOOK.md](docs/LABBOOK.md).
+> Guide for collaborators and AI assistants. Keep it short. Paper: [MANUSCRIPT.md](MANUSCRIPT.md).
+> Plan: [docs/ROADMAP.md](docs/ROADMAP.md). Dictionary: [docs/DATA.md](docs/DATA.md).
+> Findings: [docs/FINDINGS.md](docs/FINDINGS.md) · Lab notebook: [docs/LABBOOK.md](docs/LABBOOK.md).
+> Cognition include-list: [docs/neuropsy_features.yaml](docs/neuropsy_features.yaml).
 
 ## What this is
 
-A **self-contained** project that harmonizes the 3-cohort FACE psychiatric data
-(Bipolar, Schizophrenia, Depression; baseline V0 → 4-year V4) and models
-**trans-diagnostic** structure across DSM-5. Headline result: trans-diagnostic
-variation is **dimensional, not categorical** — six reproducible, confound-controlled
-trans-diagnostic dimensions (five symptom/biology axes plus one cognitive axis, after the DR
-neuropsychology extraction gap was closed) that complement/outperform DSM diagnosis for
-patient-reported outcomes (full write-up in `MANUSCRIPT.md`).
+A **self-contained** project that harmonizes the 3-cohort FACE psychiatric data (Bipolar,
+Schizophrenia, Depression; baseline **V0** → 4-year V4) and models **trans-diagnostic** structure
+two ways: **(1) dimensional analysis** (latent symptom / biology / cognition dimensions) and
+**(2) patient stratification** (clustering). **No imputation anywhere** — pervasive missingness is
+handled by *masked* methods (pairwise-complete correlation, masked similarity, masked posterior
+scores).
 
-The stratification **engine** (masked similarity → multipartite-spectral embedding,
-cluster enrichment, factor scaffolding) was originally a sister project; the pieces we
-use are now **internalized** in `src/trans_diag/engine/` — the repo has **no external
-dependency on `face_stratification`/`face_rlvr`**.
+**This is the v2 study — a clean restart on a re-curated dictionary.** The earlier (v1) analysis is
+archived at git tag **`v1-archive-2026-05-30`** (branch `archive/v1-research`); we stopped trusting
+the v1 common-variables set and now **re-derive every result from zero** on v2 — no v1 finding is
+assumed. Work happens on branch `v2-study`.
+
+The stratification **engine** (masked similarity → multipartite-spectral embedding, enrichment) is
+internalized in `src/trans_diag/engine/` — no external dependency on `face_stratification`/`face_rlvr`.
+
+## Status (v2 — the analysis has NOT been run yet)
+
+- ✅ **v2 dictionary finalized + locked** — **214 usable variables** (a re-curated subset of v1's 361),
+  with structured sanity bounds + coverage. Cognition reconciled to `docs/neuropsy_features.yaml`
+  (6 primary 3-cohort WAIS/TMT features + covariates). `qa_harmonization`: 190/190 load + pass sanity, 0 fail.
+- ✅ **Preprocessing debugged + ML-ready** — fixed the robust-z explosion (prolactin |z|≈106→5),
+  added **type-aware bounded scaling to [−1,1]**, kept the masked / no-imputation design. QA report
+  has the three parts described below.
+- ⬜ **Dimensional analysis + stratification — NOT yet re-derived on v2.** Scripts `01–22` are the
+  (reusable, validated-on-v1) *method* pipeline; they have **not** been re-run/re-validated on v2.
+  Golden-number tests + `MANUSCRIPT.md`/`docs/FINDINGS.md` numbers are **stale v1** and skip until regenerated.
+
+## Data processing — three stages (= the QA report's three Parts)
+
+`scripts/qa_harmonization.py` → `results/reports/qa_harmonization.html` shows the data at each stage.
+This is the debugging surface that must be clean *before* any analysis.
+
+1. **Part 1 — Harmonized variables (native scale).** Each dictionary variable is read from its
+   per-cohort source column, run through its harmonization rule (`rules.py`: text→code, unit fixes)
+   and per-variable **sanity bounds** (out-of-range → NaN, **never imputed**), landing on its native
+   clinical scale (TMT seconds, WAIS 1–19, Likert 0–3, binary 0/1, labs in clinical units). Verifies:
+   every variable loads, is numeric (no text leaked through), within bounds, cross-cohort comparable.
+
+2. **Part 2 — Post-processed variables (type-aware scaling → [−1,1]).** The *same* variables on a
+   common, bounded, ML-ready scale, **by type**: binary/ordinal/Likert → min-max; continuous → log
+   (if heavy right-skewed, e.g. prolactin) + winsorize(1/99) + robust-z (median/MAD) clipped ±5, ÷5.
+   Puts a lab in the thousands and a 0/1 flag on the same footing and bounds outliers. Verifies:
+   every feature lands in [−1,1] (`normalize_for_embedding`, `adapter.py`).
+
+3. **Part 3 — Encoded modelling features (aggregated V0 domain scores) — the actual model inputs.**
+   Items are aggregated into **construct-level domain scores** (each item robust-z'd + sign-oriented,
+   then a **masked mean** within its instrument/composite; no imputation), at the **baseline V0**
+   visit. These ~69 domain scores — *not* the raw items — are what feed the dimensional FA and the
+   stratification embedding.
+
+   **Why aggregate into domain scores (what "Encoded modelling features (aggregated V0 domain scores)" means and why we need it):**
+   - **Each construct counts once.** A construct measured by many items (e.g. a 30-item suicide
+     instrument) would otherwise be ~30 % of the dimensions in a similarity/correlation computed over
+     raw items, drowning out single-item constructs. Aggregating items → one score removes this
+     **item-count weighting bias** (LABBOOK E-series rationale).
+   - **More coverage, still no imputation.** A domain score needs only *some* of its items observed
+     (masked mean with a min-item floor), so it is far better-covered than any single item.
+   - **Interpretability.** Structure over ~69 *named* clinical constructs (depression, mania,
+     metabolic, cognition…) is interpretable; over ~190 raw items it is noise.
+   - **Comparable units.** Robust-z'ing each item before averaging lets members on different units
+     (mmol/L, mmHg, Likert points) combine sensibly into one construct.
+   - **V0 = the analysis anchor.** Dimensions/clusters are *defined* at baseline; later visits
+     (V1, V2…) are used to test their **temporal coherence**, not to define the structure.
 
 ## Repository layout
 
 ```
 face-common-bp-sz-dr/
-├── MANUSCRIPT.md  CLAUDE.md  README.md   ← paper + guides (kept at root)
-├── data/                            ← inputs (read-only)
-│   ├── face-common-vars.xlsx        ← common-variables dictionary (tracked)
-│   ├── thesaurus/                   ← per-cohort source dictionaries (tracked, reference)
-│   └── {bipolar,schizophrenia,depression}.csv  ← longitudinal data (confidential; gitignored)
-├── src/trans_diag/                 ← the package (all our code)
-│   ├── variable.py  rules.py  loader.py  filters.py   ← harmonization
-│   ├── schema_gen.py  adapter.py  domains.py          ← matrix build + domain aggregation
-│   ├── masked_fa.py  axes.py  outcomes.py             ← imputation-free FA, axis names, outcome models
-│   └── engine/                      ← internalized stratification engine
-│       ├── feature_schema.py  harmonized_dataset.py   ← data contracts
-│       ├── masked_similarity.py  spectral_base.py  multipartite.py  ← embedding (no imputation)
-│       ├── enrichment.py  clustering.py               ← enrichment + kmeans/bootstrap
-├── scripts/                         ← pipeline (00_run_all.py orchestrates 01–22) + verify/audit/qa infra
-├── tests/                           ← unit + golden-number regression tests (76)
-├── results/                         ← reproducible AGGREGATE artifacts (CSV/JSON; tracked)
-│   └── reports/                     ← rendered HTML + figures/ (PNG/SVG; tracked)
-├── notebooks/                       ← FACE_reproduction.ipynb
-├── docs/                            ← ROADMAP · DATA · FINDINGS · LABBOOK
-└── pyproject.toml                   ← packages = src/trans_diag; deps; [full] extras
+├── MANUSCRIPT.md  CLAUDE.md  AGENTS.md  README.md   ← paper + guides (root)
+├── data/                              ← inputs (read-only)
+│   ├── face-common-vars.xlsx          ← v2 common-variables dictionary (214 usable; tracked)
+│   ├── thesaurus/                     ← per-cohort source dictionaries (tracked, reference)
+│   └── {bipolar,schizophrenia,depression}.csv · site_lookup.csv   ← data (confidential; gitignored except site_lookup)
+├── src/trans_diag/                    ← the package (all our code)
+│   ├── variable·rules·loader·filters.py        ← harmonization + sanity bounds
+│   ├── schema_gen·adapter·domains.py           ← matrix build, type-aware scaling, domain aggregation
+│   ├── masked_fa·axes·outcomes.py              ← imputation-free FA, axis names, outcome models
+│   └── engine/                                 ← internalized stratification engine (masked, no imputation)
+├── scripts/                           ← method pipeline (00_run_all → 01–22) + qa_harmonization/verify/audit
+├── tests/                             ← unit + golden-number tests (golden skip until v2 results exist)
+├── results/                           ← regenerated AGGREGATE artifacts (empty on a clean tree; .gitkeep)
+│   └── reports/qa_harmonization.html  ← the 3-part QA report
+├── notebooks/  docs/                  ← reproduction notebook · ROADMAP·DATA·FINDINGS·LABBOOK·neuropsy_features.yaml
+└── pyproject.toml
 ```
 
-**Imports.** `trans_diag` resolves from `src/`. Scripts insert `src/` on `sys.path`;
-pytest uses `pythonpath = ["src"]`. Or `pip install -e ".[full]"`.
-
-## Data inputs (read-only, confidential)
-
-- `data/face-common-vars.xlsx` — dictionary: one row per harmonized variable (per-cohort
-  source columns, `dtype`, value set, `section`, `cluster_readiness`, rule). Small (103 KB);
-  tracked and safe to share. `data/thesaurus/` holds the per-cohort source dictionaries (reference).
-- `data/{bipolar,schizophrenia,depression}.csv` — 6,252 / 2,209 / 552 patients,
-  visit-level rows (V0–V4). **Confidential.** ✅ gitignored and **never committed**
-  (`git log --all --full-history -- 'data/*.csv'` is empty) — a local working copy only,
-  safe to share the repo as-is.
-- `results/v0_clusters_anchor.csv` — the sister 4-cohort clusters projected onto our
-  ids; a reference used only by `02_confound_ladder.py` (ARI-vs-sister in §3.1).
+**Imports.** `trans_diag` resolves from `src/`. Scripts insert `src/` on `sys.path`; pytest uses
+`pythonpath = ["src"]`. Or `pip install -e ".[full]"`.
 
 ## Core concepts
 
-**`Variable`** (`variable.py`) — one per dictionary row; `source_col(cohort)` → CSV column.
-**Harmonization registry** (`rules.py`) — `@register(...)`; unregistered → `identity_cast`.
-**`build_unified_dataframe(...)`** (`loader.py`) — `readiness=['READY','PARTIAL']` (361 vars),
-`format='long'|'wide'`; yearly visits recoded `V0..V10`.
-**Filters** (`filters.py`) — variable/patient filters, V0 anchoring.
-**Engine bridge** (`schema_gen.py`+`adapter.py`) — `to_harmonized_dataset(df, variables,
-visit='V0', sections=…, residualize_on=('age','sex'), normalize=…, exclude=…)` → a
-`trans_diag.engine.HarmonizedDataset` (numeric `X`, MultiIndex `[cohort, patient_id]`);
-`residualize_features` (spline + cross-fit) and `normalize_for_embedding` (robust z) live here.
-**Domain aggregation** (`domains.py`) — items → construct-level domain scores (masked mean
-of robust-z, min-item floor) + curated biology composites.
-**`patient_uid = cohort::usubjid_patients`** — globally-unique key (usubjid collides across
-cohorts; 970 collisions). **Identifiers (never modelled on):** `patient_uid`, `usubjid_patients`,
-`cohort`, `arm`, `visit`, `visitnum`.
-**No imputation** anywhere in the final model: the masked-similarity embedding, the
-autoencoder objective, AND the factor analysis all operate on observed cells only
-(`masked_fa.py`: pairwise-complete correlation → masked posterior-mean scores; the residual
-matrix is ~65% observed — see MANUSCRIPT §2.1, §3.8). The superseded FA mean-fill survives
-only as an ablation (`scripts/sensitivity_masked_fa*.py`).
+**`Variable`** (`variable.py`) — one per dictionary row; `source_col(cohort)` → CSV column; carries
+`sanity_min/max` (v2). **Harmonization registry** (`rules.py`) — `@register(...)`; unregistered →
+`identity_cast`. **`build_unified_dataframe(...)`** (`loader.py`) — `readiness=['READY','PARTIAL']`
+(214 vars); auto-detects v2 (any sanity bound present) → applies sanity bounds + v2 rules + fondacode
+site; `format='long'|'wide'`. **`to_harmonized_dataset(...)`** (`adapter.py`) — V0 numeric matrix,
+MultiIndex `[cohort, patient_id]`, optional `residualize_on=('age','sex')`; `normalize_for_embedding`
+= **type-aware scaling to [−1,1]**. **Domain aggregation** (`domains.py`) — items → construct-level
+domain scores (masked mean of robust-z, clipped ±5) + curated biology/cognition composites.
+**Identifiers (never modelled on):** `usubjid_patients`, `cohort`, `arm`, `visit`, `visitnum`,
+`siteid_city` (kept loadable for site stratification, excluded from features via `ADMINISTRATIVE_FEATURES`).
+**No imputation** anywhere — masked similarity, masked FA (pairwise-complete correlation → masked
+posterior-mean scores), all on observed cells only.
 
 ## Quick start
 
 ```bash
-pip install -e ".[full]"             # core + torch (AE) + neuroHarmonize (ComBat) + kaleido (figures)
-python3 scripts/00_run_all.py           # reproduce the whole manuscript pipeline (~5 min, steps 01–22)
-python3 -m pytest tests/ -q          # unit + golden-number tests (76)
-python3 scripts/verify.py            # end-to-end harmonization smoke test
-python3 scripts/02_confound_ladder.py   # reproduce the §3.1 confound ladder
+pip install -e ".[full]"                 # core + torch + neuroHarmonize + kaleido
+python3 scripts/qa_harmonization.py      # the 3-part data-processing QA report (must be clean first)
+python3 -m pytest tests/ -q              # unit tests (golden tests skip until v2 results exist)
+python3 scripts/verify.py                # harmonization smoke test (thresholds still v1-calibrated — Phase 6)
 ```
 
 ```python
@@ -97,74 +125,29 @@ from trans_diag import build_unified_dataframe, load_variables, to_harmonized_da
 df = build_unified_dataframe("data", "data/face-common-vars.xlsx",
                              readiness=["READY", "PARTIAL"], format="long")
 ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), visit="V0")
-# ds.X: MultiIndex[cohort, patient_id] × numeric features (NaN = missing, never imputed here);
-# ds.schema: a trans_diag.engine.FeatureSchema generated from our dictionary.
+# ds.X: MultiIndex[cohort, patient_id] × numeric features (NaN = missing, never imputed)
 ```
 
-## Pipeline order (`scripts/00_run_all.py`)
+## Pipeline (`scripts/`) — reusable method code, NOT yet re-run on v2
 
-Scripts are numbered in execution order — read or run them top-to-bottom:
-`01_manuscript_table1` (Table 1) → `02_confound_ladder` (§3.1 confound trap) →
-`03_cluster_domains` (residualized scores + embedding) → `04_structure_test`
-(discrete-vs-dimensional) → `05_dimensional_axes` (varimax FA) → `06_dimensional_ae`
-(autoencoder cross-check) → `07_dimensional_refine` (locked K=6 axes, incl. cognition) →
-`08_longitudinal_axes` → `09_longitudinal_coherence` → `10_phase5_outcomes` (V1 then V2)
-→ `11_phase5_ci` → `12_phase5_decircularized` → `13_robustness_site` (ComBat) →
-`15_review_checks` (incl. the cognition confound battery #10) → `16_manuscript_figures` →
-`17_export_longitudinal_figure` (Suppl. Fig S1) → `18_export_dimensional_flow` (Fig 6) →
-`19_pfactor` (§4.6 general-factor 'p' check) → `20_robustness_cvrefit` (Limitation 10:
-axes re-fit inside CV folds) → `21_replication_holdout` (Limitation 9: within-FACE
-leave-one-cohort / leave-one-site replication) → `22_screening_panel` (§4.5 parsimonious
-screening panel: sparse item→axis distillation).
-`00_run_all.py` runs all 21 in this order (step 14, the old BP/SZ-only cognition analysis,
-was removed when neuropsychology was folded into the main model); the unnumbered scripts
-(`verify`, `audit`, `qa_missingness`, `build_notebook`, `build_dr_neuropsych_mapping`,
-`sensitivity_masked_fa{,_mechanism}`) are utilities, not pipeline steps.
+Numbered in execution order: `01_manuscript_table1` → `02_confound_ladder` → `03_cluster_domains`
+(domain scores + embedding) → `04_structure_test` (discrete-vs-dimensional) → `05_dimensional_axes`
+(varimax FA) → `06_dimensional_ae` (AE cross-check) → `07_dimensional_refine` (lock K by masked
+split-half) → `08/09` longitudinal → `10/11/12` outcomes → `13` ComBat site → `15` review/confound
+battery → `16/17/18` figures → `19` p-factor → `20/21` CV-refit + leave-cohort-out replication →
+`22` screening panel. **Re-deriving these on v2 (Phase 4/5) is the next work** — every K, axis, ARI,
+and outcome is to be re-determined; do not assume the v1 values.
 
 ## Conventions
 
-- **Python ≥ 3.11.** Core deps in `pyproject.toml`; full reproduction needs `".[full]"`.
-- **Develop in `src/trans_diag`** (incl. `engine/` — vendored but now ours to maintain).
-- **Output paths**: scripts write aggregates to `results/` and HTML/figures to `results/reports/`.
-- **Determinism**: fixed seeds throughout; reproduces to ≤1e-12 (BLAS round-off only).
-  All CV folds are shuffled (the patient matrix is cohort-ordered).
-
-## Status (manuscript draft; imputation-free model)
-
-- **Trans-diagnostic structure is DIMENSIONAL, not discrete** (structure test: no eigengap,
-  monotone gap, HDBSCAN≈cohort ARI 0.64; the only discrete structure is diagnosis). The 7
-  DSM subtypes order on a mood↔psychosis continuum (ρ 0.50 [0.36,0.61]; down from ρ 0.79 in the
-  symptom-only embedding — cognition now shares the leading embedding dimension).
-- **Final model: K=6 imputation-free confound-free axes** (`07_dimensional_refine.py`: masked
-  pairwise-complete correlation → PAF+varimax → masked posterior-mean scores, NO cell filled;
-  K=6 = max reproducible dimensionality before collapse by deterministic single-split half
-  congruence, K≥7 collapse; a 25-split robustness curve is reported as a caveat; FA + PyTorch AE
-  agree, leading CCA 0.94 vs perm-null 0.05). Diagnosis-independent (cohort η²≤0.106, site ≤0.049).
-  Axes: depression, later-onset, mania/activation (+externalizing: impulsivity/childhood-ADHD),
-  illness-burden, **cognition (verbal reasoning + working memory)**, metabolic.
-- **Cognition integrated (DR neuropsych extraction gap closed, 2026-05).** The old "neuropsychology
-  absent in DR by design (0% vs BP 71% / SZ 86%)" claim was an extraction artifact; a full DR export
-  recovered it (V0 coverage ~57%, vs BP ~68% / SZ ~80%). DR neuropsych columns were mapped into the
-  dictionary (`scripts/build_dr_neuropsych_mapping.py`) and curated cognitive constructs now feed the
-  main masked FA. A confound battery (`15_review_checks` #10 + `21`) admitted ONE genuine cognitive
-  axis (verbal reasoning + working memory; cohort η² 0.072, transports leave-DR-out 1.0) and rejected
-  the rest: processing speed/executive (incoherent across cohorts, ~0 communality), verbal fluency
-  (cohort artifact — η² 0.46, survives within-cohort permutation), CVLT memory + matrix reasoning
-  (BP/SZ-only). The standalone BP/SZ cognition analysis (old `14_cognition_bpsz.py`) was removed; vs
-  the prior symptom-only K=7, the pure-mania and externalizing axes re-merge and work-disability is
-  no longer separately resolved.
-- **Outcomes (shuffled CV + repeated-CV CIs) — UNCHANGED by the cognition integration:** axes beat
-  DSM on QoL (+0.037 [+0.034,+0.040]), complement functioning (combined +0.035), DSM dominates
-  hospitalization (−0.141). Robust to de-circularization, ComBat, fold-honest re-fit, and V2.
-  Trait-state: metabolic (0.63) & depression (0.58) most trait-like; cognition moderately
-  trait-like (0.31).
-- **Discrete clustering = negative result** — slices of a continuum; supplement only.
-- **Repo independence:** engine internalized (`engine/`); full pipeline reproduces to ≤1e-12;
-  76 tests pass with no `archive/` dependency.
+- **Python ≥ 3.11.** Develop in `src/trans_diag` (incl. `engine/`).
+- **No imputation, ever.** Missingness is handled by masked methods (no hard missingness drop).
+- **Output**: scripts write aggregates to `results/`, HTML/figures to `results/reports/`.
+- **Determinism**: fixed seeds; CV folds shuffled (the patient matrix is cohort-ordered).
+- **Recoverability**: the full v1 study is at tag `v1-archive-2026-05-30`.
 
 ## Where to read next
 
-- **The paper** → [MANUSCRIPT.md](MANUSCRIPT.md)
-- **Dictionary columns** → [docs/DATA.md](docs/DATA.md) · **Plan/framing** → [docs/ROADMAP.md](docs/ROADMAP.md)
-- **Findings (paper log)** → [docs/FINDINGS.md](docs/FINDINGS.md) · **Lab notebook** → [docs/LABBOOK.md](docs/LABBOOK.md)
-- **Engine internals** → `src/trans_diag/engine/` (module docstrings)
+- **Plan** → [docs/ROADMAP.md](docs/ROADMAP.md) · **Dictionary columns** → [docs/DATA.md](docs/DATA.md)
+- **Findings (v2 log)** → [docs/FINDINGS.md](docs/FINDINGS.md) · **Lab notebook** → [docs/LABBOOK.md](docs/LABBOOK.md)
+- **Paper skeleton** → [MANUSCRIPT.md](MANUSCRIPT.md) · **Engine internals** → `src/trans_diag/engine/`
