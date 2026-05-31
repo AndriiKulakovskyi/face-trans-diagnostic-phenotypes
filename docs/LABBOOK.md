@@ -237,8 +237,31 @@ measured, per Study A; pooled near-identical).
   symptom-only measurement. Biology and cognition are structured but orthogonal to symptoms, so an
   integrated model is genuinely multidimensional with no dominant general factor."* Robust BP+DR↔pooled.
 
+## V2-16 · Study C — longitudinal coherence (V0→V1→V2) — 2026-05-31
+`scripts/44_longitudinal_coherence_v2.py` (reuses Stage 0/2/3 logic via importlib — V0 reproduces the
+committed Stage-2 scores, |r|=1.00).
+- **Structural invariance** (re-derive K=4 per visit; Tucker congruence vs V0): internalizing
+  **0.99/0.98**, cardiometabolic **0.98/0.97** (strong); cognition 0.00@V1 / **0.87@V2** (battery is
+  baseline-anchored — `wais` ~5% at V1); illness-course 0.87/0.78. → **the dimensional structure
+  PERSISTS at follow-up** wherever re-measured.
+- **Score stability** (project V0 loadings; Spearman test-retest V0↔V1 / V0↔V2): cardiometabolic
+  **0.66/0.62** (trait-stable), internalizing **0.59/0.53** (moderate — episodic mood, as expected),
+  cognition 0.49@V2, **illness-course 0.12/0.16 (low)**.
+- **Illness-course dig:** its core age-of-onset constructs (`agedebutpremier_episode`, `agetrt`,
+  `agedebut_hospitalisation`) are **0% at V1/V2** (baseline-only historical intake items); only the
+  noisy lifetime-hospitalization burden is re-collected. So illness-course is a **fixed baseline-
+  historical axis, not a longitudinally re-measurable state** — low test-retest is a measurement-design
+  artifact, not instability.
+- **Verdict:** structure is longitudinally **coherent where measurable**: biology trait-stable, mood
+  state-moderate (appropriate), cognition baseline-anchored (V2), illness-course a fixed baseline trait.
+  V0-defines/later-validate design supported.
+- **Emergent synthesis (across Studies A+C):** the **cardiometabolic axis is the most measurement-
+  robust** trans-diagnostic dimension — 3-cohort *and* longitudinally stable; cognition is 3-cohort but
+  baseline-anchored; internalizing is BP+DR mood; illness-course is fixed-historical. With Study B
+  (symptoms⊥biology, p-factor is symptom-only), the robust trans-diagnostic substrate is **biological/
+  cognitive**, while symptom structure is more cohort-/state-specific.
+
 ## Next (validation arm)
-- **Study C** — longitudinal coherence V0→V1→V2 (internalizing invariance = BP+DR per Study A).
 - **Study D** — predictive validity vs DSM (relapse-by-V2 [CGI-S, locked] + functioning/QoL;
-  internalizing split direct[BP+DR]/proxy[SZ]).
+  internalizing split direct[BP+DR]/proxy[SZ]). The make-or-break.
 - Then **Phase 6** — manuscript framed by the D verdict + figures + re-baselined golden tests.

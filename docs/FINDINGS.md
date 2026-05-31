@@ -111,4 +111,12 @@ Relapse outcome **locked** (Study D): hospitalization-count REJECTED (lifetime c
   symptom-only **0.33** → +cognition 0.27 → +biology 0.15 → full **0.09**. → *a p-factor is a
   symptom-only artifact; the integrated symptom+biology+cognition space is multidimensional and
   orthogonal-blocked, no general factor.* Robust BP+DR↔pooled.
-- [TODO — Study C longitudinal coherence · Study D predictive validity vs DSM.]
+- **Study C — longitudinal coherence (V0→V1→V2)** (`scripts/44_longitudinal_coherence_v2.py`).
+  *Structural invariance* (re-derive per visit, congruence vs V0): internalizing 0.99/0.98,
+  cardiometabolic 0.98/0.97 (strong); cognition 0.87@V2 (0@V1 — baseline-anchored battery); illness-
+  course 0.87/0.78 → structure persists. *Score stability* (test-retest): cardiometabolic 0.66/0.62
+  (trait), internalizing 0.59/0.53 (state/episodic), cognition 0.49@V2, illness-course **0.12/0.16**
+  (its age-of-onset core is baseline-only at V1/V2 → fixed-historical, not re-measurable; not
+  instability). **Cardiometabolic is the most measurement-robust axis** (3-cohort + longitudinally
+  stable). → with Study B, the robust trans-diagnostic substrate is biological/cognitive.
+- [TODO — Study D predictive validity vs DSM (the make-or-break).]
