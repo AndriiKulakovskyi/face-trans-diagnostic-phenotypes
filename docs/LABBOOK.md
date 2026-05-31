@@ -299,6 +299,24 @@ patient** (no leakage); bootstrap CIs by patient; DSM = `dsm_diagnosis` one-hot;
   the stabler estimator). Relapse remains hard to predict. **The original "dims useless for relapse"
   was too harsh — a confound artifact.**
 
+## V2-19 · Relapse prediction — can we reach AUC > 0.7? (yes, legitimately, via early-course) — 2026-05-31
+Two leakage-safe attempts (OOF AUC, StratifiedGroup/StratifiedKFold, bootstrap by patient, fair DSM,
+logistic + HistGradientBoosting):
+- **#1 richer baseline** (`scripts/47_relapse_richbaseline_v2.py`): full **75 construct scores** vs the
+  6 axes on the remission-based person-intervals → best AUC **0.636** (gboost rich) / 0.631 (logistic
+  axes); Δ(rich vs axes) +0.027 [−0.002,+0.057] **ns**. → the 6-axis compression cost ~nothing;
+  **baseline-only relapse tops out ~0.64 — cannot reach 0.7 with more baseline features.**
+- **#2 early-course prognosis** (`scripts/48_relapse_trajectory_v2.py`): predict **V1→V2** relapse
+  (remitted-at-V1, CGI_V1 controlled) from **V0+V1** (early trajectory: ΔCGI, V1 axes, V1−V0 Δaxes).
+  n=989 (BP-heavy), 22% relapse. **AUC ≈ 0.70** (gboost 0.696 full-sample; logistic 0.702 complete-case)
+  — reaches the target. Beats **DSM +0.05 [+0.01,+0.10]** and baseline severity +0.08 (both sig). The
+  trajectory-over-V0-dims increment is modest/method-dependent (gboost +0.053 sig; logistic +0.001 ns)
+  — much of the gain is the V0+V1 dimensional profile.
+- **Verdict:** >0.7 is reachable **legitimately only by using early-course (V0+V1) data** — a different,
+  clinically reasonable question (early-response prognosis) — NOT by enriching baseline (stays ~0.64).
+  No confound/leakage reintroduced (regression-to-mean stays removed, CGI_V1 controlled, OOF CV, fair
+  DSM). Honest: right *at* 0.70, BP-dominated, requires the first follow-up year.
+
 ## VALIDATION ARM COMPLETE — overall verdict
 The v2 dimensional model is **rigorous and partially useful, not transformative**:
 - **Solid & validated:** 4 reproducible axes, no p-factor, no subtypes (dimensional); confound-clean &

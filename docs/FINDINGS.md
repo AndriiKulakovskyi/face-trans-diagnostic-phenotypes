@@ -134,6 +134,12 @@ Relapse outcome **locked** (Study D): hospitalization-count REJECTED (lifetime c
   modest increment over DSM** (logistic ΔAUC **+0.036 [+0.014,+0.057]**; gboost +0.012 ns —
   borderline/method-dependent), internalizing-carried; relapse stays hard to predict (AUC ≤0.65). So
   the earlier "dims useless for relapse" was a confounded-outcome artifact.
+- **Relapse — reaching AUC >0.7** (`scripts/47,48`): **(1) richer baseline** (75 constructs vs 6 axes)
+  tops out at 0.636 (Δ+0.027 ns) → baseline-only relapse can't break 0.7. **(2) early-course prognosis**
+  (predict V1→V2 from V0+V1: ΔCGI + V1 axes + Δaxes, CGI_V1 controlled, leakage-safe) reaches **AUC ≈
+  0.70** (gboost 0.696 / logistic 0.702, n=989), beating DSM +0.05 and baseline +0.08. → >0.7 is
+  reachable *only* by adding the early course (a different, clinically-sensible prognostic question),
+  not by enriching baseline — and without reintroducing the regression-to-mean confound or leakage.
 
 ## Overall verdict (validation arm complete)
 The v2 dimensional model is **rigorous and partially useful, not transformative.** Solid: 4 reproducible
