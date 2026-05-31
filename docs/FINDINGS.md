@@ -126,13 +126,22 @@ Relapse outcome **locked** (Study D): hospitalization-count REJECTED (lifetime c
   **FAST@V2 (BP+DR):** axes beat DSM (DSM adds 0; Δ +0.038 [+0.022,+0.053]). Per-axis: illness_course
   leads (+0.017); cognition/cardiometabolic add little individually. **Verdict: partially earns its
   keep** — DSM-equivalent-to-better + modest non-circular functional-prognosis increment (ΔR²~0.04),
-  no relapse advantage. More than descriptive; clinical gain over DSM small (report honestly).
+  no relapse advantage *under the change-based outcome* (later shown confounded). Report honestly.
+- **Study D refined — relapse done right** (`scripts/46_predictive_survival_v2.py`): the change-based
+  relapse was confounded by **regression-to-the-mean** (baseline-only AUC 0.765 → **0.578** under a
+  remission-based discrete-time-survival outcome: at-risk = V0-remitted CGI≤3, relapse = deterioration
+  to CGI≥4; GroupKFold by patient; logistic + gradient-boosting). De-confounded, the dims **do add a
+  modest increment over DSM** (logistic ΔAUC **+0.036 [+0.014,+0.057]**; gboost +0.012 ns —
+  borderline/method-dependent), internalizing-carried; relapse stays hard to predict (AUC ≤0.65). So
+  the earlier "dims useless for relapse" was a confounded-outcome artifact.
 
 ## Overall verdict (validation arm complete)
 The v2 dimensional model is **rigorous and partially useful, not transformative.** Solid: 4 reproducible
 dimensional axes, no p-factor, no subtypes; confound-clean (A); longitudinally coherent (C). Novel
 (B, headline): **symptoms ⊥ biology; the p-factor is a symptom-only artifact.** Honest limits:
 internalizing BP+DR-anchored, cognition baseline-anchored, illness-course fixed-historical;
-cardiometabolic is the most measurement-robust axis. Utility (D): modest — matches/beats DSM, adds a
-small incremental *functional*-prognosis (not relapse). → A trans-diagnostic dimensional account that
-is at least DSM-equivalent for prognosis with a small functional-prognosis gain, biologically grounded.
+cardiometabolic is the most measurement-robust axis. Utility (D + refined): modest but real —
+matches/beats DSM and adds incremental prognosis over it, robustly for *functioning* (ΔR²~0.04) and
+modestly for *relapse* once the regression-to-mean confound is removed (de-confounded ΔAUC +0.036,
+borderline). → A trans-diagnostic dimensional account at least DSM-equivalent for prognosis, adding a
+small-to-modest incremental forecast of functioning and relapse, biologically grounded.

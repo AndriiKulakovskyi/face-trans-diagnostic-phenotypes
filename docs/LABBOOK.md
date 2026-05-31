@@ -280,6 +280,25 @@ AUC 0.531 (near-chance) → completer sample not biased on the axes.
   course; **no advantage for relapse** (baseline-severity-driven). More than descriptive, but the
   clinical gain over DSM is small — report honestly, do not oversell.
 
+## V2-18 · Study D refined — relapse done right (remission-based + discrete-time survival) — 2026-05-31
+`scripts/46_predictive_survival_v2.py`. Fixed the regression-to-mean confound in the original
+change-based relapse: at-risk = **V0-remitted** (CGI-S 1–3), relapse = deterioration to **CGI-S ≥4**;
+**discrete-time hazard** over person-intervals (attrition handled via censoring); **GroupKFold by
+patient** (no leakage); bootstrap CIs by patient; DSM = `dsm_diagnosis` one-hot; **two methods**
+(regularized logistic + HistGradientBoosting), identical pipeline per predictor set.
+- n=1766 person-intervals (1262 patients, effectively BP+SZ; DR-remitted negligible), 400 events (23%);
+  hazard V0→V1 26%, V1→V2 17%.
+- **The confound was real:** baseline-only AUC **0.765 (old) → 0.578 (remission-based)** — the old
+  "baseline dominates / dims useless" was largely a regression-to-mean artifact.
+- **Relapse-from-remission is hard to predict** (best M3 AUC 0.650).
+- **Logistic:** dims add over DSM **+0.036 [+0.014,+0.057]** (sig); axes≈DSM alone; cross-domain
+  (non-circular) +0.011 (ns). **GBoost:** +0.012 [−0.017,+0.041] (ns) — does not robustly replicate.
+- **Read:** with a fair de-confounded outcome, the dims **do add a modest, linear-detectable (not
+  boosting-robust) increment over DSM**, carried by **internalizing** (residual symptoms → relapse).
+  The modern method tempered, not amplified, the result (small linear signal → regularized linear is
+  the stabler estimator). Relapse remains hard to predict. **The original "dims useless for relapse"
+  was too harsh — a confound artifact.**
+
 ## VALIDATION ARM COMPLETE — overall verdict
 The v2 dimensional model is **rigorous and partially useful, not transformative**:
 - **Solid & validated:** 4 reproducible axes, no p-factor, no subtypes (dimensional); confound-clean &
@@ -287,9 +306,13 @@ The v2 dimensional model is **rigorous and partially useful, not transformative*
 - **Novel insight (B, headline):** symptoms ⊥ biology; the p-factor is a symptom-only artifact.
 - **Honest limitations:** internalizing is BP+DR-anchored (SZ proxy); cognition baseline-anchored;
   illness-course fixed-historical; cardiometabolic is the most measurement-robust axis.
-- **Clinical utility (D):** modest — matches/beats DSM and adds small incremental *functional*-outcome
-  prediction (not relapse). Honest bottom line: a trans-diagnostic dimensional account that is at
-  least DSM-equivalent for prognosis and adds a small functional-prognosis increment.
+- **Clinical utility (D + D-refined):** modest but real — the dims match/beat DSM and add incremental
+  prognosis over it: **robustly for functioning** (GAF/FAST, ΔR²~0.04) and **modestly for relapse**
+  once the regression-to-mean confound is removed (remission-based discrete-time survival: dims add
+  ΔAUC +0.036 over DSM by logistic, borderline/ns by gradient boosting; internalizing-carried). The
+  earlier "dims useless for relapse" was a confounded-outcome artifact. Honest bottom line: a
+  trans-diagnostic dimensional account at least DSM-equivalent for prognosis, adding a small-to-modest
+  incremental forecast of functioning and (de-confounded) relapse.
 
 ## Next — Phase 6
 - **Manuscript** framed by the above (lead with B; honest D verdict). Figures (4 axes, orthogonality,
