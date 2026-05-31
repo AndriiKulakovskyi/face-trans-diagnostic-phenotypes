@@ -261,7 +261,36 @@ committed Stage-2 scores, |r|=1.00).
   (symptoms⊥biology, p-factor is symptom-only), the robust trans-diagnostic substrate is **biological/
   cognitive**, while symptom structure is more cohort-/state-specific.
 
-## Next (validation arm)
-- **Study D** — predictive validity vs DSM (relapse-by-V2 [CGI-S, locked] + functioning/QoL;
-  internalizing split direct[BP+DR]/proxy[SZ]). The make-or-break.
-- Then **Phase 6** — manuscript framed by the D verdict + figures + re-baselined golden tests.
+## V2-17 · Study D — predictive validity vs DSM (the make-or-break): MODEST, functioning-specific — 2026-05-31
+`scripts/45_predictive_validity_v2.py`. Out-of-sample cohort-stratified 5-fold CV; M0 = age+sex+V0
+baseline-of-outcome, M1 = +DSM (`dsm_diagnosis`), M2 = +axes, M3 = +both, M2x = cross-domain axes
+(drop internalizing = the non-circular test). **Attrition check passed**: V0 axes → has-V2-followup
+AUC 0.531 (near-chance) → completer sample not biased on the axes.
+- **Relapse-by-V2 (binary, n=3378):** baseline CGI-S alone AUC **0.765**; **neither DSM nor axes add**
+  (Δ axes-vs-DSM +0.004 [CI −0.002,+0.011], ns; cross-domain +0.002 ns). Relapse ≈ baseline severity.
+- **GAF@V2 (n=2043):** axes **add over DSM ΔR²=+0.046 [+0.030,+0.062]**; cross-domain (non-circular)
+  +0.033 [+0.020,+0.047]; axes≈DSM-alone (0.314 vs 0.310).
+- **FAST@V2 (BP+DR, n=1878):** axes **beat DSM** (DSM adds 0.000; Δ axes-vs-DSM +0.038 [+0.022,+0.053]);
+  cross-domain +0.026 [+0.013,+0.039].
+- **Per-axis (functioning):** led by **illness_course** (ΔR² 0.017/0.010) + internalizing (0.012/0.018);
+  cognition & cardiometabolic add little individually (≤0.005) — the functional signal is modest and
+  illness-course-led, NOT a strong cognition/biology effect.
+- **VERDICT — partially earns its keep:** the dimensions are **DSM-equivalent-to-better and add a
+  modest, significant, non-circular increment to FUNCTIONAL prognosis** (ΔR² ~0.04), led by illness-
+  course; **no advantage for relapse** (baseline-severity-driven). More than descriptive, but the
+  clinical gain over DSM is small — report honestly, do not oversell.
+
+## VALIDATION ARM COMPLETE — overall verdict
+The v2 dimensional model is **rigorous and partially useful, not transformative**:
+- **Solid & validated:** 4 reproducible axes, no p-factor, no subtypes (dimensional); confound-clean &
+  cohort-residualization-robust (A); longitudinally coherent (C).
+- **Novel insight (B, headline):** symptoms ⊥ biology; the p-factor is a symptom-only artifact.
+- **Honest limitations:** internalizing is BP+DR-anchored (SZ proxy); cognition baseline-anchored;
+  illness-course fixed-historical; cardiometabolic is the most measurement-robust axis.
+- **Clinical utility (D):** modest — matches/beats DSM and adds small incremental *functional*-outcome
+  prediction (not relapse). Honest bottom line: a trans-diagnostic dimensional account that is at
+  least DSM-equivalent for prognosis and adds a small functional-prognosis increment.
+
+## Next — Phase 6
+- **Manuscript** framed by the above (lead with B; honest D verdict). Figures (4 axes, orthogonality,
+  continuum, predictive deltas). Re-baseline golden tests + `verify.py` thresholds to v2.

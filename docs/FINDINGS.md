@@ -119,4 +119,20 @@ Relapse outcome **locked** (Study D): hospitalization-count REJECTED (lifetime c
   (its age-of-onset core is baseline-only at V1/V2 → fixed-historical, not re-measurable; not
   instability). **Cardiometabolic is the most measurement-robust axis** (3-cohort + longitudinally
   stable). → with Study B, the robust trans-diagnostic substrate is biological/cognitive.
-- [TODO — Study D predictive validity vs DSM (the make-or-break).]
+- **Study D — predictive validity vs DSM (the make-or-break): MODEST, functioning-specific**
+  (`scripts/45_predictive_validity_v2.py`; out-of-sample CV; M0=age+sex+V0-baseline). Attrition check
+  passed (axes→dropout AUC 0.531). **Relapse-by-V2:** baseline CGI-S AUC 0.765; neither DSM nor axes
+  add (ns). **GAF@V2:** axes add over DSM ΔR²=+0.046 [+0.030,+0.062]; cross-domain (non-circular) +0.033.
+  **FAST@V2 (BP+DR):** axes beat DSM (DSM adds 0; Δ +0.038 [+0.022,+0.053]). Per-axis: illness_course
+  leads (+0.017); cognition/cardiometabolic add little individually. **Verdict: partially earns its
+  keep** — DSM-equivalent-to-better + modest non-circular functional-prognosis increment (ΔR²~0.04),
+  no relapse advantage. More than descriptive; clinical gain over DSM small (report honestly).
+
+## Overall verdict (validation arm complete)
+The v2 dimensional model is **rigorous and partially useful, not transformative.** Solid: 4 reproducible
+dimensional axes, no p-factor, no subtypes; confound-clean (A); longitudinally coherent (C). Novel
+(B, headline): **symptoms ⊥ biology; the p-factor is a symptom-only artifact.** Honest limits:
+internalizing BP+DR-anchored, cognition baseline-anchored, illness-course fixed-historical;
+cardiometabolic is the most measurement-robust axis. Utility (D): modest — matches/beats DSM, adds a
+small incremental *functional*-prognosis (not relapse). → A trans-diagnostic dimensional account that
+is at least DSM-equivalent for prognosis with a small functional-prognosis gain, biologically grounded.
