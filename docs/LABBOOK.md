@@ -35,7 +35,158 @@ Part 1 harmonized variables (native scale) + sanity + missingness · Part 2 post
 variables (type-aware [−1, 1], all 190 in Part-1 order) · Part 3 aggregated V0 domain scores
 (the ~69 model inputs). 190/190 pass.
 
+## V2-6 · Aggregation investigation — why aggregate at all? — 2026-05-31
+Question raised: do we need construct aggregation before the dimensional analysis, or run on the
+190 standardized items directly to avoid dropping signal? **First-principles:** type-aware scaling
+fixes *scale* but not (a) **count/redundancy bias** — a construct's geometric weight scales with how
+many items its questionnaire happens to have — nor (b) **structured missingness** under no-imputation.
+Both distort *any* inner-product / squared-error method (FA, k-means, cosine, **and AE/VAE/VQ-VAE**,
+which also force imputation). **Empirical** (`scripts/sensitivity_aggregation_v2.py`): item-level
+masked corr cond ≈1.3e9 vs domain 110; within-SZ **67%** of item-pairs have <100 co-obs (only
+104/188 items exist in SZ → item structure is BP-carried); suicide block = **19%** of item-axes. Flat
+means are lossy (metabolic PA_k=3; CTQ r(mean,PC1)=0.76) **but** the top 4–5 dimensions are
+**granularity-invariant** (canonical r ≥ 0.85, perm-null 0.04) — the headline structure is not a
+grouping artifact. **Decision:** replace flat masked means with a **hierarchical/bifactor measurement
+model in HYBRID mode** (clinical anchors, data-revised), keeping masked / no-imputation. Full rationale
++ evidence: [AGGREGATION_RATIONALE.md](AGGREGATION_RATIONALE.md); plan: [HIERARCHICAL_FA_PLAN.md](HIERARCHICAL_FA_PLAN.md).
+
+## V2-7 · Hierarchical-FA Stages 0–2 — 2026-05-31
+- **Stage 0** (`scripts/30_hfa_stage0_itemset_v2.py`) — froze a **188-item** set: added every valid
+  measurement (the 34 composite-dropped labs/vitals + 16 previously-NOT-USABLE-but-valid rows incl.
+  WAIS matrices/arith/symbols, MDQ, rare `*_mhoccur` flags); excluded identifiers, age/sex
+  (residualized), confounds `hcg`/`clozapin`/**`oxcarbaz`** (caught in QA), the D8 branching
+  suicide items (<6% obs, 0 complete cases), and by-construction-collinear `tmtba01`. Factorable
+  (scree 12.6, 10.1, 6.9…); plain KMO undefined (near-singular cond 1.3e9 → use scree, shrunk-KMO 0.66).
+- **Stage 1** (`scripts/31_hfa_stage1_efa_v2.py`) — masked Horn parallel analysis → **42 first-order
+  factors, highly nameable**, and they **independently confirm the An2 aggregation problems**:
+  metabolic → adiposity / BP / lipids / cholesterol; CTQ **denial (ctq40/41) splits off** from trauma;
+  C-SSRS → severity / intensity; ISF → ideation / attempts; dropped labs/vitals **recovered** as
+  factors (autonomic-HR, red-cell, inflammation, vit-D). Substantive (top-12) factors reproduce
+  **leave-BP-out (mean Tucker congruence 0.91)** → not BP-driven.
+- **Stage 2** (`scripts/32_hfa_stage2_v2.py`) — hybrid first-order model: each construct = a
+  **within-construct masked 1-factor posterior** (estimated weights, no item-count / total-subscore
+  double-count, explicit signs). **84 constructs** (26 multi-item). *Wins:* metabolic split →
+  adiposity VAF1 **0.93** / cholesterol 0.90 / BP 0.72 / lipids 0.72 (vs collapsed **0.40**); CTQ
+  cleaned (denial dropped, VAF1 0.59); CGI reduced to severity (`cgi01`). **Φ₁: 106/3486 construct
+  pairs |r|>0.3 (max 0.74)** with coherent second-order seeds (depression: madrs~qidsr 0.74,
+  staya~qidsr 0.73; functioning: cgi~egf −0.69) → second-order layer warranted.
+- **Honest limitations (reviewer-facing):** C-SSRS constructs are **sparse** (coverage 6–16%; the
+  usable suicidality dimension is ISF `suicidal_ideation`, 0.91); `medical_comorbidity` (24 flags,
+  VAF1 0.38) is a heterogeneous bin (kept per decision, flagged); several lab panels are weakly
+  unidimensional (electrolytes 0.34, red-cell 0.43, thyroid 0.46). 84 constructs is many — the
+  second-order layer (Stage 3) is what reduces them to interpretable dimensions.
+- Findings logged in [FINDINGS.md](FINDINGS.md) §Track 1.
+
+## V2-8 · `medical_comorbidity` → data-anchored decomposition — 2026-05-31
+The pooled 24-flag `medical_comorbidity` construct was VAF1 0.38 (not one dimension). Split it
+**data-anchored, step by step** (`scripts/sensitivity_comorbidity_v2.py`):
+- **(1) prevalence:** 13/24 flags are **<2%** (cirrhose n=7, MS 16, HIV 21) → un-clusterable; only
+  ~8 flags ≥5%. Cohort-reporting confound noted (migraine 1.6% SZ vs 19% DR).
+- **(2) within-BP association (cohort-cleaned):** correlations are tiny (max phi 0.10) but
+  co-occurrence **lifts are real (2–3×)**; hierarchical clustering → two interpretable clusters —
+  **cardiac** (hta+autcardv+trbrycard, 2.7–2.9×) and **atopic/inflammatory** (acne+eczema+cheveux+
+  toxidermi+psoriasis, 1.6–2.5×); head-trauma standalone.
+- **(3) validation:** `cardiac_history` VAF1 **0.50** (stable BP/SZ/DR; bootstrap CI tight);
+  `atopic_inflammatory` **0.26** (stable, weak). Splitting concentrates the signal (pooled bin
+  VAF1 0.06 → cardiac 0.50).
+- **Encoded** (`scripts/32_hfa_stage2_v2.py`): `cardiac_history` + `atopic_inflammatory` (flagged
+  weak) + standalone {`migraine`, `head_trauma`, `peptic_ulcer`}; the **13 flags <2% dropped from
+  the dimensional inputs, retained as Stage-4 validators** (`results/hfa/stage2_comorbidity_validators_v2.csv`)
+  — i.e. *does the recovered metabolic/inflammation axis predict real cardiovascular/autoimmune
+  history?* **Honest caveat:** even split, somatic-comorbidity constructs are weak (0.26–0.50) — the
+  signal is genuinely thin; `atopic_inflammatory` is borderline. Model now has **88 constructs** (169/188 items).
+
+## V2-9 · Stage 3 — second-order trans-diagnostic dimensions — 2026-05-31
+`scripts/33_hfa_stage3_v2.py`: factor the construct correlation Φ₁ (75 constructs, coverage ≥30%,
+standardized; PSD with **0% neg-eigen mass** — the aggregation conditioning win vs item-level);
+oblique (promax); K by masked split-half Tucker congruence; general factor **tested** via
+Schmid–Leiman ECV.
+- **The stat-correctness audit caught a real bug.** Split-half congruence is **non-monotonic**:
+  reproducible at K=2–4 (0.94–0.98), **collapses at K=5 (0.36)**, spurious recovery at K=7–10. A naive
+  "max K ≥ 0.85" rule → K=10 with **Heywood loadings** (bio_qt 1.18 > 1 — improper). Fixed to
+  **first-collapse-minus-1 → K=4** (0 Heywood, proper solution). Lesson logged.
+- **4 reproducible trans-diagnostic dimensions** (ECV **0.36** → multidimensional, **no dominant
+  p-factor**; mean |Φ₂| 0.17):
+  1. **Internalizing** — qidsr/madrs/staya/fast/eq5d/egf (depression–anxiety–functioning)
+  2. **Cognitive impairment** — executive/processing/psychomotor/working-memory/perceptual (edu −)
+  3. **Illness course** — age-of-onset + inverse hospitalization burden (later-onset / lower-chronicity)
+  4. **Cardiometabolic–inflammatory** — lipids/inflammation/adiposity/BP/hepatic/autonomic
+- **Notable vs v1:** 4 dims, not v1's 6 — **mania is NOT a reproducible trans-diagnostic axis**
+  (`mania_activation` is a fine construct, VAF1 0.71, but loads <0.30 on all 4 dimensions);
+  v1's later_onset + illness_burden merged into one *course* axis. `axes.py` (v1 names) confirmed
+  **stale** — names re-derived here, to be **locked after Stage 4**.
+
+## V2-10 · K-selection deep dive — 2026-05-31
+The Stage-3 "first-collapse-minus-1 on the MIN congruence" rule (→K=4) was too conservative (the min
+collapses if ONE factor is unstable). Per-factor congruence (`scripts/34_hfa_kselect_v2.py`) resolves it:
+- #factors reproducing (congruence ≥0.85): K=4→4, K=5→4, K=6→**5**, K=7→6, K=8→8; **Heywood: 0
+  through K=6, 1 at K=7**, 2 at K=9. The "K=5 collapse" was a rotation *swap* (cardiac vs trauma
+  competing for the 5th slot), not absent structure.
+- **4 rock-solid dims** (≥0.97): internalizing, cognition, course, cardiometabolic-inflammatory.
+- **5th reproducible @K=6 (0.89, proper): cardiac/somatic-history** (cardiac_history+peptic_ulcer+
+  perinatal) — but rests on the weak binary comorbidity constructs.
+- **6th (childhood-trauma/ADHD: ctq+wurs) only @K=7 (0.84) where a Heywood appears** → real but not
+  cleanly extractable at this N.
+- **Robust negatives (true at every K 4–7):** `mania_activation` & `suicidal_ideation` load <0.30
+  everywhere → NOT reproducible trans-diagnostic axes; metabolic & inflammation do not separate.
+  Parallel-analysis K=19 / Kaiser K=26 over-extract (ignored).
+- **Decision (user):** **K=4 primary (+ K=6 as sensitivity).** K≥7 rejected (Heywood).
+
+## V2-11 · Stage 4 — validation (K=4 PASSES) — 2026-05-31
+`scripts/35_hfa_stage4_v2.py`. The 4-dimension solution passes every check:
+- **Confound-clean:** no dim explained >0.25 by cohort / sex / age / site / missingness
+  (internalizing cohort η²=0.09; cognition 0.16 with educ 0.16 = a real correlate, not a confound;
+  course & cardiometab ~0.01).
+- **Trans-diagnostic *and* clinically valid:** dims vary mostly WITHIN cohorts but show the expected
+  between-cohort differences — internalizing highest in **DR** (depression cohort), cognition worst
+  in **SZ**. (η² cohort ≤0.16 → not cohort markers.)
+- **Leave-cohort-out reproducible:** drop BP → per-dim Tucker congruence min **0.84**; drop SZ → 0.90;
+  drop DR → 0.99.
+- **Granularity-invariant:** hierarchical-K4 vs flat-domain-K4 canonical r = **[0.99, 0.93, 0.77, 0.39]**
+  — top 3 (internalizing/cognition/course) invariant (NOT an aggregation artifact); the 4th differs
+  because the hierarchical model adds the recovered labs/vitals the flat domains dropped.
+- **Mania resolved (not a bug):** `mania_activation` is well-measured (cov 0.95), clinically valid
+  (BP 0.63 > SZ 0.40 > DR −0.04), within-cohort-varying (η² cohort 0.02) — but **orthogonal to all 4
+  dims (|r| ≤ 0.09)**. It shares too little variance with other constructs to anchor a second-order
+  factor (same for suicidality): a distinct standalone construct, not a missing axis.
+- **K=6 sensitivity:** the 5th (cardiac/somatic-history) and 6th (childhood-trauma: ctq+wurs) are
+  also confound-clean (η² ≤0.13).
+- **Verdict:** the **4-dimension trans-diagnostic structure** (internalizing, cognition, course,
+  cardiometabolic-inflammatory; **no p-factor**, ECV 0.36) is reproducible, confound-clean,
+  trans-diagnostic, and granularity-invariant. `axes.py` (v1, 6 axes) is **superseded for v2**; the
+  v2 axes are defined by `results/hfa/stage3_loadings_v2.csv`. (Polychoric sensitivity, D9, deferred.)
+
+## V2-12 · Dimensional result finalized — axis names, polychoric, mania — 2026-05-31
+- **Axis names locked** in `src/trans_diag/axes_v2.py` (NEW v2 source-of-truth; `axes.py` is stale-v1,
+  left untouched for the v1 scripts): **dim1 internalizing · dim2 cognition · dim3 illness_course ·
+  dim4 cardiometabolic**. Polarity documented (dim3 higher = later-onset / lower-chronicity).
+- **Polychoric sensitivity (D9) PASSED** (`scripts/sensitivity_polychoric_v2.py`): of the 3 all-binary
+  multi-item constructs (suicidal_ideation, atopic_inflammatory, cardiac_history), tetrachoric scores
+  correlate ≥0.96 with Pearson; the 4 dims are **identical** (Tucker congruence 1.00). Crucially,
+  `suicidal_ideation` max loading stays ~0.30 under tetrachoric → its absence as a dimension is **not**
+  a Pearson-attenuation artifact. The Pearson choice is vindicated; binary-attenuation caveat closed.
+- **Mania decision:** `mania_activation` (and `suicidal_ideation`) are valid, well-measured,
+  clinically-valid constructs **orthogonal** to the 4 correlated axes (|r| ≤ 0.09, robust to
+  polychoric) → reported as **independent standalone dimensions** (`axes_v2.ORTHOGONAL_DIMENSIONS`),
+  **included as features in Phase-5 stratification** but NOT part of the correlated factor structure.
+  Not dropped, not forced. (Scientific note: mania's independence from internalizing is itself a finding.)
+
+## V2-13 · Phase 5 — stratification: DIMENSIONAL (continuum), not discrete — 2026-05-31
+`scripts/40_phase5_stratify_v2.py`. Structure-test battery (eigengap, gap-vs-Gaussian-null, HDBSCAN,
+Sarle bimodality, DSM-anchor, bootstrap stability) on **A = 6 axes** (4 dims + mania + suicidal_ideation)
+primary and **B = 75 construct scores** via the masked engine embedding (sensitivity).
+- **A: DIMENSIONAL / continuum.** HDBSCAN **0 dense clusters (100% noise)**; real−null silhouette gap
+  small & non-peaking (0.01–0.05); axes unimodal (Sarle ≤0.51); k-means ARI-vs-DSM ~0.03. (k-means
+  bootstrap stability 0.79–0.93 is high, but that's a *continuum artifact* — k-means partitions a blob
+  stably; HDBSCAN + unimodality are decisive.)
+- **B: only discrete structure = DSM diagnosis.** HDBSCAN's 3 dense clusters are **exactly the 3
+  cohorts (ARI = 1.00)**; silhouette gap monotone (no natural k); unimodal. Finer granularity reveals
+  **no novel subtypes**.
+- **Verdict (both arms agree):** trans-diagnostic structure in FACE is **DIMENSIONAL** — 4 continuous
+  axes (+ 2 orthogonal: mania, suicidality), **no discrete patient subtypes** beyond the DSM categories
+  themselves. (No p-factor [dimensional arm] + no discrete clusters [this] = a clean dimensional account.)
+
 ## Next
-- **Phase 4** — dimensional analysis on v2 (checkpoints: structure test, K-selection).
-- **Phase 5** — patient stratification on v2 (checkpoint: verdict).
-- **Phase 6** — fresh manuscript + re-baselined golden tests + verify.py thresholds.
+- **Phase 6** — manuscript (the dimensional account) + dimensional/stratification figures +
+  re-baselined golden tests + `verify.py` thresholds.
+- Optional: longitudinal coherence of the 4 axes at V1/V2 (temporal-validation arm).

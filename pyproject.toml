@@ -16,6 +16,7 @@ dependencies = [
     "pyyaml>=6.0",
     "openpyxl>=3.1",      # read the common-variables dictionary (.xlsx)
     "statsmodels>=0.14",  # nested F-test / LRT in the outcome head-to-head
+    "factor_analyzer>=0.5",  # oblique rotation + factor correlations for the hierarchical-FA pipeline (scripts 30-34_v2)
     "plotly>=5.18",       # interactive HTML reports
     "matplotlib>=3.7",    # static manuscript figures
 ]
