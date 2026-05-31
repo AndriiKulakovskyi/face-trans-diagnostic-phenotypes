@@ -88,3 +88,27 @@ embedding):
 **Headline (both arms):** FACE trans-diagnostic structure is **dimensional** — 4 reproducible continuous
 axes (internalizing, cognition, illness-course, cardiometabolic-inflammatory) + 2 orthogonal standalone
 dims (mania, suicidality); **no general p-factor and no discrete subtypes** beyond DSM categories.
+
+## Track 3 — does it matter? (validation; plan: VALIDATION_PLAN_v2.md)
+Relapse outcome **locked** (Study D): hospitalization-count REJECTED (lifetime count non-monotone,
+41% spurious decreases); **primary = CGI-S relapse by V2** (rise ≥2 / cross <4→≥4), prevalence 20%
+(BP 23 / SZ 14 / DR 8), n=3,657. Longitudinal arm is BP+SZ (DR collapses by V3).
+- **Study A — cohort confound: axes are NOT a cohort artifact** (`scripts/42_cohort_confound_v2.py`).
+  Cohort-residualized re-derivation reproduces all 4 axes ≥0.96; within-BP ≥0.95 → within-cohort
+  covariance, not between-cohort means.
+- **Study A dig — cross-cohort measurement-coverage asymmetry (KEY).** The within-SZ internalizing
+  0.80 is *structural*, not subtle: **internalizing's defining scales (MADRS, QIDS, STAI, FAST, Altman)
+  are 0% in SZ** (PARTIAL/BP+DR by design — FACE-SZ used a psychosis battery). So **internalizing is
+  directly measured only in BP+DR; SZ scored by 3-cohort proxies (GAF/CGI/PSQI/EQ-5D)**. Cardiometabolic
+  is 3-cohort *core* (lipids/adiposity/CRP) + BP+DR peripherals (HR, lymphocytes). **Cognition &
+  illness-course are cleanly 3-cohort.** → The *fully* trans-diagnostic axes are cognition, course,
+  core-cardiometabolic; the **mood axis is BP+DR-direct / SZ-proxy** — qualify the "trans-diagnostic"
+  label on internalizing. Dimensional/no-p-factor/no-subtypes results unaffected.
+- **Study B — symptom⊥biology + p-factor is a symptom-only artifact (HEADLINE)**
+  (`scripts/43_orthogonality_pfactor_v2.py`, BP+DR primary). Between-block mean |construct r|:
+  symptom↔biology **0.03**, symptom↔cognition 0.07, biology↔cognition 0.04 (within: symptom 0.24,
+  cognition 0.42); strongest symptom↔biology pair only 0.15. General-factor first-factor share:
+  symptom-only **0.33** → +cognition 0.27 → +biology 0.15 → full **0.09**. → *a p-factor is a
+  symptom-only artifact; the integrated symptom+biology+cognition space is multidimensional and
+  orthogonal-blocked, no general factor.* Robust BP+DR↔pooled.
+- [TODO — Study C longitudinal coherence · Study D predictive validity vs DSM.]

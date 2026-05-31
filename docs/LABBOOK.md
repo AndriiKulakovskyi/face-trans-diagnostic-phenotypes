@@ -186,7 +186,59 @@ primary and **B = 75 construct scores** via the masked engine embedding (sensiti
   axes (+ 2 orthogonal: mania, suicidality), **no discrete patient subtypes** beyond the DSM categories
   themselves. (No p-factor [dimensional arm] + no discrete clusters [this] = a clean dimensional account.)
 
-## Next
-- **Phase 6** — manuscript (the dimensional account) + dimensional/stratification figures +
-  re-baselined golden tests + `verify.py` thresholds.
-- Optional: longitudinal coherence of the 4 axes at V1/V2 (temporal-validation arm).
+## V2-14 · Validation Study A — cohort confound: axes are NOT a cohort artifact — 2026-05-31
+`scripts/42_cohort_confound_v2.py`. Attack: 3 cohorts = 3 DSM diagnoses → the axes might encode
+between-cohort/batch differences. Two defenses (Tucker congruence vs the pooled K=4):
+- **Decisive — cohort-residualized:** center each construct within cohort (remove between-cohort
+  means), re-derive → **all 4 axes ≥0.96**. The structure is within-cohort covariance, not between-
+  cohort means → confound refuted.
+- **Within-cohort re-derivation:** **BP (n=6252) reproduces all 4 axes ≥0.95**; **SZ (n=2209)** 3/4
+  strong (cognition 0.92, course 0.93, cardiometab 0.87), **internalizing 0.80** (borderline);
+  **DR (n=552) underpowered** (cardiometab 0.66 — not interpreted).
+- **Verdict (confound):** the 4 axes are within-cohort, cohort-residualization-robust dimensions —
+  NOT between-cohort artifacts.
+
+### V2-14a · The internalizing-SZ dig → a cross-cohort measurement-coverage asymmetry (KEY)
+Digging into the within-SZ internalizing 0.80 (`/tmp/internalizing_sz.py`) revealed it is **not** a
+subtle clinical nuance but a **structural measurement-coverage fact** (data design, not a bug — all
+verified PARTIAL with `SZ_col=None`):
+- **Internalizing is BP+DR-ANCHORED.** Its defining scales — **MADRS, QIDS, STAI, FAST, Altman,
+  PRISM, CSM — are 0% in SZ** (the FACE-SZ cohort used a psychosis battery, not these mood/anxiety/
+  functioning self-reports). SZ patients are scored on internalizing only via the surviving 3-cohort
+  proxies (GAF `egf`, CGI, PSQI, MARS, EQ-5D) → within-SZ congruence 0.80. **Strong axis in mood
+  disorders, proxy axis in schizophrenia.**
+- **Cardiometabolic is 3-cohort *core*** (lipids, adiposity, glycemia, CRP/WBC/neutrophils all in SZ)
+  with BP+DR-only **peripherals** (autonomic heart-rate, lymphocytes) → minor (within-SZ 0.87).
+- **Cognition + illness-course are cleanly 3-cohort** (all top constructs 43–92% in SZ) → fully
+  trans-diagnostic.
+- **Consequence (must state in the manuscript):** the *fully* trans-diagnostic axes are **cognition,
+  illness-course, and (core) cardiometabolic** — i.e. biology/cognition/course; the **internalizing
+  (mood) axis is directly measured only in BP+DR**, represented by proxy in SZ. The dimensional / no-
+  p-factor / no-subtypes results stand; the "trans-diagnostic" label on *internalizing* is qualified.
+- **Implications:** Study B orthogonality → also compute **within BP+DR** (where mood + biology are
+  both measured). Study C → internalizing invariance is a BP+DR test. Study D → report internalizing
+  prediction split by direct (BP+DR) vs proxy (SZ).
+
+Validation plan: [VALIDATION_PLAN_v2.md](VALIDATION_PLAN_v2.md).
+
+## V2-15 · Study B — symptom⊥biology + the p-factor is a symptom-only artifact (THE headline) — 2026-05-31
+`scripts/43_orthogonality_pfactor_v2.py`. Computed **within BP+DR** (clean — mood+biology both
+measured, per Study A; pooled near-identical).
+- **Orthogonality:** mean |construct r| **within** symptom 0.24 / cognition 0.42 / biology 0.08
+  (heterogeneous panels); **between symptom↔biology 0.03, symptom↔cognition 0.07, biology↔cognition
+  0.04**. Strongest single symptom↔biology link only **0.15** (FAST↔lipids), **0% of pairs >0.15** —
+  no hidden link. → symptoms, biology, cognition are mutually ~orthogonal.
+- **p-factor is symptom-bound:** first-factor share (K-free) **symptom-only 0.33 → +cognition 0.27 →
+  +biology 0.15 → full 0.09** (monotonic dissolve); ECV(K=4) 0.58→~0.40 consistent. A general factor
+  exists *within symptoms* but does NOT span the integrated symptom+biology+cognition space.
+- **Not dilution:** biology/cognition are *structured* (they form the coherent Stage-3 cardiometabolic
+  & cognition axes) yet orthogonal to symptoms — so no single factor can span them.
+- **HEADLINE (the non-derivative message):** *"A general psychopathology (p-)factor is an artifact of
+  symptom-only measurement. Biology and cognition are structured but orthogonal to symptoms, so an
+  integrated model is genuinely multidimensional with no dominant general factor."* Robust BP+DR↔pooled.
+
+## Next (validation arm)
+- **Study C** — longitudinal coherence V0→V1→V2 (internalizing invariance = BP+DR per Study A).
+- **Study D** — predictive validity vs DSM (relapse-by-V2 [CGI-S, locked] + functioning/QoL;
+  internalizing split direct[BP+DR]/proxy[SZ]).
+- Then **Phase 6** — manuscript framed by the D verdict + figures + re-baselined golden tests.
