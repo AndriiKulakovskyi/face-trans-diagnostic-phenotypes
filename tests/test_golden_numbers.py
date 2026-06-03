@@ -20,7 +20,7 @@ anhedonia joined internalizing; and the weak-axes caveat gained ``cardiometaboli
 Suicidality stayed orthogonal even after its coverage was recovered.
 
 If the artifacts are absent (a fresh clone that hasn't run the pipeline), the tests skip — results/hfa/
-is gitignored, so run the v2 pipeline (scripts ``30_*_v2`` … ``48_*_v2``) to regenerate them.
+is gitignored, so run ``python3 scripts/00_run_all.py`` (the v2 pipeline) to regenerate them.
 """
 import json
 from pathlib import Path
@@ -35,7 +35,7 @@ HFA = Path(__file__).resolve().parents[1] / "results" / "hfa"
 def _need(name: str) -> Path:
     p = HFA / name
     if not p.exists():
-        pytest.skip(f"{name} absent — run scripts/30–48_*_v2 to regenerate")
+        pytest.skip(f"{name} absent — run python3 scripts/00_run_all.py to regenerate")
     return p
 
 

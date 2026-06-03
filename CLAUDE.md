@@ -122,8 +122,9 @@ posterior-mean scores), all on observed cells only.
 ## Quick start
 
 ```bash
-pip install -e ".[full]"                 # core + torch + neuroHarmonize + kaleido
+pip install -e ".[full]"                 # core + kaleido (static figure export)
 python3 scripts/qa_harmonization.py      # the 3-part data-processing QA report (must be clean first)
+python3 scripts/00_run_all.py            # regenerate every results/hfa/ artifact (needs the cohort CSVs)
 python3 -m pytest tests/ -q              # unit + v2 golden tests (golden skip on a clean clone — results/hfa/ gitignored)
 python3 scripts/verify.py                # harmonization smoke test (v2-calibrated)
 ```

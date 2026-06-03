@@ -93,8 +93,10 @@ other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scr
 - ⬜ **P3.1** Drop the now-redundant `_v2` suffix from scripts, the `axes` module, and `results/hfa/*`
   artifacts — in lockstep with the golden tests' paths, `PIPELINE.md`'s script→artifact map, and the
   figures/manuscript builders.
-- ⬜ **P3.2** Add a real v2 orchestrator (`00_run_all`) that runs stage0→stage4 → stratify → inventory
-  → Studies A–D → sensitivity → figures → manuscript and writes `results/hfa/`.
+- ✅ **P3.2** Added `scripts/00_run_all.py` (v2): QA → Stages 0–4 → stratify → inventory → Studies A–D
+  → sensitivity → figures, in `PIPELINE.md` order (dependency-checked: 41 before 45–48; 32 before 44;
+  44 before 48). Golden-test + README/CLAUDE regeneration hints repointed to it. *(Structure verified —
+  compiles, ruff-clean, all 20 steps exist; a full run needs the confidential CSVs.)*
 - ⬜ **P3.3** Renumber to a contiguous, phase-grouped sequence so the filename prefix is the run order.
 - 🔜 **P3.4** Fixed the actively-misleading refs: the `__init__.py` "imports face_stratification"
   comment, `schema_gen.py`'s external-module pointer, and `enrichment.py`'s dead-doc link. The

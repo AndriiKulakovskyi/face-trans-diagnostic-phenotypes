@@ -43,8 +43,9 @@ interpretable over named constructs. Full rationale in [CLAUDE.md](CLAUDE.md).
 
 ## Quick start
 ```bash
-pip install -e ".[full]"                 # core + torch + neuroHarmonize + kaleido
+pip install -e ".[full]"                 # core + kaleido (static figure export)
 python3 scripts/qa_harmonization.py      # the 3-part data-processing QA report (clean this first)
+python3 scripts/00_run_all.py            # regenerate every results/hfa/ artifact (needs the cohort CSVs)
 python3 -m pytest tests/ -q              # unit + golden tests (golden tests skip on a clean clone)
 ```
 ```python
