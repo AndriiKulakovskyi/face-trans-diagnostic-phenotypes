@@ -89,7 +89,7 @@ def dims(S, K=4):
 
 
 def main() -> None:
-    fit = pd.read_csv(OUT / "stage2_construct_fit_v2.csv").set_index("construct")
+    fit = pd.read_csv(OUT / "stage2_construct_fit.csv").set_index("construct")
     df = build_unified_dataframe(str(ROOT / "data"), str(ROOT / "data" / "face-common-vars.xlsx"),
                                  readiness=["READY", "PARTIAL", "NOT USABLE", "ID"], format="long")
     vs = load_variables(str(ROOT / "data" / "face-common-vars.xlsx"))

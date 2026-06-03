@@ -35,7 +35,7 @@ interpretable over named constructs. Full rationale in [CLAUDE.md](CLAUDE.md).
 ├── CLAUDE.md  AGENTS.md  README.md             ← guides (project paper: results/manuscript/manuscript.md)
 ├── data/            face-common-vars.xlsx (v2 dict) · thesaurus/ · *.csv (confidential) · site_lookup.csv
 ├── src/trans_diag/  variable·rules·loader·filters · schema_gen·adapter·domains · masked_fa·axes·skip_logic · engine/
-├── scripts/         v2 pipeline 30–48_v2 (hierarchical FA → stratify → validate) + qa_harmonization · verify · audit
+├── scripts/         v2 pipeline 30–48 (hierarchical FA → stratify → validate) + qa_harmonization · verify · audit
 ├── tests/           unit + golden-number tests (pinned to results/hfa/; skip on a clean clone)
 ├── results/         regenerated aggregates: hfa/ · manuscript/ · reports/ (gitignored; empty on a clean tree)
 └── docs/            PIPELINE · ROADMAP · DATA · FINDINGS · LABBOOK · neuropsy_features.yaml

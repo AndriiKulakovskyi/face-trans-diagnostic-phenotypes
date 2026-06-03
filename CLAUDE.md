@@ -32,9 +32,9 @@ internalized in `src/trans_diag/engine/` — no external dependency on `face_str
 - ✅ **Preprocessing debugged + ML-ready** — fixed the robust-z explosion (prolactin |z|≈106→5),
   added **type-aware bounded scaling to [−1,1]**, kept the masked / no-imputation design. QA report
   has the three parts described below.
-- ✅ **Dimensional analysis + stratification re-derived on v2** (scripts `30–48_v2`): 4 trans-diagnostic
+- ✅ **Dimensional analysis + stratification re-derived on v2** (scripts `30–48`): 4 trans-diagnostic
   axes (K=4, no p-factor), dimensional / no discrete subtypes, validation arm A–D. **Manuscript + 6
-  figures delivered** (`results/manuscript/`, `scripts/figures_manuscript_v2.py`). **Golden-number tests
+  figures delivered** (`results/manuscript/`, `scripts/figures_manuscript.py`). **Golden-number tests
   + `verify.py` re-baselined to v2** — `tests/test_golden_numbers.py` pins the manuscript's headline
   numbers to `results/hfa/` (pass locally; skip on a clean clone since `results/hfa/` is gitignored).
   The legacy `01–22` pipeline and the old manuscript skeleton have been removed from the tree;
@@ -93,7 +93,7 @@ face-common-bp-sz-dr/
 │   ├── schema_gen·adapter·domains.py           ← matrix build, type-aware scaling, domain aggregation
 │   ├── masked_fa·axes·skip_logic.py            ← imputation-free FA, axis names, suicide skip-logic
 │   └── engine/                                 ← internalized stratification engine (masked, no imputation)
-├── scripts/                           ← v2 pipeline (30–48_v2: hierarchical FA → stratify → validate) + qa_harmonization/verify/audit
+├── scripts/                           ← v2 pipeline (30–48: hierarchical FA → stratify → validate) + qa_harmonization/verify/audit
 ├── tests/                             ← unit + v2 golden-number tests (pinned to results/hfa/; skip on a clean clone)
 ├── results/                           ← regenerated AGGREGATE artifacts: hfa/ · manuscript/ · reports/ (empty on a clean tree; .gitkeep)
 │   └── reports/qa_harmonization.html  ← the 3-part QA report
@@ -142,16 +142,16 @@ ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), vis
 The hierarchical/bifactor measurement model + validation arm (all masked / no-imputation), writing
 aggregate artifacts to `results/hfa/`:
 
-- **Stages 0–4** — `30_hfa_stage0_itemset_v2` (freeze the V0 item set) → `31_hfa_stage1_efa_v2`
-  (exploratory first-order) → `32_hfa_stage2_v2` (hybrid first-order constructs) → `33_hfa_stage3_v2`
-  (second-order: **K=4** axes; general factor tested via Schmid–Leiman ECV) → `34_hfa_kselect_v2`
-  (per-factor split-half K) → `35_hfa_stage4_v2` (confound / leave-cohort-out / granularity validation).
-- **Stratification** — `40_phase5_stratify_v2` (discrete-vs-continuum battery → **dimensional**).
-- **Validation A–D** — `41_v1v4_inventory_v2` (relapse derivation) → `42_cohort_confound_v2` (A) ·
-  `43_orthogonality_pfactor_v2` (B, the headline) · `44_longitudinal_coherence_v2` (C) ·
+- **Stages 0–4** — `30_hfa_stage0_itemset` (freeze the V0 item set) → `31_hfa_stage1_efa`
+  (exploratory first-order) → `32_hfa_stage2` (hybrid first-order constructs) → `33_hfa_stage3`
+  (second-order: **K=4** axes; general factor tested via Schmid–Leiman ECV) → `34_hfa_kselect`
+  (per-factor split-half K) → `35_hfa_stage4` (confound / leave-cohort-out / granularity validation).
+- **Stratification** — `40_phase5_stratify` (discrete-vs-continuum battery → **dimensional**).
+- **Validation A–D** — `41_v1v4_inventory` (relapse derivation) → `42_cohort_confound` (A) ·
+  `43_orthogonality_pfactor` (B, the headline) · `44_longitudinal_coherence` (C) ·
   `45`–`48` predictive (D: prognosis vs DSM).
-- **Sensitivity** — `sensitivity_{aggregation,comorbidity,polychoric}_v2`.
-- **Outputs** — `figures_manuscript_v2` (6 figures) · `build_manuscript_v2` (→ `.docx`).
+- **Sensitivity** — `sensitivity_{aggregation,comorbidity,polychoric}`.
+- **Outputs** — `figures_manuscript` (6 figures) · `build_manuscript` (→ `.docx`).
 
 End-to-end diagram + mathematics: **[docs/PIPELINE.md](docs/PIPELINE.md)**.
 

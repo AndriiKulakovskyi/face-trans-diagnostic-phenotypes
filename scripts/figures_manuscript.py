@@ -159,8 +159,8 @@ def fig1_pipeline():
 
 # ============================================================================= F2
 def fig2_axes():
-    L = pd.read_csv(HFA / "stage3_loadings_v2.csv", index_col=0)
-    phi2 = pd.read_csv(HFA / "stage3_phi2_v2.csv", index_col=0).to_numpy()
+    L = pd.read_csv(HFA / "stage3_loadings.csv", index_col=0)
+    phi2 = pd.read_csv(HFA / "stage3_phi2.csv", index_col=0).to_numpy()
     dims = ["dim1", "dim2", "dim3", "dim4"]
 
     fig = plt.figure(figsize=(11, 9.6))
@@ -213,8 +213,8 @@ def fig3_orthogonality():
     from trans_diag.masked_fa import masked_correlation
     from trans_diag.variable import load_variables
 
-    S = pd.read_pickle(HFA / "stage2_scores_v2.pkl").set_index(["cohort", "patient_id"])
-    fit = pd.read_csv(HFA / "stage2_construct_fit_v2.csv").set_index("construct")
+    S = pd.read_pickle(HFA / "stage2_scores.pkl").set_index(["cohort", "patient_id"])
+    fit = pd.read_csv(HFA / "stage2_construct_fit.csv").set_index("construct")
     item_sec = {v.canonical_name: v.section for v in load_variables(str(ROOT / "data" / "face-common-vars.xlsx"))}
     SEC2BLOCK = {"AUTO-QUESTIONNAIRES": "symptom", "HETERO-QUESTIONNAIRES": "symptom",
                  "SUICIDE": "symptom", "EVALUATION MEDICALE": "symptom",
@@ -235,7 +235,7 @@ def fig3_orthogonality():
     ordered = [c for b in order_blocks for c in keep if blk[c] == b]
     R = pd.DataFrame(masked_correlation(Z[ordered], 100), index=ordered, columns=ordered)
 
-    sb = json.load(open(HFA / "studyB_orthogonality_v2.json"))["BP+DR"]
+    sb = json.load(open(HFA / "studyB_orthogonality.json"))["BP+DR"]
     o = sb["orthogonality"]; sets = sb["sets"]
 
     fig = plt.figure(figsize=(12.2, 5.6))
@@ -269,7 +269,7 @@ def fig3_orthogonality():
     axB = fig.add_subplot(gs[0, 1])
     order = ["symptom_only", "symptom+cognition", "symptom+biology", "full(all blocks)"]
     xlab = ["symptom\nonly", "+ cognition", "+ biology", "full\nintegrated"]
-    pooled = json.load(open(HFA / "studyB_orthogonality_v2.json"))["pooled"]["sets"]
+    pooled = json.load(open(HFA / "studyB_orthogonality.json"))["pooled"]["sets"]
     yb = [sets[k]["first_factor_share"] for k in order]
     yp = [pooled[k]["first_factor_share"] for k in order]
     x = np.arange(4)
@@ -297,8 +297,8 @@ def fig3_orthogonality():
 
 # ============================================================================= F4
 def fig4_continuum():
-    ph = json.load(open(HFA / "phase5_structure_v2.json"))["A"]
-    F = pd.read_pickle(HFA / "stage3_scores_v2.pkl")
+    ph = json.load(open(HFA / "phase5_structure.json"))["A"]
+    F = pd.read_pickle(HFA / "stage3_scores.pkl")
     dims = ["dim1", "dim2", "dim3", "dim4"]
 
     fig = plt.figure(figsize=(13.2, 4.4))
@@ -368,9 +368,9 @@ def fig4_continuum():
 
 # ============================================================================= F5
 def fig5_predictive():
-    d = json.load(open(HFA / "studyD_predictive_v2.json"))
-    d2 = json.load(open(HFA / "studyD2_survival_v2.json"))
-    d4 = json.load(open(HFA / "studyD4_trajectory_v2.json"))
+    d = json.load(open(HFA / "studyD_predictive.json"))
+    d2 = json.load(open(HFA / "studyD2_survival.json"))
+    d4 = json.load(open(HFA / "studyD4_trajectory.json"))
 
     fig = plt.figure(figsize=(13.2, 5.4))
     gs = fig.add_gridspec(1, 2, width_ratios=[1.12, 1.0], wspace=0.28,
@@ -435,7 +435,7 @@ def fig5_predictive():
 
 # ============================================================================= F6
 def fig6_longitudinal():
-    c = json.load(open(HFA / "studyC_longitudinal_v2.json"))
+    c = json.load(open(HFA / "studyC_longitudinal.json"))
     inv, stab = c["invariance"], c["stability"]
     order = ["internalizing", "cognition", "illness_course", "cardiometabolic"]
     short = ["Internalizing", "Cognition", "Illness course", "Cardiometabolic"]

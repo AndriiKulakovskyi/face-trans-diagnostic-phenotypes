@@ -5,7 +5,7 @@ provenance: they show the design (item set, estimator, K-selection rule, validat
 framing) was specified up front rather than reverse-engineered from the results.
 
 They are **historical**. Some details describe *intended* work and differ from what was finally built
-(e.g. the planned `hierarchical_fa.py` module became `masked_fa.py` + the `30–35_v2` scripts; planned
+(e.g. the planned `hierarchical_fa.py` module became `masked_fa.py` + the `30–35` scripts; planned
 output paths differ from the actual `results/hfa/`). For the **current** state of the project, read:
 
 - **[../PIPELINE.md](../PIPELINE.md)** — the analysis that was actually run (diagrams + math).

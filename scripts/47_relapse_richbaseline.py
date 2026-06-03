@@ -9,7 +9,7 @@ relapse = deterioration to CGI>=4; person-intervals V0->V1, V1->V2). Question: d
   +rich(constructs) = base + ALL well-covered construct scores
 Leakage-safe: GroupKFold BY PATIENT; bootstrap CIs by patient; OOF AUC only; no feature selection
 outside folds. HistGradientBoosting handles NaN natively (no imputation, full at-risk set); logistic
-shown on the ~complete axes/DSM as the linear reference. Writes studyD3_richbaseline_v2.json.
+shown on the ~complete axes/DSM as the linear reference. Writes studyD3_richbaseline.json.
 """
 from __future__ import annotations
 
@@ -77,8 +77,8 @@ def main() -> None:
     vs = load_variables(str(ROOT / "data" / "face-common-vars.xlsx"))
     ds = to_harmonized_dataset(df, vs, visit="V0", sections=None, residualize_on=None, normalize=False)
 
-    F = pd.read_pickle(OUT / "stage3_scores_v2.pkl").set_index(["cohort", "patient_id"])[["dim1", "dim2", "dim3", "dim4"]]
-    Sc = pd.read_pickle(OUT / "stage2_scores_v2.pkl").set_index(["cohort", "patient_id"])
+    F = pd.read_pickle(OUT / "stage3_scores.pkl").set_index(["cohort", "patient_id"])[["dim1", "dim2", "dim3", "dim4"]]
+    Sc = pd.read_pickle(OUT / "stage2_scores.pkl").set_index(["cohort", "patient_id"])
     constructs = [c for c in Sc.columns if Sc[c].notna().mean() >= 0.30]      # well-covered constructs
     P = F.join(Sc)
     P.index = [f"{c.upper()}::{p}" for c, p in P.index]
@@ -126,8 +126,8 @@ def main() -> None:
             print(f"    Δ(rich vs axes) = {d_ra:+.3f}  CI[{ci[0]:+.3f},{ci[1]:+.3f}]")
             res["rich_vs_axes"] = [round(d_ra, 4), ci]
         results[label] = res
-    json.dump(results, open(OUT / "studyD3_richbaseline_v2.json", "w"), indent=2, default=str)
-    print(f"\nsaved -> {OUT}/studyD3_richbaseline_v2.json")
+    json.dump(results, open(OUT / "studyD3_richbaseline.json", "w"), indent=2, default=str)
+    print(f"\nsaved -> {OUT}/studyD3_richbaseline.json")
 
 
 if __name__ == "__main__":

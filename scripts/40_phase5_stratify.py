@@ -12,7 +12,7 @@ CONTINUUM across the validated structure, with the same battery as the v1 struct
 Inputs:  A (primary) = 4 dimension scores + mania + suicidal_ideation (the validated 6 axes);
          B (sensitivity) = the well-covered (coverage>=0.30) construct scores via the masked
          MultipartiteSpectral embedding (engine).
-Masked / no-imputation. Writes results/hfa/phase5_structure_v2.json.
+Masked / no-imputation. Writes results/hfa/phase5_structure.json.
 """
 from __future__ import annotations
 
@@ -141,8 +141,8 @@ def structure_test(arr, arm, cohort, label):
 
 
 def main() -> None:
-    F = pd.read_pickle(OUT / "stage3_scores_v2.pkl").set_index(["cohort", "patient_id"])
-    S = pd.read_pickle(OUT / "stage2_scores_v2.pkl").set_index(["cohort", "patient_id"])
+    F = pd.read_pickle(OUT / "stage3_scores.pkl").set_index(["cohort", "patient_id"])
+    S = pd.read_pickle(OUT / "stage2_scores.pkl").set_index(["cohort", "patient_id"])
     df = build_unified_dataframe(str(ROOT / "data"), str(ROOT / "data" / "face-common-vars.xlsx"),
                                  readiness=["READY", "PARTIAL", "NOT USABLE", "ID"], format="long")
     vs = load_variables(str(ROOT / "data" / "face-common-vars.xlsx"))
@@ -171,8 +171,8 @@ def main() -> None:
     coh_B = np.array(emb.index.get_level_values("cohort"))
     resB = structure_test(emb.to_numpy(np.float64), arm_B, coh_B, f"B: {len(keep)} construct scores (engine embedding)")
 
-    json.dump({"A": resA, "B": resB}, open(OUT / "phase5_structure_v2.json", "w"), indent=2, default=str)
-    print(f"\nsaved -> {OUT}/phase5_structure_v2.json")
+    json.dump({"A": resA, "B": resB}, open(OUT / "phase5_structure.json", "w"), indent=2, default=str)
+    print(f"\nsaved -> {OUT}/phase5_structure.json")
 
 
 if __name__ == "__main__":

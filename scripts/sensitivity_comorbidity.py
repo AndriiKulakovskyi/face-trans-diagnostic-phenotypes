@@ -6,7 +6,7 @@ Audits the Stage 2 decision (LABBOOK V2-8): the 24 `*_mhoccur` flags do NOT form
   2. cohort-cleaned (within-BP) association + hierarchical clustering -> 2 weak but interpretable
      co-occurrence clusters (cardiac, atopic/inflammatory) + standalones;
   3. validation: VAF1, any-positive prevalence, cross-cohort + bootstrap stability.
-Conclusion encoded in scripts/32_hfa_stage2_v2.py: cardiac_history + atopic_inflammatory +
+Conclusion encoded in scripts/32_hfa_stage2.py: cardiac_history + atopic_inflammatory +
 standalone {migraine, head_trauma, peptic_ulcer, other_neuro}; the 12 flags <2% -> Stage-4 validators.
 """
 from __future__ import annotations

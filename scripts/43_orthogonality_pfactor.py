@@ -10,7 +10,7 @@ The one potentially non-derivative message. Two linked tests:
 
 Per Study A: the mood (internalizing) scales are BP+DR-only, so the CLEAN test is **within BP+DR**
 (symptoms + biology both measured); pooled is reported as a (confounded) sensitivity. Masked / no-
-imputation. Writes results/hfa/studyB_orthogonality_v2.json.
+imputation. Writes results/hfa/studyB_orthogonality.json.
 """
 from __future__ import annotations
 
@@ -111,8 +111,8 @@ def analyze(S, blk, label):
 
 
 def main() -> None:
-    S = pd.read_pickle(OUT / "stage2_scores_v2.pkl").set_index(["cohort", "patient_id"])
-    fit = pd.read_csv(OUT / "stage2_construct_fit_v2.csv").set_index("construct")
+    S = pd.read_pickle(OUT / "stage2_scores.pkl").set_index(["cohort", "patient_id"])
+    fit = pd.read_csv(OUT / "stage2_construct_fit.csv").set_index("construct")
     item_sec = {v.canonical_name: v.section for v in load_variables(str(ROOT / "data" / "face-common-vars.xlsx"))}
     blk = block_map(fit, item_sec)
     coh = S.index.get_level_values("cohort")
@@ -131,8 +131,8 @@ def main() -> None:
     print("\n=== VERDICT (BP+DR) ===")
     print(f"  symptom<->biology mean|r| = {sb:.2f}  ({orth_v})")
     print(f"  1st-factor share: symptom-only {ff_sym:.2f} -> full {ff_full:.2f}  ({pf_v})")
-    json.dump(res, open(OUT / "studyB_orthogonality_v2.json", "w"), indent=2)
-    print(f"\nsaved -> {OUT}/studyB_orthogonality_v2.json")
+    json.dump(res, open(OUT / "studyB_orthogonality.json", "w"), indent=2)
+    print(f"\nsaved -> {OUT}/studyB_orthogonality.json")
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@
 
 > Review & lock before coding. Decides whether the 4 trans-diagnostic axes are a **useful** result
 > or a rigorous-but-descriptive one. Builds on the validated dimensional + stratification arms
-> (LABBOOK V2-6…V2-13). Axes: `src/trans_diag/axes_v2.py`. Masked / no-imputation throughout.
+> (LABBOOK V2-6…V2-13). Axes: `src/trans_diag/axes.py`. Masked / no-imputation throughout.
 
 ## The make-or-break question
 The dimensional account is internally solid but, as a reviewer noted, **largely confirmatory of
@@ -15,7 +15,7 @@ HiTOP/RDoC and of unproven clinical value**. Four studies decide whether it earn
 priority order. Two are quick and *defend/sharpen* the existing result (A, B); two test *whether it
 is useful* (C, D). **D (predictive validity) is the make-or-break.**
 
-## Data reality (inventory, `/tmp` → to promote to `scripts/41_v1v4_inventory_v2.py`)
+## Data reality (inventory, `/tmp` → to promote to `scripts/41_v1v4_inventory.py`)
 - **Attrition:** V0 9,013 → V1 4,270 → V2 2,958 → V3 1,955 → **V4 779**. Non-random (informative
   dropout likely). **DR collapses longitudinally (V3 n=3)** → the longitudinal/predictive arm is
   effectively **BP+SZ**; V1–V2 are the workhorses; **V4 is underpowered** (report but don't lead on it).
@@ -32,7 +32,7 @@ is useful* (C, D). **D (predictive validity) is the make-or-break.**
 
 ## Study A — Confront the cohort confound (quick; defends the result)
 **Attack:** the 3 cohorts *are* the 3 diagnoses; the axes might encode between-cohort/batch effects.
-**Tests** (`scripts/42_cohort_confound_v2.py`):
+**Tests** (`scripts/42_cohort_confound.py`):
 1. **Within-cohort re-derivation** — re-run Stage 2→3 (construct scores → Φ₁ → K=4 promax) **within
    BP alone** and **within SZ alone** (DR too small); Tucker congruence vs the pooled loadings. Pass:
    each axis congruent (≥0.85) within each cohort → the axis exists *inside* a diagnosis, not just
@@ -46,7 +46,7 @@ sensitive).
 
 ## Study B — Symptom–biology orthogonality + the integrated no-p-factor (quick; THE novelty)
 **Goal:** make the one non-derivative message rigorous and quantified.
-**Tests** (`scripts/43_orthogonality_pfactor_v2.py`):
+**Tests** (`scripts/43_orthogonality_pfactor.py`):
 1. **Cross-block orthogonality** — distribution of construct-construct |r| *between* symptom and
    biology blocks vs *within* block; report mean/CI. Claim: symptom⊥biology (between ≈ 0, within > 0).
 2. **p-factor is a symptom-only artifact** — fit the bifactor / compute **ECV on (i) symptom-only
@@ -59,7 +59,7 @@ multidimensional." If not, drop this as the headline and fall back to the descri
 
 ## Study C — Longitudinal coherence (medium; the project's stated design)
 **Goal:** are the V0 axes stable/coherent over V1–V4? (V0 defines, later visits validate.)
-**Tests** (`scripts/44_longitudinal_coherence_v2.py`; adapt v1 scripts 08/09):
+**Tests** (`scripts/44_longitudinal_coherence.py`; adapt v1 scripts 08/09):
 1. **Measurement invariance** — apply the V0 construct definitions to V1, V2 (V3/V4 BP+SZ only),
    re-estimate Φ₁ and K=4 *at each visit*; Tucker congruence of per-visit loadings vs V0. Pass: ≥0.85
    → the same dimensions exist at follow-up.
@@ -138,6 +138,6 @@ missingness is itself a finding).
 4. Then **Phase 6** manuscript, framed by the D verdict.
 
 ## Deliverables
-`scripts/41_v1v4_inventory_v2.py` (promote the inventory) · `42_cohort_confound_v2.py` ·
-`43_orthogonality_pfactor_v2.py` · `44_longitudinal_coherence_v2.py` · `45_predictive_validity_v2.py`;
+`scripts/41_v1v4_inventory.py` (promote the inventory) · `42_cohort_confound.py` ·
+`43_orthogonality_pfactor.py` · `44_longitudinal_coherence.py` · `45_predictive_validity.py`;
 results to `results/hfa/` (gitignored); findings → FINDINGS Tracks 1–3 + LABBOOK.

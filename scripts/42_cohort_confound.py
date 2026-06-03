@@ -12,7 +12,7 @@ Two defenses:
      within-cohort covariance, not the between-cohort mean differences.
 
 Masked / no-imputation. Construct scores are the Stage-2 outputs (already age+sex-residualized; the
-cohort index is lowercase bp/sz/dr). Writes results/hfa/studyA_cohort_confound_v2.json.
+cohort index is lowercase bp/sz/dr). Writes results/hfa/studyA_cohort_confound.json.
 """
 from __future__ import annotations
 
@@ -65,7 +65,7 @@ def named(cong: dict) -> str:
 
 
 def main() -> None:
-    S = pd.read_pickle(OUT / "stage2_scores_v2.pkl").set_index(["cohort", "patient_id"])
+    S = pd.read_pickle(OUT / "stage2_scores.pkl").set_index(["cohort", "patient_id"])
     coh = S.index.get_level_values("cohort")
     print(f"construct scores: {S.shape}; cohorts {dict(pd.Series(coh).value_counts())}")
 
@@ -112,8 +112,8 @@ def main() -> None:
     print(f"  {verdict}")
     results["verdict"] = verdict
     results["weak_axes"] = weak
-    json.dump(results, open(OUT / "studyA_cohort_confound_v2.json", "w"), indent=2)
-    print(f"\nsaved -> {OUT}/studyA_cohort_confound_v2.json")
+    json.dump(results, open(OUT / "studyA_cohort_confound.json", "w"), indent=2)
+    print(f"\nsaved -> {OUT}/studyA_cohort_confound.json")
 
 
 if __name__ == "__main__":

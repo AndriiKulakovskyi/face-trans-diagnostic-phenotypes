@@ -1,6 +1,6 @@
 """Imputation-free factor analysis from a pairwise-complete (masked) correlation matrix.
 
-This estimator underlies the whole v2 hierarchical/bifactor pipeline (scripts 30–35_v2): every
+This estimator underlies the whole v2 hierarchical/bifactor pipeline (scripts 30–35): every
 factor model — within-construct, second-order, per-visit, split-half — NEVER fills a missing cell.
 Mean-filling would reweight each correlation by co-observation (``corr_fill ≈ O · corr_masked``,
 ``O = n_AB/√(n_A n_B)``) and so partially re-import the cohort-by-missingness confound at the

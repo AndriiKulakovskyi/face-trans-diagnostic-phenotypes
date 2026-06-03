@@ -10,7 +10,7 @@ duplication) to recompute construct scores at each visit:
 
 Coverage constraints (honest): cognition is baseline-anchored (wais ~5% at V1, 43% at V2) -> cognition
 coherence is V0<->V2 only; internalizing is BP+DR (Study A). Attrition: completers; report dropout bias.
-Masked / no-imputation. Writes results/hfa/studyC_longitudinal_v2.json.
+Masked / no-imputation. Writes results/hfa/studyC_longitudinal.json.
 """
 from __future__ import annotations
 
@@ -47,8 +47,8 @@ def _load(stem):  # import a digit-prefixed pipeline script as a module (no main
     return mod
 
 
-S30 = _load("30_hfa_stage0_itemset_v2.py")
-S32 = _load("32_hfa_stage2_v2.py")
+S30 = _load("30_hfa_stage0_itemset.py")
+S32 = _load("32_hfa_stage2.py")
 BIO_IDX = {it: (d, s) for d, mem in S32.BIO.items() for it, s in mem}
 COG_IDX = {it: (d, s) for d, mem in S32.COG.items() for it, s in mem}
 
@@ -107,7 +107,7 @@ def main() -> None:
     print("construct scores: " + ", ".join(f"{v} {S[v].shape}" for v in S))
 
     # sanity: V0 reproduces the committed Stage-2 scores
-    S0ref = pd.read_pickle(OUT / "stage2_scores_v2.pkl").set_index(["cohort", "patient_id"])
+    S0ref = pd.read_pickle(OUT / "stage2_scores.pkl").set_index(["cohort", "patient_id"])
     common_c = [c for c in S0ref.columns if c in S["V0"].columns]
     r = np.nanmedian([abs(np.corrcoef(np.nan_to_num(S["V0"][c]), np.nan_to_num(S0ref[c].reindex(S["V0"].index)))[0, 1])
                       for c in common_c])
@@ -145,8 +145,8 @@ def main() -> None:
     print(f"  structural invariance V1/V2 (min congruence >=0.80, cognition excepted at V1): "
           f"{ {v: round(min(res['invariance'][v].values()),2) for v in res['invariance']} }")
     print("  (cognition V1 is sparse — wais ~5%; interpret cognition coherence at V2 only)")
-    json.dump(res, open(OUT / "studyC_longitudinal_v2.json", "w"), indent=2, default=str)
-    print(f"\nsaved -> {OUT}/studyC_longitudinal_v2.json")
+    json.dump(res, open(OUT / "studyC_longitudinal.json", "w"), indent=2, default=str)
+    print(f"\nsaved -> {OUT}/studyC_longitudinal.json")
 
 
 if __name__ == "__main__":

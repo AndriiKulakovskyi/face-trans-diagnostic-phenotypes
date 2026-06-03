@@ -9,7 +9,7 @@ Two jobs:
        * PRIMARY  CGI-S relapse by V2 = CGI-S (`cgi01`) rises >=2 OR crosses <4 -> >=4 in the
          V0->V1 or V1->V2 interval (clinician-rated event; 20% prevalence; BP 23/SZ 14/DR 8).
        * SENSITIVITY mood-syndromal = MADRS crosses <20->>=20 OR YMRS crosses <12->>=12.
-Saves per-patient relapse to results/hfa/relapse_v2.csv (keyed by `patient_uid` = COHORT::usubjid;
+Saves per-patient relapse to results/hfa/relapse.csv (keyed by `patient_uid` = COHORT::usubjid;
 join to V0 dimension scores via cohort.upper()+'::'+patient_id — the case gotcha from Study A).
 """
 from __future__ import annotations
@@ -91,8 +91,8 @@ def main() -> None:
     print(f"  mood-syndromal (sensitivity): evaluable n={int(rel.mood_evaluable.sum())}  "
           f"relapse {rel[rel.mood_evaluable].relapse_mood_byV2.mean()*100:.0f}%")
 
-    rel.to_csv(OUT / "relapse_v2.csv")
-    print(f"\nsaved -> {OUT}/relapse_v2.csv  (per-patient; gitignored)")
+    rel.to_csv(OUT / "relapse.csv")
+    print(f"\nsaved -> {OUT}/relapse.csv  (per-patient; gitignored)")
 
 
 if __name__ == "__main__":

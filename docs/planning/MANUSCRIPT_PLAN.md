@@ -5,7 +5,7 @@
 > paper see [../../results/manuscript/manuscript.md](../../results/manuscript/manuscript.md).
 
 > Companion to `results/manuscript/manuscript.md` (source) → `results/manuscript/FACE_trans_diagnostic_v2.docx`.
-> Figures: `scripts/figures_manuscript_v2.py` → `results/reports/figures/fig1..6.png`.
+> Figures: `scripts/figures_manuscript.py` → `results/reports/figures/fig1..6.png`.
 
 ## Working title
 *Symptoms are orthogonal to biology: an integrated, imputation-free dimensional model dissolves the

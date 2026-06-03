@@ -94,9 +94,9 @@ def cca(A, B):
 
 
 def main() -> None:
-    F = pd.read_pickle(OUT / "stage3_scores_v2.pkl").set_index(["cohort", "patient_id"])
-    S = pd.read_pickle(OUT / "stage2_scores_v2.pkl").set_index(["cohort", "patient_id"])
-    Lfull = pd.read_csv(OUT / "stage3_loadings_v2.csv", index_col=0)[["dim1", "dim2", "dim3", "dim4"]]
+    F = pd.read_pickle(OUT / "stage3_scores.pkl").set_index(["cohort", "patient_id"])
+    S = pd.read_pickle(OUT / "stage2_scores.pkl").set_index(["cohort", "patient_id"])
+    Lfull = pd.read_csv(OUT / "stage3_loadings.csv", index_col=0)[["dim1", "dim2", "dim3", "dim4"]]
 
     # reload covariates / labels at V0, aligned to F's patients
     df = build_unified_dataframe(str(ROOT / "data"), str(ROOT / "data" / "face-common-vars.xlsx"),

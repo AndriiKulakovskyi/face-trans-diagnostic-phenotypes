@@ -14,7 +14,7 @@ Predictor sets (outcome = CGI_V2 >= 4; one row per patient; StratifiedKFold on c
   +traj  = base + dCGI(V0->V1) + V1 axes + d-axes(V1-V0)   [the early-trajectory model]
   +full  = base + DSM + traj features
 Cognition is baseline-anchored (V1 ~5%) so its V1/d terms are mostly NaN -> gboost (NaN-native)
-handles them; logistic shown on the well-measured features. Writes studyD4_trajectory_v2.json.
+handles them; logistic shown on the well-measured features. Writes studyD4_trajectory.json.
 """
 from __future__ import annotations
 
@@ -49,7 +49,7 @@ def _load(stem):
     m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m
 
 
-S44 = _load("44_longitudinal_coherence_v2.py")
+S44 = _load("44_longitudinal_coherence.py")
 
 
 def gb():
@@ -96,7 +96,7 @@ def main() -> None:
     # V0 & V1 construct scores (validated Study-C path), then project the committed V0 axis loadings
     S0 = S44.construct_scores_at(df, vs, by, "V0")
     S1 = S44.construct_scores_at(df, vs, by, "V1")
-    L0 = pd.read_csv(OUT / "stage3_loadings_v2.csv", index_col=0)[DIMS]
+    L0 = pd.read_csv(OUT / "stage3_loadings.csv", index_col=0)[DIMS]
     A0 = S44.axis_scores(S0, L0); A0.columns = DIMS; A0.index = to_uid(A0.index)
     A1 = S44.axis_scores(S1, L0); A1.columns = DIMS; A1.index = to_uid(A1.index)
     S0.index = to_uid(S0.index); S1.index = to_uid(S1.index)
@@ -149,8 +149,8 @@ def main() -> None:
         print(f"    Δ(traj vs base)     = {dtb:+.3f}  CI[{ctb[0]:+.3f},{ctb[1]:+.3f}]")
         results[label] = {"AUC": {k: round(roc_auc_score(y[oof[k][1]], oof[k][0][oof[k][1]]), 4) for k in sets},
                           "d_traj_vs_v0": [round(dtv, 4), ctv], "d_traj_vs_dsm": [round(dtd, 4), ctd]}
-    json.dump(results, open(OUT / "studyD4_trajectory_v2.json", "w"), indent=2, default=str)
-    print(f"\nsaved -> {OUT}/studyD4_trajectory_v2.json")
+    json.dump(results, open(OUT / "studyD4_trajectory.json", "w"), indent=2, default=str)
+    print(f"\nsaved -> {OUT}/studyD4_trajectory.json")
 
 
 if __name__ == "__main__":

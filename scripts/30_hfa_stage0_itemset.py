@@ -145,11 +145,11 @@ def main() -> None:
     print(f"excluded canonicals (present in dict): {len(excluded_present)}")
 
     # ---- save artifacts ----
-    items_df.sort_values(["section", "item"]).to_csv(OUT / "stage0_items_v2.csv", index=False)
-    np.savez(OUT / "stage0_corr_resid_v2.npz", R=R, cols=np.array(cols, dtype=object))
-    Zr.to_pickle(OUT / "stage0_Z_resid_v2.pkl")
-    Zu.to_pickle(OUT / "stage0_Z_raw_v2.pkl")
-    meta.to_pickle(OUT / "stage0_meta_v2.pkl")
+    items_df.sort_values(["section", "item"]).to_csv(OUT / "stage0_items.csv", index=False)
+    np.savez(OUT / "stage0_corr_resid.npz", R=R, cols=np.array(cols, dtype=object))
+    Zr.to_pickle(OUT / "stage0_Z_resid.pkl")
+    Zu.to_pickle(OUT / "stage0_Z_raw.pkl")
+    meta.to_pickle(OUT / "stage0_meta.pkl")
     json.dump(
         {"n_items": len(cols), "n_patients": int(len(Xr)),
          "cohort_n": {k: int(v) for k, v in coh.value_counts().items()},
@@ -157,9 +157,9 @@ def main() -> None:
          "n_eig_floor": fac["n_eig_floor"], "isolated_items": isolated, "low_coverage_items": lowcov,
          "eig_gt1": int((ev > 1).sum()), "eig_top20": [float(x) for x in ev[:20]],
          "newly_included": newly, "min_pair": MIN_PAIR},
-        open(OUT / "stage0_diagnostics_v2.json", "w"), indent=2,
+        open(OUT / "stage0_diagnostics.json", "w"), indent=2,
     )
-    print(f"\nsaved -> {OUT}/stage0_*_v2.*")
+    print(f"\nsaved -> {OUT}/stage0_*.*")
 
 
 if __name__ == "__main__":

@@ -76,7 +76,7 @@ def top_constructs(L2df, k, n=4):
 
 
 def main() -> None:
-    S = pd.read_pickle(OUT / "stage2_scores_v2.pkl").set_index(["cohort", "patient_id"])
+    S = pd.read_pickle(OUT / "stage2_scores.pkl").set_index(["cohort", "patient_id"])
     cov = S.notna().mean()
     keep = [c for c in S.columns if cov[c] >= COVERAGE_FLOOR and S[c].var() > 1e-9]
     Z = (S[keep] - S[keep].mean()) / S[keep].std()

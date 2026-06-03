@@ -8,7 +8,7 @@ The order follows ``docs/PIPELINE.md`` and the inter-script dependencies (e.g. `
 relapse outcome consumed by ``45``–``48``; ``44`` reuses Stage-0/2 logic; ``48`` reuses ``44``). The
 pipeline is deterministic (fixed seeds) apart from ~1e-9 BLAS round-off.
 
-The manuscript ``.docx`` is built separately (after the figures) via ``scripts/build_manuscript_v2.py``
+The manuscript ``.docx`` is built separately (after the figures) via ``scripts/build_manuscript.py``
 (needs pandoc); it is intentionally not part of this analysis run.
 """
 from __future__ import annotations
@@ -24,29 +24,29 @@ REPO = Path(__file__).resolve().parents[1]
 STEPS: list[tuple[str, list[str]]] = [
     ("qa_harmonization.py", []),            # 3-part data-processing QA report (gate before analysis)
     # ── hierarchical / bifactor measurement model — Stages 0–4 ──
-    ("30_hfa_stage0_itemset_v2.py", []),    # freeze the 194-item V0 set + factorability
-    ("31_hfa_stage1_efa_v2.py", []),        # exploratory first-order EFA (Horn parallel analysis)
-    ("32_hfa_stage2_v2.py", []),            # hybrid first-order constructs (94) → Φ₁
-    ("33_hfa_stage3_v2.py", []),            # second-order: K=4 axes; Schmid–Leiman ECV (no p-factor)
-    ("34_hfa_kselect_v2.py", []),           # per-factor split-half K-selection deep dive
-    ("35_hfa_stage4_v2.py", []),            # validation: confound η² / leave-cohort-out / granularity
+    ("30_hfa_stage0_itemset.py", []),    # freeze the 194-item V0 set + factorability
+    ("31_hfa_stage1_efa.py", []),        # exploratory first-order EFA (Horn parallel analysis)
+    ("32_hfa_stage2.py", []),            # hybrid first-order constructs (94) → Φ₁
+    ("33_hfa_stage3.py", []),            # second-order: K=4 axes; Schmid–Leiman ECV (no p-factor)
+    ("34_hfa_kselect.py", []),           # per-factor split-half K-selection deep dive
+    ("35_hfa_stage4.py", []),            # validation: confound η² / leave-cohort-out / granularity
     # ── stratification arm ──
-    ("40_phase5_stratify_v2.py", []),       # discrete-vs-continuum battery → dimensional
+    ("40_phase5_stratify.py", []),       # discrete-vs-continuum battery → dimensional
     # ── validation A–D (41 derives the relapse outcome used by 45–48) ──
-    ("41_v1v4_inventory_v2.py", []),        # V1–V4 inventory + LOCKED CGI-S relapse derivation
-    ("42_cohort_confound_v2.py", []),       # Study A — cohort confound
-    ("43_orthogonality_pfactor_v2.py", []), # Study B — symptom⊥biology / p-factor (headline)
-    ("44_longitudinal_coherence_v2.py", []),# Study C — measurement invariance + score stability
-    ("45_predictive_validity_v2.py", []),   # Study D — prognosis vs DSM
-    ("46_predictive_survival_v2.py", []),   # Study D-refined — remission-based discrete-time survival
-    ("47_relapse_richbaseline_v2.py", []),  # Study D3 — richer baseline vs 6 axes
-    ("48_relapse_trajectory_v2.py", []),    # Study D4 — early-course prognosis
+    ("41_v1v4_inventory.py", []),        # V1–V4 inventory + LOCKED CGI-S relapse derivation
+    ("42_cohort_confound.py", []),       # Study A — cohort confound
+    ("43_orthogonality_pfactor.py", []), # Study B — symptom⊥biology / p-factor (headline)
+    ("44_longitudinal_coherence.py", []),# Study C — measurement invariance + score stability
+    ("45_predictive_validity.py", []),   # Study D — prognosis vs DSM
+    ("46_predictive_survival.py", []),   # Study D-refined — remission-based discrete-time survival
+    ("47_relapse_richbaseline.py", []),  # Study D3 — richer baseline vs 6 axes
+    ("48_relapse_trajectory.py", []),    # Study D4 — early-course prognosis
     # ── sensitivity analyses ──
-    ("sensitivity_aggregation_v2.py", []),  # granularity invariance / conditioning audit
-    ("sensitivity_comorbidity_v2.py", []),  # the 24 *_mhoccur flags decomposition
-    ("sensitivity_polychoric_v2.py", []),   # tetrachoric sensitivity of the K=4 structure
+    ("sensitivity_aggregation.py", []),  # granularity invariance / conditioning audit
+    ("sensitivity_comorbidity.py", []),  # the 24 *_mhoccur flags decomposition
+    ("sensitivity_polychoric.py", []),   # tetrachoric sensitivity of the K=4 structure
     # ── figures ──
-    ("figures_manuscript_v2.py", []),       # 6 manuscript figures from results/hfa/
+    ("figures_manuscript.py", []),       # 6 manuscript figures from results/hfa/
 ]
 
 
@@ -63,7 +63,7 @@ def main() -> int:
             return r.returncode
         print(f"   ...done in {time.time()-t:.0f}s", flush=True)
     print(f"\n{'='*72}\nALL {len(STEPS)} STEPS OK in {time.time()-t0:.0f}s")
-    print("Next: python3 scripts/build_manuscript_v2.py   # build the .docx (needs pandoc)")
+    print("Next: python3 scripts/build_manuscript.py   # build the .docx (needs pandoc)")
     print(f"{'='*72}")
     return 0
 

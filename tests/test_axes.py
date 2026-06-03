@@ -1,6 +1,6 @@
 """Guards for the v2 axis-name source of truth (``trans_diag.axes``).
 
-These catch axis-name/order drift: the v2 hierarchical model (scripts 30–35_v2, LABBOOK V2-9..V2-12)
+These catch axis-name/order drift: the v2 hierarchical model (scripts 30–35, LABBOOK V2-9..V2-12)
 re-locked the structure at **K=4** — internalizing, cognition, illness_course, cardiometabolic — with
 mania & suicidality demoted to *orthogonal standalone* dimensions (|r| ≤ 0.09), NOT axes.
 ``trans_diag.axes`` is the canonical map written for the manuscript and downstream code. (The
@@ -26,7 +26,7 @@ def test_label_dicts_cover_exactly_the_axes():
 
 
 def test_index_map_matches_paf_order():
-    # stage 33_v2 writes dim1..dim4 in PAF / descending-eigenvalue order; the map must mirror AXIS_NAMES.
+    # stage 33 writes dim1..dim4 in PAF / descending-eigenvalue order; the map must mirror AXIS_NAMES.
     assert AXIS_INDEX_TO_NAME == {f"dim{i + 1}": n for i, n in enumerate(AXIS_NAMES)}
     assert AXIS_INDEX_TO_NAME["dim1"] == "internalizing"
     assert AXIS_INDEX_TO_NAME["dim4"] == "cardiometabolic"

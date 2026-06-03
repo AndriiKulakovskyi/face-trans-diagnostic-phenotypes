@@ -16,7 +16,7 @@ FAIR comparison vs DSM (so we don't jeopardize the model):
   - GroupKFold BY PATIENT (a patient's intervals never split train/test -> no leakage);
   - bootstrap CIs resample PATIENTS, not rows (respect clustering).
 Two methods: regularized logistic (standard discrete-time hazard, interpretable) and HistGradient-
-Boosting (modern, nonlinear; a deep net would overfit at this n). Writes studyD2_survival_v2.json.
+Boosting (modern, nonlinear; a deep net would overfit at this n). Writes studyD2_survival.json.
 """
 from __future__ import annotations
 
@@ -82,8 +82,8 @@ def main() -> None:
     ds = to_harmonized_dataset(df, vs, visit="V0", sections=None, residualize_on=None, normalize=False)
 
     # predictors keyed by patient_uid
-    F = pd.read_pickle(OUT / "stage3_scores_v2.pkl").set_index(["cohort", "patient_id"])[["dim1", "dim2", "dim3", "dim4"]]
-    Sc = pd.read_pickle(OUT / "stage2_scores_v2.pkl").set_index(["cohort", "patient_id"])[["mania_activation", "suicidal_ideation"]]
+    F = pd.read_pickle(OUT / "stage3_scores.pkl").set_index(["cohort", "patient_id"])[["dim1", "dim2", "dim3", "dim4"]]
+    Sc = pd.read_pickle(OUT / "stage2_scores.pkl").set_index(["cohort", "patient_id"])[["mania_activation", "suicidal_ideation"]]
     P = F.join(Sc).rename(columns={"mania_activation": "mania", "suicidal_ideation": "suicide"})
     P.index = [f"{c.upper()}::{p}" for c, p in P.index]
     cov = ds.X[["age", "sex"]].copy(); cov.index = [f"{c.upper()}::{p}" for c, p in cov.index]
@@ -138,8 +138,8 @@ def main() -> None:
                            "d_axes_add_dsm": [round(pts['M3_+DSM+axes']-pts['M1_+DSM'], 4), c31],
                            "d_crossdomain_vs_base": [round(pts['M2x_crossdomain']-pts['M0_base'], 4), cx0]}
 
-    json.dump(results, open(OUT / "studyD2_survival_v2.json", "w"), indent=2, default=str)
-    print(f"\nsaved -> {OUT}/studyD2_survival_v2.json")
+    json.dump(results, open(OUT / "studyD2_survival.json", "w"), indent=2, default=str)
+    print(f"\nsaved -> {OUT}/studyD2_survival.json")
 
 
 if __name__ == "__main__":

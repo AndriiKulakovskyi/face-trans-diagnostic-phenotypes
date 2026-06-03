@@ -59,8 +59,8 @@ def splithalf_congruence(Z, K, n_splits=15, seed=SEED):
 
 
 def main() -> None:
-    S = pd.read_pickle(OUT / "stage2_scores_v2.pkl").set_index(["cohort", "patient_id"])
-    fit = pd.read_csv(OUT / "stage2_construct_fit_v2.csv").set_index("construct")
+    S = pd.read_pickle(OUT / "stage2_scores.pkl").set_index(["cohort", "patient_id"])
+    fit = pd.read_csv(OUT / "stage2_construct_fit.csv").set_index("construct")
 
     # ---------------- AUDIT ----------------
     print("=== STATISTICAL-CORRECTNESS AUDIT ===")
@@ -142,10 +142,10 @@ def main() -> None:
     print(f"\n  patient scores: {Fdf.shape}; dimension-score coverage "
           f"{[round(Fdf[c].notna().mean(),2) for c in L2df.columns]}")
 
-    L2df.assign(general_SL=g).round(3).to_csv(OUT / "stage3_loadings_v2.csv")
-    Fdf.reset_index().to_pickle(OUT / "stage3_scores_v2.pkl")
-    pd.DataFrame(Phi2, index=L2df.columns, columns=L2df.columns).round(3).to_csv(OUT / "stage3_phi2_v2.csv")
-    print(f"\nsaved -> {OUT}/stage3_loadings_v2.csv, stage3_scores_v2.pkl, stage3_phi2_v2.csv")
+    L2df.assign(general_SL=g).round(3).to_csv(OUT / "stage3_loadings.csv")
+    Fdf.reset_index().to_pickle(OUT / "stage3_scores.pkl")
+    pd.DataFrame(Phi2, index=L2df.columns, columns=L2df.columns).round(3).to_csv(OUT / "stage3_phi2.csv")
+    print(f"\nsaved -> {OUT}/stage3_loadings.csv, stage3_scores.pkl, stage3_phi2.csv")
 
 
 if __name__ == "__main__":

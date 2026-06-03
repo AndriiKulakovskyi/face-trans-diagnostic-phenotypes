@@ -2,7 +2,7 @@
 
 > A complete, scientifically rigorous map of the analysis, from the three confidential cohort CSVs to
 > the manuscript. Every stage lists its **inputs → operation → outputs**, the **mathematics**, the
-> **parameters**, the **script** that runs it (`scripts/*_v2.py`), and the **artifact** it writes
+> **parameters**, the **script** that runs it (`scripts/*.py`), and the **artifact** it writes
 > (`results/hfa/`). Companion docs: [ROADMAP](ROADMAP.md) · [AGGREGATION_RATIONALE](AGGREGATION_RATIONALE.md)
 > · [HIERARCHICAL_FA_PLAN](planning/HIERARCHICAL_FA_PLAN.md) · [VALIDATION_PLAN_v2](planning/VALIDATION_PLAN_v2.md) ·
 > [FINDINGS](FINDINGS.md) · [LABBOOK](LABBOOK.md). Manuscript: `results/manuscript/`.
@@ -298,8 +298,8 @@ flowchart TB
 flowchart LR
     classDef out fill:#F3ECEA,stroke:#B5562B,color:#111
     R["results/hfa/*<br/>(aggregate artifacts; gitignored)"]:::out
-    R --> F["scripts/figures_manuscript_v2.py<br/>→ 6 figures (results/reports/figures/)"]:::out
-    R --> MAN["results/manuscript/manuscript.md<br/>→ build_manuscript_v2.py → FACE_trans_diagnostic_v2.docx"]:::out
+    R --> F["scripts/figures_manuscript.py<br/>→ 6 figures (results/reports/figures/)"]:::out
+    R --> MAN["results/manuscript/manuscript.md<br/>→ build_manuscript.py → FACE_trans_diagnostic_v2.docx"]:::out
     R --> G["tests/test_golden_numbers.py<br/>pins manuscript numbers → results/hfa/ (skip if absent)"]:::out
     DICT2["data + dictionary"] --> VER["scripts/verify.py<br/>harmonization smoke test (v2-calibrated)"]:::out
 ```
@@ -308,20 +308,20 @@ flowchart LR
 
 | Step | Script | Writes (`results/hfa/`) |
 |---|---|---|
-| Stage 0 item set | `30_hfa_stage0_itemset_v2.py` | `stage0_diagnostics_v2.json`, `stage0_items_v2.csv`, `stage0_corr_resid_v2.npz` |
-| Stage 1 EFA | `31_hfa_stage1_efa_v2.py` | `stage1_loadings_v2.csv`, `stage1_construct_purity_v2.csv` |
-| Stage 2 constructs | `32_hfa_stage2_v2.py` (+ `sensitivity_comorbidity_v2.py`) | `stage2_scores_v2.pkl`, `stage2_phi1_v2.csv`, `stage2_construct_fit_v2.csv` |
-| Stage 3 second-order | `33_hfa_stage3_v2.py` | `stage3_loadings_v2.csv`, `stage3_phi2_v2.csv`, `stage3_scores_v2.pkl` |
-| K-selection | `34_hfa_kselect_v2.py` | (console: per-factor congruence) |
-| Stage 4 validation | `35_hfa_stage4_v2.py` | (console: confound / LCO / CCA) |
-| Stratification | `40_phase5_stratify_v2.py` | `phase5_structure_v2.json` |
-| Study A | `42_cohort_confound_v2.py` | `studyA_cohort_confound_v2.json` |
-| Study B | `43_orthogonality_pfactor_v2.py` | `studyB_orthogonality_v2.json` |
-| Study C | `44_longitudinal_coherence_v2.py` | `studyC_longitudinal_v2.json` |
-| Study D (predictive) | `45_predictive_validity_v2.py` | `studyD_predictive_v2.json` |
-| Study D (survival) | `46_predictive_survival_v2.py` | `studyD2_survival_v2.json` |
-| Study D (relapse >0.7) | `47_…richbaseline`, `48_…trajectory` | `studyD3_richbaseline_v2.json`, `studyD4_trajectory_v2.json` |
-| Sensitivity | `sensitivity_aggregation_v2.py`, `…_polychoric_v2.py` | (console / reports) |
+| Stage 0 item set | `30_hfa_stage0_itemset.py` | `stage0_diagnostics.json`, `stage0_items.csv`, `stage0_corr_resid.npz` |
+| Stage 1 EFA | `31_hfa_stage1_efa.py` | `stage1_loadings.csv`, `stage1_construct_purity.csv` |
+| Stage 2 constructs | `32_hfa_stage2.py` (+ `sensitivity_comorbidity.py`) | `stage2_scores.pkl`, `stage2_phi1.csv`, `stage2_construct_fit.csv` |
+| Stage 3 second-order | `33_hfa_stage3.py` | `stage3_loadings.csv`, `stage3_phi2.csv`, `stage3_scores.pkl` |
+| K-selection | `34_hfa_kselect.py` | (console: per-factor congruence) |
+| Stage 4 validation | `35_hfa_stage4.py` | (console: confound / LCO / CCA) |
+| Stratification | `40_phase5_stratify.py` | `phase5_structure.json` |
+| Study A | `42_cohort_confound.py` | `studyA_cohort_confound.json` |
+| Study B | `43_orthogonality_pfactor.py` | `studyB_orthogonality.json` |
+| Study C | `44_longitudinal_coherence.py` | `studyC_longitudinal.json` |
+| Study D (predictive) | `45_predictive_validity.py` | `studyD_predictive.json` |
+| Study D (survival) | `46_predictive_survival.py` | `studyD2_survival.json` |
+| Study D (relapse >0.7) | `47_…richbaseline`, `48_…trajectory` | `studyD3_richbaseline.json`, `studyD4_trajectory.json` |
+| Sensitivity | `sensitivity_aggregation.py`, `…_polychoric.py` | (console / reports) |
 
 ### Parameters & decision rules
 

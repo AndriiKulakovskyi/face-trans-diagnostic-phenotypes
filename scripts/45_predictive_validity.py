@@ -13,7 +13,7 @@ every model; internalizing is BP+DR/proxy (Study A) so the cross-domain model is
 attrition = completers + a dropout-predictor check. Decision: axes earn their keep iff they add
 cross-validated incremental value over DSM (CI excludes 0) on a HARD outcome. Masked / no-imputation
 (complete-case on predictors+outcome; predictors are the existing masked scores).
-Writes results/hfa/studyD_predictive_v2.json.
+Writes results/hfa/studyD_predictive.json.
 """
 from __future__ import annotations
 
@@ -86,8 +86,8 @@ def main() -> None:
     ds = to_harmonized_dataset(df, vs, visit="V0", sections=None, residualize_on=None, normalize=False)
 
     # predictors: V0 axes + mania + suicidality, keyed by patient_uid (COHORT::patient_id)
-    F = pd.read_pickle(OUT / "stage3_scores_v2.pkl").set_index(["cohort", "patient_id"])[AXES]
-    S = pd.read_pickle(OUT / "stage2_scores_v2.pkl").set_index(["cohort", "patient_id"])[["mania_activation", "suicidal_ideation"]]
+    F = pd.read_pickle(OUT / "stage3_scores.pkl").set_index(["cohort", "patient_id"])[AXES]
+    S = pd.read_pickle(OUT / "stage2_scores.pkl").set_index(["cohort", "patient_id"])[["mania_activation", "suicidal_ideation"]]
     P = F.join(S)
     P.index = [f"{c.upper()}::{p}" for c, p in P.index]          # -> patient_uid (the join gotcha)
     P = P.rename(columns={"mania_activation": "mania", "suicidal_ideation": "suicide"})
@@ -97,7 +97,7 @@ def main() -> None:
     cov = ds.X[["age", "sex"]].copy(); cov.index = [f"{c.upper()}::{p}" for c, p in cov.index]
 
     # outcomes: relapse-by-V2 (recompute, reproducible) + V0/V2 GAF & FAST
-    relapse = _load("41_v1v4_inventory_v2.py").derive_relapse(df)
+    relapse = _load("41_v1v4_inventory.py").derive_relapse(df)
     def visit_wide(col):
         w = df[df.visit.isin(["V0", "V2"])].drop_duplicates(["patient_uid", "visit"]) \
             .pivot_table(index="patient_uid", columns="visit", values=col, aggfunc="first")
@@ -176,8 +176,8 @@ def main() -> None:
           f"({'informative dropout — caveat' if auc_drop > 0.60 else 'near-chance — dropout ~ignorable by axes'}) ===")
     results["dropout_auc_from_axes"] = round(float(auc_drop), 3)
 
-    json.dump(results, open(OUT / "studyD_predictive_v2.json", "w"), indent=2, default=str)
-    print(f"\nsaved -> {OUT}/studyD_predictive_v2.json")
+    json.dump(results, open(OUT / "studyD_predictive.json", "w"), indent=2, default=str)
+    print(f"\nsaved -> {OUT}/studyD_predictive.json")
 
 
 if __name__ == "__main__":

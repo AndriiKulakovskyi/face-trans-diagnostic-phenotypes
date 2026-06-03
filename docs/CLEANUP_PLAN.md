@@ -10,7 +10,7 @@
 
 ## Bottom line
 
-The v2 science is done and high quality (`scripts/30–48_*_v2`, `docs/PIPELINE.md`, `docs/LABBOOK.md`,
+The v2 science is done and high quality (`scripts/30–48`, `docs/PIPELINE.md`, `docs/LABBOOK.md`,
 99 passing tests, `results/manuscript/manuscript.md` → `.docx`). The problem is that the **v1 layer
 was never cleared out** and the **top-level surfaces were never re-pointed at v2**, so a reviewer
 cannot tell what is current. Five concrete symptoms:
@@ -20,7 +20,7 @@ cannot tell what is current. Five concrete symptoms:
 2. `README.md`, root `MANUSCRIPT.md`, `AGENTS.md`, and parts of `CLAUDE.md` say *"the analysis has
    NOT been run yet / No v2 results are written yet"* — false; `CLAUDE.md` contradicts itself.
 3. The package default export `from trans_diag import AXIS_NAMES` returns the **v1 K=6** names; the
-   live v2 K=4 names are only reachable via `axes_v2`.
+   live v2 K=4 names are only reachable via `axes`.
 4. The 2026-06-03 dictionary review (CVLT/fluency/QIDS-13 anhedonia + suicide skip-logic) updated the
    manuscript + tests to **194 items / 94 constructs / ECV 0.34 / memory-anchored cognition**, but the
    docs still say **188 / 88 / 0.36**.
@@ -31,9 +31,9 @@ cannot tell what is current. Five concrete symptoms:
 
 | Layer | Current (v2 — keep) | Legacy (v1 — remove) |
 |---|---|---|
-| Pipeline | `30–35_*_v2` (stages 0–4), `40–48_*_v2`, `sensitivity_{aggregation,comorbidity,polychoric}_v2` | `00_run_all`, `01`–`13`, `15`–`22`, `sensitivity_masked_fa{,_mechanism}` |
-| Utilities | `qa_harmonization`, `verify`, `audit`, `figures_manuscript_v2`, `build_manuscript_v2`, `build_dr_neuropsych_mapping`* | `build_notebook`, `qa_missingness` |
-| `src/trans_diag` | `axes_v2`→`axes`, `skip_logic`, `masked_fa`, `domains`, `variable/rules/loader/filters/schema_gen/adapter`, `engine/*` | `axes.py` (v1 K=6), `outcomes.py` |
+| Pipeline | `30–35` (stages 0–4), `40–48`, `sensitivity_{aggregation,comorbidity,polychoric}` | `00_run_all`, `01`–`13`, `15`–`22`, `sensitivity_masked_fa{,_mechanism}` |
+| Utilities | `qa_harmonization`, `verify`, `audit`, `figures_manuscript`, `build_manuscript`, `build_dr_neuropsych_mapping`* | `build_notebook`, `qa_missingness` |
+| `src/trans_diag` | `axes`→`axes`, `skip_logic`, `masked_fa`, `domains`, `variable/rules/loader/filters/schema_gen/adapter`, `engine/*` | `axes.py` (v1 K=6), `outcomes.py` |
 | Outputs | `results/hfa/*` | top-level `results/*` (v1) |
 | Notebook | — | `notebooks/FACE_reproduction.ipynb` |
 | Manuscript | `results/manuscript/manuscript.md` | root `MANUSCRIPT.md` (skeleton) |
@@ -42,7 +42,7 @@ cannot tell what is current. Five concrete symptoms:
 a no-op against the locked dictionary, then archive.
 
 **Dependency check (verified):** every v2 script imports only from the surviving `trans_diag` core or
-other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scripts. Removal is clean.
+other v2 scripts; `outcomes.py`/`axes.py` are imported only by the legacy scripts. Removal is clean.
 
 ---
 
@@ -51,7 +51,7 @@ other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scr
 - ✅ **P0.1** Kill the "not yet run" contradiction in `README.md`, `AGENTS.md`, `CLAUDE.md` (status
   header, repo-layout `scripts/` line, the `## Pipeline … NOT yet re-run on v2` section), and repoint
   every `MANUSCRIPT.md` link to `results/manuscript/manuscript.md`.
-- ✅ **P0.2** Make the package default the v2 model: delete v1 `axes.py`, rename `axes_v2.py → axes.py`,
+- ✅ **P0.2** Make the package default the v2 model: delete v1 `axes.py`, rename `axes.py → axes.py`,
   export `ORTHOGONAL_DIMENSIONS`, repoint the 4 importers + `test_axes.py`.
 - ✅ **P0.3** Fix regeneration instructions that claim `00_run_all.py` rebuilds `results/hfa/`
   (`test_golden_numbers.py` docstring + skip message).
@@ -91,18 +91,21 @@ other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scr
 
 ## P3 — Structure & naming
 
-- ⬜ **P3.1 — deferred (needs a verifying pipeline run).** Dropping `_v2` from script + artifact
-  filenames is a repo-wide rename touching importlib script-loads + ~25 *gitignored* artifact
-  read/write paths across ~20 scripts. The golden tests catch broken *read* paths, but a missed *write*
-  path only surfaces on the next pipeline run — which needs the confidential CSVs (can't run here).
-  Recommend: one rename commit immediately followed by `python3 scripts/00_run_all.py` to verify.
-  (`axes_v2 → axes` was already done in P0.2.)
+- ✅ **P3.1 — done + verified.** Dropped the redundant `_v2` suffix from all 20 pipeline scripts and
+  the ~24 (gitignored) `results/hfa/` artifacts, updating every reference: importlib script-loads, the
+  `00_run_all` step list, all `OUT/…` write+read paths, golden-test artifact names, and the docs.
+  Protected the legitimate tokens (`use_v2_rules`, `VALIDATION_PLAN_v2.md`, the `v2-study` branch,
+  `FACE_trans_diagnostic_v2.docx`, the `cgi_v2`/`is_v2` vars, the `_v2` visit-2 forbidden-suffix).
+  Verified: all scripts compile, every importlib target resolves, ruff clean, `verify.py` green, and
+  **golden tests pass against the renamed local artifacts** (read-paths) with zero `_v2` artifact
+  strings left in scripts (write-paths). (The `axes_v2 → axes` module rename was already done in P0.2.)
 - ✅ **P3.2** Added `scripts/00_run_all.py` (v2): QA → Stages 0–4 → stratify → inventory → Studies A–D
   → sensitivity → figures, in `PIPELINE.md` order (dependency-checked: 41 before 45–48; 32 before 44;
   44 before 48). Golden-test + README/CLAUDE regeneration hints repointed to it. *(Structure verified —
   compiles, ruff-clean, all 20 steps exist; a full run needs the confidential CSVs.)*
-- ⬜ **P3.3 — deferred (same reason as P3.1).** Renumbering also moves the importlib filename strings;
-  pair it with the P3.1 rename + a verifying `00_run_all` run.
+- ⬜ **P3.3 — optional, not requested.** The `_v2` drop (P3.1) is done; I kept the `30–48` numbering
+  (it encodes the stage 0–4 / study A–D grouping). A further renumber to a gap-free `01..` sequence
+  would move the importlib filename strings again for marginal gain — left as optional polish.
 - ✅ **P3.4** Fixed the actively-misleading refs (`__init__.py` "imports", `schema_gen.py` +
   `feature_schema.py` external-module/config pointers, `enrichment.py` dead-doc link) and **deleted the
   dead `load_feature_schema` YAML loader** (never called; it carried the `config/face_stratification/`
@@ -116,7 +119,7 @@ other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scr
   `install.py`; **updated CI push triggers** (`main`, `v2-study`); confirmed `neuropsy_features.yaml`
   already lists the CVLT/fluency features. **Remaining (need a build/network unavailable here):**
   `manuscript.md`'s 6 figure paths are absolute `/Users/…` (broken on any other machine) — the fix is
-  repo-root-relative paths + `cwd=ROOT` in `build_manuscript_v2`'s pandoc call, but the `.docx` build
+  repo-root-relative paths + `cwd=ROOT` in `build_manuscript`'s pandoc call, but the `.docx` build
   can't be verified here (no pandoc), so it's left for a tested pass; regenerate `requirements.lock` on
   Python 3.11 (it still pins the removed torch/neuro deps; `pip-compile` is unavailable here).
 - ✅ **CI is now fully green** (lint **and** tests, on CI's latest deps — [PR #3]). Three layers, each

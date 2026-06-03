@@ -6,10 +6,10 @@ Pipeline:  results/manuscript/manuscript.md  --pandoc-->  FACE_trans_diagnostic_
     (2) drop the redundant <m:sty m:val="p"/> from the 9 <m:nor/>+<m:sty/> math runs (a pandoc OMML
         quirk that some strict validators reject; <m:nor/> alone already renders operators upright).
 
-Figures must exist first:  python3 scripts/figures_manuscript_v2.py
+Figures must exist first:  python3 scripts/figures_manuscript.py
 Requires: pandoc (math -> editable OMML). Optional companion PDF: xelatex + STIX Two Math.
 
-Usage:  python3 scripts/build_manuscript_v2.py [--pdf]
+Usage:  python3 scripts/build_manuscript.py [--pdf]
 """
 from __future__ import annotations
 
@@ -55,7 +55,7 @@ def main() -> None:
     if not MD.exists():
         sys.exit(f"missing {MD}")
     if not list((ROOT / "results" / "reports" / "figures").glob("fig*.png")):
-        sys.exit("figures missing — run scripts/figures_manuscript_v2.py first")
+        sys.exit("figures missing — run scripts/figures_manuscript.py first")
     print("pandoc -> docx ...")
     subprocess.run(PANDOC, check=True)
     patch_docx(DOCX)

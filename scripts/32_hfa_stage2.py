@@ -129,8 +129,8 @@ def score_construct(Zc: pd.DataFrame):
 
 
 def main() -> None:
-    Z = pd.read_pickle(OUT / "stage0_Z_resid_v2.pkl")
-    meta = pd.read_pickle(OUT / "stage0_meta_v2.pkl")
+    Z = pd.read_pickle(OUT / "stage0_Z_resid.pkl")
+    meta = pd.read_pickle(OUT / "stage0_meta.pkl")
     by = {v.canonical_name: v for v in load_variables(str(ROOT / "data" / "face-common-vars.xlsx"))}
     bio_idx = {it: (d, s) for d, mem in BIO.items() for it, s in mem}
     cog_idx = {it: (d, s) for d, mem in COG.items() for it, s in mem}
@@ -166,7 +166,7 @@ def main() -> None:
     print(f"  dropped as contaminants ({len(contaminants)}): {contaminants}")
     print(f"  dropped as <2% comorbidity -> Stage-4 validators ({len(validators)}): "
           f"{[v.replace('_mhoccur','') for v in validators]}")
-    pd.Series(sorted(validators)).to_csv(OUT / "stage2_comorbidity_validators_v2.csv", index=False, header=["flag"])
+    pd.Series(sorted(validators)).to_csv(OUT / "stage2_comorbidity_validators.csv", index=False, header=["flag"])
     print("\n=== multi-item constructs (within-construct unidimensionality VAF1) ===")
     print(fitdf[fitdf.n_items > 1][["n_items", "vaf1", "coverage", "polarity", "items"]]
           .to_string(max_colwidth=52))
@@ -207,10 +207,10 @@ def main() -> None:
         print(f"    {it:24s} (assigned {con:18s}) max|load|={m}")
 
     # save
-    fitdf.to_csv(OUT / "stage2_construct_fit_v2.csv")
-    S.reset_index().to_pickle(OUT / "stage2_scores_v2.pkl")
-    Phi.round(3).to_csv(OUT / "stage2_phi1_v2.csv")
-    print(f"\nsaved -> {OUT}/stage2_construct_fit_v2.csv, stage2_scores_v2.pkl, stage2_phi1_v2.csv")
+    fitdf.to_csv(OUT / "stage2_construct_fit.csv")
+    S.reset_index().to_pickle(OUT / "stage2_scores.pkl")
+    Phi.round(3).to_csv(OUT / "stage2_phi1.csv")
+    print(f"\nsaved -> {OUT}/stage2_construct_fit.csv, stage2_scores.pkl, stage2_phi1.csv")
 
 
 if __name__ == "__main__":

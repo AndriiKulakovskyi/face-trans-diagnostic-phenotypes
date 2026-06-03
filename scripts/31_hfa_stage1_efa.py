@@ -85,8 +85,8 @@ def topk_congruence(A: np.ndarray, B: np.ndarray, k: int):
 
 
 def main() -> None:
-    Z = pd.read_pickle(OUT / "stage0_Z_resid_v2.pkl")
-    meta = pd.read_pickle(OUT / "stage0_meta_v2.pkl")
+    Z = pd.read_pickle(OUT / "stage0_Z_resid.pkl")
+    meta = pd.read_pickle(OUT / "stage0_meta.pkl")
     by = {v.canonical_name: v for v in load_variables(str(ROOT / "data" / "face-common-vars.xlsx"))}
     cols = list(Z.columns)
 
@@ -156,9 +156,9 @@ def main() -> None:
     Ld.columns = [f"F{i+1}" for i in range(k1)]
     Ld.insert(0, "construct", [constructs[c] for c in cols])
     Ld.insert(1, "dom_factor", [f"F{d+1}" for d in dom])
-    Ld.round(3).to_csv(OUT / "stage1_loadings_v2.csv")
-    pur.to_csv(OUT / "stage1_construct_purity_v2.csv", index=False)
-    print(f"\nsaved -> {OUT}/stage1_loadings_v2.csv, stage1_construct_purity_v2.csv")
+    Ld.round(3).to_csv(OUT / "stage1_loadings.csv")
+    pur.to_csv(OUT / "stage1_construct_purity.csv", index=False)
+    print(f"\nsaved -> {OUT}/stage1_loadings.csv, stage1_construct_purity.csv")
 
 
 if __name__ == "__main__":

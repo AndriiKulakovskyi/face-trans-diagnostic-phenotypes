@@ -1,6 +1,6 @@
 """Tests for the imputation-free factor analysis (trans_diag.masked_fa).
 
-Validates the math behind the dimensional model's masked estimator (scripts 30–35_v2): the
+Validates the math behind the dimensional model's masked estimator (scripts 30–35): the
 masked correlation, principal-axis factoring + varimax recover a known 2-factor structure,
 and the masked posterior-mean scores track the true factors while leaving sparsely-observed
 rows unscored (NaN) rather than imputing them.

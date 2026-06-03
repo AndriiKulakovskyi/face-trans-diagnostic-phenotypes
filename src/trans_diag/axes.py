@@ -1,7 +1,7 @@
 """Canonical names for the v2 trans-diagnostic dimensions — single source of truth.
 
-The v2 hierarchical/bifactor pipeline (scripts/30-35_*_v2.py) re-derived the dimensional structure
-from zero. It writes generic ``dim1``..``dim4`` in ``results/hfa/stage3_loadings_v2.csv`` (paf order,
+The v2 hierarchical/bifactor pipeline (scripts/30-35_*.py) re-derived the dimensional structure
+from zero. It writes generic ``dim1``..``dim4`` in ``results/hfa/stage3_loadings.csv`` (paf order,
 descending eigenvalue). This module fixes their interpretation so downstream code + the manuscript
 do not re-hardcode names.
 
@@ -27,7 +27,7 @@ If Stage 3's dim ordering is ever re-locked, update only this file.
 """
 from __future__ import annotations
 
-# snake_case names in dim1..dim4 (paf / descending-eigenvalue) order — the order stage 33_v2 writes.
+# snake_case names in dim1..dim4 (paf / descending-eigenvalue) order — the order stage 33 writes.
 AXIS_NAMES: list[str] = [
     "internalizing",
     "cognition",
@@ -51,7 +51,7 @@ AXIS_LABELS: dict[str, str] = {
     "cardiometabolic": "Cardiometabolic–inflammatory burden — higher = worse",
 }
 
-# dim index (as written by stage 33_v2: "dim1".."dim4") -> canonical name.
+# dim index (as written by stage 33: "dim1".."dim4") -> canonical name.
 AXIS_INDEX_TO_NAME: dict[str, str] = {f"dim{i + 1}": n for i, n in enumerate(AXIS_NAMES)}
 
 # Valid, well-measured constructs that are ORTHOGONAL to the four correlated axes (|r| <= 0.09;

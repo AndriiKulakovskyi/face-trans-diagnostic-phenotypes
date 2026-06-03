@@ -8,7 +8,7 @@ Four analyses, all on the V0 matrix, masked / no-imputation:
 
 These are the numbers cited in the rationale; this script makes them auditable. It uses the
 ORIGINAL flat-domain pipeline (DOMAIN_SECTIONS -> 177 items / 69 domains) on purpose, since the
-rationale is *why we move away from flat domains*. Run: python3 scripts/sensitivity_aggregation_v2.py
+rationale is *why we move away from flat domains*. Run: python3 scripts/sensitivity_aggregation.py
 """
 from __future__ import annotations
 
