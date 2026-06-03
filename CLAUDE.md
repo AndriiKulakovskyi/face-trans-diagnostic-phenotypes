@@ -32,7 +32,7 @@ internalized in `src/trans_diag/engine/` — no external dependency on `face_str
 - ✅ **Preprocessing debugged + ML-ready** — fixed the robust-z explosion (prolactin |z|≈106→5),
   added **type-aware bounded scaling to [−1,1]**, kept the masked / no-imputation design. QA report
   has the three parts described below.
-- ✅ **Dimensional analysis + stratification re-derived on v2** (scripts `30–48`): 4 trans-diagnostic
+- ✅ **Dimensional analysis + stratification re-derived on v2** (scripts `01–15`): 4 trans-diagnostic
   axes (K=4, no p-factor), dimensional / no discrete subtypes, validation arm A–D. **Manuscript + 6
   figures delivered** (`results/manuscript/`, `scripts/figures_manuscript.py`). **Golden-number tests
   + `verify.py` re-baselined to v2** — `tests/test_golden_numbers.py` pins the manuscript's headline
@@ -93,7 +93,7 @@ face-common-bp-sz-dr/
 │   ├── schema_gen·adapter·domains.py           ← matrix build, type-aware scaling, domain aggregation
 │   ├── masked_fa·axes·skip_logic.py            ← imputation-free FA, axis names, suicide skip-logic
 │   └── engine/                                 ← internalized stratification engine (masked, no imputation)
-├── scripts/                           ← v2 pipeline (30–48: hierarchical FA → stratify → validate) + qa_harmonization/verify/audit
+├── scripts/                           ← v2 pipeline (01–15: hierarchical FA → stratify → validate) + qa_harmonization/verify/audit
 ├── tests/                             ← unit + v2 golden-number tests (pinned to results/hfa/; skip on a clean clone)
 ├── results/                           ← regenerated AGGREGATE artifacts: hfa/ · manuscript/ · reports/ (empty on a clean tree; .gitkeep)
 │   └── reports/qa_harmonization.html  ← the 3-part QA report
@@ -142,14 +142,14 @@ ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), vis
 The hierarchical/bifactor measurement model + validation arm (all masked / no-imputation), writing
 aggregate artifacts to `results/hfa/`:
 
-- **Stages 0–4** — `30_hfa_stage0_itemset` (freeze the V0 item set) → `31_hfa_stage1_efa`
-  (exploratory first-order) → `32_hfa_stage2` (hybrid first-order constructs) → `33_hfa_stage3`
-  (second-order: **K=4** axes; general factor tested via Schmid–Leiman ECV) → `34_hfa_kselect`
-  (per-factor split-half K) → `35_hfa_stage4` (confound / leave-cohort-out / granularity validation).
-- **Stratification** — `40_phase5_stratify` (discrete-vs-continuum battery → **dimensional**).
-- **Validation A–D** — `41_v1v4_inventory` (relapse derivation) → `42_cohort_confound` (A) ·
-  `43_orthogonality_pfactor` (B, the headline) · `44_longitudinal_coherence` (C) ·
-  `45`–`48` predictive (D: prognosis vs DSM).
+- **Stages 0–4** — `01_hfa_stage0_itemset` (freeze the V0 item set) → `02_hfa_stage1_efa`
+  (exploratory first-order) → `03_hfa_stage2` (hybrid first-order constructs) → `04_hfa_stage3`
+  (second-order: **K=4** axes; general factor tested via Schmid–Leiman ECV) → `05_hfa_kselect`
+  (per-factor split-half K) → `06_hfa_stage4` (confound / leave-cohort-out / granularity validation).
+- **Stratification** — `07_phase5_stratify` (discrete-vs-continuum battery → **dimensional**).
+- **Validation A–D** — `08_v1v4_inventory` (relapse derivation) → `09_cohort_confound` (A) ·
+  `10_orthogonality_pfactor` (B, the headline) · `11_longitudinal_coherence` (C) ·
+  `12`–`15` predictive (D: prognosis vs DSM).
 - **Sensitivity** — `sensitivity_{aggregation,comorbidity,polychoric}`.
 - **Outputs** — `figures_manuscript` (6 figures) · `build_manuscript` (→ `.docx`).
 

@@ -3,7 +3,7 @@
 Each assertion pins a number the manuscript (``results/manuscript/manuscript.md``) states — with its
 §/Table/Figure location — to the corresponding committed *aggregate* artifact under ``results/hfa/``
 (loadings, correlation matrices, and the Study A–D JSONs hold no per-patient data). If a pipeline
-re-run (scripts 30–48) changes a result, the artifact changes and the matching assertion fails,
+re-run (scripts 01–48) changes a result, the artifact changes and the matching assertion fails,
 forcing a synchronized update of BOTH this test and the manuscript. Tolerances absorb the manuscript's
 rounding (3 decimals) + BLAS round-off.
 

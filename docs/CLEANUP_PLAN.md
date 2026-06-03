@@ -10,7 +10,7 @@
 
 ## Bottom line
 
-The v2 science is done and high quality (`scripts/30–48`, `docs/PIPELINE.md`, `docs/LABBOOK.md`,
+The v2 science is done and high quality (`scripts/01–15`, `docs/PIPELINE.md`, `docs/LABBOOK.md`,
 99 passing tests, `results/manuscript/manuscript.md` → `.docx`). The problem is that the **v1 layer
 was never cleared out** and the **top-level surfaces were never re-pointed at v2**, so a reviewer
 cannot tell what is current. Five concrete symptoms:
@@ -31,7 +31,7 @@ cannot tell what is current. Five concrete symptoms:
 
 | Layer | Current (v2 — keep) | Legacy (v1 — remove) |
 |---|---|---|
-| Pipeline | `30–35` (stages 0–4), `40–48`, `sensitivity_{aggregation,comorbidity,polychoric}` | `00_run_all`, `01`–`13`, `15`–`22`, `sensitivity_masked_fa{,_mechanism}` |
+| Pipeline | `01–06` (stages 0–4), `07–15`, `sensitivity_{aggregation,comorbidity,polychoric}` | `00_run_all`, `01`–`13`, `15`–`22`, `sensitivity_masked_fa{,_mechanism}` |
 | Utilities | `qa_harmonization`, `verify`, `audit`, `figures_manuscript`, `build_manuscript`, `build_dr_neuropsych_mapping`* | `build_notebook`, `qa_missingness` |
 | `src/trans_diag` | `axes`→`axes`, `skip_logic`, `masked_fa`, `domains`, `variable/rules/loader/filters/schema_gen/adapter`, `engine/*` | `axes.py` (v1 K=6), `outcomes.py` |
 | Outputs | `results/hfa/*` | top-level `results/*` (v1) |
@@ -58,9 +58,10 @@ other v2 scripts; `outcomes.py`/`axes.py` are imported only by the legacy script
 - ✅ **P0.4** Reconciled headline numbers against `results/hfa/` and propagated to the docs + golden
   test: **194** items, **94** constructs, **81** Stage-3 inputs, **ECV 0.34**, **56** eig>1, canonical
   r **0.99/0.90/0.79**; dictionary **199 usable** (READY+PARTIAL) of **223** entries.
-  **Flagged for the scientist (not doc bugs):** (a) the manuscript says "220-variable dictionary" —
-  it counts curated entries minus identifiers, a *different denominator* than the 199 usable; reconcile
-  the wording in the paper. (b) **RESOLVED:** `40_phase5`'s arm-B "75" was a stale hardcoded label —
+  Both earlier flags now **RESOLVED:** (a) the manuscript's stale "220-variable dictionary" / "196/196
+  loaded" → reconciled to **199 usable variables** / "all 199 load and pass" (abstract, §2.2, Fig 1),
+  consistent with every doc; the `.docx` was rebuilt and re-verified. (b) `07_phase5_stratify`'s arm-B
+  "75" was a stale hardcoded label —
   the actual set is the same coverage≥0.30 filter (**81**, confirmed by Study-D3's `n_constructs: 81`);
   the label is now computed dynamically and the docs all say 81.
 
@@ -100,12 +101,15 @@ other v2 scripts; `outcomes.py`/`axes.py` are imported only by the legacy script
   **golden tests pass against the renamed local artifacts** (read-paths) with zero `_v2` artifact
   strings left in scripts (write-paths). (The `axes_v2 → axes` module rename was already done in P0.2.)
 - ✅ **P3.2** Added `scripts/00_run_all.py` (v2): QA → Stages 0–4 → stratify → inventory → Studies A–D
-  → sensitivity → figures, in `PIPELINE.md` order (dependency-checked: 41 before 45–48; 32 before 44;
-  44 before 48). Golden-test + README/CLAUDE regeneration hints repointed to it. *(Structure verified —
+  → sensitivity → figures, in `PIPELINE.md` order (dependency-checked: 08 before 12–15; 03 before 11;
+  11 before 15). Golden-test + README/CLAUDE regeneration hints repointed to it. *(Structure verified —
   compiles, ruff-clean, all 20 steps exist; a full run needs the confidential CSVs.)*
-- ⬜ **P3.3 — optional, not requested.** The `_v2` drop (P3.1) is done; I kept the `30–48` numbering
-  (it encodes the stage 0–4 / study A–D grouping). A further renumber to a gap-free `01..` sequence
-  would move the importlib filename strings again for marginal gain — left as optional polish.
+- ✅ **P3.3 — done.** Renumbered `30–48 → 01–15` (contiguous, execution-ordered): stages `01–06`,
+  stratify `07`, inventory `08`, Studies A–D `09–15`. The named bookends (`qa_harmonization`,
+  `sensitivity_*`, `figures_manuscript`, `build_manuscript`) and standalone utilities (`verify`,
+  `audit`, `build_dr_neuropsych_mapping`) keep descriptive names. Updated all importlib loads, the
+  `00_run_all` step list, and every doc/test reference. Verified: compiles, importlib targets resolve,
+  ruff clean, pytest green, the `.docx` still builds.
 - ✅ **P3.4** Fixed the actively-misleading refs (`__init__.py` "imports", `schema_gen.py` +
   `feature_schema.py` external-module/config pointers, `enrichment.py` dead-doc link) and **deleted the
   dead `load_feature_schema` YAML loader** (never called; it carried the `config/face_stratification/`

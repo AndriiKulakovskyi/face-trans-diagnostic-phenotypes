@@ -1,6 +1,6 @@
 """Study C (v2) — longitudinal coherence of the 4 axes (V0 defines, V1/V2 validate).
 
-Two tests, reusing the EXACT validated Stage-0/2/3 logic (imported from scripts 30/32, no
+Two tests, reusing the EXACT validated Stage-0/2/3 logic (imported from scripts 01/03, no
 duplication) to recompute construct scores at each visit:
   1. MEASUREMENT INVARIANCE — re-derive K=4 independently at V1 and V2; Tucker congruence vs V0.
      Pass (>=0.85): the same axis structure exists at follow-up.
@@ -47,8 +47,8 @@ def _load(stem):  # import a digit-prefixed pipeline script as a module (no main
     return mod
 
 
-S30 = _load("30_hfa_stage0_itemset.py")
-S32 = _load("32_hfa_stage2.py")
+S30 = _load("01_hfa_stage0_itemset.py")
+S32 = _load("03_hfa_stage2.py")
 BIO_IDX = {it: (d, s) for d, mem in S32.BIO.items() for it, s in mem}
 COG_IDX = {it: (d, s) for d, mem in S32.COG.items() for it, s in mem}
 

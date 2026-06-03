@@ -158,7 +158,7 @@ back to weighted-item or revised flat domains.
 
 - New module `src/trans_diag/hierarchical_fa.py` extending `masked_fa.py` (target rotation,
   Schmid–Leiman, ECV/ωH, second-order extraction).
-- New scripts `scripts/30–34_*` (one per stage) + `scripts/sensitivity_aggregation.py` (promotes the
+- New scripts `scripts/01–05_*` (one per stage) + `scripts/sensitivity_aggregation.py` (promotes the
   rationale analyses).
 - `domains.build_domain_scores` retained for comparison/sensitivity, not deleted.
 - `axes.py` re-derived (current names are stale v1).

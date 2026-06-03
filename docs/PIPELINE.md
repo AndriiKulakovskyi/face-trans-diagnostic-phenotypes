@@ -63,13 +63,13 @@ flowchart TB
 |---|---|---:|---:|---|
 | Raw cohort CSVs | — | 9,013 (V0) | per-cohort columns | confidential, read-only |
 | Harmonized (long) | `loader` | 9,013 × visits | ~195 vars | `readiness ∈ {READY, PARTIAL}` (199 usable) |
-| V0 item matrix | `30` | 9,013 | **194 items** | drop ids / age·sex (resid.) / confounds / branching-suicide |
-| Stage 1 EFA | `31` | 9,013 | **42 factors** | Horn parallel analysis |
-| Stage 2 constructs | `32`, `sens_comorbidity` | 9,013 | **94 constructs** | masked 1-factor, `min_pair = 100` |
-| Stage 3 input (Φ₁) | `33` | 9,013 | **81 constructs** | coverage ≥ 0.30, standardized |
-| Stage 3 axes | `33`, `34` | 9,013 | **4 axes (+ general)** | `K` by split-half Tucker ≥ 0.85 |
-| Stratification | `40` | 9,013 | 6 axes / 81 constructs | HDBSCAN, silhouette-vs-null |
-| Validation D | `45`–`48` | ≤ 3,378 / 1,766 intervals | axes vs DSM | GroupKFold by patient |
+| V0 item matrix | `01` | 9,013 | **194 items** | drop ids / age·sex (resid.) / confounds / branching-suicide |
+| Stage 1 EFA | `02` | 9,013 | **42 factors** | Horn parallel analysis |
+| Stage 2 constructs | `03`, `sens_comorbidity` | 9,013 | **94 constructs** | masked 1-factor, `min_pair = 100` |
+| Stage 3 input (Φ₁) | `04` | 9,013 | **81 constructs** | coverage ≥ 0.30, standardized |
+| Stage 3 axes | `04`, `05` | 9,013 | **4 axes (+ general)** | `K` by split-half Tucker ≥ 0.85 |
+| Stratification | `07` | 9,013 | 6 axes / 81 constructs | HDBSCAN, silhouette-vs-null |
+| Validation D | `12`–`15` | ≤ 3,378 / 1,766 intervals | axes vs DSM | GroupKFold by patient |
 
 ---
 
@@ -183,15 +183,15 @@ flowchart TB
     classDef model fill:#E3EDF6,stroke:#33414b,color:#111
     classDef out   fill:#F3ECEA,stroke:#B5562B,color:#111
 
-    S0["Stage 0 · item set — script 30<br/>194 V0 items (incl. 34 recovered labs/vitals)<br/>masked R: κ≈1.3e9 · scree 12.6, 10.1, 6.9 · 56 eig>1"]:::model
+    S0["Stage 0 · item set — script 01<br/>194 V0 items (incl. 34 recovered labs/vitals)<br/>masked R: κ≈1.3e9 · scree 12.6, 10.1, 6.9 · 56 eig>1"]:::model
     S0 -->|"masked item correlation"| S1
-    S1["Stage 1 · exploratory EFA — script 31<br/>Horn parallel analysis → 42 nameable first-order factors<br/>leave-BP-out congruence 0.91 (not BP-driven)"]:::model
+    S1["Stage 1 · exploratory EFA — script 02<br/>Horn parallel analysis → 42 nameable first-order factors<br/>leave-BP-out congruence 0.91 (not BP-driven)"]:::model
     S1 -->|"data-revised construct map"| S2
-    S2["Stage 2 · first-order constructs — script 32 (+ comorbidity decomp.)<br/>88 within-construct masked 1-factor posteriors → Φ₁<br/>VAF₁: adiposity 0.93 · cholesterol 0.90 · processing-speed 0.87"]:::model
+    S2["Stage 2 · first-order constructs — script 03 (+ comorbidity decomp.)<br/>88 within-construct masked 1-factor posteriors → Φ₁<br/>VAF₁: adiposity 0.93 · cholesterol 0.90 · processing-speed 0.87"]:::model
     S2 -->|"81 constructs (coverage≥30%)<br/>Φ₁ PSD (0% neg-eigen)"| S3
-    S3["Stage 3 · second-order — scripts 33, 34<br/>PAF + promax → Λ₂, Φ₂ · Schmid–Leiman ECV · split-half Tucker K"]:::model
+    S3["Stage 3 · second-order — scripts 04, 05<br/>PAF + promax → Λ₂, Φ₂ · Schmid–Leiman ECV · split-half Tucker K"]:::model
     S3 -->|"K = 4 · ECV = 0.34 · mean|Φ₂| = 0.17"| S4
-    S4["Stage 4 · validation — script 35<br/>confound η²<0.25 · leave-cohort-out ≥0.84 · granularity CCA 0.99/0.90/0.79"]:::model
+    S4["Stage 4 · validation — script 06<br/>confound η²<0.25 · leave-cohort-out ≥0.84 · granularity CCA 0.99/0.90/0.79"]:::model
     S4 --> AX["RESULT · 4 trans-diagnostic axes<br/>1 internalizing · 2 cognition · 3 illness-course · 4 cardiometabolic<br/>+ 2 ORTHOGONAL standalones: mania, suicidality (abs r ≤ 0.09)"]:::out
 ```
 
@@ -217,7 +217,7 @@ flowchart LR
     SP["repeated patient split-half<br/>(cohort-stratified, 15×)"]:::model
     SP --> LL["re-extract varimax loadings per half<br/>Hungarian-match factors"]:::model
     LL --> TC["Tucker congruence φ(a,b) = aᵀb / √(aᵀa·bᵀb)<br/>record minimum over matched factors"]:::model
-    TC --> KK{"first-collapse − 1<br/>+ per-factor refinement (script 34)"}:::model
+    TC --> KK{"first-collapse − 1<br/>+ per-factor refinement (script 05)"}:::model
     KK -->|"≥0.97 ×4"| K4["K = 4 primary<br/>(K=6 sensitivity)"]:::model
     KK -.->|"Heywood at K≥7 → rejected"| K4
 ```
@@ -238,7 +238,7 @@ flowchart TB
         DA["4 reproducible axes · weakly correlated (mean abs Φ₂ = 0.17)<br/>NO general p-factor (ECV 0.34)"]:::arm
     end
 
-    subgraph STR["⑤b Stratification arm — script 40"]
+    subgraph STR["⑤b Stratification arm — script 07"]
         direction TB
         SA["masked similarity kernels<br/>cosine / Gower (observed-shared only)"]:::arm
         SA --> SE["multipartite spectral embedding"]:::arm
@@ -271,10 +271,10 @@ flowchart TB
     AX --> C
     AX --> D
 
-    A["A · cohort confound — script 42<br/>residualize each construct on cohort → re-derive<br/>congruence ≥0.96 · within-BP ≥0.95<br/>caveat: internalizing is BP+DR-anchored (SZ proxy)"]:::val
-    B["B · orthogonality + p-factor (HEADLINE) — script 43<br/>between-block mean abs r: symptom↔biology 0.03<br/>first-factor share 0.33→0.27→0.15→0.09 as biology/cognition admitted"]:::val
-    C["C · longitudinal coherence — script 44<br/>invariance V2: internalizing 0.98 · cardiometab 0.97<br/>test-retest: cardiometab 0.66 (trait) · course 0.16 (fixed-historical)"]:::val
-    D["D · predictive validity vs DSM — scripts 45–48<br/>GAF ΔR² +0.046 · FAST +0.036 (CI excl. 0)<br/>relapse de-confounded +0.036 · early-course AUC ≈ 0.70"]:::val
+    A["A · cohort confound — script 09<br/>residualize each construct on cohort → re-derive<br/>congruence ≥0.96 · within-BP ≥0.95<br/>caveat: internalizing is BP+DR-anchored (SZ proxy)"]:::val
+    B["B · orthogonality + p-factor (HEADLINE) — script 10<br/>between-block mean abs r: symptom↔biology 0.03<br/>first-factor share 0.33→0.27→0.15→0.09 as biology/cognition admitted"]:::val
+    C["C · longitudinal coherence — script 11<br/>invariance V2: internalizing 0.98 · cardiometab 0.97<br/>test-retest: cardiometab 0.66 (trait) · course 0.16 (fixed-historical)"]:::val
+    D["D · predictive validity vs DSM — scripts 12–48<br/>GAF ΔR² +0.046 · FAST +0.036 (CI excl. 0)<br/>relapse de-confounded +0.036 · early-course AUC ≈ 0.70"]:::val
 
     A --> VV["OVERALL · rigorous + partially useful, not transformative.<br/>Solid (4 axes, no p-factor, no subtypes); novel (B: symptoms⊥biology);<br/>honest limits (measurement design); modest prognosis over DSM."]:::out
     B --> VV
@@ -308,18 +308,18 @@ flowchart LR
 
 | Step | Script | Writes (`results/hfa/`) |
 |---|---|---|
-| Stage 0 item set | `30_hfa_stage0_itemset.py` | `stage0_diagnostics.json`, `stage0_items.csv`, `stage0_corr_resid.npz` |
-| Stage 1 EFA | `31_hfa_stage1_efa.py` | `stage1_loadings.csv`, `stage1_construct_purity.csv` |
-| Stage 2 constructs | `32_hfa_stage2.py` (+ `sensitivity_comorbidity.py`) | `stage2_scores.pkl`, `stage2_phi1.csv`, `stage2_construct_fit.csv` |
-| Stage 3 second-order | `33_hfa_stage3.py` | `stage3_loadings.csv`, `stage3_phi2.csv`, `stage3_scores.pkl` |
-| K-selection | `34_hfa_kselect.py` | (console: per-factor congruence) |
-| Stage 4 validation | `35_hfa_stage4.py` | (console: confound / LCO / CCA) |
-| Stratification | `40_phase5_stratify.py` | `phase5_structure.json` |
-| Study A | `42_cohort_confound.py` | `studyA_cohort_confound.json` |
-| Study B | `43_orthogonality_pfactor.py` | `studyB_orthogonality.json` |
-| Study C | `44_longitudinal_coherence.py` | `studyC_longitudinal.json` |
-| Study D (predictive) | `45_predictive_validity.py` | `studyD_predictive.json` |
-| Study D (survival) | `46_predictive_survival.py` | `studyD2_survival.json` |
+| Stage 0 item set | `01_hfa_stage0_itemset.py` | `stage0_diagnostics.json`, `stage0_items.csv`, `stage0_corr_resid.npz` |
+| Stage 1 EFA | `02_hfa_stage1_efa.py` | `stage1_loadings.csv`, `stage1_construct_purity.csv` |
+| Stage 2 constructs | `03_hfa_stage2.py` (+ `sensitivity_comorbidity.py`) | `stage2_scores.pkl`, `stage2_phi1.csv`, `stage2_construct_fit.csv` |
+| Stage 3 second-order | `04_hfa_stage3.py` | `stage3_loadings.csv`, `stage3_phi2.csv`, `stage3_scores.pkl` |
+| K-selection | `05_hfa_kselect.py` | (console: per-factor congruence) |
+| Stage 4 validation | `06_hfa_stage4.py` | (console: confound / LCO / CCA) |
+| Stratification | `07_phase5_stratify.py` | `phase5_structure.json` |
+| Study A | `09_cohort_confound.py` | `studyA_cohort_confound.json` |
+| Study B | `10_orthogonality_pfactor.py` | `studyB_orthogonality.json` |
+| Study C | `11_longitudinal_coherence.py` | `studyC_longitudinal.json` |
+| Study D (predictive) | `12_predictive_validity.py` | `studyD_predictive.json` |
+| Study D (survival) | `13_predictive_survival.py` | `studyD2_survival.json` |
 | Study D (relapse >0.7) | `47_…richbaseline`, `48_…trajectory` | `studyD3_richbaseline.json`, `studyD4_trajectory.json` |
 | Sensitivity | `sensitivity_aggregation.py`, `…_polychoric.py` | (console / reports) |
 
@@ -332,9 +332,9 @@ flowchart LR
 | clip | ±5 | robust-$z$ clip (then ÷5 → [−1,1]) | `domains.py` |
 | coverage floor | 0.30 | min construct coverage to enter Stage 3 | `33_…` |
 | `K_floor` | 0.85 | split-half Tucker congruence threshold | `33_…` |
-| **K** | **4** | number of second-order trans-diagnostic axes | `33`, `34` |
-| **ECV** | **0.34** | general-factor common variance (< 0.5 ⇒ no p-factor) | `33` |
-| confound flag | 0.25 | axis flagged if any $\eta^2/R^2$ exceeds it | `35` |
+| **K** | **4** | number of second-order trans-diagnostic axes | `04`, `05` |
+| **ECV** | **0.34** | general-factor common variance (< 0.5 ⇒ no p-factor) | `04` |
+| confound flag | 0.25 | axis flagged if any $\eta^2/R^2$ exceeds it | `06` |
 
 ---
 

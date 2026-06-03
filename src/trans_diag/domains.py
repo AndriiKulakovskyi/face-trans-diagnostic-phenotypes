@@ -92,7 +92,7 @@ BIOLOGY_COMPOSITES: dict[str, list[tuple[str, int]]] = {
 # skipped (masked), so 2-cohort constructs (e.g. verbal_memory = CVLT, BP/SZ only — DR has no CVLT)
 # yield NaN for the absent cohort and the masked FA handles it. Unlike v1, processing speed and
 # executive are INCLUDED as candidates; the v2 dimensional model re-derives structure from zero and
-# the confound battery (Stage 4, `35_hfa_stage4`) re-tests each axis; no v1 cognition result is assumed.
+# the confound battery (Stage 4, `06_hfa_stage4`) re-tests each axis; no v1 cognition result is assumed.
 #
 # 2026-06-03 (dictionary review): added verbal_memory (CVLT total/short/long-delay recall, BP/SZ)
 # and verbal_fluency (phonemic + semantic, 3-cohort) — the battery previously had no verbal episodic

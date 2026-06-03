@@ -97,7 +97,7 @@ def main() -> None:
     cov = ds.X[["age", "sex"]].copy(); cov.index = [f"{c.upper()}::{p}" for c, p in cov.index]
 
     # outcomes: relapse-by-V2 (recompute, reproducible) + V0/V2 GAF & FAST
-    relapse = _load("41_v1v4_inventory.py").derive_relapse(df)
+    relapse = _load("08_v1v4_inventory.py").derive_relapse(df)
     def visit_wide(col):
         w = df[df.visit.isin(["V0", "V2"])].drop_duplicates(["patient_uid", "visit"]) \
             .pivot_table(index="patient_uid", columns="visit", values=col, aggfunc="first")

@@ -51,19 +51,19 @@ model in HYBRID mode** (clinical anchors, data-revised), keeping masked / no-imp
 + evidence: [AGGREGATION_RATIONALE.md](AGGREGATION_RATIONALE.md); plan: [HIERARCHICAL_FA_PLAN.md](planning/HIERARCHICAL_FA_PLAN.md).
 
 ## V2-7 · Hierarchical-FA Stages 0–2 — 2026-05-31
-- **Stage 0** (`scripts/30_hfa_stage0_itemset.py`) — froze a **188-item** set: added every valid
+- **Stage 0** (`scripts/01_hfa_stage0_itemset.py`) — froze a **188-item** set: added every valid
   measurement (the 34 composite-dropped labs/vitals + 16 previously-NOT-USABLE-but-valid rows incl.
   WAIS matrices/arith/symbols, MDQ, rare `*_mhoccur` flags); excluded identifiers, age/sex
   (residualized), confounds `hcg`/`clozapin`/**`oxcarbaz`** (caught in QA), the D8 branching
   suicide items (<6% obs, 0 complete cases), and by-construction-collinear `tmtba01`. Factorable
   (scree 12.6, 10.1, 6.9…); plain KMO undefined (near-singular cond 1.3e9 → use scree, shrunk-KMO 0.66).
-- **Stage 1** (`scripts/31_hfa_stage1_efa.py`) — masked Horn parallel analysis → **42 first-order
+- **Stage 1** (`scripts/02_hfa_stage1_efa.py`) — masked Horn parallel analysis → **42 first-order
   factors, highly nameable**, and they **independently confirm the An2 aggregation problems**:
   metabolic → adiposity / BP / lipids / cholesterol; CTQ **denial (ctq40/41) splits off** from trauma;
   C-SSRS → severity / intensity; ISF → ideation / attempts; dropped labs/vitals **recovered** as
   factors (autonomic-HR, red-cell, inflammation, vit-D). Substantive (top-12) factors reproduce
   **leave-BP-out (mean Tucker congruence 0.91)** → not BP-driven.
-- **Stage 2** (`scripts/32_hfa_stage2.py`) — hybrid first-order model: each construct = a
+- **Stage 2** (`scripts/03_hfa_stage2.py`) — hybrid first-order model: each construct = a
   **within-construct masked 1-factor posterior** (estimated weights, no item-count / total-subscore
   double-count, explicit signs). **84 constructs** (26 multi-item). *Wins:* metabolic split →
   adiposity VAF1 **0.93** / cholesterol 0.90 / BP 0.72 / lipids 0.72 (vs collapsed **0.40**); CTQ
@@ -89,7 +89,7 @@ The pooled 24-flag `medical_comorbidity` construct was VAF1 0.38 (not one dimens
 - **(3) validation:** `cardiac_history` VAF1 **0.50** (stable BP/SZ/DR; bootstrap CI tight);
   `atopic_inflammatory` **0.26** (stable, weak). Splitting concentrates the signal (pooled bin
   VAF1 0.06 → cardiac 0.50).
-- **Encoded** (`scripts/32_hfa_stage2.py`): `cardiac_history` + `atopic_inflammatory` (flagged
+- **Encoded** (`scripts/03_hfa_stage2.py`): `cardiac_history` + `atopic_inflammatory` (flagged
   weak) + standalone {`migraine`, `head_trauma`, `peptic_ulcer`}; the **13 flags <2% dropped from
   the dimensional inputs, retained as Stage-4 validators** (`results/hfa/stage2_comorbidity_validators.csv`)
   — i.e. *does the recovered metabolic/inflammation axis predict real cardiovascular/autoimmune
@@ -97,7 +97,7 @@ The pooled 24-flag `medical_comorbidity` construct was VAF1 0.38 (not one dimens
   signal is genuinely thin; `atopic_inflammatory` is borderline. Model now has **88 constructs** (169/188 items).
 
 ## V2-9 · Stage 3 — second-order trans-diagnostic dimensions — 2026-05-31
-`scripts/33_hfa_stage3.py`: factor the construct correlation Φ₁ (75 constructs, coverage ≥30%,
+`scripts/04_hfa_stage3.py`: factor the construct correlation Φ₁ (75 constructs, coverage ≥30%,
 standardized; PSD with **0% neg-eigen mass** — the aggregation conditioning win vs item-level);
 oblique (promax); K by masked split-half Tucker congruence; general factor **tested** via
 Schmid–Leiman ECV.
@@ -118,7 +118,7 @@ Schmid–Leiman ECV.
 
 ## V2-10 · K-selection deep dive — 2026-05-31
 The Stage-3 "first-collapse-minus-1 on the MIN congruence" rule (→K=4) was too conservative (the min
-collapses if ONE factor is unstable). Per-factor congruence (`scripts/34_hfa_kselect.py`) resolves it:
+collapses if ONE factor is unstable). Per-factor congruence (`scripts/05_hfa_kselect.py`) resolves it:
 - #factors reproducing (congruence ≥0.85): K=4→4, K=5→4, K=6→**5**, K=7→6, K=8→8; **Heywood: 0
   through K=6, 1 at K=7**, 2 at K=9. The "K=5 collapse" was a rotation *swap* (cardiac vs trauma
   competing for the 5th slot), not absent structure.
@@ -133,7 +133,7 @@ collapses if ONE factor is unstable). Per-factor congruence (`scripts/34_hfa_kse
 - **Decision (user):** **K=4 primary (+ K=6 as sensitivity).** K≥7 rejected (Heywood).
 
 ## V2-11 · Stage 4 — validation (K=4 PASSES) — 2026-05-31
-`scripts/35_hfa_stage4.py`. The 4-dimension solution passes every check:
+`scripts/06_hfa_stage4.py`. The 4-dimension solution passes every check:
 - **Confound-clean:** no dim explained >0.25 by cohort / sex / age / site / missingness
   (internalizing cohort η²=0.09; cognition 0.16 with educ 0.16 = a real correlate, not a confound;
   course & cardiometab ~0.01).
@@ -172,7 +172,7 @@ collapses if ONE factor is unstable). Per-factor congruence (`scripts/34_hfa_kse
   Not dropped, not forced. (Scientific note: mania's independence from internalizing is itself a finding.)
 
 ## V2-13 · Phase 5 — stratification: DIMENSIONAL (continuum), not discrete — 2026-05-31
-`scripts/40_phase5_stratify.py`. Structure-test battery (eigengap, gap-vs-Gaussian-null, HDBSCAN,
+`scripts/07_phase5_stratify.py`. Structure-test battery (eigengap, gap-vs-Gaussian-null, HDBSCAN,
 Sarle bimodality, DSM-anchor, bootstrap stability) on **A = 6 axes** (4 dims + mania + suicidal_ideation)
 primary and **B = 75 construct scores** via the masked engine embedding (sensitivity).
 - **A: DIMENSIONAL / continuum.** HDBSCAN **0 dense clusters (100% noise)**; real−null silhouette gap
@@ -187,7 +187,7 @@ primary and **B = 75 construct scores** via the masked engine embedding (sensiti
   themselves. (No p-factor [dimensional arm] + no discrete clusters [this] = a clean dimensional account.)
 
 ## V2-14 · Validation Study A — cohort confound: axes are NOT a cohort artifact — 2026-05-31
-`scripts/42_cohort_confound.py`. Attack: 3 cohorts = 3 DSM diagnoses → the axes might encode
+`scripts/09_cohort_confound.py`. Attack: 3 cohorts = 3 DSM diagnoses → the axes might encode
 between-cohort/batch differences. Two defenses (Tucker congruence vs the pooled K=4):
 - **Decisive — cohort-residualized:** center each construct within cohort (remove between-cohort
   means), re-derive → **all 4 axes ≥0.96**. The structure is within-cohort covariance, not between-
@@ -222,7 +222,7 @@ verified PARTIAL with `SZ_col=None`):
 Validation plan: [VALIDATION_PLAN_v2.md](planning/VALIDATION_PLAN_v2.md).
 
 ## V2-15 · Study B — symptom⊥biology + the p-factor is a symptom-only artifact (THE headline) — 2026-05-31
-`scripts/43_orthogonality_pfactor.py`. Computed **within BP+DR** (clean — mood+biology both
+`scripts/10_orthogonality_pfactor.py`. Computed **within BP+DR** (clean — mood+biology both
 measured, per Study A; pooled near-identical).
 - **Orthogonality:** mean |construct r| **within** symptom 0.24 / cognition 0.42 / biology 0.08
   (heterogeneous panels); **between symptom↔biology 0.03, symptom↔cognition 0.07, biology↔cognition
@@ -238,7 +238,7 @@ measured, per Study A; pooled near-identical).
   integrated model is genuinely multidimensional with no dominant general factor."* Robust BP+DR↔pooled.
 
 ## V2-16 · Study C — longitudinal coherence (V0→V1→V2) — 2026-05-31
-`scripts/44_longitudinal_coherence.py` (reuses Stage 0/2/3 logic via importlib — V0 reproduces the
+`scripts/11_longitudinal_coherence.py` (reuses Stage 0/2/3 logic via importlib — V0 reproduces the
 committed Stage-2 scores, |r|=1.00).
 - **Structural invariance** (re-derive K=4 per visit; Tucker congruence vs V0): internalizing
   **0.99/0.98**, cardiometabolic **0.98/0.97** (strong); cognition 0.00@V1 / **0.87@V2** (battery is
@@ -262,7 +262,7 @@ committed Stage-2 scores, |r|=1.00).
   cognitive**, while symptom structure is more cohort-/state-specific.
 
 ## V2-17 · Study D — predictive validity vs DSM (the make-or-break): MODEST, functioning-specific — 2026-05-31
-`scripts/45_predictive_validity.py`. Out-of-sample cohort-stratified 5-fold CV; M0 = age+sex+V0
+`scripts/12_predictive_validity.py`. Out-of-sample cohort-stratified 5-fold CV; M0 = age+sex+V0
 baseline-of-outcome, M1 = +DSM (`dsm_diagnosis`), M2 = +axes, M3 = +both, M2x = cross-domain axes
 (drop internalizing = the non-circular test). **Attrition check passed**: V0 axes → has-V2-followup
 AUC 0.531 (near-chance) → completer sample not biased on the axes.
@@ -281,7 +281,7 @@ AUC 0.531 (near-chance) → completer sample not biased on the axes.
   clinical gain over DSM is small — report honestly, do not oversell.
 
 ## V2-18 · Study D refined — relapse done right (remission-based + discrete-time survival) — 2026-05-31
-`scripts/46_predictive_survival.py`. Fixed the regression-to-mean confound in the original
+`scripts/13_predictive_survival.py`. Fixed the regression-to-mean confound in the original
 change-based relapse: at-risk = **V0-remitted** (CGI-S 1–3), relapse = deterioration to **CGI-S ≥4**;
 **discrete-time hazard** over person-intervals (attrition handled via censoring); **GroupKFold by
 patient** (no leakage); bootstrap CIs by patient; DSM = `dsm_diagnosis` one-hot; **two methods**
@@ -302,11 +302,11 @@ patient** (no leakage); bootstrap CIs by patient; DSM = `dsm_diagnosis` one-hot;
 ## V2-19 · Relapse prediction — can we reach AUC > 0.7? (yes, legitimately, via early-course) — 2026-05-31
 Two leakage-safe attempts (OOF AUC, StratifiedGroup/StratifiedKFold, bootstrap by patient, fair DSM,
 logistic + HistGradientBoosting):
-- **#1 richer baseline** (`scripts/47_relapse_richbaseline.py`): full **75 construct scores** vs the
+- **#1 richer baseline** (`scripts/14_relapse_richbaseline.py`): full **75 construct scores** vs the
   6 axes on the remission-based person-intervals → best AUC **0.636** (gboost rich) / 0.631 (logistic
   axes); Δ(rich vs axes) +0.027 [−0.002,+0.057] **ns**. → the 6-axis compression cost ~nothing;
   **baseline-only relapse tops out ~0.64 — cannot reach 0.7 with more baseline features.**
-- **#2 early-course prognosis** (`scripts/48_relapse_trajectory.py`): predict **V1→V2** relapse
+- **#2 early-course prognosis** (`scripts/15_relapse_trajectory.py`): predict **V1→V2** relapse
   (remitted-at-V1, CGI_V1 controlled) from **V0+V1** (early trajectory: ΔCGI, V1 axes, V1−V0 Δaxes).
   n=989 (BP-heavy), 22% relapse. **AUC ≈ 0.70** (gboost 0.696 full-sample; logistic 0.702 complete-case)
   — reaches the target. Beats **DSM +0.05 [+0.01,+0.10]** and baseline severity +0.08 (both sig). The
@@ -345,7 +345,7 @@ The v2 dimensional model is **rigorous and partially useful, not transformative*
   loadings, no-p-factor ECV 0.36, dimensional-not-categorical, the symptom⊥biology headline, Studies
   A/C/D). `tests/test_axes.py` rewritten to guard `axes` (4 axes + 2 orthogonal). `verify.py` PARTIAL
   threshold 100→75 (v2 adds 86). **`pytest` green: 91 passed; `verify.py` green.** (Golden tests skip on
-  a clean clone — `results/hfa/` is gitignored; regenerate via scripts 30–48.)
+  a clean clone — `results/hfa/` is gitignored; regenerate via scripts 01–48.)
 - **PHASE 6 COMPLETE — the v2 study is fully delivered** (analysis · validation · manuscript · figures · tests).
 
 ## V2-21 · Dictionary review — CVLT / fluency / anhedonia + suicide skip-logic — 2026-06-03

@@ -198,7 +198,7 @@ factor** + one **specific construct factor**. This **relaxes all four flat-mean 
 (metabolic's 3 axes become 3 specifics, not 1 mean — **nothing dropped, just organized**);
 (3) misfitting items (CTQ denial) get ~0 loading; (4) sign comes from the data.
 
-**Nameable at both levels:** general = *p-factor / overall severity* (cross-check vs Study B / `43_orthogonality_pfactor`);
+**Nameable at both levels:** general = *p-factor / overall severity* (cross-check vs Study B / `10_orthogonality_pfactor`);
 specifics = named construct dimensions (depression-, mania-, metabolic-, cognition-, suicidality-,
 trauma-specific…), orthogonal to the general factor.
 
