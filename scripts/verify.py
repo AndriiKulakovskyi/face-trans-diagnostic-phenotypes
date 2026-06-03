@@ -133,7 +133,8 @@ def run_test_3_partial_long() -> pd.DataFrame:
     partial_cols = set(df.columns)
     grew_by = len(partial_cols - ready_cols)
     print(f"  feature columns grew by {grew_by} when adding PARTIAL")
-    check("PARTIAL adds at least 100 new feature columns", grew_by >= 100,
+    # v2 dictionary (214 usable vars): PARTIAL adds 86 new feature columns (v1 was ~200 of 361).
+    check("PARTIAL adds at least 75 new feature columns", grew_by >= 75,
           f"grew_by={grew_by}")
     return df
 

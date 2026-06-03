@@ -52,8 +52,10 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 from trans_diag import (  # noqa: E402
     COGNITIVE_COMPOSITES,
     DOMAIN_SECTIONS,
+    SUICIDE_SKIP_RULES,
     build_domain_scores,
     build_unified_dataframe,
+    decode_skip_logic,
     load_variables,
     normalize_for_embedding,
     to_harmonized_dataset,
@@ -544,10 +546,81 @@ def v0_missingness(df: pd.DataFrame, variables: list) -> dict:
     return out
 
 
+def compute_skip_logic_report(df: pd.DataFrame) -> dict | None:
+    """Coverage recovered by skip-logic decoding (gate=No -> structural 0), by cohort.
+
+    Compares per-dependent V0 coverage before vs after
+    :func:`trans_diag.skip_logic.decode_skip_logic`, plus the total cells filled.
+    Returns ``None`` when none of the gated columns are present.
+    """
+    v0 = df[df["visit"] == "V0"] if "visit" in df.columns else df
+    cols = sorted({c for r in SUICIDE_SKIP_RULES for c in (r.gate, *r.dependents)
+                   if c in v0.columns})
+    deps = [d for r in SUICIDE_SKIP_RULES for d in r.dependents if d in v0.columns]
+    if not cols or not deps:
+        return None
+    coh = v0["cohort"].to_numpy()
+    before = pd.DataFrame({c: pd.to_numeric(v0[c], errors="coerce") for c in cols})
+    after, _ = decode_skip_logic(before.copy())
+    rows, seen = [], set()
+    for d in deps:
+        if d in seen:
+            continue
+        seen.add(d)
+        rec = {"dependent": d,
+               "filled": int((after[d].notna() & before[d].isna()).sum())}
+        for ch in COHORTS:
+            m = coh == ch
+            rec[ch] = (
+                (before[d][m].notna().mean() * 100) if m.any() else float("nan"),
+                (after[d][m].notna().mean() * 100) if m.any() else float("nan"),
+            )
+        rows.append(rec)
+    return {"rows": rows,
+            "rules": [(r.gate, ", ".join(r.dependents), r.rationale)
+                      for r in SUICIDE_SKIP_RULES]}
+
+
+def render_skip_logic(rep: dict | None) -> str:
+    """Part-1 panel: coverage recovered by skip-logic decoding."""
+    if not rep or not rep["rows"]:
+        return ""
+    o = ["<div class='summary' id='skiplogic'>",
+         "<b>Skip-logic decoding (gate = No &rarr; structural 0)</b>",
+         "<div class='muted' style='margin-top:6px;line-height:1.6;max-width:900px'>",
+         "Conditional suicide-module items (ISF) are only asked when a gate is Yes; a No leaves them "
+         "blank &mdash; a <b>structural zero</b>, not missing data (e.g. ISF05 “never attempted” "
+         "&rArr; 0 attempts). We fill 0 <b>only</b> where the gate is explicitly No and the cell is "
+         "blank &mdash; never overwriting an existing value, never where the gate is unknown. This is "
+         "<b>not imputation</b> (see <code>skip_logic.py</code>). V0 coverage before &rarr; after, by cohort:",
+         "</div>"]
+    o.append("<table style='border-collapse:collapse;margin-top:10px;font-size:13px'>")
+    o.append("<tr><th style='text-align:left;padding:4px 16px 4px 0'>item</th>"
+             "<th style='padding:4px 16px'>BP</th><th style='padding:4px 16px'>SZ</th>"
+             "<th style='padding:4px 16px'>DR</th>"
+             "<th style='padding:4px 0'>cells filled</th></tr>")
+
+    def cell(t: tuple[float, float]) -> str:
+        b, a = t
+        if b != b:  # NaN
+            return "<td class='muted' style='padding:4px 16px'>&mdash;</td>"
+        col = "#1a7f37" if (a - b) > 1 else "#57606a"
+        return (f"<td style='padding:4px 16px'><span class='muted'>{b:.0f}%</span> &rarr; "
+                f"<b style='color:{col}'>{a:.0f}%</b></td>")
+
+    for r in rep["rows"]:
+        o.append(f"<tr><td style='padding:4px 16px 4px 0'><code>{html.escape(r['dependent'])}</code></td>"
+                 f"{cell(r['BP'])}{cell(r['SZ'])}{cell(r['DR'])}"
+                 f"<td style='padding:4px 0'><b>{r['filled']:,}</b></td></tr>")
+    o.append("</table></div>")
+    return "".join(o)
+
+
 def build_html(records: list[dict], df: pd.DataFrame, vars_by_name: dict,
                counts: dict, n_pass: int, n_fail: int,
                domain_records: list[dict] | None = None,
-               scaled: pd.DataFrame | None = None) -> str:
+               scaled: pd.DataFrame | None = None,
+               skip_report: dict | None = None) -> str:
     sections: dict[str, list] = {}
     for r in records:
         sections.setdefault(r["section"] or "—", []).append(r)
@@ -563,6 +636,9 @@ def build_html(records: list[dict], df: pd.DataFrame, vars_by_name: dict,
                "(ML-ready), same order. Part 3 — the aggregated domain scores that enter "
                "the factor analysis &amp; embedding.</div>")
     out.append("<nav class='toc'>")
+    if skip_report:
+        out.append("<a href='#skiplogic' style='background:#eef0ff;color:#3a3aa3'>"
+                   "&#9656; Skip-logic recovery</a>")
     for s in sections:
         out.append(f"<a href='#{slug(s)}'>{html.escape(s)} ({len(sections[s])})</a>")
     if scaled is not None:
@@ -605,6 +681,9 @@ def build_html(records: list[dict], df: pd.DataFrame, vars_by_name: dict,
         "dropped. Within-cohort missingness ignores structural cohort-absence (a 2-cohort variable "
         "isn't 'missing' where it was never collected).</div></div>"
         "</div></div>")
+
+    # Skip-logic decoding panel (structural-zero recovery for gated items).
+    out.append(render_skip_logic(skip_report))
 
     for sec, recs in sections.items():
         recs.sort(key=lambda r: r["name"])
@@ -711,9 +790,17 @@ def main() -> int:
     print(f"  scaled {scaled.shape[1]} variables; overall range "
           f"[{float(np.nanmin(scaled.to_numpy())):.2f}, {float(np.nanmax(scaled.to_numpy())):.2f}]")
 
+    print("Computing skip-logic recovery (gate=No -> structural 0) ...")
+    skip_report = compute_skip_logic_report(df)
+    if skip_report:
+        total_filled = sum(r["filled"] for r in skip_report["rows"])
+        print(f"  skip-logic would fill {total_filled:,} structural-zero cells "
+              f"across {len(skip_report['rows'])} ISF count items")
+
     print("Rendering HTML ...")
     html_str = build_html(records, df, vars_by_name, counts, n_pass, n_fail,
-                          domain_records=domain_records, scaled=scaled)
+                          domain_records=domain_records, scaled=scaled,
+                          skip_report=skip_report)
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     out_path = REPORTS_DIR / "qa_harmonization.html"
     out_path.write_text(html_str, encoding="utf-8")

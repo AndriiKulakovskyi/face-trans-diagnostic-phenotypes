@@ -267,6 +267,40 @@ def _qtc(series, cohort):
     return _ms_to_seconds(series, cohort)
 
 
+# ----- SUICIDE (count fields with inequality / ceiling tokens) ---------------
+# Count items such as ISF07 ("how many suicide attempts?") are occasionally
+# recorded as a ceiling category, e.g. '>10' (SZ), or with a decimal comma. Plain
+# pd.to_numeric drops those to NaN — losing real data in a field this preprocessing
+# step then tries to recover (see skip_logic.py). We strip a leading inequality
+# sign and normalise the decimal mark, so '>10' -> 10.0, '3,5' -> 3.5; genuine
+# non-numeric junk still becomes NaN. Sanity bounds are applied afterwards.
+
+def _count_with_inequalities(series: pd.Series, cohort: str) -> pd.Series:
+    def convert(x):
+        if x is None or x is pd.NA:
+            return np.nan
+        if isinstance(x, (int, float)):
+            return float(x)
+        s = str(x).strip().replace(",", ".").lstrip("><=≥≤ ").strip()
+        try:
+            return float(s)
+        except ValueError:
+            return np.nan
+    return series.map(convert).astype("float64")
+
+
+@register("isf07")
+def _isf07(series, cohort):
+    # "Combien de fois avez-vous tenté de vous suicider?" — count; '>10' in SZ.
+    return _count_with_inequalities(series, cohort)
+
+
+@register("isf09a")
+def _isf09a(series, cohort):
+    # "Nombre de tentatives de suicide graves" — count.
+    return _count_with_inequalities(series, cohort)
+
+
 # ----- BILAN BIOLOGIQUE (hematology: within-column unit mixing) --------------
 # MCHC and HCT mix scales within the same column (data-entry / lab-system unit).
 # MCHC: mostly g/dL (~30-37) but ~6 % BP / ~30 % DR recorded in g/L (~300-370 = x10)

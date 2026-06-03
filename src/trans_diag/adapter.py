@@ -30,6 +30,7 @@ import pandas as pd
 from .engine import HarmonizedDataset
 from .filters import IDENTIFIER_COLUMNS
 from .schema_gen import DEFAULT_SCHEMA_VERSION, build_feature_schema, feature_cohorts
+from .skip_logic import decode_skip_logic
 from .variable import Variable
 
 __all__ = [
@@ -235,6 +236,7 @@ def to_harmonized_dataset(
     sections: Iterable[str] | None = None,
     residualize_on: Iterable[str] | None = None,
     normalize: bool = False,
+    apply_skip_logic: bool = True,
     schema_version: str = DEFAULT_SCHEMA_VERSION,
 ) -> HarmonizedDataset:
     """Build a :class:`HarmonizedDataset` from our unified long-format frame.
@@ -274,6 +276,14 @@ def to_harmonized_dataset(
         scaling) so the cosine embedding isn't dominated by raw magnitude. Leave
         ``False`` to keep raw values (e.g. for rank-based enrichment, which is
         scale-invariant). Date-typed dictionary features are always dropped.
+    apply_skip_logic:
+        If ``True`` (default), decode instrument skip-logic on the raw numeric
+        matrix via :func:`~trans_diag.skip_logic.decode_skip_logic`: where a gate
+        item is explicitly "No" and a conditional item is missing, fill the
+        structural zero (e.g. ISF05="never attempted" ⇒ ISF07/08A/09A = 0). This
+        recovers count-feature coverage from ~25-38 % to ~72-92 % without any
+        imputation (only cells the instrument's own logic determines). Set
+        ``False`` to keep the raw structural blanks as NaN.
     schema_version:
         Version string stamped on the generated schema and embedding artifacts.
     """
@@ -344,6 +354,14 @@ def to_harmonized_dataset(
 
     full = pd.DataFrame(numeric)
     full.index = index
+
+    # Decode instrument skip-logic (gate=No -> structural 0) on the raw numeric
+    # matrix, BEFORE the section/covariate filter and any scaling, so the
+    # recovered zeros flow into both the direct feature matrix and the domain
+    # scores (build_domain_scores consumes this X). No imputation: only cells the
+    # instrument's own skip-logic determines are filled (see skip_logic.py).
+    if apply_skip_logic:
+        full, _ = decode_skip_logic(full)
 
     # Covariates for residualization come from the full numeric set (before the
     # section filter), so e.g. age/sex are available even if PATIENT is dropped.

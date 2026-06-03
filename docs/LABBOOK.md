@@ -332,6 +332,18 @@ The v2 dimensional model is **rigorous and partially useful, not transformative*
   trans-diagnostic dimensional account at least DSM-equivalent for prognosis, adding a small-to-modest
   incremental forecast of functioning and (de-confounded) relapse.
 
-## Next — Phase 6
-- **Manuscript** framed by the above (lead with B; honest D verdict). Figures (4 axes, orthogonality,
-  continuum, predictive deltas). Re-baseline golden tests + `verify.py` thresholds to v2.
+## V2-20 · Phase 6 — manuscript, figures, golden tests + verify.py — 2026-05-31
+- **Manuscript written** (leads with Study B; honest D verdict; measurement-design limits up front; full
+  math formalism + pipeline + derivations in Methods; 12-point reviewer-anticipation subsection).
+  Source `results/manuscript/manuscript.md` → `FACE_trans_diagnostic_v2.docx` via pandoc (editable OMML
+  equations; OOXML-validated) + companion `.pdf`. Plan: `docs/MANUSCRIPT_PLAN.md`.
+- **6 figures** (`scripts/figures_manuscript_v2.py` → `results/reports/figures/fig1-6.png`): pipeline ·
+  4 axes+Φ₂ · orthogonality heatmap + p-factor dissolution (headline) · continuum · predictive Δ + relapse
+  · longitudinal coherence. Reproducible build: `scripts/build_manuscript_v2.py`.
+- **Golden tests + verify.py re-baselined to v2.** `tests/test_golden_numbers.py` rewritten to pin the
+  manuscript's headline numbers to `results/hfa/` artifacts (cohorts/itemset, construct VAF1, 4-axis
+  loadings, no-p-factor ECV 0.36, dimensional-not-categorical, the symptom⊥biology headline, Studies
+  A/C/D). `tests/test_axes.py` rewritten to guard `axes_v2` (4 axes + 2 orthogonal). `verify.py` PARTIAL
+  threshold 100→75 (v2 adds 86). **`pytest` green: 91 passed; `verify.py` green.** (Golden tests skip on
+  a clean clone — `results/hfa/` is gitignored; regenerate via scripts 30–48_v2.)
+- **PHASE 6 COMPLETE — the v2 study is fully delivered** (analysis · validation · manuscript · figures · tests).

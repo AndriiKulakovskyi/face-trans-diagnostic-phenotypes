@@ -1,17 +1,23 @@
-"""Guards for the shared axis-name constant (trans_diag.axes).
+"""Guards for the v2 axis-name source of truth (``trans_diag.axes_v2``).
 
-These catch the class of drift bug that motivated the constant: a renamed/re-ordered axis
-(e.g. the 2026-05 cognition integration that re-locked the model at K=6 — folding in one
-verbal/working-memory cognitive axis, re-merging mania with externalizing, and dropping the
-separate work-disability axis) leaving stale copies, or the label dicts falling out of sync
-with the canonical name list.
+These catch axis-name/order drift: the v2 hierarchical model (scripts 30–35_v2, LABBOOK V2-9..V2-12)
+re-locked the structure at **K=4** — internalizing, cognition, illness_course, cardiometabolic — with
+mania & suicidality demoted to *orthogonal standalone* dimensions (|r| ≤ 0.09), NOT axes. ``axes_v2``
+is the canonical map written for the manuscript and downstream code; ``axes.py`` holds the superseded
+v1 6-axis solution (kept only for the legacy v1 scripts) and is intentionally not tested here.
 """
-from trans_diag import AXIS_INDEX_TO_NAME, AXIS_LABELS, AXIS_NAMES, AXIS_SHORT
+from trans_diag.axes_v2 import (
+    AXIS_INDEX_TO_NAME,
+    AXIS_LABELS,
+    AXIS_NAMES,
+    AXIS_SHORT,
+    ORTHOGONAL_DIMENSIONS,
+)
 
 
-def test_six_unique_axes():
-    assert len(AXIS_NAMES) == 6
-    assert len(set(AXIS_NAMES)) == 6
+def test_four_unique_axes():
+    assert AXIS_NAMES == ["internalizing", "cognition", "illness_course", "cardiometabolic"]
+    assert len(set(AXIS_NAMES)) == 4
 
 
 def test_label_dicts_cover_exactly_the_axes():
@@ -19,17 +25,24 @@ def test_label_dicts_cover_exactly_the_axes():
     assert set(AXIS_LABELS) == set(AXIS_NAMES)
 
 
-def test_index_map_matches_ss_order():
-    # 07_dimensional_refine writes axis1..axis6 in SS order; the map must mirror AXIS_NAMES.
-    assert AXIS_INDEX_TO_NAME == {f"axis{i + 1}": n for i, n in enumerate(AXIS_NAMES)}
-    assert AXIS_INDEX_TO_NAME["axis5"] == "cognition_verbal"   # the integrated cognitive axis
-    assert AXIS_INDEX_TO_NAME["axis6"] == "metabolic"
+def test_index_map_matches_paf_order():
+    # stage 33_v2 writes dim1..dim4 in PAF / descending-eigenvalue order; the map must mirror AXIS_NAMES.
+    assert AXIS_INDEX_TO_NAME == {f"dim{i + 1}": n for i, n in enumerate(AXIS_NAMES)}
+    assert AXIS_INDEX_TO_NAME["dim1"] == "internalizing"
+    assert AXIS_INDEX_TO_NAME["dim4"] == "cardiometabolic"
 
 
-def test_no_legacy_axis_name():
-    # superseded / pre-cognition axis names must not reappear in the constant
-    for legacy in ("adhd_impulsivity_trauma", "externalizing", "work_disability",
-                   "cognition_fluency"):
+def test_mania_and_suicidality_are_orthogonal_standalones_not_axes():
+    # mania/suicidality are valid constructs but ORTHOGONAL to the correlated structure → not axes.
+    assert set(ORTHOGONAL_DIMENSIONS) == {"mania_activation", "suicidal_ideation"}
+    for name in ORTHOGONAL_DIMENSIONS:
+        assert name not in AXIS_NAMES
+
+
+def test_no_legacy_v1_axis_name():
+    # superseded v1 axis names must not reappear in the v2 constant (v2 has 4 axes, not 6).
+    for legacy in ("later_onset", "mania_activation", "illness_burden",
+                   "cognition_verbal", "metabolic", "depression_severity"):
         assert legacy not in AXIS_NAMES
         assert legacy not in AXIS_SHORT
         assert legacy not in AXIS_LABELS

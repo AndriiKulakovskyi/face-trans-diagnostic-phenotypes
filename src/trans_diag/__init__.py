@@ -10,6 +10,7 @@ from .filters import (
 )
 from .loader import YEARLY_VISIT_MAP, build_unified_dataframe
 from .rules import RULES, identity_cast, register
+from .skip_logic import SUICIDE_SKIP_RULES, SkipRule, decode_skip_logic
 from .variable import Variable, load_variables
 
 # Engine bridge (imports face_stratification; available whenever the vendored
@@ -53,6 +54,9 @@ __all__ = [
     "register",
     "identity_cast",
     "build_unified_dataframe",
+    "decode_skip_logic",
+    "SkipRule",
+    "SUICIDE_SKIP_RULES",
     "YEARLY_VISIT_MAP",
     "IDENTIFIER_COLUMNS",
     "VariableFilterReport",

@@ -86,18 +86,33 @@ BIOLOGY_COMPOSITES: dict[str, list[tuple[str, int]]] = {
 # construct-level WAIS *standard* scores (1-19) / processing-speed indices / TMT seconds — not
 # raw items — so each construct maps directly to its feature(s); no item->stem aggregation is
 # needed. Cross-cohort comparability comes from using standard scores (edition-independent) and
-# per-cohort source columns (e.g. SZ uses SDMT for processing speed). Six primary 3-cohort
-# features form five constructs (processing speed pools WAIS-coding + IVT index). The 2-cohort
-# sensitivity tests (matrices, arithmetic, symbols, CVLT, commissions) are held OUT of the main
-# matrix (marked NOT USABLE in the dictionary). Unlike v1, processing speed and executive are
-# INCLUDED as candidates here — the v2 dimensional model re-derives structure from zero and the
-# confound battery (15_review_checks) re-tests each axis; no v1 cognition result is assumed.
+# per-cohort source columns (e.g. SZ uses SDMT for processing speed). Processing speed pools
+# WAIS-coding + IVT index. Sign convention: +1 if higher = better cognition (WAIS standard scores,
+# recall/fluency counts), -1 for TMT times (higher = worse). Members absent from the matrix are
+# skipped (masked), so 2-cohort constructs (e.g. verbal_memory = CVLT, BP/SZ only — DR has no CVLT)
+# yield NaN for the absent cohort and the masked FA handles it. Unlike v1, processing speed and
+# executive are INCLUDED as candidates; the v2 dimensional model re-derives structure from zero and
+# the confound battery (15_review_checks) re-tests each axis; no v1 cognition result is assumed.
+#
+# 2026-06-03 (dictionary review): added verbal_memory (CVLT total/short/long-delay recall, BP/SZ)
+# and verbal_fluency (phonemic + semantic, 3-cohort) — the battery previously had no verbal episodic
+# memory and a thin flexibility/EF measure. The remaining 2-cohort sensitivity tests (WAIS matrices,
+# arithmetic, symbols) stay OUT (NOT USABLE in the dictionary).
 COGNITIVE_COMPOSITES: dict[str, list[tuple[str, int]]] = {
     "verbal_reasoning": [("wais_similitudes_std", +1)],
     "working_memory": [("wais_digitspan_std", +1)],
     "processing_speed": [("wais_code_std", +1), ("wais_ivt_index", +1)],
     "psychomotor_speed": [("tmt_a_time_sec", -1)],
     "executive": [("tmt_b_time_sec", -1)],
+    "verbal_memory": [
+        ("cvlt_total_recall", +1),
+        ("cvlt_short_delay_free_recall", +1),
+        ("cvlt_long_delay_free_recall", +1),
+    ],
+    "verbal_fluency": [
+        ("verbal_fluency_phonemic", +1),
+        ("verbal_fluency_semantic", +1),
+    ],
 }
 
 _STEM_RE = re.compile(r"\d+[a-z]*$")

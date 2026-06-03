@@ -3,6 +3,7 @@
 > Guide for collaborators and AI assistants. Keep it short. Paper: [MANUSCRIPT.md](MANUSCRIPT.md).
 > Plan: [docs/ROADMAP.md](docs/ROADMAP.md). Dictionary: [docs/DATA.md](docs/DATA.md).
 > Findings: [docs/FINDINGS.md](docs/FINDINGS.md) · Lab notebook: [docs/LABBOOK.md](docs/LABBOOK.md).
+> **Pipeline diagram (end-to-end): [docs/PIPELINE.md](docs/PIPELINE.md).**
 > Cognition include-list: [docs/neuropsy_features.yaml](docs/neuropsy_features.yaml).
 
 ## What this is
@@ -30,9 +31,12 @@ internalized in `src/trans_diag/engine/` — no external dependency on `face_str
 - ✅ **Preprocessing debugged + ML-ready** — fixed the robust-z explosion (prolactin |z|≈106→5),
   added **type-aware bounded scaling to [−1,1]**, kept the masked / no-imputation design. QA report
   has the three parts described below.
-- ⬜ **Dimensional analysis + stratification — NOT yet re-derived on v2.** Scripts `01–22` are the
-  (reusable, validated-on-v1) *method* pipeline; they have **not** been re-run/re-validated on v2.
-  Golden-number tests + `MANUSCRIPT.md`/`docs/FINDINGS.md` numbers are **stale v1** and skip until regenerated.
+- ✅ **Dimensional analysis + stratification re-derived on v2** (scripts `30–48_v2`): 4 trans-diagnostic
+  axes (K=4, no p-factor), dimensional / no discrete subtypes, validation arm A–D. **Manuscript + 6
+  figures delivered** (`results/manuscript/`, `scripts/figures_manuscript_v2.py`). **Golden-number tests
+  + `verify.py` re-baselined to v2** — `tests/test_golden_numbers.py` pins the manuscript's headline
+  numbers to `results/hfa/` (pass locally; skip on a clean clone since `results/hfa/` is gitignored).
+  The legacy `01–22` scripts + the `MANUSCRIPT.md` skeleton are superseded by the `*_v2` pipeline.
 
 ## Data processing — three stages (= the QA report's three Parts)
 
@@ -86,7 +90,7 @@ face-common-bp-sz-dr/
 │   ├── masked_fa·axes·outcomes.py              ← imputation-free FA, axis names, outcome models
 │   └── engine/                                 ← internalized stratification engine (masked, no imputation)
 ├── scripts/                           ← method pipeline (00_run_all → 01–22) + qa_harmonization/verify/audit
-├── tests/                             ← unit + golden-number tests (golden skip until v2 results exist)
+├── tests/                             ← unit + v2 golden-number tests (pinned to results/hfa/; skip on a clean clone)
 ├── results/                           ← regenerated AGGREGATE artifacts (empty on a clean tree; .gitkeep)
 │   └── reports/qa_harmonization.html  ← the 3-part QA report
 ├── notebooks/  docs/                  ← reproduction notebook · ROADMAP·DATA·FINDINGS·LABBOOK·neuropsy_features.yaml
@@ -116,8 +120,8 @@ posterior-mean scores), all on observed cells only.
 ```bash
 pip install -e ".[full]"                 # core + torch + neuroHarmonize + kaleido
 python3 scripts/qa_harmonization.py      # the 3-part data-processing QA report (must be clean first)
-python3 -m pytest tests/ -q              # unit tests (golden tests skip until v2 results exist)
-python3 scripts/verify.py                # harmonization smoke test (thresholds still v1-calibrated — Phase 6)
+python3 -m pytest tests/ -q              # unit + v2 golden tests (golden skip on a clean clone — results/hfa/ gitignored)
+python3 scripts/verify.py                # harmonization smoke test (v2-calibrated)
 ```
 
 ```python
@@ -148,6 +152,7 @@ and outcome is to be re-determined; do not assume the v1 values.
 
 ## Where to read next
 
+- **Pipeline (end-to-end diagram + math)** → [docs/PIPELINE.md](docs/PIPELINE.md)
 - **Plan** → [docs/ROADMAP.md](docs/ROADMAP.md) · **Dictionary columns** → [docs/DATA.md](docs/DATA.md)
 - **Findings (v2 log)** → [docs/FINDINGS.md](docs/FINDINGS.md) · **Lab notebook** → [docs/LABBOOK.md](docs/LABBOOK.md)
 - **Paper skeleton** → [MANUSCRIPT.md](MANUSCRIPT.md) · **Engine internals** → `src/trans_diag/engine/`
