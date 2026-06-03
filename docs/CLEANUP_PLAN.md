@@ -91,14 +91,18 @@ other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scr
 
 ## P3 — Structure & naming
 
-- ⬜ **P3.1** Drop the now-redundant `_v2` suffix from scripts, the `axes` module, and `results/hfa/*`
-  artifacts — in lockstep with the golden tests' paths, `PIPELINE.md`'s script→artifact map, and the
-  figures/manuscript builders.
+- ⬜ **P3.1 — deferred (needs a verifying pipeline run).** Dropping `_v2` from script + artifact
+  filenames is a repo-wide rename touching importlib script-loads + ~25 *gitignored* artifact
+  read/write paths across ~20 scripts. The golden tests catch broken *read* paths, but a missed *write*
+  path only surfaces on the next pipeline run — which needs the confidential CSVs (can't run here).
+  Recommend: one rename commit immediately followed by `python3 scripts/00_run_all.py` to verify.
+  (`axes_v2 → axes` was already done in P0.2.)
 - ✅ **P3.2** Added `scripts/00_run_all.py` (v2): QA → Stages 0–4 → stratify → inventory → Studies A–D
   → sensitivity → figures, in `PIPELINE.md` order (dependency-checked: 41 before 45–48; 32 before 44;
   44 before 48). Golden-test + README/CLAUDE regeneration hints repointed to it. *(Structure verified —
   compiles, ruff-clean, all 20 steps exist; a full run needs the confidential CSVs.)*
-- ⬜ **P3.3** Renumber to a contiguous, phase-grouped sequence so the filename prefix is the run order.
+- ⬜ **P3.3 — deferred (same reason as P3.1).** Renumbering also moves the importlib filename strings;
+  pair it with the P3.1 rename + a verifying `00_run_all` run.
 - ✅ **P3.4** Fixed the actively-misleading refs (`__init__.py` "imports", `schema_gen.py` +
   `feature_schema.py` external-module/config pointers, `enrichment.py` dead-doc link) and **deleted the
   dead `load_feature_schema` YAML loader** (never called; it carried the `config/face_stratification/`
@@ -108,12 +112,13 @@ other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scr
 
 ## P4 — Polish
 
-- 🔜 **P4** Done: deleted `.env.example`; removed the dead `ai`/`combat`/`notebook` extras (they served
-  deleted v1 scripts; none of torch/neuroHarmonize/nibabel/ipython/nbformat is used by v2) and trimmed
-  `install.py`'s verify-list to match. **Remaining:** make `manuscript.md` figure paths relative
-  (currently absolute `/Users/…`); regenerate `requirements.lock` on Python 3.11 (it still pins the
-  removed torch/neuro deps); update CI branch triggers; confirm `neuropsy_features.yaml` lists the
-  CVLT/fluency features.
+- 🔜 **P4** Done: deleted `.env.example`; removed dead `ai`/`combat`/`notebook` extras + trimmed
+  `install.py`; **updated CI push triggers** (`main`, `v2-study`); confirmed `neuropsy_features.yaml`
+  already lists the CVLT/fluency features. **Remaining (need a build/network unavailable here):**
+  `manuscript.md`'s 6 figure paths are absolute `/Users/…` (broken on any other machine) — the fix is
+  repo-root-relative paths + `cwd=ROOT` in `build_manuscript_v2`'s pandoc call, but the `.docx` build
+  can't be verified here (no pandoc), so it's left for a tested pass; regenerate `requirements.lock` on
+  Python 3.11 (it still pins the removed torch/neuro deps; `pip-compile` is unavailable here).
 - ✅ **CI lint gate is now green.** `ruff check .` passes (was **150** errors). Fix: added **E402** to
   the curated `[tool.ruff.lint] ignore` (with rationale — scripts insert `src/` on `sys.path` before
   importing `trans_diag`), plus ruff autofixes (F541/B905/I001/unused-imports) and 2 manual edits
