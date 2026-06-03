@@ -1,8 +1,8 @@
 # Aggregation rationale — from 190 harmonized variables to nameable trans-diagnostic dimensions
 
-> Methods rationale + empirical evidence. Contributes to `MANUSCRIPT.md` (Methods + Supplement).
+> Methods rationale + empirical evidence. Contributes to `results/manuscript/manuscript.md` (Methods + Supplement).
 > Status: **rationale settled; method (hierarchical/bifactor, hybrid) chosen; analysis plan in
-> [HIERARCHICAL_FA_PLAN.md](HIERARCHICAL_FA_PLAN.md).** All numbers below are from internal
+> [HIERARCHICAL_FA_PLAN.md](planning/HIERARCHICAL_FA_PLAN.md).** All numbers below are from internal
 > analyses on the v2 V0 data (BP 6252 / SZ 2209 / DR 552; 9013 patients), reproducible via the
 > sensitivity scripts noted in the plan.
 
@@ -195,7 +195,7 @@ factor** + one **specific construct factor**. This **relaxes all four flat-mean 
 (metabolic's 3 axes become 3 specifics, not 1 mean — **nothing dropped, just organized**);
 (3) misfitting items (CTQ denial) get ~0 loading; (4) sign comes from the data.
 
-**Nameable at both levels:** general = *p-factor / overall severity* (cross-check vs `19_pfactor`);
+**Nameable at both levels:** general = *p-factor / overall severity* (cross-check vs Study B / `43_orthogonality_pfactor_v2`);
 specifics = named construct dimensions (depression-, mania-, metabolic-, cognition-, suicidality-,
 trauma-specific…), orthogonal to the general factor.
 

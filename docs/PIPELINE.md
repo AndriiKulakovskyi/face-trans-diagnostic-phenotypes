@@ -4,7 +4,7 @@
 > the manuscript. Every stage lists its **inputs → operation → outputs**, the **mathematics**, the
 > **parameters**, the **script** that runs it (`scripts/*_v2.py`), and the **artifact** it writes
 > (`results/hfa/`). Companion docs: [ROADMAP](ROADMAP.md) · [AGGREGATION_RATIONALE](AGGREGATION_RATIONALE.md)
-> · [HIERARCHICAL_FA_PLAN](HIERARCHICAL_FA_PLAN.md) · [VALIDATION_PLAN_v2](VALIDATION_PLAN_v2.md) ·
+> · [HIERARCHICAL_FA_PLAN](planning/HIERARCHICAL_FA_PLAN.md) · [VALIDATION_PLAN_v2](planning/VALIDATION_PLAN_v2.md) ·
 > [FINDINGS](FINDINGS.md) · [LABBOOK](LABBOOK.md). Manuscript: `results/manuscript/`.
 
 ## Design invariants (hold everywhere below)

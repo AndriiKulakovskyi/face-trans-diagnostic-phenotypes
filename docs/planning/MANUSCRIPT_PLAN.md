@@ -1,5 +1,9 @@
 # Manuscript plan — FACE trans-diagnostic v2 (Phase 6)
 
+> 📁 **ARCHIVED — executed pre-registration** (moved to `docs/planning/` in the v2 cleanup). This is
+> the plan *as written before the manuscript was written*, kept for provenance. For the delivered
+> paper see [../../results/manuscript/manuscript.md](../../results/manuscript/manuscript.md).
+
 > Companion to `results/manuscript/manuscript.md` (source) → `results/manuscript/FACE_trans_diagnostic_v2.docx`.
 > Figures: `scripts/figures_manuscript_v2.py` → `results/reports/figures/fig1..6.png`.
 

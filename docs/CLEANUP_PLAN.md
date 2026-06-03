@@ -77,14 +77,13 @@ other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scr
   in `CLAUDE.md` + `README.md`.
 - ✅ **P2.2** Numbers synced in `FINDINGS`/`PIPELINE`/`ROADMAP`/`DATA`/`CLAUDE` + golden test; fixed
   `FINDINGS.md`'s false opening "No analysis results yet …" and `ROADMAP.md`'s "91 passed" (→99).
-- ⬜ **P2.3** Archive the executed pre-registration plans (`HIERARCHICAL_FA_PLAN.md`,
-  `VALIDATION_PLAN_v2.md`, `MANUSCRIPT_PLAN.md`) to `docs/planning/` with an "executed" banner — they
-  are future-tense and have drifted (propose a `hierarchical_fa.py` module never built; planned output
-  paths `results/hfa_items.csv` ≠ actual `results/hfa/stage0_items_v2.csv`).
+- ✅ **P2.3** Archived the executed pre-registration plans (`HIERARCHICAL_FA_PLAN.md`,
+  `VALIDATION_PLAN_v2.md`, `MANUSCRIPT_PLAN.md`) to `docs/planning/` with an "ARCHIVED — executed"
+  banner + a `docs/planning/README.md`; repointed all inbound links.
 - ✅ **P2.4** Added `LABBOOK.md` V2-21 (the 2026-06-03 dictionary review: 188→194 items, 88→94
   constructs, ECV 0.36→0.34, memory-anchored cognition, suicide skip-logic).
-- ⬜ **P2.5** Remove/relocate root `todo_data_cleaning.md` (17KB working notes, mostly executed,
-  references a stale `face-common-vars-v2.xlsx` filename); fold open caveats into `DATA.md`.
+- ✅ **P2.5** Removed root `todo_data_cleaning.md` (working notes; all actioned decisions are encoded
+  in the dictionary + `rules.py`); folded the one open caveat (`ltsg07`) into `DATA.md`.
 - ⬜ Rewrite `CLAUDE.md`'s "three stages / why aggregate" section: it still describes the **flat
   masked-mean** domain scores (~69), which v2 **replaced** with the hierarchical/bifactor model
   (88/94 constructs).

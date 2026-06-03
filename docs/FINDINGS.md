@@ -32,7 +32,7 @@ Rationale + full evidence: [AGGREGATION_RATIONALE.md](AGGREGATION_RATIONALE.md).
   the top 4–5 dimensions are **granularity-invariant** (canonical r ≥ 0.85, perm-null 0.04) — the
   primary structure is not a grouping artifact (anti-circularity result for the manuscript).
 - **Decision:** hierarchical/bifactor in **hybrid** mode (clinical anchors, data-revised), masked /
-  no-imputation. Plan: [HIERARCHICAL_FA_PLAN.md](HIERARCHICAL_FA_PLAN.md).
+  no-imputation. Plan: [HIERARCHICAL_FA_PLAN.md](planning/HIERARCHICAL_FA_PLAN.md).
 
 ### First-order structure (Stages 0–2, scripts 30–32_v2)
 - **Item set:** 194 V0 items (every valid measurement; identifiers/covariates/confounds/branching-
@@ -95,7 +95,7 @@ embedding):
 axes (internalizing, cognition, illness-course, cardiometabolic-inflammatory) + 2 orthogonal standalone
 dims (mania, suicidality); **no general p-factor and no discrete subtypes** beyond DSM categories.
 
-## Track 3 — does it matter? (validation; plan: VALIDATION_PLAN_v2.md)
+## Track 3 — does it matter? (validation; plan: planning/VALIDATION_PLAN_v2.md)
 Relapse outcome **locked** (Study D): hospitalization-count REJECTED (lifetime count non-monotone,
 41% spurious decreases); **primary = CGI-S relapse by V2** (rise ≥2 / cross <4→≥4), prevalence 20%
 (BP 23 / SZ 14 / DR 8), n=3,657. Longitudinal arm is BP+SZ (DR collapses by V3).

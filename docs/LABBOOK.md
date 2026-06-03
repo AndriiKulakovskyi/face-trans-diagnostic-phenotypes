@@ -48,7 +48,7 @@ means are lossy (metabolic PA_k=3; CTQ r(mean,PC1)=0.76) **but** the top 4–5 d
 **granularity-invariant** (canonical r ≥ 0.85, perm-null 0.04) — the headline structure is not a
 grouping artifact. **Decision:** replace flat masked means with a **hierarchical/bifactor measurement
 model in HYBRID mode** (clinical anchors, data-revised), keeping masked / no-imputation. Full rationale
-+ evidence: [AGGREGATION_RATIONALE.md](AGGREGATION_RATIONALE.md); plan: [HIERARCHICAL_FA_PLAN.md](HIERARCHICAL_FA_PLAN.md).
++ evidence: [AGGREGATION_RATIONALE.md](AGGREGATION_RATIONALE.md); plan: [HIERARCHICAL_FA_PLAN.md](planning/HIERARCHICAL_FA_PLAN.md).
 
 ## V2-7 · Hierarchical-FA Stages 0–2 — 2026-05-31
 - **Stage 0** (`scripts/30_hfa_stage0_itemset_v2.py`) — froze a **188-item** set: added every valid
@@ -219,7 +219,7 @@ verified PARTIAL with `SZ_col=None`):
   both measured). Study C → internalizing invariance is a BP+DR test. Study D → report internalizing
   prediction split by direct (BP+DR) vs proxy (SZ).
 
-Validation plan: [VALIDATION_PLAN_v2.md](VALIDATION_PLAN_v2.md).
+Validation plan: [VALIDATION_PLAN_v2.md](planning/VALIDATION_PLAN_v2.md).
 
 ## V2-15 · Study B — symptom⊥biology + the p-factor is a symptom-only artifact (THE headline) — 2026-05-31
 `scripts/43_orthogonality_pfactor_v2.py`. Computed **within BP+DR** (clean — mood+biology both
@@ -336,7 +336,7 @@ The v2 dimensional model is **rigorous and partially useful, not transformative*
 - **Manuscript written** (leads with Study B; honest D verdict; measurement-design limits up front; full
   math formalism + pipeline + derivations in Methods; 12-point reviewer-anticipation subsection).
   Source `results/manuscript/manuscript.md` → `FACE_trans_diagnostic_v2.docx` via pandoc (editable OMML
-  equations; OOXML-validated) + companion `.pdf`. Plan: `docs/MANUSCRIPT_PLAN.md`.
+  equations; OOXML-validated) + companion `.pdf`. Plan: `docs/planning/MANUSCRIPT_PLAN.md`.
 - **6 figures** (`scripts/figures_manuscript_v2.py` → `results/reports/figures/fig1-6.png`): pipeline ·
   4 axes+Φ₂ · orthogonality heatmap + p-factor dissolution (headline) · continuum · predictive Δ + relapse
   · longitudinal coherence. Reproducible build: `scripts/build_manuscript_v2.py`.

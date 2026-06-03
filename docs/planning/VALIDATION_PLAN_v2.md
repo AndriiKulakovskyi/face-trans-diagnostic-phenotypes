@@ -1,5 +1,10 @@
 # Validation plan — does the v2 dimensional model *matter*? (pre-registration)
 
+> 📁 **ARCHIVED — executed pre-registration** (moved to `docs/planning/` in the v2 cleanup). This is
+> the plan *as written before the analysis was run*, kept for provenance. Some details describe
+> *intended* work and differ from what was built; for what was **actually done** see
+> [../PIPELINE.md](../PIPELINE.md) and [../LABBOOK.md](../LABBOOK.md).
+
 > Review & lock before coding. Decides whether the 4 trans-diagnostic axes are a **useful** result
 > or a rigorous-but-descriptive one. Builds on the validated dimensional + stratification arms
 > (LABBOOK V2-6…V2-13). Axes: `src/trans_diag/axes_v2.py`. Masked / no-imputation throughout.

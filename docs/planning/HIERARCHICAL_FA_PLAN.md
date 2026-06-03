@@ -1,7 +1,12 @@
 # Analysis plan — hierarchical / bifactor measurement model (hybrid), imputation-free
 
+> 📁 **ARCHIVED — executed pre-registration** (moved to `docs/planning/` in the v2 cleanup). This is
+> the plan *as written before the analysis was run*, kept for provenance. Some details describe
+> *intended* work and differ from what was built; for what was **actually done** see
+> [../PIPELINE.md](../PIPELINE.md) and [../LABBOOK.md](../LABBOOK.md).
+
 > **Pre-registration-style plan. Review and lock before coding.** Rationale:
-> [AGGREGATION_RATIONALE.md](AGGREGATION_RATIONALE.md). Engine: extends `src/trans_diag/masked_fa.py`.
+> [../AGGREGATION_RATIONALE.md](../AGGREGATION_RATIONALE.md). Engine: extends `src/trans_diag/masked_fa.py`.
 > Goal: replace flat masked-mean domain scores with a **clinically-anchored, data-revised
 > (hybrid) hierarchical/bifactor** model that yields **nameable** trans-diagnostic axes while
 > staying **masked / no-imputation**. Anchor visit **V0**.
