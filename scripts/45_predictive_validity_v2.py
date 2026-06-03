@@ -127,7 +127,7 @@ def main() -> None:
         if cohorts:
             sub = sub[sub.cohort.isin(cohorts)]
         if ycol == "relapse":
-            sub = sub[sub.relapse_ev == True]
+            sub = sub[sub.relapse_ev == True]  # noqa: E712 (preserve NaN-safe filter behavior)
         need = AXES + ["mania", "suicide", "age", "sex", base, ycol]
         sub = sub[sub[need].notna().all(1)]
         y = sub[ycol].to_numpy(float)

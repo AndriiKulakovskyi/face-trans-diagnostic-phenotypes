@@ -279,7 +279,7 @@ def _count_with_inequalities(series: pd.Series, cohort: str) -> pd.Series:
     def convert(x):
         if x is None or x is pd.NA:
             return np.nan
-        if isinstance(x, (int, float)):
+        if isinstance(x, int | float):
             return float(x)
         s = str(x).strip().replace(",", ".").lstrip("><=≥≤ ").strip()
         try:

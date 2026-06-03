@@ -38,7 +38,6 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
-from trans_diag.axes import AXIS_NAMES
 
 warnings.simplefilter("ignore")
 OUT = ROOT / "results" / "hfa"

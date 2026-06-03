@@ -88,7 +88,7 @@ def congruence(ref, test):
     A, B = ref.loc[common].to_numpy(), test.loc[common].to_numpy()
     M = np.abs(A.T @ B) / (np.sqrt(np.outer((A * A).sum(0), (B * B).sum(0))) + 1e-12)
     r, c = linear_sum_assignment(-M)
-    return {ref.columns[i]: float(M[i, j]) for i, j in zip(r, c)}
+    return {ref.columns[i]: float(M[i, j]) for i, j in zip(r, c, strict=False)}
 
 
 def axis_scores(Sv, Lref):
@@ -104,7 +104,7 @@ def main() -> None:
     vs = load_variables(str(ROOT / "data" / "face-common-vars.xlsx"))
     by = {v.canonical_name: v for v in vs}
     S = {v: construct_scores_at(df, vs, by, v) for v in ("V0", "V1", "V2")}
-    print(f"construct scores: " + ", ".join(f"{v} {S[v].shape}" for v in S))
+    print("construct scores: " + ", ".join(f"{v} {S[v].shape}" for v in S))
 
     # sanity: V0 reproduces the committed Stage-2 scores
     S0ref = pd.read_pickle(OUT / "stage2_scores_v2.pkl").set_index(["cohort", "patient_id"])

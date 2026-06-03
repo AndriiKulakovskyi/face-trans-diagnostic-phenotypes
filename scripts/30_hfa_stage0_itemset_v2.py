@@ -134,7 +134,7 @@ def main() -> None:
     isolated = sorted(items_df.loc[items_df.max_abs_r < 0.15, "item"])   # correlate with ~nothing
     lowcov = sorted(items_df.loc[items_df.obs_frac < 0.10, "item"])
 
-    print(f"factorability (robust to near-singularity):")
+    print("factorability (robust to near-singularity):")
     print(f"  eigenvalues >1: {int((ev > 1).sum())}  | top12: {np.round(ev[:12], 2)}  "
           f"(clear leading factors -> factorable)")
     print(f"  ridge-shrunk KMO (lam=0.05) = {fac['kmo_shrunk']:.3f}  | cond(R)={fac['cond']:.1e}, "

@@ -30,8 +30,12 @@ from factor_analyzer import Rotator
 from scipy.optimize import linear_sum_assignment
 
 from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
-from trans_diag.domains import (BIOLOGY_COMPOSITES, COGNITIVE_COMPOSITES, DOMAIN_SECTIONS,
-                                 build_domain_scores)
+from trans_diag.domains import (
+    BIOLOGY_COMPOSITES,
+    COGNITIVE_COMPOSITES,
+    DOMAIN_SECTIONS,
+    build_domain_scores,
+)
 from trans_diag.masked_fa import masked_correlation, masked_loadings, masked_scores, paf_loadings
 
 warnings.simplefilter("ignore")

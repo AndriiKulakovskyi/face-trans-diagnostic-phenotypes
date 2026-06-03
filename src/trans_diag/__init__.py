@@ -1,7 +1,6 @@
 from .axes import AXIS_INDEX_TO_NAME, AXIS_LABELS, AXIS_NAMES, AXIS_SHORT, ORTHOGONAL_DIMENSIONS
 from .filters import (
     IDENTIFIER_COLUMNS,
-    PatientFilterReport,
     V0Anchor,
     VariableFilterReport,
     filter_patients,
@@ -13,8 +12,9 @@ from .rules import RULES, identity_cast, register
 from .skip_logic import SUICIDE_SKIP_RULES, SkipRule, decode_skip_logic
 from .variable import Variable, load_variables
 
-# Engine bridge (imports face_stratification; available whenever the vendored
-# engine is on the path — always true via pyproject pythonpath / scripts' setup).
+# Engine bridge: the adapter + domains pull in the internalized engine
+# (src/trans_diag/engine/). Guarded so the core (loader/rules/variable) still
+# imports even if an optional engine dependency is unavailable.
 try:  # pragma: no cover - exercised in integration, not unit tests
     from .adapter import (
         ADMINISTRATIVE_FEATURES,
@@ -26,7 +26,6 @@ try:  # pragma: no cover - exercised in integration, not unit tests
     )
     from .domains import (
         BIOLOGY_COMPOSITES,
-        COGNITION_SECTIONS,
         COGNITIVE_COMPOSITES,
         DOMAIN_SECTIONS,
         build_domain_scores,
@@ -43,7 +42,6 @@ except ImportError:  # engine not importable in this environment
     BIOLOGY_COMPOSITES = None  # type: ignore[assignment]
     COGNITIVE_COMPOSITES = None  # type: ignore[assignment]
     DOMAIN_SECTIONS = None  # type: ignore[assignment]
-    COGNITION_SECTIONS = None  # type: ignore[assignment]
     build_feature_schema = None  # type: ignore[assignment]
     DEFAULT_SCHEMA_VERSION = None  # type: ignore[assignment]
 
@@ -60,7 +58,6 @@ __all__ = [
     "YEARLY_VISIT_MAP",
     "IDENTIFIER_COLUMNS",
     "VariableFilterReport",
-    "PatientFilterReport",
     "V0Anchor",
     "filter_variables",
     "filter_patients",
@@ -76,7 +73,6 @@ __all__ = [
     "BIOLOGY_COMPOSITES",
     "COGNITIVE_COMPOSITES",
     "DOMAIN_SECTIONS",
-    "COGNITION_SECTIONS",
     "DEFAULT_SCHEMA_VERSION",
     "AXIS_NAMES",
     "AXIS_SHORT",

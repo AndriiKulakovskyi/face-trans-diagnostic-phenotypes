@@ -21,12 +21,17 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
 import numpy as np
-import pandas as pd
 
 from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
-from trans_diag.domains import (BIOLOGY_COMPOSITES, COGNITIVE_COMPOSITES, DOMAIN_SECTIONS,
-                                 _robust_z, build_domain_scores, instrument_stem)
-from trans_diag.masked_fa import masked_correlation, masked_loadings, masked_scores, nearest_pd
+from trans_diag.domains import (
+    BIOLOGY_COMPOSITES,
+    COGNITIVE_COMPOSITES,
+    DOMAIN_SECTIONS,
+    _robust_z,
+    build_domain_scores,
+    instrument_stem,
+)
+from trans_diag.masked_fa import masked_loadings, masked_scores, nearest_pd
 
 warnings.simplefilter("ignore")
 MIN_PAIR = 100

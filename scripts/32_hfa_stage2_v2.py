@@ -167,7 +167,7 @@ def main() -> None:
     print(f"  dropped as <2% comorbidity -> Stage-4 validators ({len(validators)}): "
           f"{[v.replace('_mhoccur','') for v in validators]}")
     pd.Series(sorted(validators)).to_csv(OUT / "stage2_comorbidity_validators_v2.csv", index=False, header=["flag"])
-    print(f"\n=== multi-item constructs (within-construct unidimensionality VAF1) ===")
+    print("\n=== multi-item constructs (within-construct unidimensionality VAF1) ===")
     print(fitdf[fitdf.n_items > 1][["n_items", "vaf1", "coverage", "polarity", "items"]]
           .to_string(max_colwidth=52))
 
@@ -181,7 +181,7 @@ def main() -> None:
     cn = list(Phi.columns)
     seen = set()
     print("  top correlated construct pairs:")
-    for a, b in sorted(zip(*np.unravel_index(np.argsort(-np.abs(P), axis=None), P.shape)),
+    for a, b in sorted(zip(*np.unravel_index(np.argsort(-np.abs(P), axis=None), P.shape), strict=False),
                        key=lambda ab: -abs(P[ab]))[:200]:
         if a >= b or (a, b) in seen or abs(P[a, b]) < 0.3:
             continue

@@ -144,7 +144,7 @@ def verify_variable(var, df: pd.DataFrame, df_raw: pd.DataFrame,
         rec["checks"].append(("PASS", msg))
 
     if name not in df.columns:
-        fail(f"column absent from unified dataframe")
+        fail("column absent from unified dataframe")
         return rec
 
     series = df[name]

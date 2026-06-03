@@ -122,7 +122,7 @@ def main() -> None:
     g = L2 @ gamma                                   # SL general loading per construct
     spec = L2 * np.sqrt(1 - gamma ** 2)              # SL specific loadings
     ecv = float((g ** 2).sum() / ((g ** 2).sum() + (spec ** 2).sum()))
-    print(f"\n=== general-factor test (Schmid-Leiman) ===")
+    print("\n=== general-factor test (Schmid-Leiman) ===")
     print(f"  ECV (explained common variance by a general factor) = {ecv:.2f}  "
           f"({'general p-factor warranted' if ecv >= 0.5 else 'multidimensional — no dominant p-factor'})")
     print(f"  mean |dimension correlation| (Phi_2) = {np.abs(Phi2[np.triu_indices(K2,1)]).mean():.2f}")

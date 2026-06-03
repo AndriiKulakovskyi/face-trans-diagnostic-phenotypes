@@ -96,25 +96,25 @@ other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scr
 - ⬜ **P3.2** Add a real v2 orchestrator (`00_run_all`) that runs stage0→stage4 → stratify → inventory
   → Studies A–D → sensitivity → figures → manuscript and writes `results/hfa/`.
 - ⬜ **P3.3** Renumber to a contiguous, phase-grouped sequence so the filename prefix is the run order.
-- ⬜ **P3.4** Scrub external-project provenance from `src` docstrings (~15 `face_stratification` /
-  `face_rlvr` refs; the misleading `__init__.py` "imports face_stratification" comment; dead
-  `config/face_stratification/…` / `docs/face_stratification/…` path lookups).
-- ⬜ **P3.5** Prune dead `__init__.py` exports (`PatientFilterReport`, `COGNITION_SECTIONS`; review
-  `DEFAULT_SCHEMA_VERSION`, `identity_cast`).
+- 🔜 **P3.4** Fixed the actively-misleading refs: the `__init__.py` "imports face_stratification"
+  comment, `schema_gen.py`'s external-module pointer, and `enrichment.py`'s dead-doc link. The
+  legitimate "vendored/internalized from the FACE engine" provenance notes stay. **Remaining:**
+  `engine/feature_schema.py`'s `config/face_stratification/…` path is load-bearing code — needs a
+  careful rename, not a blind edit.
+- ✅ **P3.5** Removed the dead `__init__.py` exports `PatientFilterReport`, `COGNITION_SECTIONS`.
 
 ## P4 — Polish
 
-- ⬜ Delete `.env.example` (unused API keys). Make `manuscript.md` figure paths relative (currently
-  absolute `/Users/…`). Regenerate `requirements.lock` on Python 3.11 (CI pins 3.11; lock built on
-  3.12). Update CI branch triggers. Confirm `neuropsy_features.yaml` lists the new CVLT/fluency
-  features. Drop the now-unused `notebook` extra from `pyproject.toml`.
-- ⬜ **CI lint gate is red.** `ruff check .` reports **143 errors** (was **150** before this cleanup);
-  `[tool.ruff.lint]` in `pyproject.toml` is empty, so ruff runs its full default rule set with no
-  ignores. Dominant: **125 × E402** (module-import-not-at-top) from the `sys.path.insert(0, "src")`-
-  before-`import trans_diag` bootstrap in every script, plus a few F401/F541/B905. CI's `ruff check .`
-  step therefore fails. Decide: add `# noqa: E402` on the bootstrap imports, configure
-  `[tool.ruff.lint.per-file-ignores]` for `scripts/*`, or move the path bootstrap into
-  `tests/conftest.py` + a `scripts/_bootstrap.py`. (Not a P0/P1 regression — pre-existing.)
+- 🔜 **P4** Done: deleted `.env.example`; removed the dead `ai`/`combat`/`notebook` extras (they served
+  deleted v1 scripts; none of torch/neuroHarmonize/nibabel/ipython/nbformat is used by v2) and trimmed
+  `install.py`'s verify-list to match. **Remaining:** make `manuscript.md` figure paths relative
+  (currently absolute `/Users/…`); regenerate `requirements.lock` on Python 3.11 (it still pins the
+  removed torch/neuro deps); update CI branch triggers; confirm `neuropsy_features.yaml` lists the
+  CVLT/fluency features.
+- ✅ **CI lint gate is now green.** `ruff check .` passes (was **150** errors). Fix: added **E402** to
+  the curated `[tool.ruff.lint] ignore` (with rationale — scripts insert `src/` on `sys.path` before
+  importing `trans_diag`), plus ruff autofixes (F541/B905/I001/unused-imports) and 2 manual edits
+  (a `rules.py` `isinstance` PEP-604 modernization; a `# noqa: E712` preserving a NaN-safe filter).
 
 ---
 

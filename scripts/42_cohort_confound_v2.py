@@ -57,7 +57,7 @@ def congruence(ref: pd.DataFrame, test: pd.DataFrame) -> dict:
     A, B = ref.loc[common].to_numpy(), test.loc[common].to_numpy()
     M = np.abs(A.T @ B) / (np.sqrt(np.outer((A * A).sum(0), (B * B).sum(0))) + 1e-12)
     r, c = linear_sum_assignment(-M)
-    return {ref.columns[i]: float(M[i, j]) for i, j in zip(r, c)}, len(common)
+    return {ref.columns[i]: float(M[i, j]) for i, j in zip(r, c, strict=False)}, len(common)
 
 
 def named(cong: dict) -> str:

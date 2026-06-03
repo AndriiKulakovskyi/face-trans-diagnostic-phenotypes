@@ -20,7 +20,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 import numpy as np
 import pandas as pd
-from scipy.cluster.hierarchy import fcluster, leaves_list, linkage
+from scipy.cluster.hierarchy import fcluster, linkage
 from scipy.spatial.distance import squareform
 
 from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
@@ -65,7 +65,7 @@ def main() -> None:
     for k in (3, 4):
         cl = fcluster(Zl, k, criterion="maxclust")
         groups: dict[int, list[str]] = {}
-        for c, lab in zip(prevalent, cl):
+        for c, lab in zip(prevalent, cl, strict=False):
             groups.setdefault(lab, []).append(c.replace("_mhoccur", ""))
         print(f"  k={k}: " + " | ".join("{" + ",".join(g) + "}" for g in groups.values()))
 
