@@ -24,7 +24,7 @@ MD = MAN / "manuscript.md"
 DOCX = MAN / "FACE_trans_diagnostic_v2.docx"
 PDF = MAN / "FACE_trans_diagnostic_v2.pdf"
 
-PANDOC = ["pandoc", str(MD), "-o", str(DOCX),
+PANDOC = ["pandoc", str(MD), "-o", str(DOCX), f"--resource-path={ROOT}",
           "--toc", "--toc-depth=2", "--number-sections", "--metadata", "lang=en"]
 
 PNG_DECL = '<Default Extension="png" ContentType="image/png"/>'
@@ -64,7 +64,7 @@ def main() -> None:
     if "--pdf" in sys.argv:
         print("xelatex -> companion pdf ...")
         try:
-            subprocess.run(["pandoc", str(MD), "-o", str(PDF), "--toc", "--toc-depth=2",
+            subprocess.run(["pandoc", str(MD), "-o", str(PDF), f"--resource-path={ROOT}", "--toc", "--toc-depth=2",
                             "--number-sections", "--pdf-engine=xelatex",
                             "-V", "geometry:margin=0.85in", "-V", "fontsize=10pt",
                             "-V", "mainfont=Times New Roman", "-V", "mathfont=STIX Two Math"],
