@@ -114,7 +114,7 @@ def test_dimensional_not_categorical():
     assert p["A"]["hdbscan"]["cohort_ari"] <= 0.10                 # micro-pockets are not cohort (0.04)
     assert max(p["A"]["dsm_ari"].values()) <= 0.06                 # k-means vs DSM ARI ≈ 0.03
     assert max(p["A"]["bimodality"]) <= 0.555                      # every axis unimodal (Sarle)
-    # arm B (75 constructs): the ONLY dense clusters are the 3 cohorts themselves
+    # arm B (81 constructs): the ONLY dense clusters are the 3 cohorts themselves
     assert p["B"]["hdbscan"]["n"] == 3 and p["B"]["hdbscan"]["cohort_ari"] >= 0.98   # ARI 1.00
 
 

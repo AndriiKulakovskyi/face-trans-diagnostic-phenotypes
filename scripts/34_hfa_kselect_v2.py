@@ -85,7 +85,7 @@ def main() -> None:
     # (1) scree + (2) parallel analysis
     real, thr = masked_parallel(Z)
     k_pa = int((real > thr).sum())
-    print(f"75 constructs | Φ₁ eigenvalues>1: {int((real>1).sum())}  top8: {np.round(real[:8],2)}")
+    print(f"{Z.shape[1]} constructs | Φ₁ eigenvalues>1: {int((real>1).sum())}  top8: {np.round(real[:8],2)}")
     print(f"parallel analysis (Horn): K_PA = {k_pa}\n")
 
     # (3) per-K diagnostics

@@ -114,7 +114,7 @@ def main() -> None:
         oof = {}
         for k, X in sets.items():
             if label == "logistic" and k == "+rich(constructs)":
-                continue                                    # 75 feats need complete-case -> skip for linear
+                continue                                    # 81 feats need complete-case -> skip for linear
             o, ok = cv_oof(X, y, groups, factory, allow_nan)
             oof[k] = (o, ok)
             print(f"    {k:20s} AUC={roc_auc_score(y[ok], o[ok]):.3f}  (n={int(ok.sum())})")

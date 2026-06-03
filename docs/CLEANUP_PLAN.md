@@ -60,8 +60,9 @@ other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scr
   r **0.99/0.90/0.79**; dictionary **199 usable** (READY+PARTIAL) of **223** entries.
   **Flagged for the scientist (not doc bugs):** (a) the manuscript says "220-variable dictionary" —
   it counts curated entries minus identifiers, a *different denominator* than the 199 usable; reconcile
-  the wording in the paper. (b) `40_phase5_stratify_v2` hardcodes the arm-B label "75 construct scores"
-  while Stage-3 uses 81 — verify the stratification construct set vs. a stale label.
+  the wording in the paper. (b) **RESOLVED:** `40_phase5`'s arm-B "75" was a stale hardcoded label —
+  the actual set is the same coverage≥0.30 filter (**81**, confirmed by Study-D3's `n_constructs: 81`);
+  the label is now computed dynamically and the docs all say 81.
 
 ## P1 — Remove the v1 layer
 
@@ -98,11 +99,11 @@ other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scr
   44 before 48). Golden-test + README/CLAUDE regeneration hints repointed to it. *(Structure verified —
   compiles, ruff-clean, all 20 steps exist; a full run needs the confidential CSVs.)*
 - ⬜ **P3.3** Renumber to a contiguous, phase-grouped sequence so the filename prefix is the run order.
-- 🔜 **P3.4** Fixed the actively-misleading refs: the `__init__.py` "imports face_stratification"
-  comment, `schema_gen.py`'s external-module pointer, and `enrichment.py`'s dead-doc link. The
-  legitimate "vendored/internalized from the FACE engine" provenance notes stay. **Remaining:**
-  `engine/feature_schema.py`'s `config/face_stratification/…` path is load-bearing code — needs a
-  careful rename, not a blind edit.
+- ✅ **P3.4** Fixed the actively-misleading refs (`__init__.py` "imports", `schema_gen.py` +
+  `feature_schema.py` external-module/config pointers, `enrichment.py` dead-doc link) and **deleted the
+  dead `load_feature_schema` YAML loader** (never called; it carried the `config/face_stratification/`
+  path) + its now-orphaned imports. The legitimate "trimmed/adapted from the FACE engine, external deps
+  removed" provenance notes stay — they match the self-contained claim.
 - ✅ **P3.5** Removed the dead `__init__.py` exports `PatientFilterReport`, `COGNITION_SECTIONS`.
 
 ## P4 — Polish

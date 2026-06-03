@@ -10,7 +10,8 @@ CONTINUUM across the validated structure, with the same battery as the v1 struct
   6. bootstrap cluster stability (ARI of resampled k-means vs full) — unstable => continuum.
 
 Inputs:  A (primary) = 4 dimension scores + mania + suicidal_ideation (the validated 6 axes);
-         B (sensitivity) = ~75 construct scores via the masked MultipartiteSpectral embedding (engine).
+         B (sensitivity) = the well-covered (coverage>=0.30) construct scores via the masked
+         MultipartiteSpectral embedding (engine).
 Masked / no-imputation. Writes results/hfa/phase5_structure_v2.json.
 """
 from __future__ import annotations
@@ -168,7 +169,7 @@ def main() -> None:
     emb = MultipartiteSpectralEmbedding(**EMBED_CONFIG).fit(hd).transform().values
     arm_B = ds.metadata.reindex(emb.index)["dsm_diagnosis"]
     coh_B = np.array(emb.index.get_level_values("cohort"))
-    resB = structure_test(emb.to_numpy(np.float64), arm_B, coh_B, "B: 75 construct scores (engine embedding)")
+    resB = structure_test(emb.to_numpy(np.float64), arm_B, coh_B, f"B: {len(keep)} construct scores (engine embedding)")
 
     json.dump({"A": resA, "B": resB}, open(OUT / "phase5_structure_v2.json", "w"), indent=2, default=str)
     print(f"\nsaved -> {OUT}/phase5_structure_v2.json")

@@ -47,7 +47,7 @@ flowchart TB
     E["③ Masked, imputation-free estimator<br/>pairwise-complete corr → nearest-PD → PAF → masked posterior scores"]:::model
     E --> M
     M["④ Hierarchical / bifactor measurement model · Stages 0–4<br/>194 items → 94 constructs → 4 second-order axes"]:::model
-    M -->|"6 axis scores + 75 construct scores"| ARM{"⑤ Two analysis arms"}
+    M -->|"6 axis scores + 81 construct scores"| ARM{"⑤ Two analysis arms"}
     ARM:::model
     ARM --> DIMA["⑤a Dimensional arm<br/>4 reproducible axes · NO p-factor (ECV 0.34)"]:::arm
     ARM --> STRA["⑤b Stratification arm<br/>masked similarity → spectral embedding → continuum · NO subtypes"]:::arm
@@ -68,7 +68,7 @@ flowchart TB
 | Stage 2 constructs | `32`, `sens_comorbidity` | 9,013 | **94 constructs** | masked 1-factor, `min_pair = 100` |
 | Stage 3 input (Φ₁) | `33` | 9,013 | **81 constructs** | coverage ≥ 0.30, standardized |
 | Stage 3 axes | `33`, `34` | 9,013 | **4 axes (+ general)** | `K` by split-half Tucker ≥ 0.85 |
-| Stratification | `40` | 9,013 | 6 axes / 75 constructs | HDBSCAN, silhouette-vs-null |
+| Stratification | `40` | 9,013 | 6 axes / 81 constructs | HDBSCAN, silhouette-vs-null |
 | Validation D | `45`–`48` | ≤ 3,378 / 1,766 intervals | axes vs DSM | GroupKFold by patient |
 
 ---
@@ -230,7 +230,7 @@ flowchart LR
 flowchart TB
     classDef arm fill:#EAF3EC,stroke:#4E9A5B,color:#111
     classDef model fill:#E3EDF6,stroke:#33414b,color:#111
-    M["second-order scores (6 axes)<br/>+ 75 construct scores"]:::model
+    M["second-order scores (6 axes)<br/>+ 81 construct scores"]:::model
     M --> DA
     M --> SA
 
