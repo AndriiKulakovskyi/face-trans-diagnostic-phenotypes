@@ -9,7 +9,7 @@ guide explains the columns.
 > same name `data/face-common-vars.xlsx`.
 
 ## Files
-- `data/face-common-vars.xlsx` — the v2 dictionary (Sheet1; ~216 rows, **214 usable**, 16 columns)
+- `data/face-common-vars.xlsx` — the v2 dictionary (Sheet1; 223 rows, **199 usable**, 16 columns)
 - `data/{bipolar,schizophrenia,depression}.csv` — visit-level data (confidential, gitignored)
 - `data/site_lookup.csv` — fondacode → site lookup (for `siteid_city`)
 - `data/thesaurus/` — per-cohort source dictionaries (reference)
@@ -25,7 +25,7 @@ guide explains the columns.
   (never clipped, never imputed). Their presence is what flags a dictionary as v2.
 - **Coverage (cohorts present)** — which cohorts contribute data.
 - **Cluster readiness** — READY (3-cohort) / PARTIAL (2-cohort) / NOT USABLE (excluded). The loader
-  keeps **READY + PARTIAL** (214 vars).
+  keeps **READY + PARTIAL** (199 vars).
 - **Canonical name (merged single-cohort)** — the harmonized variable name (the modelled feature).
 
 ## How the package loads it (don't hand-merge)
@@ -61,3 +61,14 @@ dimensions / clusters against them via η², ARI, and per-group composition (Pha
 - Within-column unit mixing (`mchc` g/L vs g/dL; `hct` % vs L/L) is harmonized by v2 rules.
 - **QA**: `scripts/qa_harmonization.py` validates that every variable loads + passes sanity, and
   shows the 3 processing stages per variable (`results/reports/qa_harmonization.html`).
+
+## Known open data caveats
+The sanity bounds + `rules.py` encode the harmonization decisions made during curation (unit fixes,
+sentinel removal, ms→s ECG conversion, text→code maps; e.g. `hct`/`mchc` within-column scale mixing is
+resolved by v2 rules). One minor item remains clinician-pending and does **not** affect the modelled
+features:
+- **Suicide `ltsg07`** — asymmetric "don't know" coding (BP yes/no vs DR yes/no/DK ≈11%); the exact
+  BP↔DR alignment of the rarest high-lethality categories (DR n ≤ 7) is approximate.
+
+(Curation working-notes formerly lived in a root `todo_data_cleaning.md`; every actioned decision is
+now encoded in `data/face-common-vars.xlsx` + `rules.py` and logged in `docs/LABBOOK.md`.)

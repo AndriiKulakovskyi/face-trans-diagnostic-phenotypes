@@ -2,9 +2,9 @@
 
 > A complete, scientifically rigorous map of the analysis, from the three confidential cohort CSVs to
 > the manuscript. Every stage lists its **inputs → operation → outputs**, the **mathematics**, the
-> **parameters**, the **script** that runs it (`scripts/*_v2.py`), and the **artifact** it writes
+> **parameters**, the **script** that runs it (`scripts/*.py`), and the **artifact** it writes
 > (`results/hfa/`). Companion docs: [ROADMAP](ROADMAP.md) · [AGGREGATION_RATIONALE](AGGREGATION_RATIONALE.md)
-> · [HIERARCHICAL_FA_PLAN](HIERARCHICAL_FA_PLAN.md) · [VALIDATION_PLAN_v2](VALIDATION_PLAN_v2.md) ·
+> · [HIERARCHICAL_FA_PLAN](planning/HIERARCHICAL_FA_PLAN.md) · [VALIDATION_PLAN_v2](planning/VALIDATION_PLAN_v2.md) ·
 > [FINDINGS](FINDINGS.md) · [LABBOOK](LABBOOK.md). Manuscript: `results/manuscript/`.
 
 ## Design invariants (hold everywhere below)
@@ -40,16 +40,16 @@ flowchart TB
     SZ --> H
     DR --> H
 
-    H["① Harmonization<br/>214-var dictionary · per-variable sanity bounds · NO imputation"]:::proc
-    H -->|"unified long/wide frame<br/>N = 9,013 patients × ~190 vars"| P
+    H["① Harmonization<br/>199-var dictionary · per-variable sanity bounds · NO imputation"]:::proc
+    H -->|"unified long/wide frame<br/>N = 9,013 patients × ~195 vars"| P
     P["② Three-stage processing<br/>native scale → type-aware [−1,1] → V0 item matrix"]:::proc
-    P -->|"188 V0 items"| E
+    P -->|"194 V0 items"| E
     E["③ Masked, imputation-free estimator<br/>pairwise-complete corr → nearest-PD → PAF → masked posterior scores"]:::model
     E --> M
-    M["④ Hierarchical / bifactor measurement model · Stages 0–4<br/>188 items → 88 constructs → 4 second-order axes"]:::model
-    M -->|"6 axis scores + 75 construct scores"| ARM{"⑤ Two analysis arms"}
+    M["④ Hierarchical / bifactor measurement model · Stages 0–4<br/>194 items → 94 constructs → 4 second-order axes"]:::model
+    M -->|"6 axis scores + 81 construct scores"| ARM{"⑤ Two analysis arms"}
     ARM:::model
-    ARM --> DIMA["⑤a Dimensional arm<br/>4 reproducible axes · NO p-factor (ECV 0.36)"]:::arm
+    ARM --> DIMA["⑤a Dimensional arm<br/>4 reproducible axes · NO p-factor (ECV 0.34)"]:::arm
     ARM --> STRA["⑤b Stratification arm<br/>masked similarity → spectral embedding → continuum · NO subtypes"]:::arm
     DIMA --> V
     STRA --> V
@@ -62,13 +62,13 @@ flowchart TB
 | Stage | Script | Rows | Features | Gate / parameter |
 |---|---|---:|---:|---|
 | Raw cohort CSVs | — | 9,013 (V0) | per-cohort columns | confidential, read-only |
-| Harmonized (long) | `loader` | 9,013 × visits | ~190 vars | `readiness ∈ {READY, PARTIAL}` (214 usable) |
-| V0 item matrix | `30` | 9,013 | **188 items** | drop ids / age·sex (resid.) / confounds / branching-suicide |
+| Harmonized (long) | `loader` | 9,013 × visits | ~195 vars | `readiness ∈ {READY, PARTIAL}` (199 usable) |
+| V0 item matrix | `30` | 9,013 | **194 items** | drop ids / age·sex (resid.) / confounds / branching-suicide |
 | Stage 1 EFA | `31` | 9,013 | **42 factors** | Horn parallel analysis |
-| Stage 2 constructs | `32`, `sens_comorbidity` | 9,013 | **88 constructs** | masked 1-factor, `min_pair = 100` |
-| Stage 3 input (Φ₁) | `33` | 9,013 | **75 constructs** | coverage ≥ 0.30, standardized |
+| Stage 2 constructs | `32`, `sens_comorbidity` | 9,013 | **94 constructs** | masked 1-factor, `min_pair = 100` |
+| Stage 3 input (Φ₁) | `33` | 9,013 | **81 constructs** | coverage ≥ 0.30, standardized |
 | Stage 3 axes | `33`, `34` | 9,013 | **4 axes (+ general)** | `K` by split-half Tucker ≥ 0.85 |
-| Stratification | `40` | 9,013 | 6 axes / 75 constructs | HDBSCAN, silhouette-vs-null |
+| Stratification | `40` | 9,013 | 6 axes / 81 constructs | HDBSCAN, silhouette-vs-null |
 | Validation D | `45`–`48` | ≤ 3,378 / 1,766 intervals | axes vs DSM | GroupKFold by patient |
 
 ---
@@ -85,13 +85,13 @@ flowchart LR
         C2["schizophrenia.csv"]:::data
         C3["depression.csv"]:::data
     end
-    DICT["face-common-vars.xlsx<br/>214 usable variables<br/>+ sanity bounds + coverage"]:::data
+    DICT["face-common-vars.xlsx<br/>199 usable variables<br/>+ sanity bounds + coverage"]:::data
     SRC --> R
     DICT --> R
     R["Variable.source_col(cohort) → per-cohort column<br/>harmonization rule (text→code, unit fixes)"]:::proc
     R --> S["Sanity bound: out-of-range → NaN<br/>(never imputed)"]:::proc
     S --> U["build_unified_dataframe(...)<br/>MultiIndex [cohort, patient_id], visit V0…V4"]:::proc
-    U --> QA["qa_harmonization.py → 3-part HTML report<br/>190/190 load + pass sanity, 0 fail"]:::proc
+    U --> QA["qa_harmonization.py → 3-part HTML report<br/>all variables load + pass sanity, 0 fail"]:::proc
 ```
 
 - **Harmonization registry** (`rules.py`): `@register` transforms (e.g. haematocrit L/L → %, MCHC g/L → g/dL) — 25 registered, 165 identity-cast.
@@ -108,7 +108,7 @@ flowchart TB
     S1["Stage 1 · native clinical scale<br/>TMT seconds · WAIS 1–19 · Likert 0–3 · binary 0/1 · labs in clinical units"]:::proc
     S1 -->|"per-variable type"| S2
     S2["Stage 2 · type-aware scaling to [−1,1]<br/>binary/ordinal → min-max · continuous → log1p? + winsor(1/99) + robust-z, clip ±5"]:::proc
-    S2 -->|"all 190 features ∈ [−1,1]"| S3
+    S2 -->|"all 195 features ∈ [−1,1]"| S3
     S3["Stage 3 · model inputs<br/>aggregate items → construct scores (the actual model inputs)"]:::proc
 ```
 
@@ -129,7 +129,7 @@ flowchart LR
     classDef proc fill:#F2F2EF,stroke:#777,color:#111
     classDef bad  fill:#F3ECEA,stroke:#B5562B,color:#111
     classDef good fill:#EAF3EC,stroke:#4E9A5B,color:#111
-    IT["190 standardized items"]:::proc
+    IT["194 standardized items"]:::proc
     IT --> P1{"feed items directly?"}
     P1 -->|"count/redundancy bias<br/>λ₁ = 1+(m−1)ρ"| B1["a construct's weight ∝ its item count<br/>top-5 instruments = 25% of axes"]:::bad
     P1 -->|"structured missingness<br/>(no-imputation)"| B2["item corr κ ≈ 1.3×10⁹<br/>within-SZ 67% of pairs <100 co-obs"]:::bad
@@ -183,15 +183,15 @@ flowchart TB
     classDef model fill:#E3EDF6,stroke:#33414b,color:#111
     classDef out   fill:#F3ECEA,stroke:#B5562B,color:#111
 
-    S0["Stage 0 · item set — script 30<br/>188 V0 items (incl. 34 recovered labs/vitals)<br/>masked R: κ≈1.3e9 · scree 12.6, 10.1, 6.9 · 54 eig>1"]:::model
+    S0["Stage 0 · item set — script 30<br/>194 V0 items (incl. 34 recovered labs/vitals)<br/>masked R: κ≈1.3e9 · scree 12.6, 10.1, 6.9 · 56 eig>1"]:::model
     S0 -->|"masked item correlation"| S1
     S1["Stage 1 · exploratory EFA — script 31<br/>Horn parallel analysis → 42 nameable first-order factors<br/>leave-BP-out congruence 0.91 (not BP-driven)"]:::model
     S1 -->|"data-revised construct map"| S2
     S2["Stage 2 · first-order constructs — script 32 (+ comorbidity decomp.)<br/>88 within-construct masked 1-factor posteriors → Φ₁<br/>VAF₁: adiposity 0.93 · cholesterol 0.90 · processing-speed 0.87"]:::model
-    S2 -->|"75 constructs (coverage≥30%)<br/>Φ₁ PSD (0% neg-eigen)"| S3
+    S2 -->|"81 constructs (coverage≥30%)<br/>Φ₁ PSD (0% neg-eigen)"| S3
     S3["Stage 3 · second-order — scripts 33, 34<br/>PAF + promax → Λ₂, Φ₂ · Schmid–Leiman ECV · split-half Tucker K"]:::model
-    S3 -->|"K = 4 · ECV = 0.36 · mean|Φ₂| = 0.17"| S4
-    S4["Stage 4 · validation — script 35<br/>confound η²<0.25 · leave-cohort-out ≥0.84 · granularity CCA 0.99/0.93/0.77"]:::model
+    S3 -->|"K = 4 · ECV = 0.34 · mean|Φ₂| = 0.17"| S4
+    S4["Stage 4 · validation — script 35<br/>confound η²<0.25 · leave-cohort-out ≥0.84 · granularity CCA 0.99/0.90/0.79"]:::model
     S4 --> AX["RESULT · 4 trans-diagnostic axes<br/>1 internalizing · 2 cognition · 3 illness-course · 4 cardiometabolic<br/>+ 2 ORTHOGONAL standalones: mania, suicidality (abs r ≤ 0.09)"]:::out
 ```
 
@@ -203,11 +203,11 @@ $$\mathrm{VAF}_1=\lambda_1\big/\textstyle\sum_j\lambda_j.$$
 Splitting multidimensional clinical blocks concentrated signal the flat means had diluted (collapsed metabolic mean $\mathrm{VAF}_1=0.40$ → adiposity 0.93 / cholesterol 0.90 / BP 0.72 / lipids 0.72).
 
 ### Stage 3 — second-order dimensions & the general-factor test
-Factor $\Phi_1$ (75 constructs) → oblique $\Lambda_2,\Phi_2$. A **general factor is tested** by Schmid–Leiman: with $\gamma$ the loadings of the $K$ dimensions on a single second-order factor,
+Factor $\Phi_1$ (81 constructs) → oblique $\Lambda_2,\Phi_2$. A **general factor is tested** by Schmid–Leiman: with $\gamma$ the loadings of the $K$ dimensions on a single second-order factor,
 
 $$g=\Lambda_2\gamma,\qquad S=\Lambda_2\odot\sqrt{1-\gamma^2},\qquad \mathrm{ECV}=\frac{\sum_j g_j^2}{\sum_j g_j^2+\sum_{j,k}S_{jk}^2}.$$
 
-$\mathrm{ECV}=0.36<0.5\Rightarrow$ **no dominant p-factor**.
+$\mathrm{ECV}=0.34<0.5\Rightarrow$ **no dominant p-factor**.
 
 ### `K`-selection (locked by reproducibility, not eigenvalues)
 
@@ -230,12 +230,12 @@ flowchart LR
 flowchart TB
     classDef arm fill:#EAF3EC,stroke:#4E9A5B,color:#111
     classDef model fill:#E3EDF6,stroke:#33414b,color:#111
-    M["second-order scores (6 axes)<br/>+ 75 construct scores"]:::model
+    M["second-order scores (6 axes)<br/>+ 81 construct scores"]:::model
     M --> DA
     M --> SA
 
     subgraph DIM["⑤a Dimensional arm — the result"]
-        DA["4 reproducible axes · weakly correlated (mean abs Φ₂ = 0.17)<br/>NO general p-factor (ECV 0.36)"]:::arm
+        DA["4 reproducible axes · weakly correlated (mean abs Φ₂ = 0.17)<br/>NO general p-factor (ECV 0.34)"]:::arm
     end
 
     subgraph STR["⑤b Stratification arm — script 40"]
@@ -286,7 +286,7 @@ flowchart TB
 
 - **Confound battery (A, D):** categorical $\eta^2=\mathrm{SS}_{\text{between}}/\mathrm{SS}_{\text{total}}$; continuous $R^2$. Flag any axis with $>0.25$.
 - **Reproducibility (A, Stage 4):** Tucker congruence $\phi(a,b)=a^\top b/\sqrt{(a^\top a)(b^\top b)}$, Hungarian-matched; leave-cohort-out and cohort-residualized re-derivations.
-- **Granularity invariance (Stage 4):** canonical correlations $\rho_c=\operatorname{svd}(Q_A^\top Q_B)$ between hierarchical and flat-domain axis scores (anti-circularity; top-3 = 0.99/0.93/0.77, null ≈ 0.04).
+- **Granularity invariance (Stage 4):** canonical correlations $\rho_c=\operatorname{svd}(Q_A^\top Q_B)$ between hierarchical and flat-domain axis scores (anti-circularity; top-3 = 0.99/0.90/0.79, null ≈ 0.04).
 - **Predictive design (D):** nested predictor sets $M_0=\text{age+sex(+baseline)}$, $M_1=M_0+\text{DSM}$, $M_2=M_0+\text{dims}$, $M_3=M_0+\text{both}$, $M_{2x}$ cross-domain (drop internalizing = non-circular). Out-of-sample, cohort-stratified CV; $\Delta R^2/\Delta\mathrm{AUC}$ with bootstrap CIs.
 - **De-confounded relapse (D):** remission-based **discrete-time survival** over person-intervals, $\operatorname{logit}\Pr(T_i=t\mid T_i\ge t,x_i)=\alpha_t+\beta^\top x_i$, **GroupKFold by patient** (no leakage), bootstrap CIs by patient. Removes the regression-to-the-mean confound (baseline AUC 0.765 → 0.578).
 
@@ -298,8 +298,8 @@ flowchart TB
 flowchart LR
     classDef out fill:#F3ECEA,stroke:#B5562B,color:#111
     R["results/hfa/*<br/>(aggregate artifacts; gitignored)"]:::out
-    R --> F["scripts/figures_manuscript_v2.py<br/>→ 6 figures (results/reports/figures/)"]:::out
-    R --> MAN["results/manuscript/manuscript.md<br/>→ build_manuscript_v2.py → FACE_trans_diagnostic_v2.docx"]:::out
+    R --> F["scripts/figures_manuscript.py<br/>→ 6 figures (results/reports/figures/)"]:::out
+    R --> MAN["results/manuscript/manuscript.md<br/>→ build_manuscript.py → FACE_trans_diagnostic_v2.docx"]:::out
     R --> G["tests/test_golden_numbers.py<br/>pins manuscript numbers → results/hfa/ (skip if absent)"]:::out
     DICT2["data + dictionary"] --> VER["scripts/verify.py<br/>harmonization smoke test (v2-calibrated)"]:::out
 ```
@@ -308,20 +308,20 @@ flowchart LR
 
 | Step | Script | Writes (`results/hfa/`) |
 |---|---|---|
-| Stage 0 item set | `30_hfa_stage0_itemset_v2.py` | `stage0_diagnostics_v2.json`, `stage0_items_v2.csv`, `stage0_corr_resid_v2.npz` |
-| Stage 1 EFA | `31_hfa_stage1_efa_v2.py` | `stage1_loadings_v2.csv`, `stage1_construct_purity_v2.csv` |
-| Stage 2 constructs | `32_hfa_stage2_v2.py` (+ `sensitivity_comorbidity_v2.py`) | `stage2_scores_v2.pkl`, `stage2_phi1_v2.csv`, `stage2_construct_fit_v2.csv` |
-| Stage 3 second-order | `33_hfa_stage3_v2.py` | `stage3_loadings_v2.csv`, `stage3_phi2_v2.csv`, `stage3_scores_v2.pkl` |
-| K-selection | `34_hfa_kselect_v2.py` | (console: per-factor congruence) |
-| Stage 4 validation | `35_hfa_stage4_v2.py` | (console: confound / LCO / CCA) |
-| Stratification | `40_phase5_stratify_v2.py` | `phase5_structure_v2.json` |
-| Study A | `42_cohort_confound_v2.py` | `studyA_cohort_confound_v2.json` |
-| Study B | `43_orthogonality_pfactor_v2.py` | `studyB_orthogonality_v2.json` |
-| Study C | `44_longitudinal_coherence_v2.py` | `studyC_longitudinal_v2.json` |
-| Study D (predictive) | `45_predictive_validity_v2.py` | `studyD_predictive_v2.json` |
-| Study D (survival) | `46_predictive_survival_v2.py` | `studyD2_survival_v2.json` |
-| Study D (relapse >0.7) | `47_…richbaseline`, `48_…trajectory` | `studyD3_richbaseline_v2.json`, `studyD4_trajectory_v2.json` |
-| Sensitivity | `sensitivity_aggregation_v2.py`, `…_polychoric_v2.py` | (console / reports) |
+| Stage 0 item set | `30_hfa_stage0_itemset.py` | `stage0_diagnostics.json`, `stage0_items.csv`, `stage0_corr_resid.npz` |
+| Stage 1 EFA | `31_hfa_stage1_efa.py` | `stage1_loadings.csv`, `stage1_construct_purity.csv` |
+| Stage 2 constructs | `32_hfa_stage2.py` (+ `sensitivity_comorbidity.py`) | `stage2_scores.pkl`, `stage2_phi1.csv`, `stage2_construct_fit.csv` |
+| Stage 3 second-order | `33_hfa_stage3.py` | `stage3_loadings.csv`, `stage3_phi2.csv`, `stage3_scores.pkl` |
+| K-selection | `34_hfa_kselect.py` | (console: per-factor congruence) |
+| Stage 4 validation | `35_hfa_stage4.py` | (console: confound / LCO / CCA) |
+| Stratification | `40_phase5_stratify.py` | `phase5_structure.json` |
+| Study A | `42_cohort_confound.py` | `studyA_cohort_confound.json` |
+| Study B | `43_orthogonality_pfactor.py` | `studyB_orthogonality.json` |
+| Study C | `44_longitudinal_coherence.py` | `studyC_longitudinal.json` |
+| Study D (predictive) | `45_predictive_validity.py` | `studyD_predictive.json` |
+| Study D (survival) | `46_predictive_survival.py` | `studyD2_survival.json` |
+| Study D (relapse >0.7) | `47_…richbaseline`, `48_…trajectory` | `studyD3_richbaseline.json`, `studyD4_trajectory.json` |
+| Sensitivity | `sensitivity_aggregation.py`, `…_polychoric.py` | (console / reports) |
 
 ### Parameters & decision rules
 
@@ -333,17 +333,17 @@ flowchart LR
 | coverage floor | 0.30 | min construct coverage to enter Stage 3 | `33_…` |
 | `K_floor` | 0.85 | split-half Tucker congruence threshold | `33_…` |
 | **K** | **4** | number of second-order trans-diagnostic axes | `33`, `34` |
-| **ECV** | **0.36** | general-factor common variance (< 0.5 ⇒ no p-factor) | `33` |
+| **ECV** | **0.34** | general-factor common variance (< 0.5 ⇒ no p-factor) | `33` |
 | confound flag | 0.25 | axis flagged if any $\eta^2/R^2$ exceeds it | `35` |
 
 ---
 
 ### One-line summary of the whole pipeline
 
-> Harmonize three psychoses (N = 9,013) into a 214-variable dictionary → scale by type to [−1,1] →
+> Harmonize three psychoses (N = 9,013) into a 199-variable dictionary → scale by type to [−1,1] →
 > under strict **no-imputation**, estimate a **masked** hierarchical/bifactor measurement model
-> (188 items → 88 constructs → **4 second-order axes**, general factor **tested** and rejected at
-> ECV 0.36) → confirm the structure is **dimensional** (no subtypes) → validate that it is not a
+> (194 items → 94 constructs → **4 second-order axes**, general factor **tested** and rejected at
+> ECV 0.34) → confirm the structure is **dimensional** (no subtypes) → validate that it is not a
 > cohort artifact, that **symptoms are orthogonal to biology** (the p-factor is symptom-only),
 > that it is longitudinally coherent, and that it adds a **modest, honest** prognostic increment
 > over DSM.

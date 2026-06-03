@@ -3,12 +3,12 @@
 Each assertion pins a number the manuscript (``results/manuscript/manuscript.md``) states — with its
 §/Table/Figure location — to the corresponding committed *aggregate* artifact under ``results/hfa/``
 (loadings, correlation matrices, and the Study A–D JSONs hold no per-patient data). If a pipeline
-re-run (scripts 30–48_v2) changes a result, the artifact changes and the matching assertion fails,
+re-run (scripts 30–48) changes a result, the artifact changes and the matching assertion fails,
 forcing a synchronized update of BOTH this test and the manuscript. Tolerances absorb the manuscript's
 rounding (3 decimals) + BLAS round-off.
 
 **v2 model (LABBOOK V2-9..V2-19).** K=4 second-order trans-diagnostic axes — internalizing, cognition,
-illness_course, cardiometabolic — with NO dominant general factor (ECV 0.36) and NO discrete subtypes
+illness_course, cardiometabolic — with NO dominant general factor (ECV 0.34) and NO discrete subtypes
 beyond the DSM cohorts. Mania & suicidality are valid but orthogonal standalone constructs (not axes).
 The v1 K=6 golden numbers are archived at git tag ``v1-archive-2026-05-30`` — do not carry them over.
 
@@ -20,7 +20,7 @@ anhedonia joined internalizing; and the weak-axes caveat gained ``cardiometaboli
 Suicidality stayed orthogonal even after its coverage was recovered.
 
 If the artifacts are absent (a fresh clone that hasn't run the pipeline), the tests skip — results/hfa/
-is gitignored, so run ``python3 scripts/00_run_all.py`` (or scripts 30–48_v2) to regenerate them.
+is gitignored, so run ``python3 scripts/00_run_all.py`` (the v2 pipeline) to regenerate them.
 """
 import json
 from pathlib import Path
@@ -35,7 +35,7 @@ HFA = Path(__file__).resolve().parents[1] / "results" / "hfa"
 def _need(name: str) -> Path:
     p = HFA / name
     if not p.exists():
-        pytest.skip(f"{name} absent — run scripts/30–48_v2 (or 00_run_all.py) to regenerate")
+        pytest.skip(f"{name} absent — run python3 scripts/00_run_all.py to regenerate")
     return p
 
 
@@ -49,11 +49,11 @@ def _csv(name: str, **kw) -> pd.DataFrame:
 
 # ── §2.1 / Table 1 + §2.7 Stage 0 — cohorts, item set, near-singular item correlation ──────
 def test_cohorts_and_itemset():
-    d = _json("stage0_diagnostics_v2.json")
+    d = _json("stage0_diagnostics.json")
     assert d["n_patients"] == 9013                                   # Table 1 total
     assert d["cohort_n"] == {"bp": 6252, "sz": 2209, "dr": 552}      # Table 1 per-cohort
     assert d["n_items"] == 194                                       # §2.7 Stage 0 item set (188 +6: CVLT×3, fluency×2, QIDS-13 anhedonia)
-    assert d["eig_gt1"] >= 50                                        # factorable (54 eigenvalues > 1)
+    assert d["eig_gt1"] >= 50                                        # factorable (56 eigenvalues > 1)
     assert d["eig_top20"][0] > 12 and d["eig_top20"][1] > 9          # scree 12.6, 10.1, …
     # the item correlation is near-singular (κ ≈ 1.3e9) — this MOTIVATES aggregation (§2.6)
     assert d["cond_R"] > 1e8
@@ -61,7 +61,7 @@ def test_cohorts_and_itemset():
 
 # ── §2.6 / §3.1 — aggregation concentrates construct signal (VAF1 wins vs collapsed mean) ───
 def test_construct_unidimensionality():
-    vaf = _csv("stage2_construct_fit_v2.csv").set_index("construct")["vaf1"]
+    vaf = _csv("stage2_construct_fit.csv").set_index("construct")["vaf1"]
     assert vaf["adiposity"] >= 0.90            # 0.93 (collapsed metabolic mean was 0.40)
     assert vaf["cholesterol"] >= 0.85          # 0.90
     assert vaf["autonomic_hr"] >= 0.80         # 0.86 (a recovered vitals construct)
@@ -72,7 +72,7 @@ def test_construct_unidimensionality():
 
 # ── Fig 2 / §3.1 — the four trans-diagnostic axes (top-loading constructs) ──────────────────
 def test_four_axes_loadings():
-    L = _csv("stage3_loadings_v2.csv", index_col=0)
+    L = _csv("stage3_loadings.csv", index_col=0)
     assert {"dim1", "dim2", "dim3", "dim4"}.issubset(L.columns)
     # dim1 internalizing — depression/anxiety/functioning
     assert L.loc["qidsr", "dim1"] >= 0.85 and L.loc["madrs", "dim1"] >= 0.80     # 0.93 / 0.89
@@ -96,31 +96,31 @@ def test_four_axes_loadings():
 
 # ── §3.1 / §3.3 — no dominant general ('p') factor ──────────────────────────────────────────
 def test_no_pfactor():
-    phi2 = _csv("stage3_phi2_v2.csv", index_col=0).to_numpy()
+    phi2 = _csv("stage3_phi2.csv", index_col=0).to_numpy()
     offdiag = np.abs(phi2[np.triu_indices(4, 1)])
     assert offdiag.mean() <= 0.20                                  # weakly correlated axes (mean |Φ₂| 0.17)
     # the integrated-set Schmid–Leiman general factor is weak (pooled = the Stage-3 75-construct set)
-    full = _json("studyB_orthogonality_v2.json")["pooled"]["sets"]["full(all blocks)"]
-    assert abs(full["ecv_k4"] - 0.36) <= 0.05                      # ECV 0.36 → no dominant p-factor
+    full = _json("studyB_orthogonality.json")["pooled"]["sets"]["full(all blocks)"]
+    assert abs(full["ecv_k4"] - 0.34) <= 0.03                      # ECV 0.34 → no dominant p-factor
     assert full["first_factor_share"] <= 0.12                      # 0.094
 
 
 # ── §3.2 / Fig 4 — dimensional, NOT categorical (both arms) ─────────────────────────────────
 def test_dimensional_not_categorical():
-    p = _json("phase5_structure_v2.json")
+    p = _json("phase5_structure.json")
     # arm A (the 4 dims + mania + suicidality): a continuum — HDBSCAN finds at most tiny micro-pockets
     # (<=2 dense, >=85% noise), and those pockets don't track cohort => no real discrete structure.
     assert p["A"]["hdbscan"]["n"] <= 2 and p["A"]["hdbscan"]["noise"] >= 0.85
     assert p["A"]["hdbscan"]["cohort_ari"] <= 0.10                 # micro-pockets are not cohort (0.04)
     assert max(p["A"]["dsm_ari"].values()) <= 0.06                 # k-means vs DSM ARI ≈ 0.03
     assert max(p["A"]["bimodality"]) <= 0.555                      # every axis unimodal (Sarle)
-    # arm B (75 constructs): the ONLY dense clusters are the 3 cohorts themselves
+    # arm B (81 constructs): the ONLY dense clusters are the 3 cohorts themselves
     assert p["B"]["hdbscan"]["n"] == 3 and p["B"]["hdbscan"]["cohort_ari"] >= 0.98   # ARI 1.00
 
 
 # ── §3.3 / Fig 3 — THE HEADLINE: symptoms ⊥ biology; p-factor is symptom-only ───────────────
 def test_orthogonality_headline():
-    b = _json("studyB_orthogonality_v2.json")["BP+DR"]
+    b = _json("studyB_orthogonality.json")["BP+DR"]
     o = b["orthogonality"]
     assert o["biology_symptom"] <= 0.06          # symptom ↔ biology ≈ 0.03 (near-orthogonal)
     assert o["cognition_symptom"] <= 0.10         # symptom ↔ cognition ≈ 0.07
@@ -134,7 +134,7 @@ def test_orthogonality_headline():
 
 # ── §3.4 — the axes are not a cohort artifact (+ the internalizing measurement caveat) ──────
 def test_studyA_cohort_confound():
-    a = _json("studyA_cohort_confound_v2.json")
+    a = _json("studyA_cohort_confound.json")
     assert min(a["cohort_residualized"]["congruence"].values()) >= 0.96   # cohort-residualized ≥0.96
     assert min(a["within_bp"]["congruence"].values()) >= 0.95             # within-BP all four ≥0.95
     assert a["weak_axes"] == ["internalizing", "cardiometabolic"]   # internalizing (SZ proxy) + cardiometabolic (DR n=552 underpowered, congruence 0.35)
@@ -142,7 +142,7 @@ def test_studyA_cohort_confound():
 
 # ── §3.5 / Fig 6 — longitudinal coherence (trait vs state vs fixed-historical) ──────────────
 def test_studyC_longitudinal():
-    c = _json("studyC_longitudinal_v2.json")
+    c = _json("studyC_longitudinal.json")
     inv = c["invariance"]["V2"]
     assert inv["internalizing"] >= 0.95 and inv["cardiometabolic"] >= 0.95   # structure persists (0.98/0.97)
     st = c["stability"]
@@ -153,7 +153,7 @@ def test_studyC_longitudinal():
 
 # ── §3.6 / Fig 5 / Table 3 — predictive validity vs DSM (functioning robust, honest) ───────
 def test_studyD_functioning():
-    d = _json("studyD_predictive_v2.json")
+    d = _json("studyD_predictive.json")
     gaf_est, gaf_ci = d["GAF@V2"]["delta_axes_add_dsm"]
     assert abs(gaf_est - 0.046) <= 0.012 and gaf_ci[0] > 0          # GAF: dims add over DSM, CI excludes 0
     fast_est, fast_ci = d["FAST@V2"]["delta_axes_vs_dsm"]
@@ -163,11 +163,11 @@ def test_studyD_functioning():
 
 # ── §3.6 / Fig 5 — relapse: the regression-to-the-mean confound, removed ────────────────────
 def test_studyD_relapse_deconfounded():
-    d2 = _json("studyD2_survival_v2.json")
+    d2 = _json("studyD2_survival.json")
     assert abs(d2["logistic"]["AUC"]["M0_base"] - 0.578) <= 0.02     # de-confounded baseline (was 0.765)
     add_est, add_ci = d2["logistic"]["d_axes_add_dsm"]
     assert add_est >= 0.02 and add_ci[0] > 0                         # dims add over DSM (+0.036), CI excludes 0
     # AUC ≈ 0.70 is reachable only via early-course (V0+V1) trajectory information
-    d4 = _json("studyD4_trajectory_v2.json")
+    d4 = _json("studyD4_trajectory.json")
     assert d4["logistic"]["AUC"]["+traj"] >= 0.69                    # 0.70
     assert d4["gboost"]["AUC"]["+traj"] >= 0.68                      # 0.696

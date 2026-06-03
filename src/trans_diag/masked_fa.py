@@ -1,10 +1,10 @@
 """Imputation-free factor analysis from a pairwise-complete (masked) correlation matrix.
 
-The dimensional model's primary estimator (07_dimensional_refine.py) and its longitudinal
-projection (08_longitudinal_axes.py) both need a factor model that NEVER fills a missing
-cell — the ablation in MANUSCRIPT §3.8 (LABBOOK E19) showed that mean-filling reweights every
-correlation by co-observation (``corr_fill ≈ O · corr_masked``, ``O = n_AB/√(n_A n_B)``) and so
-partially re-imports the cohort-by-missingness confound at the weakest factor.
+This estimator underlies the whole v2 hierarchical/bifactor pipeline (scripts 30–35): every
+factor model — within-construct, second-order, per-visit, split-half — NEVER fills a missing cell.
+Mean-filling would reweight each correlation by co-observation (``corr_fill ≈ O · corr_masked``,
+``O = n_AB/√(n_A n_B)``) and so partially re-import the cohort-by-missingness confound at the
+weakest factor (derivation: docs/AGGREGATION_RATIONALE.md / docs/PIPELINE.md §3–4).
 
 This module provides that estimator:
   - ``masked_correlation``  : pairwise-complete (masked) correlation → nearest-PD; no cell filled.
@@ -46,7 +46,7 @@ def masked_correlation(sc: pd.DataFrame, min_pair: int = DEFAULT_MIN_PAIR) -> np
     Each entry uses only the patients observed on both domains; pairs with fewer than
     ``min_pair`` co-observed patients (or undefined) are set to 0 (treated as uncorrelated —
     a covariance-matrix choice, not the imputation of any data value)."""
-    R = sc.corr(min_periods=min_pair).to_numpy(float)
+    R = sc.corr(min_periods=min_pair).to_numpy(float).copy()  # writable (newer numpy returns read-only)
     R[~np.isfinite(R)] = 0.0
     np.fill_diagonal(R, 1.0)
     return nearest_pd(R)

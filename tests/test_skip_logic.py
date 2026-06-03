@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 
 from trans_diag.rules import RULES
-from trans_diag.skip_logic import SUICIDE_SKIP_RULES, SkipRule, decode_skip_logic
+from trans_diag.skip_logic import SkipRule, decode_skip_logic
 
 
 def test_fills_structural_zero_only_where_gate_no_and_missing():

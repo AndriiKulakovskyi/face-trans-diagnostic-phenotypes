@@ -186,7 +186,7 @@ def residualize_features(
         from sklearn.model_selection import KFold
         kf = KFold(n_splits=cross_fit, shuffle=True, random_state=random_state)
         for col in out.columns:
-            y = out[col].to_numpy(dtype="float64")
+            y = out[col].to_numpy(dtype="float64").copy()  # writable (newer numpy returns read-only)
             obs = np.where(np.isfinite(y))[0]
             if obs.size < max(min_obs, cross_fit):
                 continue
@@ -198,7 +198,7 @@ def residualize_features(
             out[col] = resid
     else:
         for col in out.columns:
-            y = out[col].to_numpy(dtype="float64")
+            y = out[col].to_numpy(dtype="float64").copy()  # writable (newer numpy returns read-only)
             obs = np.isfinite(y)
             if int(obs.sum()) < min_obs:
                 continue

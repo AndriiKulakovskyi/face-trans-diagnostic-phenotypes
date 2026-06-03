@@ -122,10 +122,8 @@ VERIFY_IMPORTS = [
     # core
     "pandas", "numpy", "scipy", "sklearn", "pydantic", "yaml",
     "openpyxl", "statsmodels", "plotly", "matplotlib",
-    # full extras
-    "torch", "neuroHarmonize", "neuroCombat", "nibabel", "kaleido",
-    # notebook utilities
-    "IPython", "nbformat",
+    # figures extra
+    "kaleido",
     # the package itself
     "trans_diag",
 ]
@@ -143,7 +141,7 @@ def verify_install() -> None:
             failed.append(pkg)
     if failed:
         print(f"\n  WARNING: {len(failed)} package(s) failed to import: {', '.join(failed)}")
-        print("  Some optional deps (e.g. neuroHarmonize, kaleido) may have system-level requirements.")
+        print("  Some optional deps (e.g. kaleido) may have system-level requirements.")
     else:
         print("\n  All imports OK.")
 
@@ -160,8 +158,8 @@ def print_activation_hint() -> None:
       {activate}
 
   Then run the pipeline:
-      python scripts/00_run_all.py      # full manuscript pipeline
-      python -m pytest tests/ -q        # 76 unit + golden-number tests
+      python scripts/00_run_all.py      # full v2 manuscript pipeline
+      python -m pytest tests/ -q        # 99 unit + golden-number tests
       python scripts/verify.py          # harmonization smoke test
 
   Or use the venv Python directly without activating:
