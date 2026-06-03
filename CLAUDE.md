@@ -25,9 +25,10 @@ internalized in `src/trans_diag/engine/` — no external dependency on `face_str
 
 ## Status (v2 — analysis complete)
 
-- ✅ **v2 dictionary finalized + locked** — **214 usable variables** (a re-curated subset of v1's 361),
+- ✅ **v2 dictionary finalized + locked** — **199 usable variables** (READY + PARTIAL, of 223 entries),
   with structured sanity bounds + coverage. Cognition reconciled to `docs/neuropsy_features.yaml`
-  (6 primary 3-cohort WAIS/TMT features + covariates). `qa_harmonization`: 190/190 load + pass sanity, 0 fail.
+  (3-cohort WAIS/TMT + verbal memory/fluency features + covariates). `qa_harmonization`: all variables
+  load + pass sanity, 0 fail.
 - ✅ **Preprocessing debugged + ML-ready** — fixed the robust-z explosion (prolactin |z|≈106→5),
   added **type-aware bounded scaling to [−1,1]**, kept the masked / no-imputation design. QA report
   has the three parts described below.
@@ -56,11 +57,13 @@ This is the debugging surface that must be clean *before* any analysis.
    Puts a lab in the thousands and a 0/1 flag on the same footing and bounds outliers. Verifies:
    every feature lands in [−1,1] (`normalize_for_embedding`, `adapter.py`).
 
-3. **Part 3 — Encoded modelling features (aggregated V0 domain scores) — the actual model inputs.**
+3. **Part 3 — Aggregated V0 domain scores (the QA view of construct-level features).**
    Items are aggregated into **construct-level domain scores** (each item robust-z'd + sign-oriented,
    then a **masked mean** within its instrument/composite; no imputation), at the **baseline V0**
-   visit. These ~69 domain scores — *not* the raw items — are what feed the dimensional FA and the
-   stratification embedding.
+   visit. The *actual model inputs* are the richer **hierarchical/bifactor constructs** (194 items →
+   94 within-construct masked one-factor posteriors → 4 second-order axes; see
+   [docs/PIPELINE.md](docs/PIPELINE.md) §5), which supersede flat masked means; these domain scores
+   remain the interpretable QA cross-check.
 
    **Why aggregate into domain scores (what "Encoded modelling features (aggregated V0 domain scores)" means and why we need it):**
    - **Each construct counts once.** A construct measured by many items (e.g. a 30-item suicide
@@ -69,8 +72,8 @@ This is the debugging surface that must be clean *before* any analysis.
      **item-count weighting bias** (LABBOOK E-series rationale).
    - **More coverage, still no imputation.** A domain score needs only *some* of its items observed
      (masked mean with a min-item floor), so it is far better-covered than any single item.
-   - **Interpretability.** Structure over ~69 *named* clinical constructs (depression, mania,
-     metabolic, cognition…) is interpretable; over ~190 raw items it is noise.
+   - **Interpretability.** Structure over ~90 *named* clinical constructs (depression, mania,
+     metabolic, cognition…) is interpretable; over ~194 raw items it is noise.
    - **Comparable units.** Robust-z'ing each item before averaging lets members on different units
      (mmol/L, mmHg, Likert points) combine sensibly into one construct.
    - **V0 = the analysis anchor.** Dimensions/clusters are *defined* at baseline; later visits
@@ -106,7 +109,7 @@ face-common-bp-sz-dr/
 **`Variable`** (`variable.py`) — one per dictionary row; `source_col(cohort)` → CSV column; carries
 `sanity_min/max` (v2). **Harmonization registry** (`rules.py`) — `@register(...)`; unregistered →
 `identity_cast`. **`build_unified_dataframe(...)`** (`loader.py`) — `readiness=['READY','PARTIAL']`
-(214 vars); auto-detects v2 (any sanity bound present) → applies sanity bounds + v2 rules + fondacode
+(199 vars); auto-detects v2 (any sanity bound present) → applies sanity bounds + v2 rules + fondacode
 site; `format='long'|'wide'`. **`to_harmonized_dataset(...)`** (`adapter.py`) — V0 numeric matrix,
 MultiIndex `[cohort, patient_id]`, optional `residualize_on=('age','sex')`; `normalize_for_embedding`
 = **type-aware scaling to [−1,1]**. **Domain aggregation** (`domains.py`) — items → construct-level

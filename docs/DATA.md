@@ -9,7 +9,7 @@ guide explains the columns.
 > same name `data/face-common-vars.xlsx`.
 
 ## Files
-- `data/face-common-vars.xlsx` — the v2 dictionary (Sheet1; ~216 rows, **214 usable**, 16 columns)
+- `data/face-common-vars.xlsx` — the v2 dictionary (Sheet1; 223 rows, **199 usable**, 16 columns)
 - `data/{bipolar,schizophrenia,depression}.csv` — visit-level data (confidential, gitignored)
 - `data/site_lookup.csv` — fondacode → site lookup (for `siteid_city`)
 - `data/thesaurus/` — per-cohort source dictionaries (reference)
@@ -25,7 +25,7 @@ guide explains the columns.
   (never clipped, never imputed). Their presence is what flags a dictionary as v2.
 - **Coverage (cohorts present)** — which cohorts contribute data.
 - **Cluster readiness** — READY (3-cohort) / PARTIAL (2-cohort) / NOT USABLE (excluded). The loader
-  keeps **READY + PARTIAL** (214 vars).
+  keeps **READY + PARTIAL** (199 vars).
 - **Canonical name (merged single-cohort)** — the harmonized variable name (the modelled feature).
 
 ## How the package loads it (don't hand-merge)

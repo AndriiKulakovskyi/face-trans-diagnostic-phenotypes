@@ -8,7 +8,7 @@ forcing a synchronized update of BOTH this test and the manuscript. Tolerances a
 rounding (3 decimals) + BLAS round-off.
 
 **v2 model (LABBOOK V2-9..V2-19).** K=4 second-order trans-diagnostic axes — internalizing, cognition,
-illness_course, cardiometabolic — with NO dominant general factor (ECV 0.36) and NO discrete subtypes
+illness_course, cardiometabolic — with NO dominant general factor (ECV 0.34) and NO discrete subtypes
 beyond the DSM cohorts. Mania & suicidality are valid but orthogonal standalone constructs (not axes).
 The v1 K=6 golden numbers are archived at git tag ``v1-archive-2026-05-30`` — do not carry them over.
 
@@ -53,7 +53,7 @@ def test_cohorts_and_itemset():
     assert d["n_patients"] == 9013                                   # Table 1 total
     assert d["cohort_n"] == {"bp": 6252, "sz": 2209, "dr": 552}      # Table 1 per-cohort
     assert d["n_items"] == 194                                       # §2.7 Stage 0 item set (188 +6: CVLT×3, fluency×2, QIDS-13 anhedonia)
-    assert d["eig_gt1"] >= 50                                        # factorable (54 eigenvalues > 1)
+    assert d["eig_gt1"] >= 50                                        # factorable (56 eigenvalues > 1)
     assert d["eig_top20"][0] > 12 and d["eig_top20"][1] > 9          # scree 12.6, 10.1, …
     # the item correlation is near-singular (κ ≈ 1.3e9) — this MOTIVATES aggregation (§2.6)
     assert d["cond_R"] > 1e8
@@ -101,7 +101,7 @@ def test_no_pfactor():
     assert offdiag.mean() <= 0.20                                  # weakly correlated axes (mean |Φ₂| 0.17)
     # the integrated-set Schmid–Leiman general factor is weak (pooled = the Stage-3 75-construct set)
     full = _json("studyB_orthogonality_v2.json")["pooled"]["sets"]["full(all blocks)"]
-    assert abs(full["ecv_k4"] - 0.36) <= 0.05                      # ECV 0.36 → no dominant p-factor
+    assert abs(full["ecv_k4"] - 0.34) <= 0.03                      # ECV 0.34 → no dominant p-factor
     assert full["first_factor_share"] <= 0.12                      # 0.094
 
 

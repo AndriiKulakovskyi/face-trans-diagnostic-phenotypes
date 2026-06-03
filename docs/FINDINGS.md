@@ -1,14 +1,20 @@
 # FINDINGS — FACE trans-diagnostic study (v2) — running log
 
 Paper-oriented log of empirical + methodological findings on the **v2** dictionary. Every number
-must be reproducible from the pipeline. **No analysis results yet** — the dimensional analysis and
-stratification have not been re-run on v2.
+must be reproducible from the pipeline. **The v2 analysis is complete** (dimensional + stratification
++ validation A–D; manuscript delivered).
 
+> **Headline (verified against `results/hfa/`, post-2026-06-03 dictionary review):** 9,013 patients;
+> **194** V0 items → **94** constructs → **K=4** axes (internalizing · cognition · illness-course ·
+> cardiometabolic); **no p-factor** (ECV **0.34**); dimensional, no subtypes. Some intermediate counts
+> in the dated sub-sections below predate that review (the item set was 188 → 194); the K=4 backbone
+> and every verdict held — see `docs/LABBOOK.md` V2-21.
+>
 > The v1 findings log is archived at git tag `v1-archive-2026-05-30`. Do **not** carry over v1 numbers.
 
 ## Settled — data processing
-- **v2 dictionary:** 214 usable variables (a re-curated subset of v1's 361); `qa_harmonization`
-  reports 190/190 load + pass sanity (0 fail).
+- **v2 dictionary:** 199 usable variables (READY + PARTIAL, of 223 entries); `qa_harmonization`
+  reports all variables load + pass sanity (0 fail).
 - **Type-aware scaling to [−1, 1]**; robust-z explosion fixed (prolactin |z|≈106→5); **masked /
   no-imputation** design kept (no hard missingness drop).
 - See the 3-part QA report (`results/reports/qa_harmonization.html`) and CLAUDE.md §"Data processing".
@@ -29,7 +35,7 @@ Rationale + full evidence: [AGGREGATION_RATIONALE.md](AGGREGATION_RATIONALE.md).
   no-imputation. Plan: [HIERARCHICAL_FA_PLAN.md](HIERARCHICAL_FA_PLAN.md).
 
 ### First-order structure (Stages 0–2, scripts 30–32_v2)
-- **Item set:** 188 V0 items (every valid measurement; identifiers/covariates/confounds/branching-
+- **Item set:** 194 V0 items (every valid measurement; identifiers/covariates/confounds/branching-
   suicide/collinear excluded). Factorable (scree 12.6, 10.1, 6.9…); near-singular (plain KMO undefined).
 - **Data-driven EFA (Stage 1):** 42 nameable first-order factors; **independently confirms** the
   aggregation problems — metabolic splits into adiposity/BP/lipids/cholesterol, CTQ *denial* splits
@@ -45,13 +51,13 @@ Rationale + full evidence: [AGGREGATION_RATIONALE.md](AGGREGATION_RATIONALE.md).
 - **Limitations:** C-SSRS sparse (6–16% coverage; ISF `suicidal_ideation` 0.91 is the usable
   suicidality dim); somatic-comorbidity constructs are weak (0.26–0.50; thin signal); some lab panels
   weakly unidimensional (electrolytes 0.34, red-cell 0.43). **K of the final trans-diagnostic axes is
-  NOT yet locked** — Stage 3 (second-order, split-half congruence, ECV/ωH) pending. Model: 88 constructs.
+  NOT yet locked** — Stage 3 (second-order, split-half congruence, ECV/ωH) pending. Model: 94 constructs.
 
 ### Second-order structure (Stage 3, script 33_v2) — PROVISIONAL (pre-validation)
-Φ₁ of 75 constructs (coverage ≥30%, standardized) is well-conditioned (0% neg-eigen mass). K by
+Φ₁ of 81 constructs (coverage ≥30%, standardized) is well-conditioned (0% neg-eigen mass). K by
 masked split-half congruence = **4** (reproducible K2–4 at 0.94–0.98; first collapse K5; the naive
 "max-K" rule was a *caught bug* → would have over-extracted to K=10 with Heywood loadings). Solution
-proper (0 Heywood). **General factor weak: ECV 0.36 → no dominant p-factor** (multidimensional).
+proper (0 Heywood). **General factor weak: ECV 0.34 → no dominant p-factor** (multidimensional).
 **Four reproducible trans-diagnostic dimensions:**
 1. **Internalizing** (depression–anxiety–functioning) · 2. **Cognitive impairment** ·
 3. **Illness course** (later-onset / lower-chronicity) · 4. **Cardiometabolic–inflammatory**.
@@ -59,7 +65,7 @@ proper (0 Heywood). **General factor weak: ECV 0.36 → no dominant p-factor** (
   good construct); later-onset+burden merged. `axes.py` names are stale v1.
 ### Validation (Stage 4, script 35_v2) — the 4-dim solution PASSES
 - **Confound-clean:** no dim explained >0.25 by cohort/sex/age/site/missingness (max: cognition
-  cohort η²=0.16, with educ 0.16 a genuine correlate). **No p-factor** (ECV 0.36).
+  cohort η²=0.16, with educ 0.16 a genuine correlate). **No p-factor** (ECV 0.34).
 - **Trans-diagnostic + valid:** internalizing highest in DR, cognition worst in SZ; η² cohort ≤0.16
   (dims cut across diagnoses, not cohort markers).
 - **Reproducible:** leave-cohort-out Tucker congruence min 0.84 (drop BP) / 0.90 (drop SZ) / 0.99 (drop DR).

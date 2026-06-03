@@ -22,7 +22,8 @@ no external dependency on the sister `face_stratification` / `face_rlvr` project
 2. **Type-aware scaling to [−1, 1]** — binary/ordinal → min-max; continuous → log-if-skewed +
    winsorize + robust-z clipped ±5.
 3. **Aggregated V0 domain scores** — items → construct-level scores (masked mean of robust-z; no
-   imputation) — the ~69 features that actually enter the models.
+   imputation). The model itself uses the richer **hierarchical/bifactor constructs** (194 items →
+   94 → K=4 axes; see [docs/PIPELINE.md](docs/PIPELINE.md)).
 
 The QA report (`scripts/qa_harmonization.py` → `results/reports/qa_harmonization.html`) shows all
 three, per variable. **Why aggregate to domain scores?** so each construct counts once (no

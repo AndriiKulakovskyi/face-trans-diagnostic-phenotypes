@@ -9,7 +9,7 @@ Across bipolar disorder, schizophrenia and depression (FACE), is trans-diagnosti
 strata)? Re-derived from zero on the re-curated v2 dictionary — no imputation, confound-controlled.
 
 ## Design
-- **Data:** v2 dictionary (214 vars), **V0** anchor; masked / no-imputation throughout. Later
+- **Data:** v2 dictionary (199 usable vars), **V0** anchor; masked / no-imputation throughout. Later
   visits (V1, V2…) test temporal coherence, they don't define the structure.
 - **Processing:** harmonize → type-aware scale to [−1, 1] → aggregate to V0 **domain scores**
   (see CLAUDE.md §"Data processing" and the 3-part QA report).
@@ -24,10 +24,10 @@ strata)? Re-derived from zero on the re-curated v2 dictionary — no imputation,
 - ✅ **Phase 3** — clean slate: v1 generated artifacts removed; conclusion docs reset to v2 stubs.
 - ✅ **Phase 4** — dimensional analysis on v2 (scripts `30–35_v2`): hierarchical/bifactor measurement
   model → **K=4** trans-diagnostic axes (internalizing · cognition · illness-course · cardiometabolic),
-  **no p-factor** (ECV 0.36); confound-clean, leave-cohort-out reproducible, granularity-invariant.
+  **no p-factor** (ECV 0.34); confound-clean, leave-cohort-out reproducible, granularity-invariant.
 - ✅ **Phase 5** — patient stratification on v2 (`40_phase5_stratify_v2.py`): **DIMENSIONAL / continuum**,
   no discrete subtypes beyond the DSM cohorts. Validation arm A–D (`42–48_v2`).
 - ✅ **Phase 6** — manuscript + 6 figures from v2 results (`results/manuscript/FACE_trans_diagnostic_v2.docx`,
   `scripts/figures_manuscript_v2.py`); golden tests + `verify.py` **re-baselined to v2** (`pytest` green
-  — 91 passed; `verify.py` green). v2 pipeline = scripts `30–48_v2`; the legacy `00_run_all.py`/`01–22`
-  orchestrator is superseded.
+  — 99 passed; `verify.py` green). v2 pipeline = scripts `30–48_v2`; the legacy `01–22` pipeline is
+  removed (recoverable at tag `v1-archive-2026-05-30`).

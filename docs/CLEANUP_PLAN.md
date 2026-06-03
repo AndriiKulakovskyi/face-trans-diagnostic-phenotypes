@@ -55,11 +55,13 @@ other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scr
   export `ORTHOGONAL_DIMENSIONS`, repoint the 4 importers + `test_axes.py`.
 - ✅ **P0.3** Fix regeneration instructions that claim `00_run_all.py` rebuilds `results/hfa/`
   (`test_golden_numbers.py` docstring + skip message).
-- ⬜ **P0.4** Reconcile headline numbers to one script-computed source of truth and propagate. The
-  variable count disagrees across sources (199 live READY+PARTIAL / 214 docs / ~216 `DATA.md` / 220
-  manuscript) — **needs a decision on what "usable variable" counts**; `n_items = 194` is the
-  test-pinned truth. Items 188→194, constructs 88→94, ECV 0.36→0.34, canonical r `0.99/0.93/0.77`→
-  `0.99/0.90/0.79`. *(Deferred to the P2 documentation pass; verify each against `results/hfa/`.)*
+- ✅ **P0.4** Reconciled headline numbers against `results/hfa/` and propagated to the docs + golden
+  test: **194** items, **94** constructs, **81** Stage-3 inputs, **ECV 0.34**, **56** eig>1, canonical
+  r **0.99/0.90/0.79**; dictionary **199 usable** (READY+PARTIAL) of **223** entries.
+  **Flagged for the scientist (not doc bugs):** (a) the manuscript says "220-variable dictionary" —
+  it counts curated entries minus identifiers, a *different denominator* than the 199 usable; reconcile
+  the wording in the paper. (b) `40_phase5_stratify_v2` hardcodes the arm-B label "75 construct scores"
+  while Stage-3 uses 81 — verify the stratification construct set vs. a stale label.
 
 ## P1 — Remove the v1 layer
 
@@ -70,14 +72,17 @@ other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scr
 
 ## P2 — Documentation rewrite (point everything at "what it is now")
 
-- ⬜ **P2.1** Rewrite entry docs fully; add the (currently unlinked) `docs/PIPELINE.md` to `README`.
-- ⬜ **P2.2** Sync numbers (P0.4) in `FINDINGS.md`, `PIPELINE.md`, `ROADMAP.md`, `DATA.md`; fix
-  `FINDINGS.md`'s false opening "No analysis results yet …" and `ROADMAP.md`'s "91 passed" (now 99).
+- ✅ **P2.1** Entry docs rewritten (P0.1); `docs/PIPELINE.md` linked from `README`; the stale flat-
+  domain methodology ("~69 domain scores … feed the model") corrected to the hierarchical constructs
+  in `CLAUDE.md` + `README.md`.
+- ✅ **P2.2** Numbers synced in `FINDINGS`/`PIPELINE`/`ROADMAP`/`DATA`/`CLAUDE` + golden test; fixed
+  `FINDINGS.md`'s false opening "No analysis results yet …" and `ROADMAP.md`'s "91 passed" (→99).
 - ⬜ **P2.3** Archive the executed pre-registration plans (`HIERARCHICAL_FA_PLAN.md`,
   `VALIDATION_PLAN_v2.md`, `MANUSCRIPT_PLAN.md`) to `docs/planning/` with an "executed" banner — they
   are future-tense and have drifted (propose a `hierarchical_fa.py` module never built; planned output
   paths `results/hfa_items.csv` ≠ actual `results/hfa/stage0_items_v2.csv`).
-- ⬜ **P2.4** Add the missing final `LABBOOK.md` entry (V2-21) for the 2026-06-03 dictionary review.
+- ✅ **P2.4** Added `LABBOOK.md` V2-21 (the 2026-06-03 dictionary review: 188→194 items, 88→94
+  constructs, ECV 0.36→0.34, memory-anchored cognition, suicide skip-logic).
 - ⬜ **P2.5** Remove/relocate root `todo_data_cleaning.md` (17KB working notes, mostly executed,
   references a stale `face-common-vars-v2.xlsx` filename); fold open caveats into `DATA.md`.
 - ⬜ Rewrite `CLAUDE.md`'s "three stages / why aggregate" section: it still describes the **flat

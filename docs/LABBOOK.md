@@ -347,3 +347,19 @@ The v2 dimensional model is **rigorous and partially useful, not transformative*
   threshold 100→75 (v2 adds 86). **`pytest` green: 91 passed; `verify.py` green.** (Golden tests skip on
   a clean clone — `results/hfa/` is gitignored; regenerate via scripts 30–48_v2.)
 - **PHASE 6 COMPLETE — the v2 study is fully delivered** (analysis · validation · manuscript · figures · tests).
+
+## V2-21 · Dictionary review — CVLT / fluency / anhedonia + suicide skip-logic — 2026-06-03
+A late dictionary review added six variables and decoded the suicide skip-logic; the **K=4 backbone,
+the dimensional verdict, and the no-p-factor result all held**.
+- **Added** (BP/SZ verbal memory + 3-cohort fluency + QIDS anhedonia): CVLT total / short-delay /
+  long-delay free recall, verbal fluency (phonemic + semantic), QIDS item-13 anhedonia → item set
+  **188 → 194**; first-order constructs **88 → 94**; Stage-3 input (coverage ≥30%) **75 → 81**.
+- **Suicide skip-logic decoded** (`src/trans_diag/skip_logic.py`): the ISF gate items propagate
+  structural zeros to their dependents, recovering attempt-count coverage (≈25–38% → 72–92%).
+- **What changed:** the **cognition axis is now memory-anchored** (CVLT leads dim2; its sign flipped,
+  magnitudes preserved); **anhedonia joined internalizing**; **ECV 0.36 → 0.34** (still no p-factor);
+  the weak-axes caveat gained **cardiometabolic** (DR n=552 underpowered). **Suicidality stayed
+  orthogonal** even after its coverage was recovered → its standalone status is structural, not a
+  missing-data artifact.
+- **Synced:** `results/manuscript/manuscript.md`, `tests/test_golden_numbers.py`, `tests/test_skip_logic.py`;
+  the v2 docs (`FINDINGS`/`PIPELINE`/`ROADMAP`/`DATA`/`CLAUDE`) re-synced to these numbers in the cleanup.
