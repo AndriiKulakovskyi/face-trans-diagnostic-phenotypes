@@ -119,10 +119,16 @@ other `_v2` scripts; `outcomes.py`/`axes.py` are imported only by the legacy scr
   repo-root-relative paths + `cwd=ROOT` in `build_manuscript_v2`'s pandoc call, but the `.docx` build
   can't be verified here (no pandoc), so it's left for a tested pass; regenerate `requirements.lock` on
   Python 3.11 (it still pins the removed torch/neuro deps; `pip-compile` is unavailable here).
-- ✅ **CI lint gate is now green.** `ruff check .` passes (was **150** errors). Fix: added **E402** to
-  the curated `[tool.ruff.lint] ignore` (with rationale — scripts insert `src/` on `sys.path` before
-  importing `trans_diag`), plus ruff autofixes (F541/B905/I001/unused-imports) and 2 manual edits
-  (a `rules.py` `isinstance` PEP-604 modernization; a `# noqa: E712` preserving a NaN-safe filter).
+- ✅ **CI is now fully green** (lint **and** tests, on CI's latest deps — [PR #3]). Three layers, each
+  surfaced by the previous fix letting CI get further:
+  1. **ruff 150 → 0**: added **E402** to the curated `[tool.ruff.lint] ignore` (rationale: scripts
+     insert `src/` on `sys.path` before importing `trans_diag`) + autofixes + 2 manual.
+  2. CI's newer ruff then flagged **UP042** → modernized the two engine enums to `StrEnum` and
+     **pinned `ruff==0.12.0`** in `[dev]` so CI runs the same ruleset as local (the unpinned `>=0.6`
+     was the root cause of the surprise).
+  3. CI's newer **numpy** then exposed a latent read-only-array bug — `DataFrame.to_numpy()` returns
+     read-only views on newer numpy, and `masked_fa.masked_correlation` / `adapter.residualize_features`
+     mutate them in place → defensive `.copy()` at the two sites (math-identical; golden numbers unchanged).
 
 ---
 
