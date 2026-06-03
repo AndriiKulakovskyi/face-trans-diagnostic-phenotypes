@@ -78,8 +78,6 @@ proper (0 Heywood). **General factor weak: ECV 0.34 → no dominant p-factor** (
   `results/hfa/stage3_loadings.csv`. K=6 sensitivity (adds cardiac/somatic-history + childhood-
   trauma) also confound-clean.
 
-[TODO — lock axis names in a v2 source-of-truth; dimensional figures; outcomes vs DSM; Phase 5 stratification.]
-
 ## Track 2 — patient stratification (v2)
 **Verdict: DIMENSIONAL (continuum), not discrete** (`scripts/40_phase5_stratify.py`). Structure test
 on **A = 6 axes** (4 dims + mania + suicidal_ideation) and **B = 81 construct scores** (masked engine
