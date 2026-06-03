@@ -6,10 +6,11 @@ and/or **categorical** (patient strata). We harmonize the 3-cohort longitudinal 
 → 4-year V4) with **no imputation** (masked methods) and re-derive every result from zero on a
 re-curated ("v2") common-variables dictionary.
 
-> **Status — v2 restart.** The dictionary is finalized (**214 usable variables**) and the
-> preprocessing is debugged + ML-ready (**type-aware scaling to [−1, 1]**, no imputation); the
-> dimensional analysis and patient stratification have **not** yet been re-run on v2. The prior
-> v1 study is archived at git tag `v1-archive-2026-05-30`. Project guide: **[CLAUDE.md](CLAUDE.md)**.
+> **Status — v2 complete.** The dimensional analysis and patient stratification have been
+> re-derived from zero on the re-curated dictionary: **four trans-diagnostic axes** (K=4, no
+> *p*-factor), a **dimensional** (not categorical) structure, and a four-study validation arm
+> (A–D). The manuscript and six figures are delivered (`results/manuscript/`). The prior v1 study
+> is archived at git tag `v1-archive-2026-05-30`. Project guide: **[CLAUDE.md](CLAUDE.md)**.
 
 The repo is **self-contained** — the stratification engine (masked similarity →
 multipartite-spectral embedding, enrichment) is internalized in `src/trans_diag/engine/`; there is
@@ -30,20 +31,20 @@ interpretable over named constructs. Full rationale in [CLAUDE.md](CLAUDE.md).
 
 ## Repository structure
 ```
-├── MANUSCRIPT.md  CLAUDE.md  AGENTS.md  README.md   ← paper skeleton + guides
+├── CLAUDE.md  AGENTS.md  README.md             ← guides (project paper: results/manuscript/manuscript.md)
 ├── data/            face-common-vars.xlsx (v2 dict) · thesaurus/ · *.csv (confidential) · site_lookup.csv
-├── src/trans_diag/  variable·rules·loader·filters · schema_gen·adapter·domains · masked_fa·axes·outcomes · engine/
-├── scripts/         method pipeline 01–22 (00_run_all) + qa_harmonization · verify · audit
-├── tests/           unit + golden-number tests (golden skip until v2 results exist)
-├── results/         regenerated aggregates + reports/qa_harmonization.html (empty on a clean tree)
-└── docs/            ROADMAP · DATA · FINDINGS · LABBOOK · neuropsy_features.yaml
+├── src/trans_diag/  variable·rules·loader·filters · schema_gen·adapter·domains · masked_fa·axes·skip_logic · engine/
+├── scripts/         v2 pipeline 30–48_v2 (hierarchical FA → stratify → validate) + qa_harmonization · verify · audit
+├── tests/           unit + golden-number tests (pinned to results/hfa/; skip on a clean clone)
+├── results/         regenerated aggregates: hfa/ · manuscript/ · reports/ (gitignored; empty on a clean tree)
+└── docs/            PIPELINE · ROADMAP · DATA · FINDINGS · LABBOOK · neuropsy_features.yaml
 ```
 
 ## Quick start
 ```bash
 pip install -e ".[full]"                 # core + torch + neuroHarmonize + kaleido
 python3 scripts/qa_harmonization.py      # the 3-part data-processing QA report (clean this first)
-python3 -m pytest tests/ -q              # unit tests (golden tests skip until v2 results exist)
+python3 -m pytest tests/ -q              # unit + golden tests (golden tests skip on a clean clone)
 ```
 ```python
 from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
@@ -54,7 +55,9 @@ ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), vis
 ```
 
 ## Documentation
-- **[CLAUDE.md](CLAUDE.md)** — project guide + the data-processing pipeline (the central read).
+- **[CLAUDE.md](CLAUDE.md)** — project guide (the central read).
+- **[docs/PIPELINE.md](docs/PIPELINE.md)** — the end-to-end analysis pipeline (diagrams + math).
+- **Manuscript** — [results/manuscript/manuscript.md](results/manuscript/manuscript.md) (→ `.docx`).
 - **[docs/ROADMAP.md](docs/ROADMAP.md)** · **[docs/FINDINGS.md](docs/FINDINGS.md)** ·
   **[docs/LABBOOK.md](docs/LABBOOK.md)** · **[docs/DATA.md](docs/DATA.md)** ·
   **[docs/neuropsy_features.yaml](docs/neuropsy_features.yaml)** (cognition include-list).

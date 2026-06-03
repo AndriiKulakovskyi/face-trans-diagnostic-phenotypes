@@ -1,10 +1,10 @@
 """Imputation-free factor analysis from a pairwise-complete (masked) correlation matrix.
 
-The dimensional model's primary estimator (07_dimensional_refine.py) and its longitudinal
-projection (08_longitudinal_axes.py) both need a factor model that NEVER fills a missing
-cell — the ablation in MANUSCRIPT §3.8 (LABBOOK E19) showed that mean-filling reweights every
-correlation by co-observation (``corr_fill ≈ O · corr_masked``, ``O = n_AB/√(n_A n_B)``) and so
-partially re-imports the cohort-by-missingness confound at the weakest factor.
+This estimator underlies the whole v2 hierarchical/bifactor pipeline (scripts 30–35_v2): every
+factor model — within-construct, second-order, per-visit, split-half — NEVER fills a missing cell.
+Mean-filling would reweight each correlation by co-observation (``corr_fill ≈ O · corr_masked``,
+``O = n_AB/√(n_A n_B)``) and so partially re-import the cohort-by-missingness confound at the
+weakest factor (derivation: docs/AGGREGATION_RATIONALE.md / docs/PIPELINE.md §3–4).
 
 This module provides that estimator:
   - ``masked_correlation``  : pairwise-complete (masked) correlation → nearest-PD; no cell filled.

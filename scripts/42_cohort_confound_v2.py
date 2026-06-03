@@ -29,7 +29,7 @@ import pandas as pd
 from factor_analyzer import Rotator
 from scipy.optimize import linear_sum_assignment
 
-from trans_diag.axes_v2 import AXIS_NAMES
+from trans_diag.axes import AXIS_NAMES
 from trans_diag.masked_fa import masked_correlation, paf_loadings
 
 warnings.simplefilter("ignore")

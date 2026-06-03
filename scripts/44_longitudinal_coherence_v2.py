@@ -30,7 +30,7 @@ from scipy.optimize import linear_sum_assignment
 from scipy.stats import spearmanr
 
 from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
-from trans_diag.axes_v2 import AXIS_NAMES
+from trans_diag.axes import AXIS_NAMES
 from trans_diag.domains import _robust_z
 from trans_diag.masked_fa import masked_correlation, masked_scores, paf_loadings
 

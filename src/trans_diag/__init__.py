@@ -1,4 +1,4 @@
-from .axes import AXIS_INDEX_TO_NAME, AXIS_LABELS, AXIS_NAMES, AXIS_SHORT
+from .axes import AXIS_INDEX_TO_NAME, AXIS_LABELS, AXIS_NAMES, AXIS_SHORT, ORTHOGONAL_DIMENSIONS
 from .filters import (
     IDENTIFIER_COLUMNS,
     PatientFilterReport,
@@ -82,4 +82,5 @@ __all__ = [
     "AXIS_SHORT",
     "AXIS_LABELS",
     "AXIS_INDEX_TO_NAME",
+    "ORTHOGONAL_DIMENSIONS",
 ]

@@ -1,12 +1,12 @@
-"""Guards for the v2 axis-name source of truth (``trans_diag.axes_v2``).
+"""Guards for the v2 axis-name source of truth (``trans_diag.axes``).
 
 These catch axis-name/order drift: the v2 hierarchical model (scripts 30–35_v2, LABBOOK V2-9..V2-12)
 re-locked the structure at **K=4** — internalizing, cognition, illness_course, cardiometabolic — with
-mania & suicidality demoted to *orthogonal standalone* dimensions (|r| ≤ 0.09), NOT axes. ``axes_v2``
-is the canonical map written for the manuscript and downstream code; ``axes.py`` holds the superseded
-v1 6-axis solution (kept only for the legacy v1 scripts) and is intentionally not tested here.
+mania & suicidality demoted to *orthogonal standalone* dimensions (|r| ≤ 0.09), NOT axes.
+``trans_diag.axes`` is the canonical map written for the manuscript and downstream code. (The
+superseded v1 6-axis solution is archived at git tag ``v1-archive-2026-05-30``.)
 """
-from trans_diag.axes_v2 import (
+from trans_diag.axes import (
     AXIS_INDEX_TO_NAME,
     AXIS_LABELS,
     AXIS_NAMES,

@@ -1,6 +1,6 @@
 # CLAUDE.md — FACE trans-diagnostic phenotyping (BP · SZ · DR) — v2 study
 
-> Guide for collaborators and AI assistants. Keep it short. Paper: [MANUSCRIPT.md](MANUSCRIPT.md).
+> Guide for collaborators and AI assistants. Keep it short. Paper: [results/manuscript/manuscript.md](results/manuscript/manuscript.md).
 > Plan: [docs/ROADMAP.md](docs/ROADMAP.md). Dictionary: [docs/DATA.md](docs/DATA.md).
 > Findings: [docs/FINDINGS.md](docs/FINDINGS.md) · Lab notebook: [docs/LABBOOK.md](docs/LABBOOK.md).
 > **Pipeline diagram (end-to-end): [docs/PIPELINE.md](docs/PIPELINE.md).**
@@ -23,7 +23,7 @@ assumed. Work happens on branch `v2-study`.
 The stratification **engine** (masked similarity → multipartite-spectral embedding, enrichment) is
 internalized in `src/trans_diag/engine/` — no external dependency on `face_stratification`/`face_rlvr`.
 
-## Status (v2 — the analysis has NOT been run yet)
+## Status (v2 — analysis complete)
 
 - ✅ **v2 dictionary finalized + locked** — **214 usable variables** (a re-curated subset of v1's 361),
   with structured sanity bounds + coverage. Cognition reconciled to `docs/neuropsy_features.yaml`
@@ -36,7 +36,8 @@ internalized in `src/trans_diag/engine/` — no external dependency on `face_str
   figures delivered** (`results/manuscript/`, `scripts/figures_manuscript_v2.py`). **Golden-number tests
   + `verify.py` re-baselined to v2** — `tests/test_golden_numbers.py` pins the manuscript's headline
   numbers to `results/hfa/` (pass locally; skip on a clean clone since `results/hfa/` is gitignored).
-  The legacy `01–22` scripts + the `MANUSCRIPT.md` skeleton are superseded by the `*_v2` pipeline.
+  The legacy `01–22` pipeline and the old manuscript skeleton have been removed from the tree;
+  they remain recoverable at git tag `v1-archive-2026-05-30`.
 
 ## Data processing — three stages (= the QA report's three Parts)
 
@@ -79,21 +80,21 @@ This is the debugging surface that must be clean *before* any analysis.
 
 ```
 face-common-bp-sz-dr/
-├── MANUSCRIPT.md  CLAUDE.md  AGENTS.md  README.md   ← paper + guides (root)
+├── CLAUDE.md  AGENTS.md  README.md    ← guides (root; paper at results/manuscript/manuscript.md)
 ├── data/                              ← inputs (read-only)
-│   ├── face-common-vars.xlsx          ← v2 common-variables dictionary (214 usable; tracked)
+│   ├── face-common-vars.xlsx          ← v2 common-variables dictionary (tracked)
 │   ├── thesaurus/                     ← per-cohort source dictionaries (tracked, reference)
 │   └── {bipolar,schizophrenia,depression}.csv · site_lookup.csv   ← data (confidential; gitignored except site_lookup)
 ├── src/trans_diag/                    ← the package (all our code)
 │   ├── variable·rules·loader·filters.py        ← harmonization + sanity bounds
 │   ├── schema_gen·adapter·domains.py           ← matrix build, type-aware scaling, domain aggregation
-│   ├── masked_fa·axes·outcomes.py              ← imputation-free FA, axis names, outcome models
+│   ├── masked_fa·axes·skip_logic.py            ← imputation-free FA, axis names, suicide skip-logic
 │   └── engine/                                 ← internalized stratification engine (masked, no imputation)
-├── scripts/                           ← method pipeline (00_run_all → 01–22) + qa_harmonization/verify/audit
+├── scripts/                           ← v2 pipeline (30–48_v2: hierarchical FA → stratify → validate) + qa_harmonization/verify/audit
 ├── tests/                             ← unit + v2 golden-number tests (pinned to results/hfa/; skip on a clean clone)
-├── results/                           ← regenerated AGGREGATE artifacts (empty on a clean tree; .gitkeep)
+├── results/                           ← regenerated AGGREGATE artifacts: hfa/ · manuscript/ · reports/ (empty on a clean tree; .gitkeep)
 │   └── reports/qa_harmonization.html  ← the 3-part QA report
-├── notebooks/  docs/                  ← reproduction notebook · ROADMAP·DATA·FINDINGS·LABBOOK·neuropsy_features.yaml
+├── docs/                              ← PIPELINE·ROADMAP·DATA·FINDINGS·LABBOOK·neuropsy_features.yaml
 └── pyproject.toml
 ```
 
@@ -132,15 +133,23 @@ ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), vis
 # ds.X: MultiIndex[cohort, patient_id] × numeric features (NaN = missing, never imputed)
 ```
 
-## Pipeline (`scripts/`) — reusable method code, NOT yet re-run on v2
+## Pipeline (`scripts/`) — the v2 analysis, in execution order
 
-Numbered in execution order: `01_manuscript_table1` → `02_confound_ladder` → `03_cluster_domains`
-(domain scores + embedding) → `04_structure_test` (discrete-vs-dimensional) → `05_dimensional_axes`
-(varimax FA) → `06_dimensional_ae` (AE cross-check) → `07_dimensional_refine` (lock K by masked
-split-half) → `08/09` longitudinal → `10/11/12` outcomes → `13` ComBat site → `15` review/confound
-battery → `16/17/18` figures → `19` p-factor → `20/21` CV-refit + leave-cohort-out replication →
-`22` screening panel. **Re-deriving these on v2 (Phase 4/5) is the next work** — every K, axis, ARI,
-and outcome is to be re-determined; do not assume the v1 values.
+The hierarchical/bifactor measurement model + validation arm (all masked / no-imputation), writing
+aggregate artifacts to `results/hfa/`:
+
+- **Stages 0–4** — `30_hfa_stage0_itemset_v2` (freeze the V0 item set) → `31_hfa_stage1_efa_v2`
+  (exploratory first-order) → `32_hfa_stage2_v2` (hybrid first-order constructs) → `33_hfa_stage3_v2`
+  (second-order: **K=4** axes; general factor tested via Schmid–Leiman ECV) → `34_hfa_kselect_v2`
+  (per-factor split-half K) → `35_hfa_stage4_v2` (confound / leave-cohort-out / granularity validation).
+- **Stratification** — `40_phase5_stratify_v2` (discrete-vs-continuum battery → **dimensional**).
+- **Validation A–D** — `41_v1v4_inventory_v2` (relapse derivation) → `42_cohort_confound_v2` (A) ·
+  `43_orthogonality_pfactor_v2` (B, the headline) · `44_longitudinal_coherence_v2` (C) ·
+  `45`–`48` predictive (D: prognosis vs DSM).
+- **Sensitivity** — `sensitivity_{aggregation,comorbidity,polychoric}_v2`.
+- **Outputs** — `figures_manuscript_v2` (6 figures) · `build_manuscript_v2` (→ `.docx`).
+
+End-to-end diagram + mathematics: **[docs/PIPELINE.md](docs/PIPELINE.md)**.
 
 ## Conventions
 
@@ -155,4 +164,4 @@ and outcome is to be re-determined; do not assume the v1 values.
 - **Pipeline (end-to-end diagram + math)** → [docs/PIPELINE.md](docs/PIPELINE.md)
 - **Plan** → [docs/ROADMAP.md](docs/ROADMAP.md) · **Dictionary columns** → [docs/DATA.md](docs/DATA.md)
 - **Findings (v2 log)** → [docs/FINDINGS.md](docs/FINDINGS.md) · **Lab notebook** → [docs/LABBOOK.md](docs/LABBOOK.md)
-- **Paper skeleton** → [MANUSCRIPT.md](MANUSCRIPT.md) · **Engine internals** → `src/trans_diag/engine/`
+- **Manuscript** → [results/manuscript/manuscript.md](results/manuscript/manuscript.md) · **Engine internals** → `src/trans_diag/engine/`

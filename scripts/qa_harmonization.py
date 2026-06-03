@@ -302,7 +302,7 @@ def compute_domain_records(df: pd.DataFrame, variables: list) -> list[dict]:
             rec["ok"] = False
         else:
             rec["checks"].append(("PASS", f"variance ok (sd={std:.2f})"))
-        # coverage vs the 30% modelling floor (03_cluster_domains drops below it)
+        # coverage vs the 30% modelling floor (constructs below it are dropped from Stage 3)
         if cov < 0.05:
             rec["checks"].append(("FAIL", f"coverage {cov:.0%} — far too sparse to model"))
             rec["ok"] = False
