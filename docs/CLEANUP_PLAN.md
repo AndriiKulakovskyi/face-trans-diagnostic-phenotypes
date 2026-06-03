@@ -117,11 +117,12 @@ other v2 scripts; `outcomes.py`/`axes.py` are imported only by the legacy script
 
 - 🔜 **P4** Done: deleted `.env.example`; removed dead `ai`/`combat`/`notebook` extras + trimmed
   `install.py`; **updated CI push triggers** (`main`, `v2-study`); confirmed `neuropsy_features.yaml`
-  already lists the CVLT/fluency features. **Remaining (need a build/network unavailable here):**
-  `manuscript.md`'s 6 figure paths are absolute `/Users/…` (broken on any other machine) — the fix is
-  repo-root-relative paths + `cwd=ROOT` in `build_manuscript`'s pandoc call, but the `.docx` build
-  can't be verified here (no pandoc), so it's left for a tested pass; regenerate `requirements.lock` on
-  Python 3.11 (it still pins the removed torch/neuro deps; `pip-compile` is unavailable here).
+  already lists the CVLT/fluency features; **fixed the manuscript figure paths** → `../reports/figures/`
+  (relative to the `.md`) + `--resource-path={manuscript dir}` in `build_manuscript`, so they render in
+  a markdown viewer AND the pandoc build (verified: built the `.docx` from a clean cwd with pandoc 3.8,
+  all 6 figures embedded; markdown links resolve). **Remaining:** regenerate `requirements.lock` on
+  Python 3.11 (it still pins the removed torch/neuro deps; `pip-compile` is unavailable here — a
+  one-liner via `install.py --lock` once it can run).
 - ✅ **CI is now fully green** (lint **and** tests, on CI's latest deps — [PR #3]). Three layers, each
   surfaced by the previous fix letting CI get further:
   1. **ruff 150 → 0**: added **E402** to the curated `[tool.ruff.lint] ignore` (rationale: scripts
