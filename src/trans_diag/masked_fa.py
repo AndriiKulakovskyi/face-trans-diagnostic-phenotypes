@@ -46,7 +46,7 @@ def masked_correlation(sc: pd.DataFrame, min_pair: int = DEFAULT_MIN_PAIR) -> np
     Each entry uses only the patients observed on both domains; pairs with fewer than
     ``min_pair`` co-observed patients (or undefined) are set to 0 (treated as uncorrelated —
     a covariance-matrix choice, not the imputation of any data value)."""
-    R = sc.corr(min_periods=min_pair).to_numpy(float)
+    R = sc.corr(min_periods=min_pair).to_numpy(float).copy()  # writable (newer numpy returns read-only)
     R[~np.isfinite(R)] = 0.0
     np.fill_diagonal(R, 1.0)
     return nearest_pd(R)
