@@ -23,13 +23,13 @@
   "cca_observed": [
     0.965,
     0.886,
-    0.875,
-    0.746,
-    0.62,
+    0.874,
+    0.744,
+    0.622,
     0.541,
-    0.133
+    0.136
   ],
-  "cca_null_leading_p95": 0.057,
+  "cca_null_leading_p95": 0.058,
   "cca_null_leading_mean": 0.048,
   "cohort_from_mask_bacc": 0.98,
   "cohort_from_embedding_bacc": 1.0,

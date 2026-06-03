@@ -191,8 +191,8 @@ def main() -> None:
     create_venv(force=args.force)
     upgrade_pip()
 
-    # generate lock file if it doesn't exist yet, or if --lock was passed
-    if not LOCK_FILE.exists() or args.lock:
+    # generate lock file if it doesn't exist yet, or if --lock/--force was passed
+    if not LOCK_FILE.exists() or args.lock or args.force:
         generate_lock(include_dev=not args.no_dev)
 
     install_from_lock()

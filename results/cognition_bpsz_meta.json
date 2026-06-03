@@ -11,8 +11,8 @@
   ],
   "outcome_egf": {
     "n": 2477,
-    "symptom_axes_R2": 0.4027220559142326,
-    "symptom_plus_cognition_R2": 0.405234606969511,
-    "delta": 0.0025125510552784225
+    "symptom_axes_R2": 0.4027220559142558,
+    "symptom_plus_cognition_R2": 0.4052346069695285,
+    "delta": 0.002512551055272705
   }
 }

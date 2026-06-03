@@ -185,7 +185,7 @@ def residualize_features(
             out[col] = resid
     else:
         for col in out.columns:
-            y = out[col].to_numpy(dtype="float64")
+            y = out[col].to_numpy(dtype="float64").copy()
             obs = np.isfinite(y)
             if int(obs.sum()) < min_obs:
                 continue

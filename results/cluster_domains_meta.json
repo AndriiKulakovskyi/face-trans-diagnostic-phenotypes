@@ -36,17 +36,17 @@
   "embedding_dim": 36,
   "headline_k": 5,
   "cluster_sizes": {
-    "0": 1962,
+    "0": 1963,
     "1": 2252,
-    "2": 1267,
+    "2": 1266,
     "3": 1430,
     "4": 2102
   },
   "independence": {
-    "sex_cramersV": 0.041477922784239646,
+    "sex_cramersV": 0.041137849339669165,
     "age_dcor": 0.11713795487907723,
-    "age_tertile_ari": 0.005545742780459529,
-    "cohort_ari": 0.001664277220429034
+    "age_tertile_ari": 0.005574362357277787,
+    "cohort_ari": 0.001638142524143064
   },
   "site_note": "site (siteid_city) excluded; ComBat sensitivity analysis deferred (task #43)"
 }

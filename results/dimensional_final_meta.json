@@ -15,53 +15,53 @@
   "reproducibility_curve": [
     {
       "k": 3,
-      "min_congruence": 0.9804515154976841,
-      "mean_congruence": 0.9864132121377479
+      "min_congruence": 0.9804515154977029,
+      "mean_congruence": 0.9864132121377818
     },
     {
       "k": 4,
-      "min_congruence": 0.9670926763872953,
-      "mean_congruence": 0.9840347703668357
+      "min_congruence": 0.9670926763873959,
+      "mean_congruence": 0.9840347703668597
     },
     {
       "k": 5,
-      "min_congruence": 0.8882438813701007,
-      "mean_congruence": 0.9658042232125291
+      "min_congruence": 0.8882438813719087,
+      "mean_congruence": 0.9658042232129211
     },
     {
       "k": 6,
-      "min_congruence": 0.8855665091114058,
-      "mean_congruence": 0.9553307904557812
+      "min_congruence": 0.8855665091099691,
+      "mean_congruence": 0.9553307904556824
     },
     {
       "k": 7,
-      "min_congruence": 0.9112714269324862,
-      "mean_congruence": 0.9611858647820386
+      "min_congruence": 0.9112714269320478,
+      "mean_congruence": 0.9611858647820269
     },
     {
       "k": 8,
-      "min_congruence": 0.2162383523006628,
-      "mean_congruence": 0.8095794564287985
+      "min_congruence": 0.2162383522975286,
+      "mean_congruence": 0.8095794564278987
     },
     {
       "k": 9,
-      "min_congruence": 0.8068390870386823,
-      "mean_congruence": 0.929093418730326
+      "min_congruence": 0.8068390870406422,
+      "mean_congruence": 0.9290934187309394
     },
     {
       "k": 10,
-      "min_congruence": 0.7970414552213188,
-      "mean_congruence": 0.9210805198069119
+      "min_congruence": 0.7970414552213348,
+      "mean_congruence": 0.9210805198069745
     },
     {
       "k": 11,
-      "min_congruence": 0.7613254283340166,
-      "mean_congruence": 0.9214737514001019
+      "min_congruence": 0.7613254283327862,
+      "mean_congruence": 0.9214737513999522
     },
     {
       "k": 12,
-      "min_congruence": 0.4324895788892588,
-      "mean_congruence": 0.8933726061190552
+      "min_congruence": 0.4324895788933779,
+      "mean_congruence": 0.8933726061195643
     }
   ],
   "dsm_ordering_per_axis": [
