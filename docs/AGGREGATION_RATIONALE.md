@@ -1,14 +1,17 @@
-# Aggregation rationale — from 190 harmonized variables to nameable trans-diagnostic dimensions
+# Aggregation rationale — from ~195 harmonized variables to nameable trans-diagnostic dimensions
 
 > Methods rationale + empirical evidence. Contributes to `results/manuscript/manuscript.md` (Methods + Supplement).
 > Status: **rationale settled; method (hierarchical/bifactor, hybrid) chosen; analysis plan in
 > [HIERARCHICAL_FA_PLAN.md](planning/HIERARCHICAL_FA_PLAN.md).** All numbers below are from internal
 > analyses on the v2 V0 data (BP 6252 / SZ 2209 / DR 552; 9013 patients), reproducible via the
-> sensitivity scripts noted in the plan.
+> sensitivity scripts noted in the plan. The deeper illustrative counts below (e.g. 177 item-columns,
+> 69 flat domains) are from the internal flat-domain analysis that *motivated* aggregation; the final
+> pipeline uses **194 V0 items → 94 hierarchical constructs** (see [PIPELINE.md](PIPELINE.md)). The
+> count/conditioning/missingness argument is unchanged by the +6-variable 2026-06-03 review.
 
 ## TL;DR
 
-After harmonization and type-aware scaling, the V0 matrix holds **190 features**. Feeding them
+After harmonization and type-aware scaling, the V0 matrix holds **195 features**. Feeding them
 *directly* to a dimensional, clustering, or deep model is **not** "ready for analysis": two
 problems that standardization does **not** touch distort the result —
 
@@ -26,9 +29,9 @@ of flat averaging while keeping the axes nameable and the design imputation-free
 
 ## 1. The setting
 
-- **190 modelling features** at the baseline visit **V0** (the analysis anchor; V1/V2… are reserved
-  to test *temporal coherence*, not to define structure). 193 variables load from the three cohort
-  CSVs against the common-variables dictionary; 3 are identifiers, leaving 190 features.
+- **195 modelling features** at the baseline visit **V0** (the analysis anchor; V1/V2… are reserved
+  to test *temporal coherence*, not to define structure). 198 variables load from the three cohort
+  CSVs against the common-variables dictionary; 3 are identifiers, leaving 195 features.
 - Features span clinical sections (auto/hetero-questionnaires, suicide, evaluation, antecedents,
   substances, social, hospitalization), **biology** (labs, vitals/ECG), and **cognition** (WAIS/TMT).
 - **Ragged granularity.** Some instruments arrive only as a precomputed **total** (MADRS, YMRS,

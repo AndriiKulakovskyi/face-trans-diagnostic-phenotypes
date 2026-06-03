@@ -40,8 +40,8 @@ flowchart TB
     SZ --> H
     DR --> H
 
-    H["① Harmonization<br/>214-var dictionary · per-variable sanity bounds · NO imputation"]:::proc
-    H -->|"unified long/wide frame<br/>N = 9,013 patients × ~190 vars"| P
+    H["① Harmonization<br/>199-var dictionary · per-variable sanity bounds · NO imputation"]:::proc
+    H -->|"unified long/wide frame<br/>N = 9,013 patients × ~195 vars"| P
     P["② Three-stage processing<br/>native scale → type-aware [−1,1] → V0 item matrix"]:::proc
     P -->|"194 V0 items"| E
     E["③ Masked, imputation-free estimator<br/>pairwise-complete corr → nearest-PD → PAF → masked posterior scores"]:::model
@@ -108,7 +108,7 @@ flowchart TB
     S1["Stage 1 · native clinical scale<br/>TMT seconds · WAIS 1–19 · Likert 0–3 · binary 0/1 · labs in clinical units"]:::proc
     S1 -->|"per-variable type"| S2
     S2["Stage 2 · type-aware scaling to [−1,1]<br/>binary/ordinal → min-max · continuous → log1p? + winsor(1/99) + robust-z, clip ±5"]:::proc
-    S2 -->|"all 190 features ∈ [−1,1]"| S3
+    S2 -->|"all 195 features ∈ [−1,1]"| S3
     S3["Stage 3 · model inputs<br/>aggregate items → construct scores (the actual model inputs)"]:::proc
 ```
 
@@ -129,7 +129,7 @@ flowchart LR
     classDef proc fill:#F2F2EF,stroke:#777,color:#111
     classDef bad  fill:#F3ECEA,stroke:#B5562B,color:#111
     classDef good fill:#EAF3EC,stroke:#4E9A5B,color:#111
-    IT["190 standardized items"]:::proc
+    IT["194 standardized items"]:::proc
     IT --> P1{"feed items directly?"}
     P1 -->|"count/redundancy bias<br/>λ₁ = 1+(m−1)ρ"| B1["a construct's weight ∝ its item count<br/>top-5 instruments = 25% of axes"]:::bad
     P1 -->|"structured missingness<br/>(no-imputation)"| B2["item corr κ ≈ 1.3×10⁹<br/>within-SZ 67% of pairs <100 co-obs"]:::bad
@@ -340,7 +340,7 @@ flowchart LR
 
 ### One-line summary of the whole pipeline
 
-> Harmonize three psychoses (N = 9,013) into a 214-variable dictionary → scale by type to [−1,1] →
+> Harmonize three psychoses (N = 9,013) into a 199-variable dictionary → scale by type to [−1,1] →
 > under strict **no-imputation**, estimate a **masked** hierarchical/bifactor measurement model
 > (194 items → 94 constructs → **4 second-order axes**, general factor **tested** and rejected at
 > ECV 0.34) → confirm the structure is **dimensional** (no subtypes) → validate that it is not a
