@@ -1,13 +1,14 @@
-"""Pydantic v2 schema + loader for the unified transdiagnostic V1 feature dictionary.
+"""Pydantic v2 schema for the internalized stratification engine's feature matrix.
 
-The schema is loaded from ``config/face_stratification/feature_schema.yaml`` at
-runtime and validated with ``extra="forbid"`` everywhere — any typo in YAML
-fails loudly at load time rather than silently producing a bad matrix.
+``trans_diag.schema_gen.build_feature_schema`` builds a ``FeatureSchema`` directly from the
+common-variables dictionary (validated with ``extra="forbid"`` everywhere — any typo fails loudly
+rather than silently producing a bad matrix). The engine consumes that schema to describe its blocks
+and features.
 
-V1-only invariants enforced here:
+Invariants enforced here:
 
 - ``UnifiedFeature.temporal_scope`` cannot be ``trajectory``. A feature may be
-  ``current`` (measured at the baseline visit), ``lifetime`` (lifetime history
+  ``current`` (measured at the baseline visit V0), ``lifetime`` (lifetime history
   up to and including the baseline visit), or ``static`` (time-invariant
   demographics / developmental / family history). Anything longitudinal is
   rejected.
@@ -25,11 +26,8 @@ without extra indirection.
 from __future__ import annotations
 
 from enum import StrEnum
-from functools import lru_cache
-from pathlib import Path
 from typing import Literal
 
-import yaml
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 # ─── Enums ────────────────────────────────────────────────────────────────────
@@ -56,7 +54,7 @@ class TemporalScope(StrEnum):
     STATIC = "static"  # time-invariant (sex, developmental, family)
 
 
-# Canonical cohort codes used across face_rlvr.
+# Canonical cohort codes.
 _VALID_COHORTS: frozenset[str] = frozenset({"bp", "sz", "dr", "asp"})
 
 
@@ -67,8 +65,8 @@ class FeatureBlock(BaseModel):
     """A logical grouping of related features used for graph edge construction.
 
     The ``min_shared_features`` and ``min_fraction_present`` fields control the
-    semantic overlap edge constraint (see
-    :mod:`face_stratification.graph.patient_similarity`):
+    semantic overlap edge constraint (used by the engine's
+    patient-similarity graph builder):
 
     - ``min_fraction_present``: a patient must have at least this fraction of
       the block's features measured to be considered as a candidate node in
@@ -152,7 +150,7 @@ class TransdiagnosticSelectionConfig(BaseModel):
 
 
 class UnifiedFeature(BaseModel):
-    """One column of the unified V1 feature matrix.
+    """One column of the unified feature matrix.
 
     Features are per-patient (single value) and strictly cross-sectional:
     they describe the baseline visit or a static / lifetime attribute. Any
@@ -304,47 +302,3 @@ class FeatureSchema(BaseModel):
             if b.id == block_id:
                 return b
         raise KeyError(f"Unknown block id: {block_id!r}")
-
-
-# ─── Loader ───────────────────────────────────────────────────────────────────
-
-
-def _default_schema_path() -> Path:
-    """Resolve the shipped feature_schema.yaml.
-
-    Looks first next to the repo's ``config/face_stratification/`` directory
-    (development checkout) and falls back to the wheel-bundled copy under
-    ``face_stratification/_config_data/``.
-    """
-    here = Path(__file__).resolve()
-    # Development layout: <repo>/src/face_stratification/harmonization/feature_schema.py
-    repo_root_candidate = here.parents[3]
-    dev_path = repo_root_candidate / "config" / "face_stratification" / "feature_schema.yaml"
-    if dev_path.is_file():
-        return dev_path
-
-    # Wheel-installed layout (matches pyproject force-include)
-    wheel_path = here.parents[1] / "_config_data" / "feature_schema.yaml"
-    if wheel_path.is_file():
-        return wheel_path
-
-    raise FileNotFoundError(
-        "feature_schema.yaml not found. Checked:\n"
-        f"  - {dev_path}\n"
-        f"  - {wheel_path}"
-    )
-
-
-@lru_cache(maxsize=8)
-def load_feature_schema(path: str | Path | None = None) -> FeatureSchema:
-    """Load and validate the unified feature schema from YAML.
-
-    The result is cached on the resolved path so repeated calls in a process
-    are free. Pass ``path=None`` to get the shipped default schema.
-    """
-    resolved = Path(path) if path is not None else _default_schema_path()
-    with resolved.open("r", encoding="utf-8") as fh:
-        raw = yaml.safe_load(fh)
-    if not isinstance(raw, dict):
-        raise ValueError(f"{resolved}: top-level YAML must be a mapping")
-    return FeatureSchema.model_validate(raw)

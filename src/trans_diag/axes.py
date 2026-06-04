@@ -1,65 +1,65 @@
-"""Canonical names for the seven trans-diagnostic dimensional axes — single source of truth.
+"""Canonical names for the v2 trans-diagnostic dimensions — single source of truth.
 
-The dimensional model (``07_dimensional_refine.py``) writes its axes as generic ``axis1``…``axis7``
-in ``dimensional_final_{scores.parquet,loadings.csv}``, ordered by descending sum-of-squares of
-the loadings. This module fixes the *interpretation* of that order so downstream scripts and the
-manuscript don't each re-hardcode the names (which drift).
+The v2 hierarchical/bifactor pipeline (scripts/30-35_*.py) re-derived the dimensional structure
+from zero. It writes generic ``dim1``..``dim4`` in ``results/hfa/stage3_loadings.csv`` (paf order,
+descending eigenvalue). This module fixes their interpretation so downstream code + the manuscript
+do not re-hardcode names.
 
-History: the imputation-free re-derivation first renamed axis 6 from "adhd_impulsivity_trauma" to
-"work_disability" (the mean-fill ADHD/trauma axis was a co-observation artifact; §3.8). Locking
-the model at K=7 (the maximum reproducible dimensionality; split-half min >=0.85 through K=7,
-collapse at K>=8) then *split* the K=6 mania/activation+impulsivity axis into a pure mania axis
-and a distinct externalizing/neurodevelopmental axis — the genuine, imputation-free counterpart
-of that ADHD/trauma signal. The SS order therefore changed: illness-burden now precedes the
-(purified) mania axis, and the externalizing axis enters at position 5.
+(The superseded v1 6-axis solution — depression, later_onset, mania_activation, illness_burden,
+cognition_verbal, metabolic — is archived at git tag ``v1-archive-2026-05-30`` and is not used here.)
 
-  ``axis1`` → depression_severity     (Depression / internalizing)
-  ``axis2`` → later_onset             (Later onset)
-  ``axis3`` → illness_burden          (Illness / hospitalization burden)
-  ``axis4`` → mania_activation        (Mania / activation — pure)
-  ``axis5`` → externalizing           (Externalizing / neurodevelopmental: impulsivity, childhood ADHD, early adversity)
-  ``axis6`` → metabolic               (Metabolic / inflammatory)
-  ``axis7`` → work_disability         (Socio-occupational / work-disability)
+History (LABBOOK V2-9..V2-11): on the re-curated v2 dictionary + the hybrid measurement model, the
+structure locks at **K=4** (per-factor split-half congruence; K=6 sensitivity adds cardiac/somatic-
+history + childhood-trauma). There is **no general p-factor** (ECV 0.36). The four axes are confound-
+clean, leave-cohort-out reproducible, and granularity-invariant (Stage 4). Crucially, **mania and
+suicidality are valid, well-measured constructs that are ORTHOGONAL to the four axes** (|r| <= 0.09):
+they do not share enough variance with the others to anchor a second-order factor, so they are
+reported as independent standalone dimensions, NOT as part of the correlated trans-diagnostic
+structure. (This is why v2 has no separate "mania" axis, unlike v1.)
 
-Import from the package: ``from trans_diag import AXIS_NAMES, AXIS_SHORT, AXIS_LABELS``.
-If 07's axis ordering is ever re-locked, update only this file.
+  ``dim1`` -> internalizing      (depression / anxiety / poor functioning; higher = more severe)
+  ``dim2`` -> cognition          (cognitive impairment; higher = more impaired)
+  ``dim3`` -> illness_course     (age of onset + inverse hospitalization burden; higher = LATER onset / LOWER chronicity)
+  ``dim4`` -> cardiometabolic    (metabolic + inflammatory + autonomic burden; higher = worse)
+
+Import: ``from trans_diag import AXIS_NAMES, AXIS_SHORT, AXIS_LABELS, ORTHOGONAL_DIMENSIONS``.
+If Stage 3's dim ordering is ever re-locked, update only this file.
 """
 from __future__ import annotations
 
-# snake_case names in axis1..axis7 (sum-of-squares) order — the order 07 writes.
+# snake_case names in dim1..dim4 (paf / descending-eigenvalue) order — the order stage 33 writes.
 AXIS_NAMES: list[str] = [
-    "depression_severity",
-    "later_onset",
-    "illness_burden",
-    "mania_activation",
-    "externalizing",
-    "metabolic",
-    "work_disability",
+    "internalizing",
+    "cognition",
+    "illness_course",
+    "cardiometabolic",
 ]
 
 # Short display labels (compact figure axes, tables).
 AXIS_SHORT: dict[str, str] = {
-    "depression_severity": "Depression",
-    "later_onset": "Later onset",
-    "illness_burden": "Illness burden",
-    "mania_activation": "Mania",
-    "externalizing": "Externalizing",
-    "metabolic": "Metabolic",
-    "work_disability": "Work-disability",
+    "internalizing": "Internalizing",
+    "cognition": "Cognition",
+    "illness_course": "Illness course",
+    "cardiometabolic": "Cardiometab-infl",
 }
 
-# Full descriptive labels (figure titles, captions).
+# Full descriptive labels (figure titles, captions) — including polarity.
 AXIS_LABELS: dict[str, str] = {
-    "depression_severity": "Depression / internalizing",
-    "later_onset": "Later onset",
-    "illness_burden": "Illness / hospitalization burden",
-    "mania_activation": "Mania / activation",
-    "externalizing": "Externalizing / neurodevelopmental (impulsivity, childhood ADHD, early adversity)",
-    "metabolic": "Metabolic / inflammatory",
-    "work_disability": "Socio-occupational / work-disability",
+    "internalizing": "Internalizing (depression / anxiety / poor functioning) — higher = more severe",
+    "cognition": "Cognitive impairment — higher = more impaired",
+    "illness_course": "Illness course (onset + inverse burden) — higher = later onset / lower chronicity",
+    "cardiometabolic": "Cardiometabolic–inflammatory burden — higher = worse",
 }
 
-# Map the generic axis index (as written by 07: "axis1".."axis7") to the canonical name.
-AXIS_INDEX_TO_NAME: dict[str, str] = {f"axis{i + 1}": n for i, n in enumerate(AXIS_NAMES)}
+# dim index (as written by stage 33: "dim1".."dim4") -> canonical name.
+AXIS_INDEX_TO_NAME: dict[str, str] = {f"dim{i + 1}": n for i, n in enumerate(AXIS_NAMES)}
 
-__all__ = ["AXIS_NAMES", "AXIS_SHORT", "AXIS_LABELS", "AXIS_INDEX_TO_NAME"]
+# Valid, well-measured constructs that are ORTHOGONAL to the four correlated axes (|r| <= 0.09;
+# Stage 4). Reported as independent standalone dimensions — included as features in stratification,
+# but NOT part of the correlated trans-diagnostic factor structure.
+ORTHOGONAL_DIMENSIONS: dict[str, str] = {
+    "mania_activation": "Mania / activation (Altman + YMRS) — orthogonal standalone dimension",
+    "suicidal_ideation": "Suicidal ideation (ISF) — orthogonal standalone dimension",
+}
+
+__all__ = ["AXIS_NAMES", "AXIS_SHORT", "AXIS_LABELS", "AXIS_INDEX_TO_NAME", "ORTHOGONAL_DIMENSIONS"]

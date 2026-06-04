@@ -1,7 +1,7 @@
 """Generate the engine's ``FeatureSchema`` from our common-variables dictionary.
 
-The vendored ``face_stratification`` engine describes its feature matrix with a
-strict pydantic :class:`FeatureSchema` (blocks + features). To drive that engine
+The internalized stratification engine (``trans_diag.engine``) describes its feature
+matrix with a strict pydantic :class:`FeatureSchema` (blocks + features). To drive that engine
 from OUR pipeline we translate the common-variables dictionary into the same
 vocabulary:
 
@@ -16,7 +16,7 @@ and ``direction`` to ``none`` (we have not curated clinical sign conventions).
 Neither field is read by the embedding/clustering code — they exist so the
 engine's optional block-level and clinical-panel analyses can run later.
 
-See ``face_stratification.harmonization.feature_schema`` for the target model.
+See ``trans_diag.engine.feature_schema`` for the target model.
 """
 from __future__ import annotations
 

@@ -30,6 +30,7 @@ import pandas as pd
 from .engine import HarmonizedDataset
 from .filters import IDENTIFIER_COLUMNS
 from .schema_gen import DEFAULT_SCHEMA_VERSION, build_feature_schema, feature_cohorts
+from .skip_logic import decode_skip_logic
 from .variable import Variable
 
 __all__ = [
@@ -48,11 +49,14 @@ COHORT_TO_CODE = {"BP": "bp", "SZ": "sz", "DR": "dr"}
 # confound, not a clinical axis). Scripts pass these via ``exclude=``.
 ADMINISTRATIVE_FEATURES = frozenset({"siteid_city"})
 
-# Dictionary sections that carry psychiatric phenotype (symptoms, illness course,
-# functioning, history). Used via ``sections=`` to cluster on clinical signal and
-# drop physiology (labs, vitals/anthropometry), cognition (neuropsych — strongly
-# missingness/availability-confounded) and raw demographics, which otherwise
-# dominate cosine similarity and produce sex×age strata rather than phenotypes.
+# Dictionary sections that carry psychiatric *symptom* phenotype (symptoms, illness
+# course, functioning, history). Used via ``sections=`` to cluster on clinical signal and
+# drop raw demographics, which otherwise dominate similarity and produce sex×age strata.
+# Biology (labs/vitals) and cognition (neuropsych) are deliberately NOT in this set: each
+# has its own curated-aggregation path (BIOLOGY_COMPOSITES, COGNITIVE_COMPOSITES in
+# domains.py) so item-count and units don't distort them. Cognition was excluded entirely
+# before 2026 because DR coverage was 0% (an extraction artifact); with DR recovered it now
+# enters the model as curated constructs and its availability is checked explicitly (15).
 CLINICAL_SECTIONS = frozenset({
     "AUTO-QUESTIONNAIRES",
     "HETERO-QUESTIONNAIRES",
@@ -75,30 +79,39 @@ def normalize_for_embedding(
     *,
     min_unique: int = _MIN_UNIQUE_CONTINUOUS,
     winsor: tuple[float, float] = (0.01, 0.99),
+    clip: float = 5.0,
 ) -> pd.DataFrame:
-    """Robust per-feature scaling so cosine similarity isn't dominated by scale.
+    """Type-aware per-feature scaling to a bounded **[-1, 1]** range, so the masked cosine
+    embedding isn't dominated by scale and every feature is comparable & ML-ready. NaNs are
+    preserved — no imputation.
 
-    Cosine is scale-invariant *per patient* but not *per feature*: a raw column
-    with large magnitude (a date encoded as 1e17, a lab count in the thousands)
-    swamps binary 0/1 flags and z-scored scales. We rescale every empirically
-    **continuous** column (> ``min_unique`` distinct values) by winsorizing to
-    the 1st/99th percentile and robust z-scoring (median / MAD). Genuinely
-    discrete columns (binary, ordinal, low-cardinality categorical) pass through
-    on their native small scale. NaNs are preserved — no imputation.
+    Per column, by empirical cardinality:
+      * binary / ordinal / Likert (<= ``min_unique`` distinct) -> min-max to [-1, 1];
+      * continuous (> ``min_unique``) -> winsorize (1/99) + robust z (median / MAD), clipped to
+        ±``clip`` (guards explosive z on tiny-MAD log-normal columns such as prolactin), then
+        divided by ``clip`` -> [-1, 1].
+    All outputs lie in [-1, 1]; a constant column maps to 0 (NaN kept). Previously discrete
+    columns were left on their native scale, mixing 0/1 flags with unbounded z-scores.
     """
     lo_q, hi_q = winsor
     out = X.copy()
     for c in out.columns:
         col = out[c]
-        if col.nunique(dropna=True) <= min_unique:
-            continue  # discrete: leave on its native small scale
-        lo, hi = col.quantile(lo_q), col.quantile(hi_q)
-        if np.isfinite(lo) and np.isfinite(hi) and hi > lo:
-            col = col.clip(lower=lo, upper=hi)
-        med = col.median()
-        mad = (col - med).abs().median()
-        scale = 1.4826 * mad if mad and mad > 0 else (col.std() or 1.0)
-        out[c] = (col - med) / (scale if scale > 0 else 1.0)
+        nu = int(col.nunique(dropna=True))
+        if nu == 0:
+            continue
+        if nu <= min_unique:                        # binary / ordinal / Likert -> [-1, 1]
+            lo, hi = col.min(), col.max()
+            out[c] = (2.0 * (col - lo) / (hi - lo) - 1.0) if hi > lo else col * 0.0
+        else:                                       # continuous -> robust-z-clip -> [-1, 1]
+            lo, hi = col.quantile(lo_q), col.quantile(hi_q)
+            if np.isfinite(lo) and np.isfinite(hi) and hi > lo:
+                col = col.clip(lower=lo, upper=hi)
+            med = col.median()
+            mad = (col - med).abs().median()
+            scale = 1.4826 * mad if mad and mad > 0 else (col.std() or 1.0)
+            z = (col - med) / (scale if scale > 0 else 1.0)
+            out[c] = z.clip(lower=-clip, upper=clip) / clip
     return out.replace([np.inf, -np.inf], np.nan)
 
 
@@ -173,7 +186,7 @@ def residualize_features(
         from sklearn.model_selection import KFold
         kf = KFold(n_splits=cross_fit, shuffle=True, random_state=random_state)
         for col in out.columns:
-            y = out[col].to_numpy(dtype="float64")
+            y = out[col].to_numpy(dtype="float64").copy()  # writable (newer numpy returns read-only)
             obs = np.where(np.isfinite(y))[0]
             if obs.size < max(min_obs, cross_fit):
                 continue
@@ -185,7 +198,7 @@ def residualize_features(
             out[col] = resid
     else:
         for col in out.columns:
-            y = out[col].to_numpy(dtype="float64").copy()
+            y = out[col].to_numpy(dtype="float64").copy()  # writable (newer numpy returns read-only)
             obs = np.isfinite(y)
             if int(obs.sum()) < min_obs:
                 continue
@@ -223,6 +236,7 @@ def to_harmonized_dataset(
     sections: Iterable[str] | None = None,
     residualize_on: Iterable[str] | None = None,
     normalize: bool = False,
+    apply_skip_logic: bool = True,
     schema_version: str = DEFAULT_SCHEMA_VERSION,
 ) -> HarmonizedDataset:
     """Build a :class:`HarmonizedDataset` from our unified long-format frame.
@@ -262,6 +276,14 @@ def to_harmonized_dataset(
         scaling) so the cosine embedding isn't dominated by raw magnitude. Leave
         ``False`` to keep raw values (e.g. for rank-based enrichment, which is
         scale-invariant). Date-typed dictionary features are always dropped.
+    apply_skip_logic:
+        If ``True`` (default), decode instrument skip-logic on the raw numeric
+        matrix via :func:`~trans_diag.skip_logic.decode_skip_logic`: where a gate
+        item is explicitly "No" and a conditional item is missing, fill the
+        structural zero (e.g. ISF05="never attempted" ⇒ ISF07/08A/09A = 0). This
+        recovers count-feature coverage from ~25-38 % to ~72-92 % without any
+        imputation (only cells the instrument's own logic determines). Set
+        ``False`` to keep the raw structural blanks as NaN.
     schema_version:
         Version string stamped on the generated schema and embedding artifacts.
     """
@@ -332,6 +354,14 @@ def to_harmonized_dataset(
 
     full = pd.DataFrame(numeric)
     full.index = index
+
+    # Decode instrument skip-logic (gate=No -> structural 0) on the raw numeric
+    # matrix, BEFORE the section/covariate filter and any scaling, so the
+    # recovered zeros flow into both the direct feature matrix and the domain
+    # scores (build_domain_scores consumes this X). No imputation: only cells the
+    # instrument's own skip-logic determines are filled (see skip_logic.py).
+    if apply_skip_logic:
+        full, _ = decode_skip_logic(full)
 
     # Covariates for residualization come from the full numeric set (before the
     # section filter), so e.g. age/sex are available even if PATIENT is dropped.

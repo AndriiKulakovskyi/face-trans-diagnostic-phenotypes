@@ -1,0 +1,22 @@
+site_code,city,in_BP,in_SZ,in_DR
+1,Bordeaux,Y,Y,Y
+2,Créteil,Y,Y,Y
+3,Montpellier,Y,Y,Y
+4,Grenoble,Y,,Y
+5,Nancy,Y,,
+6,Marseille,Y,Y,Y
+7,Paris-Lariboisière,Y,,Y
+8,Versailles,Y,Y,
+9,Monaco,Y,,
+10,Clermont-Ferrand,Y,Y,Y
+12,Colombes,Y,Y,
+13,Lyon,Y,Y,Y
+14,Strasbourg,,Y,
+15,Grenoble,,Y,
+16,Besançon,Y,,Y
+17,UNKNOWN (DR-only site; no BP/SZ text label),,,Y
+18,UNKNOWN (DR-only site; no BP/SZ text label),,,Y
+19,Toulouse,,Y,Y
+20,Brest,Y,,Y
+23,Saint-Étienne,,Y,
+24,Ville-Evrard,Y,,

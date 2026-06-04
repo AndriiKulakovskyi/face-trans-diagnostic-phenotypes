@@ -77,12 +77,9 @@ def _rank_biserial(u_stat: float, n1: int, n2: int) -> float:
     cluster than outside, which is the standard psychological effect-size
     interpretation.
 
-    (An earlier release of this module used the inverse convention
-    ``rb = 1 − 2 U1 / n1 n2`` which silently flipped the sign of every
-    effect; the clustering documentation and narrative cards pre-dating
-    the fix therefore had the direction of every enrichment inverted. See
-    ``docs/face_stratification/stage_c_deep_analysis.md`` for the audit
-    trail.)
+    (An earlier version of this module used the inverse convention
+    ``rb = 1 − 2 U1 / n1 n2``, which flipped the sign of every effect; that has
+    since been corrected to the form computed below.)
     """
     if n1 == 0 or n2 == 0:
         return float("nan")

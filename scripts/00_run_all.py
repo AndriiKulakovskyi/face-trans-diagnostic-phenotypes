@@ -1,12 +1,15 @@
-"""Reproduce the entire FACE manuscript pipeline from the raw data, in order.
+"""Reproduce the entire FACE **v2** manuscript pipeline from the raw data, in order.
 
-Each step writes to results/ + results/reports/; later steps consume earlier outputs.
-Run from the repo root:  python3 scripts/00_run_all.py
-Requires the full extras:  pip install -e ".[full]"   (torch, neuroHarmonize, kaleido)
+Each step writes aggregate artifacts to ``results/hfa/`` (+ ``results/reports/``); later steps consume
+earlier outputs. Run from the repo root:  ``python3 scripts/00_run_all.py``
+Requires the confidential cohort CSVs in ``data/`` and ``pip install -e ".[full]"``.
 
-The pipeline is deterministic (fixed seeds) apart from ~1e-9 BLAS round-off and
-the PyTorch autoencoder (CPU-deterministic but BLAS-sensitive); all
-manuscript-reported digits reproduce.
+The order follows ``docs/PIPELINE.md`` and the inter-script dependencies (e.g. ``08`` derives the
+relapse outcome consumed by ``12``–``15``; ``11`` reuses Stage-0/2 logic; ``15`` reuses ``11``). The
+pipeline is deterministic (fixed seeds) apart from ~1e-9 BLAS round-off.
+
+The manuscript ``.docx`` is built separately (after the figures) via ``scripts/build_manuscript.py``
+(needs pandoc); it is intentionally not part of this analysis run.
 """
 from __future__ import annotations
 
@@ -17,33 +20,33 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 
-# (script, args) — run strictly in numeric order; the filename prefix IS the
-# execution order, so a reviewer can also run them one-by-one top to bottom.
-# The only script that runs twice is 10_phase5_outcomes (once per follow-up visit).
+# (script, args) — strict execution order; the filename prefix IS the order within each group.
 STEPS: list[tuple[str, list[str]]] = [
-    ("01_manuscript_table1.py", []),        # cohort demographics (Table 1)
-    ("02_confound_ladder.py", []),          # §3.1 confound trap: why naïve clustering recovers nuisance
-    ("03_cluster_domains.py", []),          # → residualized domain scores + masked-cosine embedding
-    ("04_structure_test.py", []),           # discrete-vs-dimensional verdict (uses embedding)
-    ("05_dimensional_axes.py", []),         # classical varimax FA (parallel analysis) — AE reference
-    ("06_dimensional_ae.py", []),           # masked autoencoder (no-imputation cross-check)
-    ("07_dimensional_refine.py", []),       # LOCKED K=7 axes (max reproducible; split-half) → final scores
-    ("08_longitudinal_axes.py", []),        # trait–state stability V0→V4
-    ("09_longitudinal_coherence.py", []),   # discrete-flow negative result + DSM contingency
-    ("10_phase5_outcomes.py", ["--visit", "V1"]),   # head-to-head (primary)
-    ("10_phase5_outcomes.py", ["--visit", "V2"]),   # head-to-head (follow-up)
-    ("11_phase5_ci.py", []),                # repeated-CV confidence intervals
-    ("12_phase5_decircularized.py", []),    # de-circularization sensitivity
-    ("13_robustness_site.py", []),          # ComBat site harmonization
-    ("14_cognition_bpsz.py", []),           # BP/SZ cognition (g + speed)
-    ("15_review_checks.py", []),            # cohort/site eta^2, CCA null, missingness, rho CI, figS2
-    ("16_manuscript_figures.py", []),       # Figures 1–5 (static)
-    ("17_export_longitudinal_figure.py", []),   # Suppl. Fig S1 (discrete flow)
-    ("18_export_dimensional_flow.py", []),  # Figure 6 (dimensional flow + DSM η²)
-    ("19_pfactor.py", []),                  # §4.6 general-factor ('p') check — confound-free axes ≈ orthogonal
-    ("20_robustness_cvrefit.py", []),       # Limitation 10: re-fit axes inside CV folds (optimism)
-    ("21_replication_holdout.py", []),      # Limitation 9: within-FACE leave-one-cohort/site replication
-    ("22_screening_panel.py", []),          # §4.5 parsimonious screening panel (sparse item→axis distillation)
+    ("qa_harmonization.py", []),            # 3-part data-processing QA report (gate before analysis)
+    # ── hierarchical / bifactor measurement model — Stages 0–4 ──
+    ("01_hfa_stage0_itemset.py", []),    # freeze the 194-item V0 set + factorability
+    ("02_hfa_stage1_efa.py", []),        # exploratory first-order EFA (Horn parallel analysis)
+    ("03_hfa_stage2.py", []),            # hybrid first-order constructs (94) → Φ₁
+    ("04_hfa_stage3.py", []),            # second-order: K=4 axes; Schmid–Leiman ECV (no p-factor)
+    ("05_hfa_kselect.py", []),           # per-factor split-half K-selection deep dive
+    ("06_hfa_stage4.py", []),            # validation: confound η² / leave-cohort-out / granularity
+    # ── stratification arm ──
+    ("07_phase5_stratify.py", []),       # discrete-vs-continuum battery → dimensional
+    # ── validation A–D (08 derives the relapse outcome used by 12–15) ──
+    ("08_v1v4_inventory.py", []),        # V1–V4 inventory + LOCKED CGI-S relapse derivation
+    ("09_cohort_confound.py", []),       # Study A — cohort confound
+    ("10_orthogonality_pfactor.py", []), # Study B — symptom⊥biology / p-factor (headline)
+    ("11_longitudinal_coherence.py", []),# Study C — measurement invariance + score stability
+    ("12_predictive_validity.py", []),   # Study D — prognosis vs DSM
+    ("13_predictive_survival.py", []),   # Study D-refined — remission-based discrete-time survival
+    ("14_relapse_richbaseline.py", []),  # Study D3 — richer baseline vs 6 axes
+    ("15_relapse_trajectory.py", []),    # Study D4 — early-course prognosis
+    # ── sensitivity analyses ──
+    ("sensitivity_aggregation.py", []),  # granularity invariance / conditioning audit
+    ("sensitivity_comorbidity.py", []),  # the 24 *_mhoccur flags decomposition
+    ("sensitivity_polychoric.py", []),   # tetrachoric sensitivity of the K=4 structure
+    # ── figures ──
+    ("figures_manuscript.py", []),       # 6 manuscript figures from results/hfa/
 ]
 
 
@@ -59,7 +62,9 @@ def main() -> int:
             print(f"\n!!! STEP FAILED: {label} (exit {r.returncode}) — stopping.", flush=True)
             return r.returncode
         print(f"   ...done in {time.time()-t:.0f}s", flush=True)
-    print(f"\n{'='*72}\nALL {len(STEPS)} STEPS OK in {time.time()-t0:.0f}s\n{'='*72}")
+    print(f"\n{'='*72}\nALL {len(STEPS)} STEPS OK in {time.time()-t0:.0f}s")
+    print("Next: python3 scripts/build_manuscript.py   # build the .docx (needs pandoc)")
+    print(f"{'='*72}")
     return 0
 
 
