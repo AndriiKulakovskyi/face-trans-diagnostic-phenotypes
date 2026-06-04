@@ -46,10 +46,10 @@ flowchart TB
     P -->|"194 V0 items"| E
     E["③ Masked, imputation-free estimator<br/>pairwise-complete corr → nearest-PD → PAF → masked posterior scores"]:::model
     E --> M
-    M["④ Hierarchical / bifactor measurement model · Stages 0–4<br/>194 items → 94 constructs → 4 second-order axes"]:::model
+    M["④ Hierarchical / bifactor measurement model · Stages 0–4<br/>196 items → 95 constructs → 3 second-order axes"]:::model
     M -->|"6 axis scores + 81 construct scores"| ARM{"⑤ Two analysis arms"}
     ARM:::model
-    ARM --> DIMA["⑤a Dimensional arm<br/>4 reproducible axes · NO p-factor (ECV 0.34)"]:::arm
+    ARM --> DIMA["⑤a Dimensional arm<br/>3 reproducible axes · NO p-factor (ECV 0.42)"]:::arm
     ARM --> STRA["⑤b Stratification arm<br/>masked similarity → spectral embedding → continuum · NO subtypes"]:::arm
     DIMA --> V
     STRA --> V
@@ -62,12 +62,12 @@ flowchart TB
 | Stage | Script | Rows | Features | Gate / parameter |
 |---|---|---:|---:|---|
 | Raw cohort CSVs | — | 9,013 (V0) | per-cohort columns | confidential, read-only |
-| Harmonized (long) | `loader` | 9,013 × visits | ~195 vars | `readiness ∈ {READY, PARTIAL}` (199 usable) |
+| Harmonized (long) | `loader` | 9,013 × visits | ~195 vars | `readiness ∈ {READY, PARTIAL}` (201 usable) |
 | V0 item matrix | `01` | 9,013 | **194 items** | drop ids / age·sex (resid.) / confounds / branching-suicide |
 | Stage 1 EFA | `02` | 9,013 | **42 factors** | Horn parallel analysis |
-| Stage 2 constructs | `03`, `sens_comorbidity` | 9,013 | **94 constructs** | masked 1-factor, `min_pair = 100` |
+| Stage 2 constructs | `03`, `sens_comorbidity` | 9,013 | **95 constructs** | masked 1-factor, `min_pair = 100` |
 | Stage 3 input (Φ₁) | `04` | 9,013 | **81 constructs** | coverage ≥ 0.30, standardized |
-| Stage 3 axes | `04`, `05` | 9,013 | **4 axes (+ general)** | `K` by split-half Tucker ≥ 0.85 |
+| Stage 3 axes | `04`, `05` | 9,013 | **3 axes (+ general)** | `K` by split-half Tucker ≥ 0.85 |
 | Stratification | `07` | 9,013 | 6 axes / 81 constructs | HDBSCAN, silhouette-vs-null |
 | Validation D | `12`–`15` | ≤ 3,378 / 1,766 intervals | axes vs DSM | GroupKFold by patient |
 
@@ -85,7 +85,7 @@ flowchart LR
         C2["schizophrenia.csv"]:::data
         C3["depression.csv"]:::data
     end
-    DICT["face-common-vars.xlsx<br/>199 usable variables<br/>+ sanity bounds + coverage"]:::data
+    DICT["face-common-vars.xlsx<br/>201 usable variables<br/>+ sanity bounds + coverage"]:::data
     SRC --> R
     DICT --> R
     R["Variable.source_col(cohort) → per-cohort column<br/>harmonization rule (text→code, unit fixes)"]:::proc
@@ -190,9 +190,9 @@ flowchart TB
     S2["Stage 2 · first-order constructs — script 03 (+ comorbidity decomp.)<br/>88 within-construct masked 1-factor posteriors → Φ₁<br/>VAF₁: adiposity 0.93 · cholesterol 0.90 · processing-speed 0.87"]:::model
     S2 -->|"81 constructs (coverage≥30%)<br/>Φ₁ PSD (0% neg-eigen)"| S3
     S3["Stage 3 · second-order — scripts 04, 05<br/>PAF + promax → Λ₂, Φ₂ · Schmid–Leiman ECV · split-half Tucker K"]:::model
-    S3 -->|"K = 4 · ECV = 0.34 · mean|Φ₂| = 0.17"| S4
+    S3 -->|"K = 3 · ECV = 0.42 · mean|Φ₂| = 0.12"| S4
     S4["Stage 4 · validation — script 06<br/>confound η²<0.25 · leave-cohort-out ≥0.84 · granularity CCA 0.99/0.90/0.79"]:::model
-    S4 --> AX["RESULT · 4 trans-diagnostic axes<br/>1 internalizing · 2 cognition · 3 illness-course · 4 cardiometabolic<br/>+ 2 ORTHOGONAL standalones: mania, suicidality (abs r ≤ 0.09)"]:::out
+    S4 --> AX["RESULT · 3 trans-diagnostic axes<br/>1 internalizing · 2 cognition · 3 cardiometabolic<br/>+ ORTHOGONAL standalones: mania, suicidality, substance-use (abs loading ≤ 0.07)"]:::out
 ```
 
 ### Stage 2 — construct scores
@@ -218,7 +218,7 @@ flowchart LR
     SP --> LL["re-extract varimax loadings per half<br/>Hungarian-match factors"]:::model
     LL --> TC["Tucker congruence φ(a,b) = aᵀb / √(aᵀa·bᵀb)<br/>record minimum over matched factors"]:::model
     TC --> KK{"first-collapse − 1<br/>+ per-factor refinement (script 05)"}:::model
-    KK -->|"≥0.97 ×4"| K4["K = 4 primary<br/>(K=6 sensitivity)"]:::model
+    KK -->|"≥0.92 ×3"| K4["K = 3 primary<br/>(K=6 sensitivity)"]:::model
     KK -.->|"Heywood at K≥7 → rejected"| K4
 ```
 
@@ -235,7 +235,7 @@ flowchart TB
     M --> SA
 
     subgraph DIM["⑤a Dimensional arm — the result"]
-        DA["4 reproducible axes · weakly correlated (mean abs Φ₂ = 0.17)<br/>NO general p-factor (ECV 0.34)"]:::arm
+        DA["3 reproducible axes · weakly correlated (mean abs Φ₂ = 0.12)<br/>NO general p-factor (ECV 0.42)"]:::arm
     end
 
     subgraph STR["⑤b Stratification arm — script 07"]
@@ -276,7 +276,7 @@ flowchart TB
     C["C · longitudinal coherence — script 11<br/>invariance V2: internalizing 0.98 · cardiometab 0.97<br/>test-retest: cardiometab 0.66 (trait) · course 0.16 (fixed-historical)"]:::val
     D["D · predictive validity vs DSM — scripts 12–48<br/>GAF ΔR² +0.046 · FAST +0.036 (CI excl. 0)<br/>relapse de-confounded +0.036 · early-course AUC ≈ 0.70"]:::val
 
-    A --> VV["OVERALL · rigorous + partially useful, not transformative.<br/>Solid (4 axes, no p-factor, no subtypes); novel (B: symptoms⊥biology);<br/>honest limits (measurement design); modest prognosis over DSM."]:::out
+    A --> VV["OVERALL · rigorous + partially useful, not transformative.<br/>Solid (3 axes, no p-factor, no subtypes); novel (B: symptoms⊥biology);<br/>honest limits (measurement design); modest prognosis over DSM."]:::out
     B --> VV
     C --> VV
     D --> VV
@@ -342,8 +342,8 @@ flowchart LR
 
 > Harmonize three psychoses (N = 9,013) into a 199-variable dictionary → scale by type to [−1,1] →
 > under strict **no-imputation**, estimate a **masked** hierarchical/bifactor measurement model
-> (194 items → 94 constructs → **4 second-order axes**, general factor **tested** and rejected at
-> ECV 0.34) → confirm the structure is **dimensional** (no subtypes) → validate that it is not a
+> (196 items → 95 constructs → **3 second-order axes**, general factor **tested** and rejected at
+> ECV 0.42) → confirm the structure is **dimensional** (no subtypes) → validate that it is not a
 > cohort artifact, that **symptoms are orthogonal to biology** (the p-factor is symptom-only),
 > that it is longitudinally coherent, and that it adds a **modest, honest** prognostic increment
 > over DSM.

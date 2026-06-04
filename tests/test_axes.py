@@ -1,10 +1,11 @@
 """Guards for the v2 axis-name source of truth (``trans_diag.axes``).
 
-These catch axis-name/order drift: the v2 hierarchical model (scripts 01–35, LABBOOK V2-9..V2-12)
-re-locked the structure at **K=4** — internalizing, cognition, illness_course, cardiometabolic — with
-mania & suicidality demoted to *orthogonal standalone* dimensions (|r| ≤ 0.09), NOT axes.
-``trans_diag.axes`` is the canonical map written for the manuscript and downstream code. (The
-superseded v1 6-axis solution is archived at git tag ``v1-archive-2026-05-30``.)
+These catch axis-name/order drift: the v2 hierarchical model (scripts 01–15, LABBOOK V2-9..V2-20)
+locked the structure at **K=3** — internalizing, cognition, cardiometabolic — after the
+substance_use_disorder construct collapsed the earlier K=4 (illness_course is no longer a stable
+standalone axis). mania, suicidality & substance-use disorder are *orthogonal standalone* dimensions
+(|loading| < 0.10), NOT axes. ``trans_diag.axes`` is the canonical map written for the manuscript and
+downstream code. (The superseded v1 6-axis solution is archived at git tag ``v1-archive-2026-05-30``.)
 """
 from trans_diag.axes import (
     AXIS_INDEX_TO_NAME,
@@ -15,9 +16,9 @@ from trans_diag.axes import (
 )
 
 
-def test_four_unique_axes():
-    assert AXIS_NAMES == ["internalizing", "cognition", "illness_course", "cardiometabolic"]
-    assert len(set(AXIS_NAMES)) == 4
+def test_three_unique_axes():
+    assert AXIS_NAMES == ["internalizing", "cognition", "cardiometabolic"]
+    assert len(set(AXIS_NAMES)) == 3
 
 
 def test_label_dicts_cover_exactly_the_axes():
@@ -26,15 +27,15 @@ def test_label_dicts_cover_exactly_the_axes():
 
 
 def test_index_map_matches_paf_order():
-    # stage 33 writes dim1..dim4 in PAF / descending-eigenvalue order; the map must mirror AXIS_NAMES.
+    # stage 3 writes dim1..dim3 in PAF / descending-eigenvalue order; the map must mirror AXIS_NAMES.
     assert AXIS_INDEX_TO_NAME == {f"dim{i + 1}": n for i, n in enumerate(AXIS_NAMES)}
     assert AXIS_INDEX_TO_NAME["dim1"] == "internalizing"
-    assert AXIS_INDEX_TO_NAME["dim4"] == "cardiometabolic"
+    assert AXIS_INDEX_TO_NAME["dim3"] == "cardiometabolic"
 
 
-def test_mania_and_suicidality_are_orthogonal_standalones_not_axes():
-    # mania/suicidality are valid constructs but ORTHOGONAL to the correlated structure → not axes.
-    assert set(ORTHOGONAL_DIMENSIONS) == {"mania_activation", "suicidal_ideation"}
+def test_orthogonal_standalones_are_not_axes():
+    # mania / suicidality / substance-use are valid constructs but ORTHOGONAL → not axes.
+    assert set(ORTHOGONAL_DIMENSIONS) == {"mania_activation", "suicidal_ideation", "substance_use_disorder"}
     for name in ORTHOGONAL_DIMENSIONS:
         assert name not in AXIS_NAMES
 

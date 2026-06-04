@@ -5,7 +5,7 @@ The one potentially non-derivative message. Two linked tests:
      within-block. Claim: symptoms and biology are nearly orthogonal (between |r| ~ 0).
   2. p-FACTOR IS A SYMPTOM-ONLY ARTIFACT — general-factor strength for nested construct sets:
      symptom-only -> +cognition -> +biology -> full. Metrics: (a) first-factor share lambda1/sum(lambda)
-     (K-free, comparable); (b) ECV via Schmid-Leiman at K=4. Prediction: a general factor is strong in
+     (K-free, comparable); (b) ECV via Schmid-Leiman at the data-locked K. Prediction: a general factor is strong in
      symptom-only and dissolves as biology/cognition are admitted.
 
 Per Study A: the mood (internalizing) scales are BP+DR-only, so the CLEAN test is **within BP+DR**
@@ -27,6 +27,7 @@ import numpy as np
 import pandas as pd
 from factor_analyzer import Rotator
 
+from trans_diag.axes import AXIS_NAMES
 from trans_diag.masked_fa import masked_correlation, paf_loadings
 from trans_diag.variable import load_variables
 
@@ -34,6 +35,7 @@ warnings.simplefilter("ignore")
 OUT = ROOT / "results" / "hfa"
 MIN_PAIR = 100
 SEED = 0
+K_LOCK = len(AXIS_NAMES)        # data-locked second-order K (Stage 3); ECV computed at this K
 SEC2BLOCK = {
     "AUTO-QUESTIONNAIRES": "symptom", "HETERO-QUESTIONNAIRES": "symptom",
     "SUICIDE": "symptom", "EVALUATION MEDICALE": "symptom",
@@ -56,7 +58,7 @@ def first_factor_share(Z):
     return float(w[0] / w.sum()), float(w[0] / w[1])
 
 
-def ecv(Z, K=4):
+def ecv(Z, K=K_LOCK):
     """Schmid-Leiman explained-common-variance of a single general factor (general-factor strength)."""
     if Z.shape[1] <= K:
         return np.nan
@@ -97,7 +99,7 @@ def analyze(S, blk, label):
             "symptom+biology": cons["symptom"] + cons["biology"],
             "full(all blocks)": cons["symptom"] + cons["biology"] + cons["cognition"] + cons["other"]}
     print("  general-factor strength (lower = more multidimensional):")
-    print(f"    {'set':20s} {'p':>3s} {'1st-factor share':>16s} {'l1/l2':>6s} {'ECV(K=4)':>9s}")
+    print(f"    {'set':20s} {'p':>3s} {'1st-factor share':>16s} {'l1/l2':>6s} {f'ECV(K={K_LOCK})':>9s}")
     out = {"block_sizes": {b: len(v) for b, v in cons.items()},
            "orthogonality": {f"{b1}_{b2}": block_meanabs(b1, b2)
                              for b1 in cons for b2 in cons if b1 <= b2}, "sets": {}}
@@ -106,7 +108,7 @@ def analyze(S, blk, label):
         ff, ratio = first_factor_share(Zs)
         e = ecv(Zs)
         print(f"    {name:20s} {len(members):3d} {ff:15.2f} {ratio:6.1f} {e:9.2f}")
-        out["sets"][name] = {"p": len(members), "first_factor_share": ff, "l1_l2": ratio, "ecv_k4": e}
+        out["sets"][name] = {"p": len(members), "first_factor_share": ff, "l1_l2": ratio, "ecv": e}
     return out
 
 

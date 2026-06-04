@@ -9,7 +9,7 @@ guide explains the columns.
 > same name `data/face-common-vars.xlsx`.
 
 ## Files
-- `data/face-common-vars.xlsx` — the v2 dictionary (Sheet1; 223 rows, **199 usable**, 16 columns)
+- `data/face-common-vars.xlsx` — the v2 dictionary (Sheet1; 225 rows, **201 usable**, 16 columns)
 - `data/{bipolar,schizophrenia,depression}.csv` — visit-level data (confidential, gitignored)
 - `data/site_lookup.csv` — fondacode → site lookup (for `siteid_city`)
 - `data/thesaurus/` — per-cohort source dictionaries (reference)

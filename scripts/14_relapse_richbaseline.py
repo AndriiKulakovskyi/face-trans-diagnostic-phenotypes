@@ -31,10 +31,12 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
+from trans_diag.axes import AXIS_NAMES
 
 warnings.simplefilter("ignore")
 OUT = ROOT / "results" / "hfa"
-AX = ["dim1", "dim2", "dim3", "dim4", "mania_activation", "suicidal_ideation"]
+_DIMS = [f"dim{i+1}" for i in range(len(AXIS_NAMES))]      # the data-locked K axes (trans_diag.axes)
+AX = _DIMS + ["mania_activation", "suicidal_ideation"]
 SEED = 0
 
 
@@ -77,7 +79,7 @@ def main() -> None:
     vs = load_variables(str(ROOT / "data" / "face-common-vars.xlsx"))
     ds = to_harmonized_dataset(df, vs, visit="V0", sections=None, residualize_on=None, normalize=False)
 
-    F = pd.read_pickle(OUT / "stage3_scores.pkl").set_index(["cohort", "patient_id"])[["dim1", "dim2", "dim3", "dim4"]]
+    F = pd.read_pickle(OUT / "stage3_scores.pkl").set_index(["cohort", "patient_id"])[_DIMS]
     Sc = pd.read_pickle(OUT / "stage2_scores.pkl").set_index(["cohort", "patient_id"])
     constructs = [c for c in Sc.columns if Sc[c].notna().mean() >= 0.30]      # well-covered constructs
     P = F.join(Sc)

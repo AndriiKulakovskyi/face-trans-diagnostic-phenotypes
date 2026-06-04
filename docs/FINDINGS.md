@@ -4,16 +4,21 @@ Paper-oriented log of empirical + methodological findings on the **v2** dictiona
 must be reproducible from the pipeline. **The v2 analysis is complete** (dimensional + stratification
 + validation A–D; manuscript delivered).
 
-> **Headline (verified against `results/hfa/`, post-2026-06-03 dictionary review):** 9,013 patients;
-> **194** V0 items → **94** constructs → **K=4** axes (internalizing · cognition · illness-course ·
-> cardiometabolic); **no p-factor** (ECV **0.34**); dimensional, no subtypes. Some intermediate counts
-> in the dated sub-sections below predate that review (the item set was 188 → 194); the K=4 backbone
-> and every verdict held — see `docs/LABBOOK.md` V2-21.
+> **Headline (verified against `results/hfa/`, post-2026-06-04 substance / K=3 re-baseline):** 9,013
+> patients; **196** V0 items → **95** constructs → **K=3** axes (internalizing · cognition ·
+> cardiometabolic); **no p-factor** (ECV **0.42**); dimensional, no subtypes. The earlier K=4 lock
+> (which added a 4th *illness-course* axis) collapsed when the lifetime alcohol/cannabis
+> **substance-use-disorder** construct entered the second-order extraction (K=4 split-half congruence
+> 0.96 → 0.31; counterfactual-confirmed) — illness-course was the least robust dimension and is no
+> longer reported; its inverse-burden content disperses onto cardiometabolic. Substance-use, mania and
+> suicidality are valid but **orthogonal** standalone constructs (not axes). Every other verdict
+> (dimensional, no-p-factor, symptoms⊥biology, predictive) held. Some intermediate counts in the dated
+> sub-sections below predate this — see `docs/LABBOOK.md` V2-22.
 >
 > The v1 findings log is archived at git tag `v1-archive-2026-05-30`. Do **not** carry over v1 numbers.
 
 ## Settled — data processing
-- **v2 dictionary:** 199 usable variables (READY + PARTIAL, of 223 entries); `qa_harmonization`
+- **v2 dictionary:** 201 usable variables (READY + PARTIAL, of 225 entries); `qa_harmonization`
   reports all variables load + pass sanity (0 fail).
 - **Type-aware scaling to [−1, 1]**; robust-z explosion fixed (prolactin |z|≈106→5); **masked /
   no-imputation** design kept (no hard missingness drop).

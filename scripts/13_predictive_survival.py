@@ -38,11 +38,13 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
+from trans_diag.axes import AXIS_NAMES
 
 warnings.simplefilter("ignore")
 OUT = ROOT / "results" / "hfa"
-AXES = ["dim1", "dim2", "dim3", "dim4", "mania", "suicide"]
-AXES_X = ["dim2", "dim3", "dim4", "mania", "suicide"]      # cross-domain (drop internalizing)
+_DIMS = [f"dim{i+1}" for i in range(len(AXIS_NAMES))]      # the data-locked K axes (trans_diag.axes)
+AXES = _DIMS + ["mania", "suicide"]
+AXES_X = _DIMS[1:] + ["mania", "suicide"]                 # cross-domain (drop dim1 internalizing)
 SEED = 0
 
 
@@ -82,7 +84,7 @@ def main() -> None:
     ds = to_harmonized_dataset(df, vs, visit="V0", sections=None, residualize_on=None, normalize=False)
 
     # predictors keyed by patient_uid
-    F = pd.read_pickle(OUT / "stage3_scores.pkl").set_index(["cohort", "patient_id"])[["dim1", "dim2", "dim3", "dim4"]]
+    F = pd.read_pickle(OUT / "stage3_scores.pkl").set_index(["cohort", "patient_id"])[_DIMS]
     Sc = pd.read_pickle(OUT / "stage2_scores.pkl").set_index(["cohort", "patient_id"])[["mania_activation", "suicidal_ideation"]]
     P = F.join(Sc).rename(columns={"mania_activation": "mania", "suicidal_ideation": "suicide"})
     P.index = [f"{c.upper()}::{p}" for c, p in P.index]

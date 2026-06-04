@@ -363,3 +363,26 @@ the dimensional verdict, and the no-p-factor result all held**.
   missing-data artifact.
 - **Synced:** `results/manuscript/manuscript.md`, `tests/test_golden_numbers.py`, `tests/test_skip_logic.py`;
   the v2 docs (`FINDINGS`/`PIPELINE`/`ROADMAP`/`DATA`/`CLAUDE`) re-synced to these numbers in the cleanup.
+
+## V2-22 · Addiction vars added → K=4 collapses to K=3 (illness-course not robust) — 2026-06-04
+Two lifetime substance-use-disorder variables (`suoccur_alcool`, `suoccur_cannabis`; BP/SZ 2-cohort
+PARTIAL, MINI abuse-or-dependence) were added to the dictionary → a `substance_use_disorder` construct
+(VAF₁ 0.86). Re-deriving the whole pipeline from zero **changed the headline dimensionality**.
+- **The finding:** including the substance construct in the Stage-3 second-order extraction collapses
+  the previously-locked **K=4 split-half congruence 0.96 → 0.31**, while K=3 stays reproducible (0.92),
+  so "first-collapse-minus-1" now locks **K=3**. **Counterfactual-confirmed**: drop the one construct
+  and K=4 returns at 0.96 exactly. The orthogonal, rare-binary addiction construct (loads ≤0.07 on
+  every axis) destabilizes the *weakest* factor's rotation — illness-course was never robust.
+- **New structure:** **196 items → 95 constructs → 82 Stage-3 inputs → K=3 axes** — internalizing,
+  cognition, **cardiometabolic** (was dim4; illness-course/dim3 dropped). Its inverse-burden term
+  (`nboccur_hospitalisation_lt` +0.34) re-surfaces on cardiometabolic; age-of-onset core is now
+  sub-threshold (max |loading| 0.29). **ECV 0.34 → 0.42** (still < 0.5, no p-factor). mean|Φ₂| 0.12.
+- **Every other verdict held:** dimensional (HDBSCAN noise 0.82, bimodality 0.49, DSM-ARI 0.04);
+  symptoms⊥biology (0.031); cohort-residualized congruence 0.98; predictive (GAF +0.044, FAST +0.041,
+  de-confounded relapse +0.036, early-course AUC 0.70). Substance-use is orthogonal (≤0.07) — a
+  carried standalone, like mania/suicidality, not an axis.
+- **Engineering:** `src/trans_diag/axes.py` → 3 axes; all K=4-hardcoded downstream (`06`,`07`,`09`–`15`,
+  `sensitivity_polychoric`, `figures_manuscript`) made **K-agnostic** (dims read from the loadings /
+  `len(AXIS_NAMES)`); `04` now writes `stage3_meta.json` (K, ECV, mean|Φ₂|). Full `00_run_all` re-run
+  clean; **golden tests + `test_axes` re-baselined to K=3** (99 pass); manuscript + 6 figures + docx
+  rebuilt; CLAUDE/FINDINGS/ROADMAP/DATA/PIPELINE re-synced. User decision: accept the data-driven K=3.

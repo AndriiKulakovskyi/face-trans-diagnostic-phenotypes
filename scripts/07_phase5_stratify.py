@@ -148,11 +148,13 @@ def main() -> None:
     vs = load_variables(str(ROOT / "data" / "face-common-vars.xlsx"))
     ds = to_harmonized_dataset(df, vs, visit="V0", sections=None, residualize_on=None, normalize=False)
 
-    # A (primary): 4 dims + mania + suicidal_ideation
-    A = F[["dim1", "dim2", "dim3", "dim4"]].join(S[["mania_activation", "suicidal_ideation"]]).dropna()
+    # A (primary): the K axes + mania + suicidal_ideation (3-cohort orthogonal standalones).
+    # substance_use_disorder is BP/SZ-only, so it is NOT joined here (would drop all DR via dropna).
+    dims = [c for c in F.columns if c.startswith("dim")]
+    A = F[dims].join(S[["mania_activation", "suicidal_ideation"]]).dropna()
     arm_A = ds.metadata.reindex(A.index)["dsm_diagnosis"]
     coh_A = np.array(A.index.get_level_values("cohort"))
-    resA = structure_test(A.to_numpy(float), arm_A, coh_A, "A: 6 axes (dims+mania+suicide)")
+    resA = structure_test(A.to_numpy(float), arm_A, coh_A, f"A: {len(dims)+2} axes (dims+mania+suicide)")
 
     # B (sensitivity): construct scores -> masked spectral embedding (engine, no imputation)
     cov = S.notna().mean()

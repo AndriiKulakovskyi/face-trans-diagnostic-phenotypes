@@ -25,6 +25,7 @@ from scipy.optimize import brentq
 from scipy.stats import multivariate_normal, norm
 
 from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
+from trans_diag.axes import AXIS_NAMES
 from trans_diag.domains import _robust_z
 from trans_diag.masked_fa import masked_correlation, masked_scores, nearest_pd, paf_loadings
 
@@ -80,7 +81,7 @@ def score_tetra(items_df):
     return s if np.corrcoef(np.nan_to_num(s), np.nan_to_num(Z.mean(1)))[0, 1] >= 0 else -s
 
 
-def dims(S, K=4):
+def dims(S, K=len(AXIS_NAMES)):
     cov = S.notna().mean()
     keep = [c for c in S.columns if cov[c] >= 0.30 and S[c].var() > 1e-9]
     Z = (S[keep] - S[keep].mean()) / S[keep].std()
@@ -130,7 +131,7 @@ def main() -> None:
     M = np.abs(A.T @ B) / (np.sqrt(np.outer((A * A).sum(0), (B * B).sum(0))) + 1e-12)
     from scipy.optimize import linear_sum_assignment
     r, c = linear_sum_assignment(-M)
-    print(f"\n(b) 4-dim structure Pearson vs tetrachoric: per-dim Tucker congruence "
+    print(f"\n(b) {len(AXIS_NAMES)}-dim structure Pearson vs tetrachoric: per-dim Tucker congruence "
           f"{np.round(np.sort(M[r, c])[::-1], 2)} (min {M[r, c].min():.2f})")
     print("    -> high congruence => the dimensions do NOT depend on the Pearson-vs-polychoric choice")
     # does any binary construct gain a strong loading under tetrachoric it lacked under Pearson?

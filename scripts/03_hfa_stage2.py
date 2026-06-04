@@ -109,6 +109,9 @@ def construct_and_sign(item: str, sec: str, bio_idx: dict, cog_idx: dict) -> tup
         return f"{item.replace('_mhoccur','')}_hx", 1   # any unlisted flag -> standalone
     if item in ("sudose_cigarettes_lt", "suncf_cigarettes_lt", "fagers"):
         return "nicotine", 1          # dependence (age-start/stop are timing -> own constructs)
+    if item in ("suoccur_alcool", "suoccur_cannabis"):
+        return "substance_use_disorder", 1   # lifetime alcohol/cannabis use disorder (MINI, BP/SZ; DR absent) ->
+        #                                      one externalizing/addiction construct (counts once; cf. nicotine)
     if sec in ("BILAN BIOLOGIQUE", "CONSTANTES ET ECG"):
         return f"bio_{item}", 0                        # uncomposited lab -> own construct (data-defined pole)
     return instrument_stem(item), 1                    # symptom instrument: higher = worse

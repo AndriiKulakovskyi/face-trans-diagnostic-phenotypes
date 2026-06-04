@@ -1,4 +1,4 @@
-"""Stage 4 (v2) — validation of the trans-diagnostic dimensions (K=4 primary, K=6 sensitivity).
+"""Stage 4 (v2) — validation of the trans-diagnostic dimensions (K=3 primary, K=6 sensitivity).
 
 Implements Stage 4 of docs/HIERARCHICAL_FA_PLAN.md. Checks the recovered axes are real phenotype,
 not artifacts:
@@ -29,7 +29,7 @@ import pandas as pd
 from factor_analyzer import Rotator
 from scipy.optimize import linear_sum_assignment
 
-from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
+from trans_diag import AXIS_INDEX_TO_NAME, build_unified_dataframe, load_variables, to_harmonized_dataset
 from trans_diag.domains import (
     BIOLOGY_COMPOSITES,
     COGNITIVE_COMPOSITES,
@@ -42,8 +42,6 @@ warnings.simplefilter("ignore")
 OUT = ROOT / "results" / "hfa"
 MIN_PAIR = 100
 COVERAGE_FLOOR = 0.30
-DIMS = ["dim1", "dim2", "dim3", "dim4"]
-NAMES = {"dim1": "internalizing", "dim2": "cognition", "dim3": "course", "dim4": "cardiometab-infl"}
 
 
 def eta2(y: np.ndarray, g: np.ndarray) -> float:
@@ -96,7 +94,11 @@ def cca(A, B):
 def main() -> None:
     F = pd.read_pickle(OUT / "stage3_scores.pkl").set_index(["cohort", "patient_id"])
     S = pd.read_pickle(OUT / "stage2_scores.pkl").set_index(["cohort", "patient_id"])
-    Lfull = pd.read_csv(OUT / "stage3_loadings.csv", index_col=0)[["dim1", "dim2", "dim3", "dim4"]]
+    Lfull = pd.read_csv(OUT / "stage3_loadings.csv", index_col=0)
+    DIMS = [c for c in Lfull.columns if c.startswith("dim")]   # K locked by Stage 3 (data-driven)
+    Lfull = Lfull[DIMS]
+    K = len(DIMS)
+    NAMES = {d: AXIS_INDEX_TO_NAME.get(d, d) for d in DIMS}
 
     # reload covariates / labels at V0, aligned to F's patients
     df = build_unified_dataframe(str(ROOT / "data"), str(ROOT / "data" / "face-common-vars.xlsx"),
@@ -128,12 +130,11 @@ def main() -> None:
     print("   ", F.groupby(F.index.get_level_values("cohort"))[DIMS].mean().round(2).to_dict("index"))
 
     # 3. leave-cohort-out reproducibility
-    print("\n=== 3. LEAVE-COHORT-OUT reproducibility (Tucker congruence vs full K=4) ===")
-    Lc = {c: c for c in Lfull.columns}
-    full4 = Lfull.rename(columns={f"dim{k+1}": f"d{k+1}" for k in range(4)})
+    print(f"\n=== 3. LEAVE-COHORT-OUT reproducibility (Tucker congruence vs full K={K}) ===")
+    full = Lfull.rename(columns={f"dim{k+1}": f"d{k+1}" for k in range(K)})
     for drop in ("bp", "dr", "sz"):
         sub = S[S.index.get_level_values("cohort") != drop]
-        cong = congruence(full4, extract(sub, 4))
+        cong = congruence(full, extract(sub, K))
         print(f"  drop {drop.upper()} (n={len(sub)}): per-dim congruence {np.round(np.sort(cong)[::-1],2)} "
               f"(min {cong.min():.2f})")
 
@@ -154,14 +155,14 @@ def main() -> None:
               f"{mania.groupby(F.index.get_level_values('cohort')).mean().round(2).to_dict()}")
 
     # 5. granularity invariance vs flat-domain masked FA
-    print("\n=== 5. GRANULARITY INVARIANCE — hierarchical K=4 vs flat-domain masked FA ===")
+    print(f"\n=== 5. GRANULARITY INVARIANCE — hierarchical K={K} vs flat-domain masked FA ===")
     dsf = to_harmonized_dataset(df, vs, visit="V0", sections=list(DOMAIN_SECTIONS), normalize=False)
     Xd, _ = build_domain_scores(dsf.X, vs, biology=BIOLOGY_COMPOSITES, cognition=COGNITIVE_COMPOSITES)
     Zd = (Xd - Xd.mean()) / Xd.std()
-    Fd = masked_scores(Zd.to_numpy(float), masked_loadings(Xd, 4, MIN_PAIR))
+    Fd = masked_scores(Zd.to_numpy(float), masked_loadings(Xd, K, MIN_PAIR))
     Fd = pd.DataFrame(Fd, index=Xd.index).reindex(F.index).to_numpy()
     ccs = cca(F[DIMS].to_numpy(), Fd)
-    print(f"  canonical correlations (hier-K4 vs flat-domain-K4): {np.round(ccs,2)}  "
+    print(f"  canonical correlations (hier-K{K} vs flat-domain-K{K}): {np.round(ccs,2)}  "
           f"(>=0.8 on the top dims => structure not an aggregation artifact)")
 
     # 6. K=6 sensitivity
@@ -176,7 +177,7 @@ def main() -> None:
         y = F6[d].to_numpy()
         print(f"  {d}: eta2(cohort)={eta2(y, conf.cohort):.2f} eta2(DSM)={eta2(y, conf.dsm_arm):.2f}  [{top}]")
 
-    print("\nVALIDATION SUMMARY: see flags above. axes.py to be locked only if K=4 dims are "
+    print(f"\nVALIDATION SUMMARY: see flags above. axes.py to be locked only if the K={K} dims are "
           "confound-clean, leave-cohort-out reproducible, and granularity-invariant.")
 
 

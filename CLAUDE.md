@@ -25,16 +25,19 @@ internalized in `src/trans_diag/engine/` — no external dependency on `face_str
 
 ## Status (v2 — analysis complete)
 
-- ✅ **v2 dictionary finalized + locked** — **199 usable variables** (READY + PARTIAL, of 223 entries),
+- ✅ **v2 dictionary finalized + locked** — **201 usable variables** (READY + PARTIAL, of 225 entries),
   with structured sanity bounds + coverage. Cognition reconciled to `docs/neuropsy_features.yaml`
-  (3-cohort WAIS/TMT + verbal memory/fluency features + covariates). `qa_harmonization`: all variables
-  load + pass sanity, 0 fail.
+  (3-cohort WAIS/TMT + verbal memory/fluency features + covariates); 2026-06-04 added lifetime
+  alcohol + cannabis substance-use-disorder vars (BP/SZ, 2-cohort PARTIAL). `qa_harmonization`: all
+  variables load + pass sanity, 0 fail.
 - ✅ **Preprocessing debugged + ML-ready** — fixed the robust-z explosion (prolactin |z|≈106→5),
   added **type-aware bounded scaling to [−1,1]**, kept the masked / no-imputation design. QA report
   has the three parts described below.
-- ✅ **Dimensional analysis + stratification re-derived on v2** (scripts `01–15`): 4 trans-diagnostic
-  axes (K=4, no p-factor), dimensional / no discrete subtypes, validation arm A–D. **Manuscript + 6
-  figures delivered** (`results/manuscript/`, `scripts/figures_manuscript.py`). **Golden-number tests
+- ✅ **Dimensional analysis + stratification re-derived on v2** (scripts `01–15`): **3 trans-diagnostic
+  axes (K=3, no p-factor ECV 0.42)** — internalizing · cognition · cardiometabolic — dimensional / no
+  discrete subtypes, validation arm A–D. (Adding the substance-use-disorder construct collapsed the
+  earlier K=4: the weak *illness-course* axis is no longer reproducible; downstream is now K-agnostic.)
+  **Manuscript + 6 figures delivered** (`results/manuscript/`, `scripts/figures_manuscript.py`). **Golden-number tests
   + `verify.py` re-baselined to v2** — `tests/test_golden_numbers.py` pins the manuscript's headline
   numbers to `results/hfa/` (pass locally; skip on a clean clone since `results/hfa/` is gitignored).
   The legacy `01–22` pipeline and the old manuscript skeleton have been removed from the tree;
@@ -60,8 +63,8 @@ This is the debugging surface that must be clean *before* any analysis.
 3. **Part 3 — Aggregated V0 domain scores (the QA view of construct-level features).**
    Items are aggregated into **construct-level domain scores** (each item robust-z'd + sign-oriented,
    then a **masked mean** within its instrument/composite; no imputation), at the **baseline V0**
-   visit. The *actual model inputs* are the richer **hierarchical/bifactor constructs** (194 items →
-   94 within-construct masked one-factor posteriors → 4 second-order axes; see
+   visit. The *actual model inputs* are the richer **hierarchical/bifactor constructs** (196 items →
+   95 within-construct masked one-factor posteriors → 3 second-order axes; see
    [docs/PIPELINE.md](docs/PIPELINE.md) §5), which supersede flat masked means; these domain scores
    remain the interpretable QA cross-check.
 
@@ -144,7 +147,7 @@ aggregate artifacts to `results/hfa/`:
 
 - **Stages 0–4** — `01_hfa_stage0_itemset` (freeze the V0 item set) → `02_hfa_stage1_efa`
   (exploratory first-order) → `03_hfa_stage2` (hybrid first-order constructs) → `04_hfa_stage3`
-  (second-order: **K=4** axes; general factor tested via Schmid–Leiman ECV) → `05_hfa_kselect`
+  (second-order: **K=3** axes, data-locked; general factor tested via Schmid–Leiman ECV) → `05_hfa_kselect`
   (per-factor split-half K) → `06_hfa_stage4` (confound / leave-cohort-out / granularity validation).
 - **Stratification** — `07_phase5_stratify` (discrete-vs-continuum battery → **dimensional**).
 - **Validation A–D** — `08_v1v4_inventory` (relapse derivation) → `09_cohort_confound` (A) ·
