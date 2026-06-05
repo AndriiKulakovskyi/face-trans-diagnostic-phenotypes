@@ -25,6 +25,7 @@ sys.path.insert(0, str(REPO / "src"))
 warnings.filterwarnings("ignore")
 
 from v3.latent_models.bayesian.data import load_model_data            # noqa: E402
+from v3.latent_models.bayesian.init import efa_initvals               # noqa: E402
 from v3.latent_models.bayesian.model import build_model, load_cell_priors  # noqa: E402
 
 CFG = yaml.safe_load((REPO / "configs" / "bayesian_model.yaml").read_text())
@@ -82,12 +83,21 @@ def run_stage(stage: int, smoke: bool = False, n_per_cohort: int = 500,
 
     # jitter+adapt_diag is the robust init for the per-pattern marginalized geometry
     # (ADVI destabilizes it -> NaN); ADVI is reserved for the Stage-6 scale path.
-    init = "jitter+adapt_diag"
+    # For Stage>=1 (bifactor G / cross-loadings) seed loadings from an EFA warm-start.
+    initvals = None
+    if spec.get("include_g") or spec.get("cross_loadings"):
+        try:
+            iv = efa_initvals(data, meta, spec, cell_priors, len(CFG["specific_factors"]))
+            initvals = iv or None
+            if initvals:
+                print(f"warm-start: EFA initvals for {list(initvals)}")
+        except Exception as e:
+            print(f"warm-start skipped ({e}); falling back to jitter")
     with model:
         idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=1,
                           target_accept=spec.get("target_accept", samp["target_accept"]),
-                          random_seed=SEED, progressbar=False, init=init,
-                          idata_kwargs={"log_likelihood": False})
+                          random_seed=SEED, progressbar=False, init="jitter+adapt_diag",
+                          initvals=initvals, idata_kwargs={"log_likelihood": False})
 
     res = _diagnose_and_write(stage, spec, data, meta, idata, az, smoke)
     return res
