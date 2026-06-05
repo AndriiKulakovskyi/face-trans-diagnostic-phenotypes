@@ -257,6 +257,59 @@ Phase J probabilistic strata.
 
 ---
 
+## V3-8 — Measurement-layer rebuild: config-first soft-prior ESEM-bifactor (Stages 0–1)
+
+**Why.** A self-audit (holding the *initial soft-prior map* against the *derived model*) found the
+certified core was structurally incomplete: the soft-prior matrix never fed the model (hard-coded SPEC,
+strict simple structure, no cross-loadings, no general factor), and **"no general factor" had been
+concluded from a model that omitted the very severity indicators G should be built from**. Rebuilt the
+measurement layer **config-first** so every conclusion is *earned*: `configs/{dimensions,priors,
+likelihoods,bayesian_model}.yaml` → `prior_loading_matrix_v3.csv` (96 items × 10 factors, bifactor-
+identified G) → `src/v3/latent_models/bayesian` engine that **consumes the prior matrix** (full Λ:
+sign-anchored primaries + shrunk cross/bifactor cells), holds **G orthogonal to specifics**, marginalizes
+the Gaussian block, and shares Φ with an explicit Z block for non-Gaussian indicators. Staged build,
+each certifying (R-hat≤1.01, 0 div) before advancing.
+
+**Stage 0 (reproduce).** Config-first engine in certified mode (simple structure, HalfNormal) reproduces
+the certified core **exactly**: loadings identical (psqi11 0.69, qidsr120 1.00, …), Thomson-score
+correlations identical (sleep×affective **0.54**, cognition×affective 0.30, metabolic×inflammatory 0.20).
+R-hat 1.010, ESS 1857, 0 div. *Exposed + fixed a double-`item_sign` bug* (data and loading both flipped).
+**Estimand clarification:** the engine reports the **model Φ parameter** (the principled latent
+correlation; sleep×affective **0.40**) *and* the score correlation (0.54). The old 0.54 was the score-
+based number; model Φ says sleep is *more* separable from affect than previously reported.
+
+**Stage 1 (the decisive test — does a dedicated-anchor general factor identify?).** **CERTIFIED** (R-hat
+1.010, ESS 1533, 0 div, no Heywood). **G identifies** — overturning the premature "no general factor."
+Read-out:
+
+- **G is anchored by functional impairment**: FAST items 0.73–1.04, EGF 0.75, EQ-5D 0.60. (CGI severity is
+  ordinal — joins at Stage 3 via the explicit-Z block; today G is functioning-anchored. fast29 ≈ 0,
+  one weak FAST item.)
+- **G is shared with symptoms, not biology.** Specific indicators loading on G: **affective strongly**
+  (madrs 0.82, qids 0.69, anhedonia 0.57, STAI 0.54), **cognition moderately** (cvlt 0.32, verbal-fluency
+  0.30, processing-speed 0.28, TMT-B 0.25), **metabolic/inflammatory ≈ 0** (all <0.19, most <0.1).
+  mean |G loading| over specifics = 0.23; 6/23 load ≥0.3 (the 4 affective + 2 cognition).
+- **The specific dimensions survive G.** Affective remains a distinct factor (specific loadings 0.41–0.68
+  *on top of* its G loadings); model-Φ metabolic×inflammatory **0.17**, sleep×affective **0.32**,
+  cognition×metabolic 0.18 — the biological cluster and sleep stay intact and **off the general axis**.
+
+**Verdict (earned, not assumed).** There **is** a general factor, but it is **not a broad p-factor** — it
+is a **functional-impairment / clinical-distress axis** (functioning + mood + some cognition), and it is
+**orthogonal to metabolic/inflammatory biology**. So the old headline splits: *"no general factor"* is
+**overturned**; *"symptoms/severity ⊥ biology"* is **strengthened** (biology stays off the general axis).
+The precision-psychiatry object is **G (impairment/distress) + distinct specific dimensions**, with
+biology as its own separable cluster.
+
+**Artifacts.** `results/v3/bayesian/stage{0,1}/{loadings,phi,phi_scores,factor_scores}.csv` +
+`stage_report.md` + `diagnostics.json`. Engine: `src/v3/latent_models/bayesian/`; configs as above;
+contract tests `tests/v3/`.
+
+**Next.** Stage 2 (free specific↔specific ESEM cross-loadings under soft priors) → Stage 3 (ordinal CGI on
+explicit Z — *will sharpen G toward severity*) → Stage 4 (mixed-likelihood suicidality/substance on shared
+Z). Then FIML triangulation + the dimension-adjudication table (G adjudicated **confirmed-but-partial**).
+
+---
+
 ## Open questions for review
 
 1. ~~**Convergence bar.**~~ **RESOLVED (V3-5):** the marginalized model certifies (R-hat 1.010, 0 div) —
