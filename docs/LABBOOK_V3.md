@@ -236,7 +236,7 @@ metabolic/inflammatory split.
 ## V3-7 · Sleep↔affective sensitivity → objective-sleep model (canonical) — 2026-06-05
 
 **What we did.** Investigated the sleep×affective = 0.68 from the extended model. (1) **Item decomposition**
-(`scripts/v3/06_sleep_affect_sensitivity.py`): masked correlation of each PSQI sub-item with affective
+(`scripts/v3/06_sleep_affect_sensitivity.py`): pairwise-complete correlation of each PSQI sub-item with affective
 severity (BP/DR) → **objective** parameters (efficiency 0.22, duration 0.19, latency 0.28; composite 0.31)
 vs **subjective** items (disturbance 0.34, quality 0.45, **daytime-dysfunction 0.59**; composite 0.61).
 (2) **Factor confirmation**: refit the extended model with the objective sleep items only

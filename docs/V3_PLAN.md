@@ -247,8 +247,8 @@ project-management layer.
   validated decision regions`.
 - **J2 Fit probabilistic strata** on posterior dimension scores (LPA, Bayesian GMM, mixture-of-factors,
   consensus clustering, risk-threshold regions); keep `P(stratum=k)` and assignment entropy.
-- **J3 Sensitivity:** direct raw-data stratification (masked-similarity on observed cells, Gower/HDBSCAN,
-  masked autoencoder) compared to dimension-based strata — a secondary control, not the headline.
+- **J3 Sensitivity:** direct raw-data stratification (observed-cell similarity, Gower/HDBSCAN,
+  missingness-aware autoencoder) compared to dimension-based strata — a secondary control, not the headline.
 
 ### Phase K — Strata validation
 - **K1 Statistical stability** (bootstrap, diagnosis-balanced subsampling, leave-one-site-out, posterior

@@ -139,7 +139,7 @@ Paper-oriented log of empirical + methodological findings for **V3**. Plan of re
 
 - **V3-7 · Sleep↔affective sensitivity → objective-sleep model (canonical) — 2026-06-05.**
   `scripts/v3/06_sleep_affect_sensitivity.py` + `04_extended_model.py --sleep objective`. The V3-6
-  sleep×affective 0.68 was interrogated: PSQI sub-item × affective masked correlations show the coupling
+  sleep×affective 0.68 was interrogated: PSQI sub-item × affective pairwise-complete correlations show it
   is driven by **subjective** items (daytime-dysfunction 0.59, quality 0.45; composite 0.61), while
   **objective** sleep parameters (efficiency/duration/latency; composite 0.31) are weakly affect-coupled.
   Refitting with objective sleep items only → factor-level **sleep×affective 0.68 → 0.54**, still

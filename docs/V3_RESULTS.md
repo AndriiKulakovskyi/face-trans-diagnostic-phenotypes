@@ -62,7 +62,7 @@ items anchor suicidality. No Heywood blow-ups under the marginalized estimator.
 ## 3 · Sleep ↔ affective — why "objective" sleep, and what the 0.54 means
 
 The first specification used the full PSQI sleep factor and gave sleep×affective = **0.68**. Decomposing
-that coupling at the PSQI sub-item level (masked correlations with affective severity, BP/DR) shows it is
+that coupling at the PSQI sub-item level (pairwise-complete correlations with affective severity, BP/DR) shows it is
 driven by the **subjective** items, which overlap with depression symptoms:
 
 ![PSQI item × affect](figures/v3/sleep_affect_items.png)

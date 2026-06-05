@@ -1,7 +1,7 @@
 """V3 — sleep ↔ affective sensitivity (is sleep a separable dimension or a depression facet?).
 
 The extended model (V3-6) found sleep×affective = 0.68 in the mood cohorts. This decomposes that
-coupling at the PSQI sub-item level (masked / pairwise-complete correlations, no imputation), to test
+coupling at the PSQI sub-item level (pairwise-complete correlations, no imputation), to test
 whether it is genuine sleep–depression co-occurrence or PSQI method overlap with depression symptoms.
 
 Verdict logic: if the coupling is concentrated in the SUBJECTIVE / daytime-dysfunction items (which
@@ -82,7 +82,7 @@ def main():
     fig, ax = plt.subplots(figsize=(6.6, 4.0))
     ax.barh(range(len(t)), t["r_affect"], color=[cmap[k] for k in t["kind"]])
     ax.set_yticks(range(len(t))); ax.set_yticklabels(t["item"])
-    ax.set_xlabel("masked correlation with affective severity (BP/DR)")
+    ax.set_xlabel("pairwise-complete correlation with affective severity (BP/DR)")
     ax.set_title("Sleep↔affect is driven by SUBJECTIVE PSQI items\n"
                  f"objective composite r={r_obj:.2f} · subjective r={r_subj:.2f} (obj×subj {r_os:.2f})", fontsize=10.5)
     ax.axvline(0, color="#999", lw=0.6)
