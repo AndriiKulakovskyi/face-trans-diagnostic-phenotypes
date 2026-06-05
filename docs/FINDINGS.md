@@ -135,5 +135,17 @@ Paper-oriented log of empirical + methodological findings for **V3**. Plan of re
   - **Caveats:** ~23% rare-pattern tail dropped; **SZ affective is a proxy** (no SZ affective indicators);
     suicidality↔factor correlations are post-hoc; MNAR not identifiable on the most-complete subsample
     (see atlas); single visit V0; sleep↔affective coupling needs a residualized-sleep sensitivity.
-  - **Symptoms ⊥ biology → now SUPPORTED in-model** (was partial). Next: sleep-affective sensitivity;
-    Phase H temporal coherence + invariance; Phase J strata.
+  - **Symptoms ⊥ biology → now shown in-model.** Next: sleep-affective sensitivity (V3-7).
+
+- **V3-7 · Sleep↔affective sensitivity → objective-sleep model (canonical) — 2026-06-05.**
+  `scripts/v3/06_sleep_affect_sensitivity.py` + `04_extended_model.py --sleep objective`. The V3-6
+  sleep×affective 0.68 was interrogated: PSQI sub-item × affective masked correlations show the coupling
+  is driven by **subjective** items (daytime-dysfunction 0.59, quality 0.45; composite 0.61), while
+  **objective** sleep parameters (efficiency/duration/latency; composite 0.31) are weakly affect-coupled.
+  Refitting with objective sleep items only → factor-level **sleep×affective 0.68 → 0.54**, still
+  **CERTIFIED** (R-hat 1.010, ESS 991, 0 div). → ~0.14 was PSQI method overlap; **0.54 is a genuine
+  construct-level sleep–affect relationship** (sleep separable but moderately correlated with affect in
+  mood disorders). **Adopted objective sleep as canonical** (`04 --sleep` default → objective); figures +
+  [`V3_RESULTS.md`](V3_RESULTS.md) regenerated with the canonical Φ: mean |off-diag| **0.17** (0.13 excl.
+  sleep-affective); cognition×affective 0.29, affective×metabolic 0.18, metabolic×inflammatory 0.20,
+  suicidality×affective 0.10. Next: Phase H temporal coherence (V1–V4) + measurement invariance.

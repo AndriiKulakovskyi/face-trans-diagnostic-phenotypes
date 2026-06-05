@@ -105,9 +105,9 @@ def main():
     ap.add_argument("--chains", type=int, default=4)
     ap.add_argument("--ta", type=float, default=0.95)
     ap.add_argument("--min-group", type=int, default=10)
-    ap.add_argument("--sleep", choices=["full", "objective"], default="full",
-                    help="sleep factor indicators: 'full' (V3-6) or 'objective' (V3-7 — sleep-parameter "
-                         "items only, less affect-overlap)")
+    ap.add_argument("--sleep", choices=["objective", "full"], default="objective",
+                    help="sleep factor indicators: 'objective' = sleep-parameter items only (CANONICAL, "
+                         "V3-7 — less affect-overlap); 'full' = all PSQI items (over-couples with affect)")
     args = ap.parse_args()
     if args.smoke:
         args.n_per_cohort, args.draws, args.tune, args.chains = 150, 80, 150, 2

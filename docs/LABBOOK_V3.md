@@ -233,14 +233,38 @@ metabolic/inflammatory split.
 
 ---
 
+## V3-7 · Sleep↔affective sensitivity → objective-sleep model (canonical) — 2026-06-05
+
+**What we did.** Investigated the sleep×affective = 0.68 from the extended model. (1) **Item decomposition**
+(`scripts/v3/06_sleep_affect_sensitivity.py`): masked correlation of each PSQI sub-item with affective
+severity (BP/DR) → **objective** parameters (efficiency 0.22, duration 0.19, latency 0.28; composite 0.31)
+vs **subjective** items (disturbance 0.34, quality 0.45, **daytime-dysfunction 0.59**; composite 0.61).
+(2) **Factor confirmation**: refit the extended model with the objective sleep items only
+(`scripts/v3/04_extended_model.py --sleep objective`).
+
+**Result.** Factor-level sleep×affective drops **0.68 → 0.54**, model still **CERTIFIED** (R-hat 1.010,
+ESS 991, 0 div). → ~0.14 of the coupling was PSQI method overlap (the depression-overlapping subjective
+items, esp. daytime-dysfunction = fatigue/anhedonia); the residual **0.54 is a genuine construct-level
+sleep–affect relationship**.
+
+**Conclusion / decision.** Sleep is a **separable** dimension but genuinely moderately correlated with
+affect in mood disorders (not an artifact, not a merger). **Adopted the objective sleep factor as
+canonical** (PSQI efficiency/duration/latency); the depression-contaminated PSQI items are dropped.
+`04 --sleep` default → `objective`. Canonical Φ + figures + discussion: [`V3_RESULTS.md`](V3_RESULTS.md).
+
+**Next.** Phase H temporal coherence (V1–V4) + measurement invariance; shrink the ~23% rare-pattern drop;
+Phase J probabilistic strata.
+
+---
+
 ## Open questions for review
 
 1. ~~**Convergence bar.**~~ **RESOLVED (V3-5):** the marginalized model certifies (R-hat 1.010, 0 div) —
    no need to build on a provisional fit. Remaining sub-question: lower `--min-group` to shrink the ~20%
    rare-pattern drop?
 2. ~~**Affective dimension.**~~ **RESOLVED (V3-6):** affective is a strong, well-identified named factor
-   (BP/DR) — kept. New sub-question: sleep↔affective = 0.68 — are sleep and affect separable in the mood
-   cohorts, or should sleep be residualized on affect?
+   (BP/DR) — kept. ~~Sleep↔affective separability?~~ **RESOLVED (V3-7):** sleep is separable; the objective
+   sleep factor correlates 0.54 with affect (the 0.68 was PSQI method overlap) — adopted as canonical.
 3. **Suicidality DIF.** V3-6 used the common **ISF** core (3-cohort) for suicidality (Bernoulli + NB);
    the BP-specific C-SSRS items were left out. Revisit a DIF-aware C-SSRS extension?
 4. ~~**SZ biology reliability.**~~ **ADDRESSED (V3-6):** SZ affective is reported as a *proxy* and SZ
