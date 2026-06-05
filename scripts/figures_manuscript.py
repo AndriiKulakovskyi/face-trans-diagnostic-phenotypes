@@ -500,10 +500,54 @@ def fig6_longitudinal():
     plt.close(fig); print("  F6 longitudinal -> fig6_longitudinal.png")
 
 
+# ============================================================================= S1
+def figS1_bootstrap():
+    b = json.load(open(HFA / "bootstrap_dimensionality.json"))
+    fig, (axA, axB, axC) = plt.subplots(1, 3, figsize=(13, 3.9))
+    fig.subplots_adjust(left=0.06, right=0.985, top=0.80, bottom=0.24, wspace=0.42)
+
+    # (a) eigengaps with 95% CI — first gaps large, gap4 ~ 0 (degenerate)
+    g = np.array(b["gap_mean"][:6]); lo = np.array(b["gap_ci"][0][:6]); hi = np.array(b["gap_ci"][1][:6])
+    x = np.arange(len(g)); cols = ["#2C6FB5" if l > 0.15 else "#C24A4A" for l in lo]
+    axA.bar(x, g, color=cols, edgecolor="white")
+    axA.errorbar(x, g, yerr=[g - lo, hi - g], fmt="none", ecolor="#333", capsize=3, lw=1)
+    axA.axhline(0, color="#888", lw=0.8)
+    axA.set_xticks(x); axA.set_xticklabels([f"λ{i+1}–λ{i+2}" for i in range(len(g))], fontsize=7.4)
+    axA.set_ylabel("eigenvalue gap (Φ₁)"); axA.set_title("Eigengaps (95% CI): 3 separated, then degenerate", fontsize=9)
+    axA.annotate("gap₄ ≈ 0", xy=(3, hi[3]), xytext=(3.4, 0.9), fontsize=7.5, color="#C24A4A",
+                 arrowprops=dict(arrowstyle="->", color="#C24A4A", lw=1))
+    panel_tag(axA, "a", dx=-0.12, dy=1.17)
+
+    # (b) distribution of the locked K — noisy
+    K = b["K_dist"]; n = b["n_boot_K"]; ks = sorted(int(k) for k in K)
+    axB.bar([str(k) for k in ks], [100 * K[str(k)] / n for k in ks], color="#2E8B7A", edgecolor="white")
+    axB.set_xlabel("locked K (split-half rule)"); axB.set_ylabel("% of bootstraps"); axB.set_ylim(0, 100)
+    axB.set_title("The count K is a noisy estimator", fontsize=9)
+    panel_tag(axB, "b", dx=-0.18, dy=1.17)
+
+    # (c) per-factor stability — high regardless
+    names = {"qidsr": "internalizing", "cvlt_total_recall": "cognition", "lipids_hdl": "cardiometabolic",
+             "agedebut_hospitalisation": "illness-course", "substance_use_disorder": "substance-use",
+             "wurs": "childhood-adv."}
+    st = b["stability_pct"]; labs = np.array([names.get(k, k) for k in b["ref_factors"]])
+    vals = np.array([st[k] for k in b["ref_factors"]]); order = np.argsort(vals)
+    axC.barh(labs[order], vals[order], color="#3B6FA0", edgecolor="white")
+    axC.set_xlim(0, 108); axC.set_xlabel("% of resamples factor recovers (≥0.85)")
+    axC.set_title("…but every factor is stable", fontsize=9)
+    for i, v in enumerate(vals[order]):
+        axC.text(v - 7, i, f"{v:.0f}", va="center", fontsize=7, color="white")
+    panel_tag(axC, "c", dx=-0.30, dy=1.17)
+
+    fig.suptitle("Figure S1 · Bootstrap robustness of dimensionality (50 cohort-stratified resamples): "
+                 "the factors are stable; the count K is not", fontsize=10, fontweight="bold", y=0.99)
+    fig.savefig(FIG / "figS1_bootstrap.png", bbox_inches="tight", facecolor="white")
+    plt.close(fig); print("  S1 bootstrap -> figS1_bootstrap.png")
+
+
 def main():
     print(f"Generating manuscript figures -> {FIG}")
     for fn in (fig1_pipeline, fig2_axes, fig3_orthogonality, fig4_continuum,
-               fig5_predictive, fig6_longitudinal):
+               fig5_predictive, fig6_longitudinal, figS1_bootstrap):
         try:
             fn()
         except Exception as e:  # noqa

@@ -176,3 +176,16 @@ def test_studyD_relapse_deconfounded():
     d4 = _json("studyD4_trajectory.json")
     assert d4["logistic"]["AUC"]["+traj"] >= 0.69                    # 0.70
     assert d4["gboost"]["AUC"]["+traj"] >= 0.67                      # 0.68
+
+
+# ── §3.1 / Fig S1 — bootstrap: factors robust, the K-count is not ───────────────────────────
+def test_bootstrap_dimensionality():
+    b = _json("bootstrap_dimensionality.json")
+    # the locked K is a noisy estimator but its mode is 3
+    assert max(b["K_dist"], key=lambda k: b["K_dist"][k]) == "3"     # K=3 most frequent (~60%)
+    # every individual factor recovers in nearly all resamples (98–100 %)
+    assert min(b["stability_pct"].values()) >= 95                    # min 98 (childhood-adversity)
+    # first two eigengaps are bounded away from 0; the 4th is a degenerate pair (CI touches ~0)
+    lo = b["gap_ci"][0]
+    assert lo[0] > 1.5 and lo[1] > 1.5                               # gap1/gap2 CIs clear of 0 (2.58, 1.98)
+    assert lo[3] < 0.05 and b["gap_mean"][3] < 0.20                  # gap4 ≈ 0 (0.02 / 0.11) — not identified

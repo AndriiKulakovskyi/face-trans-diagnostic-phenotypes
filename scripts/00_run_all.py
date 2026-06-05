@@ -45,6 +45,7 @@ STEPS: list[tuple[str, list[str]]] = [
     ("sensitivity_aggregation.py", []),  # granularity invariance / conditioning audit
     ("sensitivity_comorbidity.py", []),  # the 24 *_mhoccur flags decomposition
     ("sensitivity_polychoric.py", []),   # tetrachoric sensitivity of the K=3 structure
+    ("sensitivity_bootstrap_dimensionality.py", []),  # bootstrap: factors robust, K-count noisy (§3.1)
     # ── figures ──
     ("figures_manuscript.py", []),       # 6 manuscript figures from results/hfa/
 ]

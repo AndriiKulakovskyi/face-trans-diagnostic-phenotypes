@@ -405,3 +405,12 @@ narrower clusters (ECG RR/QTc), grab-bags, then Heywood (improper) at K≥12 —
   (8 factors × score + `__cov` coverage). Atlas axes track Stage-3 dims (|r| 0.97/0.87/0.81); features
   near-orthogonal (mean |r| 0.09). Coverage is the binding constraint: internalizing SZ-proxy (✓50%=0.41),
   substance BP/SZ-only (DR=0.00), illness-course DR=0.48. `tests/test_phenotype.py` (4 pass).
+- **Manuscript integration (2026-06-05):** promoted the bootstrap to `scripts/sensitivity_bootstrap_dimensionality.py`
+  (committed; writes `results/hfa/bootstrap_dimensionality.json`; added to `00_run_all`). Rewrote §3.1
+  (and abstract, Methods Stage-3, Discussion design-limits) from "illness-course is fragile / collapsed"
+  → the accurate "**3 correlated backbone + reproducible orthogonal standalones**; factors stable, count
+  noisy" framing — which *corrects* a prior inaccuracy (illness-course is 100% reproducible, just
+  orthogonal) and *reinforces* the no-p-factor thesis. New **Fig S1** (`figS1_bootstrap` in
+  figures_manuscript) = eigengap CIs · K-distribution · factor-stability. Golden test
+  `test_bootstrap_dimensionality` pins mode K=3, factor stability ≥95%, gap1/2 CIs clear of 0, gap4≈0.
+  Docx rebuilt; 104 tests pass.
