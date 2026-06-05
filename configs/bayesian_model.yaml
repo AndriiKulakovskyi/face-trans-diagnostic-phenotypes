@@ -60,10 +60,13 @@ stages:
   2:
     name: "ESEM cross-loadings"
     include_g: true
-    cross_loadings: true            # free specific<->specific plausible/unlikely cells
+    cross_loadings: true            # free theory-motivated plausible cross cells
+    cross_tier: plausible_only      # default arm: hard-zero the ~88 unlikely (soft-zero) cells
+    cross_sd_scale: 0.6             # mild tighten (ESEM ridge guard; Phi carries assoc)
     prior_mode: soft
+    target_accept: 0.99             # harder geometry under free cross-loadings
     explicit: []
-    question: "do soft-prior cross-loadings emerge without breaking identification?"
+    question: "do the theory-motivated cross-loadings emerge, or is simple structure adequate?"
   3:
     name: "ordinal CGI on explicit Z"
     include_g: true

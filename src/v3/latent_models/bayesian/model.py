@@ -45,17 +45,24 @@ def continuous_factor_order(data, spec: dict, specific_order: list[str]) -> list
 
 
 def _cell_active(ptype: str, factor: str, g_key: str, spec: dict) -> str | None:
-    """Return 'pos' | 'signed' | None for whether/how a (item,factor) cell is estimated."""
+    """Return 'pos' | 'signed' | None for whether/how a (item,factor) cell is estimated.
+
+    cross_tier (default 'plausible_only'): the DEFAULT ESEM arm frees only theory-motivated
+    plausible cross-loadings and hard-zeros the unlikely (soft-zero) cells — those ~88
+    near-degenerate cells add no signal (the bifactor G captures broad shared variance) but
+    wreck mixing/diagnostics. cross_tier='all' is the labeled surprise-hunting sensitivity arm.
+    """
+    cross_tier = spec.get("cross_tier", "plausible_only")
     if ptype in ("primary", "g_anchor"):
         return "pos"
     if ptype == "g_anchor_on_specific":
         return None                                   # severity anchor ~0 on specifics (hard)
     if ptype == "plausible_cross":
         if factor == g_key:
-            return "signed" if spec.get("include_g") else None      # bifactor G loading
+            return "signed" if spec.get("include_g") else None      # bifactor G loading (always on with G)
         return "signed" if spec.get("cross_loadings") else None
     if ptype == "unlikely_cross":
-        return "signed" if spec.get("cross_loadings") else None
+        return "signed" if (spec.get("cross_loadings") and cross_tier == "all") else None
     return None
 
 
@@ -68,6 +75,10 @@ def build_model(data, spec: dict, cell_priors: dict, specific_order: list[str],
 
     g_key = spec.get("general_factor")
     prior_mode = spec.get("prior_mode", "soft")
+    # ESEM ridge guard: tighten specific<->specific cross priors (so Phi carries the
+    # inter-factor association and cross-loadings only catch genuine extra structure).
+    # G bifactor cells are NOT scaled (they identified cleanly at sd 0.25 in Stage 1).
+    cross_sd_scale = float(spec.get("cross_sd_scale", 1.0))
     factor_cols = continuous_factor_order(data, spec, specific_order)
     F = len(factor_cols)
     col = {f: i for i, f in enumerate(factor_cols)}
@@ -94,7 +105,8 @@ def build_model(data, spec: dict, cell_priors: dict, specific_order: list[str],
             if kind == "pos":
                 pos_r.append(j); pos_c.append(col[f]); pos_mu.append(mean); pos_sd.append(sd)
             elif kind == "signed":
-                sgn_r.append(j); sgn_c.append(col[f]); sgn_mu.append(mean); sgn_sd.append(sd)
+                sd_eff = sd if f == g_key else sd * cross_sd_scale   # spare G bifactor cells
+                sgn_r.append(j); sgn_c.append(col[f]); sgn_mu.append(mean); sgn_sd.append(sd_eff)
 
     pos_r = np.array(pos_r); pos_c = np.array(pos_c)
     sgn_r = np.array(sgn_r); sgn_c = np.array(sgn_c)
