@@ -171,4 +171,6 @@ End-to-end diagram + mathematics: **[docs/PIPELINE.md](docs/PIPELINE.md)**.
 - **Pipeline (end-to-end diagram + math)** → [docs/PIPELINE.md](docs/PIPELINE.md)
 - **Plan** → [docs/ROADMAP.md](docs/ROADMAP.md) · **Dictionary columns** → [docs/DATA.md](docs/DATA.md)
 - **Findings (v2 log)** → [docs/FINDINGS.md](docs/FINDINGS.md) · **Lab notebook** → [docs/LABBOOK.md](docs/LABBOOK.md)
+- **Phenotype atlas (named factors as predictive features)** → [docs/PHENOTYPE_ATLAS.md](docs/PHENOTYPE_ATLAS.md)
+  (`src/trans_diag/phenotype.py` · `scripts/export_phenotype_features.py`)
 - **Manuscript** → [results/manuscript/manuscript.md](results/manuscript/manuscript.md) · **Engine internals** → `src/trans_diag/engine/`

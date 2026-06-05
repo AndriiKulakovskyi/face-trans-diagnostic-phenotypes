@@ -386,3 +386,22 @@ PARTIAL, MINI abuse-or-dependence) were added to the dictionary → a `substance
   `len(AXIS_NAMES)`); `04` now writes `stage3_meta.json` (K, ECV, mean|Φ₂|). Full `00_run_all` re-run
   clean; **golden tests + `test_axes` re-baselined to K=3** (99 pass); manuscript + 6 figures + docx
   rebuilt; CLAUDE/FINDINGS/ROADMAP/DATA/PIPELINE re-synced. User decision: accept the data-driven K=3.
+
+## V2-23 · Dimensionality robustness (bootstrap) + phenotype-feature atlas — 2026-06-05
+Investigating *why* 2 variables flipped K, we ran a **bootstrap robustness analysis** (50 cohort-
+stratified resamples; `/tmp/bootstrap_dim.py`). It dissolved the K=3-vs-K=4 question:
+- **Eigengaps (95% CI):** gap1 2.88 [2.58,3.16], gap2 2.19 [1.98,2.37] — bounded off 0; **gap4 0.11
+  [0.02,0.21]** ≈ 0 → λ4≈λ5 is a **degenerate eigenpair** (illness-course ≈ substance), so "the 4th
+  axis" is not individually identified.
+- **K is a noisy estimator:** the split-half rule gives K=2 (26%), **K=3 (60%)**, K=5 (4%), K=6 (10%).
+- **But the FACTORS are robust:** fixing K=6, every factor recovers in 98–100% of resamples
+  (internalizing/cognition/cardiometabolic/illness-course/substance 100%, childhood-ADHD 98%).
+→ Resolution: the data is **3 weakly-correlated axes + several reproducible ORTHOGONAL standalones**;
+"K" conflates "#reproducible factors" (≥6) with "#correlated axes" (3). Pushing K higher only peels off
+narrower clusters (ECG RR/QTc), grab-bags, then Heywood (improper) at K≥12 — not new structure.
+- **Deliverable — phenotype atlas (feature view):** `docs/PHENOTYPE_ATLAS.md` + `src/trans_diag/phenotype.py`
+  (`PHENOTYPE_FACTORS`, `build_phenotype_factors`: masked mean of sign-oriented standardized construct
+  scores, no imputation) + `scripts/export_phenotype_features.py` → `results/hfa/phenotype_features.csv`
+  (8 factors × score + `__cov` coverage). Atlas axes track Stage-3 dims (|r| 0.97/0.87/0.81); features
+  near-orthogonal (mean |r| 0.09). Coverage is the binding constraint: internalizing SZ-proxy (✓50%=0.41),
+  substance BP/SZ-only (DR=0.00), illness-course DR=0.48. `tests/test_phenotype.py` (4 pass).
