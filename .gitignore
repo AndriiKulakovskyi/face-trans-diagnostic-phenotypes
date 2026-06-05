@@ -103,3 +103,7 @@ results/hfa/
 results/manuscript/*
 !results/manuscript/manuscript.md
 results/reports/
+
+# V3 outputs (scripts/v3/*). Aggregate reports are regenerable; factor_scores.csv + idata_core.nc
+# contain per-patient posteriors derived from confidential data — never commit the dir.
+results/v3/

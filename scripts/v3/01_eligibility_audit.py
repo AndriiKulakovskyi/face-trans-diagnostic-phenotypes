@@ -10,12 +10,12 @@ data contract, the GATE for all V3 modeling (docs/V3_PLAN.md, docs/PIPELINE.md Â
   â€¢ a soft prior loading matrix (primary / cross-loading) for the Bayesian model's priors
 
 Aggregate outputs only (coverage %, never patient rows):
-  results/reports/v3_eligibility/dimension_eligibility.md
-  results/reports/v3_eligibility/variable_audit.csv
+  results/v3/eligibility/dimension_eligibility.md
+  results/v3/eligibility/variable_audit.csv
   configs/likelihood_map_v3.yaml
   configs/soft_loading_priors_v3.csv
 
-Run:  python3 scripts/v3_eligibility_audit.py
+Run:  python3 scripts/v3/01_eligibility_audit.py
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 warnings.filterwarnings("ignore")
 
@@ -35,7 +35,7 @@ from trans_diag import build_unified_dataframe, load_variables, to_harmonized_da
 COH = ["bp", "sz", "dr"]
 DICT = ROOT / "data" / "face-common-vars.xlsx"
 CFG = ROOT / "configs" / "candidate_dimensions_v3.yaml"
-OUT_REP = ROOT / "results" / "reports" / "v3_eligibility"
+OUT_REP = ROOT / "results" / "v3" / "eligibility"
 OUT_CFG = ROOT / "configs"
 
 # ---- likelihood derivation (auto; review per-variable) -----------------------

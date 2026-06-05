@@ -56,25 +56,31 @@ dimensions:
 
   - key: metabolism_immunometabolic
     role: core
-    definition: Cardiometabolic + inflammatory + autonomic biological load.
+    definition: Cardiometabolic + inflammatory biological load (TRIMMED core, not all of BILAN).
     indicators:
-      sections: [BILAN BIOLOGIQUE, CONSTANTES ET ECG]
-      names: [hta_mhoccur, autcardv_mhoccur, autendoc_mhoccur]   # somatic-history cardiometabolic flags
-      exclude: [oxcarbaz, prolctn]      # oxcarbazepine = drug level (covariate); prolactin = drug-effect, review
+      names: [bmi, wstcir, weight, chol, hdl, ldl, cholhdl_lbstresc, trig, gluc, hba1c, urate,
+              sysbpsupine, sysbpstanding, diabpsupine, diabpstanding,
+              crp, wbc, neut, lym_lbstresc, mono_lbstresc, eos, baso_lbstresc, plat,
+              hta_mhoccur, autcardv_mhoccur, autendoc_mhoccur]
     subdimensions:
       metabolic_load:    {names: [bmi, wstcir, weight, chol, hdl, ldl, cholhdl_lbstresc, trig, gluc, hba1c, urate,
                                   sysbpsupine, sysbpstanding, diabpsupine, diabpstanding]}
       inflammatory_load: {names: [crp, wbc, neut, lym_lbstresc, mono_lbstresc, eos, baso_lbstresc, plat]}
-    note: V3 tests the metabolic-vs-inflammatory SPLIT (V2 had one cardiometabolic-inflammatory axis).
-          Liver/renal/thyroid/haematology labs are peripheral biology (load on G or are excluded if too sparse).
+    covariate: [prolctn, qtc, oxcarbaz]   # drug-effect / ECG conduction = exposure/confounder (workbook)
+    note: TRIMMED to the ~26-var cardiometabolic+inflammatory core (workbook ~29) — dropped the broad
+          BILAN section sweep; **liver/renal/thyroid/red-cell labs are peripheral biology** (load on G or
+          excluded), NOT in the metabolism core. V3 tests the metabolic-vs-inflammatory SPLIT. [V3-5.]
 
   - key: sleep_circadian
     role: core
-    definition: Sleep quality/quantity + daytime sleepiness + circadian preference.
+    definition: Sleep quality/quantity (3-cohort core) + circadian preference (BP/DR extension).
     indicators:
-      names: [psqi, psqi11, psqi12, psqi13, psqi14, psqi15, psqi16, psqi17, ess0109, csm]
-    note: CONFIRMED 3-cohort (PSQI total + 7 subscores). ess0109 = Epworth sleepiness;
-          csm = Composite Scale of Morningness (the circadian indicator) — confirm coverage.
+      names: [psqi, psqi11, psqi12, psqi13, psqi14, psqi15, psqi17]   # PSQI total + subscores, 3-cohort
+    extension_BPDR: {circadian: [ess0109, csm]}   # Epworth + Morningness: obs_sz=0 -> NOT 3-cohort core
+    covariate: [psqi16]                            # hypnotic use = medication exposure, not sleep quality
+    note: 3-cohort sleep core = PSQI total+subscores. ESS/CSM are **BP/DR-only** (obs_sz=0) -> circadian
+          EXTENSION, not core (FACE_dimension_recommendations workbook + V3-1 audit agree); psqi16
+          (hypnotic use) is an exposure/covariate. [Workbook-enriched, V3-5.]
 
   - key: suicidality
     role: core
@@ -106,9 +112,11 @@ dimensions:
     role: proxy_only
     definition: Trait impulsivity / behavioural disinhibition.
     indicators: {names: []}
-    proxies: [mania_activation, substance]
+    proxies: [mania_activation, substance]   # ymrs/altman (activation), wurs (developmental ADHD)
+    covariate_only: [suncf_cigarettes_lt, sudose_cigarettes_lt, agedebut_cigarettes_lt, mars, isf05, isf07]
     note: NO dedicated impulsivity scale (no Barratt/UPPS). Proxy via activation (YMRS/Altman) and
-          substance use only. Do NOT call a recovered factor "impulsivity" without direct indicators.
+          substance use only. Smoking/adherence/attempt vars are **downstream behaviour/covariate**, not
+          the construct (workbook). Do NOT call a recovered factor "impulsivity". [V3-5.]
 
   # ---- data-implied dimensions (NOT in the original 10, but measured) ------
 

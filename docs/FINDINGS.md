@@ -18,9 +18,9 @@ patient-level observed-likelihood model (V3_PLAN §0C, Phase G3). The V2 evidenc
 | # | V2 finding (benchmark) | V3 hypothesis / action | Verdict |
 |---|---|---|---|
 | H1 | 3 weakly-correlated axes: internalizing · cognition · cardiometabolic | retest under FIML + Bayesian mixed-likelihood; adjudicate {confirm/split/merge} | ⬜ open |
-| H2 | No dominant general factor (Schmid–Leiman ECV 0.42) | estimate `G` **directly**; test whether specifics survive beyond it | ⬜ open |
-| H3 | **Symptoms ⊥ biology** (between-block mean \|r\| ≈ 0.03); p-factor is symptom-only | retest under observed-data likelihood + posterior uncertainty | ⬜ open |
-| H4 | Cardiometabolic axis robust but possibly mixed | **test split** into metabolic load vs inflammatory load | ⬜ open |
+| H2 | No dominant general factor (Schmid–Leiman ECV 0.42) | estimate `G` **directly**; test whether specifics survive beyond it | 🟡 **supported** (V3-5, core: mean\|Φ\|≈0.09, G un-identifiable) |
+| H3 | **Symptoms ⊥ biology** (between-block mean \|r\| ≈ 0.03); p-factor is symptom-only | retest under observed-data likelihood + posterior uncertainty | 🟡 **partial** (V3-5: cognition⊥inflam/sleep ≈0.05; ⊥metabolic 0.22; symptoms not yet in) |
+| H4 | Cardiometabolic axis robust but possibly mixed | **test split** into metabolic load vs inflammatory load | 🟢 **supported** (V3-5: metabolic×inflammatory 0.17 — separable) |
 | H5 | Cognition = strongest fully-transdiagnostic axis | keep core; refine into cognitive-flexibility / broader cognition if supported | ⬜ open |
 | H6 | Internalizing axis (mood scales 0% in FACE-SZ → SZ-proxy) | model as affective/anhedonic extension unless invariance supports all-cohort status | ⬜ open |
 | H7 | Standalone suicidality / mania / substance-use (orthogonal) | model suicidality with mixed binary/ordinal/count likelihoods; mania = activation/impulsivity **proxy**; substance = module/covariate | ⬜ open |
@@ -35,8 +35,8 @@ patient-level observed-likelihood model (V3_PLAN §0C, Phase G3). The V2 evidenc
 
 - **V3-1 · Eligibility & data-contract audit (Phases A+B+C) — 2026-06-05.** First V3 deliverable.
   `configs/candidate_dimensions_v3.yaml` (curated soft-ontology → indicator map) +
-  `scripts/v3_eligibility_audit.py` → per-cohort V0 observed coverage, likelihood map, missingness
-  taxonomy, soft prior matrix. Report: `results/reports/v3_eligibility/`. **Verdict on the 10 candidates
+  `scripts/v3/01_eligibility_audit.py` → per-cohort V0 observed coverage, likelihood map, missingness
+  taxonomy, soft prior matrix. Report: `results/v3/eligibility/`. **Verdict on the 10 candidates
   (+4 data-implied), at V0 N=9,013:**
   - **Core, 3-cohort (well-covered):** `overall_severity` (= general factor **G**; CGI/EGF/EQ-5D/FAST),
     `cognition` (neuropsy, cov ≈0.67/0.76/0.56), `metabolism_immunometabolic` (labs+vitals ≈0.78/0.78/0.72;
@@ -61,8 +61,8 @@ patient-level observed-likelihood model (V3_PLAN §0C, Phase G3). The V2 evidenc
   - Next: Phase B full missingness atlas (observation-probability models) → choose PPL → fit the small
     core Bayesian model.
 
-- **V3-2 · Missingness atlas (Phase B) — 2026-06-05.** `scripts/v3_missingness_atlas.py` →
-  `results/reports/v3_missingness/`. **Overall V0 missingness by cohort: BP 36% · SZ 58% · DR 43%**
+- **V3-2 · Missingness atlas (Phase B) — 2026-06-05.** `scripts/v3/02_missingness_atlas.py` →
+  `results/v3/missingness/`. **Overall V0 missingness by cohort: BP 36% · SZ 58% · DR 43%**
   (SZ most incomplete). By block: **SZ labs (BILAN) 72% missing**, SZ hetero-Q 73%, DR neuropsych 58%,
   DR substances 72%, SUICIDE ≈62–73% all cohorts (skip-logic); demographics (PATIENT) 0% — complete.
   **Observation-mechanism drivers** (per-variable logit `observed ~ cohort+age+sex+severity`, severity =
@@ -76,7 +76,7 @@ patient-level observed-likelihood model (V3_PLAN §0C, Phase G3). The V2 evidenc
   expect low per-cohort SZ reliability for the biology factor. Next: Phase F core Bayesian model (with a
   cognition MNAR arm), with Phase D (V2 replication) / E (FIML) as benchmarks.
 
-- **V3-3 · Bayesian core engine (Phase F prototype) — 2026-06-05.** `scripts/v3_bayesian_core.py`
+- **V3-3 · Bayesian core engine (Phase F prototype) — 2026-06-05.** `scripts/v3/03_bayesian_core.py`
   (PyMC 6), patient-level **observed-cell likelihood — NO imputation** (long (patient,indicator,value)
   table; missing cells never appear) on the **3-cohort continuous core** (20 indicators:
   cognition·metabolic·inflammatory·sleep), cohort-stratified subsample N=1,500. Two parameterizations:
@@ -95,7 +95,47 @@ patient-level observed-likelihood model (V3_PLAN §0C, Phase G3). The V2 evidenc
     MNAR arm is wired in the bifactor variant, b_cog<0, but untrustworthy until converged); N=1,500
     subsample; R-hat 1.06 is not the 1.01 bar → **precise Φ values are provisional** (certify with a
     longer target_accept=0.99 run). **Engine + no-imputation pipeline validated; structure emerging and
-    consistent.** Report: `results/reports/v3_bayesian/core_model.md`.
+    consistent.** Report: `results/v3/bayesian/core_model.md`.
   - Next: certify convergence → add suicidality (ordinal/Bernoulli/count) + affective/anhedonia BP/DR
     extension + cognition MNAR arm → ESEM soft cross-loadings → scale to full N (ADVI/NumPyro) →
     Phase H invariance → Phase J strata.
+
+- **V3-4 · V0 confirmed + cohort-imbalance correction — 2026-06-05.** (1) **V0 anchor verified** across
+  all V3 scripts (N=9,013 = BP 6,252 + SZ 2,209 + DR 552; later visits V1–V4 reserved for temporal
+  coherence only). (2) **Corrected BP ≫ SZ ≫ DR** (BP is 11× DR): the atlas observation models now use
+  **1/n_cohort weighting** (rescaled to preserve N); the Bayesian core now uses the **500 most-complete
+  patients per cohort** (`--select complete`; observed-cell density 70% → 84%).
+  - **Impact on V3-2 (a conclusion changed):** under cohort weighting the cognition-MNAR signal was
+    **partly BP-driven** — TMT/WAIS/fluency drop to *sporadic*; only **CVLT** stays informative. The
+    robust informative-missingness is **suicidality (ISF) + self-reports (Altman/STAI/PSQI/CSM/ESS)**.
+    → the Phase-F MNAR arm should target suicidality + self-reports (+ CVLT), not the cognition block.
+  - **Balanced Bayesian core re-run:** the **structure is robust to balancing** — loadings + Φ stable
+    across random/balanced & 70%/84% dense (cognition≈⊥biology, metabolic×inflammatory 0.19,
+    **mean |Φ| ≈ 0.09**, no general factor). **But convergence is worse** (R-hat **1.56**, **648
+    divergences** vs 39) → the bottleneck is the **LKJ correlation parameterization geometry** (unused
+    nuisance `stds` + sharper likelihood), a **model-engineering** fix, not data/compute.
+  - **Decision pending:** re-parameterize the factor correlation (LKJCorr / non-centered / marginalize
+    the Gaussian factors) to certify (R-hat<1.01, ~0 div) before extending or building strata.
+
+- **V3-5 · Workbook enrichment + CERTIFIED marginalized core — 2026-06-05.**
+  **(A) Folded in `FACE_dimension_recommendations.xlsx` (independent expert curation — confirms V3-1):**
+  ESS/CSM → BP/DR circadian extension (3-cohort sleep core = PSQI only); the unit-mislabel flags are
+  **cosmetic** (all sanity bounds correct, no data loss); metabolism trimmed 60 → **26**-var cardiometabolic+
+  inflammatory core; per-variable covariate/proxy roles added (smoking/MARS/psqi16 → covariate; YMRS/Altman/
+  WURS → proxy).
+  **(B) Reparameterized for convergence:** the explicit-latent correlated model diverges (LKJCholeskyCov 648
+  div; LKJCorr 250 div + Heywood loadings) → switched to a **marginalized Gaussian factor model** (factors
+  integrated out; `MVN(ν, ΛΦΛᵀ+Ψ)` on each patient's observed cells, grouped by missingness pattern; **no
+  imputation**; `--min-group` bounds the Cholesky count; `cores=1`). **CERTIFIED** (N=1,500 balanced
+  most-complete, 86% dense, 17 patterns, 4 chains): **max R-hat 1.010 · min ESS 1,863 · 0 divergences.**
+  Loadings clean (psqi 1.00, wstcir 0.97, wbc 0.94, tmt_b 0.74). **Φ: cognition×metabolic 0.22 ·
+  cognition×inflammatory 0.05 · metabolic×inflammatory 0.17 · sleep ≈ orthogonal; mean |Φ| ≈ 0.09 — NO
+  general factor.** First properly-converged V3 measurement model (structure identical across all 5 prior runs).
+  - **V2-claim retests (now under a certified patient-level estimator):** **H2 (no p-factor) → SUPPORTED**
+    (mean |Φ|≈0.09; bifactor G un-identifiable); **H3 (cognition ⊥ biology) → SUPPORTED** for cognition vs
+    inflammation/sleep (≈0.05), *partial* vs metabolic (0.22); **H4 (metabolic vs inflammatory split) →
+    SUPPORTED** (0.17, separable).
+  - **Caveats:** continuous core only (suicidality/affective not yet in); **~20% rare-pattern tail dropped**
+    by `--min-group 10` (mild completeness selection); single visit V0.
+  - Next: extend to suicidality (ordinal/binary/count) + affective/anhedonia (BP/DR) + cognition MNAR arm;
+    shrink the rare-pattern drop; Phase H invariance → Phase J strata.

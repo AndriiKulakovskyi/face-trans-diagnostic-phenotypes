@@ -55,12 +55,12 @@ direct indicators exist** = sensory abnormalities. Each is then adjudicated to
 
 | Phase | Theme | Status |
 |---|---|---|
-| **A** | Foundation: freeze V2 as benchmark; V3 data contract; harmonization/units/direction; skip-logic | ⬜ planned |
-| **B** | Missingness atlas + mechanism classification + measurement eligibility | ⬜ planned |
-| **C** | Soft-prior construct map (V2 constructs + 10 candidates) | ⬜ planned |
+| **A** | Foundation: freeze V2 as benchmark; V3 data contract; harmonization/units/direction; skip-logic | ✅ done — V3-1 (`scripts/v3/01`) |
+| **B** | Missingness atlas + mechanism classification + measurement eligibility | ✅ done — V3-2 (`scripts/v3/02`) |
+| **C** | Soft-prior construct map (V2 constructs + 10 candidates) | ✅ done — V3-1 (`configs/`) |
 | **D** | V2 masked-estimator replication on V3 data (reproducibility baseline) | ◻ V2 code exists (`scripts/01–06`) |
 | **E** | FIML SEM/ESEM benchmark + general-vs-specific test | ⬜ planned |
-| **F** | **Bayesian sparse bifactor + mixed likelihoods (primary discovery engine)** | ⬜ planned |
+| **F** | **Bayesian sparse bifactor + mixed likelihoods (primary discovery engine)** | 🟢 certified core — V3-5 (`scripts/v3/03`, marginalized; R-hat 1.01, 0 div) |
 | **G** | Model comparison + dimension adjudication + retest V2 claims | ⬜ planned |
 | **H** | Measurement invariance / transdiagnostic validity / DIF | ⬜ planned |
 | **I** | Posterior patient-level dimension scores + V3 phenotype atlas | ⬜ planned |
@@ -71,8 +71,14 @@ direct indicators exist** = sensory abnormalities. Each is then adjudicated to
 | **N** | Clinical interpretation: dimension/stratum/model cards (TRIPOD-AI, PROBAST-AI) | ⬜ planned |
 | **O–T** | Repo structure · acceptance criteria · deliverables · risk register · V2→V3 management · decision tree | ⬜ planned |
 
-`◻` = the existing `src/trans_diag/` + `scripts/01–15` are the **V2 benchmark implementation**, which
-becomes Phase D's reproducibility baseline; the V3 discovery engine (Phases E–M) is **not yet built**.
+**Progress (2026-06-05):** Phases **A·B·C done**, Phase **F core CERTIFIED** — V3 code is in
+`scripts/v3/` (`01` eligibility · `02` missingness · `03` Bayesian core), outputs in `results/v3/`,
+step journal in [`LABBOOK_V3.md`](LABBOOK_V3.md). Current state: a **certified** marginalized
+correlated-factor model on the continuous core (cohort-balanced 500/cohort; R-hat 1.01, 0 div) —
+weakly-correlated factors, **no general factor**, cognition≈⊥biology, metabolic/inflammatory separable
+(mean |Φ|≈0.09). Next: extend to suicidality + affective/anhedonia + the cognition MNAR arm. `◻` = the existing
+`src/trans_diag/` + `scripts/01–15` are the **V2 benchmark implementation** (Phase D baseline).
+Phases E, G–T are **not yet built**.
 
 ## What "done" looks like
 

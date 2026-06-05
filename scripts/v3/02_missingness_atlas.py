@@ -14,11 +14,11 @@ Severity proxy = row-mean of z(CGI-severity) and z(-GAF/EGF) on observed support
 latent model's cells; this is a diagnostic regression, listwise on its own predictors).
 
 Aggregate outputs only:
-  results/reports/v3_missingness/missingness_atlas.md
-  results/reports/v3_missingness/missingness_by_variable.csv
-  results/reports/v3_missingness/observation_models.csv
+  results/v3/missingness/missingness_atlas.md
+  results/v3/missingness/missingness_by_variable.csv
+  results/v3/missingness/observation_models.csv
 
-Run:  python3 scripts/v3_missingness_atlas.py
+Run:  python3 scripts/v3/02_missingness_atlas.py
 """
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ import pandas as pd
 import statsmodels.api as sm
 import yaml
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 warnings.filterwarnings("ignore")
 
@@ -40,7 +40,7 @@ from trans_diag import build_unified_dataframe, load_variables, to_harmonized_da
 COH = ["bp", "sz", "dr"]
 DICT = ROOT / "data" / "face-common-vars.xlsx"
 CFG = ROOT / "configs" / "candidate_dimensions_v3.yaml"
-OUT = ROOT / "results" / "reports" / "v3_missingness"
+OUT = ROOT / "results" / "v3" / "missingness"
 PRED_COVARS = ["age", "sex", "education_years", "siteid_city"]  # not "indicators" of any dimension
 
 
@@ -73,6 +73,7 @@ def main() -> None:
         -z(X["egf"]) if "egf" in X else pd.Series(np.nan, index=X.index),
     ], axis=1).mean(axis=1, skipna=True)   # higher = more severe
     coh_d = pd.get_dummies(pd.Series(cohort, index=X.index), prefix="coh", drop_first=True).astype(float)
+    cohort_s = pd.Series(cohort, index=X.index)   # cohort label per patient (for 1/n_cohort weighting)
 
     designcoh = {f: {c: bool(getattr(by_name[f], f"{c}_csv_col")) if f in by_name else False for c in COH} for f in feats}
     sec_of = {f: (by_name[f].section if f in by_name else None) for f in feats}
@@ -94,24 +95,31 @@ def main() -> None:
         if len(present) > 1:
             base = base.join(coh_d[[c for c in coh_d.columns if c.split("_", 1)[1] in present]])
         base = base[mask]
+        # cohort-balancing weights (BP>>SZ>>DR): 1/n_cohort, rescaled to preserve sample size so each
+        # present cohort contributes equally to the pooled observation model (the 1/n_cohort correction).
+        present_n, k = int(mask.sum()), len(present)
+        ncoh = cohort_s[mask].value_counts()
+        wt = (present_n / (k * cohort_s.map(ncoh)))[mask]
 
         def fit(Xp, yv):
-            d = pd.concat([yv.rename("y"), Xp], axis=1).dropna()
+            d = pd.concat([yv.rename("y"), Xp, wt.rename("w")], axis=1).dropna()
             if d["y"].nunique() < 2 or len(d) < 50:
                 return None
             try:
-                m = sm.Logit(d["y"], sm.add_constant(d.drop(columns="y"), has_constant="add")).fit(disp=0, maxiter=60)
-                return m
+                Xd = sm.add_constant(d.drop(columns=["y", "w"]), has_constant="add")
+                res = sm.GLM(d["y"], Xd, family=sm.families.Binomial(),
+                             freq_weights=d["w"].to_numpy()).fit()
+                prsq = (1.0 - res.deviance / res.null_deviance) if res.null_deviance else np.nan
+                return {"params": res.params, "pvalues": res.pvalues, "prsq": float(prsq)}
             except Exception:
                 return None
 
         m0 = fit(base, y)
-        base_s = base.join(sev.rename("severity"))
-        m1 = fit(base_s, y)
-        pr2 = float(getattr(m0, "prsquared", np.nan)) if m0 is not None else np.nan
-        pr2s = float(getattr(m1, "prsquared", np.nan)) if m1 is not None else np.nan
-        sev_c = float(m1.params.get("severity", np.nan)) if m1 is not None else np.nan
-        sev_p = float(m1.pvalues.get("severity", np.nan)) if m1 is not None else np.nan
+        m1 = fit(base.join(sev.rename("severity")), y)
+        pr2 = m0["prsq"] if m0 else np.nan
+        pr2s = m1["prsq"] if m1 else np.nan
+        sev_c = float(m1["params"].get("severity", np.nan)) if m1 else np.nan
+        sev_p = float(m1["pvalues"].get("severity", np.nan)) if m1 else np.nan
         # dominant driver
         driver = "sporadic"
         if m0 is not None and not np.isnan(pr2):

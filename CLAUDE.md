@@ -106,10 +106,13 @@ face-common-bp-sz-dr/
 │   ├── masked_fa·axes·phenotype.py             ← V2 masked estimator, axis names, phenotype features (→ V3 priors)
 │   └── engine/                                 ← masked-similarity stratification (→ V3 secondary control)
 │       ←  V3 modules to ADD: bayesian/ · fiml/ · missingness/ · priors/ · strata/ · prognosis/ · treatment/
+├── configs/                            ← V3 data contract: candidate_dimensions_v3 · likelihood_map_v3 · soft_loading_priors_v3
 ├── scripts/                            ← V2 benchmark pipeline (01–15) + qa_harmonization/verify/audit
+│   └── v3/                              ← V3 pipeline: 01_eligibility_audit · 02_missingness_atlas · 03_bayesian_core
 ├── tests/                              ← unit + V2 golden-number tests (pinned to results/hfa/; skip on a clean clone)
-├── results/                            ← regenerated AGGREGATE artifacts: hfa/ · manuscript/ (V2 paper) · reports/
-├── docs/                               ← V3_PLAN · V3_PLAN_SOURCE · ROADMAP · PIPELINE · DATA · FINDINGS · neuropsy_features.yaml
+├── results/                            ← regenerated AGGREGATE artifacts (gitignored): hfa/ · manuscript/ (V2 paper) · reports/
+│   └── v3/                              ← V3 outputs: eligibility/ · missingness/ · bayesian/
+├── docs/                               ← V3_PLAN · V3_PLAN_SOURCE · ROADMAP · PIPELINE · DATA · FINDINGS · LABBOOK_V3 · neuropsy_features.yaml
 │   └── legacy_v2/                       ← the V2 benchmark/reference arm (PIPELINE · FINDINGS · ATLAS · LABBOOK · planning · …)
 └── pyproject.toml
 ```
@@ -150,7 +153,8 @@ ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), vis
 
 - **Plan of record (A–T)** → [docs/V3_PLAN.md](docs/V3_PLAN.md) · verbatim source [docs/V3_PLAN_SOURCE.md](docs/V3_PLAN_SOURCE.md)
 - **What/why** → [docs/ROADMAP.md](docs/ROADMAP.md) · **Target pipeline + missing-data doctrine** → [docs/PIPELINE.md](docs/PIPELINE.md)
-- **Data contract + dictionary** → [docs/DATA.md](docs/DATA.md) · **V3 log + V2-as-hypotheses** → [docs/FINDINGS.md](docs/FINDINGS.md)
+- **Data contract + dictionary** → [docs/DATA.md](docs/DATA.md) · **V3 results log** → [docs/FINDINGS.md](docs/FINDINGS.md) · **step-by-step lab notebook** → [docs/LABBOOK_V3.md](docs/LABBOOK_V3.md)
+- **V3 code/outputs** → `scripts/v3/` (01 eligibility · 02 missingness · 03 Bayesian core) → `results/v3/`; **data contract** → `configs/`
 - **Cognition include-list** → [docs/neuropsy_features.yaml](docs/neuropsy_features.yaml)
 - **V2 benchmark/reference arm** → [docs/legacy_v2/](docs/legacy_v2/README.md) (pipeline · findings · phenotype atlas · lab notebook · planning)
 - **V2 manuscript (benchmark paper)** → [results/manuscript/manuscript.md](results/manuscript/manuscript.md)

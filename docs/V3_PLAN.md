@@ -6,6 +6,13 @@
 > (what/why), [`PIPELINE.md`](PIPELINE.md) (target architecture), [`DATA.md`](DATA.md) (data
 > contract). Full verbatim source plan: [`V3_PLAN_SOURCE.md`](V3_PLAN_SOURCE.md).
 
+> **Progress (2026-06-05).** Phases **A·B·C done**, Phase **F core CERTIFIED** (marginalized model;
+> R-hat 1.01, 0 div, cohort-balanced 500/cohort). Code: `scripts/v3/` (`01` eligibility · `02` missingness ·
+> `03` Bayesian core); outputs: `results/v3/`; step journal: [`LABBOOK_V3.md`](LABBOOK_V3.md); results log:
+> [`FINDINGS.md`](FINDINGS.md) (V3-1…5). Headline so far: 3 of 10 candidates unsupported in the common
+> dictionary; **no general factor**, cognition ≈ ⊥ biology, metabolic/inflammatory separable (mean |Φ|≈0.09).
+> Next: extend the core to suicidality + affective/anhedonia + the cognition MNAR arm.
+
 ## 0 · One sentence
 
 V3 uses **patient-level, missingness-aware observed-data latent models** — a Bayesian sparse
@@ -156,7 +163,7 @@ Each phase lists its intent and primary artifacts. Phases A–C build the V3 fou
 modeling core; H–N validate and interpret; O–T are structure, acceptance, deliverables, risk, and the
 explicit V2→V3 management layer.
 
-### Phase A — Rebuild the analytical foundation
+### Phase A — Rebuild the analytical foundation — ✅ done (V3-1)
 - **A1 Freeze V2 as benchmark.** The current `src/trans_diag/` + `scripts/01–15` are the **V2
   benchmark implementation** (reproducibility baseline), and the docs are under `legacy_v2/`. V3 is
   built alongside, not by silently overwriting V2.
@@ -175,7 +182,7 @@ explicit V2→V3 management layer.
   variables (e.g. `attempt_count = 0` when `attempt_ever = 0`); **never** overwrite observed values or
   create values where the gate is unknown.
 
-### Phase B — Missingness atlas & measurement eligibility
+### Phase B — Missingness atlas & measurement eligibility — ✅ done (V3-2)
 - **B1 Missingness matrix** `R_ij ∈ {0,1}`, summarized by cohort/site/wave/age/sex/severity/block/
   instrument/candidate-dimension. In FACE, missingness reflects cohort design, site practice,
   questionnaire routing, clinical feasibility, sometimes severity — it is an **explicit object**, not
@@ -188,7 +195,7 @@ explicit V2→V3 management layer.
 - **B4 Eligibility tiers:** Core all-cohort | Partial extension | Diagnosis-specific module |
   Covariate | Outcome | Excluded. **A dimension can only be discovered if it is actually measured.**
 
-### Phase C — Soft-prior construct map
+### Phase C — Soft-prior construct map — ✅ done (V3-1)
 - **C1 Convert V2 constructs + the 10 candidates into a soft prior loading matrix** `T_jk` with
   statuses {primary_expected · plausible_cross_loading · unlikely · covariate_only · invalid ·
   outcome_only}. Goal: **let theory guide discovery while the data may split/merge/reject/cross-load.**
@@ -212,7 +219,7 @@ explicit V2→V3 management layer.
 - **E2** Use FIML to test general severity `G` vs specific dimensions:
   `X_ij = ν_j + λ_jG·G_i + Σ_k λ_jk·D_ik + ε_ij`.
 
-### Phase F — Bayesian sparse bifactor model with mixed likelihoods (**primary discovery engine**)
+### Phase F — Bayesian sparse bifactor model with mixed likelihoods (**primary discovery engine**) — 🟢 certified core (V3-5)
 - **F1 Generative model.** `G_i ~ N(0,1)`, `D_ik ~ N(0,1)`; `η_ij = α_j + λ_jG·G_i + Σ_k λ_jk·D_ik +
   covariates`; `X_ij ~ likelihood_j(η_ij, params_j)`. Models the observed variables themselves — **no
   completed dataset is ever created.**
