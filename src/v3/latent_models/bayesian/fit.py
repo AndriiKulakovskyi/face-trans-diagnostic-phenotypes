@@ -80,7 +80,7 @@ def run_stage(stage: int, smoke: bool = False, n_per_cohort: int = 500,
     fc = meta["factor_cols"]
     print(f"\n=== Stage {stage}: {spec['name']} ===")
     print(f"N={data.M.shape[0]} cont-J={data.M.shape[1]} patterns={len(data.patterns)} "
-          f"(drop {data.n_drop}) | factors={fc} | z={meta['z_factors']} | "
+          f"(drop {data.n_drop}) | factors={fc} | explicit-factors={meta['expl_factors']} | "
           f"expl={len(meta['expl_items'])} items")
 
     # jitter+adapt_diag is the robust init for the per-pattern marginalized geometry
