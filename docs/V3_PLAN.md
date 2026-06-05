@@ -9,9 +9,11 @@
 > **Progress (2026-06-05).** Phases **A·B·C done**, Phase **F core CERTIFIED** (marginalized model;
 > R-hat 1.01, 0 div, cohort-balanced 500/cohort). Code: `scripts/v3/` (`01` eligibility · `02` missingness ·
 > `03` Bayesian core); outputs: `results/v3/`; step journal: [`LABBOOK_V3.md`](LABBOOK_V3.md); results log:
-> [`FINDINGS.md`](FINDINGS.md) (V3-1…5). Headline so far: 3 of 10 candidates unsupported in the common
-> dictionary; **no general factor**, cognition ≈ ⊥ biology, metabolic/inflammatory separable (mean |Φ|≈0.09).
-> Next: extend the core to suicidality + affective/anhedonia + the cognition MNAR arm.
+> [`FINDINGS.md`](FINDINGS.md) (V3-1…6); results page [`V3_RESULTS.md`](V3_RESULTS.md). Headline: 3 of 10
+> candidates unsupported in the common dictionary; certified extended model (5 factors + mixed-likelihood
+> suicidality) shows **no general factor**, **symptoms (affective) ≈ ⊥ biology**, metabolic/inflammatory
+> separable, **sleep↔affective 0.68**. Next: sleep-affective sensitivity + Phase H (temporal coherence /
+> invariance) → Phase J strata.
 
 ## 0 · One sentence
 

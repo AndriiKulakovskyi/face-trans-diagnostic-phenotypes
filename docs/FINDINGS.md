@@ -19,7 +19,7 @@ patient-level observed-likelihood model (V3_PLAN §0C, Phase G3). The V2 evidenc
 |---|---|---|---|
 | H1 | 3 weakly-correlated axes: internalizing · cognition · cardiometabolic | retest under FIML + Bayesian mixed-likelihood; adjudicate {confirm/split/merge} | ⬜ open |
 | H2 | No dominant general factor (Schmid–Leiman ECV 0.42) | estimate `G` **directly**; test whether specifics survive beyond it | 🟡 **supported** (V3-5, core: mean\|Φ\|≈0.09, G un-identifiable) |
-| H3 | **Symptoms ⊥ biology** (between-block mean \|r\| ≈ 0.03); p-factor is symptom-only | retest under observed-data likelihood + posterior uncertainty | 🟡 **partial** (V3-5: cognition⊥inflam/sleep ≈0.05; ⊥metabolic 0.22; symptoms not yet in) |
+| H3 | **Symptoms ⊥ biology** (between-block mean \|r\| ≈ 0.03); p-factor is symptom-only | retest under observed-data likelihood + posterior uncertainty | 🟢 **supported in-model** (V3-6: affective×biology 0.07–0.15) |
 | H4 | Cardiometabolic axis robust but possibly mixed | **test split** into metabolic load vs inflammatory load | 🟢 **supported** (V3-5: metabolic×inflammatory 0.17 — separable) |
 | H5 | Cognition = strongest fully-transdiagnostic axis | keep core; refine into cognitive-flexibility / broader cognition if supported | ⬜ open |
 | H6 | Internalizing axis (mood scales 0% in FACE-SZ → SZ-proxy) | model as affective/anhedonic extension unless invariance supports all-cohort status | ⬜ open |
@@ -139,3 +139,23 @@ patient-level observed-likelihood model (V3_PLAN §0C, Phase G3). The V2 evidenc
     by `--min-group 10` (mild completeness selection); single visit V0.
   - Next: extend to suicidality (ordinal/binary/count) + affective/anhedonia (BP/DR) + cognition MNAR arm;
     shrink the rare-pattern drop; Phase H invariance → Phase J strata.
+
+- **V3-6 · Extended certified model + visualizations — 2026-06-05.** `scripts/v3/04_extended_model.py`
+  (+ `05_visualize.py` → `docs/figures/v3/`; results page [`V3_RESULTS.md`](V3_RESULTS.md)). Marginalized
+  Gaussian block extended to **5 factors** (added **affective** = MADRS/QIDS/STAI/anhedonia, BP/DR — so
+  symptom⊥biology is a *within-model* correlation) + an **explicit mixed-likelihood suicidality** module
+  (7 ISF Bernoulli + 1 neg-binomial count). **CERTIFIED:** max R-hat **1.020**, ESS **1,066**, 0 div
+  (N=1,500 balanced).
+  - **Φ — no general factor:** mean |off-diag| ≈ **0.18 (0.12 excl. sleep-affective).** **Affective ⊥
+    biology** (affective×inflammatory 0.07, ×metabolic 0.15 → **H3 confirmed, stronger form**);
+    **sleep×affective 0.68** (the one strong edge — PSQI tightly coupled to depression in BP/DR);
+    metabolic×inflammatory 0.20 (**H4**); cognition×metabolic 0.26, ×affective 0.23.
+  - **Suicidality** ≈ orthogonal to biology/cognition (−0.08…0.00), modest affective (0.14) + sleep (0.17)
+    link → distress-linked near-standalone (partly supports V2's standalone suicidality).
+  - **Cohort validation** (diagnosis = check, not feature): cognition worst in SZ; sleep/affective worst
+    in DR; biology flat across cohorts (truly transdiagnostic).
+  - **Caveats:** ~23% rare-pattern tail dropped; **SZ affective is a proxy** (no SZ affective indicators);
+    suicidality↔factor correlations are post-hoc; MNAR not identifiable on the most-complete subsample
+    (see atlas); single visit V0; sleep↔affective coupling needs a residualized-sleep sensitivity.
+  - **H3 (symptoms ⊥ biology) → now SUPPORTED in-model** (was partial). Next: sleep-affective sensitivity;
+    Phase H temporal coherence + invariance; Phase J strata.

@@ -74,9 +74,11 @@ direct indicators exist** = sensory abnormalities. Each is then adjudicated to
 **Progress (2026-06-05):** Phases **A·B·C done**, Phase **F core CERTIFIED** — V3 code is in
 `scripts/v3/` (`01` eligibility · `02` missingness · `03` Bayesian core), outputs in `results/v3/`,
 step journal in [`LABBOOK_V3.md`](LABBOOK_V3.md). Current state: a **certified** marginalized
-correlated-factor model on the continuous core (cohort-balanced 500/cohort; R-hat 1.01, 0 div) —
-weakly-correlated factors, **no general factor**, cognition≈⊥biology, metabolic/inflammatory separable
-(mean |Φ|≈0.09). Next: extend to suicidality + affective/anhedonia + the cognition MNAR arm. `◻` = the existing
+correlated-factor model — **extended** (V3-6) to 5 Gaussian factors + a mixed-likelihood suicidality
+module (R-hat 1.02, 0 div). Headline: **no general factor** (mean |Φ|≈0.18; 0.12 excl. sleep-affective),
+**symptoms (affective) ≈ ⊥ biology**, metabolic/inflammatory separable, **sleep↔affective 0.68**.
+Figures + discussion: [`V3_RESULTS.md`](V3_RESULTS.md). Next: sleep-affective sensitivity + Phase H
+(temporal coherence / invariance) → Phase J strata. `◻` = the existing
 `src/trans_diag/` + `scripts/01–15` are the **V2 benchmark implementation** (Phase D baseline).
 Phases E, G–T are **not yet built**.
 

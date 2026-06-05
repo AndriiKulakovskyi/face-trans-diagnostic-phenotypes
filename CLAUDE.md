@@ -154,6 +154,7 @@ ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), vis
 - **Plan of record (A–T)** → [docs/V3_PLAN.md](docs/V3_PLAN.md) · verbatim source [docs/V3_PLAN_SOURCE.md](docs/V3_PLAN_SOURCE.md)
 - **What/why** → [docs/ROADMAP.md](docs/ROADMAP.md) · **Target pipeline + missing-data doctrine** → [docs/PIPELINE.md](docs/PIPELINE.md)
 - **Data contract + dictionary** → [docs/DATA.md](docs/DATA.md) · **V3 results log** → [docs/FINDINGS.md](docs/FINDINGS.md) · **step-by-step lab notebook** → [docs/LABBOOK_V3.md](docs/LABBOOK_V3.md)
+- **V3 results + figures** → [docs/V3_RESULTS.md](docs/V3_RESULTS.md) (certified measurement model: Φ heatmap/network, loadings, cohort scores)
 - **V3 code/outputs** → `scripts/v3/` (01 eligibility · 02 missingness · 03 Bayesian core) → `results/v3/`; **data contract** → `configs/`
 - **Cognition include-list** → [docs/neuropsy_features.yaml](docs/neuropsy_features.yaml)
 - **V2 benchmark/reference arm** → [docs/legacy_v2/](docs/legacy_v2/README.md) (pipeline · findings · phenotype atlas · lab notebook · planning)

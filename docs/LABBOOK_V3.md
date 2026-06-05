@@ -203,16 +203,52 @@ reduce the rare-pattern drop; then Phase H invariance → Phase J strata.
 
 ---
 
+## V3-6 · Extended model (affective + mixed-likelihood suicidality) + visualizations — 2026-06-05
+
+**What we did.** Extended the certified core (03) → `scripts/v3/04_extended_model.py`: the marginalized
+Gaussian block grew to **5 factors** by adding **affective** (MADRS/QIDS/STAI/anhedonia, BP/DR) — so the
+symptom⊥biology correlation is estimated *inside* the model, not post-hoc — plus an **explicit-latent
+suicidality module with mixed likelihoods** (7 ISF Bernoulli + 1 negative-binomial attempt count).
+`scripts/v3/05_visualize.py` → aggregate figures in `docs/figures/v3/`; results page
+[`V3_RESULTS.md`](V3_RESULTS.md).
+
+**Result — CERTIFIED** (N=1,500 balanced, 4 chains): max R-hat **1.020** · ESS **1,066** · **0 div**.
+**Φ (5 factors + suicidality): mean |off-diag| ≈ 0.18 (0.12 excl. sleep-affective) — no general factor.**
+- **Affective ⊥ biology:** affective×inflammatory **0.07**, ×metabolic **0.15** → symptoms ≈ orthogonal to
+  biology, now a *within-model* correlation (a stronger form of V2's H3).
+- **Sleep × affective = 0.68** — the one strong edge; PSQI tightly coupled to depression in BP/DR (flag:
+  PSQI may partly index depression-driven sleep complaints; BP/DR-specific).
+- **Metabolic × inflammatory 0.20** (separable, H4); **cognition** tracks metabolic 0.26 / affective 0.23.
+- **Suicidality** ≈ orthogonal to biology/cognition; modest link to affective (0.14) + sleep (0.17) —
+  distress-linked near-standalone (partly supports V2's standalone suicidality).
+
+**Observations / discussion.** (1) Cohort scores **validate** the dimensions clinically: **cognition
+worst in SZ, sleep/affective worst in DR, biology flat across cohorts** (truly transdiagnostic). (2) The
+sleep-affective coupling is the most interesting new result — questions sleep/affect separability in the
+mood cohorts; motivates a residualized-sleep sensitivity. (3) **SZ affective is a proxy** (no SZ affective
+indicators) — read with care. (4) The MNAR arm is **not identifiable** on the most-complete subsample
+(everyone's complete) → the MNAR result stays in the full-sample atlas (V3-2/V3-4).
+
+**Conclusion.** The V2 headlines (H2 no-p-factor, H3 symptoms⊥biology, H4 metabolic/inflammatory split)
+**survive and sharpen** under the certified estimator.
+
+**Next.** Sleep-affective sensitivity (residualize); shrink the ~23% rare-pattern drop; temporal coherence
++ measurement invariance (Phase H) over V1–V4; then probabilistic strata (Phase J).
+
+---
+
 ## Open questions for review
 
 1. ~~**Convergence bar.**~~ **RESOLVED (V3-5):** the marginalized model certifies (R-hat 1.010, 0 div) —
    no need to build on a provisional fit. Remaining sub-question: lower `--min-group` to shrink the ~20%
    rare-pattern drop?
-2. **Affective dimension.** The 10-candidate ontology has no explicit depression/anxiety axis; the data
-   imply one (BP/DR). Keep `affective_internalizing` as a named extension, or fold into G + anhedonia?
-3. **Suicidality DIF.** Measurement differs by cohort (BP C-SSRS vs SZ ISF). Model cohort-specific
-   indicators, or restrict to the common ISF ideation core?
-4. **SZ biology reliability.** With 72% of SZ labs missing, is a 3-cohort metabolic factor honest for
-   SZ, or should it be flagged BP/DR-core + SZ-proxy?
+2. ~~**Affective dimension.**~~ **RESOLVED (V3-6):** affective is a strong, well-identified named factor
+   (BP/DR) — kept. New sub-question: sleep↔affective = 0.68 — are sleep and affect separable in the mood
+   cohorts, or should sleep be residualized on affect?
+3. **Suicidality DIF.** V3-6 used the common **ISF** core (3-cohort) for suicidality (Bernoulli + NB);
+   the BP-specific C-SSRS items were left out. Revisit a DIF-aware C-SSRS extension?
+4. ~~**SZ biology reliability.**~~ **ADDRESSED (V3-6):** SZ affective is reported as a *proxy* and SZ
+   metabolic rests on thin support — both flagged in [`V3_RESULTS.md`](V3_RESULTS.md). Formal per-cohort
+   reliability/invariance is Phase H.
 5. **Negative symptoms.** Out of the common-variable core — worth pulling PANSS/SANS from FACE-SZ full
    data as an SZ module later?
