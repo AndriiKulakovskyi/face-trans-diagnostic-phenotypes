@@ -36,7 +36,7 @@ warnings.simplefilter("ignore")
 OUT = ROOT / "results" / "hfa"
 MIN_PAIR = 100
 COVERAGE_FLOOR = 0.30
-K = 4
+K = len(AXIS_NAMES)        # data-locked second-order K (Stage 3); names = trans_diag.axes
 
 
 def extract(S: pd.DataFrame, k: int = K) -> pd.DataFrame:
@@ -71,7 +71,7 @@ def main() -> None:
 
     # pooled reference (must reproduce Stage 3)
     Lpool = extract(S)
-    print("\npooled K=4 axes (sanity — top construct per axis):")
+    print(f"\npooled K={K} axes (sanity — top construct per axis):")
     for j, d in enumerate(Lpool.columns):
         top = Lpool[d].abs().idxmax()
         print(f"  {d} = {AXIS_NAMES[j]:16s} (top: {top} {Lpool.loc[top, d]:+.2f})")

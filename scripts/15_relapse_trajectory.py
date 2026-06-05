@@ -37,11 +37,12 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
+from trans_diag.axes import AXIS_NAMES
 
 warnings.simplefilter("ignore")
 OUT = ROOT / "results" / "hfa"
 SEED = 0
-DIMS = ["dim1", "dim2", "dim3", "dim4"]
+DIMS = [f"dim{i+1}" for i in range(len(AXIS_NAMES))]       # the data-locked K axes (trans_diag.axes)
 
 
 def _load(stem):

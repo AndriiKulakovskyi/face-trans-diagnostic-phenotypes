@@ -363,3 +363,54 @@ the dimensional verdict, and the no-p-factor result all held**.
   missing-data artifact.
 - **Synced:** `results/manuscript/manuscript.md`, `tests/test_golden_numbers.py`, `tests/test_skip_logic.py`;
   the v2 docs (`FINDINGS`/`PIPELINE`/`ROADMAP`/`DATA`/`CLAUDE`) re-synced to these numbers in the cleanup.
+
+## V2-22 · Addiction vars added → K=4 collapses to K=3 (illness-course not robust) — 2026-06-04
+Two lifetime substance-use-disorder variables (`suoccur_alcool`, `suoccur_cannabis`; BP/SZ 2-cohort
+PARTIAL, MINI abuse-or-dependence) were added to the dictionary → a `substance_use_disorder` construct
+(VAF₁ 0.86). Re-deriving the whole pipeline from zero **changed the headline dimensionality**.
+- **The finding:** including the substance construct in the Stage-3 second-order extraction collapses
+  the previously-locked **K=4 split-half congruence 0.96 → 0.31**, while K=3 stays reproducible (0.92),
+  so "first-collapse-minus-1" now locks **K=3**. **Counterfactual-confirmed**: drop the one construct
+  and K=4 returns at 0.96 exactly. The orthogonal, rare-binary addiction construct (loads ≤0.07 on
+  every axis) destabilizes the *weakest* factor's rotation — illness-course was never robust.
+- **New structure:** **196 items → 95 constructs → 82 Stage-3 inputs → K=3 axes** — internalizing,
+  cognition, **cardiometabolic** (was dim4; illness-course/dim3 dropped). Its inverse-burden term
+  (`nboccur_hospitalisation_lt` +0.34) re-surfaces on cardiometabolic; age-of-onset core is now
+  sub-threshold (max |loading| 0.29). **ECV 0.34 → 0.42** (still < 0.5, no p-factor). mean|Φ₂| 0.12.
+- **Every other verdict held:** dimensional (HDBSCAN noise 0.82, bimodality 0.49, DSM-ARI 0.04);
+  symptoms⊥biology (0.031); cohort-residualized congruence 0.98; predictive (GAF +0.044, FAST +0.041,
+  de-confounded relapse +0.036, early-course AUC 0.70). Substance-use is orthogonal (≤0.07) — a
+  carried standalone, like mania/suicidality, not an axis.
+- **Engineering:** `src/trans_diag/axes.py` → 3 axes; all K=4-hardcoded downstream (`06`,`07`,`09`–`15`,
+  `sensitivity_polychoric`, `figures_manuscript`) made **K-agnostic** (dims read from the loadings /
+  `len(AXIS_NAMES)`); `04` now writes `stage3_meta.json` (K, ECV, mean|Φ₂|). Full `00_run_all` re-run
+  clean; **golden tests + `test_axes` re-baselined to K=3** (99 pass); manuscript + 6 figures + docx
+  rebuilt; CLAUDE/FINDINGS/ROADMAP/DATA/PIPELINE re-synced. User decision: accept the data-driven K=3.
+
+## V2-23 · Dimensionality robustness (bootstrap) + phenotype-feature atlas — 2026-06-05
+Investigating *why* 2 variables flipped K, we ran a **bootstrap robustness analysis** (50 cohort-
+stratified resamples; `/tmp/bootstrap_dim.py`). It dissolved the K=3-vs-K=4 question:
+- **Eigengaps (95% CI):** gap1 2.88 [2.58,3.16], gap2 2.19 [1.98,2.37] — bounded off 0; **gap4 0.11
+  [0.02,0.21]** ≈ 0 → λ4≈λ5 is a **degenerate eigenpair** (illness-course ≈ substance), so "the 4th
+  axis" is not individually identified.
+- **K is a noisy estimator:** the split-half rule gives K=2 (26%), **K=3 (60%)**, K=5 (4%), K=6 (10%).
+- **But the FACTORS are robust:** fixing K=6, every factor recovers in 98–100% of resamples
+  (internalizing/cognition/cardiometabolic/illness-course/substance 100%, childhood-ADHD 98%).
+→ Resolution: the data is **3 weakly-correlated axes + several reproducible ORTHOGONAL standalones**;
+"K" conflates "#reproducible factors" (≥6) with "#correlated axes" (3). Pushing K higher only peels off
+narrower clusters (ECG RR/QTc), grab-bags, then Heywood (improper) at K≥12 — not new structure.
+- **Deliverable — phenotype atlas (feature view):** `docs/PHENOTYPE_ATLAS.md` + `src/trans_diag/phenotype.py`
+  (`PHENOTYPE_FACTORS`, `build_phenotype_factors`: masked mean of sign-oriented standardized construct
+  scores, no imputation) + `scripts/export_phenotype_features.py` → `results/hfa/phenotype_features.csv`
+  (8 factors × score + `__cov` coverage). Atlas axes track Stage-3 dims (|r| 0.97/0.87/0.81); features
+  near-orthogonal (mean |r| 0.09). Coverage is the binding constraint: internalizing SZ-proxy (✓50%=0.41),
+  substance BP/SZ-only (DR=0.00), illness-course DR=0.48. `tests/test_phenotype.py` (4 pass).
+- **Manuscript integration (2026-06-05):** promoted the bootstrap to `scripts/sensitivity_bootstrap_dimensionality.py`
+  (committed; writes `results/hfa/bootstrap_dimensionality.json`; added to `00_run_all`). Rewrote §3.1
+  (and abstract, Methods Stage-3, Discussion design-limits) from "illness-course is fragile / collapsed"
+  → the accurate "**3 correlated backbone + reproducible orthogonal standalones**; factors stable, count
+  noisy" framing — which *corrects* a prior inaccuracy (illness-course is 100% reproducible, just
+  orthogonal) and *reinforces* the no-p-factor thesis. New **Fig S1** (`figS1_bootstrap` in
+  figures_manuscript) = eigengap CIs · K-distribution · factor-stability. Golden test
+  `test_bootstrap_dimensionality` pins mode K=3, factor stability ≥95%, gap1/2 CIs clear of 0, gap4≈0.
+  Docx rebuilt; 104 tests pass.

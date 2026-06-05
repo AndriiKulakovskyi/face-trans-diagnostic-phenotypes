@@ -1,15 +1,16 @@
 """K-selection deep dive (v2) — how many second-order trans-diagnostic dimensions?
 
-Stage 3 locked K=4 by "first-collapse-minus-1" on the MINIMUM split-half congruence. But the min
+Stage 3 locks K=3 by "first-collapse-minus-1" on the MINIMUM split-half congruence (the K=4 solution
+collapses, 0.96 -> 0.31, once the substance_use_disorder construct enters the extraction). The min
 collapses if ONE factor is unstable, so it can UNDER-extract: it ignores that several OTHER factors
 at higher K may be perfectly reproducible. This script reconciles multiple criteria and, crucially,
 reports the PER-FACTOR congruence profile (how many of the K factors actually reproduce), not just
 the min. It also tracks where the clinically-important constructs (mania, suicidality, metabolic vs
-inflammatory) land as K grows — to see if K=4 is merging distinct dimensions.
+inflammatory) land as K grows — to see what the dropped 4th (illness-course) factor would capture.
 
 Criteria: (1) Φ₁ eigenvalue scree; (2) masked Horn parallel analysis; (3) per-K: Heywood count +
 variance explained + the descending per-factor split-half congruence vector -> #reproducible factors;
-(4) factor genealogy K=4..7 (what splits / what is added).
+(4) factor genealogy K=3..7 (what splits / what is added).
 """
 from __future__ import annotations
 

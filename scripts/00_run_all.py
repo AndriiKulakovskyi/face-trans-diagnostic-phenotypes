@@ -24,10 +24,10 @@ REPO = Path(__file__).resolve().parents[1]
 STEPS: list[tuple[str, list[str]]] = [
     ("qa_harmonization.py", []),            # 3-part data-processing QA report (gate before analysis)
     # ── hierarchical / bifactor measurement model — Stages 0–4 ──
-    ("01_hfa_stage0_itemset.py", []),    # freeze the 194-item V0 set + factorability
+    ("01_hfa_stage0_itemset.py", []),    # freeze the V0 item set (196 items) + factorability
     ("02_hfa_stage1_efa.py", []),        # exploratory first-order EFA (Horn parallel analysis)
-    ("03_hfa_stage2.py", []),            # hybrid first-order constructs (94) → Φ₁
-    ("04_hfa_stage3.py", []),            # second-order: K=4 axes; Schmid–Leiman ECV (no p-factor)
+    ("03_hfa_stage2.py", []),            # hybrid first-order constructs (95, incl. substance_use_disorder) → Φ₁
+    ("04_hfa_stage3.py", []),            # second-order: K=3 axes (data-locked); Schmid–Leiman ECV (no p-factor)
     ("05_hfa_kselect.py", []),           # per-factor split-half K-selection deep dive
     ("06_hfa_stage4.py", []),            # validation: confound η² / leave-cohort-out / granularity
     # ── stratification arm ──
@@ -44,7 +44,8 @@ STEPS: list[tuple[str, list[str]]] = [
     # ── sensitivity analyses ──
     ("sensitivity_aggregation.py", []),  # granularity invariance / conditioning audit
     ("sensitivity_comorbidity.py", []),  # the 24 *_mhoccur flags decomposition
-    ("sensitivity_polychoric.py", []),   # tetrachoric sensitivity of the K=4 structure
+    ("sensitivity_polychoric.py", []),   # tetrachoric sensitivity of the K=3 structure
+    ("sensitivity_bootstrap_dimensionality.py", []),  # bootstrap: factors robust, K-count noisy (§3.1)
     # ── figures ──
     ("figures_manuscript.py", []),       # 6 manuscript figures from results/hfa/
 ]

@@ -17,6 +17,7 @@ Leiman rather than assuming one. Masked / no-imputation throughout.
 """
 from __future__ import annotations
 
+import json
 import sys
 import warnings
 from pathlib import Path
@@ -145,7 +146,10 @@ def main() -> None:
     L2df.assign(general_SL=g).round(3).to_csv(OUT / "stage3_loadings.csv")
     Fdf.reset_index().to_pickle(OUT / "stage3_scores.pkl")
     pd.DataFrame(Phi2, index=L2df.columns, columns=L2df.columns).round(3).to_csv(OUT / "stage3_phi2.csv")
-    print(f"\nsaved -> {OUT}/stage3_loadings.csv, stage3_scores.pkl, stage3_phi2.csv")
+    json.dump({"K2": int(K2), "ecv": float(ecv),
+               "mean_phi2": float(np.abs(Phi2[np.triu_indices(K2, 1)]).mean())},
+              open(OUT / "stage3_meta.json", "w"), indent=2)
+    print(f"\nsaved -> {OUT}/stage3_loadings.csv, stage3_scores.pkl, stage3_phi2.csv, stage3_meta.json")
 
 
 if __name__ == "__main__":

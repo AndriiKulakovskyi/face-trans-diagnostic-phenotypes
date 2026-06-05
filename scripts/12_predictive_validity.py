@@ -39,8 +39,8 @@ from trans_diag.axes import AXIS_NAMES
 
 warnings.simplefilter("ignore")
 OUT = ROOT / "results" / "hfa"
-AXES = ["dim1", "dim2", "dim3", "dim4"]            # internalizing, cognition, illness_course, cardiometab
-AXES_X = ["dim2", "dim3", "dim4"]                  # cross-domain (drop internalizing = circular w/ CGI)
+AXES = [f"dim{i+1}" for i in range(len(AXIS_NAMES))]   # the data-locked K axes (trans_diag.axes)
+AXES_X = AXES[1:]                                  # cross-domain (drop dim1 internalizing = circular w/ CGI)
 SEED = 0
 
 

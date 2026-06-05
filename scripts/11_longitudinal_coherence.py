@@ -36,7 +36,7 @@ from trans_diag.masked_fa import masked_correlation, masked_scores, paf_loadings
 
 warnings.simplefilter("ignore")
 OUT = ROOT / "results" / "hfa"
-MIN_PAIR, FLOOR, K = 100, 0.30, 4
+MIN_PAIR, FLOOR, K = 100, 0.30, len(AXIS_NAMES)   # K = data-locked second-order dims (Stage 3)
 
 
 def _load(stem):  # import a digit-prefixed pipeline script as a module (no main() run on import)
@@ -117,7 +117,7 @@ def main() -> None:
     res = {"invariance": {}, "stability": {}, "mean_change": {}}
 
     # 1. measurement invariance
-    print("\n=== 1. measurement invariance (re-derive K=4 per visit; Tucker congruence vs V0) ===")
+    print(f"\n=== 1. measurement invariance (re-derive K={K} per visit; Tucker congruence vs V0) ===")
     for v in ("V1", "V2"):
         cong = congruence(L0, extract(S[v]))
         res["invariance"][v] = {AXIS_NAMES[int(d[1:]) - 1]: round(val, 2) for d, val in cong.items()}

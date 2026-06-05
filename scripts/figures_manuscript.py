@@ -1,8 +1,8 @@
 """Manuscript figures (v2) — regenerates all main figures from results/hfa/ artifacts.
 
-Six publication-quality figures (300 dpi PNG -> results/reports/figures/):
+Publication-quality figures (300 dpi PNG -> results/reports/figures/):
   F1  design & analytic pipeline (schematic)
-  F2  the four trans-diagnostic dimensions (top loadings + Phi_2 + no p-factor)
+  F2  the three trans-diagnostic axes (top loadings + Phi_2 + no p-factor)
   F3  HEADLINE: symptom<->biology orthogonality heatmap + p-factor dissolution
   F4  dimensional, not categorical (silhouette real-vs-null, unimodal axes, overlap scatter)
   F5  predictive validity vs DSM (incremental forest + relapse-AUC narrative)
@@ -29,6 +29,8 @@ import numpy as np
 import pandas as pd
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
+from trans_diag.axes import AXIS_NAMES, AXIS_SHORT
+
 warnings.simplefilter("ignore")
 
 HFA = ROOT / "results" / "hfa"
@@ -44,12 +46,12 @@ plt.rcParams.update({
     "legend.fontsize": 8, "legend.frameon": False,
 })
 
-# axis palette (internalizing / cognition / illness-course / cardiometabolic)
-AX_COL = {"internalizing": "#2C6FB5", "cognition": "#2E8B7A",
-          "illness_course": "#D98E2B", "cardiometabolic": "#C24A4A"}
-AX_ORDER = ["internalizing", "cognition", "illness_course", "cardiometabolic"]
+# axis palette (K=3: internalizing / cognition / cardiometabolic)
+AX_COL = {"internalizing": "#2C6FB5", "cognition": "#2E8B7A", "cardiometabolic": "#C24A4A"}
+AX_ORDER = ["internalizing", "cognition", "cardiometabolic"]
 AX_TITLE = {"internalizing": "Dim 1 · Internalizing", "cognition": "Dim 2 · Cognition",
-            "illness_course": "Dim 3 · Illness course", "cardiometabolic": "Dim 4 · Cardiometabolic"}
+            "cardiometabolic": "Dim 3 · Cardiometabolic"}
+AX_ABBR = {"internalizing": "Int", "cognition": "Cog", "cardiometabolic": "CMet"}
 COH_COL = {"bp": "#3B6FA0", "sz": "#B5562B", "dr": "#4E9A5B"}
 POS, NEG = "#C24A4A", "#3B6FA0"   # red = higher pole, blue = reversed pole (bar charts)
 
@@ -112,7 +114,7 @@ def fig1_pipeline():
 
     # processing stages
     box(8, 69.5, 84, 8.6,
-        "DATA PROCESSING (3 stages)   214-variable harmonised dictionary · per-variable sanity bounds (out-of-range → NaN)\n"
+        "DATA PROCESSING (3 stages)   201-variable harmonised dictionary · per-variable sanity bounds (out-of-range → NaN)\n"
         "(1) native clinical scale   →   (2) type-aware scaling to [−1, 1]   →   (3) V0 item matrix",
         "#F4F4F2", fs=8.0)
     arrow(50, 69.5, 50, 64.5)
@@ -123,22 +125,22 @@ def fig1_pipeline():
     ax.text(50, 61.6, "HIERARCHICAL / BIFACTOR MEASUREMENT MODEL  (hybrid: clinical anchors, data-revised)",
             ha="center", fontsize=8.8, fontweight="bold", color="#3a4a55")
 
-    box(7, 50, 39, 8.4, "Stage 0 — item set\n188 V0 items (incl. recovered labs/vitals)", "#EAF1F8", fs=8.0)
-    box(54, 50, 39, 8.4, "Stage 1 — exploratory EFA\n42 nameable first-order factors", "#EAF1F8", fs=8.0)
+    box(7, 50, 39, 8.4, "Stage 0 — item set\n196 V0 items (incl. recovered labs/vitals)", "#EAF1F8", fs=8.0)
+    box(54, 50, 39, 8.4, "Stage 1 — exploratory EFA\n44 nameable first-order factors", "#EAF1F8", fs=8.0)
     arrow(46, 54.2, 54, 54.2)
     arrow(26.5, 50, 26.5, 45.2); arrow(73.5, 50, 50, 45.2)
 
     box(20, 36.4, 60, 8.4,
-        "Stage 2 — first-order constructs\n88 constructs · within-construct masked 1-factor posterior scores  →  Φ₁",
+        "Stage 2 — first-order constructs\n95 constructs · within-construct masked 1-factor posterior scores  →  Φ₁",
         "#E3EDF6", fs=8.0)
     arrow(50, 36.4, 50, 31.6)
     box(14, 22.8, 72, 8.8,
         "Stage 3 — second-order dimensions   factor Φ₁ → promax → Φ₂ · Schmid–Leiman ECV · split-half Tucker K\n"
-        "4 trans-diagnostic axes  +  2 orthogonal standalone constructs (mania, suicidality) · ECV 0.36 → no p-factor",
+        "3 correlated axes  +  orthogonal standalones (illness-course, substance-use, mania, suicidality) · ECV 0.42 → no p-factor",
         "#D7E6F2", fs=8.0)
 
-    # the four axes chips
-    cx = [13.5, 35, 56.5, 78]
+    # the three correlated-axis chips
+    cx = [16, 40, 64]
     for x, a in zip(cx, AX_ORDER, strict=False):
         box(x, 13.2, 20.5, 6.6, AX_TITLE[a].split(" · ")[1], AX_COL[a] + "33", ec=AX_COL[a], fs=8.0, lw=1.4)
         arrow(x + 10, 22.8, x + 10.25, 19.8, color=AX_COL[a])
@@ -161,12 +163,20 @@ def fig1_pipeline():
 def fig2_axes():
     L = pd.read_csv(HFA / "stage3_loadings.csv", index_col=0)
     phi2 = pd.read_csv(HFA / "stage3_phi2.csv", index_col=0).to_numpy()
-    dims = ["dim1", "dim2", "dim3", "dim4"]
+    dims = [c for c in L.columns if c.startswith("dim")]
+    K = len(dims)
 
     fig = plt.figure(figsize=(11, 9.6))
     gs = fig.add_gridspec(3, 6, height_ratios=[1.0, 1.0, 0.52], hspace=0.5, wspace=2.6,
                           left=0.22, right=0.97, top=0.93, bottom=0.07)
-    cells = [gs[0, 0:3], gs[0, 3:6], gs[1, 0:3], gs[1, 3:6]]
+    # K axis panels, two per row across the top rows; a lone trailing panel is centred.
+    cells = []
+    for i in range(K):
+        row = i // 2
+        if i == K - 1 and K % 2 == 1:
+            cells.append(gs[row, 1:4])
+        else:
+            cells.append(gs[row, 0:3] if i % 2 == 0 else gs[row, 3:6])
     for i, (d, a) in enumerate(zip(dims, AX_ORDER, strict=False)):
         ax = fig.add_subplot(cells[i])
         s = L[d].reindex(L[d].abs().sort_values(ascending=False).index)
@@ -179,25 +189,31 @@ def fig2_axes():
         ax.tick_params(axis="x", labelsize=7.2)
         ax.set_xlabel("second-order loading", fontsize=8)
 
-    fig.suptitle("The four trans-diagnostic dimensions — defining constructs (|loading| > 0.30)",
+    nwords = {2: "two", 3: "three", 4: "four", 5: "five"}.get(K, str(K))
+    fig.suptitle(f"The {nwords} trans-diagnostic dimensions — defining constructs (|loading| > 0.30)",
                  fontsize=11.5, fontweight="bold", y=0.975)
 
     # Phi2 strip (inter-axis correlations) — own row, no label collisions
     axp = fig.add_subplot(gs[2, 1:3])
     im = axp.imshow(phi2, cmap="RdBu_r", vmin=-0.6, vmax=0.6, aspect="auto")
-    short = ["Int", "Cog", "Course", "CMet"]
-    axp.set_xticks(range(4)); axp.set_yticks(range(4))
+    short = [AX_ABBR.get(a, a[:4]) for a in AX_ORDER[:K]]
+    axp.set_xticks(range(K)); axp.set_yticks(range(K))
     axp.set_xticklabels(short, fontsize=7.4); axp.set_yticklabels(short, fontsize=7.4)
-    for r in range(4):
-        for c in range(4):
+    for r in range(K):
+        for c in range(K):
             axp.text(c, r, f"{phi2[r, c]:.2f}", ha="center", va="center", fontsize=7.0,
                      color="white" if abs(phi2[r, c]) > 0.33 else "black")
     axp.set_title("Φ₂  inter-axis correlations", fontsize=8.4, pad=4)
     axp.tick_params(length=0)
+    mean_phi2 = float(np.abs(phi2[np.triu_indices(K, 1)]).mean())
+    try:
+        ecv = json.load(open(HFA / "stage3_meta.json"))["ecv"]      # Stage-3 Schmid–Leiman ECV
+    except Exception:
+        ecv = float("nan")
     fig.text(0.62, 0.135,
-             "Weakly correlated axes (mean |Φ₂| = 0.17).\n"
-             "Schmid–Leiman ECV = 0.36  →  no dominant\ngeneral (p-)factor: the structure is genuinely\n"
-             "multidimensional.   Mania & suicidality are\nvalid but orthogonal (|r| ≤ 0.09) — not axes.",
+             f"Weakly correlated axes (mean |Φ₂| = {mean_phi2:.2f}).\n"
+             f"Schmid–Leiman ECV = {ecv:.2f}  →  no dominant\ngeneral (p-)factor: the structure is genuinely\n"
+             "multidimensional.   Mania, suicidality & substance\nuse are valid but orthogonal — not axes.",
              ha="left", va="center", fontsize=8.2, color="#33414b")
     fig.text(0.5, 0.018, "red = higher score is more pathological · blue = reverse-keyed construct",
              ha="center", fontsize=7.8, style="italic", color="#555")
@@ -299,7 +315,7 @@ def fig3_orthogonality():
 def fig4_continuum():
     ph = json.load(open(HFA / "phase5_structure.json"))["A"]
     F = pd.read_pickle(HFA / "stage3_scores.pkl")
-    dims = ["dim1", "dim2", "dim3", "dim4"]
+    dims = [c for c in F.columns if c.startswith("dim")]
 
     fig = plt.figure(figsize=(13.2, 4.4))
     gs = fig.add_gridspec(1, 3, width_ratios=[1, 1, 1.05], wspace=0.32,
@@ -437,19 +453,19 @@ def fig5_predictive():
 def fig6_longitudinal():
     c = json.load(open(HFA / "studyC_longitudinal.json"))
     inv, stab = c["invariance"], c["stability"]
-    order = ["internalizing", "cognition", "illness_course", "cardiometabolic"]
-    short = ["Internalizing", "Cognition", "Illness course", "Cardiometabolic"]
+    order = list(AXIS_NAMES)
+    short = [AXIS_SHORT[a] for a in order]
 
     fig, (axA, axB) = plt.subplots(1, 2, figsize=(12, 4.5))
     fig.subplots_adjust(left=0.08, right=0.97, top=0.84, bottom=0.22, wspace=0.26)
 
-    x = np.arange(4); w = 0.36
+    x = np.arange(len(order)); w = 0.36
     # panel A: structural invariance
     v1 = [inv["V1"][a] for a in order]; v2 = [inv["V2"][a] for a in order]
     axA.bar(x - w / 2, v1, w, label="V1 vs V0", color=[AX_COL[a] for a in order], alpha=0.55, edgecolor="white")
     axA.bar(x + w / 2, v2, w, label="V2 vs V0", color=[AX_COL[a] for a in order], edgecolor="white")
     axA.axhline(0.85, color="#666", ls="--", lw=1.0)
-    axA.text(3.4, 0.865, "0.85 threshold", fontsize=7, color="#666")
+    axA.text(len(order) - 1.6, 0.865, "0.85 threshold", fontsize=7, color="#666")
     for xi, (a, b) in enumerate(zip(v1, v2, strict=False)):
         axA.text(xi - w / 2, a + 0.015, f"{a:.2f}", ha="center", fontsize=7)
         axA.text(xi + w / 2, b + 0.015, f"{b:.2f}", ha="center", fontsize=7)
@@ -470,12 +486,12 @@ def fig6_longitudinal():
         axB.text(xi + w / 2, b + 0.012, f"{b:.2f}", ha="center", fontsize=7)
     axB.set_xticks(x); axB.set_xticklabels(short, fontsize=8, rotation=12)
     axB.set_ylabel("rank-order test–retest (Spearman ρ)"); axB.set_ylim(0, 0.8)
-    axB.set_title("Score stability — trait vs state vs fixed-historical", fontsize=9.4)
+    axB.set_title("Score stability — trait (biology) vs state (mood)", fontsize=9.4)
     axB.legend(loc="upper right", fontsize=7.6)
-    axB.annotate("cardiometabolic =\nmost trait-stable", xy=(3, r1[3]), xytext=(2.0, 0.72),
-                 fontsize=7, color="#C24A4A", arrowprops=dict(arrowstyle="->", color="#C24A4A", lw=1))
-    axB.annotate("illness-course: age-of-onset\nis baseline-only (fixed)", xy=(2, r1[2]), xytext=(0.3, 0.55),
-                 fontsize=7, color="#D98E2B", arrowprops=dict(arrowstyle="->", color="#D98E2B", lw=1))
+    if "cardiometabolic" in order:
+        ci = order.index("cardiometabolic")
+        axB.annotate("cardiometabolic =\nmost trait-stable", xy=(ci, r1[ci]), xytext=(max(ci - 1.2, 0.2), 0.72),
+                     fontsize=7, color="#C24A4A", arrowprops=dict(arrowstyle="->", color="#C24A4A", lw=1))
     panel_tag(axB, "b", dx=-0.10, dy=1.13)
 
     fig.suptitle("Longitudinal coherence (V0 → V1 → V2): structure persists; biology is the most measurement-robust axis",
@@ -484,10 +500,54 @@ def fig6_longitudinal():
     plt.close(fig); print("  F6 longitudinal -> fig6_longitudinal.png")
 
 
+# ============================================================================= S1
+def figS1_bootstrap():
+    b = json.load(open(HFA / "bootstrap_dimensionality.json"))
+    fig, (axA, axB, axC) = plt.subplots(1, 3, figsize=(13, 3.9))
+    fig.subplots_adjust(left=0.06, right=0.985, top=0.80, bottom=0.24, wspace=0.42)
+
+    # (a) eigengaps with 95% CI — first gaps large, gap4 ~ 0 (degenerate)
+    g = np.array(b["gap_mean"][:6]); lo = np.array(b["gap_ci"][0][:6]); hi = np.array(b["gap_ci"][1][:6])
+    x = np.arange(len(g)); cols = ["#2C6FB5" if l > 0.15 else "#C24A4A" for l in lo]
+    axA.bar(x, g, color=cols, edgecolor="white")
+    axA.errorbar(x, g, yerr=[g - lo, hi - g], fmt="none", ecolor="#333", capsize=3, lw=1)
+    axA.axhline(0, color="#888", lw=0.8)
+    axA.set_xticks(x); axA.set_xticklabels([f"λ{i+1}–λ{i+2}" for i in range(len(g))], fontsize=7.4)
+    axA.set_ylabel("eigenvalue gap (Φ₁)"); axA.set_title("Eigengaps (95% CI): 3 separated, then degenerate", fontsize=9)
+    axA.annotate("gap₄ ≈ 0", xy=(3, hi[3]), xytext=(3.4, 0.9), fontsize=7.5, color="#C24A4A",
+                 arrowprops=dict(arrowstyle="->", color="#C24A4A", lw=1))
+    panel_tag(axA, "a", dx=-0.12, dy=1.17)
+
+    # (b) distribution of the locked K — noisy
+    K = b["K_dist"]; n = b["n_boot_K"]; ks = sorted(int(k) for k in K)
+    axB.bar([str(k) for k in ks], [100 * K[str(k)] / n for k in ks], color="#2E8B7A", edgecolor="white")
+    axB.set_xlabel("locked K (split-half rule)"); axB.set_ylabel("% of bootstraps"); axB.set_ylim(0, 100)
+    axB.set_title("The count K is a noisy estimator", fontsize=9)
+    panel_tag(axB, "b", dx=-0.18, dy=1.17)
+
+    # (c) per-factor stability — high regardless
+    names = {"qidsr": "internalizing", "cvlt_total_recall": "cognition", "lipids_hdl": "cardiometabolic",
+             "agedebut_hospitalisation": "illness-course", "substance_use_disorder": "substance-use",
+             "wurs": "childhood-adv."}
+    st = b["stability_pct"]; labs = np.array([names.get(k, k) for k in b["ref_factors"]])
+    vals = np.array([st[k] for k in b["ref_factors"]]); order = np.argsort(vals)
+    axC.barh(labs[order], vals[order], color="#3B6FA0", edgecolor="white")
+    axC.set_xlim(0, 108); axC.set_xlabel("% of resamples factor recovers (≥0.85)")
+    axC.set_title("…but every factor is stable", fontsize=9)
+    for i, v in enumerate(vals[order]):
+        axC.text(v - 7, i, f"{v:.0f}", va="center", fontsize=7, color="white")
+    panel_tag(axC, "c", dx=-0.30, dy=1.17)
+
+    fig.suptitle("Figure S1 · Bootstrap robustness of dimensionality (50 cohort-stratified resamples): "
+                 "the factors are stable; the count K is not", fontsize=10, fontweight="bold", y=0.99)
+    fig.savefig(FIG / "figS1_bootstrap.png", bbox_inches="tight", facecolor="white")
+    plt.close(fig); print("  S1 bootstrap -> figS1_bootstrap.png")
+
+
 def main():
     print(f"Generating manuscript figures -> {FIG}")
     for fn in (fig1_pipeline, fig2_axes, fig3_orthogonality, fig4_continuum,
-               fig5_predictive, fig6_longitudinal):
+               fig5_predictive, fig6_longitudinal, figS1_bootstrap):
         try:
             fn()
         except Exception as e:  # noqa
