@@ -4,7 +4,7 @@ This estimator underlies the whole v2 hierarchical/bifactor pipeline (scripts 01
 factor model — within-construct, second-order, per-visit, split-half — NEVER fills a missing cell.
 Mean-filling would reweight each correlation by co-observation (``corr_fill ≈ O · corr_masked``,
 ``O = n_AB/√(n_A n_B)``) and so partially re-import the cohort-by-missingness confound at the
-weakest factor (derivation: docs/AGGREGATION_RATIONALE.md / docs/PIPELINE.md §3–4).
+weakest factor (derivation: docs/legacy_v2/AGGREGATION_RATIONALE.md / docs/legacy_v2/PIPELINE.md §3–4).
 
 This module provides that estimator:
   - ``masked_correlation``  : pairwise-complete (masked) correlation → nearest-PD; no cell filled.

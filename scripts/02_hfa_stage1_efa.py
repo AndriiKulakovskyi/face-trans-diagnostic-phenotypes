@@ -1,6 +1,6 @@
 """Stage 1 (v2) — data-driven first-order EFA on the masked correlation.
 
-Implements Stage 1 of docs/HIERARCHICAL_FA_PLAN.md. Purpose: SEE the empirical construct
+Implements Stage 1 of docs/legacy_v2/planning/HIERARCHICAL_FA_PLAN.md. Purpose: SEE the empirical construct
 structure before committing the hybrid anchors — where the clinical grouping is confirmed,
 where it splits/merges, which items are orphans. Masked / no-imputation throughout.
 

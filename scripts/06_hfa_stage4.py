@@ -1,6 +1,6 @@
 """Stage 4 (v2) — validation of the trans-diagnostic dimensions (K=3 primary, K=6 sensitivity).
 
-Implements Stage 4 of docs/HIERARCHICAL_FA_PLAN.md. Checks the recovered axes are real phenotype,
+Implements Stage 4 of docs/legacy_v2/planning/HIERARCHICAL_FA_PLAN.md. Checks the recovered axes are real phenotype,
 not artifacts:
   1. CONFOUND BATTERY — variance in each dim explained by cohort / DSM-arm / sex / age / education /
      site / per-patient missingness (eta^2 categorical, R^2 continuous). An axis that is mostly a

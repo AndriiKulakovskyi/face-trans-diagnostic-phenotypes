@@ -3,7 +3,7 @@
 Two jobs:
   1. INVENTORY — per-visit attrition by cohort + coverage of candidate longitudinal outcomes
      (documents that the longitudinal arm is BP+SZ, V1-V2 horizon; DR collapses by V3).
-  2. RELAPSE — the derived outcome locked in VALIDATION_PLAN_v2.md (verified, not asserted):
+  2. RELAPSE — the derived outcome locked in docs/legacy_v2/planning/VALIDATION_PLAN_v2.md (verified, not asserted):
        * REJECTED hospitalization-count relapse (`nboccur_hospitalisation_lt` lifetime count is
          non-monotone: 41% of consecutive pairs DECREASE -> recall noise, untrustworthy).
        * PRIMARY  CGI-S relapse by V2 = CGI-S (`cgi01`) rises >=2 OR crosses <4 -> >=4 in the

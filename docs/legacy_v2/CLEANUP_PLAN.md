@@ -1,5 +1,9 @@
 # CLEANUP & REFACTORING PLAN — FACE v2
 
+> **LEGACY — V2 benchmark / reference arm.** Historical record of the executed V1→V2 repository
+> cleanup. Not the current project. Active source of truth: the V3 precision-psychiatry plan
+> ([`../V3_PLAN.md`](../V3_PLAN.md)). See [`README.md`](README.md).
+
 > Goal: make the repository present as a **crisp, self-contained, current v2 study** — one pipeline,
 > one axis system, one manuscript, numbers consistent across paper ↔ docs ↔ tests. Nothing should
 > expose the superseded v1 generation except the intentional archive at tag `v1-archive-2026-05-30`.

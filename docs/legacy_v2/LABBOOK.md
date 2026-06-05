@@ -1,5 +1,9 @@
 # LABBOOK — FACE trans-diagnostic study (v2) — research notebook
 
+> **LEGACY — V2 benchmark / reference arm.** Historical record of the V2 study (entries V2-1 … V2-23).
+> Not the current project. Active source of truth: the V3 precision-psychiatry plan
+> ([`../V3_PLAN.md`](../V3_PLAN.md) · [`../ROADMAP.md`](../ROADMAP.md)). See [`README.md`](README.md).
+
 Chronological trace of the v2 study — what we did, observed, decided, and **why**.
 > The v1 notebook (entries E1–E26) is archived at git tag `v1-archive-2026-05-30`.
 

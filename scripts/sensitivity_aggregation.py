@@ -1,4 +1,4 @@
-"""Sensitivity (v2) — reproduces the empirical evidence in docs/AGGREGATION_RATIONALE.md.
+"""Sensitivity (v2) — reproduces the empirical evidence in docs/legacy_v2/AGGREGATION_RATIONALE.md.
 
 Four analyses, all on the V0 matrix, masked / no-imputation:
   A. conditioning of the masked correlation, item-level (177) vs domain-level (69);

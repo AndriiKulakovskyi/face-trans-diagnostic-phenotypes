@@ -1,5 +1,9 @@
 # Analysis plan — hierarchical / bifactor measurement model (hybrid), imputation-free
 
+> **LEGACY — V2 pre-registration (executed).** Historical record under the V2 benchmark arm. Active
+> source of truth: the V3 plan ([`../../V3_PLAN.md`](../../V3_PLAN.md) ·
+> [`../../PIPELINE.md`](../../PIPELINE.md)). See [`../README.md`](../README.md).
+
 > 📁 **ARCHIVED — executed pre-registration** (moved to `docs/planning/` in the v2 cleanup). This is
 > the plan *as written before the analysis was run*, kept for provenance. Some details describe
 > *intended* work and differ from what was built; for what was **actually done** see

@@ -9,7 +9,7 @@ the masked Φ₁ and everything downstream of it). It reports three things:
   2. the distribution of the locked K (the actual split-half rule)  — is the scalar K stable?
   3. per-factor stability  — fixing K=6, how often does each factor recover (Tucker congruence ≥ 0.85)?
 
-Result (see docs/PHENOTYPE_ATLAS.md, manuscript §3.1): the first 2-3 eigengaps are bounded off 0 but
+Result (see docs/legacy_v2/PHENOTYPE_ATLAS.md, manuscript §3.1): the first 2-3 eigengaps are bounded off 0 but
 gap λ4-λ5 ≈ 0 (a degenerate eigenpair); the locked K is a *noisy* estimator (mode 3); yet every factor
 recovers in 98-100% of resamples. The data is "3 weakly-correlated axes + reproducible ORTHOGONAL
 standalones," and the scalar K conflates "#reproducible factors (>=6)" with "#correlated axes (3)".

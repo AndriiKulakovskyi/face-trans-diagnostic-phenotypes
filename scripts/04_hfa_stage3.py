@@ -1,6 +1,6 @@
 """Stage 3 (v2) — second-order / bifactor general dimensions (the named trans-diagnostic axes).
 
-Implements Stage 3 of docs/HIERARCHICAL_FA_PLAN.md. Factors the construct-correlation matrix Phi_1
+Implements Stage 3 of docs/legacy_v2/planning/HIERARCHICAL_FA_PLAN.md. Factors the construct-correlation matrix Phi_1
 (Stage 2 construct scores) into general dimensions, locks K by masked split-half Tucker congruence
 (NOT Kaiser), and TESTS whether a single general factor ("p-factor") is warranted via ECV/Schmid-
 Leiman rather than assuming one. Masked / no-imputation throughout.

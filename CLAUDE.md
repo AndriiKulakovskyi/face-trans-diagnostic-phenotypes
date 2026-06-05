@@ -1,135 +1,141 @@
-# CLAUDE.md — FACE trans-diagnostic phenotyping (BP · SZ · DR) — v2 study
+# CLAUDE.md — FACE precision psychiatry (BP · SZ · DR) — **V3**
 
-> Guide for collaborators and AI assistants. Keep it short. Paper: [results/manuscript/manuscript.md](results/manuscript/manuscript.md).
-> Plan: [docs/ROADMAP.md](docs/ROADMAP.md). Dictionary: [docs/DATA.md](docs/DATA.md).
-> Findings: [docs/FINDINGS.md](docs/FINDINGS.md) · Lab notebook: [docs/LABBOOK.md](docs/LABBOOK.md).
-> **Pipeline diagram (end-to-end): [docs/PIPELINE.md](docs/PIPELINE.md).**
-> Cognition include-list: [docs/neuropsy_features.yaml](docs/neuropsy_features.yaml).
+> Guide for collaborators and AI assistants. Keep it short.
+> **Plan of record: [docs/V3_PLAN.md](docs/V3_PLAN.md)** (verbatim source: [docs/V3_PLAN_SOURCE.md](docs/V3_PLAN_SOURCE.md)).
+> What/why: [docs/ROADMAP.md](docs/ROADMAP.md) · Target pipeline: [docs/PIPELINE.md](docs/PIPELINE.md) ·
+> Data contract: [docs/DATA.md](docs/DATA.md) · V3 log: [docs/FINDINGS.md](docs/FINDINGS.md).
+> The completed **V2** dimensional study is a **benchmark/reference arm only**: [docs/legacy_v2/](docs/legacy_v2/README.md).
 
 ## What this is
 
 A **self-contained** project that harmonizes the 3-cohort FACE psychiatric data (Bipolar,
-Schizophrenia, Depression; baseline **V0** → 4-year V4) and models **trans-diagnostic** structure
-two ways: **(1) dimensional analysis** (latent symptom / biology / cognition dimensions) and
-**(2) patient stratification** (clustering). **No imputation anywhere** — pervasive missingness is
-handled by *masked* methods (pairwise-complete correlation, masked similarity, masked posterior
-scores).
+Schizophrenia, Depression; baseline **V0** → 4-year V4) and turns it into a **precision-psychiatry
+stratification and decision-modeling framework**, in four layers that must not be collapsed:
 
-**This is the v2 study — a clean restart on a re-curated dictionary.** The earlier (v1) analysis is
-archived at git tag **`v1-archive-2026-05-30`** (branch `archive/v1-research`); we stopped trusting
-the v1 common-variables set and now **re-derive every result from zero** on v2 — no v1 finding is
-assumed. Work happens on branch `v2-study`.
+```text
+diagnostic cohorts (BP · SZ · DR)          ← entry + validation metadata, NEVER clustering features
+  → transdiagnostic dimension discovery      ← patient-level, missingness-aware latent measurement
+  → validated patient strata                  ← probabilistic decision regions, not natural subtypes
+  → prognosis / treatment decision models     ← the precision-psychiatry objective
+```
 
-The stratification **engine** (masked similarity → multipartite-spectral embedding, enrichment) is
-internalized in `src/trans_diag/engine/` — no external dependency on `face_stratification`/`face_rlvr`.
+The **primary discovery engine** is a patient-level **Bayesian sparse bifactor / ESEM-like latent
+model** with **mixed likelihoods** and **soft loading priors**; **FIML/SEM** is the confirmatory
+benchmark; the **V2 masked-correlation** factors are the reproducibility baseline. **No naive
+imputation anywhere** — missingness is handled by observed-data likelihood (and explicit missingness
+models when informative), never by filling cells.
 
-## Status (v2 — analysis complete)
+### The 10 candidate dimensions are a *soft starting ontology*, not fixed scores
 
-- ✅ **v2 dictionary finalized + locked** — **201 usable variables** (READY + PARTIAL, of 225 entries),
-  with structured sanity bounds + coverage. Cognition reconciled to `docs/neuropsy_features.yaml`
-  (3-cohort WAIS/TMT + verbal memory/fluency features + covariates); 2026-06-04 added lifetime
-  alcohol + cannabis substance-use-disorder vars (BP/SZ, 2-cohort PARTIAL). `qa_harmonization`: all
-  variables load + pass sanity, 0 fail.
-- ✅ **Preprocessing debugged + ML-ready** — fixed the robust-z explosion (prolactin |z|≈106→5),
-  added **type-aware bounded scaling to [−1,1]**, kept the masked / no-imputation design. QA report
-  has the three parts described below.
-- ✅ **Dimensional analysis + stratification re-derived on v2** (scripts `01–15`): **3 trans-diagnostic
-  axes (K=3, no p-factor ECV 0.42)** — internalizing · cognition · cardiometabolic — dimensional / no
-  discrete subtypes, validation arm A–D. (Adding the substance-use-disorder construct collapsed the
-  earlier K=4: the weak *illness-course* axis is no longer reproducible; downstream is now K-agnostic.)
-  **Manuscript + 6 figures delivered** (`results/manuscript/`, `scripts/figures_manuscript.py`). **Golden-number tests
-  + `verify.py` re-baselined to v2** — `tests/test_golden_numbers.py` pins the manuscript's headline
-  numbers to `results/hfa/` (pass locally; skip on a clean clone since `results/hfa/` is gitignored).
-  The legacy `01–22` pipeline and the old manuscript skeleton have been removed from the tree;
-  they remain recoverable at git tag `v1-archive-2026-05-30`.
+Impulsivity · Cognitive flexibility · Negative symptoms · Anhedonia · Metabolism/immunometabolism ·
+Sleep/circadian · Overall clinical severity · Sensory abnormalities · Neurodevelopment · Suicidality.
 
-## Data processing — three stages (= the QA report's three Parts)
+They seed **soft priors**, not hand-tagged composite scores. The data is explicitly allowed to
+**confirm, split, merge, reject, downgrade, or cross-load** any of them; the final dimension set may be
+smaller or different from the initial 10 (that is the expected output, not a failure). Starting
+eligibility + the full A–T plan: [docs/V3_PLAN.md](docs/V3_PLAN.md).
 
-`scripts/qa_harmonization.py` → `results/reports/qa_harmonization.html` shows the data at each stage.
-This is the debugging surface that must be clean *before* any analysis.
+## Status
 
-1. **Part 1 — Harmonized variables (native scale).** Each dictionary variable is read from its
-   per-cohort source column, run through its harmonization rule (`rules.py`: text→code, unit fixes)
-   and per-variable **sanity bounds** (out-of-range → NaN, **never imputed**), landing on its native
-   clinical scale (TMT seconds, WAIS 1–19, Likert 0–3, binary 0/1, labs in clinical units). Verifies:
-   every variable loads, is numeric (no text leaked through), within bounds, cross-cohort comparable.
+- 🟢 **V3 plan adopted as the single source of truth** (2026-06-05). Direction, framing, and the
+  estimator hierarchy are fixed by [docs/V3_PLAN.md](docs/V3_PLAN.md).
+- ◻ **V2 = completed benchmark arm.** The runnable code (`src/trans_diag/` incl. `engine/`,
+  `scripts/01–15`, `qa_harmonization`, `sensitivity_*`, `figures_manuscript`, `build_manuscript`) **is
+  the V2 masked-estimator implementation**. It remains reproducible and becomes V3's Phase-D
+  reproducibility baseline. Its docs live under [docs/legacy_v2/](docs/legacy_v2/README.md); its
+  manuscript is `results/manuscript/` (the *"symptoms ⊥ biology"* benchmark paper).
+- ⬜ **V3 discovery engine NOT yet built.** The FIML benchmark + Bayesian mixed-likelihood latent model
+  + strata/prognosis/treatment layers (Phases E–M) are unimplemented. Do not describe them as done.
 
-2. **Part 2 — Post-processed variables (type-aware scaling → [−1,1]).** The *same* variables on a
-   common, bounded, ML-ready scale, **by type**: binary/ordinal/Likert → min-max; continuous → log
-   (if heavy right-skewed, e.g. prolactin) + winsorize(1/99) + robust-z (median/MAD) clipped ±5, ÷5.
-   Puts a lab in the thousands and a 0/1 flag on the same footing and bounds outliers. Verifies:
-   every feature lands in [−1,1] (`normalize_for_embedding`, `adapter.py`).
+## ⚠️ Instructions for future agents / developers (read before doing V3 work)
 
-3. **Part 3 — Aggregated V0 domain scores (the QA view of construct-level features).**
-   Items are aggregated into **construct-level domain scores** (each item robust-z'd + sign-oriented,
-   then a **masked mean** within its instrument/composite; no imputation), at the **baseline V0**
-   visit. The *actual model inputs* are the richer **hierarchical/bifactor constructs** (196 items →
-   95 within-construct masked one-factor posteriors → 3 second-order axes; see
-   [docs/PIPELINE.md](docs/PIPELINE.md) §5), which supersede flat masked means; these domain scores
-   remain the interpretable QA cross-check.
+1. **Ignore the V2 roadmap assumptions.** V2's conclusions — *K=3 axes, "no p-factor," "symptoms
+   orthogonal to biology," "no discrete subtypes," the V2 manuscript framing* — are **hypotheses to
+   retest** ([docs/FINDINGS.md](docs/FINDINGS.md)), **not** the project's objective or settled facts.
+   Do not lead new work with the masked pairwise-correlation / PAF / Schmid–Leiman pipeline; it is the
+   benchmark, not the primary model.
+2. **Preserve the no-naive-imputation principle.** Never build a mean/KNN/MICE-filled matrix for
+   discovery or clustering, and never feed completed vectors to a model that requires them. Use
+   **observed-data likelihood** (FIML / Bayesian) over each patient's observed cells; keep deterministic
+   **skip-logic** structural-zero decoding (that is not imputation). Doctrine: [docs/PIPELINE.md](docs/PIPELINE.md) §1.
+3. **Use observed-likelihood modeling where possible**, with **mixed likelihoods** that carry each
+   variable's type (Gaussian/Student-t, lognormal, ordered-logit, Bernoulli, neg-binomial) and
+   **posterior uncertainty** on dimension scores. Do **not** force everything onto one `[−1,1]` metric
+   (that is the benchmark-arm encoding).
+4. **Keep diagnosis as a covariate / validation target, never a clustering feature.** Derive dimensions
+   and strata without DSM labels; use BP/SZ/DR only to adjust indicator means and to *validate* (η²,
+   ARI, confounding, invariance, coverage).
+5. **Produce outputs aligned with the V3 decision-modeling framework.** Dimensions → **probabilistic
+   strata as validated decision regions** → prognosis model ladder (M0→M6, with calibration + decision
+   curves) → target-trial treatment modeling. Acceptance is **utility, not elegance**: every accepted
+   dimension/stratum must show a downstream value. A V3 result must beat or defensibly refine the V2
+   benchmark — reproducing V2 with heavier machinery is not success.
 
-   **Why aggregate into domain scores (what "Encoded modelling features (aggregated V0 domain scores)" means and why we need it):**
-   - **Each construct counts once.** A construct measured by many items (e.g. a 30-item suicide
-     instrument) would otherwise be ~30 % of the dimensions in a similarity/correlation computed over
-     raw items, drowning out single-item constructs. Aggregating items → one score removes this
-     **item-count weighting bias** (LABBOOK E-series rationale).
-   - **More coverage, still no imputation.** A domain score needs only *some* of its items observed
-     (masked mean with a min-item floor), so it is far better-covered than any single item.
-   - **Interpretability.** Structure over ~90 *named* clinical constructs (depression, mania,
-     metabolic, cognition…) is interpretable; over ~194 raw items it is noise.
-   - **Comparable units.** Robust-z'ing each item before averaging lets members on different units
-     (mmol/L, mmHg, Likert points) combine sensibly into one construct.
-   - **V0 = the analysis anchor.** Dimensions/clusters are *defined* at baseline; later visits
-     (V1, V2…) are used to test their **temporal coherence**, not to define the structure.
+## Data — harmonization, no-imputation, skip-logic (the load-bearing foundation)
+
+`scripts/qa_harmonization.py` → `results/reports/qa_harmonization.html` is the V2-arm QA surface; its
+**harmonization + sanity-bounds + skip-logic decoding** remain load-bearing for V3, while the
+`[−1,1]` post-processing stage is benchmark-only.
+
+1. **Harmonized variables (native scale).** Each dictionary variable is read from its per-cohort source
+   column, run through its harmonization rule (`rules.py`: text→code, unit fixes) and per-variable
+   **sanity bounds** (out-of-range → NaN, **never imputed**), landing on its native clinical scale.
+2. **Skip-logic structural zeros.** Gated/branching items (e.g. suicide-attempt details) are decoded to
+   structural zeros where the gate is negative — **never** where the gate is unknown, and **never**
+   overwriting an observed value (`skip_logic.py`).
+3. **V3 data contract.** The dictionary is extended with per-variable **likelihood family, missingness
+   type, soft prior loading on the 10-candidate ontology, covariate/outcome status, and modeling role**
+   ([docs/DATA.md](docs/DATA.md) → "V3 data contract"). These drive the patient-level latent model.
+
+> **No imputation, ever.** All structure is estimated from observed cells. The V2 arm did this with a
+> *masked* pairwise-complete correlation; V3 does it with a patient-level **observed-data likelihood**
+> (FIML / Bayesian), which preserves the principle while escaping pairwise-correlation limitations.
 
 ## Repository layout
 
 ```
 face-common-bp-sz-dr/
-├── CLAUDE.md  AGENTS.md  README.md    ← guides (root; paper at results/manuscript/manuscript.md)
-├── data/                              ← inputs (read-only)
-│   ├── face-common-vars.xlsx          ← v2 common-variables dictionary (tracked)
-│   ├── thesaurus/                     ← per-cohort source dictionaries (tracked, reference)
+├── CLAUDE.md  AGENTS.md  README.md     ← guides (V3); plan of record: docs/V3_PLAN.md
+├── data/                               ← inputs (read-only)
+│   ├── face-common-vars.xlsx           ← harmonized common-variables dictionary (tracked)
+│   ├── thesaurus/                      ← per-cohort source dictionaries (tracked, reference)
 │   └── {bipolar,schizophrenia,depression}.csv · site_lookup.csv   ← data (confidential; gitignored except site_lookup)
-├── src/trans_diag/                    ← the package (all our code)
-│   ├── variable·rules·loader·filters.py        ← harmonization + sanity bounds
-│   ├── schema_gen·adapter·domains.py           ← matrix build, type-aware scaling, domain aggregation
-│   ├── masked_fa·axes·skip_logic.py            ← imputation-free FA, axis names, suicide skip-logic
-│   └── engine/                                 ← internalized stratification engine (masked, no imputation)
-├── scripts/                           ← v2 pipeline (01–15: hierarchical FA → stratify → validate) + qa_harmonization/verify/audit
-├── tests/                             ← unit + v2 golden-number tests (pinned to results/hfa/; skip on a clean clone)
-├── results/                           ← regenerated AGGREGATE artifacts: hfa/ · manuscript/ · reports/ (empty on a clean tree; .gitkeep)
-│   └── reports/qa_harmonization.html  ← the 3-part QA report
-├── docs/                              ← PIPELINE·ROADMAP·DATA·FINDINGS·LABBOOK·neuropsy_features.yaml
+├── src/trans_diag/                     ← the package (V2 benchmark implementation today)
+│   ├── variable·rules·loader·filters.py        ← harmonization + sanity bounds + skip-logic (V3-load-bearing)
+│   ├── schema_gen·adapter·domains.py           ← matrix build, type-aware scaling, domain aggregation (benchmark encoding)
+│   ├── masked_fa·axes·phenotype.py             ← V2 masked estimator, axis names, phenotype features (→ V3 priors)
+│   └── engine/                                 ← masked-similarity stratification (→ V3 secondary control)
+│       ←  V3 modules to ADD: bayesian/ · fiml/ · missingness/ · priors/ · strata/ · prognosis/ · treatment/
+├── scripts/                            ← V2 benchmark pipeline (01–15) + qa_harmonization/verify/audit
+├── tests/                              ← unit + V2 golden-number tests (pinned to results/hfa/; skip on a clean clone)
+├── results/                            ← regenerated AGGREGATE artifacts: hfa/ · manuscript/ (V2 paper) · reports/
+├── docs/                               ← V3_PLAN · V3_PLAN_SOURCE · ROADMAP · PIPELINE · DATA · FINDINGS · neuropsy_features.yaml
+│   └── legacy_v2/                       ← the V2 benchmark/reference arm (PIPELINE · FINDINGS · ATLAS · LABBOOK · planning · …)
 └── pyproject.toml
 ```
 
 **Imports.** `trans_diag` resolves from `src/`. Scripts insert `src/` on `sys.path`; pytest uses
 `pythonpath = ["src"]`. Or `pip install -e ".[full]"`.
 
-## Core concepts
+## Core concepts (the data layer — shared by V2 and V3)
 
 **`Variable`** (`variable.py`) — one per dictionary row; `source_col(cohort)` → CSV column; carries
-`sanity_min/max` (v2). **Harmonization registry** (`rules.py`) — `@register(...)`; unregistered →
+`sanity_min/max`. **Harmonization registry** (`rules.py`) — `@register(...)`; unregistered →
 `identity_cast`. **`build_unified_dataframe(...)`** (`loader.py`) — `readiness=['READY','PARTIAL']`
-(199 vars); auto-detects v2 (any sanity bound present) → applies sanity bounds + v2 rules + fondacode
-site; `format='long'|'wide'`. **`to_harmonized_dataset(...)`** (`adapter.py`) — V0 numeric matrix,
-MultiIndex `[cohort, patient_id]`, optional `residualize_on=('age','sex')`; `normalize_for_embedding`
-= **type-aware scaling to [−1,1]**. **Domain aggregation** (`domains.py`) — items → construct-level
-domain scores (masked mean of robust-z, clipped ±5) + curated biology/cognition composites.
+(199 vars); applies sanity bounds + rules + fondacode site; `format='long'|'wide'`.
+**`to_harmonized_dataset(...)`** (`adapter.py`) — V0 numeric matrix, MultiIndex `[cohort, patient_id]`,
+optional `residualize_on=('age','sex')`. **Skip-logic** (`skip_logic.py`) — structural-zero decoding.
 **Identifiers (never modelled on):** `usubjid_patients`, `cohort`, `arm`, `visit`, `visitnum`,
-`siteid_city` (kept loadable for site stratification, excluded from features via `ADMINISTRATIVE_FEATURES`).
-**No imputation** anywhere — masked similarity, masked FA (pairwise-complete correlation → masked
-posterior-mean scores), all on observed cells only.
+`siteid_city` (excluded from features via `ADMINISTRATIVE_FEATURES`; `cohort`/`arm` are **covariates /
+validation labels**, not features). **No imputation** anywhere.
 
 ## Quick start
 
 ```bash
 pip install -e ".[full]"                 # core + kaleido (static figure export)
-python3 scripts/qa_harmonization.py      # the 3-part data-processing QA report (must be clean first)
-python3 scripts/00_run_all.py            # regenerate every results/hfa/ artifact (needs the cohort CSVs)
-python3 -m pytest tests/ -q              # unit + v2 golden tests (golden skip on a clean clone — results/hfa/ gitignored)
-python3 scripts/verify.py                # harmonization smoke test (v2-calibrated)
+python3 scripts/qa_harmonization.py      # harmonization QA report (load-bearing for V3; [-1,1] stage is benchmark-only)
+python3 scripts/00_run_all.py            # regenerate the V2-benchmark results/hfa/ artifacts (needs the cohort CSVs)
+python3 -m pytest tests/ -q              # unit + V2 golden tests (golden skip on a clean clone — results/hfa/ gitignored)
 ```
 
 ```python
@@ -140,37 +146,21 @@ ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), vis
 # ds.X: MultiIndex[cohort, patient_id] × numeric features (NaN = missing, never imputed)
 ```
 
-## Pipeline (`scripts/`) — the v2 analysis, in execution order
+## Where to read next
 
-The hierarchical/bifactor measurement model + validation arm (all masked / no-imputation), writing
-aggregate artifacts to `results/hfa/`:
-
-- **Stages 0–4** — `01_hfa_stage0_itemset` (freeze the V0 item set) → `02_hfa_stage1_efa`
-  (exploratory first-order) → `03_hfa_stage2` (hybrid first-order constructs) → `04_hfa_stage3`
-  (second-order: **K=3** axes, data-locked; general factor tested via Schmid–Leiman ECV) → `05_hfa_kselect`
-  (per-factor split-half K) → `06_hfa_stage4` (confound / leave-cohort-out / granularity validation).
-- **Stratification** — `07_phase5_stratify` (discrete-vs-continuum battery → **dimensional**).
-- **Validation A–D** — `08_v1v4_inventory` (relapse derivation) → `09_cohort_confound` (A) ·
-  `10_orthogonality_pfactor` (B, the headline) · `11_longitudinal_coherence` (C) ·
-  `12`–`15` predictive (D: prognosis vs DSM).
-- **Sensitivity** — `sensitivity_{aggregation,comorbidity,polychoric}`.
-- **Outputs** — `figures_manuscript` (6 figures) · `build_manuscript` (→ `.docx`).
-
-End-to-end diagram + mathematics: **[docs/PIPELINE.md](docs/PIPELINE.md)**.
+- **Plan of record (A–T)** → [docs/V3_PLAN.md](docs/V3_PLAN.md) · verbatim source [docs/V3_PLAN_SOURCE.md](docs/V3_PLAN_SOURCE.md)
+- **What/why** → [docs/ROADMAP.md](docs/ROADMAP.md) · **Target pipeline + missing-data doctrine** → [docs/PIPELINE.md](docs/PIPELINE.md)
+- **Data contract + dictionary** → [docs/DATA.md](docs/DATA.md) · **V3 log + V2-as-hypotheses** → [docs/FINDINGS.md](docs/FINDINGS.md)
+- **Cognition include-list** → [docs/neuropsy_features.yaml](docs/neuropsy_features.yaml)
+- **V2 benchmark/reference arm** → [docs/legacy_v2/](docs/legacy_v2/README.md) (pipeline · findings · phenotype atlas · lab notebook · planning)
+- **V2 manuscript (benchmark paper)** → [results/manuscript/manuscript.md](results/manuscript/manuscript.md)
 
 ## Conventions
 
-- **Python ≥ 3.11.** Develop in `src/trans_diag` (incl. `engine/`).
-- **No imputation, ever.** Missingness is handled by masked methods (no hard missingness drop).
-- **Output**: scripts write aggregates to `results/`, HTML/figures to `results/reports/`.
+- **Python ≥ 3.11.** Develop in `src/trans_diag` (incl. `engine/`); add V3 sub-packages as above.
+- **No naive imputation, ever.** Observed-data likelihood + masked methods only.
+- **Diagnosis is a covariate / validation target**, never a clustering feature.
 - **Determinism**: fixed seeds; CV folds shuffled (the patient matrix is cohort-ordered).
-- **Recoverability**: the full v1 study is at tag `v1-archive-2026-05-30`.
-
-## Where to read next
-
-- **Pipeline (end-to-end diagram + math)** → [docs/PIPELINE.md](docs/PIPELINE.md)
-- **Plan** → [docs/ROADMAP.md](docs/ROADMAP.md) · **Dictionary columns** → [docs/DATA.md](docs/DATA.md)
-- **Findings (v2 log)** → [docs/FINDINGS.md](docs/FINDINGS.md) · **Lab notebook** → [docs/LABBOOK.md](docs/LABBOOK.md)
-- **Phenotype atlas (named factors as predictive features)** → [docs/PHENOTYPE_ATLAS.md](docs/PHENOTYPE_ATLAS.md)
-  (`src/trans_diag/phenotype.py` · `scripts/export_phenotype_features.py`)
-- **Manuscript** → [results/manuscript/manuscript.md](results/manuscript/manuscript.md) · **Engine internals** → `src/trans_diag/engine/`
+- **Output**: scripts write aggregates to `results/`, HTML/figures to `results/reports/`.
+- **Recoverability**: the V2 arm is `legacy_v2/` + `results/manuscript/`; the full v1 study is at git
+  tag `v1-archive-2026-05-30`.

@@ -13,6 +13,14 @@ abstract: |
   **Conclusions.** An integrated, imputation-free account of three major psychoses is genuinely **multidimensional with separable symptom, cognitive and biological substrates**. The general psychopathology factor appears to be an artifact of symptom-only measurement rather than a property of disorder. The dimensions are at least DSM-equivalent for prognosis and add a small, biologically-grounded increment. We state plainly where the "trans-diagnostic" label is qualified by measurement design.
 ---
 
+> **⚠️ LEGACY — V2 benchmark / reference paper.** This manuscript is the **V2** dimensional study,
+> retained for traceability as the **benchmark arm** of the FACE precision-psychiatry program — it is
+> **not the current project objective**. The active source of truth is the **V3** plan
+> ([../../docs/V3_PLAN.md](../../docs/V3_PLAN.md)); the V2-benchmark documentation is under
+> [../../docs/legacy_v2/](../../docs/legacy_v2/README.md). Under V3, this paper's storylines — *"symptoms
+> are orthogonal to biology," "no dominant p-factor," "no discrete subtypes"* — are **hypotheses to
+> retest** under a patient-level observed-likelihood model, not settled conclusions.
+
 # Introduction
 
 For seventy years psychiatric nosology has been **categorical**: the DSM and ICD sort patients into discrete disorders defined by symptom checklists [1]. The categorical model has organized clinical communication and trials, but its scientific limits are now widely acknowledged — extensive comorbidity, within-category heterogeneity, arbitrary thresholds, and weak mapping to biology [2,3]. Two influential programs propose a **dimensional** alternative: the Research Domain Criteria (RDoC) recast psychopathology as continua grounded in neurobiological systems [2], and the Hierarchical Taxonomy of Psychopathology (HiTOP) organizes empirically-derived symptom dimensions into a hierarchy [3]. At the apex of that hierarchy many investigators place a single **general factor of psychopathology**, the "*p*-factor," interpreted as a trait-like liability common to all disorders [4–6].

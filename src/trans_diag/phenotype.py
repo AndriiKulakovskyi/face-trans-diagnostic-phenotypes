@@ -1,6 +1,6 @@
 """Phenotype atlas — named, reproducible factor scores for use as **predictive features**.
 
-This is the *feature* view of the v2 dimensional analysis (companion: ``docs/PHENOTYPE_ATLAS.md``,
+This is the *feature* view of the v2 dimensional analysis (companion: ``docs/legacy_v2/PHENOTYPE_ATLAS.md``,
 LABBOOK V2-23). The structural model (manuscript) is **3 weakly-correlated trans-diagnostic axes**
 (internalizing · cognition · cardiometabolic). The bootstrap robustness analysis showed those 3 are
 the only K-invariant *correlated* structure; beyond them the data contains several **reproducible but
@@ -16,7 +16,7 @@ Member lists were derived from a K=7 varimax solution (constructs |loading| > 0.
 curated for clinical coherence (e.g. the cardiometabolic block keeps glucose/BP/cholesterol even where
 they sit just below 0.40). Signs orient each member so the factor's stated pole is the **high** end.
 
-Caveats that matter for using these as features (full detail in ``docs/PHENOTYPE_ATLAS.md``):
+Caveats that matter for using these as features (full detail in ``docs/legacy_v2/PHENOTYPE_ATLAS.md``):
   * **internalizing** mood scales are 0 % observed in FACE-SZ; SZ is scored only via QoL/functioning
     proxies (EQ-5D, GAF, CGI) → in SZ the score means "poor functioning", not "depression".
   * **cognition** is memory-anchored (CVLT) in BP/SZ but executive/fluency-based in DR (no CVLT there).
@@ -58,7 +58,7 @@ PHENOTYPE_FACTORS: dict[str, list[tuple[str, int]]] = {
     "childhood_adversity": [("wurs", +1), ("ctq", +1)],    # childhood ADHD + trauma (weak / exploratory)
 }
 
-# the weakly-correlated backbone vs the orthogonal standalones (see docs/PHENOTYPE_ATLAS.md)
+# the weakly-correlated backbone vs the orthogonal standalones (see docs/legacy_v2/PHENOTYPE_ATLAS.md)
 AXES: tuple[str, ...] = ("internalizing", "cognition", "cardiometabolic")
 STANDALONES: tuple[str, ...] = (
     "illness_course", "substance_use", "mania", "suicidality", "childhood_adversity",

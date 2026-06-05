@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "trans-diag"
 version = "0.1.0"
-description = "FACE trans-diagnostic phenotyping (BP/SZ/DR): longitudinal harmonization + a confound-controlled dimensional model. Self-contained — the stratification engine is internalized in trans_diag.engine."
+description = "FACE precision psychiatry (BP/SZ/DR): harmonized 3-cohort data → patient-level, missingness-aware transdiagnostic dimension discovery → validated probabilistic strata → prognosis/treatment decision models (V3; see docs/V3_PLAN.md). The current package is the V2 masked-estimator benchmark arm. Self-contained — the stratification engine is internalized in trans_diag.engine."
 requires-python = ">=3.11"
 dependencies = [
     "pandas>=2.0",

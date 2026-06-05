@@ -1,6 +1,6 @@
 """Stage 0 (v2) — freeze the hierarchical-FA item set, masked correlation, factorability.
 
-Implements Stage 0 of docs/HIERARCHICAL_FA_PLAN.md. V0 anchor; masked / no-imputation.
+Implements Stage 0 of docs/legacy_v2/planning/HIERARCHICAL_FA_PLAN.md. V0 anchor; masked / no-imputation.
 
 Loads the FULL dictionary (incl. rows currently flagged NOT USABLE / ID) so that "add every
 valid measurement" is honoured, then applies one explicit, documented exclude list:
@@ -40,7 +40,7 @@ OUT = ROOT / "results" / "hfa"
 OUT.mkdir(parents=True, exist_ok=True)
 MIN_PAIR = 100
 
-# ---- explicit exclude list (D6-D9 locked; see docs/HIERARCHICAL_FA_PLAN.md) ----
+# ---- explicit exclude list (D6-D9 locked; see docs/legacy_v2/planning/HIERARCHICAL_FA_PLAN.md) ----
 IDENT = {"usubjid_patients", "fondacode", "cohort", "arm", "armcd", "visit", "visitnum", "siteid_city"}
 COVAR = {"age", "sex", "education_years", "cclin01"}     # age,sex -> residualize_on; edu/cclin01 dropped
 DEGEN = {"brthdtc"}

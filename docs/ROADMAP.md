@@ -1,35 +1,81 @@
-# ROADMAP — FACE trans-diagnostic study (v2)
+# ROADMAP — FACE V3 precision psychiatry
 
-> Single source of truth for *what* we are doing and *why*. The v1 roadmap is archived at git
-> tag `v1-archive-2026-05-30`.
+> Single source of truth for *what* we are doing and *why*. The detailed plan of record is
+> [`V3_PLAN.md`](V3_PLAN.md); the target pipeline is [`PIPELINE.md`](PIPELINE.md). The completed **V2**
+> dimensional study is the **benchmark / reference arm** only — see [`legacy_v2/`](legacy_v2/README.md).
+> The pre-V2 **v1** study is at git tag `v1-archive-2026-05-30`.
 
-## Question
-Across bipolar disorder, schizophrenia and depression (FACE), is trans-diagnostic variation
-**dimensional** (latent symptom / biology / cognition dimensions) and/or **categorical** (patient
-strata)? Re-derived from zero on the re-curated v2 dictionary — no imputation, confound-controlled.
+## Objective
 
-## Design
-- **Data:** v2 dictionary (201 usable vars), **V0** anchor; masked / no-imputation throughout. Later
-  visits (V1, V2…) test temporal coherence, they don't define the structure.
-- **Processing:** harmonize → type-aware scale to [−1, 1] → aggregate to V0 **domain scores**
-  (see CLAUDE.md §"Data processing" and the 3-part QA report).
-- **Track 1 — dimensional:** masked pairwise-complete correlation → PAF + varimax; K by masked
-  split-half reproducibility; confound η² (cohort/site/age/sex); outcomes vs DSM; longitudinal coherence.
-- **Track 2 — stratification:** masked similarity → multipartite-spectral embedding → clustering
-  + stability (bootstrap ARI, consensus PAC, gap, silhouette) + independence panel; discrete-vs-continuum verdict.
+Turn the FACE 3-cohort psychiatric data into a **precision-psychiatry stratification and
+decision-modeling framework**, in four layers that must not be collapsed:
 
-## Phases
-- ✅ **Phase 1–2b** — v2 dictionary finalized + locked; pipeline wired to v2; preprocessing
-  debugged (explosion fix, type-aware [−1, 1] scaling); 3-part QA report complete.
-- ✅ **Phase 3** — clean slate: v1 generated artifacts removed; conclusion docs reset to v2 stubs.
-- ✅ **Phase 4** — dimensional analysis on v2 (scripts `01–06`): hierarchical/bifactor measurement
-  model → **K=3** trans-diagnostic axes (internalizing · cognition · cardiometabolic),
-  **no p-factor** (ECV 0.42); confound-clean, leave-cohort-out reproducible, granularity-invariant.
-  (Adding the alcohol/cannabis substance-use-disorder construct collapsed the earlier K=4; the weak
-  *illness-course* axis is no longer reproducible — see `docs/FINDINGS.md`.)
-- ✅ **Phase 5** — patient stratification on v2 (`07_phase5_stratify.py`): **DIMENSIONAL / continuum**,
-  no discrete subtypes beyond the DSM cohorts. Validation arm A–D (`09–15`).
-- ✅ **Phase 6** — manuscript + 6 figures from v2 results (`results/manuscript/FACE_trans_diagnostic_v2.docx`,
-  `scripts/figures_manuscript.py`); golden tests + `verify.py` **re-baselined to v2** (`pytest` green
-  — 99 passed; `verify.py` green). v2 pipeline = scripts `01–15`; the legacy `01–22` pipeline is
-  removed (recoverable at tag `v1-archive-2026-05-30`).
+```text
+diagnostic cohorts (BP · SZ · DR)            ← entry + validation metadata, NEVER clustering features
+  → transdiagnostic dimension discovery       ← patient-level, missingness-aware latent measurement
+  → validated patient strata                   ← probabilistic decision regions, not natural subtypes
+  → prognosis / treatment decision models      ← the precision-psychiatry objective
+```
+
+## Primary question
+
+Do patient-level latent dimensions and the strata derived from them add clinically meaningful
+predictive or decision value **beyond** `diagnosis + age + sex + site + baseline severity`?
+
+## Design principles (hold everywhere)
+
+- **No naive imputation, ever.** No completed-data / mean / KNN / MICE matrix before discovery or
+  clustering. Use **observed-data likelihood** (FIML / Bayesian) over each patient's observed cells,
+  with **posterior uncertainty**, and explicit **missingness models** where missingness is informative.
+  Keep deterministic **skip-logic** structural-zero decoding (it is not imputation).
+- **Diagnosis is a covariate / validation target, not a clustering feature.** Strata and dimensions are
+  derived without DSM labels; DSM is used to *validate* (η², coverage, confounding), not to define.
+- **V0 anchor.** Dimensions are defined at baseline V0; later visits (V1–V4) test temporal coherence
+  and supply outcomes — they never define the structure.
+- **Soft starting ontology.** The 10 candidate dimensions seed **soft priors**, not hand-tagged scores;
+  the data may **confirm, split, merge, reject, downgrade, or cross-load** any of them.
+- **Estimator hierarchy.** **Primary discovery engine** = patient-level **Bayesian sparse bifactor /
+  ESEM-like** model with **mixed likelihoods** + soft loading priors. **Confirmatory benchmark** =
+  **FIML SEM/ESEM**. **Reproducibility baseline** = the **V2 masked-correlation** factors.
+- **Utility, not elegance.** Every accepted dimension/stratum must show a downstream value (calibration,
+  discrimination, decision-curve net benefit, subgroup prognosis, or treatment-effect heterogeneity).
+
+## The 10 candidate dimensions (soft ontology → adjudicated)
+
+Impulsivity · Cognitive flexibility · Negative symptoms · Anhedonia · Metabolism/immunometabolism ·
+Sleep/circadian · Overall clinical severity · Sensory abnormalities · Neurodevelopment · Suicidality.
+
+Starting status (eligibility *before* modeling; full table in [`V3_PLAN.md`](V3_PLAN.md) §0B):
+**core** = severity (`G`), cognition, metabolism (test split), sleep, suicidality; **extension** =
+anhedonia; **proxy/module** = impulsivity, neurodevelopment, negative symptoms; **unsupported unless
+direct indicators exist** = sensory abnormalities. Each is then adjudicated to
+{confirmed · split · merged · module · proxy · unsupported} by the latent model.
+
+## Phases (see [`V3_PLAN.md`](V3_PLAN.md) for the full A–T plan)
+
+| Phase | Theme | Status |
+|---|---|---|
+| **A** | Foundation: freeze V2 as benchmark; V3 data contract; harmonization/units/direction; skip-logic | ⬜ planned |
+| **B** | Missingness atlas + mechanism classification + measurement eligibility | ⬜ planned |
+| **C** | Soft-prior construct map (V2 constructs + 10 candidates) | ⬜ planned |
+| **D** | V2 masked-estimator replication on V3 data (reproducibility baseline) | ◻ V2 code exists (`scripts/01–06`) |
+| **E** | FIML SEM/ESEM benchmark + general-vs-specific test | ⬜ planned |
+| **F** | **Bayesian sparse bifactor + mixed likelihoods (primary discovery engine)** | ⬜ planned |
+| **G** | Model comparison + dimension adjudication + retest V2 claims | ⬜ planned |
+| **H** | Measurement invariance / transdiagnostic validity / DIF | ⬜ planned |
+| **I** | Posterior patient-level dimension scores + V3 phenotype atlas | ⬜ planned |
+| **J** | Probabilistic strata as decision regions | ⬜ planned |
+| **K** | Strata validation (stability · artefact · clinical · longitudinal) | ⬜ planned |
+| **L** | Prognosis model ladder (M0→M6) + missingness-aware learners | ⬜ planned |
+| **M** | Treatment & decision modeling (target-trial emulation, CATE by stratum) | ⬜ planned |
+| **N** | Clinical interpretation: dimension/stratum/model cards (TRIPOD-AI, PROBAST-AI) | ⬜ planned |
+| **O–T** | Repo structure · acceptance criteria · deliverables · risk register · V2→V3 management · decision tree | ⬜ planned |
+
+`◻` = the existing `src/trans_diag/` + `scripts/01–15` are the **V2 benchmark implementation**, which
+becomes Phase D's reproducibility baseline; the V3 discovery engine (Phases E–M) is **not yet built**.
+
+## What "done" looks like
+
+Three manuscripts: (1) the patient-level missingness-aware **measurement model**; (2) **dimensions →
+validated patient strata**; (3) **precision-psychiatry decision modeling**. Each V3 claim must beat or
+defensibly refine the V2 benchmark — reproducing V2 with heavier machinery is **not** success.

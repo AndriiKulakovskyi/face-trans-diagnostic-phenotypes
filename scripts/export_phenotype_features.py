@@ -1,7 +1,7 @@
 """Export the phenotype-atlas factor scores as a tidy patient × factor feature table.
 
 Reads the Stage-2 construct scores (``results/hfa/stage2_scores.pkl``), scores the named phenotype
-factors (``trans_diag.phenotype``; see ``docs/PHENOTYPE_ATLAS.md``) on observed support only, and
+factors (``trans_diag.phenotype``; see ``docs/legacy_v2/PHENOTYPE_ATLAS.md``) on observed support only, and
 writes ``results/hfa/phenotype_features.csv`` with one ``<factor>`` score column and one
 ``<factor>__cov`` coverage column (fraction of member constructs observed) per factor.
 

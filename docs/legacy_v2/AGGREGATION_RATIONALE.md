@@ -1,5 +1,11 @@
 # Aggregation rationale — from ~195 harmonized variables to nameable trans-diagnostic dimensions
 
+> **LEGACY — V2 benchmark / reference arm.** Not the current project. Active source of truth: the V3
+> precision-psychiatry plan ([`../V3_PLAN.md`](../V3_PLAN.md)). This derives why the **V2** masked
+> estimator aggregated items → constructs before geometry; in V3 the same construct intelligence
+> becomes the **soft-prior loading map** (V3 plan, Phase C), and the patient-level observed-likelihood
+> model — not pairwise-complete correlation — is the primary estimator. See [`README.md`](README.md).
+
 > Methods rationale + empirical evidence. Contributes to `results/manuscript/manuscript.md` (Methods + Supplement).
 > Status: **rationale settled; method (hierarchical/bifactor, hybrid) chosen; analysis plan in
 > [HIERARCHICAL_FA_PLAN.md](planning/HIERARCHICAL_FA_PLAN.md).** All numbers below are from internal

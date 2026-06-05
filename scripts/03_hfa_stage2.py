@@ -1,6 +1,6 @@
 """Stage 2 (v2) — hybrid first-order measurement model (clinical anchors, data-revised).
 
-Implements Stage 2 of docs/HIERARCHICAL_FA_PLAN.md. Builds the construct layer that REPLACES the
+Implements Stage 2 of docs/legacy_v2/planning/HIERARCHICAL_FA_PLAN.md. Builds the construct layer that REPLACES the
 flat masked-mean domain scores. "Hybrid" = clinical anchors (the construct boundaries) revised by
 the Stage 1 data (split multidimensional constructs, drop misfitting items, recover dropped labs).
 

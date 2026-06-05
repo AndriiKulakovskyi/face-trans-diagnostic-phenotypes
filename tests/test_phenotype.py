@@ -1,7 +1,7 @@
 """Guards for the phenotype-atlas feature module (``trans_diag.phenotype``).
 
 Structural checks + a synthetic-data check of the scorer, so they run on a clean clone (no
-dependence on the gitignored ``results/hfa/stage2_scores.pkl``). See ``docs/PHENOTYPE_ATLAS.md``.
+dependence on the gitignored ``results/hfa/stage2_scores.pkl``). See ``docs/legacy_v2/PHENOTYPE_ATLAS.md``.
 """
 import numpy as np
 import pandas as pd

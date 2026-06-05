@@ -1,10 +1,17 @@
 # PHENOTYPE_ATLAS — named factors as predictive features (v2)
 
+> **LEGACY — V2 benchmark / reference arm.** Not the current project. Active source of truth: the V3
+> precision-psychiatry plan ([`../V3_PLAN.md`](../V3_PLAN.md)). These V2 named factors are the source
+> for the **V3 prior atlas** (V3 plan, Phase C / S2): they seed the soft loading priors and are then
+> re-adjudicated (confirm / split / merge / module / proxy / reject) by the patient-level latent model.
+> The V3 deliverable is a *probabilistic* phenotype atlas with posterior uncertainty. See
+> [`README.md`](README.md).
+
 > The **feature** view of the v2 dimensional analysis. The manuscript's *structural* model is **3
 > weakly-correlated trans-diagnostic axes**; this atlas adds the reproducible **orthogonal standalone**
 > dimensions so the whole, non-redundant feature set is documented in one place.
-> Code: [`src/trans_diag/phenotype.py`](../src/trans_diag/phenotype.py) ·
-> Export: [`scripts/export_phenotype_features.py`](../scripts/export_phenotype_features.py) →
+> Code: [`src/trans_diag/phenotype.py`](../../src/trans_diag/phenotype.py) ·
+> Export: [`scripts/export_phenotype_features.py`](../../scripts/export_phenotype_features.py) →
 > `results/hfa/phenotype_features.csv`. Provenance: `docs/LABBOOK.md` **V2-23**.
 
 ## Why this exists (and why it isn't "K")

@@ -4,7 +4,7 @@ Each step writes aggregate artifacts to ``results/hfa/`` (+ ``results/reports/``
 earlier outputs. Run from the repo root:  ``python3 scripts/00_run_all.py``
 Requires the confidential cohort CSVs in ``data/`` and ``pip install -e ".[full]"``.
 
-The order follows ``docs/PIPELINE.md`` and the inter-script dependencies (e.g. ``08`` derives the
+The order follows ``docs/legacy_v2/PIPELINE.md`` and the inter-script dependencies (e.g. ``08`` derives the
 relapse outcome consumed by ``12``–``15``; ``11`` reuses Stage-0/2 logic; ``15`` reuses ``11``). The
 pipeline is deterministic (fixed seeds) apart from ~1e-9 BLAS round-off.
 
