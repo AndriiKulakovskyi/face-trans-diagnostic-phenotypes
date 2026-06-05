@@ -1,10 +1,8 @@
 # FACE V3 — Precision-psychiatry stratification & decision-modeling plan
 
-> **This is the single source of truth for the project's direction.** It supersedes the V2
-> dimensional study, which is retained only as a benchmark / reference arm under
-> [`legacy_v2/`](legacy_v2/README.md). Companion current-facing docs: [`ROADMAP.md`](ROADMAP.md)
-> (what/why), [`PIPELINE.md`](PIPELINE.md) (target architecture), [`DATA.md`](DATA.md) (data
-> contract). Full verbatim source plan: [`V3_PLAN_SOURCE.md`](V3_PLAN_SOURCE.md).
+> **This is the single source of truth for the project's direction.** Companion current-facing docs:
+> [`ROADMAP.md`](ROADMAP.md) (what/why), [`PIPELINE.md`](PIPELINE.md) (target architecture),
+> [`DATA.md`](DATA.md) (data contract).
 
 > **Progress (2026-06-05).** Phases **A·B·C done**, Phase **F core CERTIFIED** (marginalized model;
 > R-hat 1.01, 0 div, cohort-balanced 500/cohort). Code: `scripts/v3/` (`01` eligibility · `02` missingness ·
@@ -19,8 +17,8 @@
 
 V3 uses **patient-level, missingness-aware observed-data latent models** — a Bayesian sparse
 bifactor / ESEM-like model as the **primary discovery engine**, with FIML/SEM as a confirmatory
-benchmark and the V2 masked-correlation factors as a reproducibility baseline — to discover and
-**validate** transdiagnostic dimensions, project patients into uncertainty-aware dimension space,
+check — to discover and **validate** transdiagnostic dimensions, project patients into
+uncertainty-aware dimension space,
 derive **probabilistic patient strata as validated decision regions**, and test whether those strata
 improve **prognosis and treatment-relevant decisions** beyond DSM diagnosis and conventional severity.
 
@@ -73,49 +71,30 @@ factors, missingness sensitivity, and external longitudinal/prognostic validatio
 | Candidate dimension | V3 starting status | Reason |
 |---|---|---|
 | Overall clinical severity | **core** — general factor `G` | CGI/GAF/EQ-5D/functioning/hospitalization measure it directly |
-| Cognitive flexibility / cognition | **core** | V2 found a robust cognition axis; neuropsychology supports it |
-| Metabolism / immunometabolism | **core, but test split** | V2 cardiometabolic-inflammatory may hide metabolic vs inflammatory subdomains |
+| Cognitive flexibility / cognition | **core** | neuropsychology directly supports a cognition axis |
+| Metabolism / immunometabolism | **core, but test split** | a cardiometabolic-inflammatory block may hide metabolic vs inflammatory subdomains |
 | Sleep / circadian dysregulation | **core if PSQI/sleep indicators present** | measurable across cohorts; circadian specificity may be partial |
-| Suicidality | **core risk dimension** | V2 standalone; needs mixed binary/ordinal/count likelihoods + skip-logic awareness |
+| Suicidality | **core risk dimension** | likely near-standalone; needs mixed binary/ordinal/count likelihoods + skip-logic awareness |
 | Anhedonia | **extension / module** | likely BP/DR-measured; SZ may be proxy only |
 | Impulsivity | **proxy / module** | no dedicated common impulsivity measure unless verified |
 | Negative symptoms | **SZ module** unless common direct indicators exist | do not infer from poor functioning alone |
 | Neurodevelopmental alterations | **proxy / module** | use developmental-risk / adversity / early-onset proxy, not direct neurodevelopmental biology |
 | Sensory abnormalities | **unsupported** unless direct indicators exist | the model cannot discover an unmeasured construct |
 
-V3 must distinguish three objects V2 partially blended: a **candidate construct** (clinical idea →
+V3 must keep three objects distinct: a **candidate construct** (clinical idea →
 soft prior/hypothesis), an **empirical latent dimension** (stable axis of covariance → discovered &
 validated), and a **patient stratum** (recurring decision-relevant profile → derived after dimension
 validation).
 
-## 0C · How V2 is treated (benchmark, not roadmap)
+### V3 success criterion
 
-V2's facts become V3 **priors, stress tests, and baseline comparators** — never conclusions. Full
-detail and the finding-by-finding carry-forward: [`FINDINGS.md`](FINDINGS.md) and
-[`legacy_v2/`](legacy_v2/README.md).
-
-| V2 finding | V3 treatment |
-|---|---|
-| Internalizing axis | retest; model as affective/anhedonic extension unless invariance supports all-cohort status (mood scales are 0% in FACE-SZ) |
-| Cognition axis | keep as core; refine into cognitive flexibility / broader cognition if data support |
-| Cardiometabolic-inflammatory axis | **test split** into metabolic load vs inflammatory load |
-| Suicidality standalone | model with binary/ordinal/count likelihoods; keep separate from suicide *outcomes* |
-| Mania/activation standalone | activation/impulsivity **proxy** only — not "true impulsivity" without direct indicators |
-| Substance-use standalone | module or covariate depending on the outcome |
-| Childhood adversity / illness course | developmental-risk **proxy**; do not overclaim neurodevelopmental alteration |
-| "No p-factor" | **retest** with an explicit `G` factor + mixed likelihoods |
-| "No natural subtypes" | accept the continuum; derive **validated decision regions**, not natural density clusters |
-| "Symptoms ⊥ biology" | **retest** under observed-data likelihood + posterior uncertainty |
-
-### V3 success criterion (§0A.8 of the source plan)
-
-V3 succeeds only if the advanced pipeline delivers **at least one** of: (1) more defensible
-patient-level dimension scores with uncertainty; (2) sharper empirical adjudication of the 10
-candidates; (3) replication/refinement of the symptom–biology orthogonality claim under observed-data
+V3 succeeds only if the pipeline delivers **at least one** of: (1) defensible
+patient-level dimension scores with uncertainty; (2) sharp empirical adjudication of the 10
+candidates; (3) a clear verdict on symptom–biology orthogonality under observed-data
 likelihood; (4) validated probabilistic strata that are *not* just natural clusters; (5) improved
-prognosis calibration/discrimination/decision-utility beyond diagnosis, severity, and V2 dimensions;
-(6) feasible treatment-relevant modeling under target-trial assumptions. **Reproducing V2 with more
-complex code is not a success.**
+prognosis calibration/discrimination/decision-utility beyond diagnosis and severity;
+(6) feasible treatment-relevant modeling under target-trial assumptions. **Elegant machinery without
+downstream value is not a success.**
 
 ---
 
@@ -144,7 +123,7 @@ measure them.
 FACE BP/SZ/DR V0 baseline
   → dictionary correction + unit harmonization + skip-logic decoding
   → missingness atlas + structural/design/informative/sporadic classification
-  → soft prior loading matrix (V2 constructs + 10 candidate dimensions)
+  → soft prior loading matrix (10 candidate dimensions)
   → patient-level FIML / Bayesian mixed-likelihood latent models
   → empirical dimension adjudication {confirmed | split | merged | cohort-module | unsupported}
   → posterior dimension scores + uncertainty + measurement coverage
@@ -154,21 +133,19 @@ FACE BP/SZ/DR V0 baseline
   → precision-psychiatry decision framework
 ```
 
-The end-to-end diagram, the V2-benchmark relationship, and the missing-data doctrine are in
-[`PIPELINE.md`](PIPELINE.md).
+The end-to-end diagram and the missing-data doctrine are in [`PIPELINE.md`](PIPELINE.md).
 
 ---
 
 ## 3 · Phased plan (A–T)
 
-Each phase lists its intent and primary artifacts. Phases A–C build the V3 foundation; D–G are the
+Each phase lists its intent and primary artifacts. Phases A–C build the foundation; E–G are the
 modeling core; H–N validate and interpret; O–T are structure, acceptance, deliverables, risk, and the
-explicit V2→V3 management layer.
+project-management layer.
 
-### Phase A — Rebuild the analytical foundation — ✅ done (V3-1)
-- **A1 Freeze V2 as benchmark.** The current `src/trans_diag/` + `scripts/01–15` are the **V2
-  benchmark implementation** (reproducibility baseline), and the docs are under `legacy_v2/`. V3 is
-  built alongside, not by silently overwriting V2.
+### Phase A — Build the analytical foundation — ✅ done (V3-1)
+- **A1 Patient-level analytical base.** Stand up the V3 code (`src/v3/data`, `scripts/v3/`) and outputs
+  (`results/v3/`) on the harmonized 3-cohort data, with the data contract under `configs/`.
 - **A2 V3 data contract.** Strict patient-level schema (one row/patient at baseline) + long-format
   observed-cell tables. Extend the dictionary with per-variable **likelihood family, missingness type,
   prior-loading metadata, covariate/outcome status, and modeling role** (see [`DATA.md`](DATA.md)).
@@ -178,11 +155,10 @@ explicit V2→V3 management layer.
   reverse-code so **higher = more burden/dysfunction** unless documented (GAF/EGF, EQ-5D VAS, HDL…);
   `log1p` skewed labs (CRP); residualize TMT-B on TMT-A/age/education/site; preserve ordinal/binary/
   count nature (PSQI, C-SSRS/ISF). **Keep deterministic scaling where useful but do not force one
-  pseudo-continuous metric — the observation likelihood carries the variable type** (this is where V3
-  departs from V2's blanket `[−1,1]` scaling).
-- **A4 Skip-logic decoding, separated from imputation.** Keep V2's structural-zero decoding for gated
-  variables (e.g. `attempt_count = 0` when `attempt_ever = 0`); **never** overwrite observed values or
-  create values where the gate is unknown.
+  pseudo-continuous metric — the observation likelihood carries the variable type.**
+- **A4 Skip-logic decoding, separated from imputation.** Use deterministic structural-zero decoding for
+  gated variables (e.g. `attempt_count = 0` when `attempt_ever = 0`); **never** overwrite observed values
+  or create values where the gate is unknown.
 
 ### Phase B — Missingness atlas & measurement eligibility — ✅ done (V3-2)
 - **B1 Missingness matrix** `R_ij ∈ {0,1}`, summarized by cohort/site/wave/age/sex/severity/block/
@@ -198,26 +174,18 @@ explicit V2→V3 management layer.
   Covariate | Outcome | Excluded. **A dimension can only be discovered if it is actually measured.**
 
 ### Phase C — Soft-prior construct map — ✅ done (V3-1)
-- **C1 Convert V2 constructs + the 10 candidates into a soft prior loading matrix** `T_jk` with
+- **C1 Convert the 10 candidate constructs into a soft prior loading matrix** `T_jk` with
   statuses {primary_expected · plausible_cross_loading · unlikely · covariate_only · invalid ·
   outcome_only}. Goal: **let theory guide discovery while the data may split/merge/reject/cross-load.**
 - **C2 Adjudicate which candidates are testable** (confirmed-core | extension | proxy-only |
   not-testable) — see the eligibility table in §0B. → `soft_loading_prior_matrix.{csv,yaml}`,
   `core_dimensions_v3.yaml`, `extension_dimensions_v3.yaml`, `unsupported_dimensions_v3.md`.
 
-### Phase D — V2 benchmark replication (reproducibility baseline)
-- **D1** Re-run the V2 masked estimator (masked pairwise-complete corr → nearest-PD → PAF →
-  promax/varimax → Thomson scores → Schmid–Leiman ECV → split-half congruence → bootstrap) on the
-  **re-harmonized V3 data** to confirm curation did not destroy the V2 structure. This is **not** the
-  V3 primary model. (Existing code: `scripts/01–06`, `src/trans_diag/masked_fa.py`.)
-- **D2** Record benchmark metrics (axes, congruence, ECV, symptom–biology r, longitudinal coherence,
-  prediction increments, stratification tests) as falsifiable V3 hypotheses.
-
-### Phase E — FIML latent-model benchmark (confirmatory)
-- **E1** Fit patient-level **FIML SEM/ESEM** models (E1 one-factor; E2 V2 three-axis; E3 +standalones;
+### Phase E — FIML latent-model confirmation
+- **E1** Fit patient-level **FIML SEM/ESEM** models (E1 one-factor; E2 three-axis; E3 +standalones;
   E4 candidate 6–8 dim; E5 bifactor `G`+specifics; E6 ESEM cross-loadings). FIML uses each patient's
   observed data — **complete-data ML is precluded by missingness, but observed-data FIML is compatible
-  with no naive imputation** (this is the precise correction of the V2 "ML impossible" framing).
+  with no naive imputation.**
 - **E2** Use FIML to test general severity `G` vs specific dimensions:
   `X_ij = ν_j + λ_jG·G_i + Σ_k λ_jk·D_ik + ε_ij`.
 
@@ -234,8 +202,8 @@ explicit V2→V3 management layer.
   10 candidates are priors, not forced labels** — the data can keep unexpected cross-loadings or shrink
   unsupported ones to zero.
 - **F4 General burden `G`** estimated directly; specifics explain residual domain variance (`G ⊥ D` for
-  identifiability in the first pass; correlated `D` in a sensitivity model). Retests V2's "no p-factor"
-  under patient-level likelihood.
+  identifiability in the first pass; correlated `D` in a sensitivity model). Tests whether a dominant
+  general factor is supported under patient-level likelihood.
 - **F5 Diagnosis/site/age/sex/education as covariates in the measurement model — never as dimension
   indicators.** Separates diagnosis/site mean differences from within-patient latent dimensions.
 - **F6 Missingness handling.** Start with an observed-likelihood **MAR** model
@@ -246,15 +214,15 @@ explicit V2→V3 management layer.
   prior/posterior predictive checks, loading stability, posterior uncertainty by cohort).
 
 ### Phase G — Model comparison & dimension discovery
-- **G1** Compare competing structures (1-factor, V2 three-axis ±standalones, 10-candidate, 6–8 empirical,
+- **G1** Compare competing structures (1-factor, three-axis ±standalones, 10-candidate, 6–8 empirical,
   bifactor, ESEM, Bayesian sparse) by approximate-LOO / predictive log-likelihood, posterior predictive
   checks, loading interpretability, reliability, coverage, invariance, resampling stability, outcome
   validity. **Adjudicate, don't assume, dimensionality.**
 - **G2 Dimension adjudication table** — every candidate → {Confirmed | Split | Merged | Module |
   Proxy-only | Unsupported}. → `final_empirical_dimensions_v3.yaml`.
-- **G3 Retest the V2 headline claims** (symptom–biology orthogonality, general-factor strength,
+- **G3 Validate the discovered structure** (symptom–biology orthogonality, general-factor strength,
   cognition transdiagnosticity, cardiometabolic structure, SZ internalizing gap, standalone
-  suicidality/mania/substance, no-subtypes, modest prognosis) → confirm / refine / **downgrade**.
+  suicidality/mania/substance, subtype-vs-continuum, prognostic value) → confirm / refine / **downgrade**.
 
 ### Phase H — Measurement invariance & transdiagnostic validity
 - **H1** Per-dimension transdiagnosticity: coverage + loading stability + score reliability by cohort,
@@ -268,20 +236,19 @@ explicit V2→V3 management layer.
   missingness pattern. V3 = posterior scores **with uncertainty**, not point Thomson scores.
 - **I2 V3 phenotype atlas** (`docs/PHENOTYPE_ATLAS_V3.md` when produced) — a *probabilistic* atlas with
   posterior loadings, coverage, direction, state/trait/fixed-historical status, reliability, limits,
-  clinical reading. Seeds: the V2 atlas in [`legacy_v2/PHENOTYPE_ATLAS.md`](legacy_v2/PHENOTYPE_ATLAS.md).
+  clinical reading.
 
 ### Phase J — Stratification as precision decision regions
 - **J1 Reframe the objective.** Strata are **validated recurrent patient profiles in dimension space**
   (latent profiles, Bayesian mixtures, risk territories, outcome- or treatment-relevant profiles) — a
   stratum can be valid even when the global distribution is continuous, provided it is stable,
   interpretable, non-artefactual, prognostic, and useful, and is represented with **posterior class
-  probabilities, not forced hard labels**. V3 does **not** try to reverse V2's continuum finding; it
-  builds on it: `continuous dimension space → probabilistic validated decision regions`.
+  probabilities, not forced hard labels**. The objective is `continuous dimension space → probabilistic
+  validated decision regions`.
 - **J2 Fit probabilistic strata** on posterior dimension scores (LPA, Bayesian GMM, mixture-of-factors,
   consensus clustering, risk-threshold regions); keep `P(stratum=k)` and assignment entropy.
-- **J3 Sensitivity:** direct raw-data stratification (the V2 masked-similarity engine in
-  `src/trans_diag/engine/`, Gower/HDBSCAN, masked autoencoder) compared to dimension-based strata — now
-  a secondary control, not the headline.
+- **J3 Sensitivity:** direct raw-data stratification (masked-similarity on observed cells, Gower/HDBSCAN,
+  masked autoencoder) compared to dimension-based strata — a secondary control, not the headline.
 
 ### Phase K — Strata validation
 - **K1 Statistical stability** (bootstrap, diagnosis-balanced subsampling, leave-one-site-out, posterior
@@ -300,7 +267,7 @@ explicit V2→V3 management layer.
   `M3 +posterior dimension scores` → `M4 +stratum probabilities` → `M5 +selected raw vars + missingness
   indicators` → `M6 +early-course trajectory`. Quantifies the **incremental** value of dimensions/strata.
 - **L2 Missingness-aware learners** (CatBoost/LightGBM/XGBoost/HistGradientBoosting, survival variants;
-  penalized logistic/Cox on dimension scores as classical benchmarks) — do **not** impute high-missing
+  penalized logistic/Cox on dimension scores as classical baselines) — do **not** impute high-missing
   raw variables before prediction.
 - **L3 Validation to clinical-prediction-model standards** — nested CV, GroupKFold by patient,
   leave-one-site-out, diagnosis-stratified, temporal if dates allow; report AUROC, AUPRC (rare
@@ -324,14 +291,13 @@ explicit V2→V3 management layer.
   handling, performance, calibration, subgroup, limits, not-for-use) — **TRIPOD-AI**, **PROBAST-AI**.
 
 ### Phase O — Repository & implementation structure
-The source plan proposes a `configs/ · src/{data,missingness,priors,v2_benchmark,fiml,bayesian,
-dimensions,strata,prognosis,treatment,reporting} · notebooks/ · reports/ · docs/ · tests/` layout.
-**Map to this repo:** the existing `src/trans_diag/` (incl. `engine/`) + `scripts/01–15` are the
-`v2_benchmark` arm; new V3 modules should be added as sub-packages (e.g. `src/trans_diag/bayesian/`,
-`.../fiml/`, `.../missingness/`, `.../priors/`, `.../strata/`, `.../prognosis/`, `.../treatment/`) with
-configs under `configs/` and reports under `results/`. Keep the **no-imputation** and **V0-anchor**
-invariants. Add V3 tests: `test_schema`, `test_skip_logic`, `test_likelihood_assignments`,
-`test_prior_matrix`, `test_no_outcome_leakage`.
+Target layout: `configs/ · src/v3/{data,missingness,priors,fiml,bayesian,dimensions,strata,prognosis,
+treatment,reporting} · scripts/v3/ · results/v3/ · docs/ · tests/`. The data layer lives in
+`src/v3/data`; the staged pipeline in `scripts/v3/` writes to `results/v3/`; the data contract is under
+`configs/`. New modeling modules are added as sub-packages (`src/v3/bayesian/`, `.../fiml/`,
+`.../missingness/`, `.../priors/`, `.../strata/`, `.../prognosis/`, `.../treatment/`). Keep the
+**no-imputation** and **V0-anchor** invariants. Add V3 tests: `test_schema`, `test_skip_logic`,
+`test_likelihood_assignments`, `test_prior_matrix`, `test_no_outcome_leakage`.
 
 ### Phase P — Acceptance criteria
 - **Dimension** accepted into the V3 core only with most of: sufficient direct indicators; acceptable
@@ -349,10 +315,10 @@ invariants. Add V3 tests: `test_schema`, `test_skip_logic`, `test_likelihood_ass
   the design.
 
 ### Phase Q — Deliverables
-1. V3 data dictionary + missingness atlas · 2. V2 benchmark replication report · 3. FIML benchmark ·
-4. Bayesian mixed-likelihood sparse bifactor model · 5. Dimension adjudication report · 6. V3 phenotype
-atlas · 7. Probabilistic patient strata · 8. Strata validation report · 9. Prognosis model-ladder
-report · 10. Treatment target-trial feasibility report. **Manuscript sequence:** (1) measurement model;
+1. V3 data dictionary + missingness atlas · 2. FIML confirmation ·
+3. Bayesian mixed-likelihood sparse bifactor model · 4. Dimension adjudication report · 5. V3 phenotype
+atlas · 6. Probabilistic patient strata · 7. Strata validation report · 8. Prognosis model-ladder
+report · 9. Treatment target-trial feasibility report. **Manuscript sequence:** (1) measurement model;
 (2) dimensions → validated strata; (3) precision-psychiatry decision modeling.
 
 ### Phase R — Risk register (abridged)
@@ -364,17 +330,17 @@ effects → artificial strata (→ leave-one-site-out) · missingness patterns m
 stratum artefact audit) · treatment confounding (→ target-trial only) · neural-model overfit (→
 secondary sensitivity only).
 
-### Phases S–T — V2→V3 management layer & the decision tree
-- **S1** Dual-track evidence: run every major V3 result against {V2 masked · V3 FIML · V3 Bayesian} and
+### Phases S–T — Project-management layer & the decision tree
+- **S1** Dual-track evidence: run every major V3 result against {FIML · Bayesian} and
   record confirm/refine/split/merge/reject/cannot-test.
-- **S2** Convert the V2 phenotype atlas into the V3 **prior atlas** (named constructs → expected
-  loadings + plausible cross-loadings + module status + cohort coverage).
+- **S2** Maintain the **prior atlas** (named constructs → expected loadings + plausible cross-loadings +
+  module status + cohort coverage) as the bridge from soft ontology to discovered structure.
 - **S3** The missing-data doctrine, stated precisely (see [`PIPELINE.md`](PIPELINE.md) §"Missing-data
   doctrine"): **No** completed-data imputation before discovery; **no** mean/KNN/MICE-filled matrix for
   clustering; **yes** to deterministic skip-logic decoding, observed-data likelihood, posterior
   uncertainty over latent dimensions, and explicit missingness models when missingness is informative.
-- **S4** Replace natural-subtype testing with **decision-strata development** (keep the V2 subtype test
-  as a negative control).
+- **S4** Frame stratification as **decision-strata development** rather than natural-subtype testing
+  (keep a subtype test as a negative control).
 - **S5** Precision psychiatry is contingent on **utility, not elegance** — each final dimension/stratum
   must show ≥1 downstream value (calibration, discrimination, decision-curve net benefit, subgroup
   prognosis, treatment-effect heterogeneity, or clear interpretability).
@@ -397,5 +363,5 @@ Which patients occupy similar validated regions of this dimension space?
 Do those regions improve prognosis or treatment-relevant decisions beyond DSM and severity?
 ```
 
-That is the transformation from a dimensional psychopathology analysis (V2) into a precision-psychiatry
-**stratification and decision-modeling** framework (V3).
+That is what makes V3 a precision-psychiatry **stratification and decision-modeling** framework rather
+than a descriptive dimensional psychopathology analysis.

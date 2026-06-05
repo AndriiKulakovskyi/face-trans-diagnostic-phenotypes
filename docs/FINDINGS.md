@@ -1,37 +1,17 @@
 # FINDINGS — FACE V3 precision psychiatry — running log
 
 Paper-oriented log of empirical + methodological findings for **V3**. Plan of record:
-[`V3_PLAN.md`](V3_PLAN.md). Every number must be reproducible from the V3 pipeline once built.
+[`V3_PLAN.md`](V3_PLAN.md). Every number must be reproducible from the V3 pipeline (`scripts/v3/` →
+`results/v3/`).
 
-> **Status.** V3 modeling has **not been run yet** — the patient-level Bayesian / FIML discovery engine
-> (Phases E–M) is not implemented. The runnable code (`src/trans_diag/`, `scripts/01–15`) is the **V2
-> benchmark implementation**; its complete results log is preserved at
-> [`legacy_v2/FINDINGS.md`](legacy_v2/FINDINGS.md). **Do not carry V2 numbers forward as conclusions** —
-> they enter V3 only as priors, baselines, and the hypotheses below.
-
-## How V2 findings enter V3 (hypotheses, not conclusions)
-
-Each V2 result is a **falsifiable hypothesis** to confirm / refine / **downgrade** under the V3
-patient-level observed-likelihood model (V3_PLAN §0C, Phase G3). The V2 evidence is in
-[`legacy_v2/FINDINGS.md`](legacy_v2/FINDINGS.md).
-
-| # | V2 finding (benchmark) | V3 hypothesis / action | Verdict |
-|---|---|---|---|
-| H1 | 3 weakly-correlated axes: internalizing · cognition · cardiometabolic | retest under FIML + Bayesian mixed-likelihood; adjudicate {confirm/split/merge} | ⬜ open |
-| H2 | No dominant general factor (Schmid–Leiman ECV 0.42) | estimate `G` **directly**; test whether specifics survive beyond it | 🟡 **supported** (V3-5, core: mean\|Φ\|≈0.09, G un-identifiable) |
-| H3 | **Symptoms ⊥ biology** (between-block mean \|r\| ≈ 0.03); p-factor is symptom-only | retest under observed-data likelihood + posterior uncertainty | 🟢 **supported in-model** (V3-6: affective×biology 0.07–0.15) |
-| H4 | Cardiometabolic axis robust but possibly mixed | **test split** into metabolic load vs inflammatory load | 🟢 **supported** (V3-5: metabolic×inflammatory 0.17 — separable) |
-| H5 | Cognition = strongest fully-transdiagnostic axis | keep core; refine into cognitive-flexibility / broader cognition if supported | ⬜ open |
-| H6 | Internalizing axis (mood scales 0% in FACE-SZ → SZ-proxy) | model as affective/anhedonic extension unless invariance supports all-cohort status | ⬜ open |
-| H7 | Standalone suicidality / mania / substance-use (orthogonal) | model suicidality with mixed binary/ordinal/count likelihoods; mania = activation/impulsivity **proxy**; substance = module/covariate | ⬜ open |
-| H8 | No discrete subtypes (continuum) | accept; build **probabilistic decision regions**, not natural clusters | ⬜ open |
-| H9 | Modest prognosis increment over DSM (functioning ΔR²≈0.04; de-confounded relapse ΔAUC≈+0.036) | the **minimum benchmark** the V3 model ladder + decision-curve utility must beat | ⬜ open |
+> **Status.** The V3 measurement core is certified (Phase F); the strata / prognosis / treatment layers
+> (Phases J–M) are not yet built. Code: `src/v3/data`, `scripts/v3/`; outputs: `results/v3/`.
 
 ## V3 log
 
-- **V3-0 · Project reframed to precision-psychiatry V3 — 2026-06-05.** V3 plan adopted as the single
-  source of truth ([`V3_PLAN.md`](V3_PLAN.md), [`V3_PLAN_SOURCE.md`](V3_PLAN_SOURCE.md)); V2 demoted to a
-  benchmark/reference arm under [`legacy_v2/`](legacy_v2/README.md). No V3 modeling run yet.
+- **V3-0 · Precision-psychiatry framing adopted — 2026-06-05.** [`V3_PLAN.md`](V3_PLAN.md) adopted as the
+  single source of truth: cohorts → patient-level missingness-aware dimension discovery → validated
+  probabilistic strata → prognosis/treatment decision models.
 
 - **V3-1 · Eligibility & data-contract audit (Phases A+B+C) — 2026-06-05.** First V3 deliverable.
   `configs/candidate_dimensions_v3.yaml` (curated soft-ontology → indicator map) +
@@ -74,7 +54,7 @@ patient-level observed-likelihood model (V3_PLAN §0C, Phase G3). The V2 evidenc
   model), NOT naive MAR;** the ≈97 sporadic + structural-by-design variables are fine under the
   observed-likelihood MAR model. **SZ-metabolism rests on thin observed support** (72% labs missing) →
   expect low per-cohort SZ reliability for the biology factor. Next: Phase F core Bayesian model (with a
-  cognition MNAR arm), with Phase D (V2 replication) / E (FIML) as benchmarks.
+  cognition MNAR arm), with Phase E (FIML) as the confirmatory model.
 
 - **V3-3 · Bayesian core engine (Phase F prototype) — 2026-06-05.** `scripts/v3/03_bayesian_core.py`
   (PyMC 6), patient-level **observed-cell likelihood — NO imputation** (long (patient,indicator,value)
@@ -83,14 +63,13 @@ patient-level observed-likelihood model (V3_PLAN §0C, Phase G3). The V2 evidenc
   - **Bifactor (G + specifics): weakly identified** (max R-hat **2.04**, ESS 2, 0 divergences). `G`
     competes with the specifics for the metabolic/inflammatory variance while cognition/sleep barely
     load on `G`. The non-identification is itself evidence that **no dominant general factor** is
-    supported — consistent with V2's no-p-factor (H2).
+    supported.
   - **Correlated 4-factor simple structure (LKJ): near-converged** (max R-hat **1.06**, 39 div, ESS 31 —
     **PROVISIONAL**; qualitative structure stable across runs). Clean positive loadings (psqi 0.99,
     wstcir 0.98, wbc 0.89, tmt_b 0.85). **Factor correlations Φ: mean |off-diagonal| ≈ 0.12 — weakly-
     correlated factors, NO general factor.** cognition×metabolic 0.16 · cognition×inflammatory 0.10 ·
-    cognition×sleep 0.07 → **cognition ≈ orthogonal to biology** (first V3 echo of V2's cognition/
-    symptoms⊥biology [H3], now under patient-level observed-likelihood); **metabolic×inflammatory 0.28
-    → separable** (supports the H4 split); sleep ≈ orthogonal to all.
+    cognition×sleep 0.07 → **cognition ≈ orthogonal to biology** under patient-level observed-likelihood;
+    **metabolic×inflammatory 0.28 → separable**; sleep ≈ orthogonal to all.
   - **Caveats:** continuous-core only (suicidality/affective/anhedonia not yet in); MAR (the cognition
     MNAR arm is wired in the bifactor variant, b_cog<0, but untrustworthy until converged); N=1,500
     subsample; R-hat 1.06 is not the 1.01 bar → **precise Φ values are provisional** (certify with a
@@ -131,10 +110,9 @@ patient-level observed-likelihood model (V3_PLAN §0C, Phase G3). The V2 evidenc
   Loadings clean (psqi 1.00, wstcir 0.97, wbc 0.94, tmt_b 0.74). **Φ: cognition×metabolic 0.22 ·
   cognition×inflammatory 0.05 · metabolic×inflammatory 0.17 · sleep ≈ orthogonal; mean |Φ| ≈ 0.09 — NO
   general factor.** First properly-converged V3 measurement model (structure identical across all 5 prior runs).
-  - **V2-claim retests (now under a certified patient-level estimator):** **H2 (no p-factor) → SUPPORTED**
-    (mean |Φ|≈0.09; bifactor G un-identifiable); **H3 (cognition ⊥ biology) → SUPPORTED** for cognition vs
-    inflammation/sleep (≈0.05), *partial* vs metabolic (0.22); **H4 (metabolic vs inflammatory split) →
-    SUPPORTED** (0.17, separable).
+  - **Structure under the certified patient-level estimator:** **no general factor** (mean |Φ|≈0.09;
+    bifactor G un-identifiable); **cognition ⊥ biology** for cognition vs inflammation/sleep (≈0.05),
+    *partial* vs metabolic (0.22); **metabolic vs inflammatory are separable** (0.17).
   - **Caveats:** continuous core only (suicidality/affective not yet in); **~20% rare-pattern tail dropped**
     by `--min-group 10` (mild completeness selection); single visit V0.
   - Next: extend to suicidality (ordinal/binary/count) + affective/anhedonia (BP/DR) + cognition MNAR arm;
@@ -147,15 +125,15 @@ patient-level observed-likelihood model (V3_PLAN §0C, Phase G3). The V2 evidenc
   (7 ISF Bernoulli + 1 neg-binomial count). **CERTIFIED:** max R-hat **1.020**, ESS **1,066**, 0 div
   (N=1,500 balanced).
   - **Φ — no general factor:** mean |off-diag| ≈ **0.18 (0.12 excl. sleep-affective).** **Affective ⊥
-    biology** (affective×inflammatory 0.07, ×metabolic 0.15 → **H3 confirmed, stronger form**);
-    **sleep×affective 0.68** (the one strong edge — PSQI tightly coupled to depression in BP/DR);
-    metabolic×inflammatory 0.20 (**H4**); cognition×metabolic 0.26, ×affective 0.23.
+    biology** (affective×inflammatory 0.07, ×metabolic 0.15 — symptom⊥biology in its stronger,
+    within-model form); **sleep×affective 0.68** (the one strong edge — PSQI tightly coupled to
+    depression in BP/DR); metabolic×inflammatory 0.20 (separable); cognition×metabolic 0.26, ×affective 0.23.
   - **Suicidality** ≈ orthogonal to biology/cognition (−0.08…0.00), modest affective (0.14) + sleep (0.17)
-    link → distress-linked near-standalone (partly supports V2's standalone suicidality).
+    link → a distress-linked near-standalone risk dimension.
   - **Cohort validation** (diagnosis = check, not feature): cognition worst in SZ; sleep/affective worst
     in DR; biology flat across cohorts (truly transdiagnostic).
   - **Caveats:** ~23% rare-pattern tail dropped; **SZ affective is a proxy** (no SZ affective indicators);
     suicidality↔factor correlations are post-hoc; MNAR not identifiable on the most-complete subsample
     (see atlas); single visit V0; sleep↔affective coupling needs a residualized-sleep sensitivity.
-  - **H3 (symptoms ⊥ biology) → now SUPPORTED in-model** (was partial). Next: sleep-affective sensitivity;
+  - **Symptoms ⊥ biology → now SUPPORTED in-model** (was partial). Next: sleep-affective sensitivity;
     Phase H temporal coherence + invariance; Phase J strata.

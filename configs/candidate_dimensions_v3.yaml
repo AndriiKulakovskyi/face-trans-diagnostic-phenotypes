@@ -67,7 +67,7 @@ dimensions:
                                   sysbpsupine, sysbpstanding, diabpsupine, diabpstanding]}
       inflammatory_load: {names: [crp, wbc, neut, lym_lbstresc, mono_lbstresc, eos, baso_lbstresc, plat]}
     covariate: [prolctn, qtc, oxcarbaz]   # drug-effect / ECG conduction = exposure/confounder (workbook)
-    note: TRIMMED to the ~26-var cardiometabolic+inflammatory core (workbook ~29) — dropped the broad
+    note: TRIMMED to the ~26-var cardiometabolic+inflammatory core — dropped the broad
           BILAN section sweep; **liver/renal/thyroid/red-cell labs are peripheral biology** (load on G or
           excluded), NOT in the metabolism core. V3 tests the metabolic-vs-inflammatory SPLIT. [V3-5.]
 
@@ -88,7 +88,7 @@ dimensions:
     indicators:
       sections: [SUICIDE]
     note: 34 items but SPARSE + skip-logic gated (C-SSRS/ISF/lethality). Mixed likelihoods
-          (binary/ordinal/count) + structural-zero decoding. ISF ideation is the usable core (V2).
+          (binary/ordinal/count) + structural-zero decoding. ISF ideation is the usable core.
           Keep SEPARATE from future suicide OUTCOMES (no leakage).
 
   - key: sensory_abnormalities
@@ -123,7 +123,7 @@ dimensions:
   - key: affective_internalizing
     role: extension
     not_in_original_10: true
-    definition: Depression–anxiety–distress severity (the V2 internalizing axis).
+    definition: Depression–anxiety–distress severity (the internalizing axis).
     indicators: {names: [madrs, qidsr120, staya, qids_anhedonia_interest]}
     cross_loading: [overall_severity]
     note: BP/DR-anchored — MADRS/QIDS/STAI are 0% in FACE-SZ (SZ scored by proxy via G/functioning/PSQI).
@@ -135,7 +135,7 @@ dimensions:
     not_in_original_10: true
     definition: Manic activation / elevated energy.
     indicators: {names: [ymrs, altman]}
-    note: YMRS is 3-cohort (hetero); Altman BP/DR (auto). Serves as the impulsivity PROXY. V2 standalone.
+    note: YMRS is 3-cohort (hetero); Altman BP/DR (auto). Serves as the impulsivity PROXY. Standalone module.
 
   - key: substance
     role: module

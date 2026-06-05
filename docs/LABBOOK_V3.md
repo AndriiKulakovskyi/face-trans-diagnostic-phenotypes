@@ -2,25 +2,22 @@
 
 Chronological trace of the **V3** study — what we did, observed, decided, and **why**, step by step.
 Results log (numbers): [`FINDINGS.md`](FINDINGS.md). Plan of record: [`V3_PLAN.md`](V3_PLAN.md) ·
-roadmap: [`ROADMAP.md`](ROADMAP.md). The V2 benchmark notebook is at
-[`legacy_v2/LABBOOK.md`](legacy_v2/LABBOOK.md).
+roadmap: [`ROADMAP.md`](ROADMAP.md).
 
 > Convention: one entry per step. Each entry = **What we did · Results · Observations · Conclusion /
 > decision · Next**. Code lives in `scripts/v3/`, aggregate outputs in `results/v3/` (gitignored).
 
 ---
 
-## V3-0 · Reframe to precision psychiatry — 2026-06-05
+## V3-0 · Project setup: precision psychiatry — 2026-06-05
 
-**What we did.** Adopted the V3 plan as the single source of truth ([`V3_PLAN.md`](V3_PLAN.md),
-verbatim source [`V3_PLAN_SOURCE.md`](V3_PLAN_SOURCE.md)); demoted the completed V2 dimensional study to
-a benchmark/reference arm under [`legacy_v2/`](legacy_v2/README.md); rewrote the current-facing docs
-(README, CLAUDE.md, ROADMAP, PIPELINE, DATA, FINDINGS) to lead with V3.
+**What we did.** Adopted the V3 plan as the single source of truth ([`V3_PLAN.md`](V3_PLAN.md)); set up
+the current-facing docs (README, CLAUDE.md, ROADMAP, PIPELINE, DATA, FINDINGS) to lead with V3.
 
 **Conclusion.** Direction fixed: diagnostic cohorts → hybrid transdiagnostic dimension discovery →
 validated patient strata → prognosis/treatment decision models. Primary engine = patient-level
-Bayesian latent model; FIML = confirmatory; V2 masked factors = reproducibility baseline. The 10
-candidate dimensions are a **soft ontology**, not fixed scores. (Commit `05a33e5` on branch `v3`.)
+Bayesian latent model; FIML = confirmatory. The 10 candidate dimensions are a **soft ontology**, not
+fixed scores. (Commit `05a33e5` on branch `v3`.)
 
 ---
 
@@ -99,10 +96,9 @@ Output: `results/v3/bayesian/`.
   0.28**, sleep ≈ orthogonal to all.
 
 **Observations.** The bifactor's non-identification is *itself* evidence: there is **no dominant
-general factor**, so `G` had nothing stable to be (independent echo of V2's no-p-factor). The
-correlated model says the factors are **weakly correlated, not one backbone**; **cognition ≈ orthogonal
-to biology** (first V3 echo of V2's cognition⊥biology, now under observed-likelihood); **metabolic and
-inflammatory are separable** (0.28), supporting the split V2 had fused.
+general factor**, so `G` had nothing stable to be. The correlated model says the factors are **weakly
+correlated, not one backbone**; **cognition ≈ orthogonal to biology** (under observed-likelihood);
+**metabolic and inflammatory are separable** (0.28).
 
 **Conclusion / decision.** Engine + no-imputation pipeline **validated**; qualitative structure
 **stable across runs**. Precise Φ values are **provisional** (R-hat 1.06 ≠ the 1.01 bar). This is the
@@ -183,10 +179,10 @@ unchanged**: cognition×metabolic 0.18, cognition×inflammatory −0.01, **metab
 (separable), sleep ≈ orthogonal, **mean |Φ| ≈ 0.08, no general factor**.
 
 **Conclusion / decision.** The clean estimator for V3 discovery is the **marginalized** correlated-factor
-model (no latent funnel, certifies, doubles as the FIML observed-likelihood benchmark). The structural
-finding (no general factor · cognition ≈ ⊥ biology · metabolic/inflammatory separable) is now robust across
-**five** runs and certified. Trade-off logged: `--min-group` drops a small rare-pattern tail (~14% at the
-mini scale) for tractable gradients.
+model (no latent funnel, certifies, doubles as the FIML observed-likelihood confirmatory model). The
+structural finding (no general factor · cognition ≈ ⊥ biology · metabolic/inflammatory separable) is now
+robust across **five** runs and certified. Trade-off logged: `--min-group` drops a small rare-pattern tail
+(~14% at the mini scale) for tractable gradients.
 
 **Full certified balanced run (done).** 500 most-complete/cohort (N=1,500; 86% dense), 4 chains, tune 800,
 ta 0.95, 17 patterns (294/1,500 ≈ **20% rare-pattern tail dropped** by `--min-group 10`): **max R-hat
@@ -215,12 +211,12 @@ suicidality module with mixed likelihoods** (7 ISF Bernoulli + 1 negative-binomi
 **Result — CERTIFIED** (N=1,500 balanced, 4 chains): max R-hat **1.020** · ESS **1,066** · **0 div**.
 **Φ (5 factors + suicidality): mean |off-diag| ≈ 0.18 (0.12 excl. sleep-affective) — no general factor.**
 - **Affective ⊥ biology:** affective×inflammatory **0.07**, ×metabolic **0.15** → symptoms ≈ orthogonal to
-  biology, now a *within-model* correlation (a stronger form of V2's H3).
+  biology, as a *within-model* correlation (a strong form of the claim).
 - **Sleep × affective = 0.68** — the one strong edge; PSQI tightly coupled to depression in BP/DR (flag:
   PSQI may partly index depression-driven sleep complaints; BP/DR-specific).
-- **Metabolic × inflammatory 0.20** (separable, H4); **cognition** tracks metabolic 0.26 / affective 0.23.
+- **Metabolic × inflammatory 0.20** (separable); **cognition** tracks metabolic 0.26 / affective 0.23.
 - **Suicidality** ≈ orthogonal to biology/cognition; modest link to affective (0.14) + sleep (0.17) —
-  distress-linked near-standalone (partly supports V2's standalone suicidality).
+  distress-linked near-standalone.
 
 **Observations / discussion.** (1) Cohort scores **validate** the dimensions clinically: **cognition
 worst in SZ, sleep/affective worst in DR, biology flat across cohorts** (truly transdiagnostic). (2) The
@@ -229,8 +225,8 @@ mood cohorts; motivates a residualized-sleep sensitivity. (3) **SZ affective is 
 indicators) — read with care. (4) The MNAR arm is **not identifiable** on the most-complete subsample
 (everyone's complete) → the MNAR result stays in the full-sample atlas (V3-2/V3-4).
 
-**Conclusion.** The V2 headlines (H2 no-p-factor, H3 symptoms⊥biology, H4 metabolic/inflammatory split)
-**survive and sharpen** under the certified estimator.
+**Conclusion.** The certified estimator establishes: no general factor · symptoms ⊥ biology ·
+metabolic/inflammatory split.
 
 **Next.** Sleep-affective sensitivity (residualize); shrink the ~23% rare-pattern drop; temporal coherence
 + measurement invariance (Phase H) over V1–V4; then probabilistic strata (Phase J).

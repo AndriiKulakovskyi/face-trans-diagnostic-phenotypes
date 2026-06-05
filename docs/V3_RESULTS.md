@@ -26,25 +26,23 @@ observed-patterns, ~23% rare-pattern tail dropped — see Caveats).
 ![Dimension correlation network](figures/v3/correlation_network.png)
 
 **Mean |off-diagonal| ≈ 0.18 (0.12 excluding sleep↔affective) — there is no general psychopathology
-factor.** The dimensions are a *weakly-correlated coordinate system*, not one axis of "severity." This
-is the V2 "no p-factor" result (**H2**), now reproduced under a certified, cohort-balanced, patient-level
-estimator instead of a masked Schmid–Leiman test.
+factor.** The dimensions are a *weakly-correlated coordinate system*, not one axis of "severity,"
+established under a certified, cohort-balanced, patient-level estimator.
 
 What the off-diagonals say, and how we read them:
 
 - **Symptoms (affective) ≈ orthogonal to biology.** affective×inflammatory **0.07**, affective×metabolic
   **0.15**. With the *symptom* factor inside the same latent model, mood/anxiety is nearly uncorrelated
-  with cardiometabolic and inflammatory load. This is V2's headline (**H3, symptoms ⊥ biology**) — but
-  now it is a *within-model* factor correlation, not a between-block average, so it is a much stronger
-  form of the claim.
+  with cardiometabolic and inflammatory load. Because this is a *within-model* factor correlation rather
+  than a between-block average, it is a strong form of the claim.
 - **Sleep ↔ affective = 0.68 — the one strong edge, and a finding to interrogate.** In BP/DR, the PSQI
   sleep factor and the affective factor are tightly coupled. Clinically unsurprising (insomnia *is* a
   depression symptom), but the magnitude is large enough that PSQI may be partly indexing
   depression-driven sleep complaints rather than a fully separable sleep axis. It is BP/DR-specific (SZ
   has no affective measurement), so we treat "sleep" as a **partly affective-entangled** dimension in
   the affective cohorts and flag a sensitivity analysis (sleep factor with affective residualized).
-- **Metabolic ↔ inflammatory = 0.20** — separable but related, supporting the V2-vs-V3 **split** (**H4**):
-  the V2 single "cardiometabolic-inflammatory" axis resolves into two correlated-but-distinct loads.
+- **Metabolic ↔ inflammatory = 0.20** — separable but related: a single "cardiometabolic-inflammatory"
+  axis resolves into two correlated-but-distinct loads.
 - **Cognition** is modestly tied to **metabolic (0.26)** and **affective (0.23)**, ≈ orthogonal to
   inflammation/sleep — i.e. cognitive burden tracks metabolic load and distress a little, biology-of-
   inflammation not at all.
@@ -63,8 +61,8 @@ blow-ups under the marginalized estimator.
 Suicidality (Bernoulli + negative-binomial indicators) correlates with **affective 0.14** and **sleep
 0.17**, and is ≈ orthogonal to cognition (−0.08), metabolic (−0.05), inflammatory (0.00). So it is
 **not** a biology- or cognition-linked dimension; it sits closest to affective distress and disturbed
-sleep, but only weakly — partly supporting V2's "suicidality is a standalone risk dimension," now with a
-modest, sensible distress link rather than full independence.
+sleep, but only weakly — a standalone risk dimension with a modest, sensible distress link rather than
+full independence.
 
 ## 4 · Dimension scores by cohort — clinical validation (diagnosis as a *check*, not a feature)
 
@@ -106,6 +104,5 @@ on the full sample is future work.
 A certified, cohort-balanced, no-imputation transdiagnostic measurement model of BP/SZ/DR says:
 **no general factor; symptoms (affective) ≈ orthogonal to biology; metabolic and inflammatory are
 separable; cognition tracks metabolic/affective weakly; suicidality is a distress-linked near-standalone;
-and sleep is strongly entangled with affect in the mood cohorts.** The V2 headlines (H2, H3, H4) survive
-— and sharpen — under a stronger estimator. Next: temporal coherence + measurement invariance (Phase H),
-then probabilistic strata (Phase J).
+and sleep is strongly entangled with affect in the mood cohorts.** Next: temporal coherence + measurement
+invariance (Phase H), then probabilistic strata (Phase J).

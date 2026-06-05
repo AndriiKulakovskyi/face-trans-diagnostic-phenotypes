@@ -1,9 +1,7 @@
 # ROADMAP — FACE V3 precision psychiatry
 
 > Single source of truth for *what* we are doing and *why*. The detailed plan of record is
-> [`V3_PLAN.md`](V3_PLAN.md); the target pipeline is [`PIPELINE.md`](PIPELINE.md). The completed **V2**
-> dimensional study is the **benchmark / reference arm** only — see [`legacy_v2/`](legacy_v2/README.md).
-> The pre-V2 **v1** study is at git tag `v1-archive-2026-05-30`.
+> [`V3_PLAN.md`](V3_PLAN.md); the target pipeline is [`PIPELINE.md`](PIPELINE.md).
 
 ## Objective
 
@@ -35,8 +33,8 @@ predictive or decision value **beyond** `diagnosis + age + sex + site + baseline
 - **Soft starting ontology.** The 10 candidate dimensions seed **soft priors**, not hand-tagged scores;
   the data may **confirm, split, merge, reject, downgrade, or cross-load** any of them.
 - **Estimator hierarchy.** **Primary discovery engine** = patient-level **Bayesian sparse bifactor /
-  ESEM-like** model with **mixed likelihoods** + soft loading priors. **Confirmatory benchmark** =
-  **FIML SEM/ESEM**. **Reproducibility baseline** = the **V2 masked-correlation** factors.
+  ESEM-like** model with **mixed likelihoods** + soft loading priors. **Confirmatory** =
+  **FIML SEM/ESEM**.
 - **Utility, not elegance.** Every accepted dimension/stratum must show a downstream value (calibration,
   discrimination, decision-curve net benefit, subgroup prognosis, or treatment-effect heterogeneity).
 
@@ -55,13 +53,12 @@ direct indicators exist** = sensory abnormalities. Each is then adjudicated to
 
 | Phase | Theme | Status |
 |---|---|---|
-| **A** | Foundation: freeze V2 as benchmark; V3 data contract; harmonization/units/direction; skip-logic | ✅ done — V3-1 (`scripts/v3/01`) |
+| **A** | Foundation: V3 data contract; harmonization/units/direction; skip-logic | ✅ done — V3-1 (`scripts/v3/01`) |
 | **B** | Missingness atlas + mechanism classification + measurement eligibility | ✅ done — V3-2 (`scripts/v3/02`) |
-| **C** | Soft-prior construct map (V2 constructs + 10 candidates) | ✅ done — V3-1 (`configs/`) |
-| **D** | V2 masked-estimator replication on V3 data (reproducibility baseline) | ◻ V2 code exists (`scripts/01–06`) |
-| **E** | FIML SEM/ESEM benchmark + general-vs-specific test | ⬜ planned |
+| **C** | Soft-prior construct map (10 candidates) | ✅ done — V3-1 (`configs/`) |
+| **E** | FIML SEM/ESEM confirmatory + general-vs-specific test | ⬜ planned |
 | **F** | **Bayesian sparse bifactor + mixed likelihoods (primary discovery engine)** | 🟢 certified core — V3-5 (`scripts/v3/03`, marginalized; R-hat 1.01, 0 div) |
-| **G** | Model comparison + dimension adjudication + retest V2 claims | ⬜ planned |
+| **G** | Model comparison + dimension adjudication | ⬜ planned |
 | **H** | Measurement invariance / transdiagnostic validity / DIF | ⬜ planned |
 | **I** | Posterior patient-level dimension scores + V3 phenotype atlas | ⬜ planned |
 | **J** | Probabilistic strata as decision regions | ⬜ planned |
@@ -69,7 +66,7 @@ direct indicators exist** = sensory abnormalities. Each is then adjudicated to
 | **L** | Prognosis model ladder (M0→M6) + missingness-aware learners | ⬜ planned |
 | **M** | Treatment & decision modeling (target-trial emulation, CATE by stratum) | ⬜ planned |
 | **N** | Clinical interpretation: dimension/stratum/model cards (TRIPOD-AI, PROBAST-AI) | ⬜ planned |
-| **O–T** | Repo structure · acceptance criteria · deliverables · risk register · V2→V3 management · decision tree | ⬜ planned |
+| **O–T** | Repo structure · acceptance criteria · deliverables · risk register · decision tree | ⬜ planned |
 
 **Progress (2026-06-05):** Phases **A·B·C done**, Phase **F core CERTIFIED** — V3 code is in
 `scripts/v3/` (`01` eligibility · `02` missingness · `03` Bayesian core), outputs in `results/v3/`,
@@ -78,12 +75,10 @@ correlated-factor model — **extended** (V3-6) to 5 Gaussian factors + a mixed-
 module (R-hat 1.02, 0 div). Headline: **no general factor** (mean |Φ|≈0.18; 0.12 excl. sleep-affective),
 **symptoms (affective) ≈ ⊥ biology**, metabolic/inflammatory separable, **sleep↔affective 0.68**.
 Figures + discussion: [`V3_RESULTS.md`](V3_RESULTS.md). Next: sleep-affective sensitivity + Phase H
-(temporal coherence / invariance) → Phase J strata. `◻` = the existing
-`src/trans_diag/` + `scripts/01–15` are the **V2 benchmark implementation** (Phase D baseline).
-Phases E, G–T are **not yet built**.
+(temporal coherence / invariance) → Phase J strata. Phases E, G–T are **not yet built**.
 
 ## What "done" looks like
 
 Three manuscripts: (1) the patient-level missingness-aware **measurement model**; (2) **dimensions →
-validated patient strata**; (3) **precision-psychiatry decision modeling**. Each V3 claim must beat or
-defensibly refine the V2 benchmark — reproducing V2 with heavier machinery is **not** success.
+validated patient strata**; (3) **precision-psychiatry decision modeling**. Acceptance is **utility,
+not elegance**: every accepted dimension/stratum must demonstrate downstream decision value.

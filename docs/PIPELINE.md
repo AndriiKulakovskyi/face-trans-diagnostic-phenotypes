@@ -4,12 +4,8 @@
 > CSVs to validated dimensions, probabilistic strata, and decision models. Plan of record:
 > [`V3_PLAN.md`](V3_PLAN.md) · what/why: [`ROADMAP.md`](ROADMAP.md) · data contract: [`DATA.md`](DATA.md).
 >
-> **What exists today vs. what is planned.** The runnable code in `src/trans_diag/` + `scripts/01–15`
-> is the **V2 benchmark implementation** (masked pairwise-correlation → PAF → Schmid–Leiman →
-> stratification → validation). In V3 that becomes the **reproducibility baseline** (Phase D); its full
-> diagram + math is preserved at [`legacy_v2/PIPELINE.md`](legacy_v2/PIPELINE.md). The V3 **discovery
-> engine** (FIML benchmark + Bayesian mixed-likelihood latent model + decision modeling, Phases E–M) is
-> **not yet built** — this document is its target design.
+> The discovery engine (FIML confirmatory + Bayesian mixed-likelihood latent model + decision modeling,
+> Phases E–M) is **not yet built** — this document is its target design.
 
 ## Design invariants (hold everywhere)
 
@@ -19,7 +15,7 @@
 | **V0 anchor** | Dimensions are *defined* at baseline (V0); later visits (V1–V4) only *test* temporal coherence and supply outcomes. |
 | **Diagnosis = covariate / validation** | BP/SZ/DR labels are entry + validation metadata and measurement-model covariates — **never** dimension indicators or clustering features. |
 | **Soft ontology** | The 10 candidate dimensions are **soft priors**, not fixed scores; the data may confirm / split / merge / reject / downgrade / cross-load them. |
-| **Observation likelihood carries type** | Variables keep their distributional meaning (Gaussian, Student-t, lognormal, ordered-logit, Bernoulli, neg-binomial). V3 does **not** force everything onto one `[−1,1]` metric (that was a V2 convenience). |
+| **Observation likelihood carries type** | Variables keep their distributional meaning (Gaussian, Student-t, lognormal, ordered-logit, Bernoulli, neg-binomial). The model does **not** force everything onto one shared metric — each variable's type drives its likelihood. |
 | **Utility, not elegance** | Every accepted dimension/stratum must demonstrate downstream decision value. |
 
 ## 0 · Master pipeline (V3)
@@ -42,16 +38,14 @@ flowchart TB
 
     H["A · Harmonization + V3 data contract<br/>units · score direction · skip-logic decoding · likelihood family per variable"]:::proc
     H --> MISS["B · Missingness atlas<br/>structural / design / clinical-skip / sporadic / informative / outcome"]:::proc
-    MISS --> PRIOR["C · Soft-prior loading map<br/>V2 constructs + 10 candidate dimensions (priors, not labels)"]:::proc
+    MISS --> PRIOR["C · Soft-prior loading map<br/>10 candidate dimensions (priors, not labels)"]:::proc
     PRIOR --> EST{"Estimator hierarchy"}:::model
 
-    EST --> BENCH["D · V2 masked estimator<br/>REPRODUCIBILITY BASELINE (legacy_v2)"]:::model
-    EST --> FIML["E · FIML SEM/ESEM<br/>CONFIRMATORY BENCHMARK"]:::model
     EST --> BAYES["F · Bayesian sparse bifactor + mixed likelihoods<br/>PRIMARY DISCOVERY ENGINE"]:::model
+    EST --> FIML["E · FIML SEM/ESEM<br/>CONFIRMATORY"]:::model
 
-    BENCH --> ADJ
-    FIML --> ADJ
     BAYES --> ADJ
+    FIML --> ADJ
     ADJ["G–H · Dimension adjudication + invariance<br/>confirmed / split / merged / module / proxy / unsupported"]:::model
     ADJ --> SCORE["I · Posterior patient-level dimension scores<br/>mean + sd + coverage + reliability"]:::arm
     SCORE --> STRATA["J · Probabilistic patient strata<br/>validated DECISION REGIONS (soft assignments)"]:::arm
@@ -63,10 +57,9 @@ flowchart TB
 
 ## 1 · Missing-data doctrine (the principle that defines V3)
 
-This is the precise statement the V2 study only approximated, and the single most important invariant
-to preserve. *Masked pairwise-complete covariance* (V2) and *observed-data likelihood* (V3) both honor
-"no naive imputation"; V3 replaces the former with the latter to escape pairwise-correlation
-limitations while keeping each patient's missing cells **missing**.
+This is the single most important invariant to preserve. V3 estimates all structure from an
+**observed-data likelihood** that keeps each patient's missing cells **missing** — no cell is ever
+filled.
 
 | | Forbidden | Allowed |
 |---|---|---|
@@ -79,8 +72,7 @@ limitations while keeping each patient's missing cells **missing**.
 an observed-data likelihood **never materializes the missing cells** — it integrates each patient's
 contribution over only the variables they actually have, so missingness changes the *information* a
 patient contributes, not their *values*. Because FACE missingness is cohort- and site-patterned, any
-fill re-imports exactly the confounds we are trying to avoid (derived in
-[`legacy_v2/AGGREGATION_RATIONALE.md`](legacy_v2/AGGREGATION_RATIONALE.md)).
+fill re-imports exactly the confounds we are trying to avoid.
 
 ## 2 · The primary discovery engine (Phase F)
 
@@ -91,8 +83,8 @@ $$\eta_{ij} \;=\; \alpha_j \;+\; \lambda_{jG}\,G_i \;+\; \sum_k \lambda_{jk}\,D_
 
 with covariates $c_i$ = {cohort, site, age, sex, education} entering the **measurement** model (not as
 dimensions), and a general burden factor $G$ estimated **directly** (orthogonal to the specifics $D$ in
-the first pass; correlated $D$ in a sensitivity model — this retests V2's "no p-factor" under
-patient-level likelihood).
+the first pass; correlated $D$ in a sensitivity model — this tests for a general psychopathology factor
+under patient-level likelihood).
 
 **Mixed likelihoods by variable type** (the observation likelihood carries the type — see
 [`DATA.md`](DATA.md) for the per-variable map):
@@ -116,15 +108,11 @@ cross-loadings or shrink unsupported loadings to zero. **Mandatory diagnostics:*
 sample size, divergences, prior/posterior predictive checks, loading stability, posterior uncertainty
 by cohort.
 
-## 3 · Confirmatory & baseline arms
+## 3 · Confirmatory arm
 
-- **FIML benchmark (Phase E).** Patient-level FIML SEM/ESEM on approximately-continuous variables /
-  construct scores: 1-factor, V2 three-axis (±standalones), candidate 6–8 dim, bifactor, ESEM
-  cross-loading. *Complete-data ML is precluded by missingness; observed-data FIML is not, and is
-  compatible with no naive imputation.*
-- **V2 reproducibility baseline (Phase D).** Re-run the masked estimator (`scripts/01–06`,
-  `src/trans_diag/masked_fa.py`) on the re-harmonized V3 data to confirm curation did not destroy the
-  known structure. Full V2 method + math: [`legacy_v2/PIPELINE.md`](legacy_v2/PIPELINE.md).
+- **FIML confirmatory (Phase E).** Patient-level FIML SEM/ESEM on approximately-continuous variables /
+  construct scores: 1-factor, candidate 6–8 dim, bifactor, ESEM cross-loading. *Complete-data ML is
+  precluded by missingness; observed-data FIML is not, and is compatible with no naive imputation.*
 
 ## 4 · Dimensions → strata → decisions
 
@@ -133,9 +121,8 @@ by cohort.
   resampling stability, and outcome validity.
 - **Strata (J).** Probabilistic decision regions on posterior dimension scores (LPA / Bayesian GMM /
   mixture-of-factors / risk-threshold regions); keep `P(stratum=k)` + entropy. A stratum may be valid on
-  a continuous distribution if it is stable, interpretable, non-artefactual, prognostic, and useful. The
-  V2 masked-similarity engine (`src/trans_diag/engine/`) becomes a *secondary* direct-stratification
-  control.
+  a continuous distribution if it is stable, interpretable, non-artefactual, prognostic, and useful. A
+  direct-similarity stratification on the observed cells serves as a *secondary* control.
 - **Validation (K) + prognosis (L) + treatment (M).** Strata must predict **future** outcomes not used
   to define them; the model ladder `M0(age+sex+site) → +DSM → +severity → +dimensions → +strata →
   +raw/missingness → +early-course` quantifies incremental value with calibration + decision-curve net
@@ -143,9 +130,9 @@ by cohort.
 
 ## 5 · Outputs
 
-V3 deliverables (Phase Q): V3 data dictionary + missingness atlas · V2 benchmark replication report ·
-FIML benchmark · Bayesian sparse-bifactor model · dimension adjudication · **probabilistic phenotype
-atlas** · probabilistic strata · strata validation · prognosis model-ladder · treatment target-trial
+V3 deliverables (Phase Q): V3 data dictionary + missingness atlas · FIML confirmatory ·
+Bayesian sparse-bifactor model · dimension adjudication · **probabilistic phenotype atlas** ·
+probabilistic strata · strata validation · prognosis model-ladder · treatment target-trial
 feasibility — each with model/dimension/stratum cards and TRIPOD-AI / PROBAST-AI reporting.
 
 ---
@@ -153,8 +140,8 @@ feasibility — each with model/dimension/stratum cards and TRIPOD-AI / PROBAST-
 ### One-line summary
 
 > Harmonize three psychoses under a V3 data contract → atlas the missingness → seed a **soft-prior**
-> map from V2 constructs + 10 candidate dimensions → estimate a **patient-level, observed-likelihood**
-> latent model (Bayesian mixed-likelihood primary; FIML confirmatory; V2 masked baseline) with
-> posterior uncertainty and an explicit general factor → **adjudicate** dimensions → score patients →
-> derive **probabilistic decision strata** → validate them longitudinally → quantify incremental
-> **prognosis** and, under target-trial discipline, **treatment** decision value beyond DSM + severity.
+> map from the 10 candidate dimensions → estimate a **patient-level, observed-likelihood**
+> latent model (Bayesian mixed-likelihood primary; FIML confirmatory) with posterior uncertainty and an
+> explicit general factor → **adjudicate** dimensions → score patients → derive **probabilistic
+> decision strata** → validate them longitudinally → quantify incremental **prognosis** and, under
+> target-trial discipline, **treatment** decision value beyond DSM + severity.

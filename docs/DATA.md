@@ -6,10 +6,8 @@ mixed-likelihood modeling. One row per harmonized variable maps it to its per-co
 records how to harmonize + sanity-check it. **The package loads it for you** — this guide explains the
 columns and what V3 adds.
 
-> The dictionary was curated through the V2 study; V3 builds on the same harmonization and **no-naive-
-> imputation** foundation and adds modeling metadata (see "V3 data contract" below). Earlier
-> dictionaries: v1 at git tag `v1-archive-2026-05-30`; the V2 method docs are under
-> [`legacy_v2/`](legacy_v2/README.md).
+> V3 builds on a harmonization and **no-naive-imputation** foundation and adds modeling metadata (see
+> "V3 data contract" below).
 
 ## Files
 - `data/face-common-vars.xlsx` — the harmonized dictionary (Sheet1; 225 rows, **201 usable**, 16 columns)
@@ -33,7 +31,7 @@ columns and what V3 adds.
 
 ## How the package loads it (don't hand-merge)
 ```python
-from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
+from v3.data import build_unified_dataframe, load_variables, to_harmonized_dataset
 df = build_unified_dataframe("data", "data/face-common-vars.xlsx",
                              readiness=["READY", "PARTIAL"], format="long")
 ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), visit="V0")
@@ -70,12 +68,10 @@ Config artifacts: `data_dictionary_v3.csv`, `variable_schema_v3.yaml`, `likeliho
 `construct_prior_map_v3.yaml`, `soft_loading_prior_matrix.{csv,yaml}`.
 
 ### Encoding for V3 (the observation likelihood carries the type)
-V3 does **not** force every variable onto one pseudo-continuous `[−1,1]` metric. Deterministic scaling
+V3 does **not** force every variable onto one shared pseudo-continuous metric. Deterministic scaling
 is kept only where useful (e.g. standardizing approximately-continuous scores); skewed labs are
 `log`-transformed; ordinal/binary/count variables keep their nature and get an ordinal/Bernoulli/count
-likelihood. (The blanket type-aware `[−1,1]` scaling described in
-[legacy_v2/PIPELINE.md](legacy_v2/PIPELINE.md) §2 is the **benchmark-arm** encoding, used for the V2
-masked-correlation reproducibility baseline.)
+likelihood.
 
 ### Diagnosis is a covariate / validation target — never a clustering feature
 Keep `arm` (DSM-5 subtype) and `cohort` as **labels** and **measurement-model covariates**. They are
@@ -93,9 +89,8 @@ and to adjust indicator means — **never** as dimension indicators or clusterin
 - `siteid_city` is kept loadable (for site stratification) but excluded from the feature matrix.
 - Within-column unit mixing (`mchc` g/L vs g/dL; `hct` % vs L/L) is harmonized by `rules.py`.
 - **QA**: `scripts/qa_harmonization.py` validates that every variable loads + passes sanity, and shows
-  the processing stages per variable (`results/reports/qa_harmonization.html`). This is the V2
-  benchmark-arm QA surface; in V3, the harmonization + skip-logic decoding it checks remain load-bearing
-  while the `[−1,1]` post-processing stage is benchmark-only.
+  the processing stages per variable (`results/reports/qa_harmonization.html`). The harmonization +
+  skip-logic decoding it checks are load-bearing for V3.
 
 ## Known open data caveats
 The sanity bounds + `rules.py` encode the harmonization decisions (unit fixes, sentinel removal, ms→s
