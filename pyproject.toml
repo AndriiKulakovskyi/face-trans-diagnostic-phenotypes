@@ -24,6 +24,8 @@ dependencies = [
 [project.optional-dependencies]
 figures = ["kaleido>=0.2"]                            # static export of plotly figures
 dev = ["pytest>=7.0", "pytest-cov>=4.0", "ruff==0.12.0", "pip-tools>=7.0"]  # ruff pinned: lint rules change between versions (keep CI == local)
+# V3 Bayesian discovery engine (scripts/v3_bayesian_core.py): patient-level observed-likelihood latent model.
+bayesian = ["pymc>=5.10", "arviz>=0.17", "h5netcdf>=1.0"]
 # Convenience alias for "everything needed to reproduce the manuscript + figures".
 full = ["kaleido>=0.2"]
 
