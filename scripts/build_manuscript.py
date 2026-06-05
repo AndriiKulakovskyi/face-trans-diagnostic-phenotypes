@@ -64,6 +64,8 @@ def main() -> None:
     if "--pdf" in sys.argv:
         print("xelatex -> companion pdf ...")
         try:
+            # Times New Roman covers the arrows/relations used inline (→ ≈ ≥ ≤ ↔); the few math
+            # sub/superscripts (λ₄, 10⁹) and ⊥ are written as LaTeX math in the source so they render.
             subprocess.run(["pandoc", str(MD), "-o", str(PDF), f"--resource-path={MAN}", "--toc", "--toc-depth=2",
                             "--number-sections", "--pdf-engine=xelatex",
                             "-V", "geometry:margin=0.85in", "-V", "fontsize=10pt",
