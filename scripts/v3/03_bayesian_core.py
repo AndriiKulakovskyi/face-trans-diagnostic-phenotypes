@@ -33,7 +33,7 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 warnings.filterwarnings("ignore")
 
-from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset  # noqa: E402
+from v3.data import build_unified_dataframe, load_variables, to_harmonized_dataset  # noqa: E402
 
 OUT = ROOT / "results" / "v3" / "bayesian"
 SEED = 20260605

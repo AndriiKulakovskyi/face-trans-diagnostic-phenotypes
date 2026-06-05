@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 warnings.filterwarnings("ignore")
 
-from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset  # noqa: E402
+from v3.data import build_unified_dataframe, load_variables, to_harmonized_dataset  # noqa: E402
 
 OUT = ROOT / "results" / "v3" / "bayesian_ext"
 SEED = 20260605
@@ -43,13 +43,16 @@ CONT = {
     "gluc": ("metabolic", +1, True), "hdl": ("metabolic", -1, False), "sysbpsupine": ("metabolic", +1, False),
     "crp": ("inflammatory", +1, True), "wbc": ("inflammatory", +1, True), "neut": ("inflammatory", +1, True),
     "plat": ("inflammatory", +1, True), "mono_lbstresc": ("inflammatory", +1, True),
-    "psqi": ("sleep", +1, False), "psqi11": ("sleep", +1, False),
-    "psqi13": ("sleep", +1, False), "psqi15": ("sleep", +1, False),
+    "psqi": ("sleep", +1, False), "psqi11": ("sleep", +1, False), "psqi12": ("sleep", +1, False),
+    "psqi13": ("sleep", +1, False), "psqi14": ("sleep", +1, False), "psqi15": ("sleep", +1, False),
     # AFFECTIVE (BP/DR; higher = worse mood/anxiety/anhedonia)
     "madrs": ("affective", +1, False), "qidsr120": ("affective", +1, False),
     "staya": ("affective", +1, False), "qids_anhedonia_interest": ("affective", +1, False),
 }
 FACTORS = ["cognition", "metabolic", "inflammatory", "sleep", "affective"]
+# sleep specifications (V3-7): 'full' = V3-6 set; 'objective' = sleep-parameter items only (less
+# affect-overlap — daytime-dysfunction/quality drive the sleep×affect coupling, see V3-7 sensitivity).
+SLEEP_SETS = {"full": ["psqi", "psqi11", "psqi13", "psqi15"], "objective": ["psqi11", "psqi12", "psqi14"]}
 SUIC_BIN = ["isf01", "isf02", "isf03", "isf04", "isf05", "isf08", "isf09"]   # Bernoulli
 SUIC_COUNT = "isf09a"                                                         # negative-binomial (attempt count)
 
@@ -62,7 +65,8 @@ def prep(args):
     X = ds.X
     cohort = pd.Series(X.index.get_level_values("cohort"), index=X.index)
 
-    cont = [c for c in CONT if c in X.columns]
+    sleep_keep = set(SLEEP_SETS[args.sleep])
+    cont = [c for c in CONT if c in X.columns and (CONT[c][0] != "sleep" or c in sleep_keep)]
     M = pd.DataFrame(index=X.index)
     for c in cont:
         _, orient, dolog = CONT[c]
@@ -101,6 +105,9 @@ def main():
     ap.add_argument("--chains", type=int, default=4)
     ap.add_argument("--ta", type=float, default=0.95)
     ap.add_argument("--min-group", type=int, default=10)
+    ap.add_argument("--sleep", choices=["full", "objective"], default="full",
+                    help="sleep factor indicators: 'full' (V3-6) or 'objective' (V3-7 — sleep-parameter "
+                         "items only, less affect-overlap)")
     args = ap.parse_args()
     if args.smoke:
         args.n_per_cohort, args.draws, args.tune, args.chains = 150, 80, 150, 2
