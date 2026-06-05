@@ -26,11 +26,14 @@ likelihoods:
   brthcirc: gaussian
   brthht: gaussian
   ca_lbstresc: gaussian
-  cgi01: ordered_logistic
-  cgi02: ordered_logistic
+  # CGI severity ratings (1-7) modeled gaussian: they anchor the general factor G in the
+  # marginalized continuous block (one coherent G latent with FAST/EGF), rather than a
+  # parallel ordinal-Z G. Standard continuous approximation; ordinal robustness is a check.
+  cgi01: gaussian
+  cgi02: gaussian
   cgi03: gaussian
-  cgi03a: ordered_logistic
-  cgi03b: ordered_logistic
+  cgi03a: gaussian
+  cgi03b: gaussian
   cheveux_mhoccur: bernoulli
   chol: gaussian
   cholhdl_lbstresc: gaussian
@@ -78,9 +81,9 @@ likelihoods:
   fast25: gaussian
   fast26: gaussian
   fast27: gaussian
-  fast28: ordered_logistic
+  fast28: gaussian        # FAST functional-impairment item -> continuous G/functioning anchor
   fast29: gaussian
-  fast30: ordered_logistic
+  fast30: gaussian        # FAST functional-impairment item -> continuous G/functioning anchor
   ggt_lbstresc: lognormal
   gluc: lognormal
   gstabrth: gaussian
@@ -124,7 +127,7 @@ likelihoods:
   ltsv06: ordered_logistic
   ltsv07: bernoulli
   ltsv09: bernoulli
-  lvsbjind: ordered_logistic
+  lvsbjind: gaussian        # subjective illness rating -> continuous G severity anchor
   lym_lbstresc: lognormal
   madrs: gaussian
   mars: gaussian
@@ -137,7 +140,7 @@ likelihoods:
   migraine_mhoccur: bernoulli
   mono_lbstresc: lognormal
   naisstyp: bernoulli
-  nboccur_hospitalisation_lt: neg_binomial
+  nboccur_hospitalisation_lt: lognormal   # hospitalization count -> log1p continuous G service-use anchor
   neut: lognormal
   oxcarbaz: gaussian
   pere_structure: bernoulli

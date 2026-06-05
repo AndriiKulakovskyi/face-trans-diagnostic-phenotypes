@@ -69,26 +69,26 @@ brthht,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,contin
 brthht,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
 brthht,neurodevelopment,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor neurodevelopment
 brthht,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
-cgi01,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,G dedicated anchor
-cgi01,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi01,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi01,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi01,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi01,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi01,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi01,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi01,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi01,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi02,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,G dedicated anchor
-cgi02,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi02,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi02,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi02,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi02,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi02,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi02,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi02,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi02,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
+cgi01,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+cgi01,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi02,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+cgi02,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi02,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi02,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi02,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi02,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi02,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi02,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi02,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi02,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
 cgi03,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
 cgi03,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
 cgi03,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
@@ -99,26 +99,26 @@ cgi03,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,c
 cgi03,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
 cgi03,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
 cgi03,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
-cgi03a,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,G dedicated anchor
-cgi03a,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03a,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03a,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03a,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03a,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03a,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03a,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03a,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03a,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03b,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,G dedicated anchor
-cgi03b,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03b,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03b,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03b,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03b,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03b,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03b,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03b,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-cgi03b,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
+cgi03a,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+cgi03a,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03a,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03a,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03a,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03a,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03a,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03a,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03a,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03a,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03b,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+cgi03b,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03b,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03b,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03b,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03b,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03b,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03b,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03b,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi03b,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
 chol,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
 chol,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 chol,metabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor metabolic
@@ -379,16 +379,16 @@ fast27,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,
 fast27,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
 fast27,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
 fast27,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
-fast28,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,G dedicated anchor
-fast28,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast28,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast28,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast28,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast28,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast28,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast28,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast28,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast28,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
+fast28,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+fast28,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
 fast29,overall_severity,g_anchor,0.6,0.3,half_normal,positive,-1,gaussian,continuous,G dedicated anchor
 fast29,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
 fast29,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
@@ -399,16 +399,16 @@ fast29,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian
 fast29,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
 fast29,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
 fast29,substance,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
-fast30,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,G dedicated anchor
-fast30,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast30,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast30,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast30,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast30,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast30,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast30,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast30,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-fast30,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
+fast30,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+fast30,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
 gluc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
 gluc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
 gluc,metabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor metabolic
@@ -559,16 +559,16 @@ ldl,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous
 ldl,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 ldl,neurodevelopment,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 ldl,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
-lvsbjind,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,G dedicated anchor
-lvsbjind,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-lvsbjind,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-lvsbjind,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-lvsbjind,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-lvsbjind,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-lvsbjind,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-lvsbjind,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-lvsbjind,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
-lvsbjind,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,ordered_logistic,explicit,severity anchor ~0 on specific (bifactor id)
+lvsbjind,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+lvsbjind,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
 lym_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,lognormal,continuous,specific item may load on G
 lym_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,-1,lognormal,continuous,soft-zero complement
 lym_lbstresc,metabolic,plausible_cross,0.0,0.25,normal,signed,-1,lognormal,continuous,theory-motivated cross-loading
@@ -609,16 +609,16 @@ naisstyp,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,expl
 naisstyp,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
 naisstyp,neurodevelopment,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor neurodevelopment
 naisstyp,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
-nboccur_hospitalisation_lt,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,neg_binomial,explicit,G dedicated anchor
-nboccur_hospitalisation_lt,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,neg_binomial,explicit,severity anchor ~0 on specific (bifactor id)
-nboccur_hospitalisation_lt,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,neg_binomial,explicit,severity anchor ~0 on specific (bifactor id)
-nboccur_hospitalisation_lt,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,neg_binomial,explicit,severity anchor ~0 on specific (bifactor id)
-nboccur_hospitalisation_lt,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,neg_binomial,explicit,severity anchor ~0 on specific (bifactor id)
-nboccur_hospitalisation_lt,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,neg_binomial,explicit,severity anchor ~0 on specific (bifactor id)
-nboccur_hospitalisation_lt,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,neg_binomial,explicit,severity anchor ~0 on specific (bifactor id)
-nboccur_hospitalisation_lt,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,neg_binomial,explicit,severity anchor ~0 on specific (bifactor id)
-nboccur_hospitalisation_lt,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,neg_binomial,explicit,severity anchor ~0 on specific (bifactor id)
-nboccur_hospitalisation_lt,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,neg_binomial,explicit,severity anchor ~0 on specific (bifactor id)
+nboccur_hospitalisation_lt,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,lognormal,continuous,G dedicated anchor
+nboccur_hospitalisation_lt,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,lognormal,continuous,severity anchor ~0 on specific (bifactor id)
+nboccur_hospitalisation_lt,metabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,lognormal,continuous,severity anchor ~0 on specific (bifactor id)
+nboccur_hospitalisation_lt,inflammatory,g_anchor_on_specific,0.0,0.001,normal,signed,1,lognormal,continuous,severity anchor ~0 on specific (bifactor id)
+nboccur_hospitalisation_lt,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,lognormal,continuous,severity anchor ~0 on specific (bifactor id)
+nboccur_hospitalisation_lt,affective_internalizing,g_anchor_on_specific,0.0,0.001,normal,signed,1,lognormal,continuous,severity anchor ~0 on specific (bifactor id)
+nboccur_hospitalisation_lt,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,lognormal,continuous,severity anchor ~0 on specific (bifactor id)
+nboccur_hospitalisation_lt,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,lognormal,continuous,severity anchor ~0 on specific (bifactor id)
+nboccur_hospitalisation_lt,neurodevelopment,g_anchor_on_specific,0.0,0.001,normal,signed,1,lognormal,continuous,severity anchor ~0 on specific (bifactor id)
+nboccur_hospitalisation_lt,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,lognormal,continuous,severity anchor ~0 on specific (bifactor id)
 neut,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
 neut,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
 neut,metabolic,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,theory-motivated cross-loading

@@ -9,11 +9,11 @@ likelihoods:
   baso_lbstresc: lognormal
   bmi: gaussian
   brthht: gaussian
-  cgi01: ordered_logistic
-  cgi02: ordered_logistic
+  cgi01: gaussian
+  cgi02: gaussian
   cgi03: gaussian
-  cgi03a: ordered_logistic
-  cgi03b: ordered_logistic
+  cgi03a: gaussian
+  cgi03b: gaussian
   chol: gaussian
   cholhdl_lbstresc: gaussian
   crp: lognormal
@@ -40,9 +40,9 @@ likelihoods:
   fast25: gaussian
   fast26: gaussian
   fast27: gaussian
-  fast28: ordered_logistic
+  fast28: gaussian
   fast29: gaussian
-  fast30: ordered_logistic
+  fast30: gaussian
   gluc: lognormal
   gstabrth: gaussian
   hba1c: lognormal
@@ -58,12 +58,12 @@ likelihoods:
   isf09: bernoulli
   isf09a: neg_binomial
   ldl: gaussian
-  lvsbjind: ordered_logistic
+  lvsbjind: gaussian
   lym_lbstresc: lognormal
   madrs: gaussian
   mono_lbstresc: lognormal
   naisstyp: bernoulli
-  nboccur_hospitalisation_lt: neg_binomial
+  nboccur_hospitalisation_lt: lognormal
   neut: lognormal
   plat: lognormal
   prembrth: ordered_logistic

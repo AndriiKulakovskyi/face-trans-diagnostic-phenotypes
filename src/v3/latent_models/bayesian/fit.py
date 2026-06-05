@@ -42,6 +42,8 @@ def stage_item_set(spec: dict) -> list[str] | None:
         cont += items
     if spec.get("include_g"):
         cont += CFG["g_anchors_continuous"]
+    if spec.get("add_severity_anchors"):
+        cont += CFG.get("g_anchors_severity", [])
     expl: list[str] = []
     for g in spec.get("explicit", []) or []:
         expl += CFG["explicit"].get(g, [])
