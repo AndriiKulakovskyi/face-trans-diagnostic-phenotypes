@@ -53,12 +53,9 @@ def load_configs(configs_dir: Path | None = None) -> tuple[dict, dict, dict]:
         CONFIGS = Path(configs_dir)
     dims = _load("dimensions.yaml")
     priors = _load("priors.yaml")
-    # likelihoods: prefer canonical likelihoods.yaml, fall back to legacy map
-    lik_path = CONFIGS / "likelihoods.yaml"
-    if lik_path.exists():
-        liks = yaml.safe_load(lik_path.read_text())["likelihoods"]
-    else:
-        liks = _load("likelihood_map_v3.yaml")["likelihoods"]
+    # likelihood_map_v3.yaml is the hand-maintained SOURCE; likelihoods.yaml is a derived
+    # artifact this builder EMITS (never reads back — that would let it go stale).
+    liks = _load("likelihood_map_v3.yaml")["likelihoods"]
     liks = {k: _norm_family(v) for k, v in liks.items()}   # strip ':parse' data-layer notes
     return dims, priors, liks
 

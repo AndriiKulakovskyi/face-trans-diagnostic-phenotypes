@@ -68,12 +68,12 @@ likelihoods:
   plat: lognormal
   prembrth: ordered_logistic
   psqi: gaussian
-  psqi11: ordered_logistic
-  psqi12: ordered_logistic
-  psqi13: ordered_logistic
-  psqi14: ordered_logistic
-  psqi15: ordered_logistic
-  psqi17: ordered_logistic
+  psqi11: gaussian
+  psqi12: gaussian
+  psqi13: gaussian
+  psqi14: gaussian
+  psqi15: gaussian
+  psqi17: gaussian
   qids_anhedonia_interest: gaussian
   qidsr120: gaussian
   staya: gaussian
