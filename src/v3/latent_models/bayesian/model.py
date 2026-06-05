@@ -111,16 +111,18 @@ def build_model(data, spec: dict, cell_priors: dict, specific_order: list[str],
     pos_r = np.array(pos_r); pos_c = np.array(pos_c)
     sgn_r = np.array(sgn_r); sgn_c = np.array(sgn_c)
 
-    # ---- explicit-block factors: those carrying non-Gaussian indicators this stage ----
+    # ---- explicit STANDALONE factors (suicidality / substance): each gets its own latent
+    # D_f ~ N(0,1) carrying its binary/count/ordinal indicators (the certified `04` design,
+    # which composes and certifies). Their correlations with the marginalized continuous
+    # factors are read POST-HOC from scores — this avoids the marginalize-vs-share wall
+    # (a factor with no continuous indicator cannot be tied into the shared Phi).
     expl_items = _stage_explicit_items(data, spec)
-    z_factors = sorted({data.expl_home[it] for it in expl_items if data.expl_home[it] in col},
-                       key=lambda f: col[f])
-    zc = {f: i for i, f in enumerate(z_factors)}
+    expl_factors = sorted({data.expl_home[it] for it in expl_items})
 
     meta = {"factor_cols": factor_cols, "g_col": g_col,
             "pos_cells": list(zip(pos_r.tolist(), pos_c.tolist())) if len(pos_r) else [],
             "sgn_cells": list(zip(sgn_r.tolist(), sgn_c.tolist())) if len(sgn_r) else [],
-            "z_factors": z_factors, "expl_items": expl_items}
+            "expl_factors": expl_factors, "expl_items": expl_items}
 
     with pm.Model() as model:
         # ---------- factor correlation Phi (G orthogonal to specifics) ----------
@@ -179,18 +181,10 @@ def build_model(data, spec: dict, cell_priors: dict, specific_order: list[str],
                                + (sol ** 2).sum(axis=0))).sum()
         pm.Potential("cont_ll", ll)
 
-        # ---------- explicit block (shared Phi via Z) ----------
-        if z_factors:
-            kz = len(z_factors)
-            zidx = [col[f] for f in z_factors]
-            Ez = np.zeros((F, kz))                      # selection (no advanced indexing)
-            for k, i in enumerate(zidx):
-                Ez[i, k] = 1.0
-            Phi_z = pt.as_tensor(Ez).T @ Phi @ pt.as_tensor(Ez)
-            Lz = pt.linalg.cholesky(Phi_z + 1e-6 * pt.eye(kz))
-            Zraw = pm.Normal("Z_raw", 0.0, 1.0, shape=(N, kz))
-            Z = pm.Deterministic("Z", Zraw @ Lz.T)             # [N, kz] ~ MVN(0, Phi_z)
-            _add_explicit_likelihoods(pm, pt, data, spec, Z, zc)
+        # ---------- explicit standalone block (suicidality / substance) ----------
+        if expl_factors:
+            D = {f: pm.Normal(f"D_{f}", 0.0, 1.0, shape=N) for f in expl_factors}
+            _add_explicit_likelihoods(pm, pt, data, spec, D)
 
     return model, meta
 
@@ -207,23 +201,40 @@ def _stage_explicit_items(data, spec: dict) -> list[str]:
     return [it for it in want if it in present]
 
 
-def _add_explicit_likelihoods(pm, pt, data, spec, Z, zc) -> None:
-    """Attach ordinal / binary / count likelihoods on the shared latent Z (observed cells)."""
+def _add_explicit_likelihoods(pm, pt, data, spec, D: dict) -> None:
+    """Attach binary / count / ordinal likelihoods on each factor's standalone latent
+    D[home] ~ N(0,1) (observed cells only). Loadings are sign-anchored positive (presence/
+    higher = burden); intercepts free."""
     expl = set(_stage_explicit_items(data, spec))
+
+    def latent(it, obs):
+        return D[data.expl_home[it]][obs]
+
     # binary (Bernoulli)
     for k, it in enumerate(data.bin_items):
-        if it not in expl or data.expl_home[it] not in zc:
+        if it not in expl or data.expl_home[it] not in D:
             continue
         y = data.Bin[:, k]; obs = np.flatnonzero(~np.isnan(y))
         if len(obs) < 30:
             continue
         a = pm.Normal(f"a_{it}", 0.0, 1.5)
         lj = pm.HalfNormal(f"lam_{it}", 0.8)
-        pm.Bernoulli(f"y_{it}", logit_p=a + lj * Z[obs, zc[data.expl_home[it]]],
-                     observed=y[obs].astype("int8"))
-    # ordinal (ordered logistic)
+        pm.Bernoulli(f"y_{it}", logit_p=a + lj * latent(it, obs), observed=y[obs].astype("int8"))
+    # count (negative binomial)
+    for k, it in enumerate(data.cnt_items):
+        if it not in expl or data.expl_home[it] not in D:
+            continue
+        y = data.Cnt[:, k]; obs = np.flatnonzero(~np.isnan(y))
+        if len(obs) < 30:
+            continue
+        a = pm.Normal(f"a_{it}", 0.0, 1.5)
+        lj = pm.HalfNormal(f"lam_{it}", 0.8)
+        alpha = pm.HalfNormal(f"alpha_{it}", 2.0)
+        pm.NegativeBinomial(f"y_{it}", mu=pt.exp(a + lj * latent(it, obs)),
+                            alpha=alpha, observed=np.rint(y[obs]).astype("int64"))
+    # ordinal (ordered logistic) — rare in the core stages; supported for completeness
     for k, it in enumerate(data.ord_items):
-        if it not in expl or data.expl_home[it] not in zc:
+        if it not in expl or data.expl_home[it] not in D:
             continue
         y = data.Ord[:, k]; obs = np.flatnonzero(~np.isnan(y))
         if len(obs) < 30:
@@ -232,17 +243,5 @@ def _add_explicit_likelihoods(pm, pt, data, spec, Z, zc) -> None:
         cut = pm.Normal(f"c_{it}", mu=np.linspace(-1.5, 1.5, K - 1), sigma=2.0,
                         shape=K - 1, transform=pm.distributions.transforms.ordered)
         lj = pm.HalfNormal(f"lam_{it}", 0.8)
-        pm.OrderedLogistic(f"y_{it}", eta=lj * Z[obs, zc[data.expl_home[it]]], cutpoints=cut,
+        pm.OrderedLogistic(f"y_{it}", eta=lj * latent(it, obs), cutpoints=cut,
                            observed=y[obs].astype("int32"), compute_p=False)
-    # count (negative binomial)
-    for k, it in enumerate(data.cnt_items):
-        if it not in expl or data.expl_home[it] not in zc:
-            continue
-        y = data.Cnt[:, k]; obs = np.flatnonzero(~np.isnan(y))
-        if len(obs) < 30:
-            continue
-        a = pm.Normal(f"a_{it}", 0.0, 1.5)
-        lj = pm.HalfNormal(f"lam_{it}", 0.8)
-        alpha = pm.HalfNormal(f"alpha_{it}", 2.0)
-        pm.NegativeBinomial(f"y_{it}", mu=pt.exp(a + lj * Z[obs, zc[data.expl_home[it]]]),
-                            alpha=alpha, observed=np.rint(y[obs]).astype("int64"))

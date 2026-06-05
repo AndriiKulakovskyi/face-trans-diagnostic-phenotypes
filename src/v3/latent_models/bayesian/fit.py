@@ -127,6 +127,8 @@ def _diagnose_and_write(stage, spec, data, meta, idata, az, smoke) -> dict:
 
     # diagnostics
     vnames = [v for v in ["lam_pos", "lam_cross", "psi_raw", "Phi_spec"] if v in post]
+    vnames += [f"D_{f}" for f in meta.get("expl_factors", []) if f"D_{f}" in post]
+    vnames += [f"lam_{it}" for it in meta.get("expl_items", []) if f"lam_{it}" in post]
     summ = az.summary(idata, var_names=vnames)
     rc = "r_hat" if "r_hat" in summ.columns else "rhat"
     ec = next((c for c in summ.columns if c.startswith("ess")), None)
@@ -155,6 +157,21 @@ def _diagnose_and_write(stage, spec, data, meta, idata, az, smoke) -> dict:
     # conflated. (Stage 0: model Phi sleep×aff 0.40 vs score-corr 0.54 — both reproduced.)
     score_corr = pd.DataFrame(Fsc, columns=fc).corr()
 
+    # explicit standalone factors (suicidality/substance): posterior latent means + loadings
+    # + POST-HOC correlation with the continuous factor scores (the certified `04` read-out).
+    expl_corr, expl_load_rows = None, []
+    for f in meta.get("expl_factors", []):
+        if f"D_{f}" in post:
+            sc[f"D_{f}"] = post[f"D_{f}"].mean(("chain", "draw")).values
+    for it in meta.get("expl_items", []):
+        if f"lam_{it}" in post:
+            expl_load_rows.append({"indicator": it, "factor": data.expl_home[it],
+                                   "loading": round(float(post[f"lam_{it}"].mean()), 3),
+                                   "kind": "explicit"})
+    if meta.get("expl_factors"):
+        cols_all = [f"F_{f}" for f in fc] + [f"D_{f}" for f in meta["expl_factors"] if f"D_{f}" in post]
+        expl_corr = sc[cols_all].corr()
+
     # G survival report (Stage >= 1)
     g_report = {}
     if spec.get("include_g") and CFG["general_factor"] in fc:
@@ -169,8 +186,11 @@ def _diagnose_and_write(stage, spec, data, meta, idata, az, smoke) -> dict:
 
     out = OUT / f"stage{stage}{'_smoke' if smoke else ''}"
     out.mkdir(parents=True, exist_ok=True)
-    load.to_csv(out / "loadings.csv", index=False)
+    load_all = pd.concat([load, pd.DataFrame(expl_load_rows)], ignore_index=True) if expl_load_rows else load
+    load_all.to_csv(out / "loadings.csv", index=False)
     phi.round(3).to_csv(out / "phi.csv")
+    if expl_corr is not None:
+        expl_corr.round(3).to_csv(out / "phi_explicit.csv")
     score_corr.round(3).to_csv(out / "phi_scores.csv")
     sc.round(3).to_csv(out / "factor_scores.csv")
     diag = {"stage": stage, "name": spec["name"], "N": int(N), "cont_J": int(J),
@@ -203,14 +223,32 @@ def _diagnose_and_write(stage, spec, data, meta, idata, az, smoke) -> dict:
            score_corr.round(2).to_markdown(), "",
            "_Model Φ is the latent factor correlation; score correlations blend factors via "
            "the regression scoring and run higher. Report model Φ as canonical._", "",
-           "## Loadings", load.to_markdown(index=False), "",
-           "Artifacts: loadings.csv · phi.csv · phi_scores.csv · factor_scores.csv · diagnostics.json · idata.nc"]
+           "## Loadings", load.to_markdown(index=False), ""]
+    if expl_corr is not None:
+        expl_names = [c for c in expl_corr.columns if c.startswith("D_")]
+        md += ["## Explicit standalone factors (suicidality / substance) — post-hoc score correlation",
+               "_Mixed-likelihood (Bernoulli/neg-binomial) latents; their relationship to the "
+               "continuous dimensions is read post-hoc from scores (the certified `04` design)._",
+               expl_corr.round(2).to_markdown(), "",
+               "### Explicit indicator loadings",
+               pd.DataFrame(expl_load_rows).to_markdown(index=False) if expl_load_rows else "_none_", ""]
+        for dn in expl_names:
+            row = expl_corr.loc[dn, [c for c in expl_corr.columns if c.startswith("F_")]]
+            md.append(f"- **{dn[2:]}** vs dimensions: " + ", ".join(f"{k[2:]} {v:+.2f}" for k, v in row.items()))
+        md.append("")
+    md += ["Artifacts: loadings.csv · phi.csv · phi_scores.csv"
+           + (" · phi_explicit.csv" if expl_corr is not None else "")
+           + " · factor_scores.csv · diagnostics.json · idata.nc"]
     (out / "stage_report.md").write_text("\n".join(md))
 
     print(f"R-hat {rhat_max:.3f} · ESS {ess_min:.0f} · div {div} · Heywood {heywood} · "
           f"{'CERTIFIED' if certified else 'NOT CERTIFIED'}")
     if g_report:
         print(f"G: anchors {g_report['g_anchor_loadings']} | specifics-on-G {g_report['specific_on_g_loadings']}")
+    if expl_corr is not None:
+        for dn in [c for c in expl_corr.columns if c.startswith("D_")]:
+            row = expl_corr.loc[dn, [c for c in expl_corr.columns if c.startswith("F_")]]
+            print(f"{dn}: " + ", ".join(f"{k[2:]} {v:+.2f}" for k, v in row.items()))
     print("Phi:\n", phi.round(2).to_string())
     print("wrote:", out.relative_to(REPO))
     return diag
