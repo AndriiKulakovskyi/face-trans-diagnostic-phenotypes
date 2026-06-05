@@ -75,7 +75,10 @@ def build_model(data, spec: dict, cell_priors: dict, specific_order: list[str],
 
     Mv = data.M
     N, J = Mv.shape
-    sign = np.array([data.item_sign.get(it, 1) for it in data.cont_items], dtype=float)
+    # NOTE: burden orientation (item_sign) is applied ONCE, in the data layer
+    # (M = sign * raw, then z-scored). Continuous primary loadings are therefore
+    # positive on the already-oriented data — do NOT multiply by sign again here
+    # (that double-flip corrupts the factor direction).
 
     # ---- enumerate active loading cells from the prior matrix x stage toggles ----
     pos_r, pos_c, pos_mu, pos_sd = [], [], [], []
@@ -144,7 +147,6 @@ def build_model(data, spec: dict, cell_priors: dict, specific_order: list[str],
                 lam_pos = pm.TruncatedNormal("lam_pos", mu=np.array(pos_mu),
                                              sigma=np.array(pos_sd), lower=0.0,
                                              shape=len(pos_r))
-            lam_pos = lam_pos * pt.as_tensor(sign[pos_r])      # orient by item burden sign
             Lam = pt.set_subtensor(Lam[pos_r, pos_c], lam_pos)
         if len(sgn_r):
             lam_sgn = pm.Normal("lam_cross", mu=np.array(sgn_mu), sigma=np.array(sgn_sd),

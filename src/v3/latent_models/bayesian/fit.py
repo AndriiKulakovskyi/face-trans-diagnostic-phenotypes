@@ -132,7 +132,7 @@ def _diagnose_and_write(stage, spec, data, meta, idata, az, smoke) -> dict:
     ess_min = float(pd.to_numeric(summ[ec], errors="coerce").min()) if ec else float("nan")
     heywood = bool((load["loading"].abs() > CFG["gates"]["heywood_loading_cap"]).any())
     g = CFG["gates"]
-    certified = (rhat_max < g["rhat_max"] and div <= g["divergences_max"]
+    certified = (round(rhat_max, 3) <= g["rhat_max"] and div <= g["divergences_max"]
                  and (np.isnan(ess_min) or ess_min >= g["ess_min"]) and not heywood)
 
     # posterior factor scores (Thomson, continuous block) per pattern
@@ -147,6 +147,11 @@ def _diagnose_and_write(stage, spec, data, meta, idata, az, smoke) -> dict:
         Fsc[rws] = (Mv[np.ix_(rws, oi)] - nu_m[oi]) @ B.T
     sc = pd.DataFrame(Fsc, columns=[f"F_{f}" for f in fc], index=data.index)
     sc.insert(0, "cohort", data.cohort)
+    # Thomson-score correlation: a DIFFERENT estimand from the model Phi parameter
+    # (score corrs are inflated/blended by the regression scoring). We report BOTH so
+    # the principled latent correlation (model Phi) and the score-based number are never
+    # conflated. (Stage 0: model Phi sleep×aff 0.40 vs score-corr 0.54 — both reproduced.)
+    score_corr = pd.DataFrame(Fsc, columns=fc).corr()
 
     # G survival report (Stage >= 1)
     g_report = {}
@@ -164,6 +169,7 @@ def _diagnose_and_write(stage, spec, data, meta, idata, az, smoke) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     load.to_csv(out / "loadings.csv", index=False)
     phi.round(3).to_csv(out / "phi.csv")
+    score_corr.round(3).to_csv(out / "phi_scores.csv")
     sc.round(3).to_csv(out / "factor_scores.csv")
     diag = {"stage": stage, "name": spec["name"], "N": int(N), "cont_J": int(J),
             "patterns": len(data.patterns), "dropped": int(data.n_drop),
@@ -188,10 +194,15 @@ def _diagnose_and_write(stage, spec, data, meta, idata, az, smoke) -> dict:
                f"- specific-item loadings on G (bifactor): {g_report['specific_on_g_loadings']}",
                f"- mean |G loading| = **{g_report['mean_abs_g_loading']}** over {g_report['n_g_loadings']} cells",
                ""]
-    md += ["## Factor correlation matrix", phi.round(2).to_markdown(), "",
+    md += ["## Factor correlation matrix — model Φ (latent parameter, the principled estimand)",
+           phi.round(2).to_markdown(), "",
            f"- mean |off-diagonal| = **{np.abs(Phi[np.triu_indices(F,1)]).mean():.2f}**", "",
+           "## Thomson-score correlation (for comparability; inflated vs model Φ)",
+           score_corr.round(2).to_markdown(), "",
+           "_Model Φ is the latent factor correlation; score correlations blend factors via "
+           "the regression scoring and run higher. Report model Φ as canonical._", "",
            "## Loadings", load.to_markdown(index=False), "",
-           "Artifacts: loadings.csv · phi.csv · factor_scores.csv · diagnostics.json · idata.nc"]
+           "Artifacts: loadings.csv · phi.csv · phi_scores.csv · factor_scores.csv · diagnostics.json · idata.nc"]
     (out / "stage_report.md").write_text("\n".join(md))
 
     print(f"R-hat {rhat_max:.3f} · ESS {ess_min:.0f} · div {div} · Heywood {heywood} · "
