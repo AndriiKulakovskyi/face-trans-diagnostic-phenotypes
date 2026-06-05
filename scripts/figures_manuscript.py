@@ -1,8 +1,8 @@
 """Manuscript figures (v2) — regenerates all main figures from results/hfa/ artifacts.
 
-Six publication-quality figures (300 dpi PNG -> results/reports/figures/):
+Publication-quality figures (300 dpi PNG -> results/reports/figures/):
   F1  design & analytic pipeline (schematic)
-  F2  the four trans-diagnostic dimensions (top loadings + Phi_2 + no p-factor)
+  F2  the three trans-diagnostic axes (top loadings + Phi_2 + no p-factor)
   F3  HEADLINE: symptom<->biology orthogonality heatmap + p-factor dissolution
   F4  dimensional, not categorical (silhouette real-vs-null, unimodal axes, overlap scatter)
   F5  predictive validity vs DSM (incremental forest + relapse-AUC narrative)
@@ -114,7 +114,7 @@ def fig1_pipeline():
 
     # processing stages
     box(8, 69.5, 84, 8.6,
-        "DATA PROCESSING (3 stages)   214-variable harmonised dictionary · per-variable sanity bounds (out-of-range → NaN)\n"
+        "DATA PROCESSING (3 stages)   201-variable harmonised dictionary · per-variable sanity bounds (out-of-range → NaN)\n"
         "(1) native clinical scale   →   (2) type-aware scaling to [−1, 1]   →   (3) V0 item matrix",
         "#F4F4F2", fs=8.0)
     arrow(50, 69.5, 50, 64.5)
@@ -125,22 +125,22 @@ def fig1_pipeline():
     ax.text(50, 61.6, "HIERARCHICAL / BIFACTOR MEASUREMENT MODEL  (hybrid: clinical anchors, data-revised)",
             ha="center", fontsize=8.8, fontweight="bold", color="#3a4a55")
 
-    box(7, 50, 39, 8.4, "Stage 0 — item set\n188 V0 items (incl. recovered labs/vitals)", "#EAF1F8", fs=8.0)
-    box(54, 50, 39, 8.4, "Stage 1 — exploratory EFA\n42 nameable first-order factors", "#EAF1F8", fs=8.0)
+    box(7, 50, 39, 8.4, "Stage 0 — item set\n196 V0 items (incl. recovered labs/vitals)", "#EAF1F8", fs=8.0)
+    box(54, 50, 39, 8.4, "Stage 1 — exploratory EFA\n44 nameable first-order factors", "#EAF1F8", fs=8.0)
     arrow(46, 54.2, 54, 54.2)
     arrow(26.5, 50, 26.5, 45.2); arrow(73.5, 50, 50, 45.2)
 
     box(20, 36.4, 60, 8.4,
-        "Stage 2 — first-order constructs\n88 constructs · within-construct masked 1-factor posterior scores  →  Φ₁",
+        "Stage 2 — first-order constructs\n95 constructs · within-construct masked 1-factor posterior scores  →  Φ₁",
         "#E3EDF6", fs=8.0)
     arrow(50, 36.4, 50, 31.6)
     box(14, 22.8, 72, 8.8,
         "Stage 3 — second-order dimensions   factor Φ₁ → promax → Φ₂ · Schmid–Leiman ECV · split-half Tucker K\n"
-        "4 trans-diagnostic axes  +  2 orthogonal standalone constructs (mania, suicidality) · ECV 0.36 → no p-factor",
+        "3 correlated axes  +  orthogonal standalones (illness-course, substance-use, mania, suicidality) · ECV 0.42 → no p-factor",
         "#D7E6F2", fs=8.0)
 
-    # the four axes chips
-    cx = [13.5, 35, 56.5, 78]
+    # the three correlated-axis chips
+    cx = [16, 40, 64]
     for x, a in zip(cx, AX_ORDER, strict=False):
         box(x, 13.2, 20.5, 6.6, AX_TITLE[a].split(" · ")[1], AX_COL[a] + "33", ec=AX_COL[a], fs=8.0, lw=1.4)
         arrow(x + 10, 22.8, x + 10.25, 19.8, color=AX_COL[a])
