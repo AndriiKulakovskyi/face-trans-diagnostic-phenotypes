@@ -150,14 +150,16 @@ likelihoods:
   prolctn: lognormal
   prot_lbstresc: gaussian
   psoriasis_mhoccur: bernoulli
+  # PSQI component scores are 0-3; modeled gaussian in the continuous core (matches the
+  # certified model; standard in factor analysis). Ordinal-robustness is a Stage-3 check.
   psqi: gaussian
-  psqi11: ordered_logistic
-  psqi12: ordered_logistic
-  psqi13: ordered_logistic
-  psqi14: ordered_logistic
-  psqi15: ordered_logistic
-  psqi16: ordered_logistic
-  psqi17: ordered_logistic
+  psqi11: gaussian        # efficiency (objective)
+  psqi12: gaussian        # duration (objective)
+  psqi13: gaussian        # disturbance (subjective)
+  psqi14: gaussian        # latency (objective)
+  psqi15: gaussian        # quality (subjective)
+  psqi16: gaussian        # sleep-med use (covariate_only)
+  psqi17: gaussian        # daytime-dysfunction (subjective)
   qids_anhedonia_interest: gaussian
   qidsr120: gaussian
   qt: gaussian
