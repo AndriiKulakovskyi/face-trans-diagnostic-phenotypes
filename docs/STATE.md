@@ -53,7 +53,8 @@ Marginalized (Woodbury) bifactor, NumPyro/JAX-CPU: **R-hat 1.010 · ESS 1,939 ·
   sleep 0.22 — biology sits *off* the general-burden axis; cognition/sleep partly track it. The earlier
   explicit-latent run reproduced these loadings (the two parameterizations triangulate).
 - *Continuous backbone only* (independent-specifics bifactor, Φ = I); cross-loadings, the symptom blocks,
-  and inter-factor correlations come at S2–S5. Artifacts: `reports/04_stage1_report.md` + `_loadings.csv`.
+  and inter-factor correlations come at S2–S5. **Full writeup + interpretation:
+  [`RESULTS.md`](RESULTS.md) §S1.** Artifacts: `reports/04_stage1_report.md` + `_loadings.csv`.
 
 ## Open methods choices (flagged for the PI)
 
@@ -63,5 +64,6 @@ factor-level covariates · acceptance-gate numbers. Defaults are set in
 
 ## What to read
 
-[`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md) (methods + math) · [`../README.md`](../README.md) (overview)
-· [`../CLAUDE.md`](../CLAUDE.md) (guide) · [`DATA.md`](DATA.md) (data contract).
+[`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md) (methods + math) · [`RESULTS.md`](RESULTS.md) (findings log)
+· [`PRIOR_ATLAS.md`](PRIOR_ATLAS.md) (prior map) · [`../README.md`](../README.md) (overview) ·
+[`../CLAUDE.md`](../CLAUDE.md) (guide) · [`DATA.md`](DATA.md) (data contract).
