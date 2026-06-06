@@ -25,8 +25,10 @@ dependencies = [
 [project.optional-dependencies]
 figures = ["kaleido>=0.2"]                            # static export of plotly figures
 dev = ["pytest>=7.0", "pytest-cov>=4.0", "ruff==0.12.0", "pip-tools>=7.0"]  # ruff pinned: lint rules change between versions (keep CI == local)
-# V3 Bayesian discovery engine (scripts/v3/04_fit_measurement.py): patient-level observed-likelihood latent model.
-bayesian = ["pymc>=5.10", "arviz>=0.17", "h5netcdf>=1.0"]
+# Bayesian discovery engine (scripts/04_fit.py): patient-level observed-likelihood latent model.
+# numpyro+jax enable the NumPyro/JAX NUTS backend (scripts/04_fit.py --gpu); on a CUDA box also
+# `pip install -U "jax[cuda12]"` to use the GPU (e.g. RTX 4090).
+bayesian = ["pymc>=5.10", "arviz>=0.17", "h5netcdf>=1.0", "numpyro>=0.13", "jax>=0.4"]
 # Convenience alias for "everything needed to export static figures".
 full = ["kaleido>=0.2"]
 
