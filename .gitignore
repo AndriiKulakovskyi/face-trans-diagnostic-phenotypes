@@ -112,3 +112,6 @@ results/v3/
 data/processed/
 data/interim/
 data/artifacts/
+
+# Stage fit outputs (per-patient scores + idata; regenerable)
+results/face/
