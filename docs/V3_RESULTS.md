@@ -1,8 +1,11 @@
-# V3 results — the certified transdiagnostic measurement model
+# V3 results — first-generation measurement model (SUPERSEDED)
 
-> Living results page for the V3 **measurement layer** (Phases F–G). Plan: [`V3_PLAN.md`](V3_PLAN.md) ·
-> step journal: [`LABBOOK_V3.md`](LABBOOK_V3.md) · numbers log: [`FINDINGS.md`](FINDINGS.md). Figures are
-> aggregate (no per-patient data); regenerate with `scripts/v3/04_extended_model.py` → `05_visualize.py`.
+> ⚠️ **Superseded.** This page describes the first-generation ("Engine A") measurement model. Its
+> headline — *"no general factor"* — was **overturned** by the config-first engine, which adds the
+> severity/functioning anchors `G` is built from and finds a general factor `G` (functional impairment /
+> distress), orthogonal to biology. **Current state: [`STATE.md`](STATE.md).** The scripts referenced
+> below now live in `scripts/v3/legacy/`. Kept for provenance; a new results page will be regenerated
+> once the new engine certifies Stage ≥ 3. Original page follows, unchanged.
 
 ## The model
 
@@ -122,7 +125,12 @@ them). A de-biasing joint selection model on the full sample is future work.
 
 ## Bottom line
 
-A certified, cohort-balanced, no-imputation transdiagnostic measurement model of BP/SZ/DR:
+> ⚠️ Superseded — see the banner at the top and [`STATE.md`](STATE.md). The "no general factor" claim
+> below was **overturned** by the config-first engine (a functional-impairment/distress `G` identifies,
+> orthogonal to biology); the *symptoms ⊥ biology* and *metabolic/inflammatory separable* findings carry
+> over and are strengthened.
+
+A cohort-balanced, no-imputation transdiagnostic measurement model of BP/SZ/DR:
 **no general factor; symptoms (affective) ≈ orthogonal to biology; metabolic and inflammatory are
 separable; cognition tracks metabolic/affective weakly; suicidality is a distress-linked standalone; and
 sleep is a separable dimension moderately correlated with affect (0.54) once depression-overlapping PSQI

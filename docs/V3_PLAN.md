@@ -4,14 +4,14 @@
 > [`ROADMAP.md`](ROADMAP.md) (what/why), [`PIPELINE.md`](PIPELINE.md) (target architecture),
 > [`DATA.md`](DATA.md) (data contract).
 
-> **Progress (2026-06-05).** Phases **A·B·C done**, Phase **F core CERTIFIED** (marginalized model;
-> R-hat 1.01, 0 div, cohort-balanced 500/cohort). Code: `scripts/v3/` (`01` eligibility · `02` missingness ·
-> `03` Bayesian core); outputs: `results/v3/`; step journal: [`LABBOOK_V3.md`](LABBOOK_V3.md); results log:
-> [`FINDINGS.md`](FINDINGS.md) (V3-1…6); results page [`V3_RESULTS.md`](V3_RESULTS.md). Headline: 3 of 10
-> candidates unsupported in the common dictionary; certified extended model (5 factors + mixed-likelihood
-> suicidality) shows **no general factor**, **symptoms (affective) ≈ ⊥ biology**, metabolic/inflammatory
-> separable, **sleep↔affective 0.68**. Next: sleep-affective sensitivity + Phase H (temporal coherence /
-> invariance) → Phase J strata.
+> **Progress (2026-06-06).** Phases **A·B·C done**; Phase **F measurement engine converged through
+> Stage 2** (config-first soft-prior ESEM-bifactor; `src/v3/latent_models/bayesian/`, run via
+> `scripts/v3/` `03` build-prior-matrix · `04` fit-measurement). **Headline (Stage 1, certified):** a
+> general factor `G` (functional impairment / distress) **identifies, orthogonal to
+> metabolic/inflammatory biology** — this **overturns** the earlier "no general factor." 3 of 10
+> candidates remain unsupported in the common dictionary. **Current state + caveats:**
+> [`STATE.md`](STATE.md); step journal: [`LABBOOK_V3.md`](LABBOOK_V3.md). Next: certify Stage 3 (CGI
+> severity) + Stage 4 (suicidality/substance) → Phase H invariance → Phase J strata.
 
 ## 0 · One sentence
 

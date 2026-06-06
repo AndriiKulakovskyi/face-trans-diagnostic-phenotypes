@@ -1,7 +1,7 @@
 # CLAUDE.md — FACE precision psychiatry (BP · SZ · DR) — **V3**
 
 > Guide for collaborators and AI assistants. Keep it short.
-> **Plan of record: [docs/V3_PLAN.md](docs/V3_PLAN.md)**.
+> **Current state: [docs/STATE.md](docs/STATE.md)** (read first) · **Plan of record: [docs/V3_PLAN.md](docs/V3_PLAN.md)**.
 > What/why: [docs/ROADMAP.md](docs/ROADMAP.md) · Target pipeline: [docs/PIPELINE.md](docs/PIPELINE.md) ·
 > Data contract: [docs/DATA.md](docs/DATA.md) · V3 log: [docs/FINDINGS.md](docs/FINDINGS.md).
 
@@ -37,10 +37,12 @@ eligibility + the full A–T plan: [docs/V3_PLAN.md](docs/V3_PLAN.md).
 
 - 🟢 **V3 plan adopted as the single source of truth** (2026-06-05). Direction, framing, and the
   estimator hierarchy are fixed by [docs/V3_PLAN.md](docs/V3_PLAN.md).
-- 🟢 **Certified measurement model built.** The self-contained data layer (`src/v3/data/`), the
-  pipeline (`scripts/v3/`: 01 eligibility audit · 02 missingness atlas · 03 Bayesian core · 04 extended
-  model · 05 visualize · 06 sleep↔affect sensitivity), and its outputs (`results/v3/`, figures under
-  `docs/figures/v3/`) are in place; results are logged in [docs/V3_RESULTS.md](docs/V3_RESULTS.md).
+- 🟢 **Measurement engine built (config-first), converged through Stage 2.** The data layer
+  (`src/v3/data/`) + the staged soft-prior ESEM-bifactor engine (`src/v3/latent_models/bayesian/`), run
+  via `scripts/v3/` (01 eligibility · 02 missingness · 03 build-prior-matrix · 04 fit-measurement).
+  **Headline:** a general factor `G` (functional impairment / distress) **identifies, orthogonal to
+  metabolic/inflammatory biology** — this overturns the earlier "no general factor." The first-generation
+  engine is quarantined in `scripts/v3/legacy/`. **Current state + caveats:** [docs/STATE.md](docs/STATE.md).
 - ⬜ **Downstream decision layers NOT yet built.** The strata / prognosis / treatment layers
   (Phases E–M) are unimplemented. Do not describe them as done.
 
@@ -95,13 +97,14 @@ face-common-bp-sz-dr/
 │   ├── adapter·harmonized_dataset.py           ← observed-data V0 matrix builder (NaN = missing, never imputed)
 │   ├── schema_gen·feature_schema.py            ← feature schema / data-contract wiring
 │   └── skip_logic.py                           ← structural-zero decoding
-│       ←  V3 modules to ADD: bayesian/ · fiml/ · missingness/ · priors/ · strata/ · prognosis/ · treatment/
-├── configs/                            ← V3 data contract: candidate_dimensions_v3 · likelihood_map_v3 · soft_loading_priors_v3
-├── scripts/v3/                         ← V3 pipeline: 01_eligibility_audit · 02_missingness_atlas · 03_bayesian_core · 04_extended_model · 05_visualize · 06_sleep_affect_sensitivity
+├── src/v3/latent_models/bayesian/      ← the measurement engine (config-first ESEM-bifactor); src/v3/priors/ builds the prior matrix
+│       ←  modules still to ADD: fiml/ · missingness/ · strata/ · prognosis/ · treatment/
+├── configs/                            ← ontology + contract: dimensions · priors · likelihoods · likelihood_map_v3 · bayesian_model · prior_loading_matrix_v3
+├── scripts/v3/                         ← V3 pipeline: 01_eligibility_audit · 02_missingness_atlas · 03_build_prior_matrix · 04_fit_measurement  (legacy/ = superseded Engine A)
 ├── tests/                              ← unit tests
-├── results/v3/                         ← regenerated AGGREGATE artifacts (gitignored): eligibility/ · missingness/ · bayesian/ · bayesian_ext/ · sleep_sensitivity/
-├── docs/                               ← V3_PLAN · ROADMAP · PIPELINE · DATA · FINDINGS · LABBOOK_V3 · V3_RESULTS · neuropsy_features.yaml
-│   └── figures/v3/                      ← certified-model figures (Φ heatmap · correlation network · loadings · scores by cohort · sleep↔affect)
+├── results/v3/                         ← regenerated AGGREGATE artifacts (gitignored): eligibility/ · missingness/ · bayesian/stage{0..4}/
+├── docs/                               ← STATE (current) · V3_PLAN · ROADMAP · PIPELINE · DATA · FINDINGS · LABBOOK_V3 · V3_RESULTS · neuropsy_features.yaml
+│   └── figures/v3/                      ← figures (Φ heatmap · network · loadings · cohort scores) — from the legacy engine; regenerate from the new engine
 └── pyproject.toml
 ```
 
@@ -124,13 +127,11 @@ validation labels**, not features). **No imputation** anywhere.
 
 ```bash
 pip install -e ".[full]"                       # core + kaleido (static figure export)
-python3 scripts/v3/01_eligibility_audit.py     # eligibility audit            → results/v3/eligibility/
-python3 scripts/v3/02_missingness_atlas.py     # missingness atlas            → results/v3/missingness/
-python3 scripts/v3/03_bayesian_core.py         # certified core latent model  → results/v3/bayesian/
-python3 scripts/v3/04_extended_model.py        # extended model              → results/v3/bayesian_ext/
-python3 scripts/v3/05_visualize.py             # figures                      → docs/figures/v3/
-python3 scripts/v3/06_sleep_affect_sensitivity.py  # sleep↔affect sensitivity → results/v3/sleep_sensitivity/
-python3 -m pytest tests/ -q                    # unit tests
+python3 scripts/v3/01_eligibility_audit.py          # eligibility + V0 coverage      → results/v3/eligibility/
+python3 scripts/v3/02_missingness_atlas.py          # missingness mechanism          → results/v3/missingness/
+python3 scripts/v3/03_build_prior_matrix.py         # config ontology → prior matrix  → configs/
+python3 scripts/v3/04_fit_measurement.py --stage 1  # staged measurement model       → results/v3/bayesian/stage1/
+python3 -m pytest tests/ -q                         # unit tests
 ```
 
 ```python
@@ -143,11 +144,11 @@ ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), vis
 
 ## Where to read next
 
-- **Plan of record (A–T)** → [docs/V3_PLAN.md](docs/V3_PLAN.md)
+- **Current state (read first)** → [docs/STATE.md](docs/STATE.md) · **Plan of record (A–T)** → [docs/V3_PLAN.md](docs/V3_PLAN.md)
 - **What/why** → [docs/ROADMAP.md](docs/ROADMAP.md) · **Target pipeline + missing-data doctrine** → [docs/PIPELINE.md](docs/PIPELINE.md)
 - **Data contract + dictionary** → [docs/DATA.md](docs/DATA.md) · **V3 results log** → [docs/FINDINGS.md](docs/FINDINGS.md) · **step-by-step lab notebook** → [docs/LABBOOK_V3.md](docs/LABBOOK_V3.md)
-- **V3 results + figures** → [docs/V3_RESULTS.md](docs/V3_RESULTS.md) (certified measurement model: Φ heatmap/network, loadings, cohort scores)
-- **V3 code/outputs** → `scripts/v3/` (01 eligibility · 02 missingness · 03 Bayesian core · 04 extended model · 05 visualize · 06 sleep↔affect sensitivity) → `results/v3/`; **data contract** → `configs/`
+- **V3 results + figures** → [docs/V3_RESULTS.md](docs/V3_RESULTS.md) (⚠️ first-generation engine — superseded; see STATE.md)
+- **V3 code/outputs** → `scripts/v3/` (01 eligibility · 02 missingness · 03 build-prior-matrix · 04 fit-measurement) → `results/v3/`; **data contract** → `configs/`
 - **Cognition include-list** → [docs/neuropsy_features.yaml](docs/neuropsy_features.yaml)
 
 ## Conventions

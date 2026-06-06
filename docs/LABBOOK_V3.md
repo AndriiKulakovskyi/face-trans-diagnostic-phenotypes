@@ -310,6 +310,30 @@ Z). Then FIML triangulation + the dimension-adjudication table (G adjudicated **
 
 ---
 
+## V3-8b · Stages 2–3 + structural cleanup — 2026-06-06
+
+**Stage 2 (ESEM cross-loadings) — CERTIFIED** (R-hat 1.01, ESS 800, 0 div). Freeing the theory-motivated
+plausible cross-loadings adds little: simple structure mostly holds; specifics stay weakly correlated
+(model Φ metabolic×inflammatory 0.17, cognition×metabolic 0.18, sleep×affective 0.32). G unchanged.
+
+**Stage 3 (CGI severity anchors) — NOT yet certified** (R-hat 1.53, ESS 7, 0 div). Adding CGI-S + a
+hospitalization count to G de-stabilizes a chain: the zero-inflated `nboccur_hospitalisation_lt`, fit as
+lognormal, loads ~0.01 on G (a degenerate direction) and tanks ESS. Mid-fix: dropped it from
+`g_anchors_severity` (uncommitted edit). **Stage 4** (mixed-likelihood suicidality/substance) is coded,
+not run.
+
+**Structural cleanup (the readability pass).** Created [`STATE.md`](STATE.md) as the single
+current-state source. Quarantined the first-generation engine (old `03_bayesian_core` ·
+`04_extended_model` · `05_visualize` · `06_sleep_affect_sensitivity`) to `scripts/v3/legacy/`; renumbered
+the config-first engine to a contiguous pipeline (`10/11` → `03_build_prior_matrix` /
+`04_fit_measurement`). Reconciled the stale "no general factor" headline across `V3_RESULTS` · `FINDINGS`
+· `V3_PLAN` · `README` · `CLAUDE`. Full test suite green (115 passed).
+
+**Next.** Certify Stage 3 (re-run after dropping the hospitalization count) → run Stage 4 → regenerate
+the results page + figures from the new engine → Phase H invariance.
+
+---
+
 ## Open questions for review
 
 1. ~~**Convergence bar.**~~ **RESOLVED (V3-5):** the marginalized model certifies (R-hat 1.010, 0 div) —

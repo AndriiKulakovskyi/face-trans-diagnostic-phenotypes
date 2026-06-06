@@ -4,8 +4,10 @@ Paper-oriented log of empirical + methodological findings for **V3**. Plan of re
 [`V3_PLAN.md`](V3_PLAN.md). Every number must be reproducible from the V3 pipeline (`scripts/v3/` →
 `results/v3/`).
 
-> **Status.** The V3 measurement core is certified (Phase F); the strata / prognosis / treatment layers
-> (Phases J–M) are not yet built. Code: `src/v3/data`, `scripts/v3/`; outputs: `results/v3/`.
+> **Status.** Current state: [`STATE.md`](STATE.md). The measurement engine is converged through Stage 2
+> (a general factor `G` = functional impairment/distress identifies, ⊥ biology — this **overturned** the
+> earlier "no general factor"); strata / prognosis / treatment (Phases J–M) are not yet built. The
+> first-generation results (V3-3…7 below) used the now-quarantined Engine A (`scripts/v3/legacy/`).
 
 ## V3 log
 
@@ -149,3 +151,18 @@ Paper-oriented log of empirical + methodological findings for **V3**. Plan of re
   [`V3_RESULTS.md`](V3_RESULTS.md) regenerated with the canonical Φ: mean |off-diag| **0.17** (0.13 excl.
   sleep-affective); cognition×affective 0.29, affective×metabolic 0.18, metabolic×inflammatory 0.20,
   suicidality×affective 0.10. Next: Phase H temporal coherence (V1–V4) + measurement invariance.
+
+- **V3-8 · Config-first rebuild — `G` identifies, overturns "no general factor" — 2026-06-05/06.** A
+  self-audit found Engine A's "no general factor" came from a hard-coded spec that **omitted the
+  severity/functioning indicators `G` is built from**. Rebuilt the measurement layer config-first
+  (`src/v3/latent_models/bayesian/`, run via `scripts/v3/04_fit_measurement.py --stage S`; prior matrix
+  from `scripts/v3/03_build_prior_matrix.py`). **Stage 0** reproduces Engine A exactly. **Stage 1
+  (certified, R-hat 1.010):** a general factor **`G` identifies** — a *functional-impairment / distress*
+  axis (FAST 1.04, EGF 0.75, EQ-5D 0.60; MADRS 0.82, QIDS 0.69 load on `G`; cognition moderate;
+  **metabolic/inflammatory ≈ 0**), **orthogonal to biology**. **Stage 2 (certified):** ESEM
+  cross-loadings — simple structure mostly holds; specifics stay weakly correlated (model Φ
+  metabolic×inflammatory 0.17, cognition×metabolic 0.18, sleep×affective 0.32). **Stage 3** (sharpen `G`
+  with CGI severity) **not yet converged** (R-hat 1.53); **Stage 4** (mixed-likelihood
+  suicidality/substance) coded, not run. **Verdict:** "no general factor" overturned; "symptoms/severity
+  ⊥ biology" strengthened. Engine A quarantined to `scripts/v3/legacy/`; scripts renumbered (10/11 →
+  03/04). Current state + caveats: [`STATE.md`](STATE.md).

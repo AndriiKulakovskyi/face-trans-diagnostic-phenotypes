@@ -15,12 +15,12 @@ loading priors**; **FIML/SEM** is the confirmatory follow-up). Strata are **prob
 regions**, not natural subtypes. **No naive imputation anywhere** — structure is estimated from each
 patient's observed cells via observed-data likelihood, never by filling cells.
 
-> **Status.** The **V3 plan is the single source of truth** — direction, framing, and the estimator
-> hierarchy are fixed by **[docs/V3_PLAN.md](docs/V3_PLAN.md)**. The **certified measurement model** is
-> built (data layer `src/v3/data/`, pipeline `scripts/v3/`, outputs `results/v3/`, figures
-> `docs/figures/v3/`; see **[docs/V3_RESULTS.md](docs/V3_RESULTS.md)**); the downstream
-> strata / prognosis / treatment layers (Phases E–M) are **not yet built**. Project guide:
-> **[CLAUDE.md](CLAUDE.md)**.
+> **Status.** Direction is fixed by **[docs/V3_PLAN.md](docs/V3_PLAN.md)**; **current state** lives in
+> **[docs/STATE.md](docs/STATE.md)** — read it first. The config-first measurement engine
+> (`src/v3/latent_models/bayesian/`, run via `scripts/v3/03–04`) is **converged through Stage 2**: a
+> general factor `G` (functional impairment / distress) identifies, **orthogonal to
+> metabolic/inflammatory biology**. The downstream strata / prognosis / treatment layers are **not yet
+> built**. Project guide: **[CLAUDE.md](CLAUDE.md)**.
 
 The repo is **self-contained** — the data layer (`src/v3/data/`) and the full V3 pipeline live in-tree;
 there is no external dependency on the sister `face_stratification` / `face_rlvr` projects.
@@ -48,9 +48,9 @@ carries each variable's native type (no shared rescaling).
 ```
 ├── CLAUDE.md  AGENTS.md  README.md             ← guides (V3); plan of record: docs/V3_PLAN.md
 ├── data/            face-common-vars.xlsx (dictionary) · thesaurus/ · *.csv (confidential) · site_lookup.csv
-├── src/v3/data/     variable·rules·loader·filters · adapter·harmonized_dataset · schema_gen·feature_schema · skip_logic  (self-contained data layer; add V3 sub-packages)
-├── configs/         V3 data contract: candidate_dimensions_v3 · likelihood_map_v3 · soft_loading_priors_v3
-├── scripts/v3/      01_eligibility_audit · 02_missingness_atlas · 03_bayesian_core · 04_extended_model · 05_visualize · 06_sleep_affect_sensitivity
+├── src/v3/          data/ (harmonization, no-imputation) · latent_models/bayesian/ (the engine) · priors/ (prior-matrix builder)
+├── configs/         ontology + contract: dimensions · priors · likelihoods · bayesian_model · prior_loading_matrix_v3
+├── scripts/v3/      01_eligibility_audit · 02_missingness_atlas · 03_build_prior_matrix · 04_fit_measurement   (legacy/ = superseded Engine A)
 ├── tests/           unit tests
 ├── results/v3/      regenerated aggregates: eligibility/ · missingness/ · bayesian/ · bayesian_ext/ · sleep_sensitivity/ (gitignored; empty on a clean tree)
 └── docs/            V3_PLAN · ROADMAP · PIPELINE · DATA · FINDINGS · LABBOOK_V3 · V3_RESULTS · neuropsy_features.yaml · figures/v3/
@@ -59,13 +59,11 @@ carries each variable's native type (no shared rescaling).
 ## Quick start
 ```bash
 pip install -e ".[full]"                       # core + kaleido (static figure export)
-python3 scripts/v3/01_eligibility_audit.py     # eligibility audit            → results/v3/eligibility/
-python3 scripts/v3/02_missingness_atlas.py     # missingness atlas            → results/v3/missingness/
-python3 scripts/v3/03_bayesian_core.py         # certified core latent model  → results/v3/bayesian/
-python3 scripts/v3/04_extended_model.py        # extended model              → results/v3/bayesian_ext/
-python3 scripts/v3/05_visualize.py             # figures                      → docs/figures/v3/
-python3 scripts/v3/06_sleep_affect_sensitivity.py  # sleep↔affect sensitivity → results/v3/sleep_sensitivity/
-python3 -m pytest tests/ -q                    # unit tests
+python3 scripts/v3/01_eligibility_audit.py          # eligibility + V0 coverage      → results/v3/eligibility/
+python3 scripts/v3/02_missingness_atlas.py          # missingness mechanism          → results/v3/missingness/
+python3 scripts/v3/03_build_prior_matrix.py         # config ontology → prior matrix  → configs/
+python3 scripts/v3/04_fit_measurement.py --stage 1  # staged measurement model       → results/v3/bayesian/stage1/
+python3 -m pytest tests/ -q                         # unit tests
 ```
 ```python
 from v3.data import build_unified_dataframe, load_variables, to_harmonized_dataset
@@ -77,10 +75,11 @@ ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), vis
 
 ## Documentation
 - **[CLAUDE.md](CLAUDE.md)** — project guide (the central read; includes instructions for future agents).
-- **[docs/V3_PLAN.md](docs/V3_PLAN.md)** — the V3 plan of record.
+- **[docs/STATE.md](docs/STATE.md)** — where V3 actually is right now (read first).
+- **[docs/V3_PLAN.md](docs/V3_PLAN.md)** — the V3 plan of record (direction).
 - **[docs/ROADMAP.md](docs/ROADMAP.md)** (what/why) · **[docs/PIPELINE.md](docs/PIPELINE.md)** (target architecture + missing-data doctrine).
 - **[docs/DATA.md](docs/DATA.md)** (data contract + dictionary) · **[docs/FINDINGS.md](docs/FINDINGS.md)** (V3 log) · **[docs/LABBOOK_V3.md](docs/LABBOOK_V3.md)** (lab notebook).
-- **[docs/V3_RESULTS.md](docs/V3_RESULTS.md)** — certified measurement model: Φ heatmap/network, loadings, cohort scores.
+- **[docs/V3_RESULTS.md](docs/V3_RESULTS.md)** — ⚠️ first-generation engine results, superseded (see STATE.md).
 
 ## Confidentiality
 The FACE database is **confidential** (Fondation FondaMental). The per-cohort `data/*.csv` and all

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Thin CLI: expand the V3 config ontology into the soft-prior loading matrix.
 
-    python3 scripts/v3/10_build_prior_matrix.py
+    python3 scripts/v3/03_build_prior_matrix.py
 
 Reads  configs/dimensions.yaml + priors.yaml + likelihood_map_v3.yaml
 Writes configs/prior_loading_matrix_v3.csv + configs/likelihoods.yaml
