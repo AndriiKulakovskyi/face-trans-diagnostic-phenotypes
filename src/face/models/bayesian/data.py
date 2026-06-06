@@ -27,7 +27,7 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(REPO / "src"))
 
-from v3.data import build_unified_dataframe, load_variables, to_harmonized_dataset  # noqa: E402
+from face.data import build_unified_dataframe, load_variables, to_harmonized_dataset  # noqa: E402
 
 MATRIX = REPO / "configs" / "prior_loading_matrix_v3.csv"
 SEED = 20260605

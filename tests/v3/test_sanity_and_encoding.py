@@ -19,12 +19,12 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from v3.data.loader import _apply_sanity_bounds, _harmonize_series
-from v3.data.rules import (
+from face.data.loader import _apply_sanity_bounds, _harmonize_series
+from face.data.rules import (
     RULES,
     derive_siteid_city,
 )
-from v3.data.variable import Variable
+from face.data.variable import Variable
 
 
 def _var(name, dtype, *, smin=None, smax=None):
@@ -195,7 +195,7 @@ def test_suicide_method_rules_pass_dr_codes_through():
 
 
 def test_suicide_method_rules_are_v2_gated():
-    from v3.data.loader import _V2_ONLY_RULES
+    from face.data.loader import _V2_ONLY_RULES
     for canon in ("ltsv02", "ltsv04", "ltsv05", "ltsv06",
                   "ltsg03", "ltsg05", "ltsg06"):
         assert canon in _V2_ONLY_RULES  # never alters the v1 pipeline

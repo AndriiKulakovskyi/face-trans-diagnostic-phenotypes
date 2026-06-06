@@ -4,7 +4,7 @@ Self-contained: the harmonized `Variable` model, the per-variable harmonization 
 skip-logic structural-zero decoding, and the V0 observed-data matrix builder. NaN = missing, never
 imputed. Reused by the V3 pipeline in `scripts/v3/`.
 
-    from v3.data import build_unified_dataframe, load_variables, to_harmonized_dataset
+    from face.data import build_unified_dataframe, load_variables, to_harmonized_dataset
     df = build_unified_dataframe("data", "data/face-common-vars.xlsx",
                                  readiness=["READY", "PARTIAL"], format="long")
     ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), visit="V0")

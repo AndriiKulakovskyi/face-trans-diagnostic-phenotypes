@@ -14,7 +14,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 
-from v3.priors import build_prior_matrix  # noqa: E402
+from face.priors import build_prior_matrix  # noqa: E402
 
 if __name__ == "__main__":
     build_prior_matrix()

@@ -54,6 +54,9 @@ covariates / validation labels.
 
 ## In-flight restructure
 
-The package namespace is being renamed `src/v3/…` → `src/face/…` and the pipeline rebuilt to
-`scripts/01_build_data … 07_score` per [docs/MEASUREMENT_MODEL.md](docs/MEASUREMENT_MODEL.md) §11. Until
-that lands, some paths still read `src/v3`.
+The package is now **`src/face/…`** (renamed from `src/v3`; data layer + priors + tests green). The
+pipeline is being rebuilt to `scripts/01_build_data … 07_score` consuming
+`configs/prior_loading_matrix_v3.csv`, with the matrix-consuming staged-fit engine
+(`src/face/models/bayesian`) as the next increment, per
+[docs/MEASUREMENT_MODEL.md](docs/MEASUREMENT_MODEL.md) §11. Until then `scripts/v3/` keeps the current
+script names and `results/v3/` the outputs.

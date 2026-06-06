@@ -22,7 +22,8 @@ repository is on a **clean base**; implementation of M1 is the next step.
   negative symptoms, sensory.
 - **Stack:** lean — PyMC (dev) + NumPyro/JAX-CUDA on the **RTX 4090** (full fits); YAML configs; Parquet
   model-ready persistence (raw stays CSV); a Jupyter notebook to run + display; per-stage reports.
-- **Repo:** namespace `src/v3/…` → `src/face/…`; pipeline `scripts/01_build_data … 07_score`.
+- **Repo:** package **renamed `src/v3/…` → `src/face/…`** (done, tests green); pipeline rebuild to
+  `scripts/01_build_data … 07_score` + the matrix-consuming staged engine is the next increment.
 
 ## What exists vs. not
 

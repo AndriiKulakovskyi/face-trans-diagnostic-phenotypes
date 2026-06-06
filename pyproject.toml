@@ -30,7 +30,7 @@ bayesian = ["pymc>=5.10", "arviz>=0.17", "h5netcdf>=1.0"]
 full = ["kaleido>=0.2"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/v3"]
+packages = ["src/face"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

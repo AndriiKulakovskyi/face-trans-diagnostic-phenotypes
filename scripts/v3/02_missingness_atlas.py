@@ -35,7 +35,7 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 warnings.filterwarnings("ignore")
 
-from v3.data import build_unified_dataframe, load_variables, to_harmonized_dataset  # noqa: E402
+from face.data import build_unified_dataframe, load_variables, to_harmonized_dataset  # noqa: E402
 
 COH = ["bp", "sz", "dr"]
 DICT = ROOT / "data" / "face-common-vars.xlsx"

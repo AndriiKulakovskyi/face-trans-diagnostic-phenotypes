@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from v3.data.filters import (
+from face.data.filters import (
     IDENTIFIER_COLUMNS,
     VariableFilterReport,
     filter_patients,

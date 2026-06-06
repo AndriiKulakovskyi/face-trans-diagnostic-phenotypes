@@ -1,6 +1,6 @@
 """Pydantic v2 schema for the V3 data layer's feature matrix.
 
-``v3.data.schema_gen.build_feature_schema`` builds a ``FeatureSchema`` directly from the
+``face.data.schema_gen.build_feature_schema`` builds a ``FeatureSchema`` directly from the
 common-variables dictionary (validated with ``extra="forbid"`` everywhere — any typo fails loudly
 rather than silently producing a bad matrix). The engine consumes that schema to describe its blocks
 and features.

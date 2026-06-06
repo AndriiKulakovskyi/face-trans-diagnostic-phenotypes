@@ -1,7 +1,7 @@
 """Pytest path bootstrap for the ``src/`` layout.
 
-Only ``src/`` needs to be importable to run the V3 tests without installing the
-project (``import v3`` resolves from there).
+Only ``src/`` needs to be importable to run the tests without installing the
+project (``import face`` resolves from there).
 """
 import sys
 from pathlib import Path

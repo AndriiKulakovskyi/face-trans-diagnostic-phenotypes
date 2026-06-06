@@ -24,9 +24,9 @@ REPO = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(REPO / "src"))
 warnings.filterwarnings("ignore")
 
-from v3.latent_models.bayesian.data import load_model_data            # noqa: E402
-from v3.latent_models.bayesian.init import efa_initvals               # noqa: E402
-from v3.latent_models.bayesian.model import build_model, load_cell_priors  # noqa: E402
+from face.models.bayesian.data import load_model_data            # noqa: E402
+from face.models.bayesian.init import efa_initvals               # noqa: E402
+from face.models.bayesian.model import build_model, load_cell_priors  # noqa: E402
 
 CFG = yaml.safe_load((REPO / "configs" / "bayesian_model.yaml").read_text())
 OUT = REPO / "results" / "v3" / "bayesian"
