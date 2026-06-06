@@ -59,6 +59,11 @@ We keep three objects distinct throughout:
   measurement-invariance grouping variable, and as a post-hoc validation/interpretation layer.
 - **Baseline defines, follow-up validates.** Dimensions are estimated on **V0** only. Later visits
   (V1–V4) are reserved for temporal coherence and prognosis — used *after* the map is fixed.
+- **One global structure; cohort is missingness, not structure.** There is a single factor structure on
+  one harmonized matrix. An instrument absent for a cohort is simply a **missing cell** (observed
+  likelihood) — there are **no cohort-specific "modules" or "extensions."** Coverage is emergent and
+  flagged per patient (a factor's scores are low-information for patients lacking its indicators), never a
+  structural sub-model.
 
 > **A dimension requires indicators.** The model can discover a statistical dimension; it cannot discover
 > a construct that is not measured. A candidate with no valid indicators is reported `not_testable`, never
@@ -77,7 +82,7 @@ workbook) fixes the eligible model set. **This map is itself a primary result of
 
 | Candidate | Verdict | Role in the model | Indicators (FACE common) | Cohorts |
 |---|---|---|---|---|
-| 7 Overall Severity | core anchor | **G** (general factor) | CGI-S, EGF⁻, EQ5D-VAS⁻, hospitalization, work-stop, functioning | 3-cohort |
+| 7 Overall Severity | core anchor | **G** (functional burden — one job) | CGI-S, EGF⁻, EQ5D-VAS⁻, FAST, work-stoppage, employment — functioning + global severity **only** | 3-cohort |
 | 2 Cognitive Flexibility | core | **cognition** | TMT-B (resid. on TMT-A/age/edu/site), WAIS coding/digit-span, fluency | 3-cohort |
 | 5 Metabolism/Immuno | core — **split** | **metabolic** + **inflammatory** | BMI, waist, BP, glucose, HbA1c, lipids / logCRP, WBC, neutrophils, platelets | 3-cohort |
 | 6 Sleep / Circadian | core (sleep) | **sleep** | PSQI total + 7 sub-scores (ESS/CSM circadian = BP/DR extension) | 3-cohort |
@@ -94,9 +99,13 @@ not survive as a standalone factor and could merge into `G` or be rejected). Thr
 for lack of indicators — *stating this is a result, not a failure.*
 
 Notes that the data will adjudicate, not us: (i) `metabolic` vs `inflammatory` is a hypothesised **split**
-of candidate 5; (ii) `developmental-risk` is a **proxy** relabelling of candidate 9; (iii) depression
-instruments (MADRS, QIDS-total) are **severity (G)** indicators and the anhedonia *item* anchors
-`anhedonia` — there is no separate affective factor in this ontology.
+of candidate 5; (ii) `developmental-risk` is a **proxy** relabelling of candidate 9; (iii) the composite
+depression/anxiety instruments (`madrs`, `qidsr120`, `staya`) are **cross-loading windows**, not a
+dimension: each is seeded `plausible_cross` on the axes it clinically touches (`G`, anhedonia, sleep,
+suicidality, cognition) and the data place it — there is **no separate affective factor and no 11th
+"depression" dimension** (one may only *emerge* via model comparison, §6). `G` does **one job** —
+transdiagnostic functional burden, anchored by functioning + global severity **only** — so symptom
+severity informs the axes it belongs to rather than contaminating the general factor.
 
 ### 2.1 Soft-prior loading roles
 
@@ -135,11 +144,32 @@ variables**, re-allocated as:
 | inflammatory / metabolic comorbidity flags (psoriasis, eczema, migraine / HTA, CV, endocrine) | **inflammatory / metabolic** (soft) | ~10 | binary comorbidity signal, adjudicated |
 | hormonal Tx, menopause, QT/RR, height, smoking-history ages, PRISE-M | `covariate_only` | ~8 | genuine confounders, not indicators |
 
-After re-allocation **~185 of 201** usable variables enter the model as indicators; the rest are
-covariates / identifiers. **The 2-cohort blocks are flagged:** those factor parts are estimated from BP/DR
-only (observed-likelihood; SZ contributes no cells), so their transdiagnosticity is *partial by design* —
-declared in adjudication, never assumed. The exact per-variable prior matrix is the machine-readable
-single source in `configs/`; this section states the principle and the coverage.
+As encoded (`configs/dimensions.yaml` → `prior_loading_matrix_v3.csv`), **143 of 201 usable variables
+enter as modeled indicators** across **10 factors** (G + 9 specifics: cognition, metabolic, inflammatory,
+sleep, suicidality, developmental-risk, anhedonia, mania_activation, substance) plus **3 cross-loading
+windows** (`madrs`/`qidsr120`/`staya`). The remaining ~58 are covariates / identifiers — including
+ambiguous-direction labs (electrolytes, red-cell indices), CGI improvement/efficacy ratings, ECG
+intervals, reproductive/hormonal and smoking-history confounders, and nominal suicide-method types. **Where
+an instrument is unobserved for a cohort, its cells are simply missing** (observed likelihood; no cohort
+sub-model), so a factor's transdiagnosticity is *adjudicated and flagged*, never assumed.
+
+### 2.3 The atlas, and the theory-vs-data comparison (the deliverable)
+
+The map is reported as two aligned **atlases** and their comparison — this *is* the scientific story:
+
+- **Prior atlas** — the soft-prior loading matrix, drawn as an indicator×factor heatmap (theory: where each
+  instrument is *expected* to load). Generable now from `configs/` alone.
+- **Empirical atlas** — the posterior loading matrix `Λ` from the fitted global model (data: where each
+  instrument *actually* loads, with uncertainty) + the factor-correlation matrix `Φ`.
+- **Prior → posterior comparison** — the two heatmaps side by side, with a per-candidate verdict
+  (`confirmed | split | merged | proxy | rejected | not_testable`; §6). It shows the 10 theoretical
+  candidates being **confirmed, reshaped, or dropped by the FACE data** — the hybrid model adjusting theory
+  with evidence.
+
+It is *expected* that some candidates do not survive (sensory, negative symptoms, impulsivity have no
+instruments; anhedonia is thin). Demonstrating **which** survive, **how** they reshape (e.g. metabolic
+splitting from inflammatory), and that they were earned from cohort data — with uncertainty and validation
+— is the scientific and clinical value of the measurement layer.
 
 ---
 

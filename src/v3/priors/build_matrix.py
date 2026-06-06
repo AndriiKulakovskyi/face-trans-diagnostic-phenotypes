@@ -143,6 +143,12 @@ def resolve_ontology(dims: dict) -> dict[str, Any]:
         for it in fac.get("covariate_only", []) or []:
             covariate_only.add(it)
 
+    # cross-loading 'window' indicators: NO home factor; a plausible-cross prior on each
+    # listed factor and a soft-zero everywhere else (composite symptom scores, e.g. MADRS).
+    cross_loaders: dict[str, list[str]] = {
+        it: list(facs) for it, facs in (dims.get("cross_loading_indicators") or {}).items()
+    }
+
     all_factors = ([g_key] if g_key else []) + factors
     return {
         "factors": factors,
@@ -152,6 +158,7 @@ def resolve_ontology(dims: dict) -> dict[str, Any]:
         "item_sign": item_sign,
         "item_cross": item_cross,
         "g_anchors": g_anchors,
+        "cross_loaders": cross_loaders,
         "covariate_only": covariate_only,
     }
 
@@ -166,8 +173,9 @@ def build_prior_matrix(configs_dir: Path | None = None,
     g_key = onto["g_key"]
     all_factors = onto["all_factors"]
 
-    # full modeled item set = specific-factor primaries + G anchors (minus covariate_only)
-    items = sorted(set(onto["item_home"]) | set(onto["g_anchors"]))
+    # full modeled item set = specific-factor primaries + G anchors + cross-loading windows
+    # (minus covariate_only)
+    items = sorted(set(onto["item_home"]) | set(onto["g_anchors"]) | set(onto["cross_loaders"]))
     items = [it for it in items if it not in onto["covariate_only"]]
 
     rows: list[dict[str, Any]] = []
@@ -195,11 +203,19 @@ def build_prior_matrix(configs_dir: Path | None = None,
             missing_lik.append(it)
             lik = "gaussian"  # safe default; flagged below
         is_g_anchor = it in onto["g_anchors"]
+        is_cross = it in onto["cross_loaders"]
         home = onto["item_home"].get(it)
         sign = onto["item_sign"].get(it, onto["g_anchors"].get(it, +1))
         crosses = onto["item_cross"].get(it, [])
+        xl_facs = onto["cross_loaders"].get(it, [])
 
         for fac in all_factors:
+            if is_cross:
+                # multi-dimensional window: plausible on listed factors, soft-zero elsewhere; NO home cell
+                tier = "plausible_cross" if fac in xl_facs else "unlikely_cross"
+                why = "cross-loading window" if fac in xl_facs else "soft-zero complement"
+                rows.append(tier_row(it, fac, tier, sign, lik, why))
+                continue
             if is_g_anchor:
                 if fac == g_key:
                     rows.append(tier_row(it, fac, "g_anchor", sign, lik, "G dedicated anchor"))

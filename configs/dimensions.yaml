@@ -1,78 +1,80 @@
-# configs/dimensions.yaml — V3 modeling ontology (config-first single source of truth)
+# configs/dimensions.yaml — measurement-model ontology (single human-authored source of truth)
 # =====================================================================================
-# This file defines the LATENT FACTORS of the V3 measurement model and the FULL
-# indicator pool seeded onto each. It is read directly by the soft-prior ESEM-bifactor
-# engine (src/v3/latent_models/bayesian) and the prior-matrix builder
-# (src/v3/priors/build_matrix.py). There is NO hard-coded SPEC anywhere in the model.
+# Read by src/.../priors/build_matrix.py + the Bayesian ESEM-bifactor engine. There is NO
+# hard-coded SPEC anywhere in the model. Methods of record: docs/MEASUREMENT_MODEL.md.
 #
-# Principles (enforced by tests/v3):
-#   * The 10+ candidate dimensions are SOFT PRIORS, not fixed scores. The data may
-#     confirm / split / merge / reject / downgrade / cross-load any of them.
-#   * Diagnosis (cohort/arm) is a covariate / validation label, NEVER an indicator.
-#   * No naive imputation: every indicator is modeled on its observed cells only.
-#   * `is_general_factor: true` marks the candidate general factor G (overall_severity),
-#     which receives DEDICATED anchors and is held orthogonal to the specific factors
-#     (bifactor identification). Whether G survives is ADJUDICATED, not assumed.
-#   * `model_factor: true`  -> becomes a latent factor in the measurement model.
-#     `model_factor: false` -> adjudicated as covariate / proxy / historical only
-#                              (kept for validation, not estimated as a latent factor).
+# PRINCIPLES (the agreed design — see MEASUREMENT_MODEL §1–§3):
+#   * Hybrid discovery. The 10 candidate dimensions are SOFT PRIORS, not fixed scores.
+#     The data may confirm / split / merge / downgrade / reject / cross-load any of them.
+#   * ONE global factor structure on the harmonized matrix. Cohort is NOT structural:
+#     instruments missing for a cohort are simply MISSING CELLS (observed-likelihood, no
+#     imputation). There are NO cohort "modules" or "extensions"; coverage is emergent and
+#     flagged per patient (low-information scores where indicators are unobserved).
+#   * G does ONE job: transdiagnostic functional burden / illness severity, anchored by
+#     FUNCTIONING + GLOBAL-SEVERITY measures ONLY (NOT symptom content), held orthogonal to
+#     the specifics (bifactor). Whether G survives / how it relates to biology is ADJUDICATED.
+#   * An instrument is a (possibly multi-dimensional) WINDOW, not a dimension. Composite
+#     symptom scores (MADRS / QIDS / STAI) do not get their own factor — they CROSS-LOAD onto
+#     the axes they touch (`cross_loading_indicators`), and the data place them. A depression
+#     factor is not assumed; it may only EMERGE via model comparison.
+#   * Over-seeding is SAFE: a weak indicator shrinks toward 0 under its soft prior, so we seed
+#     every construct-relevant usable variable; `covariate_only` is reserved for true
+#     confounders / ambiguous-direction / identifiers.
 #
-# Per-item likelihood family lives in configs/likelihoods.yaml (single source).
-# Prior tiers (primary / plausible_cross / unlikely) are expanded by priors.yaml rules
-# into the full prior_loading_matrix. `sign: pos|neg` orients higher = more burden.
+# Tiers (mean/sd/dist/sign) live in priors.yaml; per-item likelihood in likelihood_map_v3.yaml.
+# `sign: pos|neg` orients higher = more burden. `model_factor: true` -> a latent factor.
 
 meta:
-  version: "v3.1"
-  visit: "V0"                      # baseline only
-  cohort_balance: "subsample_500_most_complete"   # BP/SZ/DR equalized; 1/n weighting in atlas
+  version: "v4.0"
+  visit: "V0"                       # baseline only
   orientation: "higher = more burden / more severe"
   notes: >
-    Initial soft ontology = 10 candidate dimensions + 4 measured extensions
-    (affective_internalizing, mania_activation, substance, neurodevelopment) + the
-    candidate general factor (overall_severity). Final set is the model's output.
+    10 candidate dimensions (soft priors) + 2 measured candidate factors kept for
+    adjudication (mania_activation, substance). G = functional burden (functioning/severity
+    anchors only). MADRS/QIDS/STAI are cross-loading windows, not a factor. Final set is the
+    model's output, mapped back to the candidates in the dimension atlas.
 
 # ---------------------------------------------------------------------------------
-# GENERAL FACTOR (candidate) — dedicated anchors, held orthogonal to specifics.
-# This is the rescue of the "no general factor" question: the earlier bifactor
-# failed because G had NO dedicated anchors and competed with the specifics. Here G
-# is built from severity/functioning indicators that load on G ONLY.
+# GENERAL FACTOR G — transdiagnostic functional burden / illness severity.
+# Anchored by FUNCTIONING + GLOBAL SEVERITY only (no symptom content). Loads on G only;
+# held orthogonal to specifics (bifactor). Correlated-G is a labeled sensitivity arm.
 # ---------------------------------------------------------------------------------
 general_factor:
   key: overall_severity
   is_general_factor: true
   model_factor: true
   role: candidate_general
-  label: "Overall clinical severity / functioning (G)"
-  anchors:                         # load on G only (sd~0 on every specific factor)
-    pos: [cgi01, cgi02, cgi03, cgi03a, cgi03b, lvsbjind]   # CGI severity/illness
-    neg: [egf, eq5d, eq5d0206, fast29]                      # functioning/QoL: higher = better -> neg
-  extended:                        # functional-impairment items (FAST), higher = worse
-    pos: [fast, fast25, fast26, fast27, fast28, fast30]
-  count_anchors:
-    pos: [nboccur_hospitalisation_lt]                       # hospitalization burden
+  label: "Transdiagnostic functional burden / illness severity (G)"
+  anchors:
+    pos: [cgi01, lvsbjind]                 # CGI-Severity + subjective illness
+    neg: [egf, eq5d, eq5d0206]             # functioning / QoL: higher = better -> neg burden
+  extended:
+    pos: [fast, fast25, fast26, fast27, fast28, fast30,    # FAST functional impairment
+          hooccur_arret_travail_actuel, hodur_arret_travail_actuel]   # work stoppage = burden
+    neg: [jobclas]                         # employed = lower burden
   rationale: >
-    All 3-cohort, well covered (cgi01 ~.88/.95/.95). Severity + functioning + service
-    use. Held orthogonal to specifics; adjudicated as confirmed-but-weak vs not-general.
+    Functioning + global severity ONLY — deliberately NOT symptom-specific, so G is the
+    cross-domain burden axis (the most transdiagnostic signal) rather than a depression/distress
+    factor. CGI-improvement/efficacy (cgi02/03/03a/03b) and hospitalization count are NOT
+    anchors (different constructs / degenerate count); they sit in covariates / illness_course.
 
 # ---------------------------------------------------------------------------------
-# SPECIFIC FACTORS (the transdiagnostic dimensions). FULL seeded pools.
+# SPECIFIC FACTORS (candidate transdiagnostic dimensions). Full seeded pools.
 # ---------------------------------------------------------------------------------
 factors:
 
   - key: cognition
     model_factor: true
     role: core
-    sign: neg                       # most neuropsych scores: higher = better -> neg (burden = low score)
+    sign: neg                       # most neuropsych scores: higher = better -> neg burden
     primary:
-      # full NEUROPSYCHOLOGIE pool (education_years excluded as covariate)
       neg: [cvlt_total_recall, cvlt_short_delay_free_recall, cvlt_long_delay_free_recall,
             wais_code_std, wais_digitspan_std, wais_ivt_index, wais_similitudes_std,
             verbal_fluency_phonemic, verbal_fluency_semantic]
       pos: [tmt_a_time_sec, tmt_b_time_sec]      # time: higher = worse -> pos burden
-    plausible_cross: [overall_severity]
     subdimensions:
       cognitive_flexibility: [tmt_b_time_sec, wais_code_std, wais_ivt_index]
-    rationale: "11-item full pool (was hand-picked 5/11). SZ-worst expected (validation)."
+    rationale: "Full NEUROPSYCHOLOGIE pool (3-cohort). SZ-worst expected (validation)."
 
   - key: metabolic
     model_factor: true
@@ -81,10 +83,18 @@ factors:
     primary:
       pos: [bmi, wstcir, weight, chol, ldl, cholhdl_lbstresc, trig, gluc, hba1c, urate,
             sysbpsupine, sysbpstanding, diabpsupine, diabpstanding]
-      neg: [hdl]                    # HDL protective: higher = better -> neg
+      neg: [hdl]                    # protective: higher = better -> neg
+    extended:                       # 2-cohort biology (missing-as-missing); soft signal
+      pos: [tsh_lbstresc, t3fr_lbstresc, t4fr_lbstresc,        # thyroid (metabolic)
+            alt_lbstresc, ast_lbstresc, ggt_lbstresc, alp_lbstresc, bili_lbstresc,  # liver
+            creat_lbstresc, urea_lbstresc,                     # renal function
+            hrsupine, hrstanding, eghrmn]                      # resting heart rate (autonomic)
+      neg: [vitd]                   # low vit-D ~ cardiometabolic risk -> neg
+    binary_anchors:
+      pos: [hta_mhoccur, autcardv_mhoccur, autendoc_mhoccur]   # cardiometabolic/endocrine comorbidity
     plausible_cross: [inflammatory]
-    covariate_only: [prolctn, qtc, oxcarbaz]    # drug/ECG confounds, not indicators
-    rationale: "~15-item metabolic-load core (was 6/26). Adiposity+lipids+glycemia+BP."
+    covariate_only: [prolctn, qtc, oxcarbaz]   # drug/ECG confounds, not indicators
+    rationale: "Cardiometabolic core + thyroid/liver/renal/HR biology + comorbidity flags."
 
   - key: inflammatory
     model_factor: true
@@ -92,113 +102,130 @@ factors:
     sign: pos
     primary:
       pos: [crp, wbc, neut, mono_lbstresc, plat]
-      neg: [lym_lbstresc]           # lymphopenia direction is ambiguous; soft, adjudicate
-    plausible_cross: [metabolic]
+      neg: [lym_lbstresc]           # ambiguous; soft, adjudicate
     extended:
-      pos: [eos, baso_lbstresc]     # granulocyte detail; weakly informative
-    rationale: "8-item innate-immune load. Split from metabolic is a key adjudication."
+      pos: [eos, baso_lbstresc]
+    binary_anchors:                 # inflammatory / allergic comorbidity (soft)
+      pos: [psoriasis_mhoccur, eczema_mhoccur, acne_mhoccur, toxidermi_mhoccur,
+            somat_all, migraine_mhoccur]
+    plausible_cross: [metabolic]
+    rationale: "Innate-immune load + inflammatory/allergic comorbidity. Split from metabolic is a key adjudication."
 
   - key: sleep
     model_factor: true
     role: core
     sign: pos
-    primary:                        # OBJECTIVE PSQI parameters (canonical, depression-clean)
-      pos: [psqi11, psqi12, psqi14]          # efficiency, duration, latency (oriented worse=pos)
-    plausible_cross: [affective_internalizing, overall_severity]
-    subjective_items:               # subjective PSQI: modeled but affective-cross (method overlap)
-      pos: [psqi, psqi13, psqi15, psqi17]    # global, disturbance, quality, daytime-dysfunction
-      cross: [affective_internalizing]
-    extension_BPDR: [ess0109, csm]  # Epworth / chronotype (BP/DR)
-    covariate_only: [psqi16]        # sleep-med use
+    primary:
+      pos: [psqi11, psqi12, psqi14]          # OBJECTIVE PSQI: efficiency / duration / latency
+    subjective_items:                        # subjective PSQI: modeled, with G cross (auto)
+      pos: [psqi, psqi13, psqi15, psqi17]    # global / disturbance / quality / daytime-dysfunction
+    extended:
+      pos: [ess0109]                         # Epworth sleepiness (missing-as-missing where absent)
+      neg: [csm]                             # morningness (higher = morning type); soft
+    covariate_only: [psqi16]                 # hypnotic use -> exposure covariate
     rationale: >
-      Canonical sleep = objective params only: psqi11/12/14 = efficiency/duration/latency
-      (per scripts/v3/06 decomposition; sleep x affective 0.68->0.54 once depression-
-      overlapping subjective items psqi13/15/17 = disturbance/quality/daytime are removed).
-      Subjective items kept with an affective cross-loading so the method overlap is
-      modeled, not hidden. PSQI components (0-3) modeled gaussian in the continuous core
-      (matches the certified model); ordinal-robustness is a Stage-3 sensitivity check.
-
-  - key: affective_internalizing
-    model_factor: true
-    role: core                      # promoted: was 'extension'; symptom axis is central
-    sign: pos
-    primary:
-      pos: [madrs, qidsr120, staya, qids_anhedonia_interest]   # depression/anxiety/anhedonia
-    plausible_cross: [overall_severity, sleep]
-    merges: [anhedonia]             # anhedonia merged here (qids item-13), not standalone
-    coverage: "BP/DR only — SZ contributes no affective cells (observed-likelihood handles it)"
-    rationale: "MADRS/QIDS/STAI + anhedonia. SZ affective score is a proxy via couplings."
-
-  - key: mania_activation
-    model_factor: true
-    role: module                    # measured 3-cohort (.96/.92/.70) — was dropped w/o adjudication
-    sign: pos
-    primary:
-      pos: [ymrs, altman]
-    plausible_cross: [overall_severity]
-    rationale: "YMRS + Altman. Re-instated for explicit adjudication (module/confirmed?)."
+      Canonical sleep = objective parameters (psqi11/12/14). Subjective items kept; their
+      depression overlap is captured by the MADRS/QIDS windows cross-loading onto sleep, not by
+      a separate affective factor. ESS/CSM (circadian) included as ordinary indicators.
 
   - key: suicidality
     model_factor: true
     role: core
     sign: pos
-    # MIXED LIKELIHOODS: bernoulli ideation/attempt + ordinal + count attempts.
+    # MIXED LIKELIHOODS: bernoulli ideation/attempt + ordinal intensity/lethality + count.
     primary:
-      pos: [isf01, isf02, isf03, isf04, isf05, isf07, isf08, isf08a, isf09, isf09a]
-    plausible_cross: [affective_internalizing]
-    extension_BPDR: []              # C-SSRS as DIF-aware extension later
-    rationale: "Full ISF pool (was 7/34), modeled with its native mixed likelihoods."
+      pos: [isf01, isf02, isf03, isf04, isf05, isf07, isf08, isf08a, isf09, isf09a,   # ISF core
+            cssrs01, cssrs02, cssrs03, cssrs04, cssrs05,                              # C-SSRS ideation
+            cssrs06, cssrs08, cssrs09, cssrs10, cssrs11, cssrs12,                     # C-SSRS intensity
+            ltsg01, ltsg05, ltsg06, ltsv02, ltsv04, ltsv05, ltsv06, ltsv07, ltsv09]   # attempt lethality
+    covariate_only: [ltsg02, ltsg03, ltsg04, ltsv01]    # method TYPE (nominal) — not severity
+    rationale: "Full ISF + C-SSRS + attempt-lethality, native mixed likelihoods. Method-type items are nominal -> covariate."
 
-  - key: neurodevelopment
+  - key: developmental_risk
     model_factor: true
-    role: proxy                     # 3-cohort but heterogeneous; adjudicate module/proxy
+    role: proxy
     sign: pos
     primary:
       pos: [wurs, ctq29, ctq31, ctq33, ctq35, ctq37, ctq39, ctq40, ctq41]   # ADHD-childhood + trauma
     binary_anchors:
-      pos: [epilepsie_mhoccur, autneuro_mhoccur, traumacra_mhoccur]
-    extended:                       # perinatal section (sparse, soft)
-      pos: [prembrth, naisstyp]
-      neg: [apgr0106_1min, apgr0106_5min, brthht, gstabrth]
-    covariate_only: [agedebutpremier_episode, agetrt, mere_suicide, pere_suicide]
-    rationale: "WURS+CTQ+neuro-history+perinatal. Proxy bundle; adjudicate, don't assume."
+      pos: [epilepsie_mhoccur, autneuro_mhoccur, traumacra_mhoccur,
+            mere_structure, pere_structure, honeonat]    # neuro-history + FAMILY psychiatric history + neonatal
+    extended:
+      pos: [prembrth, naisstyp, agepere]                 # prematurity / birth type / paternal age
+      neg: [apgr0106_1min, apgr0106_5min, brthht, gstabrth, brthcirc]   # perinatal protective factors
+    covariate_only: [agedebutpremier_episode, agetrt, mere_suicide, pere_suicide, agemere]
+    rationale: "Developmental-risk PROXY: WURS+CTQ+neuro-history+family-liability+perinatal. Adjudicate, don't assume."
+
+  - key: anhedonia
+    model_factor: true
+    role: candidate                 # THIN (1 direct item); likely merges into G or rejects
+    sign: pos
+    primary:
+      pos: [qids_anhedonia_interest]
+    rationale: "Single direct item + the MADRS/QIDS windows cross-load here. Expected to be thin; adjudicated."
+
+  - key: mania_activation
+    model_factor: true
+    role: candidate                 # measured 3-cohort (YMRS); kept for adjudication
+    sign: pos
+    primary:
+      pos: [ymrs, altman]
+    rationale: "YMRS (3-cohort) + Altman. Candidate factor (not in the original 10); confirm / reject."
 
   - key: substance
     model_factor: true
-    role: module
+    role: candidate                 # measured; partly 2-cohort (missing-as-missing)
     sign: pos
     primary:
-      pos: [fagers, sudose_cigarettes_lt]            # nicotine dependence/dose
+      pos: [fagers, sudose_cigarettes_lt]
     binary_anchors:
-      pos: [suoccur_alcool, suoccur_cannabis]        # lifetime SUD (BP/SZ 2-cohort)
-    covariate_only: [suncf_cigarettes_lt, agedebut_cigarettes_lt]
-    rationale: "Nicotine/alcohol/cannabis. Module; partly 2-cohort (observed-likelihood)."
+      pos: [suoccur_alcool, suoccur_cannabis]
+    covariate_only: [suncf_cigarettes_lt, agedebut_cigarettes_lt, agefin_cigarettes_lt]
+    rationale: "Nicotine dependence/dose + lifetime alcohol/cannabis SUD. Candidate factor; confirm / reject."
 
 # ---------------------------------------------------------------------------------
-# UNSUPPORTED candidates — seeded by the ontology but NOT enough 3-cohort indicators
-# to identify a factor. Kept here so the adjudication table records them explicitly
-# (rejected/unsupported), never silently dropped.
+# CROSS-LOADING INDICATORS — multi-dimensional 'windows' with NO single home factor.
+# Composite symptom scores that inform several axes. They get a plausible-cross prior on
+# each listed factor and a soft-zero everywhere else (NO primary cell). The data place them.
+# This is how MADRS/QIDS/STAI contribute WITHOUT forcing an 11th 'depression' dimension.
+# ---------------------------------------------------------------------------------
+cross_loading_indicators:
+  madrs:    [overall_severity, anhedonia, sleep, suicidality, cognition]
+  qidsr120: [overall_severity, anhedonia, sleep, suicidality, cognition]
+  staya:    [overall_severity, sleep]      # state anxiety: arousal/sleep + global severity
+
+# ---------------------------------------------------------------------------------
+# UNSUPPORTED candidates — seeded by the ontology but no usable 3-cohort indicators.
+# Recorded so the adjudication table reports them explicitly (never silently dropped).
 # ---------------------------------------------------------------------------------
 unsupported:
   - key: negative_symptoms
-    reason: "No dedicated 3-cohort negative-symptom instrument harmonized (PANSS SZ-only)."
+    reason: "No harmonized PANSS-negative / SANS across cohorts."
   - key: sensory_abnormalities
-    reason: "No harmonized sensory battery across cohorts."
+    reason: "No harmonized sensory / perceptual battery."
   - key: impulsivity
-    reason: "No direct 3-cohort impulsivity scale; represented via mania/substance proxies."
+    reason: "No direct impulsivity scale; informed indirectly via mania/substance cross-loadings."
 
 # ---------------------------------------------------------------------------------
-# NON-FACTOR candidates — adjudicated as historical/covariate (validation only).
+# NON-FACTOR — historical / service-use (validation covariates, not latent dimensions).
 # ---------------------------------------------------------------------------------
 non_factor:
   - key: illness_course
     role: historical
     items: [agedebutpremier_episode, agetrt, agedebut_hospitalisation,
             nboccur_hospitalisation_lt, hodur_hospitalisation_lt]
-    reason: "Course/history — validation covariates, not a latent symptom dimension."
+    reason: "Course / service-use — validation covariates, not a latent symptom dimension."
 
 # ---------------------------------------------------------------------------------
 # Covariates / validation labels — NEVER indicators, NEVER clustering features.
+# (Confounders, ambiguous-direction labs, identifiers, side-effect/exposure measures.)
 # ---------------------------------------------------------------------------------
-covariates: [age, sex, education_years, edulevel, siteid_city, arm, cohort, visit, visitnum, mars]
+covariates: [age, sex, education_years, edulevel, siteid_city, arm, cohort, visit, visitnum,
+             mars, height, stprof,
+             cgi02, cgi03, cgi03a, cgi03b,                       # improvement/efficacy (not severity)
+             hormonal_rporres, menostat_rporres, pregnn_rporres, # reproductive/hormonal confounds
+             qt, rr, prism,                                      # ECG intervals / side-effect inventory
+             k_lbstresc, sodium_lbstresc, cl_lbstresc, bicarb_lbstresc, ca_lbstresc, phos_lbstresc,  # electrolytes
+             hgb, mcv, rbc, hct_lbstresc, mch_lbstresc, mchc_lbstresc, iron_lbstresc,  # red-cell (ambiguous direction)
+             cheveux_mhoccur]
 validation_labels: [cohort, arm]

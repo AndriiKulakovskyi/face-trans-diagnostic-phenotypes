@@ -1,4 +1,6 @@
-# Auto-derived from dtype by scripts/v3_eligibility_audit.py — REVIEW per-variable.
+# configs/likelihood_map_v3.yaml — hand-maintained per-item likelihood SOURCE (V3).
+# Consumed by build_matrix.py. Families: gaussian | lognormal | student_t |
+# ordered_logistic | bernoulli | neg_binomial | poisson.
 likelihoods:
   acne_mhoccur: bernoulli
   age: gaussian
@@ -15,10 +17,13 @@ likelihoods:
   altman: gaussian
   apgr0106_1min: gaussian
   apgr0106_5min: ordered_logistic
+  arithstd_w: ordered_logistic
+  arm: ordered_logistic
   ast_lbstresc: lognormal:parse
   autcardv_mhoccur: bernoulli
   autendoc_mhoccur: bernoulli
   autneuro_mhoccur: bernoulli
+  avc_mhoccur: bernoulli
   baso_lbstresc: lognormal
   bicarb_lbstresc: gaussian
   bili_lbstresc: lognormal
@@ -26,9 +31,7 @@ likelihoods:
   brthcirc: gaussian
   brthht: gaussian
   ca_lbstresc: gaussian
-  # CGI severity ratings (1-7) modeled gaussian: they anchor the general factor G in the
-  # marginalized continuous block (one coherent G latent with FAST/EGF), rather than a
-  # parallel ordinal-Z G. Standard continuous approximation; ordinal robustness is a check.
+  cclin01: gaussian
   cgi01: gaussian
   cgi02: gaussian
   cgi03: gaussian
@@ -37,7 +40,10 @@ likelihoods:
   cheveux_mhoccur: bernoulli
   chol: gaussian
   cholhdl_lbstresc: gaussian
+  cirrhose_mhoccur: bernoulli
   cl_lbstresc: gaussian
+  clozapin: gaussian
+  coronar_mhoccur: bernoulli
   creat_lbstresc: lognormal
   creatclr_lbstresc: gaussian:parse
   crp: lognormal:parse
@@ -81,16 +87,20 @@ likelihoods:
   fast25: gaussian
   fast26: gaussian
   fast27: gaussian
-  fast28: gaussian        # FAST functional-impairment item -> continuous G/functioning anchor
+  fast28: gaussian
   fast29: gaussian
-  fast30: gaussian        # FAST functional-impairment item -> continuous G/functioning anchor
+  fast30: gaussian
+  fondacode: gaussian
+  genetique_mhoccur: bernoulli
   ggt_lbstresc: lognormal
   gluc: lognormal
   gstabrth: gaussian
   hba1c: lognormal
+  hcg_lbstresc: gaussian
   hct_lbstresc: gaussian
   hdl: gaussian
   height: gaussian
+  hepmedic_mhoccur: bernoulli
   hgb: gaussian
   hodur_arret_travail_actuel: bernoulli
   hodur_hospitalisation_lt: gaussian
@@ -100,6 +110,9 @@ likelihoods:
   hrstanding: gaussian
   hrsupine: gaussian
   hta_mhoccur: bernoulli
+  hvc_mhoccur: bernoulli
+  infarctus_mhoccur: bernoulli
+  inflachro_mhoccur: bernoulli
   iron_lbstresc: lognormal
   isf01: bernoulli
   isf02: bernoulli
@@ -127,20 +140,22 @@ likelihoods:
   ltsv06: ordered_logistic
   ltsv07: bernoulli
   ltsv09: bernoulli
-  lvsbjind: gaussian        # subjective illness rating -> continuous G severity anchor
+  lvsbjind: gaussian
   lym_lbstresc: lognormal
   madrs: gaussian
   mars: gaussian
+  mat_std_w: gaussian
   mch_lbstresc: gaussian
   mchc_lbstresc: gaussian
   mcv: gaussian
+  mdq: bernoulli
   menostat_rporres: bernoulli
   mere_structure: bernoulli
   mere_suicide: ordered_logistic
   migraine_mhoccur: bernoulli
   mono_lbstresc: lognormal
   naisstyp: bernoulli
-  nboccur_hospitalisation_lt: lognormal   # hospitalization count -> log1p continuous G service-use anchor
+  nboccur_hospitalisation_lt: lognormal
   neut: lognormal
   oxcarbaz: gaussian
   pere_structure: bernoulli
@@ -153,22 +168,21 @@ likelihoods:
   prolctn: lognormal
   prot_lbstresc: gaussian
   psoriasis_mhoccur: bernoulli
-  # PSQI component scores are 0-3; modeled gaussian in the continuous core (matches the
-  # certified model; standard in factor analysis). Ordinal-robustness is a Stage-3 check.
   psqi: gaussian
-  psqi11: gaussian        # efficiency (objective)
-  psqi12: gaussian        # duration (objective)
-  psqi13: gaussian        # disturbance (subjective)
-  psqi14: gaussian        # latency (objective)
-  psqi15: gaussian        # quality (subjective)
-  psqi16: gaussian        # sleep-med use (covariate_only)
-  psqi17: gaussian        # daytime-dysfunction (subjective)
+  psqi11: gaussian
+  psqi12: gaussian
+  psqi13: gaussian
+  psqi14: gaussian
+  psqi15: gaussian
+  psqi16: gaussian
+  psqi17: gaussian
   qids_anhedonia_interest: gaussian
   qidsr120: gaussian
   qt: gaussian
   qtc: gaussian
   rbc: gaussian
   rr: gaussian
+  sep_mhoccur: bernoulli
   sex: bernoulli
   siteid_city: gaussian
   sodium_lbstresc: gaussian
@@ -179,20 +193,28 @@ likelihoods:
   suncf_cigarettes_lt: ordered_logistic
   suoccur_alcool: bernoulli
   suoccur_cannabis: bernoulli
+  symbol04_w: gaussian
   sysbpstanding: gaussian
   sysbpsupine: gaussian
   t3fr_lbstresc: gaussian
   t4fr_lbstresc: gaussian
   tmt_a_time_sec: gaussian
   tmt_b_time_sec: gaussian
+  tmtba01: gaussian
   toxidermi_mhoccur: bernoulli
   traumacra_mhoccur: bernoulli
+  trbrycard_mhoccur: bernoulli
   trig: lognormal
   tsh_lbstresc: gaussian
+  ulcgasduo_mhoccur: bernoulli
   urate: lognormal
   urea_lbstresc: gaussian
+  usubjid_patients: gaussian
   verbal_fluency_phonemic: gaussian
   verbal_fluency_semantic: gaussian
+  vih_mhoccur: bernoulli
+  visit: gaussian
+  visitnum: gaussian
   vitd: gaussian
   wais_code_std: gaussian
   wais_digitspan_std: gaussian

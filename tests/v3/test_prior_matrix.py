@@ -67,12 +67,17 @@ def test_modeling_block_consistent(rows):
         assert r["modeling_block"] == exp, f"{r['item']}: block != family routing"
 
 
-def test_every_item_has_home_cell(rows):
-    """Every modeled item must anchor SOMEWHERE (primary or g_anchor) — no orphan items."""
+def test_every_item_has_home_cell(rows, dims):
+    """Every modeled item must anchor SOMEWHERE (primary or g_anchor), EXCEPT declared
+    cross-loading 'window' indicators, which by design have no home and must instead carry
+    at least one plausible_cross cell."""
     home = {r["item"] for r in rows if r["prior_type"] in ("primary", "g_anchor")}
-    allitems = {r["item"] for r in rows}
-    orphans = allitems - home
+    cross_loaders = set((dims.get("cross_loading_indicators") or {}).keys())
+    orphans = {r["item"] for r in rows} - home - cross_loaders
     assert not orphans, f"items with no primary/g_anchor home cell: {orphans}"
+    plausible = {r["item"] for r in rows if r["prior_type"] == "plausible_cross"}
+    homeless = cross_loaders - plausible
+    assert not homeless, f"cross-loaders with no plausible_cross cell: {homeless}"
 
 
 # ----------------------------------------------------------- general-factor identification
