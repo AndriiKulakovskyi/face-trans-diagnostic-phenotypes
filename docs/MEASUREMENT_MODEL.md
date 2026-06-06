@@ -158,7 +158,7 @@ sub-model), so a factor's transdiagnosticity is *adjudicated and flagged*, never
 The map is reported as two aligned **atlases** and their comparison — this *is* the scientific story:
 
 - **Prior atlas** — the soft-prior loading matrix, drawn as an indicator×factor heatmap (theory: where each
-  instrument is *expected* to load). Generable now from `configs/` alone.
+  instrument is *expected* to load). Generated now from `configs/` alone — see [`PRIOR_ATLAS.md`](PRIOR_ATLAS.md).
 - **Empirical atlas** — the posterior loading matrix `Λ` from the fitted global model (data: where each
   instrument *actually* loads, with uncertainty) + the factor-correlation matrix `Φ`.
 - **Prior → posterior comparison** — the two heatmaps side by side, with a per-candidate verdict

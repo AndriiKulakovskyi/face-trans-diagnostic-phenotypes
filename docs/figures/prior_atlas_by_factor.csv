@@ -1,0 +1,11 @@
+factor,n_primary,n_plausible_cross_in,likelihoods
+overall_severity,14,129,gaussian:11; bernoulli:3
+cognition,11,2,gaussian:11
+metabolic,32,14,gaussian:19; lognormal:10; bernoulli:3
+inflammatory,14,32,lognormal:8; bernoulli:6
+sleep,9,3,gaussian:9
+suicidality,30,2,bernoulli:14; ordered_logistic:14; gaussian:1; neg_binomial:1
+developmental_risk,23,0,gaussian:12; bernoulli:8; ordered_logistic:3
+anhedonia,1,2,gaussian:1
+mania_activation,2,0,gaussian:2
+substance,4,0,bernoulli:2; gaussian:1; neg_binomial:1
