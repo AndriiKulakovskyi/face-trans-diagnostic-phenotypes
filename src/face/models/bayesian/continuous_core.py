@@ -158,3 +158,67 @@ def build_model(prep: CorePrep):
         pm.Deterministic("lamG_full", lamG)
         pm.Deterministic("lamS_full", lamS)
     return model
+
+
+def build_marginalized(prep: CorePrep, psi_floor: float = 0.05):
+    """Marginalized (Woodbury, low-rank) bifactor — funnel-free, no per-patient latents.
+
+    Integrates G, D out (Phi = I): each patient's observed cells ~ MVN(0, Lam Lam' + diag(psi)).
+    Computed via the matrix-determinant lemma + Woodbury so the per-patient work is O(F^2)
+    (F = 1 + #specifics = 5), fully vectorized over patients with a 0/1 mask (no pattern
+    grouping, no patient dropped). Tiny parameter space -> mixes fast -> certifies on CPU.
+    Run via `pm.sample(nuts_sampler="numpyro")` so JAX vmap-vectorizes the batched k×k linalg.
+    """
+    import pymc as pm
+    import pytensor.tensor as pt
+
+    M = prep.M
+    N, J = M.shape
+    F = 1 + len(prep.spec_factors)
+    mask = (~np.isnan(M)).astype("float64")
+    x = np.nan_to_num(M, nan=0.0)
+    kobs = mask.sum(1)
+    log2pi = float(np.log(2.0 * np.pi))
+
+    gA = np.array(prep.g_anchor_items, "int64")
+    gS = np.array(prep.spec_items, "int64")
+    sp_k = np.array([prep.spec_home[j] for j in prep.spec_items], "int64")
+
+    def _a(items, d, i):
+        return np.array([d[j][i] for j in items], "float64")
+
+    with pm.Model() as model:
+        lamG = pt.zeros(J)
+        if len(gA):
+            vg = pm.TruncatedNormal("lamG_anchor", mu=_a(prep.g_anchor_items, prep.cellG, 0),
+                                    sigma=_a(prep.g_anchor_items, prep.cellG, 1), lower=0.0, shape=len(gA))
+            lamG = pt.set_subtensor(lamG[gA], vg)
+        if len(gS):
+            vgx = pm.Normal("lamG_spec", mu=_a(prep.spec_items, prep.cellGx, 0),
+                            sigma=_a(prep.spec_items, prep.cellGx, 1), shape=len(gS))
+            lamG = pt.set_subtensor(lamG[gS], vgx)
+        lamS = pt.zeros((J, F - 1))
+        if len(gS):
+            vsp = pm.TruncatedNormal("lamS_home", mu=_a(prep.spec_items, prep.cellHome, 0),
+                                     sigma=_a(prep.spec_items, prep.cellHome, 1), lower=0.0, shape=len(gS))
+            lamS = pt.set_subtensor(lamS[gS, sp_k], vsp)
+        Lam = pt.concatenate([lamG[:, None], lamS], axis=1)               # [J, F]
+
+        sigma = psi_floor + pm.HalfNormal("sigma", 1.0, shape=J)
+        psi = sigma ** 2
+        W = mask / psi[None, :]                                            # [N, J] precision (0 if missing)
+
+        P = W[:, :, None] * Lam[None, :, :]                                # [N, J, F]
+        A = pt.eye(F)[None, :, :] + (P.transpose(0, 2, 1) @ Lam)           # [N, F, F] = I + Lam'WLam
+        b = (W * x) @ Lam                                                  # [N, F] = Lam'Wx
+        Lc = pt.linalg.cholesky(A)                                         # batched (JAX-vectorized)
+        logdetA = 2.0 * pt.log(pt.diagonal(Lc, axis1=-2, axis2=-1)).sum(-1)
+        sol = pt.linalg.solve_triangular(Lc, b[:, :, None], lower=True)[:, :, 0]
+        quadA = (sol ** 2).sum(-1)
+        term1 = (W * x ** 2).sum(1)
+        logdetPsi = (mask * pt.log(psi)[None, :]).sum(1)
+        ll = -0.5 * (kobs * log2pi + logdetPsi + logdetA + term1 - quadA)  # [N]
+        pm.Potential("obs_ll", ll.sum())
+        pm.Deterministic("lamG_full", lamG)
+        pm.Deterministic("lamS_full", lamS)
+    return model

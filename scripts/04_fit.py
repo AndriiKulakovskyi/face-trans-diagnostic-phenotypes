@@ -27,26 +27,29 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 warnings.filterwarnings("ignore")
 
-from face.models.bayesian.continuous_core import S1_FACTORS, build_model, prepare  # noqa: E402
+from face.models.bayesian.continuous_core import (  # noqa: E402
+    S1_FACTORS, build_marginalized, build_model, prepare)
 
 REPORTS = REPO / "reports"
 GATES = dict(rhat=1.01, ess=400.0, div=0, heywood=2.5)
 
 
-def run(stage: int = 1, subsample: int | None = None, gpu: bool = False,
-        draws: int = 1000, tune: int = 1000, chains: int = 4) -> dict:
+def run(stage: int = 1, subsample: int | None = None, marginalized: bool = True,
+        gpu: bool = False, draws: int = 1000, tune: int = 1000, chains: int = 4) -> dict:
     import arviz as az
     import pymc as pm
 
     prep = prepare(S1_FACTORS, n_subsample=subsample)
     factors = ["overall_severity"] + prep.spec_factors
     N, J = prep.M.shape
-    print(f"Stage {stage}: N={N} J={J} factors={factors} | "
+    mode = "marginalized (Woodbury)" if marginalized else "explicit-latent"
+    print(f"Stage {stage} [{mode}]: N={N} J={J} factors={factors} | "
           f"G-anchors {len(prep.g_anchor_items)} · specific {len(prep.spec_items)} · "
           f"obs cells {int((~np.isnan(prep.M)).sum()):,}")
-    model = build_model(prep)
+    model = build_marginalized(prep) if marginalized else build_model(prep)
+    use_numpyro = marginalized or gpu          # marginalized needs the JAX backend (batched k×k linalg)
     with model:
-        if gpu:
+        if use_numpyro:
             idata = pm.sample(draws=draws, tune=tune, chains=chains, target_accept=0.95,
                               random_seed=20260605, nuts_sampler="numpyro",
                               idata_kwargs={"log_likelihood": False})
@@ -54,10 +57,10 @@ def run(stage: int = 1, subsample: int | None = None, gpu: bool = False,
             idata = pm.sample(draws=draws, tune=tune, chains=chains, cores=1, target_accept=0.95,
                               random_seed=20260605, progressbar=False, init="jitter+adapt_diag",
                               idata_kwargs={"log_likelihood": False})
-    return _diagnose_write(stage, prep, idata, az)
+    return _diagnose_write(stage, prep, idata, az, marginalized)
 
 
-def _diagnose_write(stage, prep, idata, az) -> dict:
+def _diagnose_write(stage, prep, idata, az, marginalized=True) -> dict:
     out = REPO / "results" / "face" / f"stage{stage}"
     out.mkdir(parents=True, exist_ok=True)
     REPORTS.mkdir(parents=True, exist_ok=True)
@@ -92,12 +95,14 @@ def _diagnose_write(stage, prep, idata, az) -> dict:
                 ess_min=round(ess, 1), divergences=div, heywood=heywood, certified=cert)
     (out / "diagnostics.json").write_text(json.dumps(diag, indent=2))
 
-    # per-patient factor scores (gitignored)
-    sc = pd.DataFrame({"cohort": prep.cohort, "G": post["G"].mean(("chain", "draw")).values})
-    Dm = post["D"].mean(("chain", "draw")).values
-    for i, f in enumerate(spec):
-        sc[f] = Dm[:, i]
-    sc.to_csv(out / "factor_scores.csv", index=False)
+    # per-patient factor scores: explicit-latent only. The marginalized model integrates the
+    # latents out, so scores are computed post-hoc later (regression/Thomson) for stratification.
+    if "G" in post:
+        sc = pd.DataFrame({"cohort": prep.cohort, "G": post["G"].mean(("chain", "draw")).values})
+        Dm = post["D"].mean(("chain", "draw")).values
+        for i, f in enumerate(spec):
+            sc[f] = Dm[:, i]
+        sc.to_csv(out / "factor_scores.csv", index=False)
     try:
         idata.to_netcdf(str(out / "idata.nc"))
     except Exception:
@@ -105,7 +110,8 @@ def _diagnose_write(stage, prep, idata, az) -> dict:
 
     gA = load[load.kind == "g_anchor"].sort_values("loading", ascending=False)
     md = [f"# Stage {stage} — continuous-core bifactor (full-N V0)", "",
-          f"N={diag['N']:,} · J={diag['J']} · factors={diag['factors']}. Explicit-latent, "
+          f"N={diag['N']:,} · J={diag['J']} · factors={diag['factors']}. "
+          f"{'Marginalized (Woodbury)' if marginalized else 'Explicit-latent'}, "
           "observed-cell Gaussian likelihood, no imputation.", "",
           f"## Certification — {'**CERTIFIED**' if cert else '**NOT certified — provisional**'}",
           f"- max R-hat **{rhat:.3f}** · min ESS {ess:.0f} · divergences {div} · Heywood {heywood} "
@@ -129,12 +135,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", type=int, default=1)
     ap.add_argument("--subsample", type=int, default=None)
-    ap.add_argument("--gpu", action="store_true", help="sample via NumPyro/JAX (CUDA)")
+    ap.add_argument("--explicit", action="store_true",
+                    help="explicit-latent engine (default: marginalized Woodbury via NumPyro)")
+    ap.add_argument("--gpu", action="store_true", help="route NUTS through NumPyro/JAX (CUDA box)")
     ap.add_argument("--draws", type=int, default=1000)
     ap.add_argument("--tune", type=int, default=1000)
     ap.add_argument("--chains", type=int, default=4)
     a = ap.parse_args()
-    run(a.stage, a.subsample, a.gpu, a.draws, a.tune, a.chains)
+    run(a.stage, a.subsample, marginalized=not a.explicit, gpu=a.gpu,
+        draws=a.draws, tune=a.tune, chains=a.chains)
 
 
 if __name__ == "__main__":
