@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from trans_diag.rules import RULES
-from trans_diag.skip_logic import SkipRule, decode_skip_logic
+from v3.data.rules import RULES
+from v3.data.skip_logic import SkipRule, decode_skip_logic
 
 
 def test_fills_structural_zero_only_where_gate_no_and_missing():
@@ -80,7 +80,7 @@ def test_isf07_inequality_rule_decodes_ceiling_and_comma():
     reason="confidential cohort CSVs absent (clean clone)",
 )
 def test_integration_recovers_isf07_coverage():
-    from trans_diag import (
+    from v3.data import (
         build_unified_dataframe,
         load_variables,
         to_harmonized_dataset,

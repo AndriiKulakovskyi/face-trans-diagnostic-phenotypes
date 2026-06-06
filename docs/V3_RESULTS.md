@@ -4,7 +4,7 @@
 > headline — *"no general factor"* — was **overturned** by the config-first engine, which adds the
 > severity/functioning anchors `G` is built from and finds a general factor `G` (functional impairment /
 > distress), orthogonal to biology. **Current state: [`STATE.md`](STATE.md).** The scripts referenced
-> below now live in `scripts/v3/legacy/`. Kept for provenance; a new results page will be regenerated
+> below have since been removed (in git history). Kept for provenance; a new results page will be regenerated
 > once the new engine certifies Stage ≥ 3. Original page follows, unchanged.
 
 ## The model

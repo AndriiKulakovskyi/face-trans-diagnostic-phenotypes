@@ -1,4 +1,4 @@
-"""Unit tests for trans_diag.filters.
+"""Unit tests for v3.data.filters.
 
 Synthetic long-format frames cover:
 
@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from trans_diag.filters import (
+from v3.data.filters import (
     IDENTIFIER_COLUMNS,
     VariableFilterReport,
     filter_patients,

@@ -7,7 +7,7 @@ Paper-oriented log of empirical + methodological findings for **V3**. Plan of re
 > **Status.** Current state: [`STATE.md`](STATE.md). The measurement engine is converged through Stage 2
 > (a general factor `G` = functional impairment/distress identifies, ⊥ biology — this **overturned** the
 > earlier "no general factor"); strata / prognosis / treatment (Phases J–M) are not yet built. The
-> first-generation results (V3-3…7 below) used the now-quarantined Engine A (`scripts/v3/legacy/`).
+> first-generation results (V3-3…7 below) used the now-removed first-generation Engine A (in git history).
 
 ## V3 log
 
@@ -164,5 +164,5 @@ Paper-oriented log of empirical + methodological findings for **V3**. Plan of re
   metabolic×inflammatory 0.17, cognition×metabolic 0.18, sleep×affective 0.32). **Stage 3** (sharpen `G`
   with CGI severity) **not yet converged** (R-hat 1.53); **Stage 4** (mixed-likelihood
   suicidality/substance) coded, not run. **Verdict:** "no general factor" overturned; "symptoms/severity
-  ⊥ biology" strengthened. Engine A quarantined to `scripts/v3/legacy/`; scripts renumbered (10/11 →
+  ⊥ biology" strengthened. Engine A removed (first-generation); scripts renumbered (10/11 →
   03/04). Current state + caveats: [`STATE.md`](STATE.md).

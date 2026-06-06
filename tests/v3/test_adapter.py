@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from trans_diag.adapter import (
+from v3.data.adapter import (
     ADMINISTRATIVE_FEATURES,
     CLINICAL_SECTIONS,
     COHORT_TO_CODE,
@@ -26,8 +26,8 @@ from trans_diag.adapter import (
     residualize_features,
     to_harmonized_dataset,
 )
-from trans_diag.schema_gen import _slug, build_feature_schema, feature_cohorts
-from trans_diag.variable import Variable
+from v3.data.schema_gen import _slug, build_feature_schema, feature_cohorts
+from v3.data.variable import Variable
 
 # ---------------------------------------------------------------------------
 # Fixtures

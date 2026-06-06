@@ -125,7 +125,7 @@ VERIFY_IMPORTS = [
     # figures extra
     "kaleido",
     # the package itself
-    "trans_diag",
+    "v3",
 ]
 
 
@@ -157,13 +157,15 @@ def print_activation_hint() -> None:
   Activate the environment:
       {activate}
 
-  Then run the pipeline:
-      python scripts/00_run_all.py      # full v2 manuscript pipeline
-      python -m pytest tests/ -q        # 99 unit + golden-number tests
-      python scripts/verify.py          # harmonization smoke test
+  Then run the V3 pipeline (see docs/STATE.md):
+      python scripts/v3/01_eligibility_audit.py           # eligibility + coverage
+      python scripts/v3/02_missingness_atlas.py           # missingness mechanism
+      python scripts/v3/03_build_prior_matrix.py          # config -> prior matrix
+      python scripts/v3/04_fit_measurement.py --stage 1   # measurement model
+      python -m pytest tests/ -q                          # unit tests
 
   Or use the venv Python directly without activating:
-      .venv/bin/python scripts/00_run_all.py
+      .venv/bin/python scripts/v3/04_fit_measurement.py --stage 1
 
   To update pinned deps after editing pyproject.toml:
       python3 install.py --lock
@@ -181,7 +183,7 @@ def main() -> None:
     parser.add_argument("--force",  action="store_true", help="Wipe existing .venv and reinstall from scratch")
     args = parser.parse_args()
 
-    print("\n  FACE trans-diagnostic phenotypes — environment setup")
+    print("\n  FACE precision psychiatry (BP·SZ·DR) — V3 environment setup")
     print(f"  Project root: {ROOT}\n")
 
     check_python_version()

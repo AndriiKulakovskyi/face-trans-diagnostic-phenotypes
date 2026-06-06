@@ -334,6 +334,26 @@ the results page + figures from the new engine → Phase H invariance.
 
 ---
 
+## V3-9 · Delete V2 + first-generation engine — clean V3-only base — 2026-06-06
+
+**What we did.** Removed the V2 benchmark arm (`src/trans_diag/`, the V2 `scripts/*.py` pipeline,
+`docs/legacy_v2/`, V2 `results/`+`reports/`) and the first-generation Engine A (`scripts/v3/legacy/`,
+the V3-8b quarantine). Re-pointed the four data-layer test files (`test_adapter`, `test_filters`,
+`test_skip_logic`, `test_sanity_and_encoding`) from `trans_diag` → `v3.data` and moved them under
+`tests/v3/`, so the harmonization / skip-logic / sanity foundation stays tested — now against the V3
+fork the pipeline actually uses. Deleted the five V2-only test files. Updated `pyproject.toml`
+(`packages = ["src/v3"]`, name `face-v3`) and `conftest.py`.
+
+**Result.** A V3-only tree: `src/v3` · `scripts/v3/01–04` · `configs/` · `tests/v3/` (**84 passing**) ·
+V3 docs. **Zero `trans_diag` references remain.** Everything deleted is recoverable from git history.
+
+**Why.** Two parallel engines + a V2 arm + stale docs caused the earlier confusion. A minimal, tested,
+single-engine base is the precondition for re-thinking the roadmap (phases/stages) from a place we trust.
+
+**Next.** Re-think the roadmap/plan on this clean base; then certify Stage 3.
+
+---
+
 ## Open questions for review
 
 1. ~~**Convergence bar.**~~ **RESOLVED (V3-5):** the marginalized model certifies (R-hat 1.010, 0 div) —

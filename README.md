@@ -50,7 +50,7 @@ carries each variable's native type (no shared rescaling).
 ├── data/            face-common-vars.xlsx (dictionary) · thesaurus/ · *.csv (confidential) · site_lookup.csv
 ├── src/v3/          data/ (harmonization, no-imputation) · latent_models/bayesian/ (the engine) · priors/ (prior-matrix builder)
 ├── configs/         ontology + contract: dimensions · priors · likelihoods · bayesian_model · prior_loading_matrix_v3
-├── scripts/v3/      01_eligibility_audit · 02_missingness_atlas · 03_build_prior_matrix · 04_fit_measurement   (legacy/ = superseded Engine A)
+├── scripts/v3/      01_eligibility_audit · 02_missingness_atlas · 03_build_prior_matrix · 04_fit_measurement
 ├── tests/           unit tests
 ├── results/v3/      regenerated aggregates: eligibility/ · missingness/ · bayesian/ · bayesian_ext/ · sleep_sensitivity/ (gitignored; empty on a clean tree)
 └── docs/            V3_PLAN · ROADMAP · PIPELINE · DATA · FINDINGS · LABBOOK_V3 · V3_RESULTS · neuropsy_features.yaml · figures/v3/

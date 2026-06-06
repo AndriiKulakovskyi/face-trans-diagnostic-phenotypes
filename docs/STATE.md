@@ -59,21 +59,20 @@ ESS ≥ 400 · no Heywood). See caveats — this is **convergence**, not scienti
   with the number of indicators.
 - Results are through **Stage 2**; the severity-sharpened `G` (Stage 3) is not yet converged.
 
-## File map — canonical vs legacy
+## File map (V3-only — V2 and the first-generation engine were deleted)
 
-- **Foundation (shared):** `src/v3/data/` · `scripts/v3/01,02` ·
-  `configs/candidate_dimensions_v3.yaml`, `likelihood_map_v3.yaml`.
+- **Foundation:** `src/v3/data/` · `scripts/v3/01,02` · `configs/candidate_dimensions_v3.yaml`,
+  `likelihood_map_v3.yaml`, `soft_loading_priors_v3.csv` (the last three are audit outputs of `01`).
 - **Canonical engine:** `src/v3/latent_models/bayesian/` · `src/v3/priors/` · `scripts/v3/03,04` ·
   `configs/dimensions.yaml`, `priors.yaml`, `likelihoods.yaml`, `bayesian_model.yaml`,
   `prior_loading_matrix_v3.csv`.
-- **Legacy (quarantined, superseded):** `scripts/v3/legacy/` (old `03_bayesian_core`,
-  `04_extended_model`, `05_visualize`, `06_sleep_affect_sensitivity`) ·
-  `configs/soft_loading_priors_v3.csv` (by-product of `01`) · `docs/figures/v3/*.png` (old-engine
-  figures — regenerate once Stage ≥ 3 certifies) · `docs/V3_RESULTS.md` (old headline; reconciled).
+- **Tests:** all under `tests/v3/` — foundation (`test_adapter`, `test_filters`, `test_skip_logic`,
+  `test_sanity_and_encoding`, now testing `v3.data`) + engine (`test_prior_matrix`). **84 passing.**
+- **Superseded but kept:** `docs/V3_RESULTS.md` (old headline, banner-marked) · `docs/figures/v3/*.png`
+  (first-generation figures — regenerate once Stage ≥ 3 certifies). Deleted code is in git history.
 
 ## Cleanup debt (tracked, not yet done)
 
-- **Two ontology files:** `candidate_dimensions_v3.yaml` (eligibility) vs `dimensions.yaml`
-  (modeling). Unify onto `dimensions.yaml` once `01`/`02` are migrated.
-- `src/trans_diag/` is the **V2 benchmark** package (still present; the 100+ passing root tests cover
-  it). Not part of V3.
+- **Two ontology files:** `candidate_dimensions_v3.yaml` (eligibility, read by `01`/`02`) vs
+  `dimensions.yaml` (modeling). Unify onto `dimensions.yaml` once `01`/`02` are migrated — defer to the
+  roadmap re-think.

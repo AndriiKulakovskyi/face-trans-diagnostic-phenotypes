@@ -42,7 +42,7 @@ eligibility + the full A–T plan: [docs/V3_PLAN.md](docs/V3_PLAN.md).
   via `scripts/v3/` (01 eligibility · 02 missingness · 03 build-prior-matrix · 04 fit-measurement).
   **Headline:** a general factor `G` (functional impairment / distress) **identifies, orthogonal to
   metabolic/inflammatory biology** — this overturns the earlier "no general factor." The first-generation
-  engine is quarantined in `scripts/v3/legacy/`. **Current state + caveats:** [docs/STATE.md](docs/STATE.md).
+  engine has since been removed (V2 + Engine A deleted; in git history). **Current state + caveats:** [docs/STATE.md](docs/STATE.md).
 - ⬜ **Downstream decision layers NOT yet built.** The strata / prognosis / treatment layers
   (Phases E–M) are unimplemented. Do not describe them as done.
 
@@ -100,11 +100,11 @@ face-common-bp-sz-dr/
 ├── src/v3/latent_models/bayesian/      ← the measurement engine (config-first ESEM-bifactor); src/v3/priors/ builds the prior matrix
 │       ←  modules still to ADD: fiml/ · missingness/ · strata/ · prognosis/ · treatment/
 ├── configs/                            ← ontology + contract: dimensions · priors · likelihoods · likelihood_map_v3 · bayesian_model · prior_loading_matrix_v3
-├── scripts/v3/                         ← V3 pipeline: 01_eligibility_audit · 02_missingness_atlas · 03_build_prior_matrix · 04_fit_measurement  (legacy/ = superseded Engine A)
+├── scripts/v3/                         ← V3 pipeline: 01_eligibility_audit · 02_missingness_atlas · 03_build_prior_matrix · 04_fit_measurement
 ├── tests/                              ← unit tests
 ├── results/v3/                         ← regenerated AGGREGATE artifacts (gitignored): eligibility/ · missingness/ · bayesian/stage{0..4}/
 ├── docs/                               ← STATE (current) · V3_PLAN · ROADMAP · PIPELINE · DATA · FINDINGS · LABBOOK_V3 · V3_RESULTS · neuropsy_features.yaml
-│   └── figures/v3/                      ← figures (Φ heatmap · network · loadings · cohort scores) — from the legacy engine; regenerate from the new engine
+│   └── figures/v3/                      ← figures (Φ heatmap · network · loadings · cohort scores) — first-generation; regenerate from the current engine
 └── pyproject.toml
 ```
 
