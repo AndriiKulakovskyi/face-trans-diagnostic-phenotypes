@@ -1,78 +1,45 @@
-# STATE — where V3 actually is
+# STATE — where the project is right now
 
-> **Read this first.** One-page ground truth, updated 2026-06-06. Where this disagrees with
-> [`V3_RESULTS.md`](V3_RESULTS.md) or [`FINDINGS.md`](FINDINGS.md), **this file wins** until those
-> are reconciled. Plan of record (direction, unchanged): [`V3_PLAN.md`](V3_PLAN.md).
+> **Read this first.** Updated 2026-06-06.
 
 ## TL;DR
 
-- **One engine is canonical:** the config-first soft-prior **ESEM-bifactor** model in
-  `src/v3/latent_models/bayesian/`, driven by `configs/bayesian_model.yaml`, run via
-  `scripts/v3/04_fit_measurement.py --stage S`.
-- **Certified through Stage 2.** The decisive result (**Stage 1**) is that **a general factor `G`
-  identifies** — a *functional-impairment / clinical-distress* axis (functioning + mood + some
-  cognition), **orthogonal to metabolic/inflammatory biology**.
-- This **overturns the earlier "no general factor" headline**, which came from a model that omitted
-  the severity/functioning indicators `G` is built from.
-- **Stage 3** (sharpen `G` with CGI severity) is **not yet converged** (R-hat 1.53) — in progress.
-  **Stage 4** (mixed-likelihood suicidality/substance) is coded but **not run**.
-- **Downstream layers — strata, prognosis, treatment — are NOT built.**
+The project has been **replanned** around **Milestone 1 (M1): the transdiagnostic dimensional map** on the
+FACE **V0** baseline. The methods and mathematics are **fixed** in
+[`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md) (the single methods/plan of record). The previous
+"Engine A" stage results (the old `03/04` Bayesian engine and its "no general factor" headline) are
+**discarded** — superseded by the global, full-sample, explicit-latent approach in the methods doc. The
+repository is on a **clean base**; implementation of M1 is the next step.
 
-## The pipeline (run in order)
+## What's decided
 
-| # | script | does | output |
-|---|--------|------|--------|
-| 01 | `01_eligibility_audit.py` | candidate-dimension eligibility + V0 coverage | `results/v3/eligibility/` |
-| 02 | `02_missingness_atlas.py` | observation matrix + missingness mechanism | `results/v3/missingness/` |
-| 03 | `03_build_prior_matrix.py` | config ontology → `prior_loading_matrix_v3.csv` | `configs/` |
-| 04 | `04_fit_measurement.py --stage S` | staged Bayesian measurement model | `results/v3/bayesian/stageS/` |
+- **Model:** one **global** Bayesian sparse bifactor / ESEM — mixed likelihoods, soft priors,
+  observed-cell likelihood (no imputation), **full V0 sample**. Estimated via a **staged continuation**
+  (S1→S5); **only the global fit (S5) is interpreted.**
+- **Confirmation:** **FIML** on the continuous backbone (masked-PAF dropped).
+- **Dimension set (V0):** `G(severity)` · `cognition` · `metabolic` · `inflammatory` · `sleep` ·
+  `suicidality` · `developmental-risk` (3-cohort) + `anhedonia` (BP/DR, thin). Dropped: impulsivity,
+  negative symptoms, sensory.
+- **Stack:** lean — PyMC (dev) + NumPyro/JAX-CUDA on the **RTX 4090** (full fits); YAML configs; Parquet
+  model-ready persistence (raw stays CSV); a Jupyter notebook to run + display; per-stage reports.
+- **Repo:** namespace `src/v3/…` → `src/face/…`; pipeline `scripts/01_build_data … 07_score`.
 
-## Stage status (engine = `04_fit_measurement.py`)
+## What exists vs. not
 
-| stage | question | certified | R-hat | dropped | takeaway |
-|-------|----------|:---------:|:-----:|:-------:|----------|
-| 0 | reproduce old core | ✅ | 1.01 | 23% | matches the old engine exactly |
-| 1 | does `G` identify? | ✅ | 1.010 | 32% | **yes — `G` = impairment/distress, ⊥ biology** |
-| 2 | ESEM cross-loadings | ✅ | 1.01 | 32% | simple structure mostly holds |
-| 3 | sharpen `G` w/ CGI severity | ❌ | 1.53 | 38% | degenerate (hospitalization count) — debugging |
-| 4 | mixed-likelihood suic/subst | — | — | — | coded, not run |
+- **Exists:** the data layer (`src/.../data` — harmonization + sanity bounds + skip-logic, no imputation);
+  tests (`tests/v3/`, **84 passing**); the candidate-eligibility map (the soft-priors workbook + `configs/`).
+- **Next (M1 build):** the `src/face/…` restructure · the pipeline `scripts/01…07` · the Parquet
+  persistence layer · the staged global fit · FIML confirmation · adjudication · scoring.
+- **Later milestones (not started):** strata (M2) · temporal coherence V1–V4 (M3) · prognosis (M4) ·
+  treatment (M5).
 
-"Certified" here = the certification gate in `bayesian_model.yaml` (R-hat ≤ 1.01 · 0 divergences ·
-ESS ≥ 400 · no Heywood). See caveats — this is **convergence**, not scientific validation.
+## Open methods choices (flagged for the PI)
 
-## What the certified model (Stage 1–2) says
+Sparsity prior (soft-normal vs horseshoe) · Student-t vs Gaussian continuous default · item- vs
+factor-level covariates · acceptance-gate numbers. Defaults are set in
+[`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md); confirm or overrule before S1.
 
-- **`G` (general factor) = functional impairment / distress.** Anchored by FAST 1.04, EGF 0.75,
-  EQ-5D 0.60; affective items load strongly on it (MADRS 0.82, QIDS 0.69), cognition moderately
-  (CVLT 0.32), **metabolic/inflammatory ≈ 0** (BMI 0.13, WBC 0.10, CRP 0.11).
-- **Specific dimensions survive `G`** and stay weakly correlated among themselves (model Φ):
-  metabolic×inflammatory 0.17 · cognition×metabolic 0.18 · sleep×affective 0.32 · the rest ≈ 0.
-- **Net:** "no general factor" is **overturned**; "symptoms/severity ⊥ biology" is **strengthened**
-  (biology sits off the general axis).
+## What to read
 
-## Caveats — read before quoting any number
-
-- **"Certified" = MCMC converged**, not validated: no out-of-sample test, no measurement invariance,
-  no posterior predictive checks yet.
-- **N = 1,500** (500 most-complete per cohort, balanced) of 9,013; **single visit V0**.
-- **~23–38% of patients dropped** as rare missingness patterns (`min_group`); the fraction grows
-  with the number of indicators.
-- Results are through **Stage 2**; the severity-sharpened `G` (Stage 3) is not yet converged.
-
-## File map (V3-only — V2 and the first-generation engine were deleted)
-
-- **Foundation:** `src/v3/data/` · `scripts/v3/01,02` · `configs/candidate_dimensions_v3.yaml`,
-  `likelihood_map_v3.yaml`, `soft_loading_priors_v3.csv` (the last three are audit outputs of `01`).
-- **Canonical engine:** `src/v3/latent_models/bayesian/` · `src/v3/priors/` · `scripts/v3/03,04` ·
-  `configs/dimensions.yaml`, `priors.yaml`, `likelihoods.yaml`, `bayesian_model.yaml`,
-  `prior_loading_matrix_v3.csv`.
-- **Tests:** all under `tests/v3/` — foundation (`test_adapter`, `test_filters`, `test_skip_logic`,
-  `test_sanity_and_encoding`, now testing `v3.data`) + engine (`test_prior_matrix`). **84 passing.**
-- **Superseded but kept:** `docs/V3_RESULTS.md` (old headline, banner-marked) · `docs/figures/v3/*.png`
-  (first-generation figures — regenerate once Stage ≥ 3 certifies). Deleted code is in git history.
-
-## Cleanup debt (tracked, not yet done)
-
-- **Two ontology files:** `candidate_dimensions_v3.yaml` (eligibility, read by `01`/`02`) vs
-  `dimensions.yaml` (modeling). Unify onto `dimensions.yaml` once `01`/`02` are migrated — defer to the
-  roadmap re-think.
+[`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md) (methods + math) · [`../README.md`](../README.md) (overview)
+· [`../CLAUDE.md`](../CLAUDE.md) (guide) · [`DATA.md`](DATA.md) (data contract).

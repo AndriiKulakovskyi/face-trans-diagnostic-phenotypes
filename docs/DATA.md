@@ -44,8 +44,8 @@ ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), vis
 ## V3 data contract (what V3 adds)
 
 V3 depends on explicit, machine-readable modeling assumptions — they must live in the dictionary, not
-only in code or prose. The contract is two schemas + four config files (Phase A2 of
-[`V3_PLAN.md`](V3_PLAN.md)).
+only in code or prose. The contract is two schemas + config files (specified in
+[`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md) §2–§3).
 
 **Patient-level baseline schema** (one row per patient): `patient_id · cohort(BP/SZ/DR) · site ·
 baseline_date · age · sex · education · diagnosis/DSM-arm · V0 variables · follow-up outcome
@@ -88,9 +88,8 @@ and to adjust indicator means — **never** as dimension indicators or clusterin
   `docs/neuropsy_features.yaml`: WAIS standard scores + TMT + verbal memory/fluency).
 - `siteid_city` is kept loadable (for site stratification) but excluded from the feature matrix.
 - Within-column unit mixing (`mchc` g/L vs g/dL; `hct` % vs L/L) is harmonized by `rules.py`.
-- **QA**: `scripts/qa_harmonization.py` validates that every variable loads + passes sanity, and shows
-  the processing stages per variable (`results/reports/qa_harmonization.html`). The harmonization +
-  skip-logic decoding it checks are load-bearing for V3.
+- **QA**: the data-layer tests (`tests/v3/`) validate that every variable loads + passes sanity bounds and
+  that skip-logic structural-zero decoding is correct — load-bearing for the measurement model.
 
 ## Known open data caveats
 The sanity bounds + `rules.py` encode the harmonization decisions (unit fixes, sentinel removal, ms→s
