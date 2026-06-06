@@ -18,7 +18,8 @@ dependencies = [
     "statsmodels>=0.14",  # nested F-test / LRT in the outcome head-to-head
     "factor_analyzer>=0.5",  # EFA warm-start init for the Bayesian measurement engine
     "plotly>=5.18",       # interactive HTML reports
-    "matplotlib>=3.7",    # static manuscript figures
+    "matplotlib>=3.7",    # static figures (prior atlas, stage reports)
+    "pyarrow>=14",        # Parquet persistence for data/processed/*.parquet
 ]
 
 [project.optional-dependencies]
