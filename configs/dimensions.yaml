@@ -225,7 +225,11 @@ covariates: [age, sex, education_years, edulevel, siteid_city, arm, cohort, visi
              cgi02, cgi03, cgi03a, cgi03b,                       # improvement/efficacy (not severity)
              hormonal_rporres, menostat_rporres, pregnn_rporres, # reproductive/hormonal confounds
              qt, rr, prism,                                      # ECG intervals / side-effect inventory
+             # FLAGGED FOR REVISIT: electrolytes + red-cell indices are covariates for now
+             # (ambiguous burden direction; a primary anchor would force a wrong positive sign).
+             # Promote to SIGNED soft cross-loaders on metabolic/inflammatory if adjudication
+             # later shows they carry real signal (per discussion 2026-06-06).
              k_lbstresc, sodium_lbstresc, cl_lbstresc, bicarb_lbstresc, ca_lbstresc, phos_lbstresc,  # electrolytes
-             hgb, mcv, rbc, hct_lbstresc, mch_lbstresc, mchc_lbstresc, iron_lbstresc,  # red-cell (ambiguous direction)
+             hgb, mcv, rbc, hct_lbstresc, mch_lbstresc, mchc_lbstresc, iron_lbstresc,  # red-cell
              cheveux_mhoccur]
 validation_labels: [cohort, arm]

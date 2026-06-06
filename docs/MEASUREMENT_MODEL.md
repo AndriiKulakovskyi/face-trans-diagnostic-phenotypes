@@ -292,6 +292,39 @@ observed-data likelihood and differ only by the presence of priors — which is 
 right, non-redundant confirmatory estimator, and why this marginal is also our computational fallback
 (§4.4): it removes the per-patient latent funnel for the Gaussian block while keeping the full sample.
 
+### 3.6 Sample, cohort balance, and the fit–score separation
+
+**Sample.** The measurement model is fit on the **full V0 sample** (N = 9,013; BP 6,252 · SZ 2,209 ·
+DR 552) — **no completeness selection.** A missingness-aware observed-likelihood model must see the full
+missingness structure; selecting the most-complete patients would estimate the map on the least-missing,
+least-representative sub-population and forfeit the very property the observed likelihood provides (§3.4).
+This is a stated acceptance criterion (§8), not a convenience.
+
+**Cohort imbalance** (BP is ~11× DR) is handled *without discarding data*. For a measurement model,
+imbalance distorts the loadings only if the structure is **non-invariant** across cohorts; we therefore
+(i) **test measurement invariance** across BP/SZ/DR directly (does each loading hold per cohort? §8) —
+detecting the problem rather than hiding it — and (ii) report a **1/n_cohort-weighted** fit as a
+sensitivity arm (equalizing each cohort's influence using all patients). Balancing by *subsampling* is
+rejected: a "500/cohort" scheme would discard ~92% of BP to match DR — a large real loss for a balance
+that weighting achieves for free.
+
+**Fit–score separation.** Fitting and scoring are distinct. The model is fit **once** on the full sample
+to estimate loadings `Λ` and correlations `Φ`; **scores** for any patient are then a projection of that
+patient's *observed* cells onto the fitted model (§7). So a downstream cohort — e.g. patients with
+adequate follow-up (≥ V3) reserved for prognosis (M4) — is **scored** from the full-sample model; it does
+**not** drive the measurement fit. This delivers reusability for predictive modeling *without* importing
+attrition/retention selection into the map: selecting the measurement sample on follow-up completeness
+would bias the structure toward treatment-retained (systematically healthier, more-adherent) patients —
+exactly the selection we avoid at the measurement layer.
+
+**Compute (hard ceiling: M4 Pro, 24 GB).** Full-N is made tractable by **Gaussian-block marginalization**
+(§3.5; the continuous core carries only a few hundred parameters, no per-patient latent funnel) plus
+**staged warm-starts** (§4.2). The frontier is the mixed-likelihood stages (S3+), where non-Gaussian
+indicators carry per-patient latents at full N. *If* a stage exceeds the ceiling there, the fallback is a
+**random, cohort-balanced** subsample for that stage (random → realistic missingness; with a
+resample-stability check) — **never** completeness- or attrition-selected. The reported map targets the
+full sample, or the largest N that certifies, documented.
+
 ---
 
 ## 4. Estimation strategy — staged continuation to the global fit
