@@ -9,9 +9,11 @@ FACE **V0** baseline. The methods and mathematics are **fixed** in
 [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md) (the single methods/plan of record). The previous
 "Engine A" stage results (the old `03/04` Bayesian engine and its "no general factor" headline) are
 **discarded** — superseded by the global, full-sample, explicit-latent approach in the methods doc. The
-repository is on a **clean base**, and M1 implementation is underway — the data layer + the
-marginalized measurement engine are built, and **S1 (continuous core) and S2 (inter-dimension Φ +
-MADRS/QIDS/STAI windows) are both certified at full N (N = 9,013) on the Mac** (no 4090 required).
+repository is on a **clean base**, and M1 implementation is underway. The data layer + the marginalized
+measurement engine are built; **S1 (continuous core) and S2 (inter-dimension Φ + MADRS/QIDS/STAI windows)
+are certified at full N (9,013)**, and **S3 is done** — S3a (+developmental-risk) certified and
+resample-stable, S3b (+suicidality via a mixed-likelihood block) provisional — on a random N = 4,000
+subsample (the §3.6 frontier fallback; full N reserved for the reported S5 fit). Updated 2026-06-07.
 
 ## What's decided
 
@@ -37,10 +39,13 @@ MADRS/QIDS/STAI windows) are both certified at full N (N = 9,013) on the Mac** (
   (`docs/PRIOR_ATLAS.md`); `scripts/01_build_data` (Parquet persistence) + `scripts/04_fit` + the
   single marginalized/explicit engine (`continuous_core`; the parallel config-first engine + its
   `bayesian_model.yaml` were retired — one canonical engine now); tests (`tests/v3/`, **88 passing**).
-- **Results so far — S1 + S2 CERTIFIED (full N):** see "S1 result" and "S2 result" below.
-- **Next (M1 build):** S3 (mixed-likelihood suicidality + developmental-risk) → S4 (anhedonia) →
-  **S5 global = the reported fit** → FIML confirmation → adjudication → scoring → the **empirical atlas +
-  prior→posterior comparison**.
+- **Results so far — S1 + S2 CERTIFIED (full N); S3 done (subsample):** see "S1/S2/S3 result" below.
+- **Next (M1 build):** S4 (anhedonia, BP/DR thin) → **S5 global = the reported fit (full N)** → FIML
+  confirmation → adjudication → scoring → the **empirical atlas + prior→posterior comparison**.
+- **Compute lesson (this session):** full-N S1/S2 ≈ 1 h; the S3+ mixed-likelihood frontier is heavier, so
+  S3 checkpoints use a random N=4,000 subsample (§3.6). Engine perf fixes: grouped-GEMM Woodbury (Cholesky
+  per observed-pattern, 2.75×), tree-depth cap 8 + ta 0.85 (2.7× at 7 factors). Φ bug fixed (LKJCorr=Cholesky
+  → Φ = L Lᵀ). The reported **S5** map targets full N (GPU per §4.5 if the Mac can't hold the mixed block).
 - **Later milestones (not started):** strata (M2) · temporal coherence V1–V4 (M3) · prognosis (M4) ·
   treatment (M5).
 
@@ -77,6 +82,23 @@ Cholesky; grouped-GEMM Woodbury, 2.75× faster, logp-identical) — Φ/loadings 
   carries that association**, mutual crosses left at 0 (standard ESEM resolution; a ridge-guarded
   sensitivity arm exists in the engine). **Full writeup: [`RESULTS.md`](RESULTS.md) §S2.** Artifacts:
   `reports/04_stage2_report.md` + `_loadings.csv` + `_phi.csv`.
+
+## S3 result — developmental-risk (certified) + mixed-likelihood suicidality (provisional)
+
+Random N = 4,000 subsample (§3.6 frontier fallback), grouped-GEMM + tree-cap8 + ta 0.85.
+- **S3a — +developmental-risk, CERTIFIED** (6 factors; R-hat 1.010 · ESS 832 · 0 div). Developmental is its
+  **own axis** (loading 0.41; ≈ orthogonal to biology and G; weakly tied to sleep +0.16). Continuous core
+  unchanged from S2 (biology⊥G 0.09/0.07; metab~inflam 0.21; windows→G 0.81/0.76/0.65). **Resample-stable**
+  (seed A vs B: |ΔΦ| ≤ 0.035, |Δloading| ≤ 0.012; continuous-core Φ matches full-N S2).
+- **S3b — +suicidality via mixed-likelihood block, PROVISIONAL** (7 factors; explicit f_e=(G,suic,dev), the
+  4 continuous specifics marginalized + coupled through Φ; 14 binary + 3 ordinal + 1 count; **0 divergences**;
+  R-hat 1.06 · structural ESS 58 — not fully certified). **Suicidality is solidly identified** by its binary
+  ISF items (ideation isf01–05 load +2.5…+3.3 on the logit scale **and** +0.4–0.56 on G; all R-hat 1.00,
+  ESS 0.8–2.3k). **suicidality~developmental +0.22** (childhood adversity ↔ suicidality). The slow mixing is
+  in the **continuous cross-loadings + the suic~dev Φ cell** (the conditional-coupling part), **not** the
+  suicidality block — so suicidality loadings are trustworthy, Φ_suicidality is provisional (→ resolve at S5).
+  **Answered the methods-doc S3 question: non-Gaussian indicators DO compose with the shared Φ.**
+  **Full writeup: [`RESULTS.md`](RESULTS.md) §S3.** Artifacts: `reports/04_stage3{,b}_*`.
 
 ## Open methods choices (flagged for the PI)
 

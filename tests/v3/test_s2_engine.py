@@ -94,3 +94,23 @@ def test_phi_is_valid_pd_correlation_with_g_orthogonal():
         assert np.allclose(np.diag(P), 1.0, atol=1e-6)                       # true correlation
         assert np.linalg.eigvalsh(P).min() > 1e-8, "Φ not PD (LKJCorr must be C = L Lᵀ)"
         assert np.allclose(np.delete(P[g], g), 0.0, atol=1e-6), "G must be ⊥ specifics"
+
+
+def test_s3b_mixed_prep_selects_3cohort_nongaussian_block():
+    """S3b: the non-Gaussian block = 3-cohort-covered binary/ordinal/count suicidality + developmental
+    indicators; the explicit factors are G + suicidality + developmental; the 4 pure-continuous
+    specifics are marginalized."""
+    from face.models.bayesian.continuous_core import prepare_mixed
+    mp = prepare_mixed(n_subsample=600)
+    # explicit f_e = (G, suicidality, developmental); marginalized = the 4 continuous specifics
+    assert [mp.base.factor_cols[c] for c in mp.e_cols] == \
+        ["overall_severity", "suicidality", "developmental_risk"]
+    assert {mp.base.factor_cols[c] for c in mp.m_cols} == \
+        {"cognition", "metabolic", "inflammatory", "sleep"}
+    # the ISF suicidality binary core is present and homed on suicidality (e-col 1)
+    for it in ("isf01", "isf02", "isf05", "isf09"):
+        assert it in mp.bin_items and mp.ng_home[it] == 1
+    assert "isf09a" in mp.cnt_items                                          # attempt count (NegBin)
+    # every non-Gaussian item homes on suicidality(1) or developmental(2), never G(0)
+    assert set(mp.ng_home.values()) <= {1, 2}
+    assert len(mp.bin_items) + len(mp.ord_items) + len(mp.cnt_items) >= 15

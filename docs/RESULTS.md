@@ -255,3 +255,97 @@ cohorts → DIMENSIONS (M1, building) → strata (M2) → prognosis (M4) / treat
 S2 adds the first picture of **how the dimensions relate** (weakly — they are distinct axes) and shows the
 **depression/anxiety instruments are burden windows, not a new axis** — while confirming S1's backbone and
 its biology⊥burden headline survive a richer model.
+
+---
+
+## S3 — developmental-risk + mixed-likelihood suicidality
+
+**Headline.** S3 brings the two remaining 3-cohort candidate dimensions onto the map. **Developmental-risk**
+(childhood trauma, perinatal, family liability) enters cleanly as a **distinct axis** (S3a, certified).
+**Suicidality** — which has essentially no continuous content (its lone continuous item, isf07, cannot
+identify it) — is established from its **binary/count ISF ideation & attempt items via a mixed-likelihood
+block** (S3b), answering the methods-doc question affirmatively: **non-Gaussian indicators do compose with
+the shared Φ** (0 divergences; suicidality solidly identified). The two new dimensions are weakly related to
+the rest and most related to **each other** (suicidality~developmental ≈ +0.22) — childhood adversity and
+suicidality travel together, as expected.
+
+### S3.1 Compute note (read first)
+
+S3 is the **mixed-likelihood frontier** the methods doc flags as exceeding the Mac ceiling (§3.6): the
+7-factor marginalized fit is ~2.7× heavier per step than S2, and S3b's explicit non-Gaussian latents are
+heavier still. Per §3.6/§4.3 — *only the global fit S5 is interpreted; S1–S4 are convergence checkpoints* —
+the S3 checkpoints are run on a **random N = 4,000 subsample** (realistic missingness, **not**
+completeness-selected), with full N reserved for the reported S5 map. Engine: the corrected Φ (`L Lᵀ`) +
+grouped-GEMM Woodbury + tree-depth cap 8 + `ta` 0.85 (all validated; see §S2.3).
+
+### S3a — developmental-risk (continuous-anchored) — **CERTIFIED**
+
+6 factors (G + cognition/metabolic/inflammatory/sleep + **developmental-risk**, anchored by CTQ×6,
+age-of-onset, WURS, perinatal). `N = 4,000` · **R-hat 1.010 · ESS 832 · 0 div · no Heywood**.
+*(Suicidality is deliberately excluded here — its only continuous indicator isf07 is too thin and left the
+factor unidentified, R-hat 1.55; it is established at S3b instead.)*
+
+- **Developmental-risk is its own axis:** mean primary loading 0.41; **≈ orthogonal to biology and G**
+  (loading on G 0.14; Φ with metabolic/inflammatory ≈ 0), weakly tied to **sleep (+0.16)**.
+- **The continuous core is unchanged from S2** (biology ⊥ G: metabolic 0.09 / inflammatory 0.07;
+  metabolic~inflammatory 0.21; windows → G 0.81/0.76/0.65) — adding a factor did not disturb the backbone.
+- **Resample-stable:** an independent random N = 4,000 draw (seed B) reproduces Φ to **|Δ| ≤ 0.035** and
+  loadings to **|Δ| ≤ 0.012** (the §3.6 stability check); and the continuous-core Φ matches the **full-N S2**
+  to 2 decimals — subsample and full sample agree.
+
+### S3b — mixed-likelihood suicidality + developmental — **provisional**
+
+7 factors; the binary/ordinal/count indicators (14 binary + 3 ordinal + 1 count) enter via **explicit
+latents `f_e = (G, suicidality, developmental)`**, with the 4 continuous specifics marginalized and coupled
+to `f_e` through Φ (the conditional decomposition `f_m | f_e`). `N = 4,000` · **0 divergences** ·
+R-hat 1.06 · structural ESS 58 — **not fully certified** (see S3.4).
+
+**Suicidality is now solidly identified** (each binary item loads strongly on the logit scale; all
+**R-hat 1.00, ESS 0.8–2.3k** — the well-mixed part of the fit):
+
+| ISF indicator | loads on suicidality | on G (bifactor) |
+|---|---:|---:|
+| isf01–05 (ideation) | **+2.5 to +3.3** | +0.39 to +0.56 |
+| isf08 / isf09 (attempt) | +1.8 / +1.9 | +0.00 / +0.28 |
+| isf09a (attempt count, NegBin) | +1.54 | +0.22 |
+| isf08a (attempt ordinal) | +1.70 | −0.01 |
+
+Suicidal ideation/attempt items load **both** on the suicidality factor **and** on the general burden axis G
+(+0.4–0.56) — clinically coherent (suicidality reflects overall illness severity *and* a specific axis).
+**Developmental non-Gaussian** indicators: family psychiatric history (mère/père structure +0.30/+0.21) and
+childhood trauma (+0.21) carry the factor; perinatal flags are weak.
+
+**Φ — the 6-specific correlations (provisional for the suicidality row):**
+
+| | cog | met | inf | sleep | suic | dev |
+|---|---:|---:|---:|---:|---:|---:|
+| suicidality | −0.13 | −0.09 | −0.01 | +0.11 | 1 | **+0.22** |
+| developmental | −0.06 | −0.02 | −0.01 | +0.16 | +0.22 | 1 |
+
+The strongest new link is **suicidality~developmental +0.22** (childhood adversity ↔ suicidality); both are
+otherwise weakly/negatively related to cognition and biology. mean |off-diagonal| 0.10.
+
+### S3.4 Boundaries — what S3 does **not** yet show
+
+- **S3b is provisional, not certified.** The slow mixing (R-hat 1.06, ESS 58) is **not** in the suicidality
+  block (which mixes excellently) — it is in the **continuous cross-loadings** (window/bifactor cells) and the
+  suicidality~developmental Φ cell, which couple to the explicit `f_e` through the conditional decomposition.
+  So the **suicidality loadings are trustworthy**; the **Φ_suicidality correlations and the cross-loading
+  refinements are provisional** and will be re-estimated with more compute at the global S5 fit (GPU).
+- **Checkpoints on a random subsample** (N = 4,000), not full N — by design (§3.1); the reported map is S5.
+- **Anhedonia (S4), the correlated-G variant, FIML confirmation, and adjudication are still ahead.**
+- Internal validity only; no invariance/temporal/external validation yet.
+
+### S3.5 Position in the roadmap
+
+```
+cohorts → DIMENSIONS (M1, building) → strata (M2) → prognosis (M4) / treatment (M5)
+               ▲
+   S1 (G + backbone) ✓ → S2 (Φ + windows) ✓ → S3a (+developmental) ✓ · S3b (+suicidality, mixed) ~prov
+   → S4 anhedonia → S5 GLOBAL = the reported map (full N) → FIML → adjudication → empirical atlas
+```
+
+With S3, the transdiagnostic map now spans **seven dimensions** — G + cognition, metabolic, inflammatory,
+sleep, developmental-risk, suicidality — and the mixed-likelihood machinery (the methods doc's hardest
+engineering step) is shown to work: binary/count psychopathology indicators compose with the shared
+continuous Φ without breaking identification.

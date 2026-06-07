@@ -49,9 +49,12 @@ PROC = REPO / "data" / "processed"
 MATRIX = REPO / "configs" / "prior_loading_matrix_v3.csv"
 
 S1_FACTORS = ["overall_severity", "cognition", "metabolic", "inflammatory", "sleep"]
-# S3 adds suicidality + developmental-risk. At S3a they enter the marginalized core via their
-# CONTINUOUS anchors (isf07; CTQ×6, agepere, wurs, perinatal); their binary/count/ordinal
-# indicators are added at S3b through explicit latents (the mixed-likelihood block).
+# S3a (marginalized continuous) adds only DEVELOPMENTAL-RISK — it has strong continuous anchors
+# (CTQ×6, age-of-onset, WURS, perinatal). SUICIDALITY is a binary-dominated factor (its only
+# continuous indicator, isf07, is too thin to identify it — gives R-hat 1.55), so it is deferred to
+# S3b's explicit mixed-likelihood block where the binary ISF ideation/attempt items anchor it.
+S3A_FACTORS = S1_FACTORS + ["developmental_risk"]
+# S3b's full factor set: suicidality + developmental enter the explicit block (binary/count/ordinal).
 S3_FACTORS = S1_FACTORS + ["suicidality", "developmental_risk"]
 WINDOWS = ["madrs", "qidsr120", "staya"]   # cross-loading windows (no home factor; §2)
 G_KEY = "overall_severity"

@@ -30,7 +30,7 @@ sys.path.insert(0, str(REPO / "src"))
 warnings.filterwarnings("ignore")
 
 from face.models.bayesian.continuous_core import (  # noqa: E402
-    S1_FACTORS, S3_FACTORS, build_marginalized, build_model, prepare, thomson_scores,
+    S1_FACTORS, S3A_FACTORS, S3_FACTORS, build_marginalized, build_model, prepare, thomson_scores,
     warmstart_initvals)
 
 REPORTS = REPO / "reports"
@@ -49,20 +49,25 @@ STAGE_FLAGS = {
     # 7-factor Φ). The non-Gaussian indicators are S3b (explicit-latent block, separate path).
     3: dict(correlated=True, windows=True, specific_cross=False, window_sd_scale=1.0),
 }
-STAGE_FACTORS = {1: S1_FACTORS, 2: S1_FACTORS, 3: S3_FACTORS}
+STAGE_FACTORS = {1: S1_FACTORS, 2: S1_FACTORS, 3: S3A_FACTORS}   # S3a: +developmental only
 # ta 0.9 is enough: the marginalized posterior has NO funnel (latents integrated out) -> ~21
 # leapfrogs/iter, 0 divergences; 0.95+ just shrinks steps and slows the fit with no quality gain.
-STAGE_TARGET_ACCEPT = {1: 0.95, 2: 0.90, 3: 0.90}
+STAGE_TARGET_ACCEPT = {1: 0.95, 2: 0.90, 3: 0.85}
+# Cap NUTS tree depth: the marginalized posterior's typical set is depth ~5 (≈21–47 leapfrogs), so a
+# cap of 8 (256 leapfrogs) never binds steady-state mixing but bounds the expensive deep warmup
+# trajectories — 2.7× faster at the 7-factor scale, 0 divergences, same depth/ESS.
+NUTS_KWARGS = {"max_tree_depth": 8}
 
 
 def run(stage: int = 1, subsample: int | None = None, marginalized: bool = True,
-        gpu: bool = False, draws: int = 1000, tune: int = 1000, chains: int = 4) -> dict:
+        gpu: bool = False, draws: int = 1000, tune: int = 1000, chains: int = 4,
+        seed: int = 20260605) -> dict:
     import arviz as az
     import pymc as pm
 
     flags = STAGE_FLAGS.get(stage, STAGE_FLAGS[1])
     factors = STAGE_FACTORS.get(stage, S1_FACTORS)
-    prep = prepare(factors, n_subsample=subsample, **flags)
+    prep = prepare(factors, n_subsample=subsample, seed=seed, **flags)
     N, J = prep.M.shape
     mode = "marginalized (Woodbury)" if marginalized else "explicit-latent"
     n_cross = sum(1 for v in prep.kind.values() if v == "cross")
@@ -87,7 +92,7 @@ def run(stage: int = 1, subsample: int | None = None, marginalized: bool = True,
             if use_numpyro:
                 return pm.sample(draws=draws, tune=tune, chains=chains, target_accept=target_accept,
                                  random_seed=20260605, nuts_sampler="numpyro", initvals=iv,
-                                 idata_kwargs={"log_likelihood": False})
+                                 nuts_sampler_kwargs=NUTS_KWARGS, idata_kwargs={"log_likelihood": False})
             return pm.sample(draws=draws, tune=tune, chains=chains, cores=1, target_accept=target_accept,
                              random_seed=20260605, progressbar=False, init="jitter+adapt_diag",
                              initvals=iv, idata_kwargs={"log_likelihood": False})
@@ -228,12 +233,12 @@ def _report_md(stage, prep, load, phi_df, offdiag, diag, marginalized) -> list[s
 
 # ---------------------------------- S3b (mixed-likelihood) ----------------------------------
 def run_mixed(subsample: int | None = None, draws: int = 600, tune: int = 1000,
-              chains: int = 4, label: str = "stage3b") -> dict:
+              chains: int = 4, label: str = "stage3b", seed: int = 20260605) -> dict:
     import arviz as az
     import pymc as pm
     from face.models.bayesian.continuous_core import build_mixed, prepare_mixed  # noqa: E402
 
-    mp = prepare_mixed(n_subsample=subsample)
+    mp = prepare_mixed(n_subsample=subsample, seed=seed)
     base = mp.base
     e_names = [base.factor_cols[c] for c in mp.e_cols]
     n_ng = len(mp.bin_items) + len(mp.ord_items) + len(mp.cnt_items)
@@ -251,9 +256,9 @@ def run_mixed(subsample: int | None = None, draws: int = 600, tune: int = 1000,
 
     def _samp(iv):
         with model:
-            return pm.sample(draws=draws, tune=tune, chains=chains, target_accept=0.95,
+            return pm.sample(draws=draws, tune=tune, chains=chains, target_accept=0.85,
                              random_seed=20260605, nuts_sampler="numpyro", initvals=iv,
-                             idata_kwargs={"log_likelihood": False})
+                             nuts_sampler_kwargs=NUTS_KWARGS, idata_kwargs={"log_likelihood": False})
     try:
         idata = _samp(initvals)
     except Exception as e:
@@ -306,7 +311,12 @@ def _diagnose_write_mixed(mp, idata, az, label="stage3b") -> dict:
     ze = az.summary(idata, var_names=["z_e"])                          # per-patient latent mixing
     ze_ess = float(pd.to_numeric(ze[ec], errors="coerce").min()) if ec in ze.columns else float("nan")
     div = int(np.asarray(idata.sample_stats["diverging"]).sum())
-    heywood = bool((load.loading.abs() > GATES["heywood"]).any())
+    # Heywood check is scale-aware: continuous loadings are z-scored (cap 2.5), but non-Gaussian
+    # loadings are on the LOGIT scale, where ~2–3 is normal for strongly-correlated binary items
+    # (e.g. the ISF ideation items) — only flag logit loadings above a separation-level 5.
+    cont_hey = (load[load.block == "continuous"].loading.abs() > GATES["heywood"]).any()
+    ng_hey = (load[load.block == "non-gaussian"].loading.abs() > 5.0).any()
+    heywood = bool(cont_hey or ng_hey)
     cert = (round(rhat, 3) <= GATES["rhat"] and (np.isnan(ess) or ess >= GATES["ess"])
             and div <= GATES["div"] and not heywood)
     diag = dict(stage="3b", N=int(base.M.shape[0]), cont_J=int(base.M.shape[1]),
@@ -370,12 +380,14 @@ def main():
     ap.add_argument("--draws", type=int, default=1000)
     ap.add_argument("--tune", type=int, default=1000)
     ap.add_argument("--chains", type=int, default=4)
+    ap.add_argument("--seed", type=int, default=20260605,
+                    help="subsample RNG seed (vary for the resample-stability check)")
     a = ap.parse_args()
     if a.mixed:
-        run_mixed(a.subsample, draws=a.draws, tune=a.tune, chains=a.chains)
+        run_mixed(a.subsample, draws=a.draws, tune=a.tune, chains=a.chains, seed=a.seed)
     else:
         run(a.stage, a.subsample, marginalized=not a.explicit, gpu=a.gpu,
-            draws=a.draws, tune=a.tune, chains=a.chains)
+            draws=a.draws, tune=a.tune, chains=a.chains, seed=a.seed)
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", type=int, default=1)
     ap.add_argument("--subsample", type=int, default=None)
