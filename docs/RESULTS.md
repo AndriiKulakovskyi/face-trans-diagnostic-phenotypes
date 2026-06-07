@@ -349,3 +349,62 @@ With S3, the transdiagnostic map now spans **seven dimensions** — G + cognitio
 sleep, developmental-risk, suicidality — and the mixed-likelihood machinery (the methods doc's hardest
 engineering step) is shown to work: binary/count psychopathology indicators compose with the shared
 continuous Φ without breaking identification.
+
+---
+
+## S4 — anhedonia: adjudicated **not a distinct dimension** (rejected)
+
+**Headline.** Candidate dimension #4 (anhedonia) is **thin** — one dedicated indicator
+(`qids_anhedonia_interest`, QIDS item 13, BP/DR only; SZ has no QIDS). Tested on top of the certified S3a
+map, it **does not form a stable, distinct factor**: R-hat **1.54** (ESS 7) at *both* the N=1,500 smoke and
+the N=4,000 fair test, with a reflection/collapse instability across chains. When it does form, it is
+**redundant with general burden and the depression composite** — its indicator loads **0.61 on G** and the
+QIDS-total window loads **0.365** onto it. **Verdict (§6): rejected as a standalone dimension** — its variance
+is absorbed by **G + the MADRS/QIDS/STAI windows**. This is the methods-doc's anticipated outcome (anhedonia
+"thin; may merge into G or be rejected"), and a *result*, not a failure: theory proposed it, the FACE common
+data declined it.
+
+### S4.1 Evidence
+
+- **Non-identification is robust** — R-hat 1.54 / ESS 7 at N=1,500 (tune 400) *and* N=4,000 (tune 1,000),
+  0 divergences. Per-chain: the anhedonia loading swings 0.00↔0.56 (3 chains form it, 1 collapses) — a thin
+  factor with no stable orientation.
+- **Redundant with G + depression** — `qids_anhedonia_interest` loads **0.61 on G** (mostly a general-burden
+  signal); the QIDS depression-total window (`qidsr120`) cross-loads **0.365** onto the anhedonia factor. So
+  the "anhedonia factor" largely re-measures depression severity, not a separable anhedonic axis.
+- **Near-collinear by construction** — the anhedonia anchor (QIDS *item 13*) is a component of the QIDS
+  *total* (`qidsr120`, a window), so the two cannot be separated.
+- **The rest of the map is undisturbed** — adding anhedonia leaves S3a intact (biology⊥G 0.09/0.07,
+  developmental~sleep 0.17, metab~inflam 0.20, windows→G ≈0.79/0.74/0.63); the non-convergence is *isolated*
+  to the anhedonia cells. mean |Φ off-diagonal| 0.07.
+
+### S4.2 Consolidated candidate adjudication (after S1–S4)
+
+The continuous/mixed measurement layer is now adjudicated:
+
+| Candidate | Verdict | Basis |
+|---|---|---|
+| Overall severity → **G** | **confirmed** | clean functional-burden axis (S1) |
+| Cognitive flexibility → **cognition** | **confirmed** | S1 |
+| Metabolism/immuno → **metabolic** + **inflammatory** | **confirmed (split)** | distinct, Φ 0.20 (S1–S2) |
+| Sleep/circadian → **sleep** | **confirmed** | S1; ~orthogonal axis (S2) |
+| Neurodevelopment → **developmental-risk** | **confirmed (proxy)** | own axis (S3a) |
+| Suicidality | **confirmed (mixed-likelihood)** | binary ISF items (S3b) |
+| **Anhedonia** | **rejected / not distinct** | **thin; merges into G + depression (S4)** |
+| Impulsivity · Negative symptoms · Sensory | **dropped (pre-modeling)** | no indicators (§2) |
+
+→ **the empirical map carries 7 dimensions** (G + cognition, metabolic, inflammatory, sleep,
+developmental-risk, suicidality); the depression/anxiety instruments remain **cross-loading windows**, not a
+dimension — confirmed consistently across S2–S4.
+
+### S4.3 Position in the roadmap
+
+```
+S1 (G + backbone) ✓ → S2 (Φ + windows) ✓ → S3a (+developmental) ✓ · S3b (+suicidality, mixed) ~prov
+   → S4 (anhedonia → rejected) ✓ → S5 GLOBAL = the reported map (full N) → FIML → adjudication → atlas
+```
+
+S1–S4 (the staged checkpoints) are complete: the eligible dimension set is adjudicated, the mixed-likelihood
+machinery works, and the engine is fast + correct. **Next is S5** — the single global fit on the full sample
+that combines all surviving dimensions and yields the *reported* map (loadings, Φ_full, the correlated-G
+sensitivity, per-patient scores), followed by FIML confirmation and the prior→posterior atlas.

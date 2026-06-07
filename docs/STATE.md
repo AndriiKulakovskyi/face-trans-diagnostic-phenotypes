@@ -11,9 +11,10 @@ FACE **V0** baseline. The methods and mathematics are **fixed** in
 **discarded** — superseded by the global, full-sample, explicit-latent approach in the methods doc. The
 repository is on a **clean base**, and M1 implementation is underway. The data layer + the marginalized
 measurement engine are built; **S1 (continuous core) and S2 (inter-dimension Φ + MADRS/QIDS/STAI windows)
-are certified at full N (9,013)**, and **S3 is done** — S3a (+developmental-risk) certified and
-resample-stable, S3b (+suicidality via a mixed-likelihood block) provisional — on a random N = 4,000
-subsample (the §3.6 frontier fallback; full N reserved for the reported S5 fit). Updated 2026-06-07.
+are certified at full N (9,013)**, and **S3–S4 are done** (random N = 4,000 subsample, §3.6 frontier
+fallback): S3a (+developmental-risk) certified/stable, S3b (+suicidality, mixed-likelihood) provisional,
+**S4 adjudicated anhedonia as rejected** (thin; merges into G + depression). The staged checkpoints S1–S4
+are complete — **7-dimension map**; next is the full-N **S5 global fit** (the reported map). Updated 2026-06-07.
 
 ## What's decided
 
@@ -39,9 +40,13 @@ subsample (the §3.6 frontier fallback; full N reserved for the reported S5 fit)
   (`docs/PRIOR_ATLAS.md`); `scripts/01_build_data` (Parquet persistence) + `scripts/04_fit` + the
   single marginalized/explicit engine (`continuous_core`; the parallel config-first engine + its
   `bayesian_model.yaml` were retired — one canonical engine now); tests (`tests/v3/`, **88 passing**).
-- **Results so far — S1 + S2 CERTIFIED (full N); S3 done (subsample):** see "S1/S2/S3 result" below.
-- **Next (M1 build):** S4 (anhedonia, BP/DR thin) → **S5 global = the reported fit (full N)** → FIML
-  confirmation → adjudication → scoring → the **empirical atlas + prior→posterior comparison**.
+- **Results so far — S1 + S2 CERTIFIED (full N); S3–S4 done (subsample):** see the result sections below.
+  Eligible dimension set adjudicated: **7 dimensions** (G + cognition/metabolic/inflammatory/sleep/
+  developmental-risk/suicidality); anhedonia **rejected** (S4); impulsivity/negative-symptoms/sensory
+  dropped pre-modeling. Depression/anxiety = cross-loading windows, not a dimension.
+- **Next (M1 build):** **S5 global = the reported fit (full N)** — all 7 dimensions jointly + correlated-G
+  sensitivity → FIML confirmation → scoring → the **empirical atlas + prior→posterior comparison**.
+  (S5's mixed-likelihood block at full N likely needs the GPU per §4.5, or a documented subsample.)
 - **Compute lesson (this session):** full-N S1/S2 ≈ 1 h; the S3+ mixed-likelihood frontier is heavier, so
   S3 checkpoints use a random N=4,000 subsample (§3.6). Engine perf fixes: grouped-GEMM Woodbury (Cholesky
   per observed-pattern, 2.75×), tree-depth cap 8 + ta 0.85 (2.7× at 7 factors). Φ bug fixed (LKJCorr=Cholesky
@@ -99,6 +104,18 @@ Random N = 4,000 subsample (§3.6 frontier fallback), grouped-GEMM + tree-cap8 +
   suicidality block — so suicidality loadings are trustworthy, Φ_suicidality is provisional (→ resolve at S5).
   **Answered the methods-doc S3 question: non-Gaussian indicators DO compose with the shared Φ.**
   **Full writeup: [`RESULTS.md`](RESULTS.md) §S3.** Artifacts: `reports/04_stage3{,b}_*`.
+
+## S4 result — anhedonia REJECTED (not a distinct dimension)
+
+Thin BP/DR candidate (1 dedicated indicator, `qids_anhedonia_interest`; SZ has no QIDS). Tested on the S3a
+map (random N=4,000). **Does not form a stable factor:** R-hat **1.54** · ESS 7 · 0 div at *both* the smoke
+and the N=4,000 fair test (reflection/collapse across chains). When it forms it is **redundant with G +
+depression** — its indicator loads **0.61 on G**, and the QIDS-total window loads **0.365** onto it (the
+anhedonia anchor, QIDS item 13, is part of QIDS total → near-collinear). The rest of the map is undisturbed
+(non-convergence isolated to the anhedonia cells). **Verdict (§6): rejected as a standalone dimension** —
+variance absorbed by G + the depression windows. Matches the methods-doc prior. **Full writeup:
+[`RESULTS.md`](RESULTS.md) §S4** (incl. the consolidated S1–S4 candidate-adjudication table). Artifacts:
+`reports/04_stage4_*`.
 
 ## Open methods choices (flagged for the PI)
 

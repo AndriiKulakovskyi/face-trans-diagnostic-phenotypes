@@ -30,8 +30,8 @@ sys.path.insert(0, str(REPO / "src"))
 warnings.filterwarnings("ignore")
 
 from face.models.bayesian.continuous_core import (  # noqa: E402
-    S1_FACTORS, S3A_FACTORS, S3_FACTORS, build_marginalized, build_model, prepare, thomson_scores,
-    warmstart_initvals)
+    S1_FACTORS, S3A_FACTORS, S3_FACTORS, S4_FACTORS, build_marginalized, build_model, prepare,
+    thomson_scores, warmstart_initvals)
 
 REPORTS = REPO / "reports"
 GATES = dict(rhat=1.01, ess=400.0, div=0, heywood=2.5)
@@ -45,14 +45,16 @@ PSI_FLOOR = 0.05
 STAGE_FLAGS = {
     1: dict(correlated=False, windows=False, specific_cross=False),
     2: dict(correlated=True, windows=True, specific_cross=False, window_sd_scale=1.0),
-    # S3a: add suicidality + developmental_risk via their continuous anchors (marginalized,
-    # 7-factor Φ). The non-Gaussian indicators are S3b (explicit-latent block, separate path).
+    # S3a: add developmental_risk via its continuous anchors (marginalized). suicidality's
+    # non-Gaussian indicators are S3b (explicit-latent block, separate --mixed path).
     3: dict(correlated=True, windows=True, specific_cross=False, window_sd_scale=1.0),
+    # S4: + thin BP/DR anhedonia (1 dedicated continuous indicator + window cross-loadings).
+    4: dict(correlated=True, windows=True, specific_cross=False, window_sd_scale=1.0),
 }
-STAGE_FACTORS = {1: S1_FACTORS, 2: S1_FACTORS, 3: S3A_FACTORS}   # S3a: +developmental only
+STAGE_FACTORS = {1: S1_FACTORS, 2: S1_FACTORS, 3: S3A_FACTORS, 4: S4_FACTORS}
 # ta 0.9 is enough: the marginalized posterior has NO funnel (latents integrated out) -> ~21
 # leapfrogs/iter, 0 divergences; 0.95+ just shrinks steps and slows the fit with no quality gain.
-STAGE_TARGET_ACCEPT = {1: 0.95, 2: 0.90, 3: 0.85}
+STAGE_TARGET_ACCEPT = {1: 0.95, 2: 0.90, 3: 0.85, 4: 0.85}
 # Cap NUTS tree depth: the marginalized posterior's typical set is depth ~5 (≈21–47 leapfrogs), so a
 # cap of 8 (256 leapfrogs) never binds steady-state mixing but bounds the expensive deep warmup
 # trajectories — 2.7× faster at the 7-factor scale, 0 divergences, same depth/ESS.

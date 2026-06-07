@@ -56,6 +56,10 @@ S1_FACTORS = ["overall_severity", "cognition", "metabolic", "inflammatory", "sle
 S3A_FACTORS = S1_FACTORS + ["developmental_risk"]
 # S3b's full factor set: suicidality + developmental enter the explicit block (binary/count/ordinal).
 S3_FACTORS = S1_FACTORS + ["suicidality", "developmental_risk"]
+# S4 tests the THIN BP/DR-only ANHEDONIA factor (one dedicated indicator, qids_anhedonia_interest;
+# SZ has no QIDS) on top of the S3a continuous map. The methods-doc question: does a thin,
+# cohort-specific factor identify at all, or does it merge into G / the depression windows? (Adjudication.)
+S4_FACTORS = S3A_FACTORS + ["anhedonia"]
 WINDOWS = ["madrs", "qidsr120", "staya"]   # cross-loading windows (no home factor; §2)
 G_KEY = "overall_severity"
 
