@@ -1,6 +1,6 @@
 # STATE — where the project is right now
 
-> **Read this first.** Updated 2026-06-06.
+> **Read this first.** Updated 2026-06-07.
 
 ## TL;DR
 
@@ -10,8 +10,8 @@ FACE **V0** baseline. The methods and mathematics are **fixed** in
 "Engine A" stage results (the old `03/04` Bayesian engine and its "no general factor" headline) are
 **discarded** — superseded by the global, full-sample, explicit-latent approach in the methods doc. The
 repository is on a **clean base**, and M1 implementation is underway — the data layer + the
-marginalized measurement engine are built, and **S1 (the continuous core) is certified at full N
-(N = 9,013) on the Mac** (no 4090 required).
+marginalized measurement engine are built, and **S1 (continuous core) and S2 (inter-dimension Φ +
+MADRS/QIDS/STAI windows) are both certified at full N (N = 9,013) on the Mac** (no 4090 required).
 
 ## What's decided
 
@@ -26,19 +26,21 @@ marginalized measurement engine are built, and **S1 (the continuous core) is cer
   (CPU)**; the RTX 4090 is optional (faster for later mixed-likelihood stages). YAML configs; Parquet
   model-ready persistence (raw stays CSV); per-stage reports; notebook later.
 - **Repo:** package **`src/face/…`** (renamed from `src/v3`, tests green). Pipeline built so far:
-  `scripts/01_build_data` (full-N V0 → Parquet) · `scripts/04_fit` (staged engine: marginalized Woodbury
-  default, explicit-latent + `--gpu` optional).
+  `scripts/01_build_data` (full-N V0 → Parquet) · `scripts/04_fit --stage {1,2}` (one canonical engine,
+  `src/face/models/bayesian/continuous_core`: marginalized Woodbury default, explicit-latent + `--gpu`
+  optional). S2 stage flags (`correlated`/`windows`/`specific_cross`) live in `scripts/04_fit`.
 
 ## What exists vs. not
 
 - **Exists:** `src/face/data` (harmonization + skip-logic, no imputation); `configs/` ontology +
   `prior_loading_matrix_v3.csv` (143 indicators × 10 factors) + the **prior atlas**
   (`docs/PRIOR_ATLAS.md`); `scripts/01_build_data` (Parquet persistence) + `scripts/04_fit` + the
-  marginalized/explicit engine; tests (`tests/v3/`, **84 passing**).
-- **First result — S1 continuous core CERTIFIED (full N):** see "S1 result" below.
-- **Next (M1 build):** S2 (ESEM cross-loadings + the MADRS/QIDS/STAI cross-loading windows) → S3
-  (mixed-likelihood suicidality + developmental-risk) → S4 (anhedonia) → **S5 global = the reported fit**
-  → FIML confirmation → adjudication → scoring → the **empirical atlas + prior→posterior comparison**.
+  single marginalized/explicit engine (`continuous_core`; the parallel config-first engine + its
+  `bayesian_model.yaml` were retired — one canonical engine now); tests (`tests/v3/`, **88 passing**).
+- **Results so far — S1 + S2 CERTIFIED (full N):** see "S1 result" and "S2 result" below.
+- **Next (M1 build):** S3 (mixed-likelihood suicidality + developmental-risk) → S4 (anhedonia) →
+  **S5 global = the reported fit** → FIML confirmation → adjudication → scoring → the **empirical atlas +
+  prior→posterior comparison**.
 - **Later milestones (not started):** strata (M2) · temporal coherence V1–V4 (M3) · prognosis (M4) ·
   treatment (M5).
 
@@ -55,6 +57,25 @@ Marginalized (Woodbury) bifactor, NumPyro/JAX-CPU: **R-hat 1.010 · ESS 1,939 ·
 - *Continuous backbone only* (independent-specifics bifactor, Φ = I); cross-loadings, the symptom blocks,
   and inter-factor correlations come at S2–S5. **Full writeup + interpretation:
   [`RESULTS.md`](RESULTS.md) §S1.** Artifacts: `reports/04_stage1_report.md` + `_loadings.csv`.
+
+## S2 result — inter-dimension Φ + MADRS/QIDS/STAI windows (CERTIFIED, full N = 9,013, no imputation)
+
+Marginalized (Woodbury) ESEM, warm-started from S1: **R-hat 1.010 · ESS 1,131 · 0 divergences**
+(J = 71 = 68 + 3 windows, 434,765 cells, ~60 min on the Mac). Adds Φ (LKJ over specifics, G orthogonal) +
+the depression/anxiety windows.
+- **Φ — specifics are weakly correlated** (mean |off-diag| 0.09): largest is metabolic↔inflammatory
+  **0.20** (immunometabolic coupling, but distinct — supports the candidate-5 *split*); sleep ≈ orthogonal
+  to biology. Distinct axes, not one factor.
+- **Windows load on G** (functional burden): MADRS **0.80**, QIDS **0.77**, STAI **0.66**, with minor
+  sleep side-loadings (QIDS 0.24, STAI 0.21) — **depression/anxiety are burden windows, not an 11th
+  dimension** (as the methods doc hypothesised). No separate affective factor.
+- **S1 survives elaboration:** primary loadings barely move and **biology ⊥ G holds** (metabolic 0.08,
+  inflammatory 0.07 on G — identical to S1) — the headline was not a bifactor/independence artefact.
+- **Identification finding:** metabolic↔inflammatory *mutual cross-loadings* are rotationally aliased with
+  Φ_{metab,inflam} (not separately identifiable; freeing both ways also made full-N intractable) → **Φ
+  carries that association**, mutual crosses left at 0 (standard ESEM resolution; a ridge-guarded
+  sensitivity arm exists in the engine). **Full writeup: [`RESULTS.md`](RESULTS.md) §S2.** Artifacts:
+  `reports/04_stage2_report.md` + `_loadings.csv` + `_phi.csv`.
 
 ## Open methods choices (flagged for the PI)
 

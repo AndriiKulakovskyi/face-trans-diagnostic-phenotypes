@@ -120,3 +120,130 @@ cohorts → DIMENSIONS (M1, building) → strata (M2) → prognosis (M4) / treat
 S1 is the first certified piece of the dimensions layer, and it already delivers the project's
 load-bearing hypothesis on the backbone: **biology is its own axis, not a proxy for severity** — exactly
 what would make biological strata worth drawing later.
+
+---
+
+## S2 — inter-dimension correlations Φ + the MADRS/QIDS/STAI windows
+
+**Headline.** Deforming the certified S1 backbone into a correlated-factors ESEM — adding the
+inter-dimension correlation matrix **Φ**, freeing the **MADRS/QIDS/STAI** composites as cross-loading
+windows, and re-checking identification — three results land on the full FACE V0 sample (N = 9,013, no
+imputation): (1) the specific dimensions are only **weakly correlated** (mean |Φ off-diagonal| 0.09; the
+largest, metabolic↔inflammatory, is **0.20**) — they are genuinely **distinct axes, not one collapsing
+factor**; (2) the depression/anxiety composites are **windows onto the general burden axis** — MADRS,
+QIDS and STAI load **0.66–0.80 on G** with only minor sleep/cognition side-loadings — empirically
+vindicating the decision to model them as cross-loading windows rather than as an 11th "affective"
+dimension; (3) the S1 structure is **robust under elaboration** — loadings barely move and **biology
+stays orthogonal to G**, so "biology ⊥ burden" was not a bifactor artefact.
+
+### S2.1 Goal
+
+S2 is still a checkpoint, not the reported map. It adds the three pieces S1 deliberately omitted:
+1. **Cross-loadings (ESEM):** free the theory-motivated `plausible_cross` cells so indicators can load on
+   more than their home factor.
+2. **The MADRS/QIDS/STAI windows:** the depression/anxiety composites have **no home factor** (they are
+   not a dimension); they enter only as signed cross-loadings onto the axes they clinically touch
+   (G, cognition, sleep), and the data place them.
+3. **Inter-dimension correlations Φ:** replace S1's independence assumption (Φ = I) with an estimated
+   correlation matrix over the specifics, so we can finally ask how the dimensions relate. **G is held
+   orthogonal to the specifics** (bifactor identification); the correlated-G variant is reserved for S5.
+
+### S2.2 Method
+
+- **Data / estimator:** identical to S1 — full N = 9,013, observed-cell Gaussian likelihood, no
+  imputation, the marginalized (Woodbury) parameterization. Φ enters analytically via
+  `Σ = Λ Φ Λᵀ + Ψ = (Λ·chol Φ)(Λ·chol Φ)ᵀ + Ψ`, so the certified S1 kernel runs unchanged.
+- **Continuation warm-start (§4.2):** every chain is initialised from the **certified S1 posterior**
+  (loadings, residuals), so S2 *deforms* the S1 fit rather than re-deriving it cold.
+- **Φ:** `LKJ(η = 2)` over the four specifics; G orthogonal. **Windows:** signed `Normal(0, 0.25)` cells.
+- **One identification decision (S2.6):** the *specific↔specific* cross-loadings (all of them
+  metabolic↔inflammatory) are **not freed in the reported fit** — they are rotationally aliased with
+  Φ_{metab,inflam} and not separately identifiable; **Φ carries that association.** A ridge-guarded
+  sensitivity arm that frees them exists in the engine but is not the reported model.
+
+### S2.3 Certification — **CERTIFIED**
+
+`N = 9,013` · `J = 71` continuous indicators (68 + the 3 windows) · `434,765` observed cells ·
+**max R-hat 1.010 · min ESS 1,131 · 0 divergences · no Heywood** · ~60 min on the Mac M4 (CPU).
+Source: `reports/04_stage2_report.md` (+ `_loadings.csv`, `_phi.csv`).
+
+### S2.4 Inter-dimension correlations Φ (the new estimand)
+
+Specific block (G orthogonal by construction); mean |off-diagonal| **0.09**:
+
+|  | cognition | metabolic | inflammatory | sleep |
+|---|---:|---:|---:|---:|
+| **cognition** | 1 | 0.15 | 0.06 | −0.09 |
+| **metabolic** | 0.15 | 1 | **0.20** | −0.03 |
+| **inflammatory** | 0.06 | 0.20 | 1 | −0.01 |
+| **sleep** | −0.09 | −0.03 | −0.01 | 1 |
+
+The dimensions are **weakly correlated** — the strongest link, metabolic↔inflammatory (0.20), is a modest
+**immunometabolic** coupling that leaves the two clearly **distinct** (far from collinear), supporting the
+hypothesised *split* of candidate 5 into two factors. **Sleep is essentially orthogonal** to the
+biological axes (≈ 0) and weakly negative with cognition. That the off-diagonals are small is itself a
+result: the specifics are not redundant facets of one super-factor — the multidimensional profile carries
+real information for the stratification layer.
+
+### S2.5 The MADRS/QIDS/STAI windows — where depression/anxiety land
+
+| window | → G | → sleep | → cognition |
+|---|---:|---:|---:|
+| **MADRS** (depression) | **0.80** | 0.14 | −0.06 |
+| **QIDS** (depression) | **0.77** | 0.24 | −0.05 |
+| **STAI** (anxiety) | **0.66** | 0.21 | — |
+
+All three load **predominantly on G** (the functional-burden axis), with a smaller, sensible **sleep**
+side-loading (QIDS/STAI carry sleep content) and a near-zero negative tap on cognition. **Read:**
+depression and anxiety severity, as measured here, are largely expressions of **overall illness burden**,
+not a separate latent — exactly the methods-doc rationale for treating them as windows, now confirmed by
+the data. No 11th affective dimension is needed (its possible emergence is an S5 model-comparison question,
+not an assumption).
+
+### S2.6 An identification finding (not just an engineering note)
+
+Freeing the metabolic↔inflammatory mutual cross-loadings **and** a free Φ_{metab,inflam} parameterizes the
+*same* covariance two ways → a rotational ridge: chains agreed on every Φ entry except
+metabolic↔inflammatory, which swung from −0.16 to +0.46. This is a **statement about the data**: the
+metabolic/inflammatory shared variance is identifiable as a **factor correlation** (Φ ≈ 0.20), not as
+separable item-level bridges. We therefore report Φ and leave the mutual cross-loadings at zero — the
+standard ESEM resolution. (The same freeing also made the full-N fit intractable; the principled model is
+also the tractable one.)
+
+### S2.7 Robustness — S1 survives elaboration
+
+Adding Φ + windows barely moves the S1 estimates — evidence the structure is stable, not fragile:
+
+| quantity | S1 | S2 |
+|---|---:|---:|
+| mean primary loading — cognition / sleep / inflammatory / metabolic | 0.57 / 0.50 / 0.38 / 0.32 | 0.58 / 0.48 / 0.38 / 0.32 |
+| mean \|loading on G\| — **metabolic / inflammatory** (biology ⊥ G) | **0.08 / 0.07** | **0.08 / 0.07** |
+| mean \|loading on G\| — cognition / sleep | 0.27 / 0.22 | 0.27 / 0.26 |
+| G anchors (FAST / EGF / CGI-S) | 1.04 / 0.69 / 0.54 | 0.91 / 0.73 / 0.62 |
+
+**Biology ⊥ G is unchanged** with correlated specifics and the affective windows in the model — the
+load-bearing S1 result is not an artefact of the independence/simple-structure constraints.
+
+### S2.8 Boundaries — what S2 does **not** yet show
+
+- **Still the continuous backbone.** Suicidality (binary/count), developmental-risk, mania, substance, and
+  anhedonia are **not in S2** (S3–S4). Φ and the windows concern only G + cognition/metabolic/inflammatory/sleep.
+- **Reported metabolic↔inflammatory association is Φ only** — item-level bridges between them are not
+  claimed (S2.6).
+- **V0, internal validity only;** no invariance test, no temporal/external validation yet.
+- **Checkpoint, not the map.** Only the global fit **S5** is interpreted/reported; S2's Φ and window
+  loadings are provisional reads that the global fit may revise.
+
+### S2.9 Position in the roadmap
+
+```
+cohorts → DIMENSIONS (M1, building) → strata (M2) → prognosis (M4) / treatment (M5)
+               ▲
+   S1 (G + backbone, Φ=I) ✓ → S2 (Φ + windows, cross-loadings) ✓
+   → S3 mixed-likelihood (suicidality, developmental) → S4 anhedonia
+   → S5 GLOBAL = the reported map → FIML confirmation → adjudication → empirical atlas
+```
+
+S2 adds the first picture of **how the dimensions relate** (weakly — they are distinct axes) and shows the
+**depression/anxiety instruments are burden windows, not a new axis** — while confirming S1's backbone and
+its biology⊥burden headline survive a richer model.

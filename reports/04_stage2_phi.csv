@@ -1,0 +1,6 @@
+,overall_severity,cognition,metabolic,inflammatory,sleep
+overall_severity,1.0,0.0,0.0,0.0,0.0
+cognition,0.0,1.0,0.147,0.063,-0.09
+metabolic,0.0,0.147,1.0,0.201,-0.031
+inflammatory,0.0,0.063,0.201,1.0,-0.01
+sleep,0.0,-0.09,-0.031,-0.01,1.0
