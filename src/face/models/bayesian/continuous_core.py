@@ -49,6 +49,10 @@ PROC = REPO / "data" / "processed"
 MATRIX = REPO / "configs" / "prior_loading_matrix_v3.csv"
 
 S1_FACTORS = ["overall_severity", "cognition", "metabolic", "inflammatory", "sleep"]
+# S3 adds suicidality + developmental-risk. At S3a they enter the marginalized core via their
+# CONTINUOUS anchors (isf07; CTQ×6, agepere, wurs, perinatal); their binary/count/ordinal
+# indicators are added at S3b through explicit latents (the mixed-likelihood block).
+S3_FACTORS = S1_FACTORS + ["suicidality", "developmental_risk"]
 WINDOWS = ["madrs", "qidsr120", "staya"]   # cross-loading windows (no home factor; §2)
 G_KEY = "overall_severity"
 
@@ -184,8 +188,11 @@ def _build_phi(pm, pt, prep, lkj_eta: float):
         return pt.eye(F), pt.eye(F)
     spec_idx = [i for i in range(F) if i != prep.g_col]
     ns = len(spec_idx)
-    craw = pm.LKJCorr("Phi_spec", n=ns, eta=lkj_eta)          # PyMC 6: full [ns, ns] matrix
-    Cs = pt.tril(craw, -1) + pt.tril(craw, -1).T + pt.eye(ns)
+    # PyMC 6.0.1 LKJCorr returns the lower CHOLESKY FACTOR L (unit-norm rows), NOT the correlation
+    # matrix — so the correlation is C = L Lᵀ (guaranteed PD, unit diagonal). (Symmetrizing L's
+    # lower triangle instead, as a naive read suggests, yields an indefinite matrix → chol(Φ)=NaN.)
+    Lcorr = pm.LKJCorr("Phi_spec", n=ns, eta=lkj_eta)
+    Cs = Lcorr @ Lcorr.T
     E = np.zeros((F, ns))
     for k, i in enumerate(spec_idx):
         E[i, k] = 1.0
@@ -208,6 +215,37 @@ def _build_loadings(pm, pt, prep, J, F):
     return Lam
 
 
+def _patterns(mask: np.ndarray):
+    """Unique observed-cell patterns + per-patient index. The per-patient Woodbury matrix A_i
+    depends on the row only through its observed pattern, so the (expensive) F×F Cholesky is done
+    once per UNIQUE pattern (~half as many as patients) instead of once per patient."""
+    pat, inv = np.unique(mask, axis=0, return_inverse=True)
+    return pat.astype("float64"), inv.reshape(-1).astype("int64")
+
+
+def _woodbury_potential(pt, r, mask, Lt, psi, pat_mask, pat_inv, kobs, F, log2pi):
+    """Marginal Gaussian log-lik over observed cells, vectorized. Σ = Lt Ltᵀ + diag(psi); per
+    patient -0.5[k log2π + logdet Σ_obs + rᵀ Σ_obs⁻¹ r] via the matrix-determinant lemma + Woodbury.
+
+    Two speedups vs the naive per-patient form: (1) A = I + Σ_j mask_j (Lt_j Lt_jᵀ)/psi_j is one BLAS
+    GEMM `pat_mask @ Q` (no [N,J,F] materialization); (2) A and its Cholesky are computed per UNIQUE
+    pattern, then gathered to patients. `r` is the residual (x for the marginalized model, x−mean for
+    the mixed model); mask/pat_mask/pat_inv/kobs are numpy constants; Lt/psi are pytensor."""
+    J = pat_mask.shape[1]
+    Qf = ((Lt[:, :, None] * Lt[:, None, :]) / psi[:, None, None]).reshape((J, F * F))   # [J, F²]
+    A = (pt.eye(F).reshape((1, F * F)) + pt.as_tensor(pat_mask) @ Qf).reshape((pat_mask.shape[0], F, F))
+    Lc = pt.linalg.cholesky(A)                                                            # [P, F, F]
+    logdetA_p = 2.0 * pt.log(pt.diagonal(Lc, axis1=-2, axis2=-1)).sum(-1)                 # [P]
+    logdetPsi_p = (pt.as_tensor(pat_mask) * pt.log(psi)[None, :]).sum(1)                  # [P]
+    Wr = pt.as_tensor(mask) * r / psi[None, :]                                            # [N, J]
+    b = Wr @ Lt                                                                           # [N, F]
+    sol = pt.linalg.solve_triangular(Lc[pat_inv], b[:, :, None], lower=True)[:, :, 0]     # gather chol
+    quadA = (sol ** 2).sum(-1)                                                            # [N]
+    term1 = (Wr * r).sum(1)                                                               # [N]
+    return -0.5 * (pt.as_tensor(kobs) * log2pi + logdetPsi_p[pat_inv] + logdetA_p[pat_inv]
+                   + term1 - quadA)
+
+
 def build_marginalized(prep: CorePrep, psi_floor: float = 0.05, lkj_eta: float = 2.0):
     """Marginalized (Woodbury, low-rank) bifactor/ESEM — funnel-free, no per-patient latents.
 
@@ -227,6 +265,7 @@ def build_marginalized(prep: CorePrep, psi_floor: float = 0.05, lkj_eta: float =
     x = np.nan_to_num(M, nan=0.0)
     kobs = mask.sum(1)
     log2pi = float(np.log(2.0 * np.pi))
+    pat_mask, pat_inv = _patterns(mask)
 
     with pm.Model() as model:
         Lam = _build_loadings(pm, pt, prep, J, F)
@@ -234,21 +273,9 @@ def build_marginalized(prep: CorePrep, psi_floor: float = 0.05, lkj_eta: float =
         Phi, R = _build_phi(pm, pt, prep, lkj_eta)
         pm.Deterministic("Phi", Phi)
         Lt = Lam @ R                                                   # [J, F] reparam loadings
-
         sigma = psi_floor + pm.HalfNormal("sigma", 1.0, shape=J)
-        psi = sigma ** 2
-        W = mask / psi[None, :]                                        # [N, J] precision (0 if missing)
-
-        P = W[:, :, None] * Lt[None, :, :]                             # [N, J, F]
-        A = pt.eye(F)[None, :, :] + (P.transpose(0, 2, 1) @ Lt)        # [N, F, F] = I + Lt'WLt
-        b = (W * x) @ Lt                                               # [N, F] = Lt'Wx
-        Lc = pt.linalg.cholesky(A)                                     # batched (JAX-vectorized)
-        logdetA = 2.0 * pt.log(pt.diagonal(Lc, axis1=-2, axis2=-1)).sum(-1)
-        sol = pt.linalg.solve_triangular(Lc, b[:, :, None], lower=True)[:, :, 0]
-        quadA = (sol ** 2).sum(-1)
-        term1 = (W * x ** 2).sum(1)
-        logdetPsi = (mask * pt.log(psi)[None, :]).sum(1)
-        ll = -0.5 * (kobs * log2pi + logdetPsi + logdetA + term1 - quadA)  # [N]
+        ll = _woodbury_potential(pt, pt.as_tensor(x), mask, Lt, sigma ** 2,
+                                 pat_mask, pat_inv, kobs, F, log2pi)
         pm.Potential("obs_ll", ll.sum())
     return model
 
@@ -292,36 +319,40 @@ def build_model(prep: CorePrep, lkj_eta: float = 2.0):
     return model
 
 
-def warmstart_initvals(prep: CorePrep, reports_dir: Path | None = None) -> dict | None:
-    """Continuation warm-start (§4.2): seed S2's loadings/residuals from the certified S1 posterior.
+def warmstart_initvals(prep: CorePrep, from_stage: int = 1, from_items: list[str] | None = None,
+                       reports_dir: Path | None = None) -> dict | None:
+    """Continuation warm-start (§4.2): seed this stage's loadings/residuals from the previous
+    certified stage's posterior, matched by NAME (item, factor) so it survives item reordering and
+    added factors. Cells absent in the source (new items/factors) start at their prior mean (0
+    for signed cells, the prior mean for positives); Phi is left to the sampler. This puts every
+    chain in the previous stage's basin so the new structure deforms from a certified solution.
 
-    Maps S1's per-(item, factor) loadings (`reports/04_stage1_loadings.csv`) and per-item residual
-    scales (`results/face/stage1/idata.nc`) onto S2's cell order by NAME (S2 reorders items + adds
-    the windows). Cross-loadings + window cells start at their prior mean (0); Phi at I (left to the
-    sampler). This puts every chain in the S1 basin so the cross-loadings/Phi deform from the
-    scientifically-correct, S1-continuous solution rather than a cold random mode."""
+    `from_stage` selects the source (S2←S1, S3←S2, …); `from_items` is that stage's item order,
+    used to map per-item residual scales from its idata."""
     import arviz as az
     rep = reports_dir or REPO / "reports"
-    f = rep / "04_stage1_loadings.csv"
+    f = rep / f"04_stage{from_stage}_loadings.csv"
     if not f.exists():
         return None
-    s1 = pd.read_csv(f)
-    s1_load = {(r.item, r.factor): float(r.loading) for r in s1.itertuples()}
+    src = pd.read_csv(f)
+    src_load = {(r.item, r.factor): float(r.loading) for r in src.itertuples()}
 
-    lam_pos = np.array([max(0.02, s1_load.get((prep.items[j], prep.factor_cols[c]), mu))
+    lam_pos = np.array([max(0.02, src_load.get((prep.items[j], prep.factor_cols[c]), mu))
                         for (j, c, mu, sd) in prep.pos_cells], dtype="float64")
-    lam_cross = np.array([s1_load.get((prep.items[j], prep.factor_cols[c]), 0.0)
+    lam_cross = np.array([src_load.get((prep.items[j], prep.factor_cols[c]), 0.0)
                           if prep.kind[(j, c)] == "bifactor_G" else 0.0
                           for (j, c, mu, sd) in prep.sgn_cells], dtype="float64")
     init = {"lam_pos": lam_pos, "lam_cross": lam_cross}
 
-    nc = REPO / "results" / "face" / "stage1" / "idata.nc"
-    if nc.exists():
+    nc = REPO / "results" / "face" / f"stage{from_stage}" / "idata.nc"
+    if nc.exists() and from_items is not None:
         try:
-            sig1 = az.from_netcdf(str(nc)).posterior["sigma"].mean(("chain", "draw")).values
-            p1_items = prepare().items                      # deterministic S1 item order
-            sig_map = {it: float(sig1[k]) for k, it in enumerate(p1_items) if k < len(sig1)}
-            init["sigma"] = np.array([sig_map.get(it, 0.8) for it in prep.items], dtype="float64")
+            sig = az.from_netcdf(str(nc)).posterior["sigma"].mean(("chain", "draw")).values
+            sig_map = {it: float(sig[k]) for k, it in enumerate(from_items) if k < len(sig)}
+            # clamp to a sane residual-SD range: a near-zero warm-start sigma (an item the prior
+            # stage fit to ~0 residual variance) blows the Woodbury precision to NaN under jitter.
+            init["sigma"] = np.clip(np.array([sig_map.get(it, 0.8) for it in prep.items],
+                                             dtype="float64"), 0.1, 1.2)
         except Exception:
             pass
     return init
@@ -347,3 +378,171 @@ def thomson_scores(prep: CorePrep, Lam: np.ndarray, Phi: np.ndarray,
         B = Phi @ Lam[oi].T @ np.linalg.pinv(Sig[np.ix_(oi, oi)])
         out[rows] = np.nan_to_num(M[np.ix_(rows, oi)]) @ B.T
     return out
+
+
+# =========================== S3b — mixed-likelihood block ============================
+# Adds the binary/count/ordinal suicidality + developmental indicators, which cannot be
+# marginalized. Architecture (methods doc §3.2/§4.4): the factors touching non-Gaussian
+# indicators — G + suicidality + developmental — get EXPLICIT non-centered latents f_e;
+# the pure-continuous specifics (cognition/metabolic/inflammatory/sleep) stay MARGINALIZED
+# as f_m, coupled to f_e through the shared Phi by the conditional decomposition
+#     f_m | f_e ~ N(M f_e, S),  M = Phi_me Phi_ee^{-1},  S = Phi_mm - Phi_me Phi_ee^{-1} Phi_em.
+# The continuous block is then a per-patient-mean Woodbury (mean B f_e, residual cov Λ_m S Λ_mᵀ+Ψ);
+# the non-Gaussian indicators get Bernoulli / NegBin / ordered-logistic likelihoods on f_e.
+EXPLICIT_FACTORS = ["overall_severity", "suicidality", "developmental_risk"]
+
+
+@dataclass
+class MixedPrep:
+    base: CorePrep                 # continuous block (S3a prep): M, pos/sgn cells, factor_cols, Phi
+    e_cols: list[int]              # explicit-factor columns in base.factor_cols  [G, suic, dev]
+    m_cols: list[int]              # marginalized-factor columns                   [cog, met, inf, sleep]
+    bin_items: list[str]
+    Bin: np.ndarray                # [N, Jb] 0/1, NaN = missing
+    ord_items: list[str]
+    Ord: np.ndarray                # [N, Jo] 0..K-1, NaN = missing
+    ord_K: list[int]
+    cnt_items: list[str]
+    Cnt: np.ndarray                # [N, Jcnt] counts, NaN = missing
+    ng_home: dict                  # {item: explicit-col index of its home (1=suic, 2=dev)}
+    ng_hp: dict                    # {item: (home_mu, home_sd)} primary prior (TruncatedNormal>0)
+    ng_gp: dict                    # {item: (g_mu, g_sd)} bifactor-G prior (signed)
+
+
+def prepare_mixed(factors: list[str] = S3_FACTORS, *, min_obs: int = 1500,
+                  n_subsample: int | None = None, seed: int = 20260605) -> MixedPrep:
+    """S3b inputs: the S3a continuous prep + the non-Gaussian (binary/ordinal/count) suicidality
+    and developmental indicators, aligned to the same patients. Coverage filter: an indicator must
+    be observed in all three cohorts with >= `min_obs` total (drops the sparse BP/DR-only C-SSRS/LTS
+    and dr=0 items, which cannot identify a loading)."""
+    base = prepare(factors, correlated=True, windows=True, n_subsample=n_subsample, seed=seed)
+    m = pd.read_csv(MATRIX)
+    meta = m.drop_duplicates("item").set_index("item")[["modeling_block", "likelihood_family"]]
+    home = (m[m.prior_type.isin(["primary", "g_anchor"])].drop_duplicates("item")
+            .set_index("item")["factor"].to_dict())
+    cell = {(r.item, r.factor): (float(r.prior_mean), float(r.prior_sd)) for r in m.itertuples()}
+    e_idx = {f: i for i, f in enumerate(EXPLICIT_FACTORS)}             # G=0, suic=1, dev=2
+    e_cols = [base.factor_cols.index(f) for f in EXPLICIT_FACTORS]
+    m_cols = [base.factor_cols.index(f) for f in base.factor_cols if f not in EXPLICIT_FACTORS]
+
+    B_full = pd.read_parquet(PROC / "baseline_v0.parquet")             # FULL data for eligibility
+    coh_full = np.asarray(B_full.index.get_level_values("cohort"))
+    ng = ["suicidality", "developmental_risk"]
+    items = [it for it in home if home.get(it) in ng and it in meta.index
+             and meta.loc[it, "modeling_block"] == "explicit" and it in B_full.columns]
+
+    def covered(it: str) -> bool:                                      # full-N coverage (subsample-independent)
+        v = pd.to_numeric(B_full[it], errors="coerce")
+        return v.notna().sum() >= min_obs and all((v[coh_full == c].notna().sum()) > 0
+                                                   for c in ("bp", "sz", "dr"))
+    items = [it for it in items if covered(it)]
+    B = B_full.loc[base.index]                                         # arrays on the (sub)sampled rows
+    fam = {it: meta.loc[it, "likelihood_family"] for it in items}
+    bin_items = sorted(it for it in items if fam[it] == "bernoulli")
+    ord_items = sorted(it for it in items if fam[it] == "ordered_logistic")
+    cnt_items = sorted(it for it in items if fam[it] == "neg_binomial")
+
+    def grab(cols):
+        return pd.DataFrame({c: pd.to_numeric(B[c], errors="coerce") for c in cols},
+                            index=B.index).to_numpy().astype(float)
+
+    Bin, Cnt, Ov = grab(bin_items), grab(cnt_items), grab(ord_items)
+    ord_K = []
+    for k in range(Ov.shape[1]):                                       # recode each ordinal to 0..K-1
+        col = Ov[:, k]; obs = ~np.isnan(col); uniq = np.unique(col[obs])
+        remap = {v: i for i, v in enumerate(uniq)}
+        for v, i in remap.items():
+            col[col == v] = i
+        Ov[:, k] = col; ord_K.append(max(2, len(uniq)))
+
+    ng_home, ng_hp, ng_gp = {}, {}, {}
+    for it in bin_items + ord_items + cnt_items:
+        ng_home[it] = e_idx[home[it]]
+        ng_hp[it] = cell.get((it, home[it]), (0.7, 0.25))
+        ng_gp[it] = cell.get((it, "overall_severity"), (0.0, 0.25))
+    return MixedPrep(base=base, e_cols=e_cols, m_cols=m_cols,
+                     bin_items=bin_items, Bin=Bin, ord_items=ord_items, Ord=Ov, ord_K=ord_K,
+                     cnt_items=cnt_items, Cnt=Cnt, ng_home=ng_home, ng_hp=ng_hp, ng_gp=ng_gp)
+
+
+def _sel(rows: list[int], F: int) -> np.ndarray:
+    S = np.zeros((len(rows), F))
+    for k, i in enumerate(rows):
+        S[k, i] = 1.0
+    return S
+
+
+def build_mixed(mp: MixedPrep, psi_floor: float = 0.05, lkj_eta: float = 2.0):
+    """Hybrid explicit/marginalized mixed-likelihood model (S3b). f_e=(G,suic,dev) explicit; the
+    continuous specifics marginalized and coupled via the conditional Phi decomposition."""
+    import pymc as pm
+    import pytensor.tensor as pt
+
+    base = mp.base
+    M = base.M
+    N, Jc = M.shape
+    F = len(base.factor_cols)
+    Ke, Km = len(mp.e_cols), len(mp.m_cols)
+    mask = (~np.isnan(M)).astype("float64")
+    x = np.nan_to_num(M, nan=0.0)
+    kobs = mask.sum(1)
+    log2pi = float(np.log(2.0 * np.pi))
+    pat_mask, pat_inv = _patterns(mask)
+    Se, Sm = _sel(mp.e_cols, F), _sel(mp.m_cols, F)                    # selection matrices
+
+    with pm.Model() as model:
+        Lam = _build_loadings(pm, pt, base, Jc, F)                     # [Jc, F] continuous loadings
+        pm.Deterministic("Lam", Lam)
+        Phi, _ = _build_phi(pm, pt, base, lkj_eta)                     # [F, F] corrected, G orthogonal
+        pm.Deterministic("Phi", Phi)
+
+        Se_t, Sm_t = pt.as_tensor(Se), pt.as_tensor(Sm)
+        Phi_ee = Se_t @ Phi @ Se_t.T                                   # [Ke, Ke]
+        Phi_mm = Sm_t @ Phi @ Sm_t.T                                   # [Km, Km]
+        Phi_me = Sm_t @ Phi @ Se_t.T                                   # [Km, Ke]
+        Mmat = pt.linalg.solve(Phi_ee, Phi_me.T).T                     # [Km, Ke] = Phi_me Phi_ee^{-1}
+        S = Phi_mm - Mmat @ Phi_me.T                                   # [Km, Km] residual cov
+        C_S = pt.linalg.cholesky(S + 1e-8 * pt.eye(Km))
+        L_ee = pt.linalg.cholesky(Phi_ee + 1e-8 * pt.eye(Ke))
+
+        Lam_e = Lam @ Se_t.T                                           # [Jc, Ke]
+        Lam_m = Lam @ Sm_t.T                                           # [Jc, Km]
+        Bmat = Lam_e + Lam_m @ Mmat                                    # [Jc, Ke] mean loadings on f_e
+        Lt = Lam_m @ C_S                                              # [Jc, Km] residual loadings
+
+        z = pm.Normal("z_e", 0.0, 1.0, shape=(N, Ke))                  # explicit latents, non-centered
+        f_e = pm.Deterministic("f_e", z @ L_ee.T)                      # Cov(rows) = Phi_ee
+
+        sigma = psi_floor + pm.HalfNormal("sigma", 1.0, shape=Jc)
+        # continuous block — per-patient-mean masked Woodbury on residual r = x - f_e Bᵀ
+        r = pt.as_tensor(x) - f_e @ Bmat.T                            # [N, Jc]
+        ll = _woodbury_potential(pt, r, mask, Lt, sigma ** 2, pat_mask, pat_inv, kobs, Km, log2pi)
+        pm.Potential("cont_ll", ll.sum())
+
+        # non-Gaussian indicators on f_e (home factor + bifactor-G), observed cells only
+        for k, it in enumerate(mp.bin_items):
+            y = mp.Bin[:, k]; obs = np.flatnonzero(~np.isnan(y))
+            a = pm.Normal(f"a_{it}", 0.0, 1.5)
+            lh = pm.TruncatedNormal(f"lh_{it}", mu=mp.ng_hp[it][0], sigma=mp.ng_hp[it][1], lower=0.0)
+            lg = pm.Normal(f"lg_{it}", mp.ng_gp[it][0], mp.ng_gp[it][1])
+            eta = a + lh * f_e[:, mp.ng_home[it]][obs] + lg * f_e[:, 0][obs]
+            pm.Bernoulli(f"y_{it}", logit_p=eta, observed=y[obs].astype("int8"))
+        for k, it in enumerate(mp.cnt_items):
+            y = mp.Cnt[:, k]; obs = np.flatnonzero(~np.isnan(y))
+            a = pm.Normal(f"a_{it}", 0.0, 1.5)
+            lh = pm.TruncatedNormal(f"lh_{it}", mu=mp.ng_hp[it][0], sigma=mp.ng_hp[it][1], lower=0.0)
+            lg = pm.Normal(f"lg_{it}", mp.ng_gp[it][0], mp.ng_gp[it][1])
+            alpha = pm.HalfNormal(f"alpha_{it}", 2.0)
+            eta = a + lh * f_e[:, mp.ng_home[it]][obs] + lg * f_e[:, 0][obs]
+            pm.NegativeBinomial(f"y_{it}", mu=pt.exp(eta), alpha=alpha,
+                                observed=np.rint(y[obs]).astype("int64"))
+        for k, it in enumerate(mp.ord_items):
+            y = mp.Ord[:, k]; obs = np.flatnonzero(~np.isnan(y)); K = int(mp.ord_K[k])
+            cut = pm.Normal(f"c_{it}", mu=np.linspace(-1.5, 1.5, K - 1), sigma=2.0, shape=K - 1,
+                            transform=pm.distributions.transforms.ordered)
+            lh = pm.TruncatedNormal(f"lh_{it}", mu=mp.ng_hp[it][0], sigma=mp.ng_hp[it][1], lower=0.0)
+            lg = pm.Normal(f"lg_{it}", mp.ng_gp[it][0], mp.ng_gp[it][1])
+            eta = lh * f_e[:, mp.ng_home[it]][obs] + lg * f_e[:, 0][obs]
+            pm.OrderedLogistic(f"y_{it}", eta=eta, cutpoints=cut,
+                               observed=y[obs].astype("int32"), compute_p=False)
+    return model

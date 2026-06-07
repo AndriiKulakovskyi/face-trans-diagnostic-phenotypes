@@ -60,9 +60,10 @@ Marginalized (Woodbury) bifactor, NumPyro/JAX-CPU: **R-hat 1.010 · ESS 1,939 ·
 
 ## S2 result — inter-dimension Φ + MADRS/QIDS/STAI windows (CERTIFIED, full N = 9,013, no imputation)
 
-Marginalized (Woodbury) ESEM, warm-started from S1: **R-hat 1.010 · ESS 1,131 · 0 divergences**
-(J = 71 = 68 + 3 windows, 434,765 cells, ~60 min on the Mac). Adds Φ (LKJ over specifics, G orthogonal) +
-the depression/anxiety windows.
+Marginalized (Woodbury) ESEM, warm-started from S1: **R-hat 1.010 · ESS 676 · 0 divergences**
+(J = 71 = 68 + 3 windows, 434,765 cells, on the Mac). Adds Φ (LKJ over specifics, G orthogonal) +
+the depression/anxiety windows. **Re-certified after two engine fixes** (Φ = L Lᵀ from the LKJCorr
+Cholesky; grouped-GEMM Woodbury, 2.75× faster, logp-identical) — Φ/loadings unchanged to 2 decimals.
 - **Φ — specifics are weakly correlated** (mean |off-diag| 0.09): largest is metabolic↔inflammatory
   **0.20** (immunometabolic coupling, but distinct — supports the candidate-5 *split*); sleep ≈ orthogonal
   to biology. Distinct axes, not one factor.

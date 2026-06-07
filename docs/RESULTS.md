@@ -164,8 +164,16 @@ S2 is still a checkpoint, not the reported map. It adds the three pieces S1 deli
 ### S2.3 Certification — **CERTIFIED**
 
 `N = 9,013` · `J = 71` continuous indicators (68 + the 3 windows) · `434,765` observed cells ·
-**max R-hat 1.010 · min ESS 1,131 · 0 divergences · no Heywood** · ~60 min on the Mac M4 (CPU).
+**max R-hat 1.010 · min ESS 676 · 0 divergences · no Heywood** · on the Mac M4 (CPU).
 Source: `reports/04_stage2_report.md` (+ `_loadings.csv`, `_phi.csv`).
+
+> **Engine corrections (re-certified).** Two engine bugs found while building S3 were fixed and S2
+> re-run; **the Φ and loadings below are unchanged to 2 decimals** (the fixes mattered for S3, not for
+> S2's numbers): (i) `pm.LKJCorr` returns the Cholesky factor `L`, so the correlation is `Φ = L Lᵀ`
+> (the earlier code symmetrized `L`'s lower triangle — indefinite at the 6-factor S3 scale, but
+> coincidentally near-identical for S2's 4 specifics); (ii) a **grouped-GEMM Woodbury** (Cholesky once
+> per unique observed-pattern, `A` as one BLAS GEMM) replaced the per-patient form — **2.75× faster**,
+> verified log-likelihood-identical to the dense computation (diff 0.0000).
 
 ### S2.4 Inter-dimension correlations Φ (the new estimand)
 

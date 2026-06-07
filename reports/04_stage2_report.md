@@ -3,14 +3,14 @@
 N=9,013 · J=71 · factors=['overall_severity', 'cognition', 'metabolic', 'inflammatory', 'sleep']. Marginalized (Woodbury), observed-cell Gaussian likelihood, no imputation. Φ ~ LKJ(2) over specifics (G ⊥ specifics); 8 MADRS/QIDS/STAI window cross-loadings; 0 specific↔specific cross-loadings (metabolic↔inflammatory association carried by Φ).
 
 ## Certification — **CERTIFIED**
-- max R-hat **1.010** · min ESS 1131 · divergences 0 · Heywood False (gates: R-hat≤1.01, ESS≥400, div=0)
+- max R-hat **1.010** · min ESS 676 · divergences 0 · Heywood False (gates: R-hat≤1.01, ESS≥400, div=0)
 
 ## G (functional burden) — anchor loadings
 | item     |   loading |
 |:---------|----------:|
 | fast     |     0.912 |
 | fast25   |     0.781 |
-| egf      |     0.733 |
+| egf      |     0.732 |
 | fast27   |     0.712 |
 | eq5d     |     0.695 |
 | fast30   |     0.694 |

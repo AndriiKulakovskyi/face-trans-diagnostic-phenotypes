@@ -78,3 +78,19 @@ def test_specific_cross_arm_is_metabolic_inflammatory_only_and_ridge_guarded():
     cross_sd = [sd for (j, c, mu, sd) in p.sgn_cells if p.kind[(j, c)] == "cross"]
     win_sd = [sd for (j, c, mu, sd) in p.sgn_cells if p.kind[(j, c)] == "window"]
     assert max(cross_sd) < min(win_sd)
+
+
+def test_phi_is_valid_pd_correlation_with_g_orthogonal():
+    """Regression guard for the LKJCorr bug: pm.LKJCorr returns the Cholesky factor L, so Φ = L Lᵀ.
+    Checked at the 6-specific (S3) scale, where the wrong `tril+tril.T+I` reconstruction is reliably
+    INDEFINITE (the cause of the S3a NaN). Φ must be PD, unit-diagonal, with G orthogonal."""
+    import numpy as np
+    import pymc as pm
+    from face.models.bayesian.continuous_core import S3_FACTORS, build_marginalized
+    prep = prepare(S3_FACTORS, correlated=True, windows=True, n_subsample=400)
+    model = build_marginalized(prep)
+    g = prep.factor_cols.index("overall_severity")
+    for P in pm.draw(model["Phi"], draws=6, random_seed=0):
+        assert np.allclose(np.diag(P), 1.0, atol=1e-6)                       # true correlation
+        assert np.linalg.eigvalsh(P).min() > 1e-8, "Φ not PD (LKJCorr must be C = L Lᵀ)"
+        assert np.allclose(np.delete(P[g], g), 0.0, atol=1e-6), "G must be ⊥ specifics"
