@@ -11,10 +11,10 @@ FACE **V0** baseline. The methods and mathematics are **fixed** in
 **discarded** — superseded by the global, full-sample, explicit-latent approach in the methods doc. The
 repository is on a **clean base**, and M1 implementation is underway. The data layer + the marginalized
 measurement engine are built; **S1 (continuous core) and S2 (inter-dimension Φ + MADRS/QIDS/STAI windows)
-are certified at full N (9,013)**, and **S3–S4 are done** (random N = 4,000 subsample, §3.6 frontier
-fallback): S3a (+developmental-risk) certified/stable, S3b (+suicidality, mixed-likelihood) provisional,
-**S4 adjudicated anhedonia as rejected** (thin; merges into G + depression). The staged checkpoints S1–S4
-are complete — **7-dimension map**; next is the full-N **S5 global fit** (the reported map). Updated 2026-06-07.
+are certified at full N (9,013)**; **S3–S4 done** (S3a +developmental certified, S3b +suicidality mixed
+provisional, S4 anhedonia **rejected**); and **S5 — the reported global 7-dimension map — is run**
+(provisional, N=5,000 subsample). All staged fits S1→S5 are complete; remaining M1 work is FIML
+confirmation, the formal adjudication write-up, and the prior→posterior atlas. Updated 2026-06-07.
 
 ## What's decided
 
@@ -44,9 +44,11 @@ are complete — **7-dimension map**; next is the full-N **S5 global fit** (the 
   Eligible dimension set adjudicated: **7 dimensions** (G + cognition/metabolic/inflammatory/sleep/
   developmental-risk/suicidality); anhedonia **rejected** (S4); impulsivity/negative-symptoms/sensory
   dropped pre-modeling. Depression/anxiety = cross-loading windows, not a dimension.
-- **Next (M1 build):** **S5 global = the reported fit (full N)** — all 7 dimensions jointly + correlated-G
-  sensitivity → FIML confirmation → scoring → the **empirical atlas + prior→posterior comparison**.
-  (S5's mixed-likelihood block at full N likely needs the GPU per §4.5, or a documented subsample.)
+- **S5 reported map (run, provisional):** see "S5 result" below. 7 dimensions; biology refined to
+  *least severity-entangled* (not strictly ⊥) via the correlated-G test.
+- **Next (M1 build):** **FIML confirmation** (continuous backbone, §5) · formal **adjudication** write-up
+  (§6) · **prior→posterior empirical atlas** (§2.3) · per-patient **scoring** at scale (§7). Then a
+  **full-N + certified S5 on the GPU** (§4.5) to upgrade the reported map from provisional.
 - **Compute lesson (this session):** full-N S1/S2 ≈ 1 h; the S3+ mixed-likelihood frontier is heavier, so
   S3 checkpoints use a random N=4,000 subsample (§3.6). Engine perf fixes: grouped-GEMM Woodbury (Cholesky
   per observed-pattern, 2.75×), tree-depth cap 8 + ta 0.85 (2.7× at 7 factors). Φ bug fixed (LKJCorr=Cholesky
@@ -116,6 +118,21 @@ anhedonia anchor, QIDS item 13, is part of QIDS total → near-collinear). The r
 variance absorbed by G + the depression windows. Matches the methods-doc prior. **Full writeup:
 [`RESULTS.md`](RESULTS.md) §S4** (incl. the consolidated S1–S4 candidate-adjudication table). Artifacts:
 `reports/04_stage4_*`.
+
+## S5 result — the reported 7-dimension map (global fit, provisional)
+
+Global mixed-likelihood fit over all 7 dimensions (continuous core marginalized + suicidality/developmental
+explicit, one shared Φ), random N=5,000 subsample (Mac best-effort): **R-hat 1.040 · 0 div** (provisional —
+slow-mixing continuous cross-loadings; full-N + certification → GPU §4.5).
+- **G = functional burden** (FAST 0.90, EGF 0.73); specifics: cognition 0.57 · sleep 0.48 · developmental
+  0.42 · inflammatory 0.39 · metabolic 0.32 · suicidality (isf07 0.60 + binary ISF 2.7–3.4 logit).
+- **Φ weak** (mean |off-diag| 0.10): metab~inflam 0.19, suic~dev 0.23, sleep~dev 0.19 — distinct axes.
+- **G⊥biology refined (the load-bearing check, both identifications):** bifactor direct G-loadings
+  metabolic 0.08 / inflammatory 0.07; **correlated-G** factor correlations metabolic **0.28** / inflammatory
+  **0.14** (vs cognition 0.35, sleep 0.47). → biology is **not strictly orthogonal** to severity (the
+  bifactor overstated it) but **is the least severity-entangled domain** (~92–98% of its variance independent
+  of G) — biological strata remain worthwhile; "largely severity-independent" replaces "orthogonal".
+  **Full writeup: [`RESULTS.md`](RESULTS.md) §S5.** Artifacts: `reports/04_stage5_*` + `04_stage5_corrG_phi.csv`.
 
 ## Open methods choices (flagged for the PI)
 

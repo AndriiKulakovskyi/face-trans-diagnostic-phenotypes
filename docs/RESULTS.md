@@ -408,3 +408,79 @@ S1–S4 (the staged checkpoints) are complete: the eligible dimension set is adj
 machinery works, and the engine is fast + correct. **Next is S5** — the single global fit on the full sample
 that combines all surviving dimensions and yields the *reported* map (loadings, Φ_full, the correlated-G
 sensitivity, per-patient scores), followed by FIML confirmation and the prior→posterior atlas.
+
+---
+
+## S5 — the global fit: the reported 7-dimension map
+
+**Headline.** The single global model — all 7 surviving dimensions jointly, continuous core marginalized +
+suicidality/developmental's non-Gaussian indicators explicit, coupled through one Φ — gives the **reported
+transdiagnostic map**: a clean general burden factor **G**, six specific axes that are **weakly correlated**
+(mean |Φ| 0.10), and a refined verdict on the project's load-bearing premise — **biology is the
+*least* severity-entangled domain, but not strictly orthogonal**. Run on a random N = 5,000 subsample
+(Mac best-effort; **provisional** — R-hat 1.04, 0 divergences); full-N + full certification is reserved for
+the GPU (§4.5).
+
+### S5.1 The map (Λ)
+
+- **G — functional burden** (unchanged across S1→S5): FAST 0.90, EGF 0.73, EQ-5D 0.68, CGI-S ~0.61.
+- **Specific factors** (mean primary loading): cognition 0.57 · sleep 0.48 · developmental-risk 0.42 ·
+  inflammatory 0.39 · metabolic 0.32 · suicidality (isf07 continuous 0.60; binary ISF ideation +2.7…+3.4
+  logit, attempt +1.8…+2.0).
+
+### S5.2 Inter-dimension correlations Φ (the reported 7×7; G held orthogonal in the primary fit)
+
+| | cog | met | inf | sleep | suic | dev |
+|---|---:|---:|---:|---:|---:|---:|
+| **cognition** | 1 | 0.15 | 0.07 | −0.09 | −0.13 | −0.08 |
+| **metabolic** | 0.15 | 1 | 0.19 | −0.03 | −0.05 | −0.05 |
+| **inflammatory** | 0.07 | 0.19 | 1 | 0.02 | 0.02 | 0.01 |
+| **sleep** | −0.09 | −0.03 | 0.02 | 1 | 0.14 | 0.19 |
+| **suicidality** | −0.13 | −0.05 | 0.02 | 0.14 | 1 | 0.23 |
+| **developmental** | −0.08 | −0.05 | 0.01 | 0.19 | 0.23 | 1 |
+
+Mean |off-diagonal| **0.10** — the six specifics are **distinct, weakly-correlated axes**. The real
+couplings are all clinically sensible: **immunometabolic** (metab~inflam 0.19), **adversity–suicidality**
+(suic~dev 0.23), and sleep's mild links to developmental (0.19) and suicidality (0.14). Biology
+(metabolic/inflammatory) is essentially uncorrelated with the psychopathology axes.
+
+### S5.3 The G ⊥ biology test — under both identifications (the load-bearing check)
+
+The project's premise — *biological load varies independently of overall severity, so biological strata
+capture heterogeneity severity misses* — is tested under **both** factor identifications (methods doc §3.1):
+
+| domain | bifactor: \|direct loading on G\| | correlated-G: factor's Φ with G |
+|---|---:|---:|
+| **inflammatory** | **0.07** | **0.14** |
+| **metabolic** | **0.08** | **0.28** |
+| cognition | 0.26 | 0.35 |
+| sleep | 0.25 | 0.47 |
+| developmental | 0.12 | 0.28 |
+
+**Honest refinement.** The strict orthogonality from the bifactor (biology G-loadings ≈ 0.07–0.08) is
+**partly a constraint artefact**: when G is *allowed* to correlate, **metabolic shows a modest 0.28 and
+inflammatory a weak 0.14 correlation with G**. So biology is **not strictly ⊥ G**. But the **substantive
+claim holds**: biology is the **least severity-entangled domain** (inflammatory the lowest of all six;
+metabolic below cognition/sleep), with **~92% (metabolic) to ~98% (inflammatory) of its variance independent
+of G**. Two equally-impaired patients can still differ sharply in biological load — biological strata remain
+worth drawing — but the earlier "orthogonal" phrasing overstated it; "largely severity-independent" is exact.
+
+### S5.4 Boundaries
+
+- **Provisional, not certified** (R-hat 1.04; the continuous cross-loadings mix slowly under the conditional
+  coupling — *not* the suicidality block, which is well-mixed). The reported point estimates are reliable; the
+  cross-loading/Φ_suicidality precision improves with more compute.
+- **N = 5,000 random subsample** (§3.6), not full N; the correlated-G sensitivity at N = 4,000 (R-hat 1.02).
+  **Full-N + certification → GPU (§4.5).**
+- **Still ahead in M1:** FIML confirmation on the continuous backbone (§5), formal dimension adjudication
+  write-up (§6), per-patient scoring at scale (§7, provisional scores exist), and the **prior→posterior
+  empirical atlas** (§2.3). Internal validity only — no invariance/temporal/external validation yet.
+
+### S5.5 What S5 delivers
+
+The **reported transdiagnostic map**: 7 empirically-supported dimensions with their loadings, the
+inter-dimension Φ, per-patient coordinates (with uncertainty), and the dual-identification G⊥biology test.
+The hybrid discovery worked end-to-end — theory proposed 10 candidates; the FACE data **confirmed 6 + G,
+reshaped one (metabolic/inflammatory split), and rejected/dropped four** (anhedonia, impulsivity, negative
+symptoms, sensory) — with the depression/anxiety instruments placed as cross-loading windows, not a
+dimension. This map is the foundation the M2 stratification layer will act on.

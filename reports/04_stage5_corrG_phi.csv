@@ -1,0 +1,7 @@
+,overall_severity,cognition,metabolic,inflammatory,sleep,developmental_risk
+overall_severity,1.0,0.354,0.284,0.14,0.465,0.277
+cognition,0.354,1.0,0.246,0.11,0.068,0.048
+metabolic,0.284,0.246,1.0,0.231,0.109,0.055
+inflammatory,0.14,0.11,0.231,1.0,0.039,0.03
+sleep,0.465,0.068,0.109,0.039,1.0,0.266
+developmental_risk,0.277,0.048,0.055,0.03,0.266,1.0

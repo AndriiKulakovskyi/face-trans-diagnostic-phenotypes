@@ -339,7 +339,7 @@ def _diagnose_write_mixed(mp, idata, az, label="stage3b") -> dict:
         pass
 
     ng = load[load.block == "non-gaussian"]
-    md = ["# Stage 3b — mixed-likelihood suicidality + developmental (full-N V0)", "",
+    md = [f"# {label} — mixed-likelihood global fit (suicidality + developmental + continuous core)", "",
           f"N={diag['N']:,} · continuous J={diag['cont_J']} + {diag['n_nongaussian']} non-Gaussian "
           f"(binary/ordinal/count). Explicit latents f_e={e_names}; the continuous specifics are "
           "marginalized and coupled to f_e through the shared Φ (conditional decomposition). "
@@ -384,9 +384,11 @@ def main():
     ap.add_argument("--chains", type=int, default=4)
     ap.add_argument("--seed", type=int, default=20260605,
                     help="subsample RNG seed (vary for the resample-stability check)")
+    ap.add_argument("--label", type=str, default="stage3b",
+                    help="output label for the --mixed path (e.g. stage5 for the global fit)")
     a = ap.parse_args()
     if a.mixed:
-        run_mixed(a.subsample, draws=a.draws, tune=a.tune, chains=a.chains, seed=a.seed)
+        run_mixed(a.subsample, draws=a.draws, tune=a.tune, chains=a.chains, seed=a.seed, label=a.label)
     else:
         run(a.stage, a.subsample, marginalized=not a.explicit, gpu=a.gpu,
             draws=a.draws, tune=a.tune, chains=a.chains, seed=a.seed)

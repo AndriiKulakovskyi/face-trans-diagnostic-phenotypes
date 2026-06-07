@@ -78,10 +78,11 @@ class CorePrep:
     cohort: np.ndarray
     index: pd.Index
     kind: dict = field(default_factory=dict)   # {(j, c): "g_anchor|primary|bifactor_G|cross|window"}
+    g_correlated: bool = False    # S5 sensitivity: let G correlate with specifics (else G ⊥, bifactor)
 
 
 def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
-            windows: bool = False, specific_cross: bool = False,
+            windows: bool = False, specific_cross: bool = False, g_correlated: bool = False,
             cross_sd_scale: float = 0.25, window_sd_scale: float = 1.0,
             n_subsample: int | None = None, seed: int = 20260605) -> CorePrep:
     """Load the persisted V0 baseline, encode the continuous block for `factors`, and resolve
@@ -173,7 +174,8 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
     return CorePrep(M=Mdf.to_numpy(), items=items, home=homes, factor_cols=factor_cols,
                     spec_factors=spec_factors, g_col=col[G_KEY],
                     pos_cells=pos_cells, sgn_cells=sgn_cells,
-                    correlated=bool(correlated), cohort=cohort, index=Mdf.index, kind=kind)
+                    correlated=bool(correlated), cohort=cohort, index=Mdf.index, kind=kind,
+                    g_correlated=bool(g_correlated))
 
 
 def _cell_arrays(cells):
@@ -193,6 +195,12 @@ def _build_phi(pm, pt, prep, lkj_eta: float):
     F = len(prep.factor_cols)
     if not prep.correlated or F <= 2:
         return pt.eye(F), pt.eye(F)
+    if getattr(prep, "g_correlated", False):
+        # S5 sensitivity: LKJ over ALL factors incl G (no orthogonality) — tests whether biology⊥G
+        # is empirical or a bifactor artefact by reading G's correlation with metabolic/inflammatory.
+        Lall = pm.LKJCorr("Phi_full", n=F, eta=lkj_eta)
+        Phi = Lall @ Lall.T
+        return Phi, pt.linalg.cholesky(Phi + 1e-8 * pt.eye(F))
     spec_idx = [i for i in range(F) if i != prep.g_col]
     ns = len(spec_idx)
     # PyMC 6.0.1 LKJCorr returns the lower CHOLESKY FACTOR L (unit-norm rows), NOT the correlation
