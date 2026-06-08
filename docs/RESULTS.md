@@ -10,6 +10,98 @@
 
 ---
 
+## The map so far — synthesis (S1 → S5)
+
+*Read this first; the per-stage sections below carry the detail and the numbers.*
+
+### What the map is
+
+On the harmonized 3-cohort FACE **V0** baseline (N = 9,013 = BP 6,252 · SZ 2,209 · DR 552), the hybrid
+Bayesian sparse bifactor/ESEM yields a **7-dimension transdiagnostic map** — one general factor and six
+specific axes — estimated from each patient's *observed* cells (no imputation):
+
+| dimension | what it is | anchored by | loading |
+|---|---|---|---|
+| **G — functional burden** | overall impairment/severity (one job) | FAST, EGF, EQ-5D, CGI-S (functioning + global severity *only*) | FAST 0.90, EGF 0.73 |
+| **cognition** | cognitive performance | CVLT, WAIS coding/digit-span, fluency, TMT-B | 0.57 |
+| **metabolic** | cardiometabolic load | BMI, waist, BP, glucose, HbA1c, lipids | 0.32 |
+| **inflammatory** | immuno-inflammatory load | CRP, WBC, neutrophils, platelets | 0.39 |
+| **sleep** | sleep/circadian | PSQI objective sub-scores | 0.48 |
+| **developmental-risk** | early adversity / liability | CTQ childhood trauma, age-of-onset, WURS, perinatal, family history | 0.42 |
+| **suicidality** | ideation/attempt | ISF binary ideation/attempt (+ count), isf07 | binary 2.7–3.4 (logit) |
+
+**Inter-dimension correlations (Φ)** are *weak* — mean |off-diagonal| ≈ **0.10**, i.e. the six specifics are
+**genuinely distinct axes**, not facets of one severity factor. The only non-trivial couplings are clinically
+coherent: **metabolic–inflammatory 0.19** (immunometabolic), **suicidality–developmental 0.23** (childhood
+adversity ↔ suicidality), and sleep's mild links to developmental (0.19) and suicidality (0.14).
+
+**Depression/anxiety are not a dimension.** MADRS/QIDS/STAI enter as **cross-loading windows**, loading
+**0.6–0.8 on G** (overall burden) with smaller taps on sleep — confirmed consistently across S2–S5. No
+separate "affective" factor and no 11th dimension.
+
+**The load-bearing biology⊥G premise, refined.** Tested under both identifications: in the **bifactor**,
+biology's direct G-loadings are ≈ 0 (metabolic 0.08, inflammatory 0.07); in the **correlated-G** sensitivity,
+the biology *factors* correlate **0.28 (metabolic)** / **0.14 (inflammatory)** with G — vs cognition 0.35,
+sleep 0.47. So biology is **the least severity-entangled domain** (≈ 92–98% of its variance independent of G),
+but **not strictly orthogonal** — the exact claim is *"largely severity-independent,"* not *"orthogonal."*
+
+**Hybrid adjudication, end to end.** Of the 10 candidate dimensions, the FACE data **confirmed 6 + G**,
+**split** candidate-5 into metabolic + inflammatory, **rejected** anhedonia (thin; merges into G + depression),
+and the three with no common indicators (impulsivity, negative symptoms, sensory) were **dropped pre-modeling**.
+
+### Strong points (what we can stand behind)
+
+1. **Full sample, no imputation, observed-data likelihood** — the central validity decision. S1 and S2 ran on
+   *all* 9,013 patients (no completeness selection), removing the selection bias that broke the prior iteration.
+2. **G is a clean functional-burden axis** — anchored by functioning/severity only, with *no* symptom content
+   (subjective illness `lvsbjind` ≈ 0); stable across all five stages.
+3. **The dimensions are distinct** (weak Φ) — the map carries genuine multidimensional information for strata,
+   not a re-dressed severity score.
+4. **The mixed-likelihood frontier works** — binary/count suicidality indicators compose with the shared
+   continuous Φ (0 divergences); suicidality is solidly identified by its ISF items.
+5. **Honest, dual-identification adjudication** — biology⊥G was *not* overclaimed (the correlated-G test caught
+   the bifactor overstatement); anhedonia was rejected rather than forced.
+6. **Engineering is sound and reproducible** — two real bugs found and fixed *with measurement* (the Φ =
+   LKJ-Cholesky correctness bug; the grouped-GEMM Woodbury, 2.75× + tree-cap 2.7×), regression-guarded; one
+   canonical engine; 90 tests pass; every result committed and scripted.
+
+### Things that must be clarified (open / to harden)
+
+1. **S3–S5 ran on random subsamples (N = 4,000–5,000), not full N** — the §3.6 frontier fallback for the
+   heavier mixed-likelihood stages. The *reported* map should ultimately be full-N (→ GPU).
+2. **S3b / S5 are provisional (R-hat 1.04–1.06, not certified)** — the continuous cross-loadings mix slowly
+   under the explicit/marginalized coupling (the suicidality block itself mixes well). Point estimates are
+   reliable; Φ_suicidality and cross-loading *precision* need more compute.
+3. **The exact metabolic~G correlation (0.28) is provisional** — the headline refinement ("not strictly
+   orthogonal") is robust in direction, but the magnitude needs the certified full-N fit to pin down.
+4. **No measurement-invariance test yet** across BP/SZ/DR — does each loading hold per cohort, or is the map
+   partly cohort-driven? (§8). This is the most important remaining validity check.
+5. **No FIML triangulation yet** — is the structure robust to the estimator, not a Bayesian-prior artefact? (§5).
+6. **Cohort-specific coverage** — anhedonia and the MADRS/QIDS windows are BP/DR (SZ has no QIDS/MADRS); the SZ
+   map leans on the shared factors. Each patient's per-dimension reliability must be flagged by observed-indicator
+   count (§7).
+7. **Naming caveats** — "developmental-risk" is a *proxy* (early-adversity/liability), not measured
+   neurodevelopment; "suicidality" rests on self-report ISF.
+8. **Internal validity only** — V0 baseline; no temporal (V1–V4) persistence or external-cohort validation (by design, later milestones).
+
+### Remaining work for M1
+
+The map exists; these finish and harden it (all named in the methods doc):
+
+- **Full-N, certified S5 on the GPU** (§4.5) — upgrade the reported map from provisional; pin the Φ magnitudes.
+- **FIML confirmation** on the continuous backbone (§5) — CFI/TLI, RMSEA, classical fit + estimator triangulation.
+- **Measurement invariance** across BP/SZ/DR (§8) — multi-group loadings/intercepts; document partial invariance.
+- **Robustness** (§8) — diagnosis-balanced bootstrap, leave-one-cohort-out loading congruence.
+- **Prior → posterior empirical atlas** (§2.3) — the theory-vs-data heatmap with per-candidate verdicts (the
+  manuscript's centerpiece).
+- **Per-patient scoring at scale** (§7) — coordinates + uncertainty + reliability flags for every patient (provisional scores exist).
+- **Formal dimension-adjudication write-up** (§6).
+
+Only after M1 is locked do the later milestones begin: **M2 strata** → **M3 temporal coherence** → **M4
+prognosis** → **M5 treatment** (§10).
+
+---
+
 ## S1 — continuous core (G + cognition · metabolic · inflammatory · sleep)
 
 **Headline.** On the full FACE V0 sample (N = 9,013, no completeness selection, no imputation), a certified
