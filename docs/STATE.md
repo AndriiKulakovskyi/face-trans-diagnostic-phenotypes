@@ -143,5 +143,7 @@ factor-level covariates · acceptance-gate numbers. Defaults are set in
 ## What to read
 
 [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md) (methods + math) · [`RESULTS.md`](RESULTS.md) (findings log)
-· [`PRIOR_ATLAS.md`](PRIOR_ATLAS.md) (prior map) · [`../README.md`](../README.md) (overview) ·
-[`../CLAUDE.md`](../CLAUDE.md) (guide) · [`DATA.md`](DATA.md) (data contract).
+· [`MEASUREMENT_MAP_EXPLAINED.md`](MEASUREMENT_MAP_EXPLAINED.md) (teaching companion: intuition, the
+marginalized Woodbury engine, NUTS, + Part C as-built results) · [`PRIOR_ATLAS.md`](PRIOR_ATLAS.md) (prior
+map) · [`../README.md`](../README.md) (overview) · [`../CLAUDE.md`](../CLAUDE.md) (guide) ·
+[`DATA.md`](DATA.md) (data contract).
