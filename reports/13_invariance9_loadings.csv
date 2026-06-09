@@ -1,0 +1,7 @@
+factor,item,BP,SZ,DR
+mania_activation,ymrs,0.57,0.16,0.41
+mania_activation,altman,0.76,,0.1
+substance,suoccur_alcool,0.4,0.49,0.63
+substance,suoccur_cannabis,0.37,0.49,0.62
+substance,sudose_cigarettes_lt,0.75,0.83,0.67
+substance,fagers,0.54,0.53,0.74

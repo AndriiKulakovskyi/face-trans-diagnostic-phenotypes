@@ -1,0 +1,102 @@
+\section{Confirmation and validation}
+\label{sec:validation}
+
+A measurement claim is only as good as its adversarial checking. The nine-dimension map is hardened along five
+arms, each asking a different ``could this be an artefact?'' question: of the \emph{prior} or \emph{estimator}
+(§\ref{sub:confirm}), of the \emph{sampler} (§\ref{sub:cert}), of \emph{resampling / cohort imbalance}
+(§\ref{sub:robust}), of \emph{cross-cohort non-comparability} (§\ref{sub:invariance}), and of \emph{absolute
+misfit} (§\ref{sub:ppc}). Because the marginalized model and FIML share one observed-data objective
+(Section~\ref{sec:estimation}), a separate FIML arm is redundant; confirmation is done \emph{in-engine}.
+
+\subsection{Not a prior or estimator artefact}
+\label{sub:confirm}
+\certified\ If the soft priors were doing the work, a \emph{flat-prior} refit (identification constraints only)
+would move the loadings. It does not: the prior-free fit reproduces the soft-prior loadings and $\Phi$
+\emph{exactly} --- per-factor Tucker congruence $\varphi = 1.00$, $\max|\Delta\Phi_{\text{off-diag}}| = 0.00$.
+Since a flat-prior MAP equals the MLE equals FIML, the structure is \textbf{earned from the data, not
+manufactured by the priors}. And the bifactor structure itself is justified by out-of-sample fit: WAIC
+decisively prefers it over both simpler alternatives (Figure~\ref{fig:waic}).
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.78\linewidth]{figures/fig_waic.png}
+\caption{WAIC model comparison on a common cohort-balanced sub-sample (lower = better out-of-sample fit). The
+bifactor ($G$ + specifics) is preferred over a correlated-factors model with no general factor (by $\approx
+2{,}700$) and overwhelmingly over a unidimensional null (by $\approx 53{,}000$). Both a general factor
+\emph{and} the specific axes are needed.}
+\label{fig:waic}
+\end{figure}
+
+\subsection{Certified at the largest N that mixes}
+\label{sub:cert}
+\certified\ The reported nine-dimension fit passes the full sampler battery across seeds:
+$\max\widehat{R}\le 1.04$, $\min\mathrm{ESS}\ge 112$, $0$ divergences, $\mathrm{BFMI}\ge 0.41$ (no funnel
+pathology), and a \textbf{cross-seed Tucker congruence of $0.993$} (max loading shift $0.19$). The continuous
+backbone and the biology$\perp$$G$ estimand mix cleanly at full $N$ ($\widehat{R}=1.010$); the
+explicit-latent block (the suicidality$\sim$developmental $\Phi$ coupling) is the documented mixing limit, so
+the joint map is certified at the largest $N$ that mixes with this resample-stability guard --- its point
+estimates are resample-stable, only the $\Phi$-precision of that one coupling is provisional. Full-$N$
+full-precision certification of the explicit block is additional sampling effort, not a change of method.
+
+\subsection{Robust to resampling, cohort imbalance, and site}
+\label{sub:robust}
+\certified\ Could the map be an artefact of the $11\!:\!1$ BP$:$DR imbalance, of one dominant cohort, or of
+recruitment-site clustering? Four resampling arms say no. Under \emph{leave-one-cohort-out}, \emph{diagnosis-
+balanced subsampling}, \emph{site cluster-bootstrap}, and a \emph{$1/n_{\text{cohort}}$-weighted} fit, the
+minimum Tucker congruence against the full-sample reference is $\mathbf{0.958}$. The structure is not driven by
+cohort imbalance, by any single cohort, or by site.
+
+\subsection{Measurement invariance --- largely invariant, with honest partials}
+\label{sub:invariance}
+\certified\ Does each loading mean the same thing in each cohort? Per-cohort fits with Tucker congruence
+(Figure~\ref{fig:invariance}, left) show the core is \textbf{largely invariant}: cognition, metabolic, and
+sleep recover congruently in every pair ($\varphi\ge 0.95$), with $12/15$ comparisons fully invariant. The
+\emph{partials are documented, not hidden} --- they are themselves findings about where an instrument means
+different things across populations:
+
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{$G$ in BP--SZ} ($\varphi 0.92$): SZ lacks the FAST behavioural anchor, so $G$ re-anchors on
+  CGI-S/EGF/EQ-5D there.
+  \item \textbf{inflammatory in DR} ($\varphi 0.71/0.75$): a real immune re-weighting --- neutrophils load
+  $\approx 0$ in DR ($0.07$ vs $0.88$ in BP/SZ) while eosinophils dominate.
+  \item \textbf{mania-Altman in DR} ($\varphi 0.764$): clinician-rated YMRS holds across cohorts ($0.57/0.41$),
+  but the \emph{self-rated} Altman floors out in a depression-at-risk cohort ($0.76\to0.10$) --- lean on YMRS
+  for mania in DR (Figure~\ref{fig:invariance}, right).
+  \item \textbf{substance} is invariant BP--SZ ($\varphi 0.997$) and is declared a \textbf{2-cohort axis} (its
+  alcohol/cannabis SUD are BP/SZ-only; the observed-likelihood simply omits DR, not claimed invariant there).
+\end{itemize}
+
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figures/fig_invariance.png}
+\caption{Measurement invariance across BP/SZ/DR. \emph{Left:} Tucker congruence $\varphi$ of the primary
+loadings per factor per cohort-pair (green $\ge 0.95$ invariant; amber partial; red non-invariant) --- the lone
+red block is inflammatory in DR. \emph{Right:} per-cohort loadings of the new mania and substance indicators;
+the self-rated Altman item does not transfer to DR, while clinician-rated YMRS does. Partials are reported as
+caveats, not smoothed over.}
+\label{fig:invariance}
+\end{figure}
+
+\subsection{Absolute fit across both likelihood blocks}
+\label{sub:ppc}
+\certified\ Posterior-predictive checks ask whether the model can \emph{regenerate} the observed data. The
+continuous block has a Bayesian $\mathrm{SRMR}\approx 0.074$ (conventional good fit $<0.08$), with residual
+misfit confined to repeated-measure clusters (the same quantity measured twice --- chol/LDL, supine/standing
+blood pressure and heart rate, AST/ALT, WAIS subtests), which is method-factor structure, not dimensional
+misfit. The non-Gaussian block reproduces \textbf{21 of 22 indicators}' observed endorsement rates / means
+within the $90\%$ posterior-predictive interval (Bayesian $p\approx 0.5$; Figure~\ref{fig:ppc}).
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.82\linewidth]{figures/fig_ppc.png}
+\caption{Absolute fit of the non-Gaussian block: observed endorsement rate (dot) vs the $90\%$
+posterior-predictive interval (bar), per binary/ordinal indicator, coloured by home factor. Every shown
+indicator reproduces. The lone failure (a count item, off-scale here) is the suicide-attempt count
+\code{isf09a}.}
+\label{fig:ppc}
+\end{figure}
+
+\begin{caveatbox}[One item-level mis-fit, isolated and flagged]
+The single exception is \code{isf09a}, the suicide-attempt \emph{count} --- $90.8\%$ zeros, a hurdle a plain
+negative binomial over-predicts in the high-suicidality tail. This is an \textbf{item-level} caveat, not a
+factor-level one: the suicidality dimension is carried by its seven binary ISF items, all of which reproduce
+(Bayesian $p$ $0.48$--$0.59$). A hurdle / zero-inflated likelihood for that one item is the fix if its count
+precision is ever required.
+\end{caveatbox}

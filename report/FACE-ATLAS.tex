@@ -1,0 +1,102 @@
+%==============================================================================
+%  FACE-ATLAS — A Transdiagnostic Latent-axis Stratification of Severe Mental Illness
+%  Technical report (living document; grows with each milestone).
+%  Compile:  pdflatex FACE-ATLAS.tex   (run twice for the table of contents / refs)
+%  Style:    faceatlas.sty  (self-contained; TeX Live "basic" compatible)
+%==============================================================================
+\documentclass[11pt]{article}
+\usepackage{faceatlas}
+
+% --- editable metadata --------------------------------------------------------
+\newcommand{\reportauthor}{Andrii Kulakovskyi}
+\newcommand{\reportgroup}{Precision Psychiatry \& Artificial Intelligence}
+\newcommand{\reportdate}{June 2026}
+\newcommand{\reportversion}{Milestone 1 --- v1.0 (the certified measurement map)}
+
+\begin{document}
+\hypersetup{pdfauthor={\reportauthor}}
+
+%================================ TITLE PAGE ===================================
+\begin{titlepage}
+\thispagestyle{empty}
+\setlength{\parskip}{0pt}          % the many \par's on the cover must not accrue global parskip
+\vspace*{0.15cm}
+{\color{faceaccent}\rule{\linewidth}{1.3pt}}\par\vspace{6pt}
+\noindent{\sffamily\footnotesize\bfseries\color{faceaccent} TECHNICAL REPORT}\hfill%
+{\sffamily\footnotesize\color{facemute} Milestone~1 --- the measurement map \quad\textbar\quad \reportdate}\par
+\vspace{1.5cm}
+
+{\sffamily\bfseries\fontsize{37}{42}\selectfont\color{faceink} FACE{\color{faceaccent}-}ATLAS}\par
+\vspace{15pt}
+{\fontsize{17}{21}\selectfont\color{faceink} A Transdiagnostic Latent-axis Stratification}\par\vspace{2pt}
+{\fontsize{17}{21}\selectfont\color{faceink} of Severe Mental Illness}\par
+\vspace{24pt}
+
+{\large \reportauthor}\par\vspace{3pt}
+{\normalsize\itshape\color{facemute} \reportgroup}\par
+\vspace{16pt}
+
+{\sffamily\footnotesize\color{facemute} Research program\quad diagnostic cohorts $\:\to\:$
+  {\bfseries\color{faceaccent}transdiagnostic dimensions} (this report) $\:\to\:$ validated strata
+  $\:\to\:$ prognosis\,/\,treatment}\par\vspace{3pt}
+{\sffamily\footnotesize\color{facemute} Scope\quad bipolar disorder, schizophrenia, depression
+  ($N=9{,}013$, baseline visit). Nine-dimension map certified at the largest $N$ that mixes (cross-seed Tucker
+  $\varphi$ $0.993$). \textbf{M1 complete} --- pending PI sign-off.}\par
+\vspace{1.15cm}
+
+{\color{facerule}\rule{\linewidth}{0.6pt}}\par\vspace{7pt}
+{\sffamily\bfseries\color{faceaccent}\small ABSTRACT}\par\vspace{5pt}
+{\small
+Psychiatric diagnosis aggregates heterogeneous patients into categories that are neither biologically nor
+prognostically uniform. \textbf{FACE-ATLAS} reorganizes the harmonized, three-cohort FACE baseline
+(bipolar disorder, schizophrenia, major depression; $N=9{,}013$) around \emph{continuous, diagnosis-agnostic
+axes of variation} rather than the diagnostic labels themselves. The program is staged across four milestones
+--- \emph{diagnostic cohorts $\to$ transdiagnostic dimensions $\to$ validated strata $\to$ prognosis/treatment}
+--- of which this report documents the first: the \emph{measurement map}. The map is estimated by a single
+global, missingness-aware \textbf{Bayesian sparse bifactor / ESEM} model with \textbf{mixed likelihoods} and
+\textbf{soft loading priors}: clinical theory proposes a candidate ontology of ten dimensions, and the data
+\emph{confirm, split, merge, downgrade, or reject} each. Three invariants are enforced throughout: estimation
+uses each patient's \emph{observed cells only} (no imputation, full sample); diagnosis is treated as
+\emph{metadata}, never an indicator; and dimensions are discovered on the baseline visit, with later visits
+reserved for validation. A Gaussian-block marginalization with a low-rank Woodbury likelihood makes the
+full-sample fit tractable without subsampling or imputation; non-Gaussian indicators enter through a hybrid
+explicit/marginalized mixed-likelihood block. On the FACE data the model yields a \textbf{certified
+nine-dimension map} --- a general functional-burden factor $G$ and eight weakly-correlated specific axes
+(cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality, mania, substance) --- with
+depression/anxiety instruments placed as \emph{cross-loading windows} rather than a separate dimension, and
+anhedonia \emph{rejected}. The map is hardened end-to-end (prior/estimator robustness, multi-seed
+certification, resample robustness, cross-cohort invariance, and absolute-fit posterior-predictive checks
+across both likelihood blocks) and projected to per-patient coordinates with reliability flags. The headline
+finding: \textbf{biology --- metabolic and inflammatory load --- is the least severity-entangled domain}
+($\varphi$ with $G$ of $0.14$ and $0.06$, versus $0.39$ cognition and $0.44$ sleep), so biological risk rides
+on axes that clinical severity does not see.}\par\vspace{7pt}
+{\color{facerule}\rule{\linewidth}{0.6pt}}
+
+\vfill
+{\footnotesize\color{facemute} The FACE database is the property of \emph{Fondation FondaMental}. Per-patient
+cohort data are confidential and never reproduced here; this report contains only aggregate parameters, derived
+structure, and code description. Every figure is reproducible from the project scripts and committed
+configurations.}
+\end{titlepage}
+
+%================================ CONTENTS =====================================
+\thispagestyle{plain}
+{\small\tableofcontents}
+\clearpage
+
+%================================ BODY =========================================
+\input{sections/01_introduction}
+\input{sections/02_data}
+\input{sections/03_model}
+\input{sections/04_estimation}
+\input{sections/05_results}
+\input{sections/06_validation}
+\input{sections/scoring}
+\input{sections/07_engineering}
+\input{sections/08_roadmap}
+\input{sections/09_limitations}
+\input{sections/10_appendix}
+
+\input{references}
+
+\end{document}

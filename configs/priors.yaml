@@ -1,0 +1,70 @@
+# configs/priors.yaml — soft-prior tier rules for the ESEM-bifactor loading matrix
+# =====================================================================================
+# src/v3/priors/build_matrix.py expands dimensions.yaml into a FULL (item x factor)
+# prior loading matrix using these tiers. Every cell gets a (mean, sd, dist, sign).
+# The model reads the matrix and parameterizes Lambda accordingly — this is the
+# mechanism by which "theory proposes -> data confirms / splits / merges / cross-loads".
+#
+# Tiers (most -> least informative):
+#   primary         an indicator's home factor. Positive, anchored. HalfNormal so the
+#                   sign is fixed (resolves rotational sign ambiguity); the prior MEAN
+#                   pulls toward a substantial loading but the data can shrink it.
+#   plausible_cross a theory-motivated secondary loading. Centered 0, moderately wide:
+#                   the data is free to discover it (or shrink it to 0).
+#   unlikely_cross  the COMPLEMENT — every (item, factor) cell not primary/plausible.
+#                   Centered 0, very tight: effectively soft-zero, but still estimable
+#                   so a genuine surprise cross-loading can emerge against the prior.
+#   g_anchor        general-factor anchors load on G with a primary prior, and on every
+#                   SPECIFIC factor with a near-hard zero (sd ~ 0.001) — this is what
+#                   identifies a bifactor G separately from the specifics.
+#
+# orientation: all loadings are oriented so the factor increases with BURDEN. `sign`
+# from dimensions.yaml flips an indicator's contribution (neg -> multiply by -1 at the
+# data/score layer, prior stays positive on the home factor).
+
+version: "v3.1"
+
+tiers:
+  primary:
+    mean: 0.60
+    sd: 0.30
+    dist: half_normal        # sign-anchored positive on the home factor
+    sign_constraint: positive
+  plausible_cross:
+    mean: 0.00
+    sd: 0.25
+    dist: normal             # signed, data-discovered
+    sign_constraint: signed
+  unlikely_cross:
+    mean: 0.00
+    sd: 0.05                 # soft-zero complement cell
+    dist: normal
+    sign_constraint: signed
+  g_anchor:
+    mean: 0.60
+    sd: 0.30
+    dist: half_normal
+    sign_constraint: positive
+  g_anchor_on_specific:      # severity anchors do NOT load on specifics
+    mean: 0.00
+    sd: 0.001                # near-hard zero (bifactor identification)
+    dist: normal
+    sign_constraint: signed
+
+# General-factor handling (bifactor identification).
+general_factor:
+  orthogonal_to_specifics: true     # Phi: G row/col fixed to 0 (LKJCorr on specific sub-block only)
+  specifics_load_on_g: plausible_cross   # specific-factor items MAY load on G (plausible tier)
+  # ^ this lets the data put a specific indicator partly on G; if many do, G is "general".
+
+# Heywood / identification guards (read by the model).
+guards:
+  psi_floor: 0.05            # residual-variance floor (no Heywood collapse)
+  loading_abs_cap: 2.5       # implausible-loading guard for warm-start sanity only
+  lkj_eta: 2.0               # Phi correlation prior (specific sub-block)
+
+# Sensitivity arms (labeled, not default) — see plan risk #3.
+sensitivity:
+  tight_unlikely_sd: 0.03    # tighten unlikely cells if ESEM smears
+  hard_zero_unlikely: false  # temporarily hard-zero unlikely cells
+  horseshoe_cross: false     # regularized-horseshoe on cross cells only (labeled arm)

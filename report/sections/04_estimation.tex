@@ -1,0 +1,225 @@
+\section{Estimation: staged continuation to the global fit}
+\label{sec:estimation}
+
+\subsection{The target and the three difficulties}
+The scientific object is the single global posterior $p(\Theta\given X_{\mathrm{obs}})$ with
+$\Theta=\{\Lambda,\alpha,\theta,\Phi,\text{latent}\}$ for all eligible dimensions, all indicators, all
+likelihoods, on the full V0 sample. Fitting it cold is hard for three concrete reasons, each a failure mode:
+\begin{enumerate}\setlength{\itemsep}{1pt}
+  \item \textbf{Funnel geometry at scale.} $\sim$9{,}000 patients $\times$ $\sim$8 latent dimensions
+  $\approx 70{,}000$ per-patient latent parameters with hierarchical variance produce Neal's funnel and NUTS
+  divergences.
+  \item \textbf{Weak identification.} $G$ + correlated specifics + cross-loadings is identified only up to
+  rotation/sign/label; on sparse, cohort-structured missingness the posterior can be multimodal.
+  \item \textbf{Mixed-likelihood stiffness.} Gaussian + ordinal + Bernoulli + negative-binomial across
+  cohort-specific missingness at full $N$ is a large, stiff joint model.
+\end{enumerate}
+
+\subsection{Continuation (homotopy) staging}
+Staging is \emph{not} a scientific sequence of results --- it is a continuation method. We solve an easy,
+well-conditioned sub-model, then deform toward the full target one source of difficulty at a time, carrying
+each converged posterior forward as the warm-start for the next. Formally we fit a nested sequence
+$\mathcal{M}_1\subset\mathcal{M}_2\subset\dots\subset\mathcal{M}_5=\text{global}$ and initialise
+$\theta_{\text{init}}^{(s+1)}=\E[\theta\given\mathcal{M}_s]$.
+
+\begin{figure}[h]\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[>={Stealth[length=2.6mm]},node distance=5mm,
+   st/.style={draw=faceaccent,line width=0.8pt,rounded corners=2.5pt,fill=white,
+     minimum height=20mm,text width=27mm,align=center,font=\sffamily\footnotesize,inner sep=3pt},
+   stc/.style={draw=facekr,line width=1.0pt,rounded corners=2.5pt,fill=facekr!8,
+     minimum height=20mm,text width=27mm,align=center,font=\sffamily\footnotesize,inner sep=3pt},
+   stp/.style={draw=facecav,line width=1.0pt,rounded corners=2.5pt,fill=facecav!8,
+     minimum height=20mm,text width=27mm,align=center,font=\sffamily\footnotesize,inner sep=3pt}]
+  \node[stc] (s1) {\bfseries S1\\\scriptsize continuous core\\\scriptsize $G$+cog/met/inf/sleep\\[2pt]\scriptsize full $N$ \,\textbullet\, $\Phi=I$};
+  \node[stc,right=of s1] (s2) {\bfseries S2\\\scriptsize $+\,\Phi$ + MADRS/\\\scriptsize QIDS/STAI windows\\[2pt]\scriptsize full $N$};
+  \node[st,right=of s2] (s3) {\bfseries S3\\\scriptsize $+$ developmental\\\scriptsize $+$ suicidality (mixed)\\[2pt]\scriptsize subsample};
+  \node[st,right=of s3] (s4) {\bfseries S4\\\scriptsize $+$ anhedonia\\\scriptsize (thin, BP/DR)\\[2pt]\scriptsize subsample};
+  \node[stp,right=of s4] (s5) {\bfseries S5\\\scriptsize all 9 dimensions\\\scriptsize $+$ correlated-$G$\\[2pt]\scriptsize \bfseries certified (largest $N$)};
+  \draw[->,faceaccent,line width=0.9pt] (s1)--(s2) node[midway,above,font=\scriptsize\sffamily\color{facemute}]{warm};
+  \draw[->,faceaccent,line width=0.9pt] (s2)--(s3);
+  \draw[->,faceaccent,line width=0.9pt] (s3)--(s4);
+  \draw[->,faceaccent,line width=0.9pt] (s4)--(s5);
+\end{tikzpicture}}
+\caption{Staged continuation. Each stage adds exactly one source of difficulty; the converged posterior
+warm-starts the next. Green $=$ certified at full $N$; amber $=$ the reported nine-dimension global fit,
+certified at the largest $N$ that mixes (cross-seed Tucker $\varphi$ 0.993). \emph{Only $\mathcal{M}_5$ is
+interpreted.} S3--S4 also adjudicated developmental-risk, suicidality, and anhedonia (rejected).}
+\label{fig:staging}
+\end{figure}
+
+What staging buys: \emph{fault isolation} (a failure at stage $s$ implicates only what $s$ added);
+\emph{warm-starts} (the hardest fit begins in a good basin); \emph{risk quarantine} (each failure mode is
+introduced at a known stage with its mitigation); \emph{stability-under-elaboration} as robustness evidence;
+and a natural QC/discussion gate after each step. After the seven-dimension backbone first stabilised, two
+candidates that had been \emph{deferred} (mania, substance) were folded in and the \emph{joint} nine-dimension
+model re-certified --- not bolted on --- so the reported map is one internally consistent object
+(Section~\ref{sec:results}).
+
+\begin{invariantbox}[The interpretation rule]
+\textbf{Only $\mathcal{M}_5$ (the global fit) is interpreted or reported.} Stages S1--S4 are
+convergence/identification checkpoints with \emph{provisional} reads. Publishing an intermediate stage is
+exactly the error to avoid --- a prior iteration concluded ``no general factor'' from a sub-model that omitted
+the severity anchors. Each stage emits a report and is followed by a discussion gate before advancing.
+\end{invariantbox}
+
+A stage advances only through the acceptance gate: $\widehat{R}\le 1.01$; $\mathrm{ESS}\ge 400$ (bulk and
+tail); $0$ divergences; no Heywood case ($\max_j|\lambda_j|$ within a cap); and posterior-predictive checks not
+grossly violated.
+
+\subsection{The Gaussian-block marginal, and its identity with FIML}
+For continuous indicators the latent factors can be integrated out analytically. Stacking the continuous
+loadings into $\Lambda$, the full factor covariance into $\Phi$, and the residual variances into
+$\Psi=\diagop(\sigma_j^2)$, the marginal over patient $i$'s observed continuous sub-vector is Gaussian with
+\begin{equation}
+\label{eq:marginal}
+X_{i,\Obs_i}\sim\Normal\!\left(\mu_{i,\Obs_i},\;\Sigma_{\Obs_i\Obs_i}\right),
+\qquad \Sigma=\Lambda\,\Phi\,\Lambda\Tn+\Psi,\quad \mu_i=\alpha+B c_i .
+\end{equation}
+Summing $\log\Normal(\cdot)$ over each patient's observed sub-vector is \emph{exactly the FIML objective}.
+
+\begin{methodsbox}[Why this makes a separate FIML confirmation redundant]
+The marginalized Bayesian model and a full-information maximum-likelihood SEM optimize the \emph{same}
+observed-data likelihood; they differ only by the presence of priors. A flat-prior MAP therefore equals the
+MLE equals the FIML solution. Hence (i) FIML adds no independent estimator evidence beyond a prior-free refit
+(Section~\ref{sec:validation}), and (ii) this marginal is also the computational route that removes the
+per-patient latent funnel for the Gaussian block while keeping the full sample.
+\end{methodsbox}
+
+\subsection{The low-rank Woodbury likelihood}
+Evaluating Eq.~\eqref{eq:marginal} naively costs a determinant and a solve on $\Sigma_{\Obs_i\Obs_i}$, which
+lives in indicator space (up to $71\times 71$ for a well-measured patient) --- and NUTS needs this, with its
+gradient, many times per draw. But $\Sigma=\Psi+\Lambda\Lambda\Tn$ has a diagonal-plus-low-rank structure
+($\Psi$ diagonal; $\Lambda\Lambda\Tn$ rank $F=K{+}1$), so the Woodbury identity and the matrix-determinant
+lemma move the expensive work into factor space. With $W=\Psi^{-1}$ (the observed-cell precision; $W_{ij}=0$
+where indicator $j$ is missing for patient $i$),
+\begin{equation}
+A_i \;=\; I_F + \Lambda_{\Obs_i}\Tn\,W_i\,\Lambda_{\Obs_i}\in\R^{F\times F},
+\qquad b_i=\Lambda_{\Obs_i}\Tn W_i x_{i,\Obs_i},
+\end{equation}
+\begin{equation}
+\log|\Sigma_i| = \log|\Psi_i| + \log|A_i|,
+\qquad
+x\Tn\Sigma_i^{-1}x = x\Tn W_i x - b_i\Tn A_i^{-1} b_i,
+\end{equation}
+so each patient's marginal log-likelihood is
+\begin{equation}
+\label{eq:woodbury}
+\ell_i = -\tfrac{1}{2}\Big[\, k_i\log 2\pi + \log|\Psi_i| + \log|A_i| + x_i\Tn W_i x_i - b_i\Tn A_i^{-1} b_i \,\Big],
+\quad k_i=|\Obs_i| .
+\end{equation}
+The only matrix factorized is $A_i$, of size $F\times F$ (e.g.\ $5\times 5$ at S1) rather than up to
+$68\times 68$. Correlated factors fold in through the reparameterization $\widetilde\Lambda=\Lambda\,\mathrm{chol}(\Phi)$,
+so $\Lambda\Phi\Lambda\Tn+\Psi=\widetilde\Lambda\widetilde\Lambda\Tn+\Psi$ and the same kernel runs unchanged.
+The likelihood is added to the model as a single potential $\sum_i\ell_i$; NUTS then samples only the
+loading/residual parameters --- the $\sim$45{,}000 patient latents are gone.
+
+\begin{figure}[h]\centering
+\woodburydiagram
+\caption{The mechanism behind full-sample tractability. \emph{Left:} the explicit model instantiates a latent
+vector for every patient ($\approx$70{,}000 parameters) and evaluates the Gaussian likelihood with a
+determinant and solve on the observed sub-covariance $\Sigma_{\mathrm{obs}}$ --- a dense matrix in
+\emph{indicator} space, up to $71\times 71$. \emph{Right:} integrating the Gaussian latents out and applying
+the Woodbury identity moves the only matrix that must be factorized, $A_i$, into \emph{factor} space
+($\approx 5\times 5$), and removes the per-patient funnel entirely. Same likelihood, vastly cheaper geometry.}
+\label{fig:woodbury}
+\end{figure}
+
+\begin{keyresult}[Full-sample inference without imputation is affordable]
+The marginalized Woodbury parameterization fits the S1 continuous core on \emph{all} $N=9{,}013$ patients
+($J=68$, $415{,}531$ observed cells), with no imputation and no subsampling, passing every convergence gate:
+$\max\widehat{R}=1.010$, $\min\mathrm{ESS}=1{,}939$, $0$ divergences. The point is not an absolute runtime but
+that the full-sample, no-imputation invariant is reached by a sequence of \emph{exact} reparameterizations
+(\S\ref{sub:cost}) rather than by approximation or by selecting an easier sub-population --- a cold
+explicit-latent fit of the same model does not converge at this scale.
+\end{keyresult}
+
+\paragraph{Recovering patient scores.} Marginalization does not discard the coordinates: for a fixed posterior
+draw the conditional $z_i\given x_{i,\Obs_i}$ is Gaussian with precision $A_i$ and mean $A_i^{-1}b_i$ --- the
+\emph{same} $A_i,b_i$ used in Eq.~\eqref{eq:woodbury}. Fitting and scoring thus separate cleanly: fit the map
+once on the full sample, then project any patient's observed cells onto it (with uncertainty), so a downstream
+cohort can be scored without driving the measurement fit.
+
+\subsection{The mixed-likelihood frontier (S3--S5)}
+Binary/ordinal/count indicators cannot be Gaussian-marginalized. The engine uses a \emph{partial collapse}: the
+factors touching non-Gaussian indicators ($f_e=\{G,\text{suicidality},\text{developmental}\}$) carry explicit
+non-centered latents, while the pure-continuous specifics ($f_m=\{$cognition, metabolic, inflammatory, sleep$\}$)
+stay marginalized and are coupled to $f_e$ through the shared $\Phi$ by the Gaussian conditional
+\begin{equation}
+f_m\given f_e\sim\Normal(M f_e,\,S),\qquad M=\Phi_{me}\Phi_{ee}^{-1},\quad S=\Phi_{mm}-\Phi_{me}\Phi_{ee}^{-1}\Phi_{em}.
+\end{equation}
+The continuous block becomes a per-patient-mean Woodbury (mean $B f_e$, residual covariance
+$\Lambda_m S\Lambda_m\Tn+\Psi$); the non-Gaussian indicators get Bernoulli/negative-binomial/ordered-logistic
+likelihoods on $f_e$. This is exactly the ``partial collapse'' the methods plan flagged as the hardest step,
+and it works: the mixed fit attains $0$ divergences.
+
+\begin{methodsbox}[A reparameterization ladder, not hardware, resolved the mixing frontier]
+With $0$ divergences but slow mixing, the mixed-likelihood stages were weak-identification \emph{ridges}, not
+funnels --- so the fix is reparameterization, not more compute. Two moves did it: (i) tightening every explicit
+specific's $\to G$ cross-loading toward zero (the dimensions that touch non-Gaussian items are $\approx\perp G$
+anyway, so this removes a ridge without touching the biology$\perp G$ estimand), and (ii) building $\Phi$ from
+a \emph{unit-row} Cholesky factor so it stays a valid correlation matrix (the same fix as the $\Phi=LL\Tn$ bug,
+Section~\ref{sec:engineering}). The explicit-latent block remains the documented mixing limit, so the joint map
+is certified at the \emph{largest $N$ that mixes} with a cross-seed resample-stability guard.
+\end{methodsbox}
+
+\subsection{What makes the fit expensive --- and the optimizations that remove it}
+\label{sub:cost}
+It is worth being explicit about where the time goes. The cost of one NUTS draw factorizes as
+\[
+\text{cost per draw}\;\sim\;\underbrace{\big(\text{\# sampled parameters}\big)}_{\text{geometry}}\;\times\;
+\underbrace{\big(\text{leapfrog steps per draw}\big)}_{\text{step size}}\;\times\;
+\underbrace{\big(\text{cost of one gradient}\big)}_{\text{linear algebra}},
+\]
+and a cold, explicit-latent fit is large on all three. The \emph{geometry} factor is enormous: instantiating
+$G_i$ and $D_{ik}$ for every patient adds $\sim$45{,}000--70{,}000 latent parameters, and their hierarchical
+variance creates Neal's funnel, which forces tiny steps and produces divergences (so the \emph{step-size}
+factor is bad too). The \emph{linear-algebra} factor is also large: every gradient evaluates the observed-data
+Gaussian likelihood, which naively requires a determinant and a solve on each patient's observed sub-covariance
+$\Sigma_{\Obs_i\Obs_i}$ --- a dense matrix in indicator space, up to $71\times 71$, across all $\sim$9{,}000
+patients --- and NUTS performs this many times per retained draw, so the three factors multiply.
+
+The engine attacks each factor with a transformation that leaves the inferential target unchanged
+(Table~\ref{tab:speedups}); the one approximation in the stack is confined to the heavier checkpoint stages and
+is labelled as such.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{The optimization stack. Every row preserves the inferential target (the same posterior, or the same
+observed-data likelihood) except the last --- an explicitly labelled approximation used only where exact
+marginalization is unavailable.}
+\label{tab:speedups}
+\begin{tabular}{L{2.7cm} L{6.1cm} L{5.0cm}}
+\toprule
+\hdr{factor attacked} & \hdr{optimization} & \hdr{effect}\\
+\midrule
+\rowcolor{facebg} geometry & marginalize the Gaussian latents (Eq.~\ref{eq:marginal}) & removes $\sim$45--70k parameters; eliminates the funnel; the MCMC state drops to a few hundred structural parameters\\
+linear algebra & Woodbury identity $+$ determinant lemma (Eq.~\ref{eq:woodbury}) & the per-patient solve moves from indicator space ($\le 71^2$) to factor space ($F^2$, e.g.\ $5^2$)\\
+\rowcolor{facebg} linear algebra & pattern-grouped, batched assembly & $A_i$ as one matrix multiply; its Cholesky computed once per \emph{unique missingness pattern} ($\approx 2.75\times$, log-likelihood-identical)\\
+step size & tuning matched to the (now benign) geometry & lower target acceptance ($0.85$--$0.90$) $+$ tree-depth cap $8$ bound the deep warmup trajectories ($\approx 2.7\times$)\\
+\rowcolor{facebg} warmup length & staged warm-starts (continuation, \S\ref{sec:estimation}) & each stage starts in the previous basin; shorter tuning, fewer failed trajectories\\
+implementation & vectorization $+$ cached preprocessing & the $F\times F$ work is batched over patients; harmonization is not recomputed per fit\\
+\midrule
+\rowcolor{facecav!9} \emph{checkpoints only} & balanced random sub-sample (\emph{labelled approximation}) & the mixed stages, whose non-Gaussian block has no closed-form marginal, run at $N=4$--$5$k\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two entries deserve a note. First, the tuning is counter-intuitive: because marginalization removes the funnel,
+the posterior is benign (its typical set is only $\sim$21 leapfrog steps deep), so the right move is to
+\emph{lower} the target acceptance and cap the tree depth --- bounding the expensive deep warmup trajectories
+--- rather than the usual reflex of \emph{raising} target acceptance to chase divergences, which here would only
+shrink the step size and slow a posterior that has no pathology to avoid. Second, the model is written in PyMC
+for a readable specification and sampled through the NumPyro/JAX backend, which compiles and batches the
+$F\times F$ linear algebra across patients. Together these turn an intractable cold fit into one that converges
+at full $N$, within a standard workstation's memory, in about an hour.
+
+\begin{caveatbox}[Why the mixed-likelihood stages cost more, and the sub-sample fallback]
+The whole stack hinges on marginalizing the Gaussian latents. The non-Gaussian indicators
+(binary/ordinal/count) have \emph{no closed-form latent integral}, so the suicidality and developmental factors
+must keep explicit per-patient latents --- which restores the geometry cost the continuous stages had removed.
+The S3--S5 checkpoints therefore run on a \emph{random, cohort-balanced} sub-sample ($N=4{,}000$--$5{,}000$;
+realistic missingness, with a resample-stability check) --- never completeness- or attrition-selected, so the
+missingness structure is preserved. This is the one approximation in the stack, and it is labelled as such: the
+reported map targets the full sample or the largest $N$ that certifies, and a full-$N$ certified S5 is a matter
+of additional sampling effort, not a change of method.
+\end{caveatbox}

@@ -1,0 +1,9 @@
+item_i,item_j,resid_corr
+chol,ldl,0.75
+eghrmn,hrsupine,0.749
+hrstanding,hrsupine,0.741
+eghrmn,hrstanding,0.689
+diabpstanding,diabpsupine,0.611
+sysbpstanding,sysbpsupine,0.579
+wais_code_std,wais_ivt_index,0.569
+alt_lbstresc,ast_lbstresc,0.554

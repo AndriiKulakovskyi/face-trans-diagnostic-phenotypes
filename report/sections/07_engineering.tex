@@ -1,0 +1,93 @@
+\section{Engineering and reproducibility}
+\label{sec:engineering}
+
+A measurement claim is only as trustworthy as the software that produced it. FACE-ATLAS is deliberately lean
+(no DVC/Hydra/MLflow): YAML configuration, Parquet model-ready persistence (raw stays CSV), a single canonical
+engine, per-stage reports, and a regression-guarded test suite. Every number is reproducible from the scripts
+and committed configs.
+
+\subsection{Repository structure}
+\begin{table}[h]\centering\small\sffamily
+\caption{The system in five layers. Theory lives in \code{configs/}; the no-imputation data foundation in
+\code{src/face/data/}; the engine in one module; the pipeline in numbered scripts; aggregates in
+\code{reports/} (committed), per-patient outputs in \code{results/} (gitignored).}
+\label{tab:repo}
+\begin{tabular}{L{4.6cm} L{9.2cm}}
+\toprule
+\hdr{path} & \hdr{responsibility}\\
+\midrule
+\rowcolor{facebg} \file{configs/} & soft-prior ontology + the central \file{prior_loading_matrix_v3.csv} (theory)\\
+\file{src/face/data/} & harmonization, sanity bounds, skip-logic; the no-imputation contract\\
+\rowcolor{facebg} \file{src/face/priors/build_matrix.py} & expands the YAML ontology into the prior matrix\\
+\file{src/face/models/bayesian/}\newline\file{continuous_core.py} & the engine: marginalized Woodbury + mixed-likelihood block\\
+\rowcolor{facebg} \file{src/face/confirm.py} & in-engine confirmation (prior-free refit, PPC/SRMR, WAIC)\\
+\file{scripts/01_build_data.py \dots\ s5_certify.py} & the runnable pipeline\\
+\rowcolor{facebg} \file{reports/} \,/\, \file{results/} & shareable aggregates \,/\, per-patient artifacts (gitignored)\\
+\file{tests/} & invariant-guarding test suite (runs without confidential data)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Config-first design: theory as data}
+The ``theory proposes'' half is mechanical and auditable. A human-authored ontology (\file{configs/dimensions.yaml})
+plus prior-tier definitions (\file{configs/priors.yaml}) and per-item likelihood families
+(\file{configs/likelihood_map_v3.yaml}) are expanded by \file{build_matrix.py} into the central artifact the
+engine reads: \file{configs/prior_loading_matrix_v3.csv}, a complete $143\times 10$ grid (one row per
+(item, factor) cell, $1{,}430$ rows). Each row carries the prior role, mean, sd, distribution, sign constraint,
+the item's burden orientation, its likelihood family, and its modelling block (continuous vs explicit). The
+engine resolves every loading cell directly from this matrix, so changing the theory is a config edit, not a
+code change.
+
+\subsection{The engine and the pipeline}
+The pipeline is a sequence of numbered scripts; each writes a committed aggregate report and (gitignored)
+per-patient artifacts.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{The pipeline. Stage flags (\code{--stage}, \code{--mixed}, \code{--subsample}, \code{--explicit},
+\code{--gpu}) select the model variant; the engine is one module.}
+\label{tab:pipeline}
+\begin{tabular}{L{5.2cm} L{8.6cm}}
+\toprule
+\hdr{script} & \hdr{what it does}\\
+\midrule
+\rowcolor{facebg} \file{scripts/01_build_data.py} & harmonize full-$N$ V0 $\to$ \file{baseline_v0.parquet} (no imputation)\\
+\file{scripts/v3/03_build_prior_matrix.py} & regenerate the prior matrix from the ontology\\
+\rowcolor{facebg} \file{scripts/04_fit.py --stage/--mixed} & fit a continuous (Woodbury) or mixed-likelihood stage (S1--S5)\\
+\file{scripts/05_confirm.py} & prior-free refit $+$ PPC/SRMR $+$ WAIC\\
+\rowcolor{facebg} \file{scripts/06_invariance.py}, \file{13_invariance9} & per-cohort invariance (core; then mania $+$ substance)\\
+\file{scripts/s5_certify9.py} & multi-seed 9-dim certification $+$ resample-stability\\
+\rowcolor{facebg} \file{scripts/07_scoring.py} & per-patient coordinates (mean/SD/HDI) $+$ reliability tiers\\
+\file{scripts/08_robustness.py} & LOCO $+$ balanced subsample $+$ site bootstrap $+$ weighting\\
+\rowcolor{facebg} \file{scripts/12_mixed_ppc.py} & absolute-fit PPC for the non-Gaussian block\\
+\file{report/make_figures.py} & regenerate the manuscript figures from aggregate CSVs\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Tests: guarding the invariants}
+The suite (90 tests, green on CI) runs without the confidential CSVs (synthetic fixtures; integration tests
+skip if data are absent). It guards exactly the load-bearing invariants: sanity bounds null but never clip or
+impute;
+skip-logic fills only gate-determined zeros and never overwrites; the prior matrix is a complete grid with one
+likelihood per item and $G$ bifactor-identified; \emph{no diagnosis or covariate leaks in as an indicator}; and
+the staged-engine wiring (S1 is a strict subset of S2; the windows land on $G$/cognition/sleep; $\Phi$ is a
+valid positive-definite correlation with $G$ orthogonal).
+
+\subsection{Two bugs found and fixed --- with measurement}
+\begin{methodsbox}[Both caught because the engineering is checked against the math]
+\textbf{(1) $\Phi$ correctness.} PyMC's \code{LKJCorr} returns the Cholesky factor $L$, so the correlation is
+$\Phi=LL\Tn$. An earlier symmetrize-the-lower-triangle reconstruction was \emph{indefinite} at the six-factor
+scale ($\to$ NaN) and coincidentally near-correct at four factors. Fixed and regression-guarded by a
+positive-definiteness test. (An independent FIML/lavaan fit would have caught this --- one reason the
+in-engine prior-free check is worth running.)\\[3pt]
+\textbf{(2) Performance.} The per-patient $A_i$ Cholesky was the cost driver --- every gradient step did $N$
+small factorizations. The grouped-GEMM Woodbury (Cholesky once per unique observed-pattern, $A$ as one BLAS
+GEMM) is $2.75\times$ faster and verified log-likelihood-identical (difference $<10^{-4}$).
+\end{methodsbox}
+
+\subsection{Reproducibility}
+Determinism is enforced by fixed seeds; the model-ready tables are cached to Parquet so every fit consumes the
+same harmonized baseline; dependencies are pinned in a committed lock file; and continuous-integration runs the
+lint and test suite on every push. The continuous stages sample through the NumPyro/JAX backend and converge at
+full $N$ within a standard workstation's memory budget; the heavier mixed-likelihood stages reintroduce explicit
+latents (\S\ref{sub:cost}) and are run at the labelled checkpoint sub-sample.

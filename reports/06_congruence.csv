@@ -1,0 +1,16 @@
+factor,pair,n_items,phi_mean,phi_min
+overall_severity,BP–SZ,5,0.921,0.899
+overall_severity,BP–DR,10,0.99,0.989
+overall_severity,SZ–DR,4,0.97,0.96
+cognition,BP–SZ,11,0.991,0.987
+cognition,BP–DR,8,0.956,0.952
+cognition,SZ–DR,8,0.972,0.956
+metabolic,BP–SZ,13,0.993,0.989
+metabolic,BP–DR,27,0.969,0.963
+metabolic,SZ–DR,13,0.986,0.984
+inflammatory,BP–SZ,5,0.99,0.983
+inflammatory,BP–DR,8,0.712,0.705
+inflammatory,SZ–DR,5,0.748,0.721
+sleep,BP–SZ,7,0.996,0.992
+sleep,BP–DR,9,0.992,0.992
+sleep,SZ–DR,7,0.993,0.991

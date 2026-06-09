@@ -1,71 +1,61 @@
-# FACE — Trans-diagnostic Phenotyping (BP · SZ · DR) — v2 study
+# FACE — Clinical-biological transdiagnostic stratification (BP · SZ · DR)
 
-Across bipolar disorder, schizophrenia and major depression in the FACE cohort, we ask whether
-trans-diagnostic variation is **dimensional** (latent symptom / biology / cognition dimensions)
-and/or **categorical** (patient strata). We harmonize the 3-cohort longitudinal data (baseline V0
-→ 4-year V4) with **no imputation** (masked methods) and re-derive every result from zero on a
-re-curated ("v2") common-variables dictionary.
+Across bipolar disorder, schizophrenia, and major depression in the FACE cohorts, this project turns the
+harmonized 3-cohort **baseline (V0)** data into a **transdiagnostic dimensional map** — continuous,
+diagnosis-agnostic axes of clinical and biological variation — and then, on that map, into **validated
+patient strata** and **prognosis / treatment decision models**.
 
-> **Status — v2 complete.** The dimensional analysis and patient stratification have been
-> re-derived from zero on the re-curated dictionary: **four trans-diagnostic axes** (K=4, no
-> *p*-factor), a **dimensional** (not categorical) structure, and a four-study validation arm
-> (A–D). The manuscript and six figures are delivered (`results/manuscript/`). The prior v1 study
-> is archived at git tag `v1-archive-2026-05-30`. Project guide: **[CLAUDE.md](CLAUDE.md)**.
-
-The repo is **self-contained** — the stratification engine (masked similarity →
-multipartite-spectral embedding, enrichment) is internalized in `src/trans_diag/engine/`; there is
-no external dependency on the sister `face_stratification` / `face_rlvr` projects.
-
-## Data processing — three stages
-1. **Harmonized variables** (native scale) — per-cohort source → harmonization rules + sanity
-   bounds (out-of-range → NaN, never imputed).
-2. **Type-aware scaling to [−1, 1]** — binary/ordinal → min-max; continuous → log-if-skewed +
-   winsorize + robust-z clipped ±5.
-3. **Aggregated V0 domain scores** — items → construct-level scores (masked mean of robust-z; no
-   imputation). The model itself uses the richer **hierarchical/bifactor constructs** (194 items →
-   94 → K=4 axes; see [docs/PIPELINE.md](docs/PIPELINE.md)).
-
-The QA report (`scripts/qa_harmonization.py` → `results/reports/qa_harmonization.html`) shows all
-three, per variable. **Why aggregate to domain scores?** so each construct counts once (no
-item-count weighting bias), to raise coverage without imputing, and to keep dimensions/clusters
-interpretable over named constructs. Full rationale in [CLAUDE.md](CLAUDE.md).
-
-## Repository structure
+```text
+diagnostic cohorts (BP · SZ · DR)  →  transdiagnostic dimensions  →  validated strata  →  prognosis / treatment
+        (entry metadata)               (M1 — current work)             (later)              (later)
 ```
-├── CLAUDE.md  AGENTS.md  README.md             ← guides (project paper: results/manuscript/manuscript.md)
-├── data/            face-common-vars.xlsx (v2 dict) · thesaurus/ · *.csv (confidential) · site_lookup.csv
-├── src/trans_diag/  variable·rules·loader·filters · schema_gen·adapter·domains · masked_fa·axes·skip_logic · engine/
-├── scripts/         v2 pipeline 01–15 (hierarchical FA → stratify → validate) + qa_harmonization · verify · audit
-├── tests/           unit + golden-number tests (pinned to results/hfa/; skip on a clean clone)
-├── results/         regenerated aggregates: hfa/ · manuscript/ · reports/ (gitignored; empty on a clean tree)
-└── docs/            PIPELINE · ROADMAP · DATA · FINDINGS · LABBOOK · neuropsy_features.yaml
-```
+
+**Method — hybrid discovery.** The 10 candidate dimensions are a **soft prior ontology**, not fixed
+scores. One global, missingness-aware **Bayesian sparse bifactor / ESEM** model with **mixed likelihoods**
+estimates the actual factor structure, and the data **confirm, split, merge, downgrade, or reject** each
+candidate; **FIML** is the confirmatory estimator. Three invariants: **no naive imputation** (structure is
+estimated from each patient's observed cells); **diagnosis is metadata**, never an indicator; dimensions
+are discovered on **V0**, later visits validate them.
+
+> **Status — Milestone 1 (the measurement map).** The methods and mathematics are fixed in
+> **[docs/MEASUREMENT_MODEL.md](docs/MEASUREMENT_MODEL.md)** (the methods-of-record). Implementation — the
+> global staged fit, FIML confirmation, scoring — is the current build. Strata / prognosis / treatment are
+> later milestones. Where the project stands right now: **[docs/STATE.md](docs/STATE.md)**.
+
+## The map being estimated (V0)
+
+3-cohort core: **G (overall severity)** · **cognition** · **metabolic** · **inflammatory** · **sleep** ·
+**suicidality** · **developmental-risk**. BP/DR extension: **anhedonia** (thin). Dropped for lack of
+indicators in the common variables: **impulsivity, negative symptoms, sensory** — *and stating so is a
+result of the analysis, not a failure.*
+
+## Data foundation (no imputation)
+
+Each dictionary variable → harmonization rule + per-variable **sanity bounds** (out-of-range → NaN, never
+imputed) → native clinical scale, with deterministic **skip-logic** structural-zero decoding. Raw data are
+confidential per-cohort **CSV**; the model-ready tables are persisted as **Parquet**. The data layer
+carries each variable's likelihood family and missingness type — the data contract, see
+[docs/DATA.md](docs/DATA.md).
 
 ## Quick start
+
 ```bash
-pip install -e ".[full]"                 # core + kaleido (static figure export)
-python3 scripts/qa_harmonization.py      # the 3-part data-processing QA report (clean this first)
-python3 scripts/00_run_all.py            # regenerate every results/hfa/ artifact (needs the cohort CSVs)
-python3 -m pytest tests/ -q              # unit + golden tests (golden tests skip on a clean clone)
+pip install -e ".[full]"        # core + figure export; add ".[bayesian]" for PyMC / NumPyro
+python3 -m pytest tests/ -q     # data-layer + contract tests
 ```
-```python
-from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
-df = build_unified_dataframe("data", "data/face-common-vars.xlsx",
-                             readiness=["READY", "PARTIAL"], format="long")
-ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), visit="V0")
-# ds.X: MultiIndex[cohort, patient_id] × numeric features (NaN = missing, never imputed)
-```
+
+The measurement pipeline (build → missingness → priors → staged global fit → FIML → adjudicate → score) is
+specified in [docs/MEASUREMENT_MODEL.md](docs/MEASUREMENT_MODEL.md) §11 and being implemented.
 
 ## Documentation
-- **[CLAUDE.md](CLAUDE.md)** — project guide (the central read).
-- **[docs/PIPELINE.md](docs/PIPELINE.md)** — the end-to-end analysis pipeline (diagrams + math).
-- **Manuscript** — [results/manuscript/manuscript.md](results/manuscript/manuscript.md) (→ `.docx`).
-- **[docs/ROADMAP.md](docs/ROADMAP.md)** · **[docs/FINDINGS.md](docs/FINDINGS.md)** ·
-  **[docs/LABBOOK.md](docs/LABBOOK.md)** · **[docs/DATA.md](docs/DATA.md)** ·
-  **[docs/neuropsy_features.yaml](docs/neuropsy_features.yaml)** (cognition include-list).
+
+- **[docs/MEASUREMENT_MODEL.md](docs/MEASUREMENT_MODEL.md)** — methods + mathematics + staged estimation (**canonical**).
+- **[docs/STATE.md](docs/STATE.md)** — where the project is right now (read first).
+- **[CLAUDE.md](CLAUDE.md)** — guide for collaborators / AI assistants.
+- **[docs/DATA.md](docs/DATA.md)** — data contract + dictionary.
 
 ## Confidentiality
-The FACE database is **confidential** (Fondation FondaMental). The per-cohort `data/*.csv` and all
-per-patient artifacts are **gitignored and never committed**. Tracked + shareable: the code
-(`src/`, `scripts/`, `tests/`), the small input dictionaries (`data/face-common-vars.xlsx`,
-`data/thesaurus/`, `data/site_lookup.csv`), and regenerated **aggregate** results.
+
+The FACE database is confidential (Fondation FondaMental). The per-cohort `data/*.csv` and all per-patient
+artifacts are **gitignored and never committed**. Tracked + shareable: the code (`src/`, `scripts/`,
+`tests/`), the small input dictionaries, and regenerated **aggregate** results.

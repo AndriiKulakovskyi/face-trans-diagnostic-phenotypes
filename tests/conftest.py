@@ -1,8 +1,7 @@
 """Pytest path bootstrap for the ``src/`` layout.
 
-``trans_diag`` is self-contained (the stratification engine is internalized in
-``trans_diag.engine``), so only ``src/`` needs to be importable to run the
-tests without installing the project.
+Only ``src/`` needs to be importable to run the tests without installing the
+project (``import face`` resolves from there).
 """
 import sys
 from pathlib import Path

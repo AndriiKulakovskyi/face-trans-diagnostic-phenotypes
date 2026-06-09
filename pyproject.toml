@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "trans-diag"
+name = "face-v3"
 version = "0.1.0"
-description = "FACE trans-diagnostic phenotyping (BP/SZ/DR): longitudinal harmonization + a confound-controlled dimensional model. Self-contained — the stratification engine is internalized in trans_diag.engine."
+description = "FACE precision psychiatry (BP/SZ/DR): harmonized 3-cohort data → patient-level, missingness-aware transdiagnostic dimension discovery → validated probabilistic strata → prognosis/treatment decision models. See docs/STATE.md (current) and docs/V3_PLAN.md (plan)."
 requires-python = ">=3.11"
 dependencies = [
     "pandas>=2.0",
@@ -16,19 +16,24 @@ dependencies = [
     "pyyaml>=6.0",
     "openpyxl>=3.1",      # read the common-variables dictionary (.xlsx)
     "statsmodels>=0.14",  # nested F-test / LRT in the outcome head-to-head
-    "factor_analyzer>=0.5",  # oblique rotation + factor correlations for the hierarchical-FA pipeline (scripts 01-34)
+    "factor_analyzer>=0.5",  # EFA warm-start init for the Bayesian measurement engine
     "plotly>=5.18",       # interactive HTML reports
-    "matplotlib>=3.7",    # static manuscript figures
+    "matplotlib>=3.7",    # static figures (prior atlas, stage reports)
+    "pyarrow>=14",        # Parquet persistence for data/processed/*.parquet
 ]
 
 [project.optional-dependencies]
 figures = ["kaleido>=0.2"]                            # static export of plotly figures
 dev = ["pytest>=7.0", "pytest-cov>=4.0", "ruff==0.12.0", "pip-tools>=7.0"]  # ruff pinned: lint rules change between versions (keep CI == local)
-# Convenience alias for "everything needed to reproduce the manuscript + figures".
+# Bayesian discovery engine (scripts/04_fit.py): patient-level observed-likelihood latent model.
+# numpyro+jax enable the NumPyro/JAX NUTS backend (scripts/04_fit.py --gpu); on a CUDA box also
+# `pip install -U "jax[cuda12]"` to use the GPU (e.g. RTX 4090).
+bayesian = ["pymc>=5.10", "arviz>=0.17", "h5netcdf>=1.0", "numpyro>=0.13", "jax>=0.4"]
+# Convenience alias for "everything needed to export static figures".
 full = ["kaleido>=0.2"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/trans_diag"]
+packages = ["src/face"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -45,5 +50,5 @@ select = ["E", "F", "W", "I", "UP", "B"]
 # one-liners, E741 single-letter math names (L, l), F601 harmless dup-coercion keys in
 # rules.py (1/1.0/True all map to the same value), F841 throwaway locals in scripts,
 # B008 (call-in-default used deliberately). E402: scripts insert src/ on sys.path
-# before importing trans_diag, so their imports are intentionally not at module top.
+# before importing v3, so their imports are intentionally not at module top.
 ignore = ["E501", "E702", "E741", "F601", "F841", "B006", "B007", "B008", "B023", "E402"]

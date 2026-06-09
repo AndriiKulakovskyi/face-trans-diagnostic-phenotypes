@@ -1,0 +1,48 @@
+\section{Limitations and open problems}
+\label{sec:limitations}
+
+The strengths of M1 are stated plainly in Section~\ref{sec:results}; the honest counterweights follow. None is
+fatal, and each is tracked.
+
+\begin{openbox}[One coupling's precision is the residual mixing limit]
+The map is certified (cross-seed Tucker $\varphi$ $0.993$; $\max|\Delta\Lambda|=0.19$, $\max|\Delta\Phi|=0.05$),
+and the continuous backbone and the biology$\perp$$G$ estimand mix cleanly at full $N$. The heavier
+mixed-likelihood stages ran on random cohort-balanced sub-samples ($N=4{,}000$--$5{,}000$), and the
+explicit/marginalized coupling --- specifically the suicidality$\sim$developmental $\Phi$ cell --- is the one
+slow-mixing block ($\widehat{R}$ up to $1.04$). Its \emph{point estimate} is resample-stable; its
+\emph{precision} (and a full-$N$ projection of the non-Gaussian per-patient scores) is a documented follow-on,
+not a change of method. The suicidality block itself mixes well.
+\end{openbox}
+
+\begin{openbox}[The biology--$G$ magnitude, reconciled]
+Two estimates of metabolic$\sim$$G$ exist: a provisional full-mixed read ($0.28$) and the clean
+continuous-backbone correlated-$G$ fit ($0.12$--$0.14$). \emph{Both agree biology is the least entangled
+domain}; the continuous-backbone value is the cleaner estimate and is the one reported. The direction is
+robust; the exact magnitude of the explicit-block couplings will tighten with the full-$N$ certification above.
+\end{openbox}
+
+\paragraph{Scope and construct caveats.}
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Internal validity only.} The map is estimated on the V0 baseline with no temporal (V1--V4)
+  persistence and no external-cohort validation. ``Converged'' denotes sampler convergence, \emph{not}
+  scientific validation. Temporal coherence and external validity are later milestones by design.
+  \item \textbf{Cohort-specific coverage.} Anhedonia and the MADRS/QIDS/STAI windows are BP/DR (SZ has no
+  QIDS/MADRS); the SZ map leans on the shared factors. Each patient's per-dimension reliability must be flagged
+  by observed-indicator count.
+  \item \textbf{Naming caveats.} ``Developmental-risk'' is a \emph{proxy} (early-adversity / liability), not
+  measured neurodevelopment; ``suicidality'' rests on self-report ISF; the DR inflammatory axis is
+  compositionally different (Section~\ref{sec:validation}).
+  \item \textbf{Thin and partial axes.} \emph{Mania} rests on only two indicators (YMRS, Altman), so it is
+  flagged \emph{partial} for every patient and its self-rated Altman item does not transfer to DR;
+  \emph{substance} is a declared \emph{2-cohort} axis (its alcohol/cannabis SUD are BP/SZ-only). The lone
+  item-level mis-fit, \code{isf09a} (suicide-attempt count), is flagged and isolated --- the suicidality factor
+  is unaffected.
+  \item \textbf{What is \emph{not} claimed.} No natural biotypes/subtypes, no causal or treatment effect, no
+  prognostic value --- those are M2--M5. M1 claims an empirically-supported set of transdiagnostic dimensions,
+  their measurement structure, and per-patient coordinates with uncertainty, under internal validity.
+\end{itemize}
+
+\paragraph{Open methods choices (flagged for decision).} The sparsity prior (soft-normal vs.\ horseshoe);
+Student-$t$ vs.\ Gaussian continuous default; item- vs.\ factor-level covariate adjustment; and the precise
+acceptance-gate thresholds. Defaults are set in the methods-of-record; these are sensitivity arms, not
+silent assumptions.
