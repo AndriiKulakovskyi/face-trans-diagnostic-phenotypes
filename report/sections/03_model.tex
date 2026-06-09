@@ -1,0 +1,142 @@
+\section{The measurement model}
+\label{sec:model}
+
+\subsection{The candidate ontology and the eligibility map}
+Theory proposes ten candidate dimensions. Mapping them against the FACE \emph{common-variable} instrument
+coverage fixes the eligible model set --- and this map is itself a primary result, because stating which
+candidates have no measurable indicators is a finding, not a failure.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{The ten candidate dimensions and their adjudicated role in the model. ``Split'', ``proxy'', and
+``window'' are hypotheses the data test (Section~\ref{sec:results}).}
+\label{tab:candidates}
+\begin{tabular}{L{4.3cm} L{3.2cm} L{4.6cm} C{1.6cm}}
+\toprule
+\hdr{candidate} & \hdr{role in model} & \hdr{anchors (FACE common)} & \hdr{cohorts}\\
+\midrule
+\rowcolor{facebg} 7 Overall severity & $G$ (functional burden) & CGI-S, EGF, EQ-5D-VAS, FAST, employment & 3-cohort\\
+2 Cognitive flexibility & cognition & TMT-B, WAIS coding/digit-span, fluency, CVLT & 3-cohort\\
+\rowcolor{facebg} 5 Metabolism/immuno & metabolic \emph{+} inflammatory (split) & BMI, waist, glucose, lipids / CRP, WBC, neutrophils & 3-cohort\\
+6 Sleep/circadian & sleep & PSQI total + sub-scores & 3-cohort\\
+\rowcolor{facebg} 10 Suicidality & suicidality (mixed) & ISF ideation/attempt; C-SSRS lethality & 3-cohort ISF\\
+9 Neurodevelopment & developmental-risk (proxy) & perinatal, CTQ, age-of-onset, family history & 3-cohort\\
+\rowcolor{facebg} 4 Anhedonia & anhedonia (thin) & QIDS anhedonia item & BP/DR\\
+1 Impulsivity & \emph{dropped} (no scale) & --- & ---\\
+\rowcolor{facebg} 3 Negative symptoms & \emph{dropped} (no PANSS/SANS) & --- & ---\\
+8 Sensory abnormalities & \code{not_testable} & none & ---\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The composite depression/anxiety instruments (MADRS, QIDS, STAI) are deliberately \emph{not} a dimension: each
+is seeded as a cross-loading \emph{window} on the axes it clinically touches, and the data place it. There is no
+separate affective factor and no eleventh ``depression'' dimension unless one emerges under model comparison
+(Section~\ref{sec:validation}). The general factor $G$ does one job --- transdiagnostic functional burden,
+anchored by functioning and global severity \emph{only} --- so symptom severity informs the axes it belongs to
+rather than contaminating the general factor.
+
+\subsection{Soft-prior loading roles}
+Every (indicator, dimension) cell receives a prior \emph{role}. The default is shrinkage, not hard exclusion:
+theory says where variables \emph{should} load; the likelihood is free to disagree. Because a hybrid soft-prior
+ESEM is safe to over-seed --- an indicator with no real signal shrinks toward zero --- every
+construct-relevant usable variable is seeded as an indicator, and only genuine confounders are reserved as
+covariates.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{Soft-prior roles and the induced prior on the loading $\lambda_{jk}$ (as built; the methods spec uses
+a slightly stronger primary mean of $0.70$). The near-zero \code{g_anchor_on_specific} role is what identifies
+the bifactor $G$ separately from the specifics.}
+\label{tab:priorroles}
+\begin{tabular}{L{4.6cm} L{5.0cm} L{4.4cm}}
+\toprule
+\hdr{role} & \hdr{meaning} & \hdr{prior on $\lambda_{jk}$}\\
+\midrule
+\rowcolor{facebg} \code{primary} / \code{g_anchor} & indicator should load (home cell) & $\Normal_{+}(0.60,\,0.30^2)$, truncated $>0$\\
+\code{plausible_cross} & indicator \emph{may} load & $\Normal(0,\,0.25^2)$\\
+\rowcolor{facebg} \code{unlikely_cross} & should be near zero & $\Normal(0,\,0.05^2)$\\
+\code{g_anchor_on_specific} & $G$-anchor held off the specifics & $\Normal(0,\,0.001^2)$\\
+covariate / outcome & adjust for / reserve for validation & not in $\Lambda$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The truncation $\lambda>0$ on home cells sign-anchors the rotation (orienting every factor so that
+\emph{higher} $=$ \emph{more burden/dysfunction}, after per-item sign flips applied in the data layer), which
+together with the soft-prior sparsity controls the rotational indeterminacy that otherwise plagues exploratory
+factor models.
+
+\subsection{The generative model}
+Index patients $i=1,\dots,N$, indicators $j=1,\dots,J$, specific dimensions $k=1,\dots,K$, and one general
+factor $G$. Each patient has a general-factor score and a vector of specific scores,
+\begin{equation}
+G_i \sim \Normal(0,1),\qquad
+D_i = (D_{i1},\dots,D_{iK}),
+\end{equation}
+and the linear predictor for indicator $j$ in patient $i$ is
+\begin{equation}
+\label{eq:eta}
+\eta_{ij} \;=\; \alpha_j \;+\; \lambda_{jG}\,G_i \;+\; \sum_{k=1}^{K}\lambda_{jk}\,D_{ik}\;+\;\beta_j\Tn c_i,
+\end{equation}
+where $\alpha_j$ is the item intercept, $\lambda_{jG}$ the general loading, $\lambda_{jk}$ the specific
+loading, and $c_i$ are item-level covariates (age, sex, education, site, cohort, assessment year, and --- later
+--- medication). Covariates adjust indicator \emph{means}; they are never dimension indicators. The loading
+matrix $\Lambda\in\R^{J\times(K+1)}$ and the factor-correlation matrix $\Phi$ are the scientific estimands.
+
+\begin{definitionbox}[Two identifications of the specific factors]
+\textbf{Bifactor (primary).} $D_{ik}\sim\Normal(0,1)$, $\Corop(D_k,D_l)=0$, and $G\perp D_k$ --- the cleanest
+identification for a first stable fit; the specific block correlates only via $\Phi$, with $G$ held orthogonal.\\[3pt]
+\textbf{Correlated-G (sensitivity).} $D_i\sim\Normal(0,\Phi)$ with $\Phi\sim\LKJdist(\eta)$, in a variant that
+\emph{lets} $G$ correlate with the biological specifics. This variant is essential: it tests whether
+``$G\perp$ biology'' is an empirical finding or merely an artefact of the bifactor constraint
+(Section~\ref{sec:results} shows it caught an overstatement).
+\end{definitionbox}
+
+\subsection{Mixed-likelihood observation model}
+Each indicator is given the likelihood appropriate to its type; the project does \emph{not} coerce everything
+onto a shared continuous scale. The observation likelihood is what carries the variable type,
+\begin{equation}
+X_{ij}\sim F_j(\eta_{ij},\theta_j),
+\end{equation}
+with $F_j$ chosen per indicator as in Table~\ref{tab:likelihoods}.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{The mixed-likelihood observation model. The continuous block (Gaussian/log-Gaussian) can be
+marginalized analytically (Section~\ref{sec:estimation}); the non-Gaussian block carries explicit latents.}
+\label{tab:likelihoods}
+\begin{tabular}{L{5.0cm} L{4.0cm} L{5.0cm}}
+\toprule
+\hdr{indicator type} & \hdr{likelihood} & \hdr{form}\\
+\midrule
+\rowcolor{facebg} continuous / z-scored neuropsych & Gaussian (Student-$t$) & $X_{ij}\sim\Normal(\eta_{ij},\sigma_j^2)$\\
+skewed lab (CRP, triglycerides) & log-Gaussian & $\log X_{ij}\sim\Normal(\eta_{ij},\sigma_j^2)$\\
+\rowcolor{facebg} ordinal item ($C_j$ categories) & ordered logistic & $P(X_{ij}\!\le\! c)=\logitfn^{-1}(\tau_{jc}-\eta_{ij})$\\
+binary (ISF ideation/attempt) & Bernoulli-logit & $X_{ij}\sim\Bern(\logitfn^{-1}(\eta_{ij}))$\\
+\rowcolor{facebg} count (attempts, hospitalizations) & negative binomial & $X_{ij}\sim\NegBin(e^{\eta_{ij}},\phi_j)$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Priors and missing data}
+The remaining priors are weakly informative: intercepts $\alpha_j\sim\Normal(0,1.5)$; residual scales
+$\sigma_j=0.05+\mathrm{HalfNormal}(1)$ (the floor guards against residual-variance collapse, a Heywood
+pathology); ordinal cutpoints ordered-normal; count dispersion $\phi_j\sim\mathrm{Exp}(1)$; and the
+factor-correlation $\Phi\sim\LKJdist(\eta{=}2)$. The likelihood sums over \emph{observed cells only},
+
+\begin{definitionbox}[Observed-data likelihood (invariant I1, formalized)]
+With $\Obs_i\subseteq\{1,\dots,J\}$ the indicators observed for patient $i$,
+\[
+\log p(X_{\mathrm{obs}}\given\Theta)\;=\;\sum_{i=1}^{N}\sum_{j\in\Obs_i}\log F_j\!\left(X_{ij}\given\eta_{ij},\theta_j\right).
+\]
+Missing cells contribute no term; a patient's latent coordinates are informed only by their observed
+indicators, and there is no completed matrix at any point.
+\end{definitionbox}
+
+\subsection{The prior atlas: the theory half of the deliverable}
+The soft-prior loading matrix is itself an artifact --- the \emph{prior atlas} (Figure~\ref{fig:prioratlas},
+Appendix~\ref{app:prioratlas}), an indicator$\times$factor heatmap of where each instrument is \emph{expected}
+to load, generated from configuration alone with no patient data. It encodes a block-diagonal primary structure
+(each factor anchored by its own pool), a faint $G$ column over every specific item (the bifactor mechanism by
+which $G$ becomes ``general'' only if the data put many specifics on it), the homeless cross-loading windows,
+and the hypothesised metabolic$\leftrightarrow$inflammatory bridge. The scientific deliverable of M1 is the
+\emph{prior $\to$ posterior} comparison: this theory map placed beside the fitted empirical atlas, with a
+per-candidate verdict. As built, $143$ indicators across $10$ candidate factors enter as modelled cells.

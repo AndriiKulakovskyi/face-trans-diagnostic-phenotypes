@@ -115,3 +115,13 @@ data/artifacts/
 
 # Stage fit outputs (per-patient scores + idata; regenerable)
 results/face/
+
+# Confidential data archive — never commit
+data.zip
+
+# FACE-ATLAS technical report — commit the LaTeX sources, not the regenerable build artifacts (`make`)
+report/*.pdf
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc

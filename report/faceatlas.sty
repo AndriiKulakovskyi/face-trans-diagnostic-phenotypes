@@ -1,0 +1,190 @@
+%% faceatlas.sty — visual system for the FACE-ATLAS technical report.
+%% Toolchain: pdflatex + mathpazo (Palatino) + helvet (sans headings) + tikz callout boxes.
+%% Deliberately depends only on packages present in a TeX Live "basic" install — no tcolorbox,
+%% no titlesec, no mdframed — so it compiles anywhere. Coloured callouts are built from tikz.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{faceatlas}[2026/06/09 FACE-ATLAS technical-report style]
+
+% -------------------------------------------------------------------- encoding & fonts
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{lmodern}               % Latin Modern: always present; clean text + matching math.
+                                       % (Palatino/Times/Helvetica Type1 metrics are absent in the
+                                       % TeX Live "basic" scheme, so we use the guaranteed LM family;
+                                       % headings use Latin Modern Sans via \sffamily.)
+\RequirePackage{textcomp}
+\RequirePackage{microtype}
+
+% -------------------------------------------------------------------- core packages
+\RequirePackage{amsmath,amssymb,mathtools,bm}
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{booktabs,array,tabularx,colortbl}
+\RequirePackage{calc}
+\RequirePackage{tikz}
+\usetikzlibrary{calc,positioning,fit,backgrounds,arrows.meta}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+\RequirePackage[a4paper,top=1in,bottom=1in,left=1.05in,right=1.05in,headheight=15pt]{geometry}
+\RequirePackage{fancyhdr}
+\RequirePackage{enumerate}
+
+% -------------------------------------------------------------------- palette
+\definecolor{faceink}{HTML}{14181F}     % near-black body text
+\definecolor{facemute}{HTML}{5B6573}    % secondary / captions
+\definecolor{faceaccent}{HTML}{2B4C8C}  % primary accent (deep blue)
+\definecolor{faceaccentdk}{HTML}{1E366B}% darker blue (rules)
+\definecolor{facerule}{HTML}{C7CED9}    % hairlines
+\definecolor{facebg}{HTML}{F5F7FB}      % page-tint panels
+% callout accents
+\definecolor{facekr}{HTML}{0F766E}      % key result   (teal)
+\definecolor{facedef}{HTML}{1E5BA8}     % definition   (blue)
+\definecolor{faceinv}{HTML}{6D28D9}     % invariant    (violet)
+\definecolor{facemeth}{HTML}{47556A}    % methods note (slate)
+\definecolor{facecav}{HTML}{B45309}     % caveat       (amber)
+\definecolor{faceopen}{HTML}{B42318}    % open problem (red)
+
+% -------------------------------------------------------------------- hyperref (load late)
+\RequirePackage{hyperref}
+\hypersetup{
+  colorlinks=true, linkcolor=faceaccent, citecolor=facekr, urlcolor=faceaccentdk,
+  pdftitle={FACE-ATLAS: A Transdiagnostic Latent-axis Stratification of Severe Mental Illness},
+  pdfauthor={FACE-ATLAS}, bookmarksnumbered=true, breaklinks=true,
+}
+\RequirePackage{bookmark}
+
+% -------------------------------------------------------------------- section design
+% (@ is already a letter inside a .sty package; no \makeatletter needed, and crucially
+%  no \makeatother — that would revert @ for the rest of the file and break \m@one etc.)
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+  {-3.6ex \@plus -1ex \@minus -.2ex}{1.5ex \@plus .25ex}%
+  {\normalfont\sffamily\bfseries\Large\color{faceaccent}}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  {-3.0ex \@plus -1ex \@minus -.2ex}{1.0ex \@plus .2ex}%
+  {\normalfont\sffamily\bfseries\large\color{faceink}}}
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+  {-2.4ex \@plus -1ex \@minus -.2ex}{0.7ex \@plus .2ex}%
+  {\normalfont\sffamily\bfseries\normalsize\color{facemeth}}}
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+  {1.4ex \@plus .5ex}{-0.6em}%
+  {\normalfont\bfseries\color{faceaccentdk}}}
+
+% -------------------------------------------------------------------- running head/foot
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{facerule}\leaders\hrule height 0.5pt\hfill}}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\footnotesize\sffamily\color{facemute}\textbf{FACE-ATLAS}}
+\fancyhead[R]{\footnotesize\sffamily\color{facemute}\nouppercase{\leftmark}}
+\fancyfoot[C]{\footnotesize\sffamily\color{facemute}\thepage}
+\renewcommand{\sectionmark}[1]{\markboth{\thesection\quad #1}{}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\footnotesize\sffamily\color{facemute}\thepage}%
+  \renewcommand{\headrule}{}}
+
+% -------------------------------------------------------------------- captions
+\captionsetup{font=small,labelfont={sf,bf,color=faceaccent},textfont={sf,color=facemute},
+  labelsep=period,skip=6pt}
+
+% -------------------------------------------------------------------- maths helpers
+\DeclareMathOperator{\diagop}{diag}
+\DeclareMathOperator{\Covop}{Cov}
+\DeclareMathOperator{\Varop}{Var}
+\DeclareMathOperator{\Corop}{Cor}
+\DeclareMathOperator{\logitfn}{logit}
+\DeclareMathOperator*{\argmaxop}{arg\,max}
+\newcommand{\Normal}{\mathcal{N}}
+\newcommand{\tLik}{\mathcal{T}}
+\newcommand{\LKJdist}{\mathrm{LKJ}}
+\newcommand{\Bern}{\mathrm{Bernoulli}}
+\newcommand{\NegBin}{\mathrm{NegBin}}
+\newcommand{\Tn}{^{\!\top}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\given}{\mid}
+\newcommand{\Obs}{\mathcal{O}}
+% \detokenize lets underscores/paths be written literally inside code spans (overall_severity, etc.)
+\newcommand{\code}[1]{\textcolor{faceaccentdk}{\texttt{\small \detokenize{#1}}}}
+\newcommand{\file}[1]{\textcolor{faceaccentdk}{\texttt{\footnotesize \detokenize{#1}}}}
+
+% -------------------------------------------------------------------- coloured callout boxes
+% Built from a saved box + a tikz frame (no tcolorbox dependency). Non-breakable by design:
+% callouts are meant to be compact. Title tab straddles the top border.
+\newsavebox{\facecalloutbox}
+\newlength{\facecalloutwd}
+\newenvironment{facecallout}[2]{%
+  \def\fc@col{#1}\def\fc@title{#2}%
+  \par\addvspace{1.1ex}%
+  \setlength{\facecalloutwd}{\dimexpr\linewidth-30pt\relax}%
+  \begin{lrbox}{\facecalloutbox}%
+    \begin{minipage}{\facecalloutwd}%
+      \setlength{\parskip}{0.45ex}\small\color{faceink}%
+}{%
+    \end{minipage}%
+  \end{lrbox}%
+  \noindent
+  \begin{tikzpicture}
+    \node[draw=\fc@col,line width=0.9pt,rounded corners=2.5pt,fill=\fc@col!6,
+          inner xsep=13pt,inner ysep=12pt] (fcbox) {\usebox{\facecalloutbox}};
+    \node[anchor=west,fill=\fc@col,text=white,rounded corners=2pt,
+          font=\sffamily\bfseries\footnotesize,inner xsep=7pt,inner ysep=2.8pt,
+          xshift=14pt] at (fcbox.north west) {\fc@title};
+  \end{tikzpicture}%
+  \par\addvspace{1.3ex}%
+}
+% semantic wrappers
+\newenvironment{keyresult}[1][Key result]{\begin{facecallout}{facekr}{#1}}{\end{facecallout}}
+\newenvironment{definitionbox}[1][Definition]{\begin{facecallout}{facedef}{#1}}{\end{facecallout}}
+\newenvironment{invariantbox}[1][Load-bearing invariant]{\begin{facecallout}{faceinv}{#1}}{\end{facecallout}}
+\newenvironment{methodsbox}[1][Methods note]{\begin{facecallout}{facemeth}{#1}}{\end{facecallout}}
+\newenvironment{caveatbox}[1][Caveat]{\begin{facecallout}{facecav}{#1}}{\end{facecallout}}
+\newenvironment{openbox}[1][Open problem]{\begin{facecallout}{faceopen}{#1}}{\end{facecallout}}
+
+% -------------------------------------------------------------------- status pill
+\newcommand{\statuspill}[2]{% #1 colour, #2 text
+  \tikz[baseline=(p.base)]{\node[fill=#1,text=white,rounded corners=2pt,
+    font=\sffamily\bfseries\scriptsize,inner xsep=5pt,inner ysep=2pt] (p) {#2};}}
+\newcommand{\certified}{\statuspill{facekr}{CERTIFIED}}
+\newcommand{\provisional}{\statuspill{facecav}{PROVISIONAL}}
+\newcommand{\rejected}{\statuspill{faceopen}{REJECTED}}
+\newcommand{\planned}{\statuspill{facemeth}{PLANNED}}
+
+% -------------------------------------------------------------------- table helpers
+\newcommand{\hdr}[1]{\textcolor{faceaccent}{\sffamily\bfseries #1}}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\arrayrulecolor{facerule!140}
+\renewcommand{\arraystretch}{1.18}
+
+% -------------------------------------------------------------------- milestone pipeline strip
+% \milestonestrip{highlight index 1..4} — draws cohorts -> dimensions -> strata -> prognosis.
+\newcommand{\milestonestrip}[1]{%
+  \def\m@one{white}\def\m@two{white}\def\m@three{white}\def\m@four{white}%
+  \def\t@one{faceink}\def\t@two{faceink}\def\t@three{faceink}\def\t@four{faceink}%
+  \ifnum#1=1\def\m@one{faceaccent}\def\t@one{white}\fi
+  \ifnum#1=2\def\m@two{faceaccent}\def\t@two{white}\fi
+  \ifnum#1=3\def\m@three{faceaccent}\def\t@three{white}\fi
+  \ifnum#1=4\def\m@four{faceaccent}\def\t@four{white}\fi
+  \begin{center}\resizebox{\linewidth}{!}{%
+  \begin{tikzpicture}[>={Stealth[length=2.4mm]},
+     msbox/.style={draw=faceaccent,line width=0.7pt,rounded corners=3pt,
+       minimum height=13mm,minimum width=35mm,align=center,font=\sffamily,inner sep=3pt}]
+    \node[msbox,fill=\m@one,text=\t@one] (a)
+       {\bfseries\small Diagnostic cohorts\\[1.5pt]\scriptsize BP $\cdot$ SZ $\cdot$ DR};
+    \node[msbox,fill=\m@two,text=\t@two,right=8mm of a] (b)
+       {\bfseries\small Transdiagnostic\\[-1pt]\bfseries\small dimensions\\[1.5pt]\scriptsize measurement map};
+    \node[msbox,fill=\m@three,text=\t@three,right=8mm of b] (c)
+       {\bfseries\small Validated strata\\[1.5pt]\scriptsize decision regions};
+    \node[msbox,fill=\m@four,text=\t@four,right=8mm of c] (d)
+       {\bfseries\small Prognosis /\\[-1pt]\bfseries\small treatment\\[1.5pt]\scriptsize decision models};
+    \draw[->,faceaccent,line width=0.9pt] (a) -- (b);
+    \draw[->,faceaccent,line width=0.9pt] (b) -- (c);
+    \draw[->,faceaccent,line width=0.9pt] (c) -- (d);
+  \end{tikzpicture}}\end{center}}
+
+% -------------------------------------------------------------------- misc
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.7ex plus 0.2ex}
+\setlength{\emergencystretch}{3em}   % give TeX slack so long code paths can move to the next line
+\AtBeginDocument{\color{faceink}}
+\endinput

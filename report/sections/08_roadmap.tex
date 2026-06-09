@@ -1,0 +1,41 @@
+\section{Roadmap: the milestones ahead}
+\label{sec:roadmap}
+
+This document is a living artifact. Milestone~1 --- the measurement map --- is the foundation; the remaining
+milestones will be written into the sections that follow as each is completed. Each is a separate milestone
+with its own acceptance gate, and none begins before the previous is locked.
+
+\milestonestrip{2}
+
+\paragraph{M2 --- Validated strata.} \planned\ Probabilistic decision regions on the M1 coordinates. The
+object is a segmentation of the seven-dimension space into recurring, decision-relevant subgroups, propagating
+the per-patient coordinate uncertainty from M1 (a patient with one observed cognition indicator is not treated
+as equally characterised as one with six). Validation will use cohort/site composition, $\eta^2$, ARI against
+diagnosis, and stability under resampling --- with the explicit guard that strata must not reduce to diagnosis,
+site, or missingness.
+
+\paragraph{M3 --- Temporal coherence.} \planned\ Do the coordinates persist across follow-up visits V1--V4?
+The M1 map is scored forward onto later visits (fit-once, score-anyone; Section~\ref{sec:estimation}), and the
+within-patient stability of each dimension is quantified. This is where invariant~I3 pays off: because the map
+was fixed on baseline, later visits are an honest out-of-sample test of persistence rather than a fitting
+target.
+
+\paragraph{M4 --- Prognosis.} \planned\ Does a patient's position on the map carry incremental predictive value
+\emph{beyond} diagnosis and overall severity for clinically meaningful outcomes? The biology$\perp$severity
+finding (Section~\ref{sec:results}) is the substantive bet here: if biological load varies independently of
+burden, biological strata can predict outcomes that a severity score alone misses. Evaluation will be a nested
+head-to-head (diagnosis + severity vs.\ + dimensions), with the downstream cohort \emph{scored} from the
+full-sample map, never driving the measurement fit.
+
+\paragraph{M5 --- Treatment.} \planned\ Target-trial emulation, only if the data support it --- estimating
+whether map position modifies treatment response. This is the most demanding milestone and the most
+conditional; it will be specified only after M2--M4 establish that the strata are stable, persistent, and
+prognostic.
+
+\subsection{Remaining work within M1}
+Before M2 begins, M1 itself is hardened: a full-$N$ certified S5 (upgrading the reported map from provisional
+and pinning the $\Phi$ magnitudes, with additional sampling effort); per-patient scoring at scale with
+reliability flags; a
+diagnosis-balanced bootstrap and leave-one-cohort-out congruence; and the centerpiece deliverable --- the
+\emph{prior $\to$ posterior empirical atlas}, the theory map of Section~\ref{sec:model} placed beside the
+fitted loading matrix with the per-candidate verdicts of Table~\ref{tab:adjudication}.

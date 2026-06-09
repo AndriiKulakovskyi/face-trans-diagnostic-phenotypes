@@ -1,0 +1,197 @@
+\section{Results: the M1 measurement map}
+\label{sec:results}
+
+\subsection{The reported seven-dimension map}
+On the harmonized FACE V0 baseline the hybrid model yields a seven-dimension transdiagnostic map --- one
+general factor and six specific axes, estimated from each patient's observed cells with no imputation
+(Table~\ref{tab:map}).
+
+\begin{table}[h]\centering\small\sffamily
+\caption{The reported transdiagnostic map. Loadings are posterior means; suicidality's binary ISF items are on
+the logit scale. $|\lambda_G|$ is the mean absolute bifactor loading on $G$ (the severity-entanglement of each
+specific domain).}
+\label{tab:map}
+\begin{tabular}{L{3.4cm} L{6.0cm} R{2.0cm} R{1.7cm}}
+\toprule
+\hdr{dimension} & \hdr{anchored by} & \hdr{primary $\lambda$} & \hdr{$|\lambda_G|$}\\
+\midrule
+\rowcolor{facebg} $G$ --- functional burden & FAST, EGF, EQ-5D, CGI-S (functioning + severity only) & 0.90 (FAST) & ---\\
+cognition & CVLT, WAIS coding/digit-span, fluency, TMT-B & 0.57 & 0.26\\
+\rowcolor{facebg} metabolic & BMI, waist, BP, glucose, HbA1c, lipids & 0.32 & 0.08\\
+inflammatory & CRP, WBC, neutrophils, platelets & 0.39 & 0.07\\
+\rowcolor{facebg} sleep & PSQI objective sub-scores & 0.48 & 0.25\\
+developmental-risk & CTQ, age-of-onset, WURS, perinatal, family history & 0.42 & 0.12\\
+\rowcolor{facebg} suicidality & ISF binary ideation/attempt $+$ count & 2.7--3.4 (logit) & ---\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{keyresult}[The dimensions are genuinely distinct axes]
+The inter-dimension correlations are weak --- mean $|\Phi_{\text{off-diag}}|\approx 0.10$. The six specifics are
+\emph{not} facets of one severity factor; the map carries real multidimensional information for stratification.
+The only non-trivial couplings are clinically coherent: metabolic--inflammatory $0.19$ (immunometabolic),
+suicidality--developmental $0.23$ (childhood adversity), and sleep's mild links to developmental ($0.19$) and
+suicidality ($0.14$).
+\end{keyresult}
+
+The hybrid adjudication ran end to end: of the ten candidates the data \textbf{confirmed} six $+\,G$,
+\textbf{split} candidate 5 into metabolic $+$ inflammatory, \textbf{rejected} anhedonia, and \textbf{dropped}
+the three with no common indicators (impulsivity, negative symptoms, sensory). Depression/anxiety
+(MADRS/QIDS/STAI) are \emph{cross-loading windows} onto $G$, not a dimension. The per-stage evidence follows.
+
+\subsection{S1 --- the continuous core}
+\label{sub:s1}
+\certified\ A bifactor model on the $68$ continuous indicators homing on $G$ + the four continuous specifics, full $N$
+($415{,}531$ observed cells): $\max\widehat{R}=1.010$, $\min\mathrm{ESS}=1{,}939$, $0$ divergences, no Heywood.
+$G$ is anchored cleanly by functioning and global severity --- FAST $1.04$, EGF $0.69$, EQ-5D $0.58$, CGI-S
+$0.54$ --- with subjective illness (\code{lvsbjind}) loading $\approx 0.01$: patients' subjective rating barely
+tracks the objective burden axis. The load-bearing read of S1 concerns the bifactor loadings of biology on $G$:
+
+\begin{table}[h]\centering\small\sffamily
+\caption{S1 bifactor: mean $|$loading on $G|$ of each specific factor's indicators (the orthogonality test).}
+\label{tab:s1bifactor}
+\begin{tabular}{L{3.2cm} R{3.0cm} L{6.2cm}}
+\toprule
+\hdr{domain} & \hdr{mean $|\lambda_G|$} & \hdr{reading}\\
+\midrule
+\rowcolor{facebg} metabolic & 0.08 & $\approx$ independent of overall burden\\
+inflammatory & 0.07 & $\approx$ independent of overall burden\\
+\rowcolor{facebg} sleep & 0.22 & moderately tracks burden\\
+cognition & 0.27 & moderately tracks burden\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The mathematically-equivalent explicit-latent parameterization reproduced these loadings, so the result is not
+an artefact of one estimator. S1 establishes the project's load-bearing hypothesis on the backbone:
+\emph{biology is its own axis, not a proxy for severity}.
+
+\subsection{S2 --- inter-dimension $\Phi$ and the depression/anxiety windows}
+\certified\ Deforming S1 into a correlated-factors ESEM (adding $\Phi$, freeing the MADRS/QIDS/STAI windows), warm-started
+from the certified S1 posterior, on full $N$ ($J=71$, $434{,}765$ cells): $\max\widehat{R}=1.010$,
+$\min\mathrm{ESS}=676$, $0$ divergences. Three results land.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{S2 specific-block correlations $\Phi$ ($G$ orthogonal by construction); mean $|$off-diagonal$|=0.09$.}
+\label{tab:s2phi}
+\begin{tabular}{L{2.8cm} R{2.2cm} R{2.2cm} R{2.4cm} R{1.8cm}}
+\toprule
+ & \hdr{cognition} & \hdr{metabolic} & \hdr{inflammatory} & \hdr{sleep}\\
+\midrule
+\rowcolor{facebg} cognition & 1 & 0.15 & 0.06 & $-0.09$\\
+metabolic & 0.15 & 1 & \textbf{0.20} & $-0.03$\\
+\rowcolor{facebg} inflammatory & 0.06 & 0.20 & 1 & $-0.01$\\
+sleep & $-0.09$ & $-0.03$ & $-0.01$ & 1\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The strongest link, metabolic$\leftrightarrow$inflammatory $0.20$, is a modest immunometabolic coupling that
+leaves the two clearly distinct --- supporting the hypothesised split. The depression/anxiety windows load
+predominantly on $G$ (MADRS $0.80$, QIDS $0.77$, STAI $0.66$) with a smaller, sensible sleep side-loading
+(QIDS $0.24$, STAI $0.21$): \emph{depression and anxiety severity are expressions of overall illness burden,
+not a separate latent}. And S1 survives elaboration --- the biology$\perp G$ loadings are \emph{identical}
+(metabolic $0.08$, inflammatory $0.07$), so the headline was not a bifactor/independence artefact.
+
+\begin{methodsbox}[An identification finding, not just an engineering note]
+Freeing the metabolic$\leftrightarrow$inflammatory mutual cross-loadings \emph{and} a free $\Phi_{me}$
+parameterizes the same covariance two ways --- a rotational ridge (chains swung $\Phi_{me}$ from $-0.16$ to
+$+0.46$) that also made the full-$N$ fit intractable. The metabolic/inflammatory shared variance is
+identifiable as a \emph{factor correlation} ($\Phi\approx 0.20$), not as separable item-level bridges; the
+mutual crosses are left at zero (the standard ESEM resolution) and $\Phi$ carries the association.
+\end{methodsbox}
+
+\subsection{S3 --- developmental-risk and mixed-likelihood suicidality}
+\textbf{S3a (developmental-risk)} \certified\ on a random $N=4{,}000$ sub-sample (six factors;
+$\widehat{R}=1.010$, $\mathrm{ESS}=832$, $0$ div). Developmental-risk is its own axis (mean primary $0.41$;
+$\approx$ orthogonal to biology and $G$; weakly tied to sleep $+0.16$), and the continuous core is unchanged
+from S2.
+
+\textbf{S3b (mixed-likelihood suicidality)} \provisional. The binary/ordinal/count ISF indicators enter via the
+explicit block coupled through $\Phi$; the suicidality factor is \emph{solidly identified} (each binary item
+$\widehat{R}=1.00$, $\mathrm{ESS}$ $0.8$--$2.3$k), even though the global structural $\mathrm{ESS}$ is low
+($58$) and $\widehat{R}=1.06$ --- the slow mixing is in the continuous cross-loadings and the
+suicidality$\sim$developmental $\Phi$ cell, \emph{not} the suicidality block.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{S3b/S5 suicidality indicators: home loading (logit) and bifactor loading on $G$. Ideation and attempt
+items load both on the specific axis and on overall burden --- clinically coherent.}
+\label{tab:suic}
+\begin{tabular}{L{4.6cm} R{3.0cm} R{3.0cm}}
+\toprule
+\hdr{ISF indicator} & \hdr{home (suicidality)} & \hdr{$G$ (bifactor)}\\
+\midrule
+\rowcolor{facebg} isf01--05 (ideation) & $+2.67$ to $+3.44$ & $+0.33$ to $+0.56$\\
+isf08 / isf09 (attempt) & $+1.84$ / $+1.98$ & $+0.12$ / $+0.34$\\
+\rowcolor{facebg} isf08a (attempt ordinal) & $+1.74$ & $+0.12$\\
+isf09a (attempt count, NegBin) & $+1.60$ & $+0.31$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This answers the methods-plan's hardest question affirmatively: \emph{non-Gaussian indicators do compose with
+the shared continuous $\Phi$} ($0$ divergences).
+
+\subsection{S4 --- anhedonia}
+\rejected\ Candidate 4 is thin (one dedicated indicator, \code{qids_anhedonia_interest}, BP/DR only; SZ has no QIDS).
+Tested on the S3a map, it does not form a stable distinct factor: $\widehat{R}=1.54$, $\mathrm{ESS}=7$ at both
+the smoke and the $N=4{,}000$ fair test, with a reflection/collapse instability across chains. When it forms it
+is redundant --- its indicator loads $0.61$ on $G$ and the QIDS-total window loads $0.365$ onto it (and the
+anhedonia anchor is a component of the QIDS total, so the two are near-collinear by construction). The rest of
+the map is undisturbed. \textbf{Verdict: rejected as a standalone dimension} --- variance absorbed by $G$ + the
+depression windows --- which is the methods-plan's anticipated outcome, and a result rather than a failure.
+
+\subsection{S5 --- the global fit and the refined biology$\perp G$ verdict}
+\provisional\ The single global model (all seven dimensions; continuous core marginalized, suicidality/developmental
+explicit, one shared $\Phi$) on a random $N=5{,}000$ sub-sample: $\widehat{R}=1.040$, $0$ divergences, $J=84$
+continuous $+\,18$ non-Gaussian. It gives the reported $\Phi$ (Table~\ref{tab:s5phi}) and the dual-identification
+test of the project's premise.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{S5 reported $\Phi$ ($G$ orthogonal in the primary fit); mean $|$off-diagonal$|=0.10$.}
+\label{tab:s5phi}
+\begin{tabular}{L{2.9cm} R{1.5cm} R{1.5cm} R{1.7cm} R{1.3cm} R{1.5cm} R{1.6cm}}
+\toprule
+ & \hdr{cog} & \hdr{met} & \hdr{inf} & \hdr{slp} & \hdr{suic} & \hdr{dev}\\
+\midrule
+\rowcolor{facebg} cognition & 1 & 0.15 & 0.07 & $-0.09$ & $-0.13$ & $-0.08$\\
+metabolic & 0.15 & 1 & 0.19 & $-0.03$ & $-0.05$ & $-0.05$\\
+\rowcolor{facebg} inflammatory & 0.07 & 0.19 & 1 & 0.02 & 0.02 & 0.01\\
+sleep & $-0.09$ & $-0.03$ & 0.02 & 1 & 0.14 & 0.19\\
+\rowcolor{facebg} suicidality & $-0.13$ & $-0.05$ & 0.02 & 0.14 & 1 & 0.23\\
+developmental & $-0.08$ & $-0.05$ & 0.01 & 0.19 & 0.23 & 1\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{keyresult}[The load-bearing premise, honestly refined]
+Tested under \emph{both} identifications: in the bifactor, biology's direct $G$-loadings are
+$\approx 0$ (metabolic $0.08$, inflammatory $0.07$); in the correlated-$G$ sensitivity, the biology
+\emph{factors} correlate $0.28$ (metabolic) / $0.14$ (inflammatory) with $G$ --- versus cognition $0.35$, sleep
+$0.47$, developmental $0.28$. So biology is the \emph{least} severity-entangled domain ($\approx 92$--$98\%$ of
+its variance independent of $G$) but \emph{not strictly orthogonal}. The exact claim is
+\emph{``largely severity-independent,''} not ``orthogonal.'' Two equally-impaired patients can still differ
+sharply in biological load --- biological strata remain worth drawing --- but the bifactor's
+strict-orthogonality phrasing overstated it. This correction is the dual-identification test doing its job.
+\end{keyresult}
+
+\subsection{Consolidated candidate adjudication}
+\begin{table}[h]\centering\small\sffamily
+\caption{Hybrid adjudication after S1--S5: theory proposed ten candidates; the FACE data confirmed six $+\,G$,
+reshaped one, rejected one, and dropped three.}
+\label{tab:adjudication}
+\begin{tabular}{L{5.4cm} L{3.6cm} L{5.0cm}}
+\toprule
+\hdr{candidate} & \hdr{verdict} & \hdr{basis}\\
+\midrule
+\rowcolor{facebg} Overall severity $\to G$ & confirmed & clean functional-burden axis (S1)\\
+Cognitive flexibility $\to$ cognition & confirmed & S1\\
+\rowcolor{facebg} Metabolism/immuno & confirmed (split) & metabolic $+$ inflammatory, $\Phi\,0.20$ (S1--S2)\\
+Sleep/circadian $\to$ sleep & confirmed & S1; $\approx$ orthogonal axis (S2)\\
+\rowcolor{facebg} Neurodevelopment $\to$ developmental-risk & confirmed (proxy) & own axis (S3a)\\
+Suicidality & confirmed (mixed-likelihood) & binary ISF items (S3b)\\
+\rowcolor{facebg} Anhedonia & \textbf{rejected} & thin; merges into $G$ + depression (S4)\\
+Impulsivity / Negative symptoms / Sensory & dropped (pre-modelling) & no common indicators\\
+\bottomrule
+\end{tabular}
+\end{table}

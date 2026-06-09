@@ -1,0 +1,99 @@
+\section{Introduction and scientific framing}
+\label{sec:intro}
+
+\subsection{The problem: heterogeneity inside the diagnostic label}
+Bipolar disorder (BP), schizophrenia (SZ), and major depressive disorder (DR) are defined by polythetic,
+consensus criteria. Two patients with the same diagnosis can share few symptoms; one patient's biology,
+cognition, and course can resemble a patient with a different diagnosis more than a same-diagnosis peer. For
+treatment selection and prognosis this categorical resolution is too coarse: the label predicts the
+\emph{average} patient, not the patient in front of the clinician. The response, developed over the last decade
+in the NIMH Research Domain Criteria (RDoC) and the Hierarchical Taxonomy of Psychopathology
+(HiTOP)~\cite{insel2010rdoc,kotov2017hitop}, is to describe psychopathology along \emph{continuous dimensions}
+that cut across diagnostic boundaries and units of analysis (behaviour, cognition, physiology).
+
+FACE-ATLAS operationalizes that idea on the FACE cohorts. It separates two questions that are routinely
+conflated:
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Measurement} --- where does each patient sit on a small set of continuous, diagnosis-agnostic
+  axes of clinical and biological variation? This \emph{builds the map}.
+  \item \textbf{Stratification} --- which regions of that map define decision-relevant subgroups? This
+  \emph{draws validated territories on the map}.
+\end{itemize}
+The two must not be collapsed. Clustering raw instruments and naming the clusters is a \emph{theory-imposed
+scoring system}, not discovery; it bakes the answer into the feature choice. FACE-ATLAS instead estimates the
+measurement model first and lets stratification act on the estimated coordinates later.
+
+\subsection{The four-milestone architecture}
+The program is strictly ordered. Each milestone has its own acceptance gate and none begins before the previous
+is locked.
+
+\milestonestrip{2}
+
+\begin{enumerate}\setlength{\itemsep}{1pt}
+  \item[\textbf{M1}] \textbf{Transdiagnostic dimensions} --- the measurement map on the baseline visit. \emph{This report.}
+  \item[\textbf{M2}] \textbf{Validated strata} --- probabilistic decision regions on the M1 coordinates.
+  \item[\textbf{M3}] \textbf{Temporal coherence} --- do the coordinates persist across follow-up visits V1--V4?
+  \item[\textbf{M4}] \textbf{Prognosis} --- incremental predictive value beyond diagnosis and severity.
+  \item[\textbf{M5}] \textbf{Treatment} --- target-trial emulation, only if the data support it.
+\end{enumerate}
+
+\subsection{The method in one paragraph: hybrid discovery}
+The ten candidate dimensions are a \emph{soft prior ontology}, not fixed outputs. Theory proposes a candidate
+structure; the data estimate the actual factor structure, loadings, cross-loadings, hierarchy, and validity. A
+single global, missingness-aware Bayesian sparse bifactor / ESEM model with mixed likelihoods is fit to the
+harmonized baseline, and the data are free to \emph{confirm, split, merge, downgrade (proxy), reject, or declare
+not-testable} any candidate. The soft priors are the formal mechanism of ``theory suggests, data decides'':
+most cross-loadings are shrunk toward zero, but the likelihood can pull any of them away if the data demand it.
+
+\begin{definitionbox}[Three objects kept distinct throughout]
+\textbf{Candidate construct} --- a clinical idea, encoded as a soft prior over loadings.\quad
+\textbf{Empirical dimension} --- a stable, data-supported axis of covariance.\quad
+\textbf{Patient stratum} --- a recurring, decision-relevant region of the map (a later milestone).
+A candidate is a hypothesis; a dimension is a result; a stratum is an action boundary.
+\end{definitionbox}
+
+\subsection{Load-bearing invariants}
+Three commitments are enforced at every layer of the system, from the data loader to the likelihood. They are
+the difference between a defensible map and an artefactual one.
+
+\begin{invariantbox}
+\textbf{(I1) No naive imputation.} Structure is estimated from each patient's \emph{observed} cells via an
+observed-data likelihood; no completed patient$\times$variable matrix is ever created. Naive imputation
+manufactures covariance and fabricates strata when missingness is cohort-, site-, or severity-dependent --- as
+it is in FACE.\\[3pt]
+\textbf{(I2) Diagnosis is metadata.} BP/SZ/DR labels are never indicators. They enter only as covariates, as a
+measurement-invariance grouping variable, and as a post-hoc validation layer.\\[3pt]
+\textbf{(I3) Baseline defines; follow-up validates.} Dimensions are estimated on the baseline visit V0 only;
+visits V1--V4 are reserved for temporal coherence and prognosis, used \emph{after} the map is fixed.
+\end{invariantbox}
+
+A fourth, structural commitment supports the first three: there is \emph{one} global factor structure on one
+harmonized matrix. An instrument absent for a cohort is simply a missing cell under the observed-data
+likelihood --- there are no cohort-specific ``modules.'' Coverage is emergent and flagged per patient, never a
+structural sub-model. And crucially, \emph{a dimension requires indicators}: the model can discover a
+statistical dimension but cannot discover a construct that is not measured; a candidate with no valid indicators
+is reported \code{not_testable}, never back-filled with an invented proxy.
+
+\subsection{What this report contributes, and how to read it}
+This document is the methods-of-record and the as-built record for Milestone~1, written at a level of detail
+beyond a journal article so that it can both seed the eventual manuscript and serve as the project's living
+technical reference. Section~\ref{sec:data} describes the data foundation and the no-imputation contract.
+Section~\ref{sec:model} specifies the measurement model: the candidate ontology, the soft priors, and the
+bifactor/ESEM generative model with mixed likelihoods. Section~\ref{sec:estimation} develops the estimation
+strategy --- the staged continuation, the Gaussian-block marginalization and its identity with FIML, the
+low-rank Woodbury likelihood, and the compute strategy that makes full-$N$ inference tractable.
+Section~\ref{sec:results} reports the as-built empirical map (seven dimensions) and the candidate adjudication.
+Section~\ref{sec:validation} presents the estimator/prior-robustness confirmation and the cross-cohort
+measurement-invariance analysis. Section~\ref{sec:engineering} documents the software: repository structure,
+the config-first design, the test suite, and the two engineering bugs found and fixed \emph{with measurement}.
+Section~\ref{sec:roadmap} sketches the later milestones into which this document will grow, and
+Section~\ref{sec:limitations} states the limitations and open problems. Appendices collect notation, the prior
+atlas, the acceptance-gate definitions, the full factor-correlation matrix, and a glossary of instruments.
+
+\begin{methodsbox}[Reading conventions]
+Coloured callouts flag \statuspill{facekr}{key results}, \statuspill{facedef}{definitions},
+\statuspill{faceinv}{invariants}, \statuspill{facemeth}{methods notes}, \statuspill{facecav}{caveats}, and
+\statuspill{faceopen}{open problems}. Status pills mark each finding's evidential standing: \certified\
+(passes the acceptance gate at full $N$), \provisional\ (a checkpoint or sub-sample read), \rejected\ (a
+candidate the data declined). Code identifiers and file paths are set in \code{monospace}.
+\end{methodsbox}

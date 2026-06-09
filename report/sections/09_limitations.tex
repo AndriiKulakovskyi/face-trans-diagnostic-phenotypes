@@ -1,0 +1,41 @@
+\section{Limitations and open problems}
+\label{sec:limitations}
+
+The strengths of M1 are stated plainly in Section~\ref{sec:results}; the honest counterweights follow. None is
+fatal, and each is tracked.
+
+\begin{openbox}[The reported global fit is provisional]
+S3--S5 ran on random sub-samples ($N=4{,}000$--$5{,}000$), the methods-plan frontier fallback for the heavier
+mixed-likelihood stages, and S5 is provisional ($\widehat{R}=1.04$). The slow mixing is specifically in the
+continuous cross-loadings and the suicidality$\sim$developmental $\Phi$ cell under the explicit/marginalized
+coupling --- \emph{not} the suicidality block, which mixes well. The reported point estimates are
+resample-stable (cross-seed $\max|\Delta\Lambda|=0.18$, $\max|\Delta\Phi|=0.05$, Tucker $\varphi\ge 0.99$), but
+the cross-loading and $\Phi_{\text{suicidality}}$ \emph{precision} need a longer, full-$N$ certified fit.
+\end{openbox}
+
+\begin{openbox}[The exact biology--$G$ magnitude is not yet pinned]
+The qualitative refinement (``largely severity-independent,'' not strictly orthogonal) is robust in direction,
+but the magnitude of the metabolic--$G$ correlation ($0.28$) carries sub-sample uncertainty and needs the
+certified full-$N$ fit to fix precisely.
+\end{openbox}
+
+\paragraph{Scope and construct caveats.}
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Internal validity only.} The map is estimated on the V0 baseline with no temporal (V1--V4)
+  persistence and no external-cohort validation. ``Converged'' denotes sampler convergence, \emph{not}
+  scientific validation. Temporal coherence and external validity are later milestones by design.
+  \item \textbf{Cohort-specific coverage.} Anhedonia and the MADRS/QIDS/STAI windows are BP/DR (SZ has no
+  QIDS/MADRS); the SZ map leans on the shared factors. Each patient's per-dimension reliability must be flagged
+  by observed-indicator count.
+  \item \textbf{Naming caveats.} ``Developmental-risk'' is a \emph{proxy} (early-adversity / liability), not
+  measured neurodevelopment; ``suicidality'' rests on self-report ISF; the DR inflammatory axis is
+  compositionally different (Section~\ref{sec:validation}).
+  \item \textbf{What is \emph{not} claimed.} No natural biotypes/subtypes, no causal or treatment effect, no
+  prognostic value --- those are M2--M5. M1 claims an empirically-supported set of transdiagnostic dimensions,
+  their measurement structure, and per-patient coordinates with uncertainty, under internal validity.
+\end{itemize}
+
+\paragraph{Open methods choices (flagged for decision).} The sparsity prior (soft-normal vs.\ horseshoe);
+Student-$t$ vs.\ Gaussian continuous default; item- vs.\ factor-level covariate adjustment; and the precise
+acceptance-gate thresholds. Defaults are set in the methods-of-record; these are sensitivity arms, not
+silent assumptions.
