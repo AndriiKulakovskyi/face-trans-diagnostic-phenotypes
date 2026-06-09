@@ -99,7 +99,7 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             cross_sd_scale: float = 0.25, window_sd_scale: float = 1.0, flat: bool = False,
             bifactor_g_sd: dict[str, float] | None = None,
             cohort_subset: list[str] | None = None, balanced: bool = False,
-            keep_index: np.ndarray | None = None,
+            keep_index: np.ndarray | None = None, force_factors_continuous: list[str] | None = None,
             n_subsample: int | None = None, seed: int = 20260605) -> CorePrep:
     """Load the persisted V0 baseline, encode the continuous block for `factors`, and resolve
     the per-cell loading priors from the matrix. Three orthogonal switches deform S1 -> S2:
@@ -131,8 +131,10 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
     factor_cols = [G_KEY] + spec_factors
     col = {f: i for i, f in enumerate(factor_cols)}
 
+    fc = set(force_factors_continuous or [])    # treat these factors' non-Gaussian items as continuous
     items = sorted(it for it in home
-                   if home[it] in factors and meta.loc[it, "modeling_block"] == "continuous")
+                   if home[it] in factors
+                   and (meta.loc[it, "modeling_block"] == "continuous" or home[it] in fc))
     use_windows = bool(windows)
     if use_windows:                        # window items: no home, plausible_cross onto our factors
         win = [w for w in WINDOWS if w in meta.index

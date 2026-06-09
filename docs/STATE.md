@@ -87,9 +87,12 @@ confirmation, the formal adjudication write-up, and the prior→posterior atlas.
   `src/face/scoring.py`, `scripts/07_score.py` → `results/face/patient_scores.parquet`.
 - **Atlas + adjudication (§2.3/§6, DONE — M1 LOCK pending PI review):** prior→posterior heatmap
   (`docs/figures/empirical_atlas.png`, `scripts/09_atlas.py`) + the verdict on all candidates
-  (`docs/ADJUDICATION.md`): **7 confirmed** (G + cognition, metabolic/inflammatory split, sleep,
-  developmental-proxy, suicidality), **anhedonia rejected**, **mania/substance DEFERRED** (have indicators,
-  not staged — an honest M1 gap), impulsivity/negative/sensory **not_testable**, depression/anxiety = windows.
+  (`docs/ADJUDICATION.md`): **7 jointly-modelled confirmed** (G + cognition, metabolic/inflammatory split,
+  sleep, developmental-proxy, suicidality) + **mania CONFIRMED** (primary |λ| 0.61, clean) and **substance
+  CONFIRMED-PROVISIONAL** (|λ| 0.34; binary-SUD-as-continuous approximation → mixed re-test) — the deferred
+  gap is **closed** (`scripts/s5_mania_substance.py`); **anhedonia rejected**, impulsivity/negative/sensory
+  **not_testable**, depression/anxiety = windows. *Folding mania/substance into a re-certified 9-dim joint
+  map + scoring is the next increment.*
 - **M1 essentially complete** — the measurement layer is built, hardened (confirmation/invariance/robustness),
   certified, scored, and adjudicated. PI sign-off on the adjudication + atlas locks it; then **M2 strata**.
 - **Compute lesson (this session):** full-N S1/S2 ≈ 1 h; the S3+ mixed-likelihood frontier is heavier, so

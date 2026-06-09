@@ -23,16 +23,18 @@ axes — **cognition, metabolic, inflammatory, sleep, developmental-risk, suicid
 | 7 | Neurodevelopment | **confirmed (proxy)** | **developmental-risk** | own axis (loading 0.42); a *proxy* for early-adversity/liability, not measured neurodevelopment |
 | 8 | Suicidality | **confirmed (mixed-likelihood)** | **suicidality** | binary ISF ideation/attempt items load +2.7…+3.4 (logit); composes with the shared Φ |
 | 4 | Anhedonia | **rejected** | — (absorbed by G + depression windows) | 1 thin indicator (BP/DR only); non-identified (R-hat 1.54); loads 0.61 on G |
-| 9 | Mania / activation | **deferred** | — (not yet modeled) | has indicators (YMRS, Altman) but **not included in the staged fits** — a documented M1 boundary |
-| 10 | Substance use | **deferred** | — (not yet modeled) | has indicators (alcohol/cannabis SUD, Fagerström) but **not included in the staged fits** |
+| 9 | Mania / activation | **confirmed** | **mania-activation** | adjudicated post-hoc (2 seeds, R-hat 1.01): identifies cleanly, primary \|λ\| **0.61**, \|G\| 0.15, distinct (max \|Φ\| 0.18). Not yet in the *joint* reported map |
+| 10 | Substance use | **confirmed (provisional)** | **substance** | primary \|λ\| **0.34**, \|G\| 0.13 — but binary SUD modelled as continuous (approximation) + one weak nicotine item → a mixed-likelihood re-test is the proper confirmation |
 | — | Impulsivity | **not_testable** | — | no common indicators (dropped pre-matrix) |
 | — | Negative symptoms | **not_testable** | — | no common indicators (dropped pre-matrix) |
 | — | Sensory abnormalities | **not_testable** | — | no common indicators (dropped pre-matrix) |
 | — | Depression / anxiety | **not a dimension** | cross-loading **windows** onto G | MADRS/QIDS/STAI load 0.66–0.80 on G — burden windows, no separate affective factor |
 
-**Tally:** of the 10 prior-matrix candidates — **7 confirmed** (incl. one split), **1 rejected**
-(anhedonia), **2 deferred** (mania, substance); 3 pre-matrix constructs **not_testable**; depression/anxiety
-are **windows, not a dimension**.
+**Tally:** of the 10 prior-matrix candidates — **8 confirmed** (incl. one split) + **1 confirmed-provisional**
+(substance), **1 rejected** (anhedonia); 3 pre-matrix constructs **not_testable**; depression/anxiety are
+**windows, not a dimension**. The reported S5 map jointly modelled **7**; **mania (confirmed) and substance
+(provisional)** were adjudicated post-hoc — folding them into the joint reported map (a re-certified 9-dim
+S5 + scoring) is the immediate next increment, not an M1 result.
 
 ## §6 confirmation criteria — evidence for the 7 confirmed dimensions
 
@@ -48,8 +50,11 @@ are **windows, not a dimension**.
 
 ## Documented M1 boundaries (honest gaps)
 
-- **Mania & substance are deferred, not adjudicated.** They have indicators but were not in the staged
-  fits; testing them (a mixed fit) is a clean extension of the map, not an M1 result.
+- **Mania & substance are now adjudicated (confirmed / confirmed-provisional)** but not yet folded into
+  the *joint* reported map. Mania identifies cleanly; substance survives a continuous-approximation test
+  and needs a mixed-likelihood re-test (its SUD indicators are binary, BP/SZ-only). Re-certifying a 9-dim
+  S5 and re-scoring with them is the immediate next increment (`scripts/s5_mania_substance.py` →
+  `reports/10_mania_substance_report.md`).
 - **Suicidality/developmental per-patient scoring** is on the S5 subsample; full-N projection of the
   non-Gaussian block is an M2 follow-on (§7).
 - **Internal validity only** — V0 baseline; no temporal (V1–V4) persistence or external-cohort validation
@@ -60,7 +65,9 @@ are **windows, not a dimension**.
 
 ## M1 status
 
-The measurement layer is **adjudicated**: a 7-dimension transdiagnostic map, earned from the cohort data,
-estimator- and prior-robust, largely invariant across cohorts, resample-stable, with per-patient
-coordinates and uncertainty. This is the object the **M2 stratification** layer will act on. *PI sign-off
-on this adjudication + the prior→posterior atlas locks M1.*
+The measurement layer is **adjudicated**: a jointly-modelled **7-dimension** transdiagnostic map (earned
+from the cohort data, estimator- and prior-robust, largely invariant across cohorts, resample-stable, with
+per-patient coordinates + uncertainty) **plus two post-hoc-confirmed axes — mania (solid) and substance
+(provisional)**. Every candidate now has a verdict (no remaining "deferred"). This is the object the **M2
+stratification** layer will act on. *Two things finalize M1: PI sign-off on this adjudication + the
+prior→posterior atlas, and (optionally) folding mania/substance into a re-certified 9-dim joint map.*
