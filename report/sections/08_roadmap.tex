@@ -1,18 +1,20 @@
 \section{Roadmap: the milestones ahead}
 \label{sec:roadmap}
 
-This document is a living artifact. Milestone~1 --- the measurement map --- is the foundation; the remaining
-milestones will be written into the sections that follow as each is completed. Each is a separate milestone
-with its own acceptance gate, and none begins before the previous is locked.
+This document is a living artifact. Milestone~1 --- the measurement map --- is \textbf{complete} (pending PI
+sign-off) and is the foundation the remaining milestones build on. Each is a separate milestone with its own
+acceptance gate, and none begins before the previous is locked.
 
 \milestonestrip{2}
 
-\paragraph{M2 --- Validated strata.} \planned\ Probabilistic decision regions on the M1 coordinates. The
-object is a segmentation of the seven-dimension space into recurring, decision-relevant subgroups, propagating
-the per-patient coordinate uncertainty from M1 (a patient with one observed cognition indicator is not treated
-as equally characterised as one with six). Validation will use cohort/site composition, $\eta^2$, ARI against
-diagnosis, and stability under resampling --- with the explicit guard that strata must not reduce to diagnosis,
-site, or missingness.
+\paragraph{M2 --- Validated strata.} \planned\ \textbf{The immediate next step.} Probabilistic decision regions
+on the M1 coordinates: a segmentation of the \emph{nine}-dimension space into recurring, decision-relevant
+subgroups, propagating the per-patient coordinate uncertainty from Section~\ref{sec:scoring} (a patient with one
+observed cognition indicator is not treated as equally characterised as one with six). Validation will use
+cohort/site composition, $\eta^2$, ARI against diagnosis, and stability under resampling --- with the explicit
+guard that strata must not reduce to diagnosis, site, or missingness. The biology$\perp$$G$ finding is the
+substantive bet: strata that use the biological axes can separate patients who look equally ill but differ
+biologically.
 
 \paragraph{M3 --- Temporal coherence.} \planned\ Do the coordinates persist across follow-up visits V1--V4?
 The M1 map is scored forward onto later visits (fit-once, score-anyone; Section~\ref{sec:estimation}), and the
@@ -32,10 +34,14 @@ whether map position modifies treatment response. This is the most demanding mil
 conditional; it will be specified only after M2--M4 establish that the strata are stable, persistent, and
 prognostic.
 
-\subsection{Remaining work within M1}
-Before M2 begins, M1 itself is hardened: a full-$N$ certified S5 (upgrading the reported map from provisional
-and pinning the $\Phi$ magnitudes, with additional sampling effort); per-patient scoring at scale with
-reliability flags; a
-diagnosis-balanced bootstrap and leave-one-cohort-out congruence; and the centerpiece deliverable --- the
-\emph{prior $\to$ posterior empirical atlas}, the theory map of Section~\ref{sec:model} placed beside the
-fitted loading matrix with the per-candidate verdicts of Table~\ref{tab:adjudication}.
+\subsection{M1 is complete --- and the small follow-ons it leaves}
+The M1 deliverables are all in hand: the certified nine-dimension map; the full hardening chain
+(Section~\ref{sec:validation}); per-patient coordinates with reliability flags (Section~\ref{sec:scoring}); and
+the centerpiece \emph{prior $\to$ posterior} atlas with the per-candidate verdicts of
+Table~\ref{tab:adjudication}. What remains is a short, principled list of M2-prep follow-ons, none of which
+changes a conclusion: full-$N$ full-precision certification of the explicit-latent block (the
+suicidality$\sim$developmental $\Phi$ coupling, currently certified at the largest $N$ that mixes); full-$N$
+projection of the non-Gaussian per-patient scores (a logistic/count conditional); a separate bootstrap and
+correlated-$G$ arm for mania/substance (they already carry the 9-dim cross-seed $\varphi$ $0.993$); and a
+hurdle likelihood for \code{isf09a} if its count precision is ever needed. \textbf{PI sign-off on the
+adjudication and the atlas locks M1.}

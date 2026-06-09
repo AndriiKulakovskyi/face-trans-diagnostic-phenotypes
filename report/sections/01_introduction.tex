@@ -52,6 +52,20 @@ most cross-loadings are shrunk toward zero, but the likelihood can pull any of t
 A candidate is a hypothesis; a dimension is a result; a stratum is an action boundary.
 \end{definitionbox}
 
+Each candidate runs the same gauntlet (Figure~\ref{fig:discovery}): it is proposed as a soft prior, enters one
+global fit, and receives a verdict. On the FACE data this loop confirmed nine dimensions (one a \emph{split} of
+the biology candidate, one a \emph{proxy} relabelling), rejected one (anhedonia), and declared three
+\code{not_testable} for want of indicators --- the map is what survived adversarial checking, not what was
+assumed.
+
+\begin{figure}[h]\centering
+\discoveryflow
+\caption{Hybrid discovery as a verdict pipeline. Theory proposes; one global fit disposes. Each candidate is
+\emph{confirmed}, \emph{split}, relabelled a \emph{proxy}, \emph{rejected}, or declared \emph{not-testable},
+with the FACE outcomes shown. This is the formal sense in which the data are allowed to overturn the theory.}
+\label{fig:discovery}
+\end{figure}
+
 \subsection{Load-bearing invariants}
 Three commitments are enforced at every layer of the system, from the data loader to the likelihood. They are
 the difference between a defensible map and an artefactual one.
@@ -82,13 +96,16 @@ Section~\ref{sec:model} specifies the measurement model: the candidate ontology,
 bifactor/ESEM generative model with mixed likelihoods. Section~\ref{sec:estimation} develops the estimation
 strategy --- the staged continuation, the Gaussian-block marginalization and its identity with FIML, the
 low-rank Woodbury likelihood, and the compute strategy that makes full-$N$ inference tractable.
-Section~\ref{sec:results} reports the as-built empirical map (seven dimensions) and the candidate adjudication.
-Section~\ref{sec:validation} presents the estimator/prior-robustness confirmation and the cross-cohort
-measurement-invariance analysis. Section~\ref{sec:engineering} documents the software: repository structure,
-the config-first design, the test suite, and the two engineering bugs found and fixed \emph{with measurement}.
-Section~\ref{sec:roadmap} sketches the later milestones into which this document will grow, and
-Section~\ref{sec:limitations} states the limitations and open problems. Appendices collect notation, the prior
-atlas, the acceptance-gate definitions, the full factor-correlation matrix, and a glossary of instruments.
+Section~\ref{sec:results} reports the as-built empirical map (\textbf{nine dimensions}) and the candidate
+adjudication. Section~\ref{sec:validation} presents the full hardening chain --- estimator/prior-robustness
+confirmation, multi-seed certification, resample robustness, cross-cohort measurement invariance, and
+absolute-fit posterior-predictive checks across both likelihood blocks. Section~\ref{sec:scoring} projects the
+map to per-patient coordinates with reliability flags. Section~\ref{sec:engineering} documents the software:
+repository structure, the config-first design, the test suite, and the two engineering bugs found and fixed
+\emph{with measurement}. Section~\ref{sec:roadmap} sketches the later milestones into which this document will
+grow, and Section~\ref{sec:limitations} states the limitations and open problems. Appendices collect notation,
+the prior and empirical atlases, the acceptance-gate definitions, the full factor-correlation matrix, and a
+glossary of instruments.
 
 \begin{methodsbox}[Reading conventions]
 Coloured callouts flag \statuspill{facekr}{key results}, \statuspill{facedef}{definitions},

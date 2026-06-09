@@ -11,7 +11,7 @@
 \newcommand{\reportauthor}{Andrii Kulakovskyi}
 \newcommand{\reportgroup}{Precision Psychiatry \& Artificial Intelligence}
 \newcommand{\reportdate}{June 2026}
-\newcommand{\reportversion}{Milestone 1 --- v0.1 (the measurement map)}
+\newcommand{\reportversion}{Milestone 1 --- v1.0 (the certified measurement map)}
 
 \begin{document}
 \hypersetup{pdfauthor={\reportauthor}}
@@ -40,8 +40,8 @@
   {\bfseries\color{faceaccent}transdiagnostic dimensions} (this report) $\:\to\:$ validated strata
   $\:\to\:$ prognosis\,/\,treatment}\par\vspace{3pt}
 {\sffamily\footnotesize\color{facemute} Scope\quad bipolar disorder, schizophrenia, depression
-  ($N=9{,}013$, baseline visit). Continuous backbone certified at full $N$; global mixed fit reported as
-  provisional.}\par
+  ($N=9{,}013$, baseline visit). Nine-dimension map certified at the largest $N$ that mixes (cross-seed Tucker
+  $\varphi$ $0.993$). \textbf{M1 complete} --- pending PI sign-off.}\par
 \vspace{1.15cm}
 
 {\color{facerule}\rule{\linewidth}{0.6pt}}\par\vspace{7pt}
@@ -60,12 +60,16 @@ uses each patient's \emph{observed cells only} (no imputation, full sample); dia
 \emph{metadata}, never an indicator; and dimensions are discovered on the baseline visit, with later visits
 reserved for validation. A Gaussian-block marginalization with a low-rank Woodbury likelihood makes the
 full-sample fit tractable without subsampling or imputation; non-Gaussian indicators enter through a hybrid
-explicit/marginalized mixed-likelihood block. On the FACE data the model yields a \textbf{seven-dimension map}
---- a general functional-burden factor $G$ and six weakly-correlated specific axes (cognition, metabolic,
-inflammatory, sleep, developmental-risk, suicidality) --- with depression/anxiety instruments placed as
-\emph{cross-loading windows} rather than a separate dimension, and anhedonia \emph{rejected} as a standalone
-factor. The continuous backbone is certified at full $N$ and shown to be estimator- and prior-robust; the
-global mixed fit is reported as provisional pending full-$N$ certification.}\par\vspace{7pt}
+explicit/marginalized mixed-likelihood block. On the FACE data the model yields a \textbf{certified
+nine-dimension map} --- a general functional-burden factor $G$ and eight weakly-correlated specific axes
+(cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality, mania, substance) --- with
+depression/anxiety instruments placed as \emph{cross-loading windows} rather than a separate dimension, and
+anhedonia \emph{rejected}. The map is hardened end-to-end (prior/estimator robustness, multi-seed
+certification, resample robustness, cross-cohort invariance, and absolute-fit posterior-predictive checks
+across both likelihood blocks) and projected to per-patient coordinates with reliability flags. The headline
+finding: \textbf{biology --- metabolic and inflammatory load --- is the least severity-entangled domain}
+($\varphi$ with $G$ of $0.14$ and $0.06$, versus $0.39$ cognition and $0.44$ sleep), so biological risk rides
+on axes that clinical severity does not see.}\par\vspace{7pt}
 {\color{facerule}\rule{\linewidth}{0.6pt}}
 
 \vfill
@@ -87,6 +91,7 @@ configurations.}
 \input{sections/04_estimation}
 \input{sections/05_results}
 \input{sections/06_validation}
+\input{sections/scoring}
 \input{sections/07_engineering}
 \input{sections/08_roadmap}
 \input{sections/09_limitations}

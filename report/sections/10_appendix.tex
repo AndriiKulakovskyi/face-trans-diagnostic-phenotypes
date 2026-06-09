@@ -29,7 +29,9 @@ Figure~\ref{fig:prioratlas} is the theory half of the map (Section~\ref{sec:mode
 matrix as an indicator$\times$factor heatmap, generated from configuration alone. Cell shade is the
 prior-permitted loading $|\text{mean}|+\text{sd}$: dark $=$ \code{primary}/\code{g_anchor} (theory expects a
 loading), mid $=$ \code{plausible_cross} (theory allows), light $=$ soft-zero (suppressed unless the data
-surprise the prior). Table~\ref{tab:pool} gives the per-factor prior pool.
+surprise the prior). Table~\ref{tab:pool} gives the per-factor prior pool. The fitted \emph{posterior}
+(empirical) atlas is shown beside this prior map in Section~\ref{sec:results}
+(Figures~\ref{fig:priorposterior}--\ref{fig:empatlas}); their comparison is the M1 deliverable.
 
 \begin{table}[h]\centering\small\sffamily
 \caption{Per-factor prior pool: primary indicators and likelihood mix. $143$ indicators $\times\,10$ candidate
@@ -47,8 +49,8 @@ inflammatory & 14 & lognormal 8, bernoulli 6\\
 suicidality & 30 & bernoulli 14, ordered-logistic 14, gaussian 1, neg-binomial 1\\
 \rowcolor{facebg} developmental-risk & 23 & gaussian 12, bernoulli 8, ordered-logistic 3\\
 anhedonia & 1 & gaussian 1 (thin)\\
-\rowcolor{facebg} mania-activation & 2 & gaussian 2 (candidate)\\
-substance & 4 & bernoulli 2, gaussian 1, neg-binomial 1 (candidate)\\
+\rowcolor{facebg} mania & 2 & gaussian 2 (confirmed; partial axis --- 2 indicators)\\
+substance & 4 & bernoulli 2, gaussian 1, neg-binomial 1 (confirmed; 2-cohort)\\
 \rowcolor{facebg} cross-loading windows & --- & MADRS/QIDS/STAI $\to$ plausible on $G$, sleep, cognition, $\dots$\\
 \bottomrule
 \end{tabular}
@@ -84,6 +86,11 @@ WAIC & lower preferred & out-of-sample predictive fit for model comparison\\
 \end{tabular}
 \end{table}
 
+The per-stage gate above certifies the continuous stages at full $N$. The joint mixed-likelihood fit, whose
+explicit-latent block mixes more slowly, is certified at the \emph{largest $N$ that mixes} ($\widehat{R}\le
+1.04$, $\mathrm{ESS}\ge 112$, $0$ divergences, $\mathrm{BFMI}\ge 0.41$) with a cross-seed resample-stability
+guard (Tucker $\varphi$ $0.993$), per §3.6/§4.5 of the methods of record.
+
 \section{Glossary of instruments and abbreviations}
 \label{app:glossary}
 {\small
@@ -97,8 +104,11 @@ fonctionnement / GAF); EQ-5D EuroQol; CGI-S Clinical Global Impression -- Severi
 Learning Test.\\[3pt]
 \textbf{Specific domains.} PSQI Pittsburgh Sleep Quality Index; CTQ Childhood Trauma Questionnaire; WURS
 Wender Utah Rating Scale; ISF self-report suicidality items; C-SSRS Columbia Suicide Severity Rating Scale.\\[3pt]
+\textbf{Mania \& substance.} YMRS Young Mania Rating Scale; Altman Altman Self-Rating Mania Scale; SUD
+substance-use disorder; Fager. Fagerstr\"om nicotine-dependence test.\\[3pt]
 \textbf{Windows.} MADRS Montgomery--\AA sberg Depression Rating Scale; QIDS Quick Inventory of Depressive
 Symptomatology; STAI State--Trait Anxiety Inventory.\\[3pt]
 \textbf{Statistics.} NUTS No-U-Turn Sampler; LKJ Lewandowski--Kurowicka--Joe correlation prior; WAIC widely
 applicable information criterion; SRMR standardized root-mean-square residual; DIF differential item
-functioning; ESS effective sample size; $\widehat{R}$ potential scale reduction factor.}
+functioning; ESS effective sample size; BFMI Bayesian fraction of missing information; ZINB zero-inflated
+negative binomial; $\widehat{R}$ potential scale reduction factor.}

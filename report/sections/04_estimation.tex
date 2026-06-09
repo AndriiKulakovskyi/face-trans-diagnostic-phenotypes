@@ -35,22 +35,26 @@ $\theta_{\text{init}}^{(s+1)}=\E[\theta\given\mathcal{M}_s]$.
   \node[stc,right=of s1] (s2) {\bfseries S2\\\scriptsize $+\,\Phi$ + MADRS/\\\scriptsize QIDS/STAI windows\\[2pt]\scriptsize full $N$};
   \node[st,right=of s2] (s3) {\bfseries S3\\\scriptsize $+$ developmental\\\scriptsize $+$ suicidality (mixed)\\[2pt]\scriptsize subsample};
   \node[st,right=of s3] (s4) {\bfseries S4\\\scriptsize $+$ anhedonia\\\scriptsize (thin, BP/DR)\\[2pt]\scriptsize subsample};
-  \node[stp,right=of s4] (s5) {\bfseries S5\\\scriptsize all dimensions\\\scriptsize $+$ correlated-$G$\\[2pt]\scriptsize \bfseries the reported map};
+  \node[stp,right=of s4] (s5) {\bfseries S5\\\scriptsize all 9 dimensions\\\scriptsize $+$ correlated-$G$\\[2pt]\scriptsize \bfseries certified (largest $N$)};
   \draw[->,faceaccent,line width=0.9pt] (s1)--(s2) node[midway,above,font=\scriptsize\sffamily\color{facemute}]{warm};
   \draw[->,faceaccent,line width=0.9pt] (s2)--(s3);
   \draw[->,faceaccent,line width=0.9pt] (s3)--(s4);
   \draw[->,faceaccent,line width=0.9pt] (s4)--(s5);
 \end{tikzpicture}}
 \caption{Staged continuation. Each stage adds exactly one source of difficulty; the converged posterior
-warm-starts the next. Green $=$ certified at full $N$; amber $=$ the reported global fit, provisional at
-sub-sample. \emph{Only $\mathcal{M}_5$ is interpreted.}}
+warm-starts the next. Green $=$ certified at full $N$; amber $=$ the reported nine-dimension global fit,
+certified at the largest $N$ that mixes (cross-seed Tucker $\varphi$ 0.993). \emph{Only $\mathcal{M}_5$ is
+interpreted.} S3--S4 also adjudicated developmental-risk, suicidality, and anhedonia (rejected).}
 \label{fig:staging}
 \end{figure}
 
 What staging buys: \emph{fault isolation} (a failure at stage $s$ implicates only what $s$ added);
 \emph{warm-starts} (the hardest fit begins in a good basin); \emph{risk quarantine} (each failure mode is
 introduced at a known stage with its mitigation); \emph{stability-under-elaboration} as robustness evidence;
-and a natural QC/discussion gate after each step.
+and a natural QC/discussion gate after each step. After the seven-dimension backbone first stabilised, two
+candidates that had been \emph{deferred} (mania, substance) were folded in and the \emph{joint} nine-dimension
+model re-certified --- not bolted on --- so the reported map is one internally consistent object
+(Section~\ref{sec:results}).
 
 \begin{invariantbox}[The interpretation rule]
 \textbf{Only $\mathcal{M}_5$ (the global fit) is interpreted or reported.} Stages S1--S4 are
@@ -110,6 +114,17 @@ so $\Lambda\Phi\Lambda\Tn+\Psi=\widetilde\Lambda\widetilde\Lambda\Tn+\Psi$ and t
 The likelihood is added to the model as a single potential $\sum_i\ell_i$; NUTS then samples only the
 loading/residual parameters --- the $\sim$45{,}000 patient latents are gone.
 
+\begin{figure}[h]\centering
+\woodburydiagram
+\caption{The mechanism behind full-sample tractability. \emph{Left:} the explicit model instantiates a latent
+vector for every patient ($\approx$70{,}000 parameters) and evaluates the Gaussian likelihood with a
+determinant and solve on the observed sub-covariance $\Sigma_{\mathrm{obs}}$ --- a dense matrix in
+\emph{indicator} space, up to $71\times 71$. \emph{Right:} integrating the Gaussian latents out and applying
+the Woodbury identity moves the only matrix that must be factorized, $A_i$, into \emph{factor} space
+($\approx 5\times 5$), and removes the per-patient funnel entirely. Same likelihood, vastly cheaper geometry.}
+\label{fig:woodbury}
+\end{figure}
+
 \begin{keyresult}[Full-sample inference without imputation is affordable]
 The marginalized Woodbury parameterization fits the S1 continuous core on \emph{all} $N=9{,}013$ patients
 ($J=68$, $415{,}531$ observed cells), with no imputation and no subsampling, passing every convergence gate:
@@ -137,6 +152,16 @@ The continuous block becomes a per-patient-mean Woodbury (mean $B f_e$, residual
 $\Lambda_m S\Lambda_m\Tn+\Psi$); the non-Gaussian indicators get Bernoulli/negative-binomial/ordered-logistic
 likelihoods on $f_e$. This is exactly the ``partial collapse'' the methods plan flagged as the hardest step,
 and it works: the mixed fit attains $0$ divergences.
+
+\begin{methodsbox}[A reparameterization ladder, not hardware, resolved the mixing frontier]
+With $0$ divergences but slow mixing, the mixed-likelihood stages were weak-identification \emph{ridges}, not
+funnels --- so the fix is reparameterization, not more compute. Two moves did it: (i) tightening every explicit
+specific's $\to G$ cross-loading toward zero (the dimensions that touch non-Gaussian items are $\approx\perp G$
+anyway, so this removes a ridge without touching the biology$\perp G$ estimand), and (ii) building $\Phi$ from
+a \emph{unit-row} Cholesky factor so it stays a valid correlation matrix (the same fix as the $\Phi=LL\Tn$ bug,
+Section~\ref{sec:engineering}). The explicit-latent block remains the documented mixing limit, so the joint map
+is certified at the \emph{largest $N$ that mixes} with a cross-seed resample-stability guard.
+\end{methodsbox}
 
 \subsection{What makes the fit expensive --- and the optimizations that remove it}
 \label{sub:cost}
