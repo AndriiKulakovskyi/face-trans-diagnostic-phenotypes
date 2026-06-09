@@ -477,6 +477,7 @@ class MixedPrep:
 def prepare_mixed(factors: list[str] = S3_FACTORS, *, min_obs: int = 1500,
                   bifactor_g_sd: dict[str, float] | None = None, balanced: bool = False,
                   explicit_factors: list[str] | None = None, min_cohorts: int = 3,
+                  cohort_subset: list[str] | None = None,
                   n_subsample: int | None = None, seed: int = 20260605) -> MixedPrep:
     """S3b inputs: the S3a continuous prep + the non-Gaussian (binary/ordinal/count) suicidality
     and developmental indicators, aligned to the same patients. Coverage filter: an indicator must
@@ -491,7 +492,7 @@ def prepare_mixed(factors: list[str] = S3_FACTORS, *, min_obs: int = 1500,
     if bifactor_g_sd is None:                                          # tighten every explicit specific →G
         bifactor_g_sd = {f: 0.05 for f in explicit_factors if f != G_KEY}
     base = prepare(factors, correlated=True, windows=True, bifactor_g_sd=bifactor_g_sd,
-                   balanced=balanced, n_subsample=n_subsample, seed=seed)
+                   balanced=balanced, cohort_subset=cohort_subset, n_subsample=n_subsample, seed=seed)
     m = pd.read_csv(MATRIX)
     meta = m.drop_duplicates("item").set_index("item")[["modeling_block", "likelihood_family"]]
     home = (m[m.prior_type.isin(["primary", "g_anchor"])].drop_duplicates("item")

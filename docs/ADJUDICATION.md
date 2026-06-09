@@ -47,7 +47,7 @@ div · BFMI ≥ 0.41 · cross-seed Tucker φ 0.993). No candidate remains deferr
 | **Not a Bayesian-prior artefact** (§5) | ✅ flat-prior refit reproduces loadings/Φ **exactly** (Tucker φ = 1.00); WAIC decisively prefers the bifactor |
 | **Absolute fit — both blocks reproduce the data** (PPC) | ✅ continuous SRMR ≈ 0.07 (§5); **non-Gaussian block 21/22 endorsement rates/means within the 90% posterior-predictive interval, Bayesian p ≈ 0.5** (§8/`12_mixed_ppc`) — lone exception `isf09a` (zero-inflated attempt count), an item-level caveat below |
 | **Stable under resampling** (φ ≥ 0.85) | ✅ §8 robustness (7-factor backbone): min Tucker φ 0.958 under LOCO, diagnosis-balanced subsampling, site cluster-bootstrap, 1/n_cohort weighting; **mania/substance** carry the **cross-seed** φ 0.993 from the 9-dim cert (their bootstrap extension is a follow-on) |
-| **Measurement invariance** across BP/SZ/DR | ✅ largely invariant; **partial**: G (BP–SZ, no FAST in SZ), **inflammatory in DR** (eosinophil- vs neutrophil-leaning); **substance** is a declared **2-cohort axis** (alcohol/cannabis SUD BP/SZ-only) — documented, not hidden |
+| **Measurement invariance** across BP/SZ/DR | ✅ largely invariant; **substance invariant BP–SZ** (φ 0.997, §8/`13_invariance9`); **partial**: G (BP–SZ, no FAST in SZ), **inflammatory in DR** (eosinophil- vs neutrophil-leaning), **mania-Altman in DR** (φ 0.764 — YMRS holds 0.57/0.41, self-rated Altman is a near-floor signal 0.76→0.10); substance declared a **2-cohort axis** (no DR SUD) — all documented, not hidden |
 | Acceptable score reliability | ✅ §7 per-patient scores carry mean/SD/HDI + a reliability tier (well/partial/prior-dominated) by observed-indicator count |
 
 ## Documented M1 boundaries (honest gaps)
@@ -56,8 +56,11 @@ div · BFMI ≥ 0.41 · cross-seed Tucker φ 0.993). No candidate remains deferr
   (`scripts/s5_certify9.py` → `reports/11_s5_9dim_report.md`), with substance's binary SUD under the proper
   Bernoulli likelihood. Substance is a 2-cohort axis (alcohol/cannabis SUD are BP/SZ-only, DR-absent —
   observed-likelihood handles the missing cohort), declared as such, not claimed invariant in DR.
-- **Per-cohort invariance + robustness** were established on the original 7-factor backbone; extending
-  those checks (and the correlated-G arm) to mania/substance is a small follow-on.
+- **Per-cohort invariance now extends to the two new axes** (§8/`13_invariance9`): **substance is invariant
+  BP–SZ** (φ 0.997); **mania is partially invariant** — YMRS holds BP–DR but the self-rated Altman is a
+  near-floor signal in DR (φ 0.764, a documented partial like G-in-SZ / inflammatory-in-DR). The
+  bootstrap-robustness and correlated-G arms for mania/substance remain a small follow-on (they already
+  carry the 9-dim cross-seed φ 0.993 and low bifactor-G loadings).
 - **One item-level PPC mis-fit — `isf09a` (suicide-attempt count).** The mixed-model PPC (§8) shows 21/22
   non-Gaussian items reproduce their observed rates; the exception is the attempt-*count* item, which is
   90.8% zeros — a hurdle count the plain NegBinom over-predicts in the high-suicidality tail. The
