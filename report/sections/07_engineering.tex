@@ -21,7 +21,8 @@ and committed configs.
 \rowcolor{facebg} \file{src/face/priors/build_matrix.py} & expands the YAML ontology into the prior matrix\\
 \file{src/face/models/bayesian/}\newline\file{continuous_core.py} & the engine: marginalized Woodbury + mixed-likelihood block\\
 \rowcolor{facebg} \file{src/face/confirm.py} & in-engine confirmation (prior-free refit, PPC/SRMR, WAIC)\\
-\file{scripts/01_build_data.py \dots\ s5_certify.py} & the runnable pipeline\\
+\file{src/face/strata/} & \textbf{M2:} structure gate, measurement-error mixture, archetypes, validation\\
+\rowcolor{facebg} \file{scripts/01_build_data.py \dots\ 26_score.py} & the runnable pipeline (M1 fit $\to$ M2 strata)\\
 \rowcolor{facebg} \file{reports/} \,/\, \file{results/} & shareable aggregates \,/\, per-patient artifacts (gitignored)\\
 \file{tests/} & invariant-guarding test suite (runs without confidential data)\\
 \bottomrule
@@ -59,7 +60,13 @@ per-patient artifacts.
 \rowcolor{facebg} \file{scripts/07_scoring.py} & per-patient coordinates (mean/SD/HDI) $+$ reliability tiers\\
 \file{scripts/08_robustness.py} & LOCO $+$ balanced subsample $+$ site bootstrap $+$ weighting\\
 \rowcolor{facebg} \file{scripts/12_mixed_ppc.py} & absolute-fit PPC for the non-Gaussian block\\
-\file{report/make_figures.py} & regenerate the manuscript figures from aggregate CSVs\\
+\midrule
+\file{scripts/20_prep_coordinates.py} & \textbf{M2:} full-$N$ 9-dim coordinates $+$ posterior draws\\
+\rowcolor{facebg} \file{scripts/21_structure.py} & structure-discovery gate (continuum vs.\ clusters)\\
+\file{scripts/22_mixture.py}, \file{23_archetypes.py} & measurement-error tessellation (XD) $+$ archetypes\\
+\rowcolor{facebg} \file{scripts/24_validate.py}, \file{26_score.py} & validation (Q1--Q4, DSM-5) $+$ per-patient strata\\
+\midrule
+\file{report/make_figures.py} & regenerate the M1 figures from aggregate CSVs\\
 \bottomrule
 \end{tabular}
 \end{table}

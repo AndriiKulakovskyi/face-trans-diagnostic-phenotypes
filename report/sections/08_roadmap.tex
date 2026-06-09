@@ -1,22 +1,22 @@
 \section{Roadmap: the milestones ahead}
 \label{sec:roadmap}
 
-This document is a living artifact. Milestone~1 --- the measurement map --- is \textbf{complete} (pending PI
-sign-off) and is the foundation the remaining milestones build on. Each is a separate milestone with its own
-acceptance gate, and none begins before the previous is locked.
+This document is a living artifact. \textbf{Milestones 1 and 2 are complete} (pending PI sign-off) --- the
+measurement map and its stratification --- and are the foundation the remaining milestones build on. Each is a
+separate milestone with its own acceptance gate, and none begins before the previous is locked. \textbf{M3 is
+next.}
 
-\milestonestrip{2}
+\milestonestrip{3}
 
-\paragraph{M2 --- Validated strata.} \planned\ \textbf{The immediate next step.} Probabilistic decision regions
-on the M1 coordinates: a segmentation of the \emph{nine}-dimension space into recurring, decision-relevant
-subgroups, propagating the per-patient coordinate uncertainty from Section~\ref{sec:scoring} (a patient with one
-observed cognition indicator is not treated as equally characterised as one with six). Validation will use
-cohort/site composition, $\eta^2$, ARI against diagnosis, and stability under resampling --- with the explicit
-guard that strata must not reduce to diagnosis, site, or missingness. The biology$\perp$$G$ finding is the
-substantive bet: strata that use the biological axes can separate patients who look equally ill but differ
-biologically.
+\paragraph{M2 --- Validated strata.} \statuspill{facekr}{COMPLETE}\ \emph{(Section~\ref{sec:strata}).} On the
+nine-dimension coordinates the transdiagnostic space is a \textbf{continuum, not biotypes}: eight extreme
+phenotypes (every patient a soft blend), severity as the spine, distinct metabolic and inflammatory corners,
+and a partition that cuts across DSM-5 (adjusted Rand index $\approx 0$) while describing the coordinates far
+better than diagnosis ($\approx 21\%$ vs $\approx 5\%$ variance explained). Internal/descriptive validity only
+--- the predictive and treatment head-to-heads are M4/M5.
 
-\paragraph{M3 --- Temporal coherence.} \planned\ Do the coordinates persist across follow-up visits V1--V4?
+\paragraph{M3 --- Temporal coherence.} \planned\ \textbf{The immediate next step.} Do the coordinates persist
+across follow-up visits V1--V4?
 The M1 map is scored forward onto later visits (fit-once, score-anyone; Section~\ref{sec:estimation}), and the
 within-patient stability of each dimension is quantified. This is where invariant~I3 pays off: because the map
 was fixed on baseline, later visits are an honest out-of-sample test of persistence rather than a fitting
@@ -34,14 +34,13 @@ whether map position modifies treatment response. This is the most demanding mil
 conditional; it will be specified only after M2--M4 establish that the strata are stable, persistent, and
 prognostic.
 
-\subsection{M1 is complete --- and the small follow-ons it leaves}
-The M1 deliverables are all in hand: the certified nine-dimension map; the full hardening chain
-(Section~\ref{sec:validation}); per-patient coordinates with reliability flags (Section~\ref{sec:scoring}); and
-the centerpiece \emph{prior $\to$ posterior} atlas with the per-candidate verdicts of
-Table~\ref{tab:adjudication}. What remains is a short, principled list of M2-prep follow-ons, none of which
-changes a conclusion: full-$N$ full-precision certification of the explicit-latent block (the
-suicidality$\sim$developmental $\Phi$ coupling, currently certified at the largest $N$ that mixes); full-$N$
-projection of the non-Gaussian per-patient scores (a logistic/count conditional); a separate bootstrap and
-correlated-$G$ arm for mania/substance (they already carry the 9-dim cross-seed $\varphi$ $0.993$); and a
-hurdle likelihood for \code{isf09a} if its count precision is ever needed. \textbf{PI sign-off on the
-adjudication and the atlas locks M1.}
+\subsection{Milestones 1 and 2 are complete --- and the small follow-ons they leave}
+The deliverables are all in hand: the certified nine-dimension map with its hardening chain
+(Sections~\ref{sec:validation}--\ref{sec:scoring}) and prior$\to$posterior atlas; and, on those coordinates,
+the validated transdiagnostic continuum --- eight extreme phenotypes and a soft tessellation, internally
+validated and adjudicated against DSM-5 (Section~\ref{sec:strata}). What remains is a short, principled list of
+follow-ons, none of which changes a conclusion: full-$N$ full-precision certification of the explicit-latent
+block (the suicidality$\sim$developmental $\Phi$ coupling); full-$N$ projection of the non-Gaussian per-patient
+scores; a separate bootstrap and correlated-$G$ arm for mania/substance (they already carry the 9-dim
+cross-seed $\varphi$ $0.993$); and a hurdle likelihood for \code{isf09a} if its count precision is needed.
+\textbf{PI sign-off on the adjudication, the atlas, and the strata findings locks M1\,$+$\,M2; then M3.}

@@ -27,11 +27,11 @@ measurement model first and lets stratification act on the estimated coordinates
 The program is strictly ordered. Each milestone has its own acceptance gate and none begins before the previous
 is locked.
 
-\milestonestrip{2}
+\milestonestrip{3}
 
 \begin{enumerate}\setlength{\itemsep}{1pt}
-  \item[\textbf{M1}] \textbf{Transdiagnostic dimensions} --- the measurement map on the baseline visit. \emph{This report.}
-  \item[\textbf{M2}] \textbf{Validated strata} --- probabilistic decision regions on the M1 coordinates.
+  \item[\textbf{M1}] \textbf{Transdiagnostic dimensions} --- the measurement map on the baseline visit. \emph{This report (\S\ref{sec:results}).}
+  \item[\textbf{M2}] \textbf{Validated strata} --- decision regions on the M1 coordinates. \emph{This report (\S\ref{sec:strata}).}
   \item[\textbf{M3}] \textbf{Temporal coherence} --- do the coordinates persist across follow-up visits V1--V4?
   \item[\textbf{M4}] \textbf{Prognosis} --- incremental predictive value beyond diagnosis and severity.
   \item[\textbf{M5}] \textbf{Treatment} --- target-trial emulation, only if the data support it.
@@ -89,9 +89,10 @@ statistical dimension but cannot discover a construct that is not measured; a ca
 is reported \code{not_testable}, never back-filled with an invented proxy.
 
 \subsection{What this report contributes, and how to read it}
-This document is the methods-of-record and the as-built record for Milestone~1, written at a level of detail
-beyond a journal article so that it can both seed the eventual manuscript and serve as the project's living
-technical reference. Section~\ref{sec:data} describes the data foundation and the no-imputation contract.
+This document is the methods-of-record and the as-built record for \textbf{Milestones 1 and 2}, written at a
+level of detail beyond a journal article so that it can both seed the eventual manuscript and serve as the
+project's living technical reference. Section~\ref{sec:data} describes the data foundation and the
+no-imputation contract.
 Section~\ref{sec:model} specifies the measurement model: the candidate ontology, the soft priors, and the
 bifactor/ESEM generative model with mixed likelihoods. Section~\ref{sec:estimation} develops the estimation
 strategy --- the staged continuation, the Gaussian-block marginalization and its identity with FIML, the
@@ -100,10 +101,12 @@ Section~\ref{sec:results} reports the as-built empirical map (\textbf{nine dimen
 adjudication. Section~\ref{sec:validation} presents the full hardening chain --- estimator/prior-robustness
 confirmation, multi-seed certification, resample robustness, cross-cohort measurement invariance, and
 absolute-fit posterior-predictive checks across both likelihood blocks. Section~\ref{sec:scoring} projects the
-map to per-patient coordinates with reliability flags. Section~\ref{sec:engineering} documents the software:
-repository structure, the config-first design, the test suite, and the two engineering bugs found and fixed
-\emph{with measurement}. Section~\ref{sec:roadmap} sketches the later milestones into which this document will
-grow, and Section~\ref{sec:limitations} states the limitations and open problems. Appendices collect notation,
+map to per-patient coordinates with reliability flags. Section~\ref{sec:strata} presents \textbf{Milestone~2}
+--- whether those coordinates harbour discrete biotypes (they do not: a continuum) and the eight extreme
+phenotypes, severity spine, and DSM-5 head-to-head that describe it. Section~\ref{sec:engineering} documents
+the software: repository structure, the config-first design, the test suite, and the two engineering bugs found
+and fixed \emph{with measurement}. Section~\ref{sec:roadmap} sketches the later milestones into which this
+document will grow, and Section~\ref{sec:limitations} states the limitations and open problems. Appendices collect notation,
 the prior and empirical atlases, the acceptance-gate definitions, the full factor-correlation matrix, and a
 glossary of instruments.
 
