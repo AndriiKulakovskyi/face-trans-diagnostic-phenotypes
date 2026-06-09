@@ -61,5 +61,7 @@ The package is **`src/face/…`**; the engine (`src/face/models/bayesian/continu
 `configs/prior_loading_matrix_v3.csv`. **M1 is complete (pending PI sign-off):** a **certified 9-dimension**
 transdiagnostic map — G + cognition/metabolic/inflammatory/sleep/developmental-risk/suicidality **+ mania +
 substance** — built, hardened (confirmation §5 / invariance §8 / robustness §8), certified (§4), scored (§7),
-and adjudicated (§6). Current status + results: **[docs/STATE.md](docs/STATE.md)**,
-**[docs/ADJUDICATION.md](docs/ADJUDICATION.md)**, [docs/RESULTS.md](docs/RESULTS.md). Next: **M2 strata**.
+and adjudicated (§6). **Findings + discussion (paper-facing, read first): [docs/M1_FINDINGS.md](docs/M1_FINDINGS.md).**
+Current status: **[docs/STATE.md](docs/STATE.md)**; per-candidate verdict:
+**[docs/ADJUDICATION.md](docs/ADJUDICATION.md)**; per-stage detail: [docs/RESULTS.md](docs/RESULTS.md).
+Next: **M2 strata**.

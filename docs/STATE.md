@@ -5,7 +5,8 @@
 ## TL;DR
 
 **Milestone 1 (M1) — the transdiagnostic dimensional map — is COMPLETE** (pending PI sign-off), on the FACE
-**V0** baseline (N = 9,013). Methods of record: [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md); verdict:
+**V0** baseline (N = 9,013). **Findings + discussion: [`M1_FINDINGS.md`](M1_FINDINGS.md)** (paper-facing
+synthesis). Methods of record: [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md); verdict:
 [`ADJUDICATION.md`](ADJUDICATION.md). The map is **9 transdiagnostic dimensions** — a general factor **G
 (functional burden)** + **cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality,
 mania, substance** — estimated from observed cells only (no imputation), via one global Bayesian sparse

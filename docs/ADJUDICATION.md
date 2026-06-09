@@ -2,8 +2,9 @@
 
 > The formal verdict on each candidate construct, synthesizing the whole M1 evidence chain
 > (confirmation §5 · invariance §8 · S5 certification §4 · correlated-G §3.1 · robustness §8 ·
-> scoring §7). Methods of record: [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md); findings:
-> [`RESULTS.md`](RESULTS.md); the prior (theory) map: [`PRIOR_ATLAS.md`](PRIOR_ATLAS.md).
+> scoring §7). Methods of record: [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md); **findings + discussion:
+> [`M1_FINDINGS.md`](M1_FINDINGS.md)**; per-stage detail: [`RESULTS.md`](RESULTS.md); the prior (theory)
+> map: [`PRIOR_ATLAS.md`](PRIOR_ATLAS.md).
 
 ## The empirical map
 

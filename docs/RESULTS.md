@@ -18,8 +18,10 @@
 > map; closing the deferred candidates then confirmed **mania** and **substance**, so the final reported
 > map is a **certified 9-dimension joint S5** (+ mania marginalized, + substance explicit with proper
 > Bernoulli SUD likelihood; R-hat ≤ 1.04 · ESS ≥ 112 · 0 div · cross-seed φ 0.993). The current verdict on
-> every candidate is in [`ADJUDICATION.md`](ADJUDICATION.md); current status in [`STATE.md`](STATE.md);
-> per-patient 9-dim scores in `results/face/patient_scores.parquet`.
+> every candidate is in [`ADJUDICATION.md`](ADJUDICATION.md); the **paper-facing findings + discussion**
+> synthesis is [`M1_FINDINGS.md`](M1_FINDINGS.md); current status in [`STATE.md`](STATE.md); per-patient
+> 9-dim scores in `results/face/patient_scores.parquet`. *(The sections below are the 7-dim development
+> record — see the banner.)*
 > **The 7-dim narrative below is the development record** — its forward-looking notes ("FIML confirmation
 > ahead", "→ GPU", "provisional", "still ahead") are all **superseded**: FIML was reframed to an in-engine
 > bundle and done (§5), nothing needed a GPU, and the map is certified. Read it for provenance, not status.
