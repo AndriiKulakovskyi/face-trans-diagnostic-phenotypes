@@ -64,4 +64,11 @@ substance** — built, hardened (confirmation §5 / invariance §8 / robustness 
 and adjudicated (§6). **Findings + discussion (paper-facing, read first): [docs/M1_FINDINGS.md](docs/M1_FINDINGS.md).**
 Current status: **[docs/STATE.md](docs/STATE.md)**; per-candidate verdict:
 **[docs/ADJUDICATION.md](docs/ADJUDICATION.md)**; per-stage detail: [docs/RESULTS.md](docs/RESULTS.md).
-Next: **M2 strata**.
+**M2 strata COMPLETE** (pending PI sign-off) — methods **[docs/STRATIFICATION_MODEL.md](docs/STRATIFICATION_MODEL.md)**,
+findings **[docs/STRATA_FINDINGS.md](docs/STRATA_FINDINGS.md)**, atlas **[docs/STRATA_ATLAS.md](docs/STRATA_ATLAS.md)**,
+detailed dev record **[docs/STRATA_RESULTS.md](docs/STRATA_RESULTS.md)**.
+On the 9-dim coordinates (uncertainty-propagated, diagnosis = validation-only) the transdiagnostic space is a
+**continuum, not biotypes**: 8 soft **archetypes** (lead) + a 4-region measurement-error **tessellation** —
+transdiagnostic (ARI≈0 vs the 7 DSM-5 subtypes), specific-axis-driven (biology⊥G as phenotypes), stable, not
+a missingness artefact, and a tighter *description* than DSM-5 (predictive/treatment validity → M4/M5).
+Engine `src/face/strata/`; pipeline `scripts/20–26`. Next: **M3 temporal coherence** (V1–V4 persistence).
