@@ -106,6 +106,16 @@ than a guessed code; skip-logic fills only gate-determined zeros; numeric coerci
 Parquet (\file{data/processed/baseline_v0.parquet}, one row per patient $\times$ modelled indicator) while raw
 data stay confidential CSV.
 
+\begin{figure}[h]\centering
+\observedcellgrid
+\caption{No imputation, made literal. Each patient contributes only the cells actually observed (filled); a
+missing cell contributes \emph{no term} to the likelihood and is never filled. Whole columns can be empty for a
+cohort (an instrument absent by design) without distorting anyone's coordinates --- the model learns that
+factor from the cohorts that measure it. Filling these holes would manufacture covariance and bias the map
+toward the best-measured patients.}
+\label{fig:observed}
+\end{figure}
+
 \subsection{Diagnosis and identifiers as metadata}
 The cohort label and DSM arm are carried as covariates and validation targets, never as indicators or clustering
 inputs (invariant I2). Identifiers --- patient id, cohort, arm, visit, and the recruitment-site code
@@ -119,7 +129,15 @@ Mean cell missingness across the modelled indicators is substantial and \emph{st
 precisely why the observed-data likelihood is non-negotiable: a model that filled these holes would describe
 the best-measured sub-population, not the FACE baseline. Coverage is reported per indicator and per cohort in
 the build report (\file{reports/01_coverage_by_indicator.csv}); a factor's transdiagnosticity is therefore
-\emph{adjudicated and flagged}, never assumed.
+\emph{adjudicated and flagged}, never assumed (Figure~\ref{fig:coverage}).
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.82\linewidth]{figures/fig_coverage.png}
+\caption{Observed coverage is structured, not random: it varies by factor block and by cohort. Mania
+self-report and the depression/anxiety windows are thin or absent in some cohorts; biology and sleep are
+broadly covered. The observed-data likelihood turns this structure from a liability into information.}
+\label{fig:coverage}
+\end{figure}
 
 \begin{caveatbox}
 The DR cohort ($N=552$) is small and lacks several instruments (e.g.\ FAST, QIDS, MADRS). Factors whose anchors

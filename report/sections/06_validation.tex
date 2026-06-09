@@ -1,85 +1,102 @@
 \section{Confirmation and validation}
 \label{sec:validation}
 
-The empirical structure must not depend on one estimator, on the soft priors, or on the pooled cohort. Three
-analyses address these in turn. Because the marginalized model and FIML share one objective
-(Section~\ref{sec:estimation}), and a classical FIML on the full high-missingness backbone is intractable and
-unreliable, the confirmation is performed \emph{in-engine}.
+A measurement claim is only as good as its adversarial checking. The nine-dimension map is hardened along five
+arms, each asking a different ``could this be an artefact?'' question: of the \emph{prior} or \emph{estimator}
+(§\ref{sub:confirm}), of the \emph{sampler} (§\ref{sub:cert}), of \emph{resampling / cohort imbalance}
+(§\ref{sub:robust}), of \emph{cross-cohort non-comparability} (§\ref{sub:invariance}), and of \emph{absolute
+misfit} (§\ref{sub:ppc}). Because the marginalized model and FIML share one observed-data objective
+(Section~\ref{sec:estimation}), a separate FIML arm is redundant; confirmation is done \emph{in-engine}.
 
-\subsection{Prior-free refit: is the structure earned, or manufactured by the priors?}
-The continuous backbone (S2) is re-fit at full $N$ with \emph{flat} loading priors (identification constraints
-only --- home cells stay sign-oriented, signed cells centred at $0$). A flat-prior MAP equals the MLE equals
-FIML, so loadings and $\Phi$ that match the soft-prior fit show the structure is data-driven.
+\subsection{Not a prior or estimator artefact}
+\label{sub:confirm}
+\certified\ If the soft priors were doing the work, a \emph{flat-prior} refit (identification constraints only)
+would move the loadings. It does not: the prior-free fit reproduces the soft-prior loadings and $\Phi$
+\emph{exactly} --- per-factor Tucker congruence $\varphi = 1.00$, $\max|\Delta\Phi_{\text{off-diag}}| = 0.00$.
+Since a flat-prior MAP equals the MLE equals FIML, the structure is \textbf{earned from the data, not
+manufactured by the priors}. And the bifactor structure itself is justified by out-of-sample fit: WAIC
+decisively prefers it over both simpler alternatives (Figure~\ref{fig:waic}).
 
-\begin{keyresult}[The map is not a Bayesian-prior artefact]
-The prior-free full-$N$ refit reproduces the soft-prior fit \emph{exactly}: per-factor Tucker congruence
-$\varphi(\text{soft},\text{flat})=1.00$ for every factor (overall, cognition, metabolic, inflammatory, sleep),
-$\max|\Delta\Phi_{\text{off-diag}}|=0.000$, flat-fit $\widehat{R}=1.00$.
-\end{keyresult}
+\begin{figure}[h]\centering
+\includegraphics[width=0.78\linewidth]{figures/fig_waic.png}
+\caption{WAIC model comparison on a common cohort-balanced sub-sample (lower = better out-of-sample fit). The
+bifactor ($G$ + specifics) is preferred over a correlated-factors model with no general factor (by $\approx
+2{,}700$) and overwhelmingly over a unidimensional null (by $\approx 53{,}000$). Both a general factor
+\emph{and} the specific axes are needed.}
+\label{fig:waic}
+\end{figure}
 
-\subsection{Absolute fit: posterior-predictive residual correlations}
-Comparing each posterior draw's model-implied correlation to the observed pairwise-complete correlation gives a
-Bayesian SRMR and a residual-correlation matrix --- absolute fit without the $\chi^2$ asymptotics that fail
-under heavy missingness and non-normal indicators. The Bayesian SRMR is
-$\mathbf{0.074}\ [0.073,0.075]$ (conventional good fit $<0.08$), and the residual misfit is confined to
-\emph{repeated-measure clusters}: chol--LDL ($0.75$), supine/standing heart rate ($0.69$--$0.75$),
-supine/standing blood pressure ($0.58$--$0.61$), WAIS subtests ($0.57$), AST--ALT ($0.55$). These are
-method-factor artefacts (the same quantity measured twice), not structural misfit.
+\subsection{Certified at the largest N that mixes}
+\label{sub:cert}
+\certified\ The reported nine-dimension fit passes the full sampler battery across seeds:
+$\max\widehat{R}\le 1.04$, $\min\mathrm{ESS}\ge 112$, $0$ divergences, $\mathrm{BFMI}\ge 0.41$ (no funnel
+pathology), and a \textbf{cross-seed Tucker congruence of $0.993$} (max loading shift $0.19$). The continuous
+backbone and the biology$\perp$$G$ estimand mix cleanly at full $N$ ($\widehat{R}=1.010$); the
+explicit-latent block (the suicidality$\sim$developmental $\Phi$ coupling) is the documented mixing limit, so
+the joint map is certified at the largest $N$ that mixes with this resample-stability guard --- its point
+estimates are resample-stable, only the $\Phi$-precision of that one coupling is provisional. Full-$N$
+full-precision certification of the explicit block is additional sampling effort, not a change of method.
 
-\subsection{Incremental fit: WAIC model comparison}
-On a common $N=6{,}000$ random cohort-balanced sub-sample, the bifactor is compared with a unidimensional null
-($G$ only) and a correlated-factors alternative (no general loadings on the specific-domain items).
+\subsection{Robust to resampling, cohort imbalance, and site}
+\label{sub:robust}
+\certified\ Could the map be an artefact of the $11\!:\!1$ BP$:$DR imbalance, of one dominant cohort, or of
+recruitment-site clustering? Four resampling arms say no. Under \emph{leave-one-cohort-out}, \emph{diagnosis-
+balanced subsampling}, \emph{site cluster-bootstrap}, and a \emph{$1/n_{\text{cohort}}$-weighted} fit, the
+minimum Tucker congruence against the full-sample reference is $\mathbf{0.958}$. The structure is not driven by
+cohort imbalance, by any single cohort, or by site.
 
-\begin{table}[h]\centering\small\sffamily
-\caption{WAIC comparison (lower is better). The bifactor structure is decisively preferred.}
-\label{tab:waic}
-\begin{tabular}{L{6.0cm} R{2.6cm} R{2.4cm} R{2.4cm}}
-\toprule
-\hdr{model} & \hdr{WAIC} & \hdr{$\Delta$WAIC} & \hdr{SE($\Delta$)}\\
-\midrule
-\rowcolor{facebg} bifactor ($G$ + specifics) & 702{,}633 & 0 & 0\\
-correlated-factors (no $G$) & 705{,}352 & 2{,}720 & 78.9\\
-\rowcolor{facebg} unidimensional ($G$ only) & 756{,}043 & 53{,}410 & 426.8\\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsection{Measurement invariance --- largely invariant, with honest partials}
+\label{sub:invariance}
+\certified\ Does each loading mean the same thing in each cohort? Per-cohort fits with Tucker congruence
+(Figure~\ref{fig:invariance}, left) show the core is \textbf{largely invariant}: cognition, metabolic, and
+sleep recover congruently in every pair ($\varphi\ge 0.95$), with $12/15$ comparisons fully invariant. The
+\emph{partials are documented, not hidden} --- they are themselves findings about where an instrument means
+different things across populations:
 
-Together: the continuous backbone is \textbf{estimator- and prior-robust} --- absolute fit is acceptable,
-the structure reproduces under flat priors, and WAIC supports the bifactor over both simpler alternatives.
-Classical CFI/TLI/RMSEA are not reported (convention, not new evidence, and statistically weak here); they are
-available via \texttt{lavaan} on request.
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{$G$ in BP--SZ} ($\varphi 0.92$): SZ lacks the FAST behavioural anchor, so $G$ re-anchors on
+  CGI-S/EGF/EQ-5D there.
+  \item \textbf{inflammatory in DR} ($\varphi 0.71/0.75$): a real immune re-weighting --- neutrophils load
+  $\approx 0$ in DR ($0.07$ vs $0.88$ in BP/SZ) while eosinophils dominate.
+  \item \textbf{mania-Altman in DR} ($\varphi 0.764$): clinician-rated YMRS holds across cohorts ($0.57/0.41$),
+  but the \emph{self-rated} Altman floors out in a depression-at-risk cohort ($0.76\to0.10$) --- lean on YMRS
+  for mania in DR (Figure~\ref{fig:invariance}, right).
+  \item \textbf{substance} is invariant BP--SZ ($\varphi 0.997$) and is declared a \textbf{2-cohort axis} (its
+  alcohol/cannabis SUD are BP/SZ-only; the observed-likelihood simply omits DR, not claimed invariant there).
+\end{itemize}
 
-\subsection{Measurement invariance across BP/SZ/DR}
-Does each loading hold per cohort, or is the map partly cohort-driven? This is the central remaining validity
-check. Classical multi-group SEM hits the same wall as FIML, so invariance is tested in-engine: the backbone is
-fit \emph{per cohort} (z-scored within cohort) on a small cohort-balanced sub-sample over three seeds, and
-metric invariance is read as Tucker congruence $\varphi$ of the primary loadings per factor per cohort-pair.
-Simple structure (not bifactor) is used, as is conventional for multi-group invariance and because the
-per-cohort bifactor $G$ is multimodal in SZ (no FAST anchor). All nine fits converged.
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figures/fig_invariance.png}
+\caption{Measurement invariance across BP/SZ/DR. \emph{Left:} Tucker congruence $\varphi$ of the primary
+loadings per factor per cohort-pair (green $\ge 0.95$ invariant; amber partial; red non-invariant) --- the lone
+red block is inflammatory in DR. \emph{Right:} per-cohort loadings of the new mania and substance indicators;
+the self-rated Altman item does not transfer to DR, while clinician-rated YMRS does. Partials are reported as
+caveats, not smoothed over.}
+\label{fig:invariance}
+\end{figure}
 
-\begin{table}[h]\centering\small\sffamily
-\caption{Metric invariance: Tucker congruence $\varphi$ (mean over seeds) per factor per cohort-pair
-($\varphi\ge 0.95$ invariant; $\ge 0.85$ partial). $12/15$ comparisons fully invariant; $13/15$ at least
-partial.}
-\label{tab:invariance}
-\begin{tabular}{L{3.6cm} R{1.7cm} R{1.7cm} R{1.7cm} L{3.6cm}}
-\toprule
-\hdr{factor} & \hdr{BP--SZ} & \hdr{BP--DR} & \hdr{SZ--DR} & \hdr{verdict}\\
-\midrule
-\rowcolor{facebg} overall severity & 0.92 & 0.99 & 0.97 & invariant (BP--SZ partial)\\
-cognition & 0.99 & 0.96 & 0.97 & invariant\\
-\rowcolor{facebg} metabolic & 0.99 & 0.97 & 0.99 & invariant\\
-inflammatory & 0.99 & \textbf{0.71} & \textbf{0.75} & \textbf{non-invariant in DR}\\
-\rowcolor{facebg} sleep & 1.00 & 0.99 & 0.99 & invariant\\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsection{Absolute fit across both likelihood blocks}
+\label{sub:ppc}
+\certified\ Posterior-predictive checks ask whether the model can \emph{regenerate} the observed data. The
+continuous block has a Bayesian $\mathrm{SRMR}\approx 0.074$ (conventional good fit $<0.08$), with residual
+misfit confined to repeated-measure clusters (the same quantity measured twice --- chol/LDL, supine/standing
+blood pressure and heart rate, AST/ALT, WAIS subtests), which is method-factor structure, not dimensional
+misfit. The non-Gaussian block reproduces \textbf{21 of 22 indicators}' observed endorsement rates / means
+within the $90\%$ posterior-predictive interval (Bayesian $p\approx 0.5$; Figure~\ref{fig:ppc}).
 
-\begin{caveatbox}[A documented partial-invariance caveat for DR inflammatory scores]
-The dimensional structure is \emph{largely invariant} --- cognition, metabolic, and sleep recover congruently
-in every cohort; $G$ is invariant except BP--SZ (partial, $\varphi=0.92$; few anchors, no FAST in SZ). The one
-genuine exception is \emph{inflammatory in DR}: neutrophils load $\approx 0$ in DR ($0.07$ vs $0.88$ in BP/SZ)
-while eosinophils load higher ($0.59$ vs $0.23$). DR's inflammatory axis is compositionally different, so DR
-inflammatory scores carry a documented partial-invariance caveat rather than a hidden bias. Cohort-modular
-dimensions (anhedonia; heterogeneously-measured suicidality) are declared modular, not claimed invariant.
+\begin{figure}[h]\centering
+\includegraphics[width=0.82\linewidth]{figures/fig_ppc.png}
+\caption{Absolute fit of the non-Gaussian block: observed endorsement rate (dot) vs the $90\%$
+posterior-predictive interval (bar), per binary/ordinal indicator, coloured by home factor. Every shown
+indicator reproduces. The lone failure (a count item, off-scale here) is the suicide-attempt count
+\code{isf09a}.}
+\label{fig:ppc}
+\end{figure}
+
+\begin{caveatbox}[One item-level mis-fit, isolated and flagged]
+The single exception is \code{isf09a}, the suicide-attempt \emph{count} --- $90.8\%$ zeros, a hurdle a plain
+negative binomial over-predicts in the high-suicidality tail. This is an \textbf{item-level} caveat, not a
+factor-level one: the suicidality dimension is carried by its seven binary ISF items, all of which reproduce
+(Bayesian $p$ $0.48$--$0.59$). A hurdle / zero-inflated likelihood for that one item is the fix if its count
+precision is ever required.
 \end{caveatbox}
