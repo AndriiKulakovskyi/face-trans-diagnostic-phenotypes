@@ -17,7 +17,109 @@ domain (correlated-G §3.1); resample-robust (min φ ≥ 0.85 under LOCO + site-
 with per-patient coordinates + uncertainty + reliability flags (§7). Anhedonia **rejected**;
 impulsivity/negative-symptoms/sensory **not_testable**; depression/anxiety are cross-loading **windows**.
 Engine in `src/face/{models/bayesian,confirm,runner,scoring}.py`; pipeline `scripts/01,04–09,s5_*`; results
-in `reports/01,04–11`. Next: **M2 strata** on these coordinates. Updated 2026-06-09.
+in `reports/01,04–11`. **M2 stratification COMPLETE** (pending PI sign-off) — findings
+[`STRATA_FINDINGS.md`](STRATA_FINDINGS.md), atlas [`STRATA_ATLAS.md`](STRATA_ATLAS.md), methods
+[`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md). The transdiagnostic space is a **continuum** (not
+biotypes): 8 soft archetypes + a 4-region tessellation, transdiagnostic (ARI≈0 vs DSM-5) and a tighter
+description than DSM-5 (descriptive). Next: **M3 temporal coherence**. Updated 2026-06-09.
+
+## M2 — stratification (COMPLETE 2026-06-09, pending PI sign-off)
+
+**Methods of record: [`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md).** Scope: **internal discovery +
+validation** of probabilistic strata on the certified 9-dim V0 coordinates — decision-relevance deferred to
+M4 (no outcomes at V0). One engine (`src/face/strata/`), three parts:
+
+- **Structure-discovery gate** (Mapper / dip / Hopkins, run on M1 draws) — *cluster vs continuum vs branched*
+  is decided & reported **before** committing to "strata exist."
+- **Model A — measurement-error Bayesian mixture (primary):** `x_i ~ Σ_k π_k·Normal(m_k, Σ_k + S_i)`, where
+  `S_i` is the M1 per-patient posterior covariance — so coordinate **uncertainty propagates** (prior-dominated
+  axes self-down-weight; the no-imputation invariant moves to the coordinate layer). `K` data-driven
+  (sparse/DP). Soft responsibilities = the probabilistic decision regions.
+- **Model B — archetypal analysis (co-primary):** patients as convex blends of extreme phenotypes (soft
+  simplex membership; the continuum-honest view). Report **both** A and B (agree = robust; disagree =
+  continuum signal).
+
+**G treated BOTH ways** (decided): Arm A all-9 (severity×profile) ∥ Arm B 8-specifics (pure profile = the
+bifactor G-residualized view, since M1's specifics are orthogonal to G). All-9 dims ⇒ **M2.0** must full-N
+project suicidality/developmental/substance + export per-patient covariance/draws + the validation table.
+Pipeline `scripts/20–26` (prep→structure→mixture→archetypes→validate→atlas→score), each with a discussion
+gate. Four validation gates: existence · **not-just-severity (Q2 — the headline, descendant of biology⊥G)** ·
+transdiagnostic (Q3) · stable/not-an-artefact (Q4). Visuals first-class (UMAP+PCA embedding, Mapper, profile
+heatmaps — viz-only, never a clustering input).
+
+**M2.0 DONE (2026-06-09)** — all 9 dimensions now full-N for 9,013 (M1 had left suicidality/developmental/
+substance on the ~1,884 fit subsample). The 3 explicit axes were projected full-N under fixed certified
+params (no re-fit, no imputation); QC: projection **reproduces the certified f_e at Pearson r ≈ 1.00**
+(0 divergences, R-hat(z_e) 1.04 — per-patient latent mixing, point estimates exact). Cross-cohort means are
+clinically coherent (mania↑BP, suicidality↓SZ, developmental↑DR). Artifacts (`results/face/m2/`,
+gitignored): `coordinates_full.parquet` (the M2 input — 9-dim mean/SD/HDI/n_obs/reliability),
+`coordinates_draws.npz` ([200,9013,9] — the uncertainty arm), `validation_table.parquet` (cohort + **7
+DSM-5 subtypes** + age/sex/edu/site). Engine: `src/face/strata/scoring.py`; `scripts/20_prep_coordinates.py`
+→ `reports/20_prep_coordinates.md` + `docs/figures/20_coverage.png`.
+
+**M2.1 structure-discovery gate DONE (2026-06-09) — verdict: CONTINUUM (not discrete clusters).** Battery
+(Hopkins · dip · GMM-BIC · silhouette · gap · HDBSCAN · Mapper), both G-arms, uncertainty-aware over draws.
+Converging evidence: **gap-stat K=1**, **HDBSCAN 0 clusters (100% noise)**, **PC1 unimodal** (dip p≈0.99),
+silhouette peak ≈0.18 (weak), GMM-BIC drops to K≈3 then a flat plateau (no elbow; monotone), Mapper a single
+connected chain. UMAP shows **one diffuse cloud with cohorts + all 7 DSM-5 subtypes fully intermixed**
+(strongly transdiagnostic) and smooth continuous gradients of severity and inflammatory load (biology⊥G).
+(Hopkins 0.85 is the lone high signal — expected upward bias in structured high-dim data; outweighed.)
+**Implication (§3.1): archetypes LEAD** (continuum-honest soft view); the mixture is reported as a *soft
+tessellation* (~K3–4 captures the anisotropy), **not** natural-kind biotypes — the honest dimensional
+result, exactly why the gate ran first. Engine `src/face/strata/structure.py`; `scripts/21_structure.py` →
+`reports/21_structure.md` + `docs/figures/21_{selection,embedding,mapper}.png`.
+
+**M2.3 archetypes (LEAD view) DONE (2026-06-09).** Archetypal analysis on the coordinates (both G-arms),
+uncertainty-aware (M1 draws projected onto fixed archetypes). **Scree smooth, no elbow** (ev 0.24→0.79 over
+A=2→8) ⇒ reconfirms continuum: no natural A, it's a parsimony choice (knee ran to the A=8 cap). Archetypes
+**highly stable** (min Tucker congruence 0.999). At A=8 they map cleanly to **one extreme per axis + a
+low-burden corner**: A0 low-burden (37%), A2 ↑cognition+severity (16%), A3 ↑sleep (16%), A4 ↑↑metabolic
+(13%), A6 ↑↑developmental (8.5%), A7 ↑↑mania (5.5%), and two rare tail-extremes A1 ↑↑suicidality (1.5%) &
+A5 ↑↑inflammatory+substance (1.9%). **Distinct metabolic AND inflammatory corners** = biology⊥G as
+phenotypes. **75% of patients are blends** (max-weight<0.5; entropy 0.67) — interior of the simplex,
+continuum-consistent. **Transdiagnostic:** every archetype mixes all cohorts + all 7 DSM-5 subtypes (Q3
+preview), with gradients (DR→cognition/severity+sleep; mania corner BP-heavy). Engine
+`src/face/strata/archetypes.py`; `scripts/23_archetypes.py` → `results/face/m2/{archetypes.parquet,
+archetype_profiles.csv}` + `reports/23_archetypes.md` + `docs/figures/23_{scree,profiles,membership}.png`.
+**A = 8 CONFIRMED (PI, gate 2026-06-09)** — the only A resolving both biology corners (metabolic +
+inflammatory). 23b corner-survival: metabolic/developmental/suicidality/sleep appear at A≥5, +cognition A≥6,
++mania A≥7, **+inflammatory only at A=8**; **severity & substance never form a corner** (severity = the
+continuum's spine; substance absorbed/noisy). `scripts/23b_archetype_compare.py` →
+`reports/23b_archetype_compare.md` + `docs/figures/23b_compare.png`.
+
+**M2.2 mixture-as-tessellation DONE (2026-06-09).** Measurement-error mixture via **Extreme Deconvolution**
+(`x_i ~ Σ_k π_k N(m_k, V_k + S_i)`, S_i = M1 per-patient variance → uncertainty propagates, prior-dominated/
+DR-absent cells self-down-weight). BIC **flat basin** (K=4 199,325; K=5 199,307; Δ18 — no sharp optimum,
+continuum-consistent); reported at **K=4** (M2.1 uncertainty-mode-4). 4 coarse deconvolved regions tiling the
+continuum: T0 low-burden (31%), T1 ↑mania+developmental+sleep (12%, BP-heavy), T2 ↑severity+metabolic (32%,
+DR/SZ-heavy), T3 ↓metabolic+↓cognition (25%); 92% confident (vs 25% for the finer 8 archetypes — coarse
+regions assign sharply, archetype corners blend). Transdiagnostic (each mixes cohorts + 7 DSM subtypes).
+Engine `src/face/strata/mixture.py` (XD EM); `scripts/22_mixture.py` → `results/face/m2/{tessellation.parquet,
+tessellation_profiles.csv}` + `reports/22_tessellation.md` + `docs/figures/22_*`.
+
+**M2.4 validation DONE (2026-06-09) — ALL preconditions pass; descriptive head-to-head vs DSM-5 WON.**
+On both views (archetypes lead, tessellation). **Q1** existence: honest CONTINUUM (no biotypes). **Q2
+not-just-severity ✔**: per-axis η² of the tessellation is multi-axis — mania 0.45, developmental 0.35,
+severity 0.31, metabolic 0.21, sleep 0.19, cognition 0.17 (η²(G) 0.31 vs mean η²(specifics) 0.20, max
+specific 0.45 > G) — driven by the specific/biological axes, not just severity. **Q3 transdiagnostic ✔**:
+ARI(partition, cohort)=0.007 / (partition, DSM-5)=0.020 (tessellation), 0.06/0.05 (archetypes) — ≈0, cuts
+across diagnosis (Cramér's V 0.18–0.28, weak). **Q4 stable + not-artefact ✔**: tessellation seed ARI 0.987
+(archetype congruence 0.999); **coverage→membership classifier acc 0.248 < majority 0.323 (lift −0.08)** —
+membership NOT driven by missingness. **Head-to-head vs DSM-5 (§1.7)**: XD BIC free K=4 **199,325** vs DSM-5
+7-group **206,016** → free wins with fewer components (tighter description); mean coordinate η² free 0.209
+vs DSM-5 **0.048** (DSM-5 barely structures the coordinates). Descriptive win only — predictive/treatment is
+M4/M5. Engine `src/face/strata/validation.py` + `mixture.xd_fixed_labels`; `scripts/24_validate.py` →
+`reports/24_validation.md` + `docs/figures/24_validation.png`.
+
+**M2.5 consolidation DONE (2026-06-09) — M2 COMPLETE (pending PI sign-off).** Unified hand-off
+`results/face/patient_strata.parquet` (9,013 × 29: archetype weights + sd, tessellation responsibilities,
+dominant labels, entropy, arm — diagnosis for validation only); paper-facing
+[`STRATA_FINDINGS.md`](STRATA_FINDINGS.md) + [`STRATA_ATLAS.md`](STRATA_ATLAS.md) + detailed development
+record [`STRATA_RESULTS.md`](STRATA_RESULTS.md) (methods rationale, ideas, per-stage observations, extended
+discussion); `scripts/26_score.py`.
+Pipeline `scripts/20–26` + `src/face/strata/{scoring,structure,mixture,archetypes,validation}.py`; 90 tests
+green. **PI sign-off on the findings + atlas locks M2; then M3 temporal coherence (do the coordinates +
+phenotype memberships persist V1–V4?).**
 
 ## What's decided
 
@@ -118,8 +220,7 @@ in `reports/01,04–11`. Next: **M2 strata** on these coordinates. Updated 2026-
   per observed-pattern, 2.75×), tree-depth cap 8 + ta 0.85 (2.7× at 7 factors). Φ bug fixed (LKJCorr=Cholesky
   → Φ = L Lᵀ). **No GPU was needed** — the reparam ladder (marginalization + rung-3 tightening) certified the
   mixed S5 (7-dim and 9-dim) on the Mac via the detached + caffeinate + per-seed-cache pattern.
-- **Later milestones (not started):** strata (M2) · temporal coherence V1–V4 (M3) · prognosis (M4) ·
-  treatment (M5).
+- **Later milestones:** **M2 strata — plan LOCKED, building** (see the M2 section above + [`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md)); temporal coherence V1–V4 (M3) · prognosis (M4) · treatment (M5) not started.
 
 ## S1 result — continuous core (CERTIFIED, full N = 9,013, no imputation)
 
