@@ -1,0 +1,285 @@
+\section{Milestone 2: validated strata --- a transdiagnostic continuum}
+\label{sec:strata}
+
+M1 gave us a map: every one of the $9{,}013$ patients placed on nine dimensions --- severity, two kinds of
+biology (metabolic, inflammatory), cognition, sleep, mania, suicidality, developmental adversity, substance ---
+with diagnosis deliberately held out. M2 asks the question the whole ``precision psychiatry'' field chases:
+do patients fall into a handful of natural \emph{types} --- biotypes --- that cut across the old diagnostic
+labels? Half the literature claims exactly this (``we found three biotypes of depression,'' and so on). The
+discipline of M2 is to \emph{not assume the answer}.
+
+\subsection{Ask whether structure exists before imposing it}
+The classic error in clustering clinical data is to pick a number of clusters $K$ and then ``find'' $K$
+groups --- the algorithm always returns them, whether or not the data contain any. So before doing any
+clustering, M2 runs a \textbf{structure-discovery gate} (Figure~\ref{fig:gateflow}): a battery of independent
+tests that each ask, in a different language, \emph{is there cluster structure at all?} Only if they converge
+on ``yes'' does a biotype claim become admissible.
+
+\begin{figure}[h]\centering
+\structuregateflow
+\caption{Structure-gate-first. Before clustering, a battery of independent tests asks whether discrete
+structure exists. On the FACE coordinates the verdict is a \emph{continuum}; the continuum is then represented
+two complementary, uncertainty-propagating ways --- eight extreme phenotypes (the lead) and a coarse four-region
+soft tessellation. The gate is the M2 analogue of M1's ``the eligibility map is itself a result.''}
+\label{fig:gateflow}
+\end{figure}
+
+Crucially, every step propagates the M1 per-patient \emph{uncertainty} rather than discarding it. The gate
+runs over the M1 posterior draws; the soft tessellation is fit by \textbf{Extreme Deconvolution}, a
+measurement-error Gaussian mixture
+\begin{equation}
+\label{eq:xd}
+x_i \;\sim\; \sum_{k}\pi_k\,\Normal\!\left(m_k,\;V_k + S_i\right),
+\end{equation}
+in which each patient's \emph{known} posterior covariance $S_i$ is added inside the component --- so the
+mixture clusters what patients \emph{are}, after the noise in how they were measured is accounted for. (A
+full-$N$ projection first extended the three non-Gaussian axes to all $9{,}013$ patients under the fixed
+certified parameters, reproducing the certified latent at Pearson $r\approx 1.00$ --- no re-fit, no imputation.)
+
+\begin{methodsbox}[Converting a hidden assumption into a tested result]
+Asking ``is there structure?'' before clustering turns the buried premise ($K$ biotypes) into a reported
+finding. The gate combines tendency (Hopkins), topology (Mapper), modality (Hartigan's dip), density
+(HDBSCAN), and model selection (gap statistic, mixture BIC, archetype scree). The synthesis is
+conservative --- it defaults to ``continuum'' unless the evidence \emph{converges} on clusters.
+\end{methodsbox}
+
+\subsection{The verdict: a continuum, not biotypes}
+\label{sub:continuum}
+The gate is unanimous, and the answer is the contrarian one (Table~\ref{tab:structure}).
+
+\begin{table}[h]\centering\small\sffamily
+\caption{The structure-discovery gate. Every diagnostic, run uncertainty-aware over the M1 draws, reports the
+same thing: no discrete clusters. (Hopkins $0.85$ is the lone high signal --- a known upward bias for
+structured high-dimensional data --- and is outweighed.)}
+\label{tab:structure}
+\begin{tabular}{L{4.4cm} L{4.8cm} L{4.6cm}}
+\toprule
+\hdr{diagnostic} & \hdr{result} & \hdr{reads as}\\
+\midrule
+\rowcolor{facebg} gap statistic & $K=1$ & no clustering over one blob\\
+HDBSCAN (density) & $0$ clusters, $100\%$ ``noise'' & no density peaks or valleys\\
+\rowcolor{facebg} Hartigan dip (PC1) & $p\approx 0.99$ & unimodal main axis\\
+KMeans silhouette & peak $\approx 0.18$, declining & no separated groups at any $K$\\
+\rowcolor{facebg} mixture BIC (Eq.~\ref{eq:xd}) & flat basin ($K4$ $199.3$k $\approx$ $K5$) & no separating $K$\\
+archetype scree & smooth, no elbow & no natural number of extremes\\
+\rowcolor{facebg} Mapper (lens $=$ severity) & one connected chain & a graded backbone, not islands\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{keyresult}[There are no biotypes --- the space is a graded continuum]
+Five completely different methods --- density-based clustering (HDBSCAN: $0$ clusters), the gap statistic
+($K=1$), a modality test (Hartigan's dip, $p\approx 0.99$), the archetype scree (no elbow), and the mixture's
+model evidence (a flat BIC basin) --- all independently say the same thing: \emph{no discrete groups}. The
+nine-dimensional cloud is one smooth, graded mass; patients spread out continuously rather than clumping into
+islands.
+\end{keyresult}
+
+This is the central M2 finding, and it has teeth precisely because it is honest and contrarian. It says most
+published ``biotype'' results are probably artefacts of forcing a cluster count onto data that has none ---
+which is exactly why those results famously fail to replicate --- and it lands squarely where serious
+psychiatry has been heading (the dimensional RDoC/HiTOP view). The archetype scree
+(Figure~\ref{fig:scree}) makes the absent $K$ visible: explained variance climbs smoothly with no knee.
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.62\linewidth]{figures/m2_scree.png}
+\caption{Archetypal-analysis scree. Explained variance rises \emph{smoothly} with the number of extreme
+phenotypes $A$ --- there is no elbow, i.e.\ no natural number of corners. This is what a continuum looks like:
+$A$ is a resolution choice, not a discovered count (here $A=8$, the parsimony that resolves both biology
+corners).}
+\label{fig:scree}
+\end{figure}
+
+\subsection{A continuum still has a shape: eight extreme phenotypes}
+\label{sub:archetypes}
+No clusters does not mean no structure. A continuum still has a \emph{shape}, and the shape has corners ---
+\textbf{extreme phenotypes}.
+
+\begin{definitionbox}[The colour-palette analogy]
+There is no discrete set of ``the colours,'' yet there are pure extremes --- the primaries --- and every real
+colour is a blend of them. Likewise the patient cloud has no natural groups, but it has \emph{corners}: pure
+extreme phenotypes, with every patient a blend. The right description of a patient is not ``which box?'' but
+``what mixture of extremes?'' --- both more honest and closer to how clinicians actually think.
+\end{definitionbox}
+
+Archetypal analysis recovers $A=8$ extreme phenotypes (cross-seed Tucker congruence $0.999$) that map almost
+one-to-one onto the axis extremes (Table~\ref{tab:archetypes}, Figure~\ref{fig:profiles}): a maximally
+inflammatory type, a maximally manic type, a maximally metabolic type, a maximal childhood-adversity type, a
+sleep type, a high-severity cognitive-impairment type, a rare extreme-suicidality type --- plus a low-burden
+pole where everything is mild.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{The eight extreme phenotypes (archetypes), the lead M2 view. ``Peak'' is the defining axis and its
+$z$-value (higher $=$ more burden); ``share'' is the \% of patients whose dominant weight is this archetype;
+diagnostic composition is validation-only. Severity and substance form \emph{no} corner (\S\ref{sub:spine}).}
+\label{tab:archetypes}
+\begin{tabular}{L{0.6cm} L{4.0cm} L{3.5cm} R{1.2cm} L{4.0cm}}
+\toprule
+\hdr{} & \hdr{phenotype} & \hdr{defining peak ($z$)} & \hdr{share} & \hdr{composition (validation)}\\
+\midrule
+\rowcolor{facebg} A0 & low-burden pole & all axes low ($\approx -1$) & 37\% & BP-heavy; few DR\\
+A2 & high severity $+$ cognitive & cognition 2.3, severity 2.1 & 16\% & most SZ (760) \& most DR (40\% of DR)\\
+\rowcolor{facebg} A3 & sleep / circadian & sleep 2.6 & 16\% & mixed, BP-leaning\\
+A4 & \textbf{metabolic} & metabolic 3.7 & 13\% & mixed (BP 755 $\cdot$ SZ 380 $\cdot$ DR 57)\\
+\rowcolor{facebg} A6 & developmental / adversity & developmental 5.1 & 8.5\% & BP/SZ-leaning\\
+A7 & mania / activation & mania 5.0 & 5.5\% & almost entirely BP (DR $\approx 0$)\\
+\rowcolor{facebg} A5 & \textbf{inflammatory} ($+$ substance) & inflammatory 6.6 & 1.9\% & mixed (rare tail)\\
+A1 & suicidality & suicidality 8.1 & 1.5\% & mixed (rare tail)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.92\linewidth]{figures/m2_profiles.png}
+\caption{Archetype profiles: each row is one extreme phenotype, each column one of the nine axes, colour the
+$z$-coordinate (red $=$ high burden). Each archetype is the high pole of essentially one axis --- the corners
+of the continuum. Note severity (left column) is never an archetype's defining peak: it is the spine, not a
+corner (\S\ref{sub:spine}).}
+\label{fig:profiles}
+\end{figure}
+
+The key fact about a continuum is the blending. Most patients do not \emph{sit} at a corner
+(Figure~\ref{fig:simplex}).
+
+\begin{figure}[h]\centering
+\archetypesimplex
+\caption{The continuum-with-corners. The cloud (ellipse) has extreme-phenotype corners --- the
+\emph{what kind} (biology in teal: metabolic, inflammatory) --- and is stretched along a severity spine, the
+\emph{how much}. Dots are patients: $75\%$ live in the interior as blends of corners. Two patients at the same
+point on the spine (same severity) can sit near opposite corners (biologically opposite).}
+\label{fig:simplex}
+\end{figure}
+
+\begin{keyresult}[Most patients are blends, not corners]
+$75\%$ of patients have no single dominant archetype (max simplex weight $<0.5$; mean normalized entropy
+$0.67$): they live in the \emph{interior} between corners. Hard assignment would be a fiction --- the honest
+decision object is the \emph{distribution} over phenotypes, exactly what the continuum and M1's per-patient
+uncertainty demand. (The coarse four-region tessellation --- low-burden 31\%, high-severity$+$metabolic 32\%,
+low-metabolic/better-cognition 25\%, mania$+$developmental$+$sleep 12\% --- assigns more confidently, $92\%$,
+precisely because it tiles broad regions rather than resolving corners.)
+\end{keyresult}
+
+\subsection{Severity is the spine, not a corner}
+\label{sub:spine}
+The most elegant detail: \textbf{overall severity has no corner of its own.} Geometrically it is the
+\emph{spine} --- the axis the entire cloud is stretched along (Figure~\ref{fig:simplex}) --- and every
+archetype sits at some severity level. This is the bifactor structure of M1 made visible as geometry: severity
+is the \emph{how much}, the specific axes (biology, cognition, sleep, mania, \dots) are the \emph{what kind},
+and they are orthogonal. So a ``maximally inflammatory'' patient and a ``low-burden'' patient can be at the
+\emph{same} severity --- they differ in what is wrong, not how much. The validation confirms it quantitatively:
+the partition's variance-explained is led by the \emph{specific} axes (mania $\eta^2$ $0.45$, developmental
+$0.35$, metabolic $0.21$, sleep $0.19$, cognition $0.17$) more than by severity ($0.31$) --- the maximum
+specific axis exceeds $G$.
+
+\subsection{Biology is its own thing --- it survives into the phenotypes}
+\begin{keyresult}[Distinct metabolic and inflammatory extreme phenotypes]
+This is the whole reason the project exists, and it survives all the way into the phenotypes: metabolic and
+inflammatory load form their \emph{own} distinct extreme corners --- separate from each other and from the
+severity spine. Two patients who look equally ill can be biologically \emph{opposite} phenotypes. A map that
+only knew ``how sick are they?'' would be blind to this --- and that heterogeneity is exactly what a
+biology-aware stratification is supposed to capture.
+\end{keyresult}
+
+\begin{caveatbox}[Honest footnote: the inflammatory extreme is rare]
+Only $\approx 1.9\%$ of patients sit near the inflammatory corner (and $1.5\%$ near suicidality) --- the long
+tails of skewed latents. They are real and \emph{distinct}, which is why the resolution was kept fine enough
+($A=8$) to see them, but their per-patient weights carry wide uncertainty. Substance, by contrast, never forms
+a corner: as the noisiest, two-cohort axis (no DR data) it self-down-weights, appearing only as a side-loading
+on the inflammatory phenotype --- a non-result that was predicted, and is consistent with the model.
+\end{caveatbox}
+
+\subsection{The DSM-5 showdown}
+We then put the map head-to-head against the diagnostic labels --- all \emph{seven} DSM-5 subtypes, not just
+the three cohorts (Table~\ref{tab:m2valid}, Figure~\ref{fig:m2valid}). Two clean results.
+
+\textbf{The structure shares almost zero information with DSM-5.} The adjusted Rand index between the strata
+and the seven subtypes is $\approx 0$ ($0.020$ tessellation, $0.05$ archetypes); every phenotype is a full mix
+of diagnoses (Cram\'er's $V$ $0.18$--$0.28$ --- weak gradients only). The high-severity$+$cognitive corner
+draws the most schizophrenia patients \emph{and} the most depression-at-risk patients --- two textbook-different
+diagnoses converging on one phenotype --- while the mania corner is almost all bipolar, as you would expect,
+but as a gradient, not a wall. The diagnoses are shuffled right through the cloud.
+
+\textbf{The map describes patients far better than the labels.} The seven diagnostic boxes explain only
+$\approx 5\%$ of where a patient actually sits in this biological/cognitive space; the data's own regions
+explain $\approx 21\%$, with \emph{fewer} groups --- and a free four-region mixture beats a DSM-5-constrained
+seven-group mixture on model evidence (BIC $199{,}325$ vs $206{,}016$). The diagnoses barely organize this
+landscape at all.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{The M2 validation battery (internal/descriptive validity). The strata are specific-axis-driven,
+transdiagnostic, stable, not a missingness artefact, and a tighter description than DSM-5.}
+\label{tab:m2valid}
+\begin{tabular}{L{4.6cm} L{5.4cm} L{3.6cm}}
+\toprule
+\hdr{question} & \hdr{result} & \hdr{verdict}\\
+\midrule
+\rowcolor{facebg} Q1 --- does structure exist? & continuum (no discrete clusters) & honest: no biotype claim\\
+Q2 --- more than severity? & $\eta^2$: mania 0.45 $\cdot$ dev 0.35 $> G$ 0.31 $\cdot$ metab 0.21 & specifics drive it\\
+\rowcolor{facebg} Q3 --- transdiagnostic? & ARI vs cohort/DSM-5 $=0.007/0.020$ (tess) & cuts across diagnosis\\
+Q4 --- stable? & seed ARI 0.987 (tess) $\cdot$ congruence 0.999 (arch) & reproducible\\
+\rowcolor{facebg} Q4 --- not an artefact? & coverage$\to$membership acc 0.248 vs 0.323 base & \textbf{negative} lift\\
+vs DSM-5 (BIC) & free $K{=}4$ \textbf{199{,}325} vs DSM-5 7-group 206{,}016 & tighter, fewer groups\\
+\rowcolor{facebg} vs DSM-5 (variance) & coordinate $\eta^2$ free \textbf{0.21} vs DSM-5 0.05 & DSM-5 barely structures it\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figures/m2_validation.png}
+\caption{\emph{Left:} coordinate variance explained per axis --- the data's regions (blue) vastly out-explain
+the DSM-5 subtypes (orange), and the lead is in the \emph{specific} axes (mania, developmental, metabolic),
+not severity. \emph{Right:} concordance with diagnosis --- adjusted Rand index $\approx 0$ (low $=$
+transdiagnostic), with only weak Cram\'er's-$V$ gradients.}
+\label{fig:m2valid}
+\end{figure}
+
+\begin{caveatbox}[The line we did not cross: ``describes better'' is not ``clinically better'']
+We have \emph{not} shown the map predicts outcomes or guides treatment better than diagnosis. That is the next
+milestones (M4 prognosis, M5 treatment), and overclaiming it now would be the field's besetting sin. What M2
+earns is a \emph{descriptive} win and the right setup for the real test --- and it reframes the question
+sharply: not ``are our clusters the true kinds?'' but ``does a continuous, biology-aware representation
+out-predict the seven DSM-5 subtypes on course and treatment response?''
+\end{caveatbox}
+
+\subsection{Why trust it: the structure is about patients, not measurement}
+\begin{keyresult}[Membership is not a missingness artefact]
+The classic trap in clustering messy clinical data is accidentally grouping patients by \emph{who got which
+tests} rather than what they are like --- people with bloodwork versus without form fake ``biotypes.'' We
+tested exactly that: a classifier predicting a patient's stratum from the \emph{pattern of what was measured}
+achieves $0.248$ accuracy against a $0.323$ majority baseline --- a \emph{negative} lift, worse than chance.
+Membership is governed by what patients \emph{are}, not by what was measured on them. The whole
+measurement-error apparatus --- propagating each patient's uncertainty the entire way (Eq.~\ref{eq:xd}) --- did
+its job. This is the M2 vindication of M1's ``propagate the uncertainty'' design.
+\end{keyresult}
+
+\subsection{The one picture to hold in your head}
+The UMAP embedding says it all (Figure~\ref{fig:umap}): one diffuse cloud, with bipolar, schizophrenia, and
+depression patients thoroughly intermixed (no diagnostic territories), and two smooth gradients crossing it in
+different directions --- a severity gradient and a biological gradient. Not a constellation of islands; a
+\emph{landscape with a ridge and crossing slopes}.
+
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figures/m2_embedding.png}
+\caption{The continuum in one picture (UMAP, \emph{visualization-only} --- never a clustering input). \emph{Far
+left:} by cohort --- BP/SZ/DR fully intermixed, no diagnostic territories. \emph{Centre-left:} by DSM-5 subtype
+--- the same intermixing across all seven subtypes. \emph{Right two:} smooth gradients of severity and of
+inflammatory load, crossing the cloud in \emph{different} directions --- the geometry of biology$\perp$severity.}
+\label{fig:umap}
+\end{figure}
+
+\subsection{What M2 establishes --- and what it defers}
+M2 converts the M1 coordinate system into decision-region objects --- soft phenotype memberships with
+uncertainty --- and establishes, under \emph{internal/descriptive} validity, that they are real, stable,
+transdiagnostic, specific-axis-driven, not a missingness artefact, and a tighter description of the data than
+the diagnostic labels. The honest boundaries are explicit:
+
+\begin{openbox}[Internal/descriptive validity only --- actionability is the next milestones]
+M2 does \emph{not} claim the strata are natural kinds (they are a continuum), nor any predictive, prognostic,
+temporal, or treatment value. The granularities ($A=8$ archetypes, $K=4$ regions) are parsimony choices, not
+discovered counts; two corners (inflammatory $1.9\%$, suicidality $1.5\%$) are real but rare; and the
+embeddings are visualization-only. The decisive tests are deferred by design: \textbf{M3} (do the coordinates
+and memberships \emph{persist} across follow-up visits, and more stably than a DSM-5 diagnosis?), \textbf{M4}
+(do the strata add \emph{incremental predictive value beyond diagnosis $+$ severity}? --- the natural engine is
+Bayesian profile regression), and \textbf{M5} (do the strata \emph{moderate treatment response}?). M2 is the
+description; M3--M5 are the test of whether the description is clinically useful.
+\end{openbox}
