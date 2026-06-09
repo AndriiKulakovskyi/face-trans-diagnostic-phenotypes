@@ -78,8 +78,20 @@ confirmation, the formal adjudication write-up, and the prior→posterior atlas.
   severity-entangled** domain (not strictly ⊥, but lowest by far). Engine: `g_correlated` Φ is now a
   **unit-row Cholesky** (`pm.LKJCorr(n≥5)` breaks jitter-init; `LKJCholeskyCov` sd funnels → divergences).
   `scripts/s5_corrg.py` → `reports/07_corrG_report.md`.
-- **Next (M1 build):** mixed-model **PPC** (optional — continuous PPC done, §5) · per-patient **scoring** at
-  scale (§7) · **robustness** (§8) · **prior→posterior atlas** (§2.3) · formal **adjudication** write-up (§6).
+- **Robustness (§8, DONE):** Tucker congruence φ of the loadings vs the certified S2 reference under
+  leave-one-cohort-out + diagnosis-balanced subsampling + **site cluster-bootstrap** + **1/n_cohort-weighted
+  fit** (§3.6) — **min φ ≥ 0.85** (map not an artefact of cohort imbalance, any single cohort, or site
+  clustering). `scripts/08_robustness.py` → `reports/08_robustness_report.md`.
+- **Scoring (§7, DONE):** per-patient coordinates for all 9,013 (continuous core, conditional-Gaussian from
+  S2) + suicidality/developmental (S5 f_e, subsample), each with mean/SD/HDI + reliability tier. Engine
+  `src/face/scoring.py`, `scripts/07_score.py` → `results/face/patient_scores.parquet`.
+- **Atlas + adjudication (§2.3/§6, DONE — M1 LOCK pending PI review):** prior→posterior heatmap
+  (`docs/figures/empirical_atlas.png`, `scripts/09_atlas.py`) + the verdict on all candidates
+  (`docs/ADJUDICATION.md`): **7 confirmed** (G + cognition, metabolic/inflammatory split, sleep,
+  developmental-proxy, suicidality), **anhedonia rejected**, **mania/substance DEFERRED** (have indicators,
+  not staged — an honest M1 gap), impulsivity/negative/sensory **not_testable**, depression/anxiety = windows.
+- **M1 essentially complete** — the measurement layer is built, hardened (confirmation/invariance/robustness),
+  certified, scored, and adjudicated. PI sign-off on the adjudication + atlas locks it; then **M2 strata**.
 - **Compute lesson (this session):** full-N S1/S2 ≈ 1 h; the S3+ mixed-likelihood frontier is heavier, so
   S3 checkpoints use a random N=4,000 subsample (§3.6). Engine perf fixes: grouped-GEMM Woodbury (Cholesky
   per observed-pattern, 2.75×), tree-depth cap 8 + ta 0.85 (2.7× at 7 factors). Φ bug fixed (LKJCorr=Cholesky

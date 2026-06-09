@@ -99,6 +99,7 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             cross_sd_scale: float = 0.25, window_sd_scale: float = 1.0, flat: bool = False,
             bifactor_g_sd: dict[str, float] | None = None,
             cohort_subset: list[str] | None = None, balanced: bool = False,
+            keep_index: np.ndarray | None = None,
             n_subsample: int | None = None, seed: int = 20260605) -> CorePrep:
     """Load the persisted V0 baseline, encode the continuous block for `factors`, and resolve
     the per-cell loading priors from the matrix. Three orthogonal switches deform S1 -> S2:
@@ -143,6 +144,8 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
     items = [it for it in items if it in B.columns]
     if cohort_subset is not None:          # per-cohort fits (§8 invariance): filter rows, z-score WITHIN
         B = B[np.isin(np.asarray(B.index.get_level_values("cohort")), list(cohort_subset))]
+    if keep_index is not None:             # explicit row resample (§8 site cluster-bootstrap; dups OK)
+        B = B.iloc[keep_index]
     cohort = np.asarray(B.index.get_level_values("cohort"))
 
     cols = {}
@@ -299,7 +302,8 @@ def _woodbury_potential(pt, r, mask, Lt, psi, pat_mask, pat_inv, kobs, F, log2pi
                    + term1 - quadA)
 
 
-def build_marginalized(prep: CorePrep, psi_floor: float = 0.05, lkj_eta: float = 2.0):
+def build_marginalized(prep: CorePrep, psi_floor: float = 0.05, lkj_eta: float = 2.0,
+                       weights: np.ndarray | None = None):
     """Marginalized (Woodbury, low-rank) bifactor/ESEM — funnel-free, no per-patient latents.
 
     Integrates G, D out: each patient's observed cells ~ MVN(0, Lam Phi Lam' + diag(psi)). With
@@ -307,7 +311,9 @@ def build_marginalized(prep: CorePrep, psi_floor: float = 0.05, lkj_eta: float =
     the S1 O(F^2) matrix-determinant-lemma + Woodbury kernel (F = 1 + #specifics), fully vectorized
     over patients via a 0/1 mask (no pattern grouping, no patient dropped). Run via
     `pm.sample(nuts_sampler="numpyro")` so JAX vmap-vectorizes the batched F×F linalg.
-    """
+
+    `weights` (§3.6): per-patient likelihood weights for the 1/n_cohort-weighted sensitivity fit
+    (equalizes each cohort's influence using all patients, instead of subsampling)."""
     import pymc as pm
     import pytensor.tensor as pt
 
@@ -329,7 +335,8 @@ def build_marginalized(prep: CorePrep, psi_floor: float = 0.05, lkj_eta: float =
         sigma = psi_floor + pm.HalfNormal("sigma", 1.0, shape=J)
         ll = _woodbury_potential(pt, pt.as_tensor(x), mask, Lt, sigma ** 2,
                                  pat_mask, pat_inv, kobs, F, log2pi)
-        pm.Potential("obs_ll", ll.sum())
+        obs_ll = (pt.as_tensor(weights) * ll).sum() if weights is not None else ll.sum()
+        pm.Potential("obs_ll", obs_ll)
     return model
 
 

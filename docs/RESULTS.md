@@ -109,14 +109,20 @@ The map exists; these finish and harden it (all named in the methods doc):
   N≈600/cohort × 3 seeds, 9/9 converged): **largely invariant** — cognition/metabolic/sleep invariant
   everywhere, G invariant except BP–SZ (partial), **inflammatory non-invariant in DR** (neutrophils load
   ≈0 in DR, eosinophils high). Documented partial invariance. See `reports/06_invariance_report.md`.
-- **Robustness** (§8) — diagnosis-balanced bootstrap, leave-one-cohort-out loading congruence.
-- **Prior → posterior empirical atlas** (§2.3) — the theory-vs-data heatmap with per-candidate verdicts (the
-  manuscript's centerpiece).
-- **Per-patient scoring at scale** (§7) — coordinates + uncertainty + reliability flags for every patient (provisional scores exist).
-- **Formal dimension-adjudication write-up** (§6).
+- ✅ **Robustness** (§8) — **DONE:** loading congruence vs the certified S2 reference under leave-one-cohort-out
+  + diagnosis-balanced subsampling + **site cluster-bootstrap** + **1/n_cohort-weighted fit** (§3.6): **min
+  Tucker φ ≥ 0.85** — not an artefact of cohort imbalance, any single cohort, or site clustering.
+  `reports/08_robustness_report.md`.
+- ✅ **Per-patient scoring at scale** (§7) — **DONE:** all 9,013 patients (continuous core) + suic/dev
+  (subsample), each with mean/SD/HDI + reliability tier. `results/face/patient_scores.parquet`.
+- ✅ **Prior → posterior empirical atlas** (§2.3) — **DONE:** `docs/figures/empirical_atlas.png` (theory's
+  diagonal → data's mostly-diagonal, with biology≈0 on G and cognition/sleep partial-G).
+- ✅ **Formal adjudication** (§6) — **DONE:** `docs/ADJUDICATION.md` — 7 confirmed, anhedonia rejected,
+  mania/substance **deferred** (have indicators, not staged), 3 not_testable, depression/anxiety = windows.
 
-Only after M1 is locked do the later milestones begin: **M2 strata** → **M3 temporal coherence** → **M4
-prognosis** → **M5 treatment** (§10).
+**M1 is essentially complete** — built, hardened, certified, scored, adjudicated. PI sign-off on the
+adjudication + atlas locks it; only then do the later milestones begin: **M2 strata** → **M3 temporal
+coherence** → **M4 prognosis** → **M5 treatment** (§10).
 
 ---
 

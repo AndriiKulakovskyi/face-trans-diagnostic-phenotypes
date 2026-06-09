@@ -21,9 +21,10 @@ def _ts() -> str:
 
 def sample_marginalized(prep, *, draws: int = 600, tune: int = 600, chains: int = 2,
                         seed: int = 20260605, target_accept: float = 0.9, label: str = "",
-                        step: str = "", progressbar: bool = True):
+                        step: str = "", progressbar: bool = True, weights=None):
     """Fit the marginalized continuous-core model for `prep`, with progress + timing. `step` is an
-    optional "[k/N]" prefix for multi-sub-task runs. Returns the InferenceData."""
+    optional "[k/N]" prefix for multi-sub-task runs. `weights` → per-patient likelihood weights
+    (§3.6 cohort-weighted fit). Returns the InferenceData."""
     import pymc as pm
 
     from face.models.bayesian.continuous_core import build_marginalized
@@ -31,7 +32,7 @@ def sample_marginalized(prep, *, draws: int = 600, tune: int = 600, chains: int 
     F = len(prep.factor_cols)
     t = time.time()
     print(f"  {step}[{_ts()}] fit {label}: N={N} J={J} F={F} ({draws}+{tune}×{chains}ch) ...", flush=True)
-    model = build_marginalized(prep)
+    model = build_marginalized(prep, weights=weights)
     with model:
         # dict(NUTS_KWARGS): the numpyro path mutates nuts_sampler_kwargs in place (injects
         # target_accept) → a shared dict trips "target_accept defined twice" on the next call.
