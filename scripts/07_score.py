@@ -30,7 +30,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 warnings.filterwarnings("ignore")
 
-from face.models.bayesian.continuous_core import S1_FACTORS, prepare, prepare_mixed  # noqa: E402
+from face.models.bayesian.continuous_core import S5_FACTORS, prepare, prepare_mixed  # noqa: E402
 from face.scoring import conditional_gaussian_scores, reliability_flags  # noqa: E402
 
 REPORTS = REPO / "reports"
@@ -41,15 +41,21 @@ HDI = 0.94
 def main():
     import arviz as az
     # ---- continuous core: 5 factors, ALL patients, from certified S2 ----
-    prep = prepare(S1_FACTORS, correlated=True, windows=True)
-    post = az.from_netcdf(REPO / "results/face/stage2/idata.nc").posterior
+    # continuous-anchored dimensions (6) scored from the certified 9-dim joint loadings; the explicit
+    # non-Gaussian dimensions (suicidality/developmental/substance) come from f_e below.
+    CONT = ["overall_severity", "cognition", "metabolic", "inflammatory", "sleep", "mania_activation"]
+    EXPLICIT9 = ["overall_severity", "suicidality", "developmental_risk", "substance"]
+    prep = prepare(S5_FACTORS, correlated=True, windows=True)
+    post = az.from_netcdf(REPO / "results/face/s5_cert9_s1/idata.nc").posterior
     fcols = prep.factor_cols
-    print(f"scoring continuous core: N={prep.M.shape[0]} · {len(fcols)} factors {fcols}", flush=True)
+    print(f"scoring continuous-anchored ({len(CONT)}): N={prep.M.shape[0]} · {CONT}", flush=True)
     sc = conditional_gaussian_scores(prep.M, post, fcols, hdi_prob=HDI)
     nobs, tier = reliability_flags(prep.M, prep.items, prep.home, fcols)
+    col = {f: i for i, f in enumerate(fcols)}
 
     df = pd.DataFrame(index=prep.index)
-    for c, f in enumerate(fcols):
+    for f in CONT:
+        c = col[f]
         df[f"{f}__mean"] = sc["mean"][:, c].round(3)
         df[f"{f}__sd"] = sc["sd"][:, c].round(3)
         df[f"{f}__hdi_lo"] = sc["hdi_low"][:, c].round(3)
@@ -57,15 +63,15 @@ def main():
         df[f"{f}__n_obs"] = nobs[:, c]
         df[f"{f}__reliability"] = tier[:, c]
 
-    # ---- suicidality + developmental: explicit f_e from certified S5 (subsample) ----
-    s5 = REPO / "results/face/s5_cert_s1/idata.nc"
+    # ---- suicidality + developmental + substance: explicit f_e from the certified 9-dim S5 (subsample) ----
+    s5 = REPO / "results/face/s5_cert9_s1/idata.nc"
     if s5.exists():
-        mp = prepare_mixed(balanced=True, n_subsample=2000, seed=20260605)
-        fe = np.asarray(az.from_netcdf(s5).posterior["f_e"].values)            # [c,d,Nsub,3]
-        fe = fe.reshape((-1,) + fe.shape[2:])                                  # [S,Nsub,3]
-        e_names = ["overall_severity", "suicidality", "developmental_risk"]
+        mp = prepare_mixed(S5_FACTORS, explicit_factors=EXPLICIT9, min_cohorts=2,
+                           balanced=True, n_subsample=2000, seed=20260605)
+        fe = np.asarray(az.from_netcdf(s5).posterior["f_e"].values)            # [c,d,Nsub,4]
+        fe = fe.reshape((-1,) + fe.shape[2:])                                  # [S,Nsub,4]
         sub = pd.DataFrame(index=mp.base.index)
-        for k, name in [(1, "suicidality"), (2, "developmental_risk")]:
+        for k, name in [(1, "suicidality"), (2, "developmental_risk"), (3, "substance")]:
             sub[f"{name}__mean"] = fe[:, :, k].mean(0).round(3)
             sub[f"{name}__sd"] = fe[:, :, k].std(0).round(3)
             lo, hi = np.quantile(fe[:, :, k], [(1 - HDI) / 2, 1 - (1 - HDI) / 2], axis=0)
@@ -79,28 +85,29 @@ def main():
     df.reset_index().to_parquet(out)
 
     # ---- aggregate report (no per-patient values) ----
-    rel = pd.DataFrame({f: pd.Series(tier[:, c]).value_counts() for c, f in enumerate(fcols)}).T.fillna(0).astype(int)
-    md = ["# 07 — per-patient dimension scoring (§7)", "",
+    rel = pd.DataFrame({f: pd.Series(tier[:, col[f]]).value_counts() for f in CONT}).T.fillna(0).astype(int)
+    md = ["# 07 — per-patient dimension scoring (§7), 9-dim joint map", "",
           f"Per-patient coordinates with uncertainty for **{len(df):,} patients**, fit-once-score-all "
-          "(§3.6). Continuous core (G + cognition/metabolic/inflammatory/sleep) via draw-wise analytic "
-          "conditional-Gaussian scores from the certified **S2** posterior; suicidality/developmental "
-          f"via explicit f_e from the certified **S5** fit (subsample n={n_sub:,}). Orientation: higher = "
-          "more burden. Each dimension carries mean · SD · HDI · #observed home indicators · reliability "
-          "tier.", "",
-          "## Reliability — patients per tier, by continuous dimension",
+          "(§3.6). Six continuous-anchored dimensions (G + cognition/metabolic/inflammatory/sleep/**mania**) "
+          "via draw-wise analytic conditional-Gaussian scores from the **certified 9-dim joint** loadings; "
+          f"three explicit (suicidality/developmental/**substance**) via f_e from the same fit (subsample "
+          f"n={n_sub:,}). Orientation: higher = more burden. Each dimension carries mean · SD · HDI · "
+          "#observed home indicators · reliability tier.", "",
+          "## Reliability — patients per tier, by continuous-anchored dimension",
           "(well = ≥3 observed home indicators · partial = 1–2 · prior-dominated = 0)",
           rel.to_markdown(), "",
           "## Dimension summary (posterior-mean scores, z-scored, higher = more burden)",
-          pd.DataFrame({f: {"mean": round(float(np.nanmean(sc['mean'][:, c])), 2),
-                            "sd_across_patients": round(float(np.nanstd(sc['mean'][:, c])), 2),
-                            "mean_posterior_SD": round(float(np.nanmean(sc['sd'][:, c])), 2)}
-                        for c, f in enumerate(fcols)}).T.to_markdown(), "",
+          pd.DataFrame({f: {"mean": round(float(np.nanmean(sc['mean'][:, col[f]])), 2),
+                            "sd_across_patients": round(float(np.nanstd(sc['mean'][:, col[f]])), 2),
+                            "mean_posterior_SD": round(float(np.nanmean(sc['sd'][:, col[f]])), 2)}
+                        for f in CONT}).T.to_markdown(), "",
           "## Notes",
           "- A patient with few observed indicators for a dimension gets a **prior-dominated** flag and a "
           "wider posterior SD — downstream strata (M2) must propagate this uncertainty, not treat all "
           "coordinates as equally characterised.",
-          "- **Suicidality/developmental are scored on the S5 subsample**; full-N projection of the "
-          "non-Gaussian block (a logistic/count projection, not Gaussian) is a documented follow-on for M2.",
+          "- **Suicidality/developmental/substance are scored on the S5 subsample** (their explicit f_e); "
+          "full-N projection of the non-Gaussian block (a logistic/count projection, not Gaussian) is a "
+          "documented follow-on for M2.",
           "", "Artifacts: `results/face/patient_scores.parquet` (per-patient, gitignored)."]
     (REPORTS / "07_scoring_report.md").write_text("\n".join(md))
     print("\n".join(md))

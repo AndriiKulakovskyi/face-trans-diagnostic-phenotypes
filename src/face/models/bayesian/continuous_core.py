@@ -56,6 +56,9 @@ S1_FACTORS = ["overall_severity", "cognition", "metabolic", "inflammatory", "sle
 S3A_FACTORS = S1_FACTORS + ["developmental_risk"]
 # S3b's full factor set: suicidality + developmental enter the explicit block (binary/count/ordinal).
 S3_FACTORS = S1_FACTORS + ["suicidality", "developmental_risk"]
+# S5 full integration: + mania (continuous, marginalized) + substance (mixed: continuous Fagerström +
+# count cigarettes + binary alcohol/cannabis SUD, so substance is an EXPLICIT factor).
+S5_FACTORS = S3_FACTORS + ["mania_activation", "substance"]
 # S4 tests the THIN BP/DR-only ANHEDONIA factor (one dedicated indicator, qids_anhedonia_interest;
 # SZ has no QIDS) on top of the S3a continuous map. The methods-doc question: does a thin,
 # cohort-specific factor identify at all, or does it merge into G / the depression windows? (Adjudication.)
@@ -473,6 +476,7 @@ class MixedPrep:
 
 def prepare_mixed(factors: list[str] = S3_FACTORS, *, min_obs: int = 1500,
                   bifactor_g_sd: dict[str, float] | None = None, balanced: bool = False,
+                  explicit_factors: list[str] | None = None, min_cohorts: int = 3,
                   n_subsample: int | None = None, seed: int = 20260605) -> MixedPrep:
     """S3b inputs: the S3a continuous prep + the non-Gaussian (binary/ordinal/count) suicidality
     and developmental indicators, aligned to the same patients. Coverage filter: an indicator must
@@ -483,8 +487,9 @@ def prepare_mixed(factors: list[str] = S3_FACTORS, *, min_obs: int = 1500,
     (suicidality, developmental_risk) — a free G-loading there makes them load on two explicit factors,
     a ridge that stalls mixing (the CTQ→G cells: ESS 30). Default tightens both toward 0 (they are ≈⊥G),
     which leaves the biology→G estimand untouched."""
-    if bifactor_g_sd is None:
-        bifactor_g_sd = {"developmental_risk": 0.05, "suicidality": 0.05}
+    explicit_factors = explicit_factors or EXPLICIT_FACTORS
+    if bifactor_g_sd is None:                                          # tighten every explicit specific →G
+        bifactor_g_sd = {f: 0.05 for f in explicit_factors if f != G_KEY}
     base = prepare(factors, correlated=True, windows=True, bifactor_g_sd=bifactor_g_sd,
                    balanced=balanced, n_subsample=n_subsample, seed=seed)
     m = pd.read_csv(MATRIX)
@@ -492,20 +497,23 @@ def prepare_mixed(factors: list[str] = S3_FACTORS, *, min_obs: int = 1500,
     home = (m[m.prior_type.isin(["primary", "g_anchor"])].drop_duplicates("item")
             .set_index("item")["factor"].to_dict())
     cell = {(r.item, r.factor): (float(r.prior_mean), float(r.prior_sd)) for r in m.itertuples()}
-    e_idx = {f: i for i, f in enumerate(EXPLICIT_FACTORS)}             # G=0, suic=1, dev=2
-    e_cols = [base.factor_cols.index(f) for f in EXPLICIT_FACTORS]
-    m_cols = [base.factor_cols.index(f) for f in base.factor_cols if f not in EXPLICIT_FACTORS]
+    e_idx = {f: i for i, f in enumerate(explicit_factors)}            # G=0, suic=1, dev=2, [substance=3]
+    e_cols = [base.factor_cols.index(f) for f in explicit_factors]
+    m_cols = [base.factor_cols.index(f) for f in base.factor_cols if f not in explicit_factors]
 
     B_full = pd.read_parquet(PROC / "baseline_v0.parquet")             # FULL data for eligibility
     coh_full = np.asarray(B_full.index.get_level_values("cohort"))
-    ng = ["suicidality", "developmental_risk"]
+    ng = [f for f in explicit_factors if f != G_KEY]                  # non-Gaussian-bearing factors
     items = [it for it in home if home.get(it) in ng and it in meta.index
              and meta.loc[it, "modeling_block"] == "explicit" and it in B_full.columns]
 
     def covered(it: str) -> bool:                                      # full-N coverage (subsample-independent)
+        # ≥ min_obs total AND observed in ≥ min_cohorts cohorts. min_cohorts=2 admits the BP/SZ-only
+        # substance SUD items (DR=0) as legitimate 2-cohort indicators (observed-likelihood handles the
+        # absent cohort); min_cohorts=3 (default) keeps the suicidality/developmental block as before.
         v = pd.to_numeric(B_full[it], errors="coerce")
-        return v.notna().sum() >= min_obs and all((v[coh_full == c].notna().sum()) > 0
-                                                   for c in ("bp", "sz", "dr"))
+        return v.notna().sum() >= min_obs and sum((v[coh_full == c].notna().sum()) > 0
+                                                  for c in ("bp", "sz", "dr")) >= min_cohorts
     items = [it for it in items if covered(it)]
     B = B_full.loc[base.index]                                         # arrays on the (sub)sampled rows
     fam = {it: meta.loc[it, "likelihood_family"] for it in items}

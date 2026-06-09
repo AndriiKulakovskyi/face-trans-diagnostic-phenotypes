@@ -21,13 +21,14 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 MATRIX = REPO / "configs" / "prior_loading_matrix_v3.csv"
-POST = REPO / "reports" / "04_stage5_loadings.csv"
+POST = REPO / "reports" / "11_s5_9dim_loadings.csv"      # the certified 9-dim joint map
 FIGS = REPO / "docs" / "figures"
 
 FACTORS = ["overall_severity", "cognition", "metabolic", "inflammatory", "sleep",
-           "developmental_risk", "suicidality"]
+           "developmental_risk", "suicidality", "mania_activation", "substance"]
 SHORT = {"overall_severity": "G", "cognition": "cog", "metabolic": "metab", "inflammatory": "inflam",
-         "sleep": "sleep", "developmental_risk": "dev", "suicidality": "suic"}
+         "sleep": "sleep", "developmental_risk": "dev", "suicidality": "suic",
+         "mania_activation": "mania", "substance": "subst"}
 
 
 def main():
@@ -78,10 +79,10 @@ def main():
         axes[0].text(-1.4, b + 0.5, lab, fontsize=9, fontweight="bold", va="top", ha="right",
                      rotation=0, color="#333")
     fig.colorbar(im, ax=axes, fraction=0.025, pad=0.02, label="loading")
-    fig.suptitle("Prior → Posterior empirical atlas — 10 candidates: 7 confirmed (G + cognition, "
-                 "metabolic/inflammatory split, sleep, developmental, suicidality),\n"
-                 "anhedonia rejected, mania/substance deferred, impulsivity/negative/sensory "
-                 "not-testable (§6)", fontsize=10, y=0.995)
+    fig.suptitle("Prior → Posterior empirical atlas — certified 9-dim joint map: 9 confirmed (G + "
+                 "cognition, metabolic/inflammatory split, sleep, developmental, suicidality, mania, "
+                 "substance),\nanhedonia rejected, impulsivity/negative/sensory not-testable (§6)",
+                 fontsize=10, y=0.995)
     FIGS.mkdir(parents=True, exist_ok=True)
     fig.savefig(FIGS / "empirical_atlas.png", dpi=130, bbox_inches="tight")
     print(f"wrote docs/figures/empirical_atlas.png ({len(items)} continuous items × {len(FACTORS)} "

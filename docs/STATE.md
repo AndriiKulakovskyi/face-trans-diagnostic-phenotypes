@@ -4,17 +4,19 @@
 
 ## TL;DR
 
-The project has been **replanned** around **Milestone 1 (M1): the transdiagnostic dimensional map** on the
-FACE **V0** baseline. The methods and mathematics are **fixed** in
-[`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md) (the single methods/plan of record). The previous
-"Engine A" stage results (the old `03/04` Bayesian engine and its "no general factor" headline) are
-**discarded** — superseded by the global, full-sample, explicit-latent approach in the methods doc. The
-repository is on a **clean base**, and M1 implementation is underway. The data layer + the marginalized
-measurement engine are built; **S1 (continuous core) and S2 (inter-dimension Φ + MADRS/QIDS/STAI windows)
-are certified at full N (9,013)**; **S3–S4 done** (S3a +developmental certified, S3b +suicidality mixed
-provisional, S4 anhedonia **rejected**); and **S5 — the reported global 7-dimension map — is run**
-(provisional, N=5,000 subsample). All staged fits S1→S5 are complete; remaining M1 work is FIML
-confirmation, the formal adjudication write-up, and the prior→posterior atlas. Updated 2026-06-07.
+**Milestone 1 (M1) — the transdiagnostic dimensional map — is COMPLETE** (pending PI sign-off), on the FACE
+**V0** baseline (N = 9,013). Methods of record: [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md); verdict:
+[`ADJUDICATION.md`](ADJUDICATION.md). The map is **9 transdiagnostic dimensions** — a general factor **G
+(functional burden)** + **cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality,
+mania, substance** — estimated from observed cells only (no imputation), via one global Bayesian sparse
+bifactor/ESEM (marginalized continuous core + explicit non-Gaussian block). It is **hardened end-to-end**:
+not a prior/estimator artefact (flat-prior φ=1.00, WAIC, PPC §5); largely invariant across BP/SZ/DR (§8);
+**certified** at largest-N with cross-seed Tucker φ 0.993 (§4); biology is the least severity-entangled
+domain (correlated-G §3.1); resample-robust (min φ ≥ 0.85 under LOCO + site-bootstrap + weighting, §8);
+with per-patient coordinates + uncertainty + reliability flags (§7). Anhedonia **rejected**;
+impulsivity/negative-symptoms/sensory **not_testable**; depression/anxiety are cross-loading **windows**.
+Engine in `src/face/{models/bayesian,confirm,runner,scoring}.py`; pipeline `scripts/01,04–09,s5_*`; results
+in `reports/01,04–11`. Next: **M2 strata** on these coordinates. Updated 2026-06-09.
 
 ## What's decided
 
@@ -82,19 +84,23 @@ confirmation, the formal adjudication write-up, and the prior→posterior atlas.
   leave-one-cohort-out + diagnosis-balanced subsampling + **site cluster-bootstrap** + **1/n_cohort-weighted
   fit** (§3.6) — **min φ ≥ 0.85** (map not an artefact of cohort imbalance, any single cohort, or site
   clustering). `scripts/08_robustness.py` → `reports/08_robustness_report.md`.
-- **Scoring (§7, DONE):** per-patient coordinates for all 9,013 (continuous core, conditional-Gaussian from
-  S2) + suicidality/developmental (S5 f_e, subsample), each with mean/SD/HDI + reliability tier. Engine
-  `src/face/scoring.py`, `scripts/07_score.py` → `results/face/patient_scores.parquet`.
-- **Atlas + adjudication (§2.3/§6, DONE — M1 LOCK pending PI review):** prior→posterior heatmap
-  (`docs/figures/empirical_atlas.png`, `scripts/09_atlas.py`) + the verdict on all candidates
-  (`docs/ADJUDICATION.md`): **7 jointly-modelled confirmed** (G + cognition, metabolic/inflammatory split,
-  sleep, developmental-proxy, suicidality) + **mania CONFIRMED** (primary |λ| 0.61, clean) and **substance
-  CONFIRMED-PROVISIONAL** (|λ| 0.34; binary-SUD-as-continuous approximation → mixed re-test) — the deferred
-  gap is **closed** (`scripts/s5_mania_substance.py`); **anhedonia rejected**, impulsivity/negative/sensory
-  **not_testable**, depression/anxiety = windows. *Folding mania/substance into a re-certified 9-dim joint
-  map + scoring is the next increment.*
-- **M1 essentially complete** — the measurement layer is built, hardened (confirmation/invariance/robustness),
-  certified, scored, and adjudicated. PI sign-off on the adjudication + atlas locks it; then **M2 strata**.
+- **9-dim joint integration (DONE):** mania + substance closed the deferred gap as **real dimensions**, so
+  the reported map was re-certified at **9 dimensions** — 5 marginalized (cognition/metabolic/inflammatory/
+  sleep/**mania**) + 4 explicit (G/suicidality/developmental/**substance**, substance's binary SUD under the
+  proper Bernoulli likelihood). Certified: R-hat ≤ 1.04 · ESS ≥ 112 · 0 div · BFMI ≥ 0.41 · cross-seed Tucker
+  φ **0.993**. `scripts/s5_certify9.py` → `reports/11_s5_9dim_report.md` (engine: `prepare_mixed` gained
+  `explicit_factors`/`min_cohorts`; `S5_FACTORS`).
+- **Scoring (§7, DONE):** per-patient coordinates for all 9,013 — 6 continuous-anchored dims (incl. mania)
+  via conditional-Gaussian from the certified 9-dim loadings + 3 explicit (suic/dev/substance) via f_e —
+  each with mean/SD/HDI + reliability tier. `scripts/07_score.py` → `results/face/patient_scores.parquet`.
+- **Atlas + adjudication (§2.3/§6, DONE — M1 LOCK pending PI review):** prior→posterior heatmap at 9 factors
+  (`docs/figures/empirical_atlas.png`) + `docs/ADJUDICATION.md`: **9 confirmed** (G + cognition, metabolic/
+  inflammatory split, sleep, developmental-proxy, suicidality, mania, substance), **anhedonia rejected**,
+  impulsivity/negative/sensory **not_testable**, depression/anxiety = windows. No candidate deferred.
+- **M1 complete** — the measurement layer is built, hardened (confirmation/invariance/robustness),
+  **certified at 9 dims**, scored, and adjudicated. PI sign-off on the adjudication + atlas locks it; then
+  **M2 strata**. *Small follow-ons: extend invariance/robustness/corr-G to mania/substance; full-N
+  non-Gaussian scoring.*
 - **Compute lesson (this session):** full-N S1/S2 ≈ 1 h; the S3+ mixed-likelihood frontier is heavier, so
   S3 checkpoints use a random N=4,000 subsample (§3.6). Engine perf fixes: grouped-GEMM Woodbury (Cholesky
   per observed-pattern, 2.75×), tree-depth cap 8 + ta 0.85 (2.7× at 7 factors). Φ bug fixed (LKJCorr=Cholesky

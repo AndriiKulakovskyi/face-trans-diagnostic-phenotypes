@@ -8,9 +8,11 @@
 ## The empirical map
 
 On the harmonized 3-cohort FACE **V0** baseline (N = 9,013), the hybrid Bayesian sparse bifactor/ESEM
-yields a **7-dimension transdiagnostic map**: a general factor **G (functional burden)** + six specific
-axes — **cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality** — weakly correlated
-(mean |Φ| ≈ 0.10), each estimated from observed cells only (no imputation).
+yields a **9-dimension transdiagnostic map**: a general factor **G (functional burden)** + eight specific
+axes — **cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality, mania, substance** —
+weakly correlated, each estimated from observed cells only (no imputation). Five are continuous-anchored
+(marginalized: cognition/metabolic/inflammatory/sleep/mania); three carry non-Gaussian indicators
+(explicit latents: suicidality, developmental, substance) alongside G.
 
 ## Per-candidate verdict
 
@@ -23,18 +25,17 @@ axes — **cognition, metabolic, inflammatory, sleep, developmental-risk, suicid
 | 7 | Neurodevelopment | **confirmed (proxy)** | **developmental-risk** | own axis (loading 0.42); a *proxy* for early-adversity/liability, not measured neurodevelopment |
 | 8 | Suicidality | **confirmed (mixed-likelihood)** | **suicidality** | binary ISF ideation/attempt items load +2.7…+3.4 (logit); composes with the shared Φ |
 | 4 | Anhedonia | **rejected** | — (absorbed by G + depression windows) | 1 thin indicator (BP/DR only); non-identified (R-hat 1.54); loads 0.61 on G |
-| 9 | Mania / activation | **confirmed** | **mania-activation** | adjudicated post-hoc (2 seeds, R-hat 1.01): identifies cleanly, primary \|λ\| **0.61**, \|G\| 0.15, distinct (max \|Φ\| 0.18). Not yet in the *joint* reported map |
-| 10 | Substance use | **confirmed (provisional)** | **substance** | primary \|λ\| **0.34**, \|G\| 0.13 — but binary SUD modelled as continuous (approximation) + one weak nicotine item → a mixed-likelihood re-test is the proper confirmation |
+| 9 | Mania / activation | **confirmed** | **mania** (marginalized) | YMRS/Altman load 0.49–0.73, \|G\| 0.15, distinct — **integrated into the certified 9-dim joint map** |
+| 10 | Substance use | **confirmed** | **substance** (explicit) | alcohol/cannabis SUD + cigarettes load +0.38…+0.69 (logit) under the **proper Bernoulli/NB likelihood** in the joint mixed model (no longer an approximation) — integrated into the certified 9-dim map |
 | — | Impulsivity | **not_testable** | — | no common indicators (dropped pre-matrix) |
 | — | Negative symptoms | **not_testable** | — | no common indicators (dropped pre-matrix) |
 | — | Sensory abnormalities | **not_testable** | — | no common indicators (dropped pre-matrix) |
 | — | Depression / anxiety | **not a dimension** | cross-loading **windows** onto G | MADRS/QIDS/STAI load 0.66–0.80 on G — burden windows, no separate affective factor |
 
-**Tally:** of the 10 prior-matrix candidates — **8 confirmed** (incl. one split) + **1 confirmed-provisional**
-(substance), **1 rejected** (anhedonia); 3 pre-matrix constructs **not_testable**; depression/anxiety are
-**windows, not a dimension**. The reported S5 map jointly modelled **7**; **mania (confirmed) and substance
-(provisional)** were adjudicated post-hoc — folding them into the joint reported map (a re-certified 9-dim
-S5 + scoring) is the immediate next increment, not an M1 result.
+**Tally:** of the 10 prior-matrix candidates — **9 confirmed** (incl. one split: metabolic/inflammatory),
+**1 rejected** (anhedonia); 3 pre-matrix constructs **not_testable**; depression/anxiety are **windows, not
+a dimension**. All 9 are jointly modelled in the **certified 9-dimension S5** (R-hat ≤ 1.04 · ESS ≥ 112 · 0
+div · BFMI ≥ 0.41 · cross-seed Tucker φ 0.993). No candidate remains deferred.
 
 ## §6 confirmation criteria — evidence for the 7 confirmed dimensions
 
@@ -50,11 +51,12 @@ S5 + scoring) is the immediate next increment, not an M1 result.
 
 ## Documented M1 boundaries (honest gaps)
 
-- **Mania & substance are now adjudicated (confirmed / confirmed-provisional)** but not yet folded into
-  the *joint* reported map. Mania identifies cleanly; substance survives a continuous-approximation test
-  and needs a mixed-likelihood re-test (its SUD indicators are binary, BP/SZ-only). Re-certifying a 9-dim
-  S5 and re-scoring with them is the immediate next increment (`scripts/s5_mania_substance.py` →
-  `reports/10_mania_substance_report.md`).
+- **Mania & substance are fully integrated** — the reported map is now the **certified 9-dim joint S5**
+  (`scripts/s5_certify9.py` → `reports/11_s5_9dim_report.md`), with substance's binary SUD under the proper
+  Bernoulli likelihood. Substance is a 2-cohort axis (alcohol/cannabis SUD are BP/SZ-only, DR-absent —
+  observed-likelihood handles the missing cohort), declared as such, not claimed invariant in DR.
+- **Per-cohort invariance + robustness** were established on the original 7-factor backbone; extending
+  those checks (and the correlated-G arm) to mania/substance is a small follow-on.
 - **Suicidality/developmental per-patient scoring** is on the S5 subsample; full-N projection of the
   non-Gaussian block is an M2 follow-on (§7).
 - **Internal validity only** — V0 baseline; no temporal (V1–V4) persistence or external-cohort validation
@@ -65,9 +67,8 @@ S5 + scoring) is the immediate next increment, not an M1 result.
 
 ## M1 status
 
-The measurement layer is **adjudicated**: a jointly-modelled **7-dimension** transdiagnostic map (earned
-from the cohort data, estimator- and prior-robust, largely invariant across cohorts, resample-stable, with
-per-patient coordinates + uncertainty) **plus two post-hoc-confirmed axes — mania (solid) and substance
-(provisional)**. Every candidate now has a verdict (no remaining "deferred"). This is the object the **M2
-stratification** layer will act on. *Two things finalize M1: PI sign-off on this adjudication + the
-prior→posterior atlas, and (optionally) folding mania/substance into a re-certified 9-dim joint map.*
+The measurement layer is **adjudicated and complete**: a jointly-modelled, **certified 9-dimension**
+transdiagnostic map — earned from the cohort data, estimator- and prior-robust, largely invariant across
+cohorts, resample-stable, with per-patient coordinates + uncertainty. Every candidate has a verdict (none
+deferred). This is the object the **M2 stratification** layer will act on. *PI sign-off on this adjudication
++ the prior→posterior atlas locks M1.*
