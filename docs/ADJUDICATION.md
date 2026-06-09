@@ -37,16 +37,16 @@ weakly correlated, each estimated from observed cells only (no imputation). Five
 a dimension**. All 9 are jointly modelled in the **certified 9-dimension S5** (R-hat ≤ 1.04 · ESS ≥ 112 · 0
 div · BFMI ≥ 0.41 · cross-seed Tucker φ 0.993). No candidate remains deferred.
 
-## §6 confirmation criteria — evidence for the 7 confirmed dimensions
+## §6 confirmation criteria — evidence for the 9 confirmed dimensions
 
 | Criterion | Result |
 |---|---|
-| ≥3 meaningful indicators | ✅ all 7 (cognition 11 · metabolic 32 · inflammatory 14 · G 14 · sleep 9 · developmental 23 · suicidality 30) |
-| Primary \|λ\| ≥ 0.30, CI away from 0 | ✅ all surviving primaries (mean home loadings 0.32–0.90) |
-| **Not reducible to G** | ✅ §3.1 correlated-G: G correlates +0.06 inflammatory / +0.14 metabolic (≪ +0.39 cognition, +0.44 sleep) — **biology least severity-entangled**; specifics distinct (mean \|Φ\| 0.10) |
+| ≥3 meaningful indicators | ✅ 8 of 9 (cognition 11 · metabolic 32 · inflammatory 14 · G 14 · sleep 9 · developmental 23 · suicidality 30 · **substance 4**); ⚠️ **mania 2** (YMRS/Altman — just-identified, below the ≥3 guideline; flagged *partial*, never *well-characterised*, in scoring) |
+| Primary \|λ\| ≥ 0.30, CI away from 0 | ✅ all surviving primaries (home loadings: continuous 0.32–0.90; mania 0.49–0.73; substance SUD +0.38…+0.69 logit) |
+| **Not reducible to G** | ✅ §3.1 correlated-G: G correlates +0.06 inflammatory / +0.14 metabolic (≪ +0.39 cognition, +0.44 sleep) — **biology least severity-entangled**; new axes low on G (mania \|G\| 0.15, substance \|G\| 0.13); specifics distinct |
 | **Not a Bayesian-prior artefact** (§5) | ✅ flat-prior refit reproduces loadings/Φ **exactly** (Tucker φ = 1.00); WAIC decisively prefers the bifactor; PPC SRMR ≈ 0.07 |
-| **Stable under resampling** (φ ≥ 0.85) | ✅ §8 robustness: min Tucker φ ≥ 0.85 under leave-one-cohort-out, diagnosis-balanced subsampling, site cluster-bootstrap, and 1/n_cohort weighting |
-| **Measurement invariance** across BP/SZ/DR | ✅ largely invariant; **partial**: G (BP–SZ, no FAST in SZ) and **inflammatory in DR** (eosinophil- vs neutrophil-leaning) — documented, not hidden |
+| **Stable under resampling** (φ ≥ 0.85) | ✅ §8 robustness (7-factor backbone): min Tucker φ 0.958 under LOCO, diagnosis-balanced subsampling, site cluster-bootstrap, 1/n_cohort weighting; **mania/substance** carry the **cross-seed** φ 0.993 from the 9-dim cert (their bootstrap extension is a follow-on) |
+| **Measurement invariance** across BP/SZ/DR | ✅ largely invariant; **partial**: G (BP–SZ, no FAST in SZ), **inflammatory in DR** (eosinophil- vs neutrophil-leaning); **substance** is a declared **2-cohort axis** (alcohol/cannabis SUD BP/SZ-only) — documented, not hidden |
 | Acceptable score reliability | ✅ §7 per-patient scores carry mean/SD/HDI + a reliability tier (well/partial/prior-dominated) by observed-indicator count |
 
 ## Documented M1 boundaries (honest gaps)

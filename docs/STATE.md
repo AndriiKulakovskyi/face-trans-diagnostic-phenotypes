@@ -42,13 +42,13 @@ in `reports/01,04–11`. Next: **M2 strata** on these coordinates. Updated 2026-
   `prior_loading_matrix_v3.csv` (143 indicators × 10 factors) + the **prior atlas**
   (`docs/PRIOR_ATLAS.md`); `scripts/01_build_data` (Parquet persistence) + `scripts/04_fit` + the
   single marginalized/explicit engine (`continuous_core`; the parallel config-first engine + its
-  `bayesian_model.yaml` were retired — one canonical engine now); tests (`tests/v3/`, **88 passing**).
-- **Results so far — S1 + S2 CERTIFIED (full N); S3–S4 done (subsample):** see the result sections below.
-  Eligible dimension set adjudicated: **7 dimensions** (G + cognition/metabolic/inflammatory/sleep/
-  developmental-risk/suicidality); anhedonia **rejected** (S4); impulsivity/negative-symptoms/sensory
-  dropped pre-modeling. Depression/anxiety = cross-loading windows, not a dimension.
-- **S5 reported map (run, provisional):** see "S5 result" below. 7 dimensions; biology refined to
-  *least severity-entangled* (not strictly ⊥) via the correlated-G test.
+  `bayesian_model.yaml` were retired — one canonical engine now); tests (`tests/v3/`, **90 passing**).
+- **The map (FINAL):** **9 dimensions** — G + cognition/metabolic/inflammatory/sleep/developmental-risk/
+  suicidality **+ mania + substance** — certified jointly (see the "DONE" bullets below). anhedonia
+  **rejected**; impulsivity/negative-symptoms/sensory dropped pre-modeling; depression/anxiety = cross-loading
+  windows. Biology is *least severity-entangled* (not strictly ⊥) via the correlated-G test. *(The dated
+  "S1 result → S5 result" sections lower down are the **7-dim development record**, superseded by the
+  9-dim certification — kept for provenance, not current status.)*
 - **Confirmation result (§5, DONE):** the continuous backbone is **estimator- and prior-robust**. A
   **prior-free** (flat-prior) refit at full N reproduces the soft-prior loadings/Φ **exactly** (Tucker φ =
   1.00 every factor; max |ΔΦ| = 0.00) → not a Bayesian-prior artefact; **PPC** absolute fit SRMR ≈ 0.07
@@ -104,7 +104,8 @@ in `reports/01,04–11`. Next: **M2 strata** on these coordinates. Updated 2026-
 - **Compute lesson (this session):** full-N S1/S2 ≈ 1 h; the S3+ mixed-likelihood frontier is heavier, so
   S3 checkpoints use a random N=4,000 subsample (§3.6). Engine perf fixes: grouped-GEMM Woodbury (Cholesky
   per observed-pattern, 2.75×), tree-depth cap 8 + ta 0.85 (2.7× at 7 factors). Φ bug fixed (LKJCorr=Cholesky
-  → Φ = L Lᵀ). The reported **S5** map targets full N (GPU per §4.5 if the Mac can't hold the mixed block).
+  → Φ = L Lᵀ). **No GPU was needed** — the reparam ladder (marginalization + rung-3 tightening) certified the
+  mixed S5 (7-dim and 9-dim) on the Mac via the detached + caffeinate + per-seed-cache pattern.
 - **Later milestones (not started):** strata (M2) · temporal coherence V1–V4 (M3) · prognosis (M4) ·
   treatment (M5).
 
@@ -171,11 +172,15 @@ variance absorbed by G + the depression windows. Matches the methods-doc prior. 
 [`RESULTS.md`](RESULTS.md) §S4** (incl. the consolidated S1–S4 candidate-adjudication table). Artifacts:
 `reports/04_stage4_*`.
 
-## S5 result — the reported 7-dimension map (global fit, provisional)
+## S5 result — the 7-dimension map (development record — SUPERSEDED by the certified 9-dim, above)
+
+> ⚠️ **Historical.** This was the first global fit (provisional, N=5,000). It has since been **certified at
+> largest-N** and **extended to 9 dimensions** (mania + substance) — see the "DONE" bullets at the top. Kept
+> for provenance. No GPU was used.
 
 Global mixed-likelihood fit over all 7 dimensions (continuous core marginalized + suicidality/developmental
 explicit, one shared Φ), random N=5,000 subsample (Mac best-effort): **R-hat 1.040 · 0 div** (provisional —
-slow-mixing continuous cross-loadings; full-N + certification → GPU §4.5).
+slow-mixing continuous cross-loadings).
 - **G = functional burden** (FAST 0.90, EGF 0.73); specifics: cognition 0.57 · sleep 0.48 · developmental
   0.42 · inflammatory 0.39 · metabolic 0.32 · suicidality (isf07 0.60 + binary ISF 2.7–3.4 logit).
 - **Φ weak** (mean |off-diag| 0.10): metab~inflam 0.19, suic~dev 0.23, sleep~dev 0.19 — distinct axes.

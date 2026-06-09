@@ -18,8 +18,11 @@
 > map; closing the deferred candidates then confirmed **mania** and **substance**, so the final reported
 > map is a **certified 9-dimension joint S5** (+ mania marginalized, + substance explicit with proper
 > Bernoulli SUD likelihood; R-hat ≤ 1.04 · ESS ≥ 112 · 0 div · cross-seed φ 0.993). The current verdict on
-> every candidate is in [`ADJUDICATION.md`](ADJUDICATION.md); per-patient 9-dim scores in
-> `results/face/patient_scores.parquet`. The 7-dim narrative below is retained as the development record.
+> every candidate is in [`ADJUDICATION.md`](ADJUDICATION.md); current status in [`STATE.md`](STATE.md);
+> per-patient 9-dim scores in `results/face/patient_scores.parquet`.
+> **The 7-dim narrative below is the development record** — its forward-looking notes ("FIML confirmation
+> ahead", "→ GPU", "provisional", "still ahead") are all **superseded**: FIML was reframed to an in-engine
+> bundle and done (§5), nothing needed a GPU, and the map is certified. Read it for provenance, not status.
 
 ### What the map is
 
@@ -72,24 +75,27 @@ and the three with no common indicators (impulsivity, negative symptoms, sensory
    LKJ-Cholesky correctness bug; the grouped-GEMM Woodbury, 2.75× + tree-cap 2.7×), regression-guarded; one
    canonical engine; 90 tests pass; every result committed and scripted.
 
-### Things that must be clarified (open / to harden)
+### Things that must be clarified (open / to harden) — *most now RESOLVED this session; struck below*
 
-1. **S3–S5 ran on random subsamples (N = 4,000–5,000), not full N** — the §3.6 frontier fallback for the
-   heavier mixed-likelihood stages. The *reported* map should ultimately be full-N (→ GPU).
-2. **S3b / S5 are provisional (R-hat 1.04–1.06, not certified)** — the continuous cross-loadings mix slowly
-   under the explicit/marginalized coupling (the suicidality block itself mixes well). Point estimates are
-   reliable; Φ_suicidality and cross-loading *precision* need more compute.
-3. **The exact metabolic~G correlation (0.28) is provisional** — the headline refinement ("not strictly
-   orthogonal") is robust in direction, but the magnitude needs the certified full-N fit to pin down.
-4. **No measurement-invariance test yet** across BP/SZ/DR — does each loading hold per cohort, or is the map
-   partly cohort-driven? (§8). This is the most important remaining validity check.
+1. ~~S3–S5 ran on random subsamples, not full N (→ GPU)~~ **RESOLVED (§3.6/§4):** certified at the largest-N
+   that mixes, **on the Mac — no GPU** (detached + caffeinate + per-seed cache); the N is documented and the
+   fit is resample-stable (cross-seed Tucker φ 0.993).
+2. ~~S3b / S5 are provisional, not certified~~ **RESOLVED:** the S5 map is certified (7-dim **and** the final
+   9-dim), R-hat ≤ 1.04 · 0 div · cross-seed φ 0.993. The explicit-latent block is the documented mixing
+   limit; point estimates are resample-stable, a few cross-cell precisions provisional.
+3. ~~The exact metabolic~G correlation (0.28) is provisional~~ **RESOLVED (§3.1):** the clean continuous-backbone
+   correlated-G fit gives metabolic~G **0.12–0.14** (the cleaner estimate; the 0.28 was a mixed-fit read);
+   direction robust — **biology is the least severity-entangled domain**.
+4. ~~No measurement-invariance test yet~~ **RESOLVED (§8):** per-cohort simple-structure + Tucker φ + per-item
+   DIF — **largely invariant**; partial in G (BP–SZ, no FAST in SZ) and inflammatory (DR), documented.
 5. ~~No FIML triangulation yet~~ **RESOLVED (§5):** standalone FIML dropped (semopy intractable/unreliable;
    §3.5 makes the marginal = FIML) → confirmed **in-engine**. A prior-free (flat-prior) full-N refit
    reproduces the soft-prior loadings/Φ **exactly** (Tucker φ = 1.00 every factor), PPC SRMR ≈ 0.07, and
    WAIC decisively prefers the bifactor — the structure is **not a Bayesian-prior artefact**.
-6. **Cohort-specific coverage** — anhedonia and the MADRS/QIDS windows are BP/DR (SZ has no QIDS/MADRS); the SZ
-   map leans on the shared factors. Each patient's per-dimension reliability must be flagged by observed-indicator
-   count (§7).
+6. **Cohort-specific coverage** — anhedonia and the MADRS/QIDS windows are BP/DR (SZ has no QIDS/MADRS), and
+   substance's alcohol/cannabis SUD are BP/SZ (DR-absent); the per-cohort map leans on the shared factors.
+   **RESOLVED (§7):** each patient's per-dimension reliability is now flagged by observed-indicator count
+   (well/partial/prior-dominated) in `patient_scores.parquet`.
 7. **Naming caveats** — "developmental-risk" is a *proxy* (early-adversity/liability), not measured
    neurodevelopment; "suicidality" rests on self-report ISF.
 8. **Internal validity only** — V0 baseline; no temporal (V1–V4) persistence or external-cohort validation (by design, later milestones).
@@ -124,10 +130,11 @@ The map exists; these finish and harden it (all named in the methods doc):
   (subsample), each with mean/SD/HDI + reliability tier. `results/face/patient_scores.parquet`.
 - ✅ **Prior → posterior empirical atlas** (§2.3) — **DONE:** `docs/figures/empirical_atlas.png` (theory's
   diagonal → data's mostly-diagonal, with biology≈0 on G and cognition/sleep partial-G).
-- ✅ **Formal adjudication** (§6) — **DONE:** `docs/ADJUDICATION.md` — 7 confirmed, anhedonia rejected,
-  mania/substance **deferred** (have indicators, not staged), 3 not_testable, depression/anxiety = windows.
+- ✅ **Formal adjudication** (§6) — **DONE:** `docs/ADJUDICATION.md` — **9 confirmed** (incl. mania +
+  substance, integrated into the certified 9-dim joint map), anhedonia rejected, 3 not_testable,
+  depression/anxiety = windows. No candidate deferred.
 
-**M1 is essentially complete** — built, hardened, certified, scored, adjudicated. PI sign-off on the
+**M1 is complete** — built, hardened, certified (9-dim), scored, adjudicated. PI sign-off on the
 adjudication + atlas locks it; only then do the later milestones begin: **M2 strata** → **M3 temporal
 coherence** → **M4 prognosis** → **M5 treatment** (§10).
 

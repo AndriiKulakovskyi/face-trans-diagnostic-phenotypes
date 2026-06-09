@@ -12,7 +12,7 @@ prognosis/treatment decision models. Four layers that must not be collapsed:
 
 ```text
 diagnostic cohorts → transdiagnostic dimensions → validated strata → prognosis / treatment
-  (entry metadata)     (M1 — current work)          (later)            (later)
+  (entry metadata)     (M1 — complete, 9-dim)       (M2 — next)        (later)
 ```
 
 The discovery engine is **one global, missingness-aware Bayesian sparse bifactor / ESEM model** with mixed
@@ -53,11 +53,13 @@ covariates / validation labels.
   before advancing. Consolidate, don't accrete; one canonical doc per concern.
 - **Output:** scripts write aggregates to `results/`, figures to `docs/figures/`.
 
-## In-flight restructure
+## Current state — M1 complete (9-dim map)
 
-The package is now **`src/face/…`** (renamed from `src/v3`; data layer + priors + tests green). The
-pipeline is being rebuilt to `scripts/01_build_data … 07_score` consuming
-`configs/prior_loading_matrix_v3.csv`, with the matrix-consuming staged-fit engine
-(`src/face/models/bayesian`) as the next increment, per
-[docs/MEASUREMENT_MODEL.md](docs/MEASUREMENT_MODEL.md) §11. Until then `scripts/v3/` keeps the current
-script names and `results/v3/` the outputs.
+The package is **`src/face/…`**; the engine (`src/face/models/bayesian/continuous_core` + `confirm`,
+`runner`, `scoring`) and pipeline (`scripts/01_build_data`, `04_fit`, `05_confirm`, `06_invariance`,
+`07_score`, `08_robustness`, `09_atlas`, `s5_certify{,9}`, `s5_corrg`) consume
+`configs/prior_loading_matrix_v3.csv`. **M1 is complete (pending PI sign-off):** a **certified 9-dimension**
+transdiagnostic map — G + cognition/metabolic/inflammatory/sleep/developmental-risk/suicidality **+ mania +
+substance** — built, hardened (confirmation §5 / invariance §8 / robustness §8), certified (§4), scored (§7),
+and adjudicated (§6). Current status + results: **[docs/STATE.md](docs/STATE.md)**,
+**[docs/ADJUDICATION.md](docs/ADJUDICATION.md)**, [docs/RESULTS.md](docs/RESULTS.md). Next: **M2 strata**.

@@ -1,5 +1,11 @@
 # M1 measurement map explained
 
+> ⚠️ **STATUS NOTE (2026-06-09): this teaching guide predates M1 completion and is STALE on results/status.**
+> It describes a **7-dimension, provisional** map with "FIML confirmation ahead" and "→ GPU" — all
+> **superseded**. M1 is **complete**: a **certified 9-dimension** map (mania + substance added), no GPU used,
+> FIML reframed to an in-engine bundle (§5). The **engine intuition + math below remain valid**; for current
+> results/status read [`ADJUDICATION.md`](ADJUDICATION.md), [`STATE.md`](STATE.md), [`RESULTS.md`](RESULTS.md).
+>
 > A companion guide to `MEASUREMENT_MODEL.md`.
 >
 > The methods document is the formal plan of record. This document is a teaching
