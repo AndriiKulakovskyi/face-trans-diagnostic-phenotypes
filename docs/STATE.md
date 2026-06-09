@@ -97,10 +97,15 @@ in `reports/01,04–11`. Next: **M2 strata** on these coordinates. Updated 2026-
   (`docs/figures/empirical_atlas.png`) + `docs/ADJUDICATION.md`: **9 confirmed** (G + cognition, metabolic/
   inflammatory split, sleep, developmental-proxy, suicidality, mania, substance), **anhedonia rejected**,
   impulsivity/negative/sensory **not_testable**, depression/anxiety = windows. No candidate deferred.
-- **M1 complete** — the measurement layer is built, hardened (confirmation/invariance/robustness),
+- **Mixed-model PPC (§8, DONE):** absolute-fit check for the non-Gaussian block (the continuous block was
+  §5, SRMR 0.07). True posterior-predictive on the 9-dim cert — **21/22 indicators reproduce** their
+  observed endorsement rates/means (Bayesian p ≈ 0.5); lone flag `isf09a` (zero-inflated attempt count,
+  item-level — the suicidality factor's 7 binary items all reproduce). `scripts/12_mixed_ppc.py` →
+  `reports/12_mixed_ppc_report.md`, `docs/figures/mixed_ppc.png`.
+- **M1 complete** — the measurement layer is built, hardened (confirmation/invariance/robustness/PPC),
   **certified at 9 dims**, scored, and adjudicated. PI sign-off on the adjudication + atlas locks it; then
   **M2 strata**. *Small follow-ons: extend invariance/robustness/corr-G to mania/substance; full-N
-  non-Gaussian scoring.*
+  non-Gaussian scoring; hurdle likelihood for isf09a if its count precision is needed.*
 - **Compute lesson (this session):** full-N S1/S2 ≈ 1 h; the S3+ mixed-likelihood frontier is heavier, so
   S3 checkpoints use a random N=4,000 subsample (§3.6). Engine perf fixes: grouped-GEMM Woodbury (Cholesky
   per observed-pattern, 2.75×), tree-depth cap 8 + ta 0.85 (2.7× at 7 factors). Φ bug fixed (LKJCorr=Cholesky

@@ -44,7 +44,8 @@ div · BFMI ≥ 0.41 · cross-seed Tucker φ 0.993). No candidate remains deferr
 | ≥3 meaningful indicators | ✅ 8 of 9 (cognition 11 · metabolic 32 · inflammatory 14 · G 14 · sleep 9 · developmental 23 · suicidality 30 · **substance 4**); ⚠️ **mania 2** (YMRS/Altman — just-identified, below the ≥3 guideline; flagged *partial*, never *well-characterised*, in scoring) |
 | Primary \|λ\| ≥ 0.30, CI away from 0 | ✅ all surviving primaries (home loadings: continuous 0.32–0.90; mania 0.49–0.73; substance SUD +0.38…+0.69 logit) |
 | **Not reducible to G** | ✅ §3.1 correlated-G: G correlates +0.06 inflammatory / +0.14 metabolic (≪ +0.39 cognition, +0.44 sleep) — **biology least severity-entangled**; new axes low on G (mania \|G\| 0.15, substance \|G\| 0.13); specifics distinct |
-| **Not a Bayesian-prior artefact** (§5) | ✅ flat-prior refit reproduces loadings/Φ **exactly** (Tucker φ = 1.00); WAIC decisively prefers the bifactor; PPC SRMR ≈ 0.07 |
+| **Not a Bayesian-prior artefact** (§5) | ✅ flat-prior refit reproduces loadings/Φ **exactly** (Tucker φ = 1.00); WAIC decisively prefers the bifactor |
+| **Absolute fit — both blocks reproduce the data** (PPC) | ✅ continuous SRMR ≈ 0.07 (§5); **non-Gaussian block 21/22 endorsement rates/means within the 90% posterior-predictive interval, Bayesian p ≈ 0.5** (§8/`12_mixed_ppc`) — lone exception `isf09a` (zero-inflated attempt count), an item-level caveat below |
 | **Stable under resampling** (φ ≥ 0.85) | ✅ §8 robustness (7-factor backbone): min Tucker φ 0.958 under LOCO, diagnosis-balanced subsampling, site cluster-bootstrap, 1/n_cohort weighting; **mania/substance** carry the **cross-seed** φ 0.993 from the 9-dim cert (their bootstrap extension is a follow-on) |
 | **Measurement invariance** across BP/SZ/DR | ✅ largely invariant; **partial**: G (BP–SZ, no FAST in SZ), **inflammatory in DR** (eosinophil- vs neutrophil-leaning); **substance** is a declared **2-cohort axis** (alcohol/cannabis SUD BP/SZ-only) — documented, not hidden |
 | Acceptable score reliability | ✅ §7 per-patient scores carry mean/SD/HDI + a reliability tier (well/partial/prior-dominated) by observed-indicator count |
@@ -57,6 +58,11 @@ div · BFMI ≥ 0.41 · cross-seed Tucker φ 0.993). No candidate remains deferr
   observed-likelihood handles the missing cohort), declared as such, not claimed invariant in DR.
 - **Per-cohort invariance + robustness** were established on the original 7-factor backbone; extending
   those checks (and the correlated-G arm) to mania/substance is a small follow-on.
+- **One item-level PPC mis-fit — `isf09a` (suicide-attempt count).** The mixed-model PPC (§8) shows 21/22
+  non-Gaussian items reproduce their observed rates; the exception is the attempt-*count* item, which is
+  90.8% zeros — a hurdle count the plain NegBinom over-predicts in the high-suicidality tail. The
+  **suicidality factor is unaffected** (its 7 binary ISF items all reproduce, Bayesian p 0.48–0.59); a
+  hurdle/zero-inflated likelihood for that one item is the fix if its count precision is ever needed.
 - **Suicidality/developmental per-patient scoring** is on the S5 subsample; full-N projection of the
   non-Gaussian block is an M2 follow-on (§7).
 - **Internal validity only** — V0 baseline; no temporal (V1–V4) persistence or external-cohort validation
