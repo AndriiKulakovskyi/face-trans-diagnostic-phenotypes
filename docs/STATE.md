@@ -21,7 +21,8 @@ confirmation, the formal adjudication write-up, and the prior→posterior atlas.
 - **Model:** one **global** Bayesian sparse bifactor / ESEM — mixed likelihoods, soft priors,
   observed-cell likelihood (no imputation), **full V0 sample**. Estimated via a **staged continuation**
   (S1→S5); **only the global fit (S5) is interpreted.**
-- **Confirmation:** **FIML** on the continuous backbone (masked-PAF dropped).
+- **Confirmation:** **in-engine** — prior-free refit + PPC + WAIC (standalone FIML dropped, §5; semopy
+  intractable/unreliable on the full backbone, and §3.5 makes the marginal = FIML). **Done** (see below).
 - **Dimension set (V0):** `G(severity)` · `cognition` · `metabolic` · `inflammatory` · `sleep` ·
   `suicidality` · `developmental-risk` (3-cohort) + `anhedonia` (BP/DR, thin). Dropped: impulsivity,
   negative symptoms, sensory.
@@ -46,9 +47,39 @@ confirmation, the formal adjudication write-up, and the prior→posterior atlas.
   dropped pre-modeling. Depression/anxiety = cross-loading windows, not a dimension.
 - **S5 reported map (run, provisional):** see "S5 result" below. 7 dimensions; biology refined to
   *least severity-entangled* (not strictly ⊥) via the correlated-G test.
-- **Next (M1 build):** **FIML confirmation** (continuous backbone, §5) · formal **adjudication** write-up
-  (§6) · **prior→posterior empirical atlas** (§2.3) · per-patient **scoring** at scale (§7). Then a
-  **full-N + certified S5 on the GPU** (§4.5) to upgrade the reported map from provisional.
+- **Confirmation result (§5, DONE):** the continuous backbone is **estimator- and prior-robust**. A
+  **prior-free** (flat-prior) refit at full N reproduces the soft-prior loadings/Φ **exactly** (Tucker φ =
+  1.00 every factor; max |ΔΦ| = 0.00) → not a Bayesian-prior artefact; **PPC** absolute fit SRMR ≈ 0.07
+  (misfit only in repeated-measure item clusters); **WAIC** decisively prefers the bifactor over
+  unidimensional (Δ≈53k) and correlated-factors (Δ≈2.7k). Artifacts: `reports/05_confirmation_report.md`
+  (+ `05_waic.csv`, `05_residual_correlations.csv`); engine `src/face/confirm.py` · `scripts/05_confirm.py`.
+- **Invariance result (§8, DONE):** in-engine, per-cohort **simple-structure** fits (the bifactor G is
+  multimodal in SZ without FAST), N≈600/cohort × 3 seeds, **9/9 converged**. The map is **largely invariant**
+  across BP/SZ/DR (12/15 factor×pair φ ≥ 0.95): **cognition · metabolic · sleep invariant** everywhere; **G
+  invariant** except BP–SZ (partial, φ 0.92 — few anchors, no FAST in SZ); **inflammatory non-invariant in
+  DR** (φ 0.71/0.75) — **neutrophils load ≈0 in DR** (0.07 vs 0.88), eosinophils high (0.59 vs 0.23): DR's
+  inflammatory axis is compositionally different → a **documented partial-invariance caveat** for DR
+  inflammatory scores. Artifacts: `reports/06_invariance_report.md` (+ `06_congruence.csv`, `06_dif_items.csv`);
+  `scripts/06_invariance.py` · `src/face/runner.py`. Working pattern: subsample ≈2k + multi-seed + resumable
+  cache + progress (§3.6).
+- **S5 certification (§3.6/§4.5, DONE — largest-N documented):** the reported 7-dim map, multi-seed at
+  N≈2,000 cohort-balanced (tune 2000 · draws 1500 · ta 0.9, 2 seeds). **§4.4 rung-3 reparam:** diagnosed
+  the slow locus as the **CTQ→G bifactor loadings** (dev is explicit ⇒ 2-explicit-factor ridge, ESS 30);
+  the `bifactor_g_sd` knob tightens dev/suic→G toward 0 (they're ≈⊥G) **leaving the biology→G estimand
+  free** — cross-loadings ESS 30→85. Result: R-hat **1.03** · struct ESS **114–158** · **0 div** · BFMI
+  **0.40** (healthy — no funnel; the limit is ESS-autocorrelation on the **suic~dev Φ + explicit-latent
+  coupling**, not geometry). **Cross-seed resample-stability: Tucker φ 0.993**, max |ΔΦ| 0.05 — the reported
+  loadings/Φ are stable; suic~dev Φ *precision* is the documented limit (point estimates solid). Artifacts:
+  `reports/07_s5_certification_report.md`; `scripts/s5_certify.py` (per-seed resumable cache). Run under
+  `caffeinate` + detached (`nohup`/`disown`) — the fix for macOS-sleep/harness interruptions on long fits.
+- **Correlated-G sensitivity (§3.1, DONE — biology⊥G refined):** relaxing G⊥specifics (all factors freely
+  correlated, simple-structure marginalized model, clean R-hat 1.01 · ESS 421 · **0 div**) → G correlates
+  **+0.06 inflammatory · +0.14 metabolic** vs **+0.39 cognition · +0.44 sleep**: biology is the **least
+  severity-entangled** domain (not strictly ⊥, but lowest by far). Engine: `g_correlated` Φ is now a
+  **unit-row Cholesky** (`pm.LKJCorr(n≥5)` breaks jitter-init; `LKJCholeskyCov` sd funnels → divergences).
+  `scripts/s5_corrg.py` → `reports/07_corrG_report.md`.
+- **Next (M1 build):** mixed-model **PPC** (optional — continuous PPC done, §5) · per-patient **scoring** at
+  scale (§7) · **robustness** (§8) · **prior→posterior atlas** (§2.3) · formal **adjudication** write-up (§6).
 - **Compute lesson (this session):** full-N S1/S2 ≈ 1 h; the S3+ mixed-likelihood frontier is heavier, so
   S3 checkpoints use a random N=4,000 subsample (§3.6). Engine perf fixes: grouped-GEMM Woodbury (Cholesky
   per observed-pattern, 2.75×), tree-depth cap 8 + ta 0.85 (2.7× at 7 factors). Φ bug fixed (LKJCorr=Cholesky

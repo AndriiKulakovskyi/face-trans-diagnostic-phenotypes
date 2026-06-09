@@ -410,19 +410,32 @@ iteration — the single most important rigor decision in M1.
 
 ---
 
-## 5. FIML confirmation (single confirmatory estimator)
+## 5. Estimator and prior robustness (in-engine confirmation)
 
-The empirical structure must not depend on one estimator. We confirm with **FIML SEM** (e.g. `semopy`) on
-the **continuous backbone** (cognition, metabolic, inflammatory, sleep, severity): maximise
-`Σ_i log Normal( X_{i,Oi^c} | μ_{i,Oi^c}, Σ_{Oi^c,Oi^c} )` — observed-data ML, no imputation (the §3.5
-marginal). FIML yields classical fit indices (CFI/TLI, RMSEA/SRMR, AIC/BIC), standardized loadings,
-residual correlations, and multi-group (cohort) invariance tests, and shows the structure is not a
-Bayesian-prior artefact.
+The empirical structure must not depend on one estimator or on the soft priors. We originally specified a
+separate **FIML SEM** here, but §3.5 shows the marginalized Bayesian model and FIML optimize the **same**
+observed-data objective — so a separate SEM adds little independent evidence. In practice a classical FIML
+on the full high-missingness backbone is also intractable/unreliable (semopy is slow and returns
+inconsistent fit indices), while complete-case FIML would reintroduce the completeness selection the
+project forbids (§3.6). We therefore confirm the map **in the existing engine**, which answers the same
+questions more faithfully (script `scripts/05_confirm.py`, module `src/face/confirm.py`):
 
-**Scope limit (stated, not hidden):** FIML handles the continuous backbone; the **ordinal/binary/count**
-indicators (suicidality) remain **Bayesian-only** (or would require categorical WLSMV SEM, out of M1
-scope). Triangulation compares Bayesian vs FIML loadings and `Φ` on the backbone; any disagreement is
-adjudicated and documented, not averaged away. (The masked-PAF third estimator is **not** used in M1.)
+1. **Prior-free refit.** Re-fit the continuous backbone with *flat* loading priors (identification
+   constraints only — sign-oriented home cells, signed cells centered at 0). A flat-prior MAP = MLE = FIML
+   (§3.5); loadings/Φ that match the soft-prior fit show the structure is **earned from the data, not
+   manufactured by the priors**. *(Result, full N: Tucker congruence φ = 1.00 for every factor; max |ΔΦ|
+   = 0.00; flat-fit R-hat 1.00.)*
+2. **Posterior-predictive checks.** Model-implied vs observed pairwise correlations → a **Bayesian SRMR**
+   and residual-correlation matrix (absolute fit), without the χ² asymptotics that fail under heavy
+   missingness + non-normal indicators. *(Result: SRMR ≈ 0.07; misfit confined to repeated-measure item
+   clusters — HR/BP positions, chol/LDL, AST/ALT, WAIS subtests.)*
+3. **WAIC model comparison.** Bifactor vs unidimensional vs correlated-factors (incremental fit). *(Result:
+   the bifactor is decisively preferred — ΔWAIC ≈ 2.7k over correlated-factors, ≈ 53k over unidimensional.)*
+
+This composes with the explicit-vs-marginalized parameterization agreement (§4) and the prior-sensitivity
+arm (§8). **Classical fit indices (CFI/TLI, RMSEA/SRMR)** are not reported — they are convention, not new
+evidence, and statistically weak here; if a venue requires them, lavaan (R) provides proper missing-data
+FIML on request. Suicidality's ordinal/binary/count indicators remain Bayesian-only throughout.
 
 ---
 

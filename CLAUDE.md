@@ -16,7 +16,8 @@ diagnostic cohorts → transdiagnostic dimensions → validated strata → progn
 ```
 
 The discovery engine is **one global, missingness-aware Bayesian sparse bifactor / ESEM model** with mixed
-likelihoods and **soft loading priors**; **FIML** is the confirmatory estimator. The full specification —
+likelihoods and **soft loading priors**; confirmation is **in-engine** (prior-free refit + PPC + WAIC — a
+standalone FIML proved redundant, §5). The full specification —
 logic, mathematics, staged estimation, acceptance gates — is in
 **[docs/MEASUREMENT_MODEL.md](docs/MEASUREMENT_MODEL.md)**; read it before any modeling work.
 

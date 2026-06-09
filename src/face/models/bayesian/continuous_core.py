@@ -81,9 +81,24 @@ class CorePrep:
     g_correlated: bool = False    # S5 sensitivity: let G correlate with specifics (else G ⊥, bifactor)
 
 
+def _balanced_idx(cohort: np.ndarray, n_total: int, rng) -> np.ndarray:
+    """Indices for a cohort-balanced subsample: ~n_total/n_cohorts per cohort, capped at each
+    cohort's size (so small cohorts like DR contribute all their patients). §3.6."""
+    cohorts = list(dict.fromkeys(cohort))                  # preserve order, unique
+    per = max(1, n_total // len(cohorts))
+    out = []
+    for c in cohorts:
+        ix_c = np.flatnonzero(cohort == c)
+        take = min(per, len(ix_c))
+        out.append(rng.choice(ix_c, size=take, replace=False))
+    return np.sort(np.concatenate(out))
+
+
 def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             windows: bool = False, specific_cross: bool = False, g_correlated: bool = False,
-            cross_sd_scale: float = 0.25, window_sd_scale: float = 1.0,
+            cross_sd_scale: float = 0.25, window_sd_scale: float = 1.0, flat: bool = False,
+            bifactor_g_sd: dict[str, float] | None = None,
+            cohort_subset: list[str] | None = None, balanced: bool = False,
             n_subsample: int | None = None, seed: int = 20260605) -> CorePrep:
     """Load the persisted V0 baseline, encode the continuous block for `factors`, and resolve
     the per-cell loading priors from the matrix. Three orthogonal switches deform S1 -> S2:
@@ -126,6 +141,8 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
 
     B = pd.read_parquet(PROC / "baseline_v0.parquet")
     items = [it for it in items if it in B.columns]
+    if cohort_subset is not None:          # per-cohort fits (§8 invariance): filter rows, z-score WITHIN
+        B = B[np.isin(np.asarray(B.index.get_level_values("cohort")), list(cohort_subset))]
     cohort = np.asarray(B.index.get_level_values("cohort"))
 
     cols = {}
@@ -141,7 +158,8 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
 
     if n_subsample and n_subsample < len(Mdf):
         rng = np.random.default_rng(seed)
-        ix = np.sort(rng.choice(len(Mdf), size=n_subsample, replace=False))
+        ix = (_balanced_idx(cohort, n_subsample, rng) if balanced
+              else np.sort(rng.choice(len(Mdf), size=n_subsample, replace=False)))
         Mdf, cohort = Mdf.iloc[ix], cohort[ix]
 
     homes = [home.get(it, "") for it in items]
@@ -157,7 +175,13 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             elif f == G_KEY:                              # bifactor-G cell (signed, sd unscaled)
                 if h:                                     # homed specific item -> always (bifactor)
                     gx = cell.get((it, G_KEY), ("plausible_cross", 0.0, 0.25))
-                    sgn_cells.append((j, c, gx[1], gx[2]))
+                    # bifactor_g_sd tightens the G-loading sd for chosen home factors. Used in the
+                    # mixed model (§4.4 rung 3) to tighten the developmental/suicidality items' G-loadings:
+                    # their home is an EXPLICIT factor, so a free G-loading makes them load on two
+                    # explicit factors (G + home) → a ridge that stalls mixing. dev/suic are ≈⊥G, so
+                    # tightening toward 0 removes the ridge without touching the biology⊥G estimand.
+                    sd_g = bifactor_g_sd.get(h, gx[2]) if bifactor_g_sd else gx[2]
+                    sgn_cells.append((j, c, gx[1], sd_g))
                     kind[(j, c)] = "bifactor_G"
                 elif use_windows and ptype == "plausible_cross":   # window on G
                     sgn_cells.append((j, c, mu, sd))
@@ -170,6 +194,13 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
                 elif specific_cross:                     # specific <-> specific (ridge-guarded)
                     sgn_cells.append((j, c, mu, sd * cross_sd_scale))
                     kind[(j, c)] = "cross"
+
+    if flat:                          # §5 confirmation: prior-free (identification-only) priors.
+        # Drop the soft-prior informativeness, keep ONLY the identification constraints (home cells
+        # stay TruncatedNormal>0 for sign-orientation; signed cells centered at 0). A flat-prior MAP
+        # = MLE = FIML (§3.5), so Λ/Φ matching the soft-prior fit ⇒ not a Bayesian-prior artefact.
+        pos_cells = [(j, c, 0.0, 5.0) for (j, c, _m, _s) in pos_cells]
+        sgn_cells = [(j, c, 0.0, 5.0) for (j, c, _m, _s) in sgn_cells]
 
     return CorePrep(M=Mdf.to_numpy(), items=items, home=homes, factor_cols=factor_cols,
                     spec_factors=spec_factors, g_col=col[G_KEY],
@@ -196,10 +227,17 @@ def _build_phi(pm, pt, prep, lkj_eta: float):
     if not prep.correlated or F <= 2:
         return pt.eye(F), pt.eye(F)
     if getattr(prep, "g_correlated", False):
-        # S5 sensitivity: LKJ over ALL factors incl G (no orthogonality) — tests whether biology⊥G
-        # is empirical or a bifactor artefact by reading G's correlation with metabolic/inflammatory.
-        Lall = pm.LKJCorr("Phi_full", n=F, eta=lkj_eta)
-        Phi = Lall @ Lall.T
+        # S5 sensitivity: correlate ALL factors incl G (no orthogonality) — reads G's correlation with
+        # metabolic/inflammatory (the biology⊥G test). Parameterize the correlation directly as a
+        # unit-row lower-triangular Cholesky: free strictly-lower entries, unit diagonal, then normalize
+        # each row to unit L2 norm ⇒ L Lᵀ has unit diagonal (a valid correlation, guaranteed PD). This
+        # avoids pm.LKJCorr (its n≥5 jitter-init is broken in this stack) AND LKJCholeskyCov's nuisance
+        # sd_dist (whose near-zero draws funnel → divergences). Weakly-informative correlation prior.
+        tl = np.tril_indices(F, -1)
+        lower = pm.Normal("Phi_lower", 0.0, 1.0, shape=len(tl[0]))
+        Lr = pt.set_subtensor(pt.eye(F)[tl], lower)
+        L = Lr / pt.sqrt((Lr ** 2).sum(1, keepdims=True))
+        Phi = L @ L.T
         return Phi, pt.linalg.cholesky(Phi + 1e-8 * pt.eye(F))
     spec_idx = [i for i in range(F) if i != prep.g_col]
     ns = len(spec_idx)
@@ -425,12 +463,21 @@ class MixedPrep:
 
 
 def prepare_mixed(factors: list[str] = S3_FACTORS, *, min_obs: int = 1500,
+                  bifactor_g_sd: dict[str, float] | None = None, balanced: bool = False,
                   n_subsample: int | None = None, seed: int = 20260605) -> MixedPrep:
     """S3b inputs: the S3a continuous prep + the non-Gaussian (binary/ordinal/count) suicidality
     and developmental indicators, aligned to the same patients. Coverage filter: an indicator must
     be observed in all three cohorts with >= `min_obs` total (drops the sparse BP/DR-only C-SSRS/LTS
-    and dr=0 items, which cannot identify a loading)."""
-    base = prepare(factors, correlated=True, windows=True, n_subsample=n_subsample, seed=seed)
+    and dr=0 items, which cannot identify a loading).
+
+    `bifactor_g_sd` (§4.4 rung 3): tighten the G-loadings of items whose home is an EXPLICIT factor
+    (suicidality, developmental_risk) — a free G-loading there makes them load on two explicit factors,
+    a ridge that stalls mixing (the CTQ→G cells: ESS 30). Default tightens both toward 0 (they are ≈⊥G),
+    which leaves the biology→G estimand untouched."""
+    if bifactor_g_sd is None:
+        bifactor_g_sd = {"developmental_risk": 0.05, "suicidality": 0.05}
+    base = prepare(factors, correlated=True, windows=True, bifactor_g_sd=bifactor_g_sd,
+                   balanced=balanced, n_subsample=n_subsample, seed=seed)
     m = pd.read_csv(MATRIX)
     meta = m.drop_duplicates("item").set_index("item")[["modeling_block", "likelihood_family"]]
     home = (m[m.prior_type.isin(["primary", "g_anchor"])].drop_duplicates("item")

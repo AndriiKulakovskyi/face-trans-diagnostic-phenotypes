@@ -1,0 +1,4 @@
+model,waic,elpd_waic,p_waic,d_waic,se_diff
+bifactor (G + specifics),702633.0,-351316.5,835.2,0.0,0.0
+correlated-factors (no G),705352.5,-352676.3,765.8,2719.6,78.9
+unidimensional (G only),756042.7,-378021.4,732.5,53409.7,426.8

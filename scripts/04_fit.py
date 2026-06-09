@@ -259,8 +259,9 @@ def run_mixed(subsample: int | None = None, draws: int = 600, tune: int = 1000,
     def _samp(iv):
         with model:
             return pm.sample(draws=draws, tune=tune, chains=chains, target_accept=0.85,
-                             random_seed=20260605, nuts_sampler="numpyro", initvals=iv,
-                             nuts_sampler_kwargs=NUTS_KWARGS, idata_kwargs={"log_likelihood": False})
+                             random_seed=seed, nuts_sampler="numpyro", initvals=iv,
+                             nuts_sampler_kwargs=dict(NUTS_KWARGS), idata_kwargs={"log_likelihood": False},
+                             progressbar=True)
     try:
         idata = _samp(initvals)
     except Exception as e:
@@ -321,7 +322,7 @@ def _diagnose_write_mixed(mp, idata, az, label="stage3b") -> dict:
     heywood = bool(cont_hey or ng_hey)
     cert = (round(rhat, 3) <= GATES["rhat"] and (np.isnan(ess) or ess >= GATES["ess"])
             and div <= GATES["div"] and not heywood)
-    diag = dict(stage="3b", N=int(base.M.shape[0]), cont_J=int(base.M.shape[1]),
+    diag = dict(stage=label.replace("stage", ""), N=int(base.M.shape[0]), cont_J=int(base.M.shape[1]),
                 explicit_factors=e_names, n_nongaussian=len(ng_items), factors=fc,
                 rhat_max=round(rhat, 4), ess_min=round(ess, 1), z_e_ess_min=round(ze_ess, 1),
                 divergences=div, heywood=heywood,
@@ -392,18 +393,6 @@ def main():
     else:
         run(a.stage, a.subsample, marginalized=not a.explicit, gpu=a.gpu,
             draws=a.draws, tune=a.tune, chains=a.chains, seed=a.seed)
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--stage", type=int, default=1)
-    ap.add_argument("--subsample", type=int, default=None)
-    ap.add_argument("--explicit", action="store_true",
-                    help="explicit-latent engine (default: marginalized Woodbury via NumPyro)")
-    ap.add_argument("--gpu", action="store_true", help="route NUTS through NumPyro/JAX (CUDA box)")
-    ap.add_argument("--draws", type=int, default=1000)
-    ap.add_argument("--tune", type=int, default=1000)
-    ap.add_argument("--chains", type=int, default=4)
-    a = ap.parse_args()
-    run(a.stage, a.subsample, marginalized=not a.explicit, gpu=a.gpu,
-        draws=a.draws, tune=a.tune, chains=a.chains)
 
 
 if __name__ == "__main__":

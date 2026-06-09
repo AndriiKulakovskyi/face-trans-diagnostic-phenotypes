@@ -60,10 +60,23 @@ def main() -> None:
     B = X[present].apply(pd.to_numeric, errors="coerce")        # raw harmonized; NaN = missing
     cohort = pd.Series(X.index.get_level_values("cohort"), index=X.index)
 
+    # ---- site (administrative; NEVER modeled) — persisted as a side table so the §8 site
+    # bootstrap (scripts/08_robustness) can cluster-resample recruitment sites. siteid_city is the
+    # canonical fondacode-derived network code (src/face/data/rules.py::derive_siteid_city); it is
+    # computed by harmonization but excluded from the indicator matrix (not in the prior matrix). ----
+    site = pd.to_numeric(X["siteid_city"], errors="coerce") if "siteid_city" in X.columns else None
+
     # ---- persist model-ready tables (per-patient -> gitignored) ----
     B.to_parquet(PROC / "baseline_v0.parquet")
     meta.loc[present].reset_index(names="item").to_parquet(PROC / "indicator_metadata.parquet",
                                                            index=False)
+    if site is not None:
+        site.rename("siteid_city").to_frame().to_parquet(PROC / "site_v0.parquet")  # gitignored
+        site_cov = pd.crosstab(site.round().astype("Int64"), cohort.values)
+        site_cov.columns = [f"n_{c}" for c in site_cov.columns]
+        site_cov["n_total"] = site_cov.sum(axis=1)
+        site_cov.index.name = "site_code"
+        site_cov.to_csv(REPORTS / "01_site_coverage.csv")
 
     # ---- aggregate QC (committable: counts/fractions only, no per-patient values) ----
     cov = pd.DataFrame({"indicator": present,
@@ -97,10 +110,21 @@ def main() -> None:
         f"min-observation guard, auto-skipped at fit; effective modeled set "
         f"**{int((cov.n_obs >= 30).sum())}**.",
     ]
+    if site is not None:
+        per = {c: int(site[(cohort == c).values].dropna().nunique()) for c in ("bp", "sz", "dr")}
+        lines.append(
+            f"- **Recruitment sites: {int(site.dropna().nunique())}** (administrative — persisted to "
+            "`data/processed/site_v0.parquet` for the §8 site bootstrap; NOT modeled): "
+            + " · ".join(f"{k.upper()} {v}" for k, v in per.items()) + " distinct sites per cohort.")
+    else:
+        lines.append("- ⚠ `siteid_city` absent from the harmonized matrix — site side table not "
+                     "written (the §8 site bootstrap will need an alternate site source).")
     if absent:
         lines.append(f"- ⚠ declared in matrix but absent from data ({len(absent)}): {absent}")
-    lines += ["", "Artifacts: `data/processed/{baseline_v0,indicator_metadata}.parquet` "
-              "(gitignored) · `reports/01_coverage_by_indicator.csv`."]
+    lines += ["", "Artifacts: `data/processed/{baseline_v0,indicator_metadata}.parquet`"
+              + (" + `site_v0.parquet`" if site is not None else "")
+              + " (gitignored) · `reports/01_coverage_by_indicator.csv`"
+              + (" · `01_site_coverage.csv`" if site is not None else "") + "."]
     (REPORTS / "01_build_data.md").write_text("\n".join(lines))
     print("\n".join(lines))
     print(f"\nwrote data/processed/baseline_v0.parquet  shape={B.shape}")

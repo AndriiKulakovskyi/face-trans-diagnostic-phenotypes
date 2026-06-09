@@ -76,7 +76,10 @@ and the three with no common indicators (impulsivity, negative symptoms, sensory
    orthogonal") is robust in direction, but the magnitude needs the certified full-N fit to pin down.
 4. **No measurement-invariance test yet** across BP/SZ/DR — does each loading hold per cohort, or is the map
    partly cohort-driven? (§8). This is the most important remaining validity check.
-5. **No FIML triangulation yet** — is the structure robust to the estimator, not a Bayesian-prior artefact? (§5).
+5. ~~No FIML triangulation yet~~ **RESOLVED (§5):** standalone FIML dropped (semopy intractable/unreliable;
+   §3.5 makes the marginal = FIML) → confirmed **in-engine**. A prior-free (flat-prior) full-N refit
+   reproduces the soft-prior loadings/Φ **exactly** (Tucker φ = 1.00 every factor), PPC SRMR ≈ 0.07, and
+   WAIC decisively prefers the bifactor — the structure is **not a Bayesian-prior artefact**.
 6. **Cohort-specific coverage** — anhedonia and the MADRS/QIDS windows are BP/DR (SZ has no QIDS/MADRS); the SZ
    map leans on the shared factors. Each patient's per-dimension reliability must be flagged by observed-indicator
    count (§7).
@@ -88,9 +91,24 @@ and the three with no common indicators (impulsivity, negative symptoms, sensory
 
 The map exists; these finish and harden it (all named in the methods doc):
 
-- **Full-N, certified S5 on the GPU** (§4.5) — upgrade the reported map from provisional; pin the Φ magnitudes.
-- **FIML confirmation** on the continuous backbone (§5) — CFI/TLI, RMSEA, classical fit + estimator triangulation.
-- **Measurement invariance** across BP/SZ/DR (§8) — multi-group loadings/intercepts; document partial invariance.
+- ✅ **Estimator/prior confirmation** (§5) — **DONE**: prior-free refit (Tucker φ = 1.00) + PPC (SRMR ≈ 0.07)
+  + WAIC (bifactor decisively preferred). See `reports/05_confirmation_report.md`. *(Replaced the planned
+  classical FIML — semopy intractable on the full backbone; §3.5 makes the marginal = FIML.)*
+- 🟡 **S5 certification** (§4.5/§3.6) — **DONE (largest-N documented):** multi-seed at N≈2,000 cohort-balanced,
+  §4.4 rung-3 reparam (CTQ→G tightened; biology→G free). R-hat 1.03 · ESS 114–158 · 0 div · BFMI 0.40; **
+  cross-seed Tucker φ 0.993** (loadings/Φ resample-stable). suic~dev Φ *precision* is the documented limit.
+  See `reports/07_s5_certification_report.md`.
+- ✅ **Correlated-G sensitivity** (§3.1, biology⊥G refinement) — **DONE.** Relaxing G⊥specifics (all factors
+  freely correlated, simple structure, clean fit: R-hat 1.01 · ESS 421 · **0 div**) confirms biology is the
+  **least severity-entangled** domain: G correlates **+0.06 inflammatory · +0.14 metabolic** vs **+0.39
+  cognition · +0.44 sleep** — biology's are the lowest, well below cognition/sleep (even cleaner than the
+  provisional 0.14/0.28). Engine fix: `g_correlated` Φ now a **unit-row Cholesky** (pm.LKJCorr n≥5 breaks
+  jitter-init; LKJCholeskyCov's nuisance sd funnels → divergences). `scripts/s5_corrg.py` →
+  `reports/07_corrG_report.md`. *Remaining S5 sub-item:* mixed-model PPC (the continuous PPC is done, §5).
+- ✅ **Measurement invariance** across BP/SZ/DR (§8) — **DONE** (in-engine, per-cohort simple-structure,
+  N≈600/cohort × 3 seeds, 9/9 converged): **largely invariant** — cognition/metabolic/sleep invariant
+  everywhere, G invariant except BP–SZ (partial), **inflammatory non-invariant in DR** (neutrophils load
+  ≈0 in DR, eosinophils high). Documented partial invariance. See `reports/06_invariance_report.md`.
 - **Robustness** (§8) — diagnosis-balanced bootstrap, leave-one-cohort-out loading congruence.
 - **Prior → posterior empirical atlas** (§2.3) — the theory-vs-data heatmap with per-candidate verdicts (the
   manuscript's centerpiece).

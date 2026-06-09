@@ -7,5 +7,6 @@
 - Skip-logic structural-zero decoding applied (`apply_skip_logic=True`).
 - Best/worst 3-cohort coverage: max 0.94 (suoccur_alcool), min 0.00 (ltsv04).
 - **2 indicator(s) with < 30 obs** (ltsv04, ltsv05) — below the engine's min-observation guard, auto-skipped at fit; effective modeled set **141**.
+- **Recruitment sites: 21** (administrative — persisted to `data/processed/site_v0.parquet` for the §8 site bootstrap; NOT modeled): BP 15 · SZ 12 · DR 13 distinct sites per cohort.
 
-Artifacts: `data/processed/{baseline_v0,indicator_metadata}.parquet` (gitignored) · `reports/01_coverage_by_indicator.csv`.
+Artifacts: `data/processed/{baseline_v0,indicator_metadata}.parquet` + `site_v0.parquet` (gitignored) · `reports/01_coverage_by_indicator.csv` · `01_site_coverage.csv`.
