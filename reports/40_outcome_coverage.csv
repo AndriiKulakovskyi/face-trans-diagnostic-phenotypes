@@ -1,0 +1,9 @@
+outcome,source_var,family,role,cohort_scope,n_V0,n_V1,n_V2,n_paired_V0V1,n_paired_V0V2,paired_bp,paired_sz,paired_dr
+egf,egf,gaussian,primary,bp+sz+dr,7486,3610,2420,3196,2121,1495,520,106
+cgi_s,cgi01,gaussian,primary,bp+sz+dr,8129,3799,2531,3540,2345,1694,544,107
+fast,fast,gaussian,secondary,bp+dr,6188,2783,2088,2669,1991,1920,0,71
+eq5d_vas,eq5d0206,gaussian,secondary,bp+sz+dr,5581,2730,1917,2234,1393,1005,269,119
+madrs,madrs,gaussian,secondary,bp+dr,6580,3152,2213,3092,2176,2052,0,124
+ymrs,ymrs,gaussian,secondary,bp+sz+dr,8435,3957,2733,3852,2660,2034,532,94
+psqi,psqi,gaussian,secondary,bp+sz+dr,7268,3475,2449,3223,2234,1911,254,69
+cssrs_active,cssrs01,bernoulli,secondary,bp+dr,1408,717,512,469,227,123,0,104
