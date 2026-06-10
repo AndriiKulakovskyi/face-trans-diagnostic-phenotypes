@@ -1,0 +1,4 @@
+visit,n_patients,n_items,obs_cells,mean_coverage,out_of_v0_support_cells,cov_bp,cov_sz,cov_dr
+V0,9013,87,526712,0.672,0,0.763,0.428,0.62
+V1,4270,86,181580,0.494,0,0.551,0.314,0.5
+V2,2958,87,138201,0.537,1,0.606,0.277,0.553

@@ -1,6 +1,6 @@
 # STATE — where the project is right now
 
-> **Read this first.** Updated 2026-06-07.
+> **Read this first.** Updated 2026-06-10.
 
 ## TL;DR
 
@@ -21,7 +21,11 @@ in `reports/01,04–11`. **M2 stratification COMPLETE** (pending PI sign-off) �
 [`STRATA_FINDINGS.md`](STRATA_FINDINGS.md), atlas [`STRATA_ATLAS.md`](STRATA_ATLAS.md), methods
 [`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md). The transdiagnostic space is a **continuum** (not
 biotypes): 8 soft archetypes + a 4-region tessellation, transdiagnostic (ARI≈0 vs DSM-5) and a tighter
-description than DSM-5 (descriptive). Next: **M3 temporal coherence**. Updated 2026-06-09.
+description than DSM-5 (descriptive). **M3 temporal coherence is COMPLETE** (pending PI sign-off) — the map
+and strata are **temporally coherent** (V0→V1→V2): the measurement holds (G1 invariance), and the M2 geometry
+replays over time — biology/cognition are durable (trait) while severity + symptoms slide (state), and
+archetype identity persists. Findings: [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md). Next: **M4 prognosis**.
+Updated 2026-06-10.
 
 ## M2 — stratification (COMPLETE 2026-06-09, pending PI sign-off)
 
@@ -120,6 +124,42 @@ discussion); `scripts/26_score.py`.
 Pipeline `scripts/20–26` + `src/face/strata/{scoring,structure,mixture,archetypes,validation}.py`; 90 tests
 green. **PI sign-off on the findings + atlas locks M2; then M3 temporal coherence (do the coordinates +
 phenotype memberships persist V1–V4?).**
+
+## M3 — temporal coherence (COMPLETE 2026-06-10, pending PI sign-off)
+
+**Findings: [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md); methods: [`TEMPORAL_MODEL.md`](TEMPORAL_MODEL.md);
+dev record: [`TEMPORAL_RESULTS.md`](TEMPORAL_RESULTS.md).** Does the V0 map + strata cohere and persist over
+follow-up (V0→V1→V2, yearly)? Scored onto the **FIXED** M1/M2 model — observed cells only, uncertainty
+propagated, **never re-discovered**. Engine `src/face/temporal/`; pipeline `scripts/30–37`; **36 tests**.
+Window V0–V2 (all 3 cohorts well-represented; DR collapses at V3). G5 (vs DSM-5) **deferred to M4** (`arm` is
+time-invariant in-data; diagnosis-change exits captured for M4). Two minimal, default-off `prepare()` adds
+(`emit_moments`, `visit=`) proven non-disruptive (90 v3 tests stay green).
+
+- **G1 invariance (precondition) ✓** — per-visit backbone refit, Tucker φ vs V0: severity/cognition/metabolic/
+  sleep/developmental **invariant** (φ 0.96–1.00), **inflammatory partial** (0.90 — acute-phase WBC shift).
+  The map measures the same constructs at follow-up → licenses reading change as patient-change. `scripts/33`.
+- **G2 substrate** — `results/face/patient_panel.parquet` (16,241 rows over V0–V2): 9-dim coords + uncertainty
+  + Arm-A/B memberships + per-axis license + trait/state. V0 reproduces M2 `patient_strata` at **99.9%**; the
+  V0-standardization spec round-trips **bit-exact** (frozen scale, so genuine change is preserved, not
+  re-centred). `scripts/31–34`.
+- **G3 trait/state (headline) — two lenses.** Measurement-error random-intercept (visit fixed effects remove
+  the population trend; known M1 var **plugged**). **Population slide:** symptoms slide (suicidality −0.89,
+  severity −0.34), biology static (metabolic +0.10, inflammatory +0.05). **Individual ICC:** metabolic 0.93 /
+  cognition 0.78 trait; sleep/suicidality/developmental mixed-state; severity 0.66 (trait-by-rank). `scripts/35`.
+- **G4 persistence + spine-vs-corner (headline) ✓** — spine (severity) moves 34.5% > biology corner 20.2%;
+  "spine moves + biology holds" **25.8% vs anti-pattern 11.5% (2.2×)**. Arm-B archetype identity persists 52%
+  (κ 0.27 vs 12.5% chance, cosine 0.81). `scripts/36`.
+- **G3 ⟷ G4 synthesis** — both routes agree on the core (biology durable, symptoms move); the simple ρ is
+  diluted by 2 **principled** exceptions: severity (trait-by-rank, moves-via-slide) and developmental (G3 σ²_w
+  inflated by **CTQ recall noise**; G4's reliable-change rule is the robust route, says it HOLDS).
+- **G6 attrition (honesty)** — dropout **mild** / cognition-leaning (severity neutral, the improved don't
+  preferentially leave); verdicts robust completers-vs-all (max |ΔICC| 0.14); IPW saved. `scripts/31`.
+
+**Bottom line:** the transdiagnostic map + strata are **temporally coherent** — *stratify on the durable
+biology (cognition/metabolic/inflammatory), monitor the moving symptoms (severity/suicidality/sleep).*
+Caveats carried forward: developmental's "state" = CTQ recall noise (trait by design); inflammatory partial;
+substance uninformative (signal ≪ noise); mania/suicidality/substance not G1-tested (explicit block); 3-visit
+window. **PI sign-off locks M3; then M4 prognosis — persists ≠ predicts.**
 
 ## What's decided
 
