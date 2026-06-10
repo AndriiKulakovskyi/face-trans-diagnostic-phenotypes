@@ -103,7 +103,8 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             bifactor_g_sd: dict[str, float] | None = None,
             cohort_subset: list[str] | None = None, balanced: bool = False,
             keep_index: np.ndarray | None = None, force_factors_continuous: list[str] | None = None,
-            n_subsample: int | None = None, seed: int = 20260605) -> CorePrep:
+            n_subsample: int | None = None, emit_moments: bool = False, visit: str = "V0",
+            seed: int = 20260605) -> "CorePrep | tuple[CorePrep, dict]":
     """Load the persisted V0 baseline, encode the continuous block for `factors`, and resolve
     the per-cell loading priors from the matrix. Three orthogonal switches deform S1 -> S2:
 
@@ -145,7 +146,7 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
                and any(cell.get((w, f), ("", 0, 0))[0] == "plausible_cross" for f in factors)]
         items = sorted(set(items) | set(win))
 
-    B = pd.read_parquet(PROC / "baseline_v0.parquet")
+    B = pd.read_parquet(PROC / f"baseline_{visit.lower()}.parquet")   # V0 default; V1/V2 for the §G1 refit
     items = [it for it in items if it in B.columns]
     if cohort_subset is not None:          # per-cohort fits (§8 invariance): filter rows, z-score WITHIN
         B = B[np.isin(np.asarray(B.index.get_level_values("cohort")), list(cohort_subset))]
@@ -154,14 +155,20 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
     cohort = np.asarray(B.index.get_level_values("cohort"))
 
     cols = {}
+    moments = {} if emit_moments else None     # frozen V0 transform for follow-up scoring (M3 §3.1)
     for it in items:
         v = pd.to_numeric(B[it], errors="coerce").astype(float)
-        if meta.loc[it, "likelihood_family"] == "lognormal":
-            mn = np.nanmin(v.values)
-            v = np.log1p(v - mn + 1e-6) if (np.isfinite(mn) and mn <= 0) else np.log(v)
-        v = int(meta.loc[it, "item_sign"]) * v
-        sd = v.std()
-        cols[it] = (v - v.mean()) / sd if sd and sd > 0 else v * 0.0
+        fam = meta.loc[it, "likelihood_family"]
+        logmin = None
+        if fam == "lognormal":
+            logmin = float(np.nanmin(v.values))
+            v = np.log1p(v - logmin + 1e-6) if (np.isfinite(logmin) and logmin <= 0) else np.log(v)
+        sgn = int(meta.loc[it, "item_sign"])
+        v = sgn * v
+        mu, sd = v.mean(), v.std()
+        cols[it] = (v - mu) / sd if sd and sd > 0 else v * 0.0
+        if moments is not None:
+            moments[it] = (str(fam), sgn, logmin, float(mu), float(sd))
     Mdf = pd.DataFrame(cols, index=B.index)
 
     if n_subsample and n_subsample < len(Mdf):
@@ -210,11 +217,12 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
         pos_cells = [(j, c, 0.0, 5.0) for (j, c, _m, _s) in pos_cells]
         sgn_cells = [(j, c, 0.0, 5.0) for (j, c, _m, _s) in sgn_cells]
 
-    return CorePrep(M=Mdf.to_numpy(), items=items, home=homes, factor_cols=factor_cols,
+    prep = CorePrep(M=Mdf.to_numpy(), items=items, home=homes, factor_cols=factor_cols,
                     spec_factors=spec_factors, g_col=col[G_KEY],
                     pos_cells=pos_cells, sgn_cells=sgn_cells,
                     correlated=bool(correlated), cohort=cohort, index=Mdf.index, kind=kind,
                     g_correlated=bool(g_correlated))
+    return (prep, moments) if moments is not None else prep
 
 
 def _cell_arrays(cells):

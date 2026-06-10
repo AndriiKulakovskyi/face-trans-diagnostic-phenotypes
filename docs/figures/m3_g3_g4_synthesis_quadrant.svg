@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="374" viewBox="0 0 680 374" font-family="system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" role="img">
+<title>G3 variance and G4 geometry agree, with two principled exceptions</title>
+<desc>A two-by-two of G3 trait or state against G4 holds or moves. Suicidality and sleep agree as dynamic; metabolic, cognition, inflammatory and mania agree as durable; severity and developmental are the two off-diagonal exceptions.</desc>
+<rect width="680" height="374" fill="#ffffff"/>
+<text x="120" y="72" font-size="12" fill="#5F5E5A">rows = G4 (moves top / holds bottom) · columns = G3 (state left / trait right)</text>
+<rect x="120" y="86" width="248" height="110" rx="6" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="132" y="110" font-size="14" font-weight="500" fill="#085041">agree — dynamic</text><text x="132" y="128" font-size="12" fill="#0F6E56">state + moves</text><text x="132" y="156" font-size="14" fill="#085041">suicidality · sleep</text>
+<rect x="378" y="86" width="250" height="110" rx="6" fill="#FAEEDA" stroke="#854F0B" stroke-width="1"/>
+<text x="390" y="110" font-size="14" font-weight="500" fill="#633806">exception</text><text x="390" y="128" font-size="12" fill="#854F0B">trait-rank but slides</text><text x="390" y="156" font-size="14" fill="#633806">severity (the spine)</text>
+<rect x="120" y="204" width="248" height="110" rx="6" fill="#FAEEDA" stroke="#854F0B" stroke-width="1"/>
+<text x="132" y="228" font-size="14" font-weight="500" fill="#633806">exception</text><text x="132" y="246" font-size="12" fill="#854F0B">state but holds</text><text x="132" y="274" font-size="14" fill="#633806">developmental</text><text x="132" y="292" font-size="12" fill="#854F0B">= CTQ recall noise</text>
+<rect x="378" y="204" width="250" height="110" rx="6" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="390" y="228" font-size="14" font-weight="500" fill="#085041">agree — durable</text><text x="390" y="246" font-size="12" fill="#0F6E56">trait + holds</text><text x="390" y="274" font-size="14" fill="#085041">metabolic · cognition</text><text x="390" y="296" font-size="14" fill="#085041">inflammatory · mania</text>
+<text x="374" y="340" text-anchor="middle" font-size="12" fill="#5F5E5A">diagonal = the two routes agree; off-diagonal = the two understood exceptions</text>
+</svg>

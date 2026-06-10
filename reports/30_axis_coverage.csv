@@ -1,0 +1,10 @@
+axis,n_indicators,items_ge30_V0,items_ge30_V1,items_ge30_V2,n_readministered,n_carried,n_untested,median_change_rate,verdict
+overall_severity,14,14,10,12,10,0,4,0.732,trackable
+cognition,11,11,11,11,11,0,0,0.895,trackable
+metabolic,32,32,32,32,32,0,0,0.952,trackable
+inflammatory,14,14,14,14,14,0,0,0.793,trackable
+sleep,9,9,9,9,9,0,0,0.554,trackable
+mania_activation,2,2,2,2,2,0,0,0.691,thin
+suicidality,30,28,21,21,21,0,9,0.432,trackable
+developmental_risk,23,23,19,18,16,1,6,0.221,trackable
+substance,4,4,4,4,4,0,0,0.368,trackable

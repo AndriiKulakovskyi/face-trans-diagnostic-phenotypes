@@ -53,7 +53,7 @@ covariates / validation labels.
   before advancing. Consolidate, don't accrete; one canonical doc per concern.
 - **Output:** scripts write aggregates to `results/`, figures to `docs/figures/`.
 
-## Current state — M1 complete (9-dim map)
+## Current state — M1 + M2 + M3 complete (next: M4 prognosis)
 
 The package is **`src/face/…`**; the engine (`src/face/models/bayesian/continuous_core` + `confirm`,
 `runner`, `scoring`) and pipeline (`scripts/01_build_data`, `04_fit`, `05_confirm`, `06_invariance`,
@@ -71,4 +71,14 @@ On the 9-dim coordinates (uncertainty-propagated, diagnosis = validation-only) t
 **continuum, not biotypes**: 8 soft **archetypes** (lead) + a 4-region measurement-error **tessellation** —
 transdiagnostic (ARI≈0 vs the 7 DSM-5 subtypes), specific-axis-driven (biology⊥G as phenotypes), stable, not
 a missingness artefact, and a tighter *description* than DSM-5 (predictive/treatment validity → M4/M5).
-Engine `src/face/strata/`; pipeline `scripts/20–26`. Next: **M3 temporal coherence** (V1–V4 persistence).
+Engine `src/face/strata/`; pipeline `scripts/20–26`.
+**M3 temporal coherence COMPLETE** (pending PI sign-off) — methods **[docs/TEMPORAL_MODEL.md](docs/TEMPORAL_MODEL.md)**,
+findings (paper-facing, read first) **[docs/TEMPORAL_FINDINGS.md](docs/TEMPORAL_FINDINGS.md)**, dev record
+**[docs/TEMPORAL_RESULTS.md](docs/TEMPORAL_RESULTS.md)**. Scoring follow-up (V0→V1→V2) onto the **fixed** M1/M2
+model (observed cells, uncertainty propagated, never re-discovered), the map + strata are **temporally
+coherent**: the measurement holds (G1 invariance: 5/6 backbone axes invariant, inflammatory partial), and the
+M2 geometry replays — **biology/cognition are durable (trait) while severity + symptoms slide (state)**, and
+archetype identity persists (G3 variance ⟷ G4 geometry agree). Honest caveats: developmental's apparent state
+is CTQ recall-noise (trait by design); G5-vs-DSM5 deferred to M4 (`arm` time-invariant). Clinical logic:
+*stratify on the durable biology, monitor the moving symptoms.* Engine `src/face/temporal/`; pipeline
+`scripts/30–37`; hand-off `results/face/patient_panel.parquet`. Next: **M4 prognosis** (persists ≠ predicts).
