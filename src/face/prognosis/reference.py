@@ -105,3 +105,17 @@ def fixed_block(sub: pd.DataFrame, cols):
     ([N, len(cols)] design, names)."""
     mat = np.column_stack([_z(sub, c) for c in cols])
     return mat, list(cols)
+
+
+def armB_block(sub: pd.DataFrame, *, profiles_path):
+    """Per-patient Arm-B (G-residualized) archetype weights: project each patient's 8-specific
+    coordinate means onto the FIXED M2 Arm-B archetype profiles (reusing the M2 simplex projection),
+    z-scored, drop-one-reference. The clean ⊥G strata representation. Returns ([N, A-1] design, names)."""
+    from face.strata.archetypes import project_to_Z
+
+    prof = pd.read_csv(profiles_path)
+    ZB = prof[prof["arm"] == "B_specifics"][list(SPECIFICS)].to_numpy("float64")     # [A, 8]
+    X = sub[[f"{ax}__mean" for ax in SPECIFICS]].to_numpy("float64")                  # [N, 8]
+    W = project_to_Z(X, ZB)[:, :-1]                                                   # [N, A-1] drop last
+    z = (W - W.mean(0)) / np.where(W.std(0) > 0, W.std(0), 1.0)
+    return z, [f"archB_w{k}" for k in range(W.shape[1])]

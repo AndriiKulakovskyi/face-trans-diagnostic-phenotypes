@@ -64,7 +64,8 @@ def fit_glm(y, X, *, family: str = "gaussian", group=None, n_groups: int | None 
         if has_eiv:
             mu_x = numpyro.sample("mu_x", dist.Normal(0.0, 1.0).expand([K]))
             tau_x = numpyro.sample("tau_x", dist.HalfNormal(1.0).expand([K]))
-            xi = numpyro.sample("xi", dist.Normal(mu_x, tau_x).expand([N, K]).to_event(1))
+            xi_raw = numpyro.sample("xi_raw", dist.Normal(0.0, 1.0).expand([N, K]).to_event(1))
+            xi = mu_x + tau_x * xi_raw                     # non-centered — avoids the EIV funnel (high-K)
             numpyro.sample("z", dist.Normal(xi, jnp.asarray(eiv_sd)).to_event(1), obs=jnp.asarray(eiv_obs))
             b_eiv = numpyro.sample("beta_eiv", dist.Normal(0.0, 1.0).expand([K]))
             eta = eta + xi @ b_eiv

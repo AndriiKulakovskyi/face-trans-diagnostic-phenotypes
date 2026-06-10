@@ -7,47 +7,49 @@ Each map representation added on top of the R3y bar; **ΔELPD vs R3y** is the he
 
 | model         |   elpd_loo |   d_elpd_vs_ref |   se_d_elpd | verdict    |   max_pareto_k |   rhat |
 |:--------------|-----------:|----------------:|------------:|:-----------|---------------:|-------:|
-| +durable      |   -2559.95 |            6.73 |        4.48 | ambiguous  |           0.5  |   1.01 |
-| +archetypes   |   -2508.32 |           58.36 |       11.06 | predictive |           0.41 |   1.01 |
-| +tessellation |   -2519.46 |           47.23 |        9.71 | predictive |           0.4  |   1.01 |
-| +specifics8   |   -2512.84 |           53.84 |       10.47 | predictive |           0.99 |   1.17 |
+| +durable      |   -2559.61 |            7.1  |        4.45 | ambiguous  |           0.57 |   1    |
+| +archetypesA  |   -2508.48 |           58.22 |       11.06 | predictive |           0.51 |   1.01 |
+| +archetypesB  |   -2520.27 |           46.44 |       10.27 | predictive |           0.47 |   1.01 |
+| +tessellation |   -2519.52 |           47.19 |        9.74 | predictive |           0.47 |   1    |
+| +specifics8   |   -2509.87 |           56.84 |       10.36 | predictive |           1.01 |   1.17 |
 
 Durable-axis effects (standardized β on the z-scored outcome; EIV, 94% HDI):
 
-| axis         |       mean |    eti_lo |     eti_hi |   p_direction |
-|:-------------|-----------:|----------:|-----------:|--------------:|
-| cognition    | -0.0221474 | -0.06279  |  0.0214441 |     0.16      |
-| metabolic    | -0.0621253 | -0.102671 | -0.0224146 |     0.0021875 |
-| inflammatory | -0.0600885 | -0.111743 | -0.0110207 |     0.00875   |
+| axis         |       mean |     eti_lo |      eti_hi |   p_direction |
+|:-------------|-----------:|-----------:|------------:|--------------:|
+| cognition    | -0.0217316 | -0.0630405 |  0.0204885  |     0.160625  |
+| metabolic    | -0.0618859 | -0.101602  | -0.0220119  |     0.000625  |
+| inflammatory | -0.0599875 | -0.111582  | -0.00793849 |     0.0134375 |
 
 Q2 — same axes under the **error-aware G** severity (must survive both):
 
 | axis         |       mean |     eti_lo |     eti_hi |   p_direction |
 |:-------------|-----------:|-----------:|-----------:|--------------:|
-| cognition    | -0.0222691 | -0.0628624 |  0.018211  |      0.140313 |
-| metabolic    | -0.054566  | -0.0950406 | -0.0153099 |      0.004375 |
-| inflammatory | -0.035008  | -0.0854889 |  0.0126297 |      0.091875 |
+| cognition    | -0.0225595 | -0.0608886 |  0.0164196 |     0.12875   |
+| metabolic    | -0.0541756 | -0.0924973 | -0.0155374 |     0.0028125 |
+| inflammatory | -0.0364547 | -0.0855003 |  0.0110841 |     0.079375  |
 
 ## cgi_s  (N = 2345)
 
 | model         |   elpd_loo |   d_elpd_vs_ref |   se_d_elpd | verdict    |   max_pareto_k |   rhat |
 |:--------------|-----------:|----------------:|------------:|:-----------|---------------:|-------:|
-| +durable      |   -3023.48 |           -0.96 |        2.04 | ambiguous  |           0.41 |   1    |
-| +archetypes   |   -3009.69 |           12.83 |        6.65 | ambiguous  |           0.33 |   1    |
-| +tessellation |   -3012.3  |           10.22 |        5.23 | ambiguous  |           0.3  |   1    |
-| +specifics8   |   -3005.26 |           17.26 |        7.19 | predictive |           0.85 |   1.12 |
+| +durable      |   -3023.1  |           -0.34 |        2.03 | ambiguous  |           0.4  |   1    |
+| +archetypesA  |   -3009.79 |           12.98 |        6.65 | ambiguous  |           0.36 |   1    |
+| +archetypesB  |   -3007.58 |           15.18 |        6.99 | predictive |           0.39 |   1.01 |
+| +tessellation |   -3012.08 |           10.69 |        5.2  | predictive |           0.34 |   1    |
+| +specifics8   |   -3006.09 |           16.68 |        7.2  | predictive |           1.17 |   1.03 |
 
 Durable-axis effects (standardized β on the z-scored outcome; EIV, 94% HDI):
 
 | axis         |       mean |      eti_lo |    eti_hi |   p_direction |
 |:-------------|-----------:|------------:|----------:|--------------:|
-| cognition    | -0.0106299 | -0.0525611  | 0.033048  |      0.321875 |
-| metabolic    |  0.0366884 | -0.00346501 | 0.0769195 |      0.957187 |
-| inflammatory |  0.0147841 | -0.0365108  | 0.0656091 |      0.710938 |
+| cognition    | -0.0104823 | -0.0531543  | 0.0321809 |      0.31     |
+| metabolic    |  0.0370666 | -0.00195457 | 0.0769096 |      0.960938 |
+| inflammatory |  0.0135686 | -0.0363103  | 0.0651393 |      0.68375  |
 
 ## Read
 
-- **Representations compared**: continuous durable coords vs the 8 archetypes vs the 4-region tessellation vs the 8-specifics ceiling — which carries predictive value, and whether the deployable archetypes retain it.
+- **Representations compared**: continuous durable coords · 8 archetypes **Arm A (full phenotype, includes G)** vs **Arm B (G-residualized, ⊥G)** · 4-region tessellation · the 8-specifics ceiling. Arm A−Arm B gap = how much of the strata's added value is a richer severity profile vs genuinely orthogonal-to-G structure.
 - **Q2**: a durable effect is only credited if its HDI excludes 0 under *both* the manifest CGI-S and the error-aware G severity (egf; for cgi_s the two coincide since CGI-S is the baseline outcome).
 - Held-out ΔELPD is the honest performance metric; the calibration scatter (in-sample R²) and the added-value bars are in `docs/figures/43_{added_value,calibration}.png`.
 

@@ -39,16 +39,18 @@ from face.prognosis import DURABLE  # noqa: E402
 from face.prognosis.compare import delta_elpd  # noqa: E402
 from face.prognosis.frame import load_outcome_config  # noqa: E402
 from face.prognosis.glm import fit_glm  # noqa: E402
-from face.prognosis.reference import (ARCH_COLS, SPECIFICS, TESS_COLS, coord_eiv_block,  # noqa: E402
-                                      design_for_rung, fixed_block, modeling_frame,
+from face.prognosis.reference import (ARCH_COLS, SPECIFICS, TESS_COLS, armB_block,  # noqa: E402
+                                      coord_eiv_block, design_for_rung, fixed_block, modeling_frame,
                                       outcome_vector, severity_column, site_index)
 
 CONFIG = REPO / "configs" / "m4_outcomes.yaml"
 M4 = REPO / "results" / "face" / "m4"
+PROFILES = REPO / "results" / "face" / "m2" / "archetype_profiles.csv"
 REPORTS = REPO / "reports"
 FIGS = REPO / "docs" / "figures"
 CGI_BASELINE = "cgi_s__V0"
-MODELS = ("R3y", "+durable", "+archetypes", "+tessellation", "+specifics8")
+# +archetypesA = Arm A (full phenotype, includes G); +archetypesB = Arm B (G-residualized, the clean ⊥G strata)
+MODELS = ("R3y", "+durable", "+archetypesA", "+archetypesB", "+tessellation", "+specifics8")
 
 
 def _fit_all(sub, spec, *, sev_col, horizon, fit_kw):
@@ -58,14 +60,16 @@ def _fit_all(sub, spec, *, sev_col, horizon, fit_kw):
     Xr, _ = design_for_rung(sub, spec, "R3y", severity_col=sev_col, horizon=horizon)
     dob, dsd, _ = coord_eiv_block(sub, DURABLE)
     sob, ssd, _ = coord_eiv_block(sub, SPECIFICS)
-    arch, _ = fixed_block(sub, ARCH_COLS)
+    archA, _ = fixed_block(sub, ARCH_COLS)
+    archB, _ = armB_block(sub, profiles_path=PROFILES)
     tess, _ = fixed_block(sub, TESS_COLS)
     base = dict(family=fam, group=grp, n_groups=ng, n_cat=n_cat, **fit_kw)
     fits = {}
     for name, kw, X in [
         ("R3y", {}, Xr),
         ("+durable", dict(eiv_obs=dob, eiv_sd=dsd), Xr),
-        ("+archetypes", {}, np.column_stack([Xr, arch])),
+        ("+archetypesA", {}, np.column_stack([Xr, archA])),
+        ("+archetypesB", {}, np.column_stack([Xr, archB])),
         ("+tessellation", {}, np.column_stack([Xr, tess])),
         ("+specifics8", dict(eiv_obs=sob, eiv_sd=ssd), Xr),
     ]:
@@ -100,7 +104,7 @@ def main(smoke: bool = False) -> None:
     horizon = cfg.meta.get("primary_horizon", "V2")
     seed = int(cfg.meta.get("seed", 20260610))
     fit_kw = (dict(draws=150, tune=150, chains=2, seed=seed) if smoke
-              else dict(draws=800, tune=800, chains=4, seed=seed))
+              else dict(draws=800, tune=1000, chains=4, seed=seed, target_accept=0.95))
 
     frame = pd.read_parquet(M4 / "analysis_frame.parquet")
     comparisons, durable_coefs, calib = [], [], {}
@@ -237,9 +241,10 @@ def _report(cfg, comp, coef, horizon, smoke):
                    .reindex(list(DURABLE))[["mean", "eti_lo", "eti_hi", "p_direction"]].to_markdown(), ""]
     md += [
         "## Read", "",
-        "- **Representations compared**: continuous durable coords vs the 8 archetypes vs the 4-region "
-        "tessellation vs the 8-specifics ceiling — which carries predictive value, and whether the "
-        "deployable archetypes retain it.",
+        "- **Representations compared**: continuous durable coords · 8 archetypes **Arm A (full "
+        "phenotype, includes G)** vs **Arm B (G-residualized, ⊥G)** · 4-region tessellation · the "
+        "8-specifics ceiling. Arm A−Arm B gap = how much of the strata's added value is a richer "
+        "severity profile vs genuinely orthogonal-to-G structure.",
         "- **Q2**: a durable effect is only credited if its HDI excludes 0 under *both* the manifest "
         "CGI-S and the error-aware G severity (egf; for cgi_s the two coincide since CGI-S is the "
         "baseline outcome).",
