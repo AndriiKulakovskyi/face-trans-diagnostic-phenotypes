@@ -321,6 +321,24 @@
   \node[cnr,draw=faceopen,text=faceopen] at (2.7,-2.15) {suicidality};
 \end{tikzpicture}}\end{center}}
 
+\newcommand{\temporalspine}{%
+\begin{center}\resizebox{0.9\linewidth}{!}{%
+\begin{tikzpicture}[font=\sffamily\scriptsize,
+   cnr/.style={fill=white,rounded corners=2pt,line width=0.7pt,inner sep=2.5pt}]
+  \foreach \cx/\lab in {3.6/V0, 0.8/V1, -2.0/V2}{%
+     \fill[faceaccent!8] (\cx,0) ellipse [x radius=1.2cm, y radius=2.0cm];
+     \draw[faceaccent!30,line width=0.5pt] (\cx,0) ellipse [x radius=1.2cm, y radius=2.0cm];
+     \node[font=\sffamily\bfseries\footnotesize,text=faceaccent] at (\cx,2.35) {\lab};}
+  \draw[->,faceink,line width=1.3pt] (2.3,-0.5) .. controls (0.8,-1.15) .. (-0.8,-0.5);
+  \node[fill=white,inner sep=1.5pt,font=\sffamily\itshape,text=faceink] at (0.75,-1.2) {the cohort slides (state)};
+  \draw[->,faceink,line width=1.2pt] (-5.3,0) -- (5.3,0);
+  \node[font=\sffamily\itshape,text=faceink] at (-4.6,0.42) {less};
+  \node[font=\sffamily\itshape,text=faceink] at (4.6,0.42) {more severe};
+  \node[cnr,draw=facekr,text=facekr] at (-4.4,1.5) {metabolic};
+  \node[cnr,draw=facekr,text=facekr] at (-4.4,-1.5) {inflammatory};
+  \node[fill=white,inner sep=1pt,font=\sffamily\itshape,text=facekr] at (-4.4,0) {corners hold};
+\end{tikzpicture}}\end{center}}
+
 % -------------------------------------------------------------------- misc
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.7ex plus 0.2ex}

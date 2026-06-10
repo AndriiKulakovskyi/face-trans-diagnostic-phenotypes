@@ -11,7 +11,7 @@
 \newcommand{\reportauthor}{Andrii Kulakovskyi}
 \newcommand{\reportgroup}{Precision Psychiatry \& Artificial Intelligence}
 \newcommand{\reportdate}{June 2026}
-\newcommand{\reportversion}{Milestones 1--2 --- v2.0 (the map and its strata)}
+\newcommand{\reportversion}{Milestones 1--3 --- v3.0 (the map, its strata, and their persistence)}
 
 \begin{document}
 \hypersetup{pdfauthor={\reportauthor}}
@@ -23,7 +23,7 @@
 \vspace*{0.15cm}
 {\color{faceaccent}\rule{\linewidth}{1.3pt}}\par\vspace{6pt}
 \noindent{\sffamily\footnotesize\bfseries\color{faceaccent} TECHNICAL REPORT}\hfill%
-{\sffamily\footnotesize\color{facemute} Milestones 1--2 --- the map and its strata \quad\textbar\quad \reportdate}\par
+{\sffamily\footnotesize\color{facemute} Milestones 1--3 --- the map, its strata, and their persistence \quad\textbar\quad \reportdate}\par
 \vspace{1.5cm}
 
 {\sffamily\bfseries\fontsize{37}{42}\selectfont\color{faceink} FACE{\color{faceaccent}-}ATLAS}\par
@@ -40,8 +40,9 @@
   {\bfseries\color{faceaccent}transdiagnostic dimensions} $\:\to\:$ {\bfseries\color{faceaccent}validated
   strata} (this report) $\:\to\:$ prognosis\,/\,treatment}\par\vspace{3pt}
 {\sffamily\footnotesize\color{facemute} Scope\quad bipolar disorder, schizophrenia, depression
-  ($N=9{,}013$, baseline visit). A certified nine-dimension map, and on it a transdiagnostic \emph{continuum}
-  --- eight extreme phenotypes, fully cross-diagnostic. \textbf{M1\,$+$\,M2 complete} --- pending PI sign-off.}\par
+  ($N=9{,}013$). A certified nine-dimension map; on it a transdiagnostic \emph{continuum} of eight extreme
+  phenotypes; and across follow-up, both shown \emph{temporally coherent}. \textbf{M1\,$+$\,M2\,$+$\,M3
+  complete} --- pending PI sign-off.}\par
 \vspace{1.15cm}
 
 {\color{facerule}\rule{\linewidth}{0.6pt}}\par\vspace{7pt}
@@ -75,8 +76,13 @@ transdiagnostic space is a graded \textbf{continuum}, represented as eight extre
 patient a soft blend, organized by biology and cognition far more than by diagnosis (adjusted Rand index
 $\approx 0$ against the seven DSM-5 subtypes; coordinate variance explained $\approx 21\%$ vs $\approx 5\%$).
 Severity is the continuum's spine, not a corner; metabolic and inflammatory load form their own extreme
-phenotypes. Whether this description is \emph{clinically} better than diagnosis is deferred, by design, to the
-predictive and treatment milestones.}\par\vspace{7pt}
+phenotypes. \textbf{Milestone~3} then scores the fixed map and strata onto follow-up visits
+(V0\,$\to$\,V1\,$\to$\,V2, never re-estimated) and asks whether the signal \emph{persists}: the measurement is
+shown invariant across visits, and the M2 geometry replays over time --- the cohort slides along the severity
+spine while individual biological positions and phenotype memberships are preserved (\emph{durable biology,
+moving symptoms}), confirmed by a variance decomposition and an independent geometric test that agree. Whether
+this description is \emph{clinically} better than diagnosis is deferred, by design, to the predictive and
+treatment milestones.}\par\vspace{7pt}
 {\color{facerule}\rule{\linewidth}{0.6pt}}
 
 \vfill
@@ -100,6 +106,7 @@ configurations.}
 \input{sections/06_validation}
 \input{sections/scoring}
 \input{sections/m2_strata}
+\input{sections/m3_temporal}
 \input{sections/07_engineering}
 \input{sections/08_roadmap}
 \input{sections/09_limitations}
