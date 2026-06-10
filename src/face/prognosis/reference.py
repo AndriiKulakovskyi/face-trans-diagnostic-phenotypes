@@ -18,8 +18,13 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from face.prognosis import CANON, DURABLE
+
 RUNGS = ("R0", "R1", "R2", "R3y")
 _COVARS = ("age", "sex", "siteid_city", "arm")
+SPECIFICS = tuple(a for a in CANON if a != "overall_severity")   # the 8 ⊥G specific axes (the ceiling)
+ARCH_COLS = tuple(f"arch_w{k}" for k in range(7))                 # 8 archetype weights, drop-one reference
+TESS_COLS = tuple(f"tess_r{k}" for k in range(3))                 # 4 tessellation regions, drop-one reference
 
 
 def severity_column(spec, *, cgi_baseline_col: str) -> str:
@@ -79,3 +84,24 @@ def design_for_rung(sub: pd.DataFrame, spec, rung: str, *, severity_col: str, ho
     names = list(cols)
     X = np.column_stack([cols[n] for n in names]) if names else np.empty((len(sub), 0))
     return X, names
+
+
+def coord_eiv_block(sub: pd.DataFrame, axes):
+    """Errors-in-variables block for coordinate `axes`: standardized posterior mean (by the axis's
+    population SD) + the per-patient measurement SD on the SAME scale, so beta_eiv is comparable to the
+    z-scored fixed effects and wide-posterior patients self-down-weight. Returns (obs, sd, names)."""
+    obs, sd = [], []
+    for ax in axes:
+        m = sub[f"{ax}__mean"].to_numpy("float64")
+        s = sub[f"{ax}__sd"].to_numpy("float64")
+        psd = m.std() or 1.0
+        obs.append((m - m.mean()) / psd)
+        sd.append(s / psd)
+    return np.column_stack(obs), np.column_stack(sd), list(axes)
+
+
+def fixed_block(sub: pd.DataFrame, cols):
+    """Z-scored fixed predictor block (the archetype / tessellation membership representations). Returns
+    ([N, len(cols)] design, names)."""
+    mat = np.column_stack([_z(sub, c) for c in cols])
+    return mat, list(cols)
