@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "face-v3"
 version = "0.1.0"
-description = "FACE precision psychiatry (BP/SZ/DR): harmonized 3-cohort data → patient-level, missingness-aware transdiagnostic dimension discovery → validated probabilistic strata → prognosis/treatment decision models. See docs/STATE.md (current) and docs/V3_PLAN.md (plan)."
+description = "FACE precision psychiatry (BP/SZ/DR): harmonized 3-cohort data → patient-level, missingness-aware transdiagnostic dimension discovery → validated probabilistic strata → temporal coherence → prognosis → treatment. Milestones 1–5 complete (pending PI sign-off); see docs/STATE.md."
 requires-python = ">=3.11"
 dependencies = [
     "pandas>=2.0",
