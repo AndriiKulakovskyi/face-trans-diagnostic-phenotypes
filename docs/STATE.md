@@ -40,6 +40,13 @@ antipsychotic-functioning hypothesis; clozapine *channeled*/non-estimable), the 
 assumed**, and the metabolic functional forecast **survives treatment adjustment** (strengthens M4).
 Findings: [`TREATMENT_FINDINGS.md`](TREATMENT_FINDINGS.md). **The program is M1–M5 complete (pending PI
 sign-off); a true M5b — treatment *selection* — needs randomized/trial-arm data.**
+**Honest positioning (the calibrated claim):** the program demonstrates **scientific validity** — a real,
+stable, *continuum* (not biotypes) map carrying a *small but genuine, group-level* incremental prognostic
+signal for functioning — but **not strong clinical utility**: the individual-level prognostic gain is small
+(remission ΔAUC +0.017) and the map does **not** moderate treatment in observational data. These are
+different bars; reporting the modest/null results as such is a deliberate **correction to biotype/biomarker
+overclaiming**, not a shortfall. Individual-level utility or treatment guidance would need incident events,
+randomized treatment data, and external validation this baseline cohort lacks.
 Updated 2026-06-11.
 
 ## M2 — stratification (COMPLETE 2026-06-09, pending PI sign-off)
