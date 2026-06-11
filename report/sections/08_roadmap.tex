@@ -1,63 +1,37 @@
-\section{Roadmap: the milestones ahead}
+\section{Future directions}
 \label{sec:roadmap}
 
-This document is a living artifact. \textbf{Milestones 1 through 5 are complete} (pending PI sign-off) ---
-the measurement map, its stratification, their temporal coherence, their prognostic value, and the treatment
-boundary --- each a separate milestone with its own acceptance gate, none begun before the previous was
-locked. \textbf{PI sign-off is next; a true treatment-selection study (M5b) needs randomized data.}
+The results above are internally complete; what remains is a short, principled list of next steps, none of
+which changes a conclusion drawn here. They divide into two kinds: methodological follow-ons that would
+\emph{tighten} the present estimates, and new studies that would be needed to cross from the scientific
+validity demonstrated here to clinical utility in the strong sense.
 
-\milestonestrip{5}
+\subsection{Tightening the present results}
+Four loose ends are documented and bounded; each is a refinement, not a change of method.
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Full-precision certification of the explicit-latent block.} The one slow-mixing coupling ---
+  the suicidality$\sim$developmental $\Phi$ cell --- has a resample-stable point estimate but a provisional
+  precision; a full-$N$, full-precision refit would close it. The continuous backbone and the
+  biology$\perp G$ estimand already mix cleanly at full $N$ (cross-seed Tucker $\varphi$ $0.993$).
+  \item \textbf{Full-$N$ projection of the non-Gaussian scores.} Extending the suicidality, substance, and
+  mania coordinates to all $9{,}013$ patients under the fixed certified parameters --- already validated at
+  Pearson $r\approx1.00$ on the certified subset --- would complete the per-patient coordinate table.
+  \item \textbf{A dedicated bootstrap and correlated-$G$ arm for the thin axes} (mania, substance), which
+  currently inherit the joint nine-dimension certification rather than carrying their own.
+  \item \textbf{A hurdle likelihood for \code{isf09a}} (the suicide-attempt count), the lone item-level
+  mis-fit, should its count precision ever be needed; the suicidality factor itself is unaffected.
+\end{itemize}
 
-\paragraph{M2 --- Validated strata.} \statuspill{facekr}{COMPLETE}\ \emph{(Section~\ref{sec:strata}).} On the
-nine-dimension coordinates the transdiagnostic space is a \textbf{continuum, not biotypes}: eight extreme
-phenotypes (every patient a soft blend), severity as the spine, distinct metabolic and inflammatory corners,
-and a partition that cuts across DSM-5 (adjusted Rand index $\approx 0$) while describing the coordinates far
-better than diagnosis ($\approx 21\%$ vs $\approx 5\%$ variance explained). Internal/descriptive validity only
---- the predictive and treatment head-to-heads are M4/M5.
-
-\paragraph{M3 --- Temporal coherence.} \statuspill{facekr}{COMPLETE}\ \emph{(Section~\ref{sec:temporal}).} The
-fixed map and strata are scored forward onto follow-up (V0\,$\to$\,V1\,$\to$\,V2; fit-once, score-anyone), and
-the signal is shown to \emph{persist}. This is where invariant~I3 pays off: because the map was fixed on
-baseline, later visits are an honest out-of-sample test. The measurement is invariant across visits (five of
-six backbone axes), and the M2 geometry replays --- the cohort slides along the severity spine (state) while
-individual biological positions and archetype identity are preserved (trait), confirmed by a variance
-decomposition and an independent geometric test that agree. The operative read-out, carried into M4:
-\emph{stratify on the durable biology (cognition, metabolic, inflammatory); monitor the moving symptoms
-(severity, suicidality, sleep)}. Persistence is not prediction --- that was M4.
-
-\paragraph{M4 --- Prognosis.} \statuspill{facekr}{COMPLETE}\ \emph{(Section~\ref{sec:prognosis}).} The
-biology$\perp$severity bet paid off, for \emph{functioning}: on the fixed objects, an errors-in-variables
-nested head-to-head (diagnosis $+$ severity $+$ baseline outcome vs.\ $+$ the map) shows the durable
-metabolic/inflammatory axes and the eight archetypes predict two-year functioning incrementally
-($\Delta$ELPD $+46$; functional remission $14\%$--$60\%$ across archetypes), robust to attrition, reliability
-and a permutation null. The signal is \emph{co-informative} with the DSM-5 subtypes (complementary) and
-\emph{course-dependent} (episodic bipolar/depression, not baseline-saturated schizophrenia); severity itself
-is autoregression-determined. The map's worth is group-level stratification plus continuous functional
-forecasting, not a large individual-binary boost.
-
-\paragraph{M5 --- Treatment.} \statuspill{facekr}{COMPLETE}\ \emph{(Section~\ref{sec:treatment}).} The
-data-feasibility check overturned the initial reading: treatment data exists in the per-cohort source
-dictionaries (unharmonized), and was mapped to common drug-class exposures. A proper causal pipeline
-(overlap gate $\to$ propensity $\to$ doubly-robust errors-in-variables moderation $+$ E-value) shows that,
-on observational treatment-as-usual, map position does \emph{not} reliably \emph{moderate} response: lithium
-in bipolar (the cleanest contrast) is a well-powered \emph{null}, an antipsychotic metabolic/inflammatory
-signal is suggestive but unconfirmed, and clozapine is confounded by channeling. The prognosis
-\emph{survives} treatment adjustment (strengthening M4). The boundary is \emph{earned}, not assumed ---
-treatment \emph{selection} needs the randomized/trial-arm data of a future \textbf{M5b}.
-
-\subsection{Milestones 1--5 are complete --- and the small follow-ons they leave}
-The deliverables are all in hand: the certified nine-dimension map with its hardening chain
-(Sections~\ref{sec:validation}--\ref{sec:scoring}) and prior$\to$posterior atlas; on those coordinates, the
-validated transdiagnostic continuum --- eight extreme phenotypes and a soft tessellation, internally validated
-and adjudicated against DSM-5 (Section~\ref{sec:strata}); and the demonstration that both \emph{persist} across
-follow-up --- invariant measurement and a replaying spine-versus-corner geometry (Section~\ref{sec:temporal});
-and the demonstration that the durable axes \emph{predict} two-year functioning incrementally beyond diagnosis
-and severity (Section~\ref{sec:prognosis}); and, on observational treatment-as-usual, the \emph{earned}
-finding that the map does not reliably moderate treatment, while the prognosis survives treatment adjustment
-(Section~\ref{sec:treatment}). What remains is a short, principled list of
-follow-ons, none of which changes a conclusion: full-$N$ full-precision certification of the explicit-latent
-block (the suicidality$\sim$developmental $\Phi$ coupling); full-$N$ projection of the non-Gaussian per-patient
-scores; a separate bootstrap and correlated-$G$ arm for mania/substance (they already carry the 9-dim
-cross-seed $\varphi$ $0.993$); and a hurdle likelihood for \code{isf09a} if its count precision is needed.
-\textbf{PI sign-off on the adjudication, the atlas, and the strata/temporal/prognosis/treatment findings
-locks M1\,$+$\,M2\,$+$\,M3\,$+$\,M4\,$+$\,M5; a true treatment-selection study (M5b) needs randomized data.}
+\subsection{From scientific validity to clinical utility}
+Three boundaries are drawn by the data, not the method, and each names a defined next study.
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Incident-event outcomes.} Individual-level prognostic utility would require hard endpoints
+  --- hospitalization, relapse, suicide attempt --- rather than the re-administered clinical scales
+  available here; the present forecasts are of scale trajectories, not events.
+  \item \textbf{Randomized or trial-arm treatment data.} Genuine treatment \emph{selection} --- which drug
+  for which phenotype --- cannot be established from observational treatment-as-usual, however carefully
+  adjusted; it requires a randomized or trial-arm study, for which the present work supplies the moderators
+  to test and a deployable causal pipeline.
+  \item \textbf{External validation.} Every result here is internally validated on a single baseline cohort;
+  a clinical claim would require replication in an independent sample.
+\end{itemize}

@@ -1,40 +1,41 @@
-\section{Milestone 3: temporal coherence --- does the map hold over time?}
+\section{Temporal coherence: does the map hold over time?}
 \label{sec:temporal}
 
-M1 gave the map and M2 gave its strata, both discovered on the baseline visit alone. A map drawn once can
+The map and its strata were both discovered on the baseline visit alone. A map drawn once can
 still be a snapshot of nothing: the dimensions might be an artefact of how patients happened to present on the
-day they enrolled, the strata a momentary arrangement that dissolves by the next visit. M3 asks the question
-that makes the first two milestones mean something --- does the signal \emph{cohere and persist} over
+day they enrolled, the strata a momentary arrangement that dissolves by the next visit. This chapter asks the
+question that makes the first two mean something --- does the signal \emph{cohere and persist} over
 follow-up? Concretely: does the measurement mean the same thing a year later; which of the nine axes are
 \emph{trait-like} (stable, worth stratifying on) versus \emph{state-like} (fluctuating, worth monitoring); and
-do the phenotype memberships persist? Throughout, the follow-up visits are scored onto the \emph{fixed} M1/M2
-model --- observed cells only, uncertainty propagated, the map never re-estimated on later data (invariant
+do the phenotype memberships persist? Throughout, the follow-up visits are scored onto the \emph{fixed} map and
+strata --- observed cells only, uncertainty propagated, never re-estimated on later data (invariant
 I3). The window is the dense yearly grid V0\,$\to$\,V1\,$\to$\,V2, where all three cohorts are well represented
-($9{,}013 \to 4{,}270 \to 2{,}958$ patients).
+($9{,}013 \to 4{,}270 \to 2{,}958$ patients). The analysis runs as a sequence of checks --- labelled G1--G6 and
+gathered in Table~\ref{tab:m3goals} --- each of which could refute the claim.
 
 \subsection{A geometrically derived, falsifiable prediction}
-M3 is not a fishing expedition. The M2 geometry makes a specific prediction (Figure~\ref{fig:temporalspine}):
+This is not a fishing expedition. The stratification geometry makes a specific prediction (Figure~\ref{fig:temporalspine}):
 if severity is the \emph{spine} the cloud is stretched along, it should be the axis patients move on over time
 (state); if the biology axes are fixed phenotype \emph{corners}, they should be the axes patients keep (trait).
 Each clause is something the data could refute --- invariance could fail (the map is baseline-specific), the
 biology corners could come out noisy (not real phenotypes), the archetypes could dissolve --- which is what
-makes M3 a test rather than a restatement.
+makes this a test rather than a restatement.
 
 \begin{figure}[h]\centering
 \temporalspine
-\caption{The M3 prediction, made by the M2 geometry. Over follow-up the cohort \emph{slides} along the severity
+\caption{The prediction, made by the stratification geometry. Over follow-up the cohort \emph{slides} along the severity
 spine (the population improves --- a state dynamic), while each patient's biological \emph{corner} stays fixed
-(a trait). The milestone tests this two independent ways: a variance decomposition (G3) and a per-patient
+(a trait). The chapter tests this two independent ways: a variance decomposition (G3) and a per-patient
 geometric decomposition (G4).}
 \label{fig:temporalspine}
 \end{figure}
 
 \subsection{The precondition: the map does not drift (G1)}
 A change in a patient's coordinate is interpretable as \emph{patient} change only if the instrument still works
-the same way --- otherwise apparent movement is measurement drift. So before interpreting anything, M3 refits
+the same way --- otherwise apparent movement is measurement drift. So before interpreting anything, we refit
 the simple-structure backbone separately at each visit (z-scored in-sample, since Tucker congruence compares
 loading \emph{shape} and is scale-free) and compares the loadings to baseline. This is the temporal analogue of
-M1's cross-cohort invariance test, with cohort swapped for visit.
+the map's cross-cohort invariance test, with cohort swapped for visit.
 
 \begin{keyresult}[The map measures the same constructs at follow-up]
 Five of the six testable backbone axes are metric-invariant across V0\,$\to$\,V1\,$\to$\,V2 --- severity
@@ -58,7 +59,7 @@ change is reported descriptively, never as licensed patient-change.
 \subsection{Trait versus state needs two lenses}
 \label{sub:traitstate}
 For each axis we decompose the longitudinal coordinate into between-patient \emph{trait} variance and
-within-patient \emph{state} variance, with the M1 measurement error \emph{plugged in} rather than estimated. The
+within-patient \emph{state} variance, with the map's measurement error \emph{plugged in} rather than estimated. The
 model is a measurement-error random-intercept, with the patient trait integrated out analytically (Gaussian):
 \begin{equation}
 \label{eq:traitstate}
@@ -66,7 +67,7 @@ x_{i,d,t}\;\sim\;\Normal\!\left(\mu_{d,t}+u_{i,d},\;\sigma^2_{w,d}+s^2_{i,d,t}\r
 \qquad u_{i,d}\sim\Normal\!\left(0,\sigma^2_{b,d}\right),
 \end{equation}
 where $\mu_{d,t}$ are \emph{visit fixed effects} (any population trajectory shape) and $s^2_{i,d,t}$ is the
-\emph{known} M1 posterior variance. The trait ratio is the intraclass correlation $\mathrm{ICC}_d =
+\emph{known} posterior variance carried over from the map. The trait ratio is the intraclass correlation $\mathrm{ICC}_d =
 \sigma^2_{b,d}/(\sigma^2_{b,d}+\sigma^2_{w,d})$.
 
 \begin{methodsbox}[Two design choices that make the answer honest]
@@ -74,7 +75,7 @@ Plugging the known $s^2_{i,d,t}$ (rather than letting it inflate $\sigma^2_w$) i
 axis from \emph{masquerading} as state --- the correction bites hardest where reliability is low (developmental
 raw ICC $0.56\to0.39$ corrected). And the visit fixed effects $\mu_{d,t}$ absorb the \emph{population}
 trajectory, so a shared improvement is not miscounted as \emph{individual} instability. That second choice is
-what forces the milestone's central nuance.
+what forces the chapter's central nuance.
 \end{methodsbox}
 
 The result splits cleanly into two lenses, and the split is the point (Table~\ref{tab:m3traitstate},
@@ -166,7 +167,7 @@ phenotype.''}
 
 \subsection{Two routes, one conclusion}
 \label{sub:synthesis}
-The milestone's real test is whether the variance route (G3) and the geometry route (G4) \emph{agree}. The
+The real test is whether the variance route (G3) and the geometry route (G4) \emph{agree}. The
 simple correlation between an axis's reliable-change rate and its ICC is $\rho=-0.33$ --- the right sign, but
 weak --- and the dilution is itself informative, because \emph{exactly two} axes diverge, for reasons we can
 name: \textbf{severity} (trait by individual rank, yet it moves via the population slide --- the two routes
@@ -177,12 +178,12 @@ core agrees both ways: biology and cognition are durable, the symptom axes move.
 \begin{keyresult}[A weak synthesis correlation is the healthier result]
 A near-perfect correlation between two operationalizations of the same quantity would signal redundancy, not
 corroboration. Two \emph{independent} routes --- a variance decomposition and a geometric one --- agreeing on
-the core while diverging for \emph{named} reasons is the stronger evidence. The M2 geometry --- severity the
+the core while diverging for \emph{named} reasons is the stronger evidence. The stratification geometry --- severity the
 spine, biology the corners --- is temporally coherent.
 \end{keyresult}
 
 \subsection{Honesty: is the retained sample fair? (G6)}
-Attrition is the temporal selection threat --- the analogue of M1's completeness concern. If the sicker
+Attrition is the temporal selection threat --- the analogue of the map's completeness concern. If the sicker
 systematically dropped out, the retained sample would drift toward health and we could mistake \emph{dropout}
 for \emph{improvement}. We regress retention on the nine baseline coordinates.
 
@@ -194,25 +195,25 @@ verdicts are robust completers-versus-all (max $|\Delta\mathrm{ICC}|=0.14$), wit
 available --- so the slide is genuine improvement, not survivorship.
 \end{keyresult}
 
-\subsection{What M3 establishes --- and what it defers}
-M3 takes the baseline map and strata and shows they are \emph{temporally coherent}: the measurement holds
-across follow-up (G1), and the M2 geometry replays --- the cohort slides on severity and symptoms while
+\subsection{What temporal coherence establishes --- and what it defers}
+This chapter takes the baseline map and strata and shows they are \emph{temporally coherent}: the measurement holds
+across follow-up (G1), and the stratification geometry replays --- the cohort slides on severity and symptoms while
 individual biology positions and archetype identity persist --- confirmed two independent ways
 (Table~\ref{tab:m3goals}). The operative consequence for what comes next is sharp:
 \textbf{stratify on the durable biology (cognition, metabolic, inflammatory); monitor the moving symptoms
 (severity, suicidality, sleep).}
 
 \begin{table}[h]\centering\small\sffamily
-\caption{The M3 goals and verdicts (internal validity, V0$\to$V2). G5 --- a temporal head-to-head against the
+\caption{The goals and verdicts of this chapter (internal validity, V0$\to$V2). G5 --- a temporal head-to-head against the
 diagnostic labels --- is absent by data design: the enrolment diagnosis is time-invariant in the record, so it
-is deferred to M4 with the diagnosis-change exit signal captured for it.}
+is deferred to the prognosis chapter with the diagnosis-change exit signal captured for it.}
 \label{tab:m3goals}
 \begin{tabular}{L{2.0cm} L{5.4cm} L{5.4cm}}
 \toprule
 \hdr{goal} & \hdr{question} & \hdr{verdict}\\
 \midrule
 \rowcolor{facebg} G1 invariance & same constructs at follow-up? & yes --- 5/6 invariant, inflammatory partial\\
-G2 substrate & the longitudinal panel & built; V0 reproduces M2 at $99.9\%$\\
+G2 substrate & the longitudinal panel & built; V0 reproduces the strata at $99.9\%$\\
 \rowcolor{facebg} G3 trait/state & which axes are durable? & biology/cognition trait; severity/symptoms state\\
 G4 persistence & spine moves, corner holds? & yes --- $2.2\times$ edge; archetype persists $52\%$\\
 \rowcolor{facebg} G3 $\leftrightarrow$ G4 & do the two routes agree? & core yes; two understood exceptions\\
@@ -221,10 +222,10 @@ G6 attrition & is the retained sample fair? & dropout mild, severity-neutral\\
 \end{tabular}
 \end{table}
 
-\begin{openbox}[Persistence is not prediction --- that is M4]
-M3 establishes that the signal \emph{coheres and persists}; it makes no prognostic, treatment, or external
+\begin{openbox}[Persistence is not prediction --- that comes next]
+This chapter establishes that the signal \emph{coheres and persists}; it makes no prognostic, treatment, or external
 claim. Whether a baseline coordinate or stratum \emph{predicts} a future outcome --- incrementally beyond
-diagnosis and severity --- is M4, and the durable axes M3 identified (cognition, metabolic, inflammatory) are
+diagnosis and severity --- is the next chapter's question, and the durable axes identified here (cognition, metabolic, inflammatory) are
 exactly where that bet is placed. Caveats carried forward: developmental's apparent state is measurement
 (recall noise); inflammatory is partial-invariant; substance is uninformative (signal below noise); and the
 three-visit window makes trajectory typing coarse. \emph{Persists $\ne$ predicts.}

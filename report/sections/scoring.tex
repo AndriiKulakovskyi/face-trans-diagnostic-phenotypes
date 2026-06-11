@@ -2,7 +2,7 @@
 \label{sec:scoring}
 
 A map is only useful if every patient can be placed on it. Because fitting and scoring separate cleanly under
-the marginalized model (Section~\ref{sec:estimation}), the map is fit \emph{once} and then every patient is
+the marginalized model (Chapter~\ref{sec:estimation}), the map is fit \emph{once} and then every patient is
 \emph{projected} onto it: for a fixed posterior draw, a patient's coordinate on a continuous-anchored dimension
 is the Gaussian conditional $z_i\mid x_{i,\Obs_i}$ with mean $A_i^{-1}b_i$ and precision $A_i$ --- the same
 $A_i,b_i$ that defined the likelihood. The explicit dimensions (suicidality, developmental, substance) are read
@@ -34,12 +34,12 @@ patients, and mania (only two indicators) is partial for everyone.}
 \label{fig:reliability}
 \end{figure}
 
-\begin{caveatbox}[Uncertainty must propagate to M2]
-The scores are a distribution, not a point. A stratification (M2) that hard-assigns patients to clusters on the
+\begin{caveatbox}[Uncertainty must propagate to the stratification]
+The scores are a distribution, not a point. A stratification that hard-assigns patients to clusters on the
 posterior means would discard exactly the information these tiers encode --- a prior-dominated cognition score
 is not evidence of average cognition, only of \emph{absent measurement}. The per-patient SD/HDI and tier are
 carried forward so downstream decision regions can down-weight or abstain where a coordinate is unreliable.
-Two follow-ons remain (M2-prep): full-$N$ projection of the non-Gaussian block (a logistic/count conditional,
+Two refinements remain: full-$N$ projection of the non-Gaussian block (a logistic/count conditional,
 not Gaussian; the explicit scores are currently on the fit sub-sample), and a hurdle likelihood for
 \code{isf09a} if its count precision is needed.
 \end{caveatbox}

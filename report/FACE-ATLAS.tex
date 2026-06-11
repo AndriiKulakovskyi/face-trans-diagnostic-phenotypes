@@ -1,6 +1,6 @@
 %==============================================================================
 %  FACE-ATLAS — A Transdiagnostic Latent-axis Stratification of Severe Mental Illness
-%  Technical report (living document; grows with each milestone).
+%  Technical report.
 %  Compile:  pdflatex FACE-ATLAS.tex   (run twice for the table of contents / refs)
 %  Style:    faceatlas.sty  (self-contained; TeX Live "basic" compatible)
 %==============================================================================
@@ -11,7 +11,7 @@
 \newcommand{\reportauthor}{Andrii Kulakovskyi}
 \newcommand{\reportgroup}{Precision Psychiatry \& Artificial Intelligence}
 \newcommand{\reportdate}{June 2026}
-\newcommand{\reportversion}{Milestones 1--5 --- v5.0 (the map, its strata, their persistence, their prognosis, and the treatment boundary)}
+\newcommand{\reportversion}{v5.0 --- the map, its strata, their persistence, their prognosis, and the treatment boundary}
 
 \begin{document}
 \hypersetup{pdfauthor={\reportauthor}}
@@ -23,7 +23,7 @@
 \vspace*{0.15cm}
 {\color{faceaccent}\rule{\linewidth}{1.3pt}}\par\vspace{6pt}
 \noindent{\sffamily\footnotesize\bfseries\color{faceaccent} TECHNICAL REPORT}\hfill%
-{\sffamily\footnotesize\color{facemute} Milestones 1--5 --- the map, its strata, their persistence, their prognosis, and the treatment boundary \quad\textbar\quad \reportdate}\par
+{\sffamily\footnotesize\color{facemute} the map, its strata, their persistence, their prognosis, and the treatment boundary \quad\textbar\quad \reportdate}\par
 \vspace{1.5cm}
 
 {\sffamily\bfseries\fontsize{37}{42}\selectfont\color{faceink} FACE{\color{faceaccent}-}ATLAS}\par
@@ -38,12 +38,11 @@
 
 {\sffamily\footnotesize\color{facemute} Research program\quad diagnostic cohorts $\:\to\:$
   {\bfseries\color{faceaccent}transdiagnostic dimensions} $\:\to\:$ {\bfseries\color{faceaccent}validated
-  strata} $\:\to\:$ {\bfseries\color{faceaccent}prognosis} (this report) $\:\to\:$ treatment}\par\vspace{3pt}
+  strata} $\:\to\:$ {\bfseries\color{faceaccent}prognosis} $\:\to\:$ {\bfseries\color{faceaccent}treatment}}\par\vspace{3pt}
 {\sffamily\footnotesize\color{facemute} Scope\quad bipolar disorder, schizophrenia, depression
   ($N=9{,}013$). A certified nine-dimension map; on it a transdiagnostic \emph{continuum} of eight extreme
-  phenotypes; both shown \emph{temporally coherent}; and the durable axes shown to \emph{predict} two-year
-  functioning beyond diagnosis and severity. \textbf{M1\,$+$\,M2\,$+$\,M3\,$+$\,M4 complete} --- pending PI
-  sign-off.}\par
+  phenotypes; both shown \emph{temporally coherent}; the durable axes shown to \emph{predict} two-year
+  functioning beyond diagnosis and severity; and the treatment boundary tested and drawn by the evidence.}\par
 \vspace{1.15cm}
 
 {\color{facerule}\rule{\linewidth}{0.6pt}}\par\vspace{7pt}
@@ -52,9 +51,10 @@
 Psychiatric diagnosis aggregates heterogeneous patients into categories that are neither biologically nor
 prognostically uniform. \textbf{FACE-ATLAS} reorganizes the harmonized, three-cohort FACE baseline
 (bipolar disorder, schizophrenia, major depression; $N=9{,}013$) around \emph{continuous, diagnosis-agnostic
-axes of variation} rather than the diagnostic labels themselves. The program is staged across five milestones
---- \emph{diagnostic cohorts $\to$ transdiagnostic dimensions $\to$ validated strata $\to$ prognosis/treatment}
---- of which this report documents the first: the \emph{measurement map}. The map is estimated by a single
+axes of variation} rather than the diagnostic labels themselves. The report follows one argument through five
+questions --- does the map \emph{exist}, \emph{organize}, \emph{persist}, \emph{predict}, and \emph{guide
+treatment}? --- across the chain \emph{diagnostic cohorts $\to$ transdiagnostic dimensions $\to$ validated
+strata $\to$ prognosis $\to$ treatment}. It opens with the \emph{measurement map}, estimated by a single
 global, missingness-aware \textbf{Bayesian sparse bifactor / ESEM} model with \textbf{mixed likelihoods} and
 \textbf{soft loading priors}: clinical theory proposes a candidate ontology of ten dimensions, and the data
 \emph{confirm, split, merge, downgrade, or reject} each. Three invariants are enforced throughout: estimation
@@ -70,19 +70,19 @@ anhedonia \emph{rejected}. The map is hardened end-to-end (prior/estimator robus
 certification, resample robustness, cross-cohort invariance, and absolute-fit posterior-predictive checks
 across both likelihood blocks) and projected to per-patient coordinates with reliability flags. The headline
 finding: \textbf{biology --- metabolic and inflammatory load --- is the least severity-entangled domain}
-($\varphi$ with $G$ of $0.14$ and $0.06$, versus $0.39$ cognition and $0.44$ sleep), so biological risk rides
-on axes that clinical severity does not see. On these coordinates, \textbf{Milestone~2} asks whether patients
+(a correlation with $G$ of $0.14$ and $0.06$, versus $0.39$ cognition and $0.44$ sleep), so biological risk rides
+on axes that clinical severity does not see. On these coordinates, the report next asks whether patients
 form discrete biotypes: a structure-discovery gate (five independent methods) finds none --- the
 transdiagnostic space is a graded \textbf{continuum}, represented as eight extreme phenotypes with every
 patient a soft blend, organized by biology and cognition far more than by diagnosis (adjusted Rand index
 $\approx 0$ against the seven DSM-5 subtypes; coordinate variance explained $\approx 21\%$ vs $\approx 5\%$).
 Severity is the continuum's spine, not a corner; metabolic and inflammatory load form their own extreme
-phenotypes. \textbf{Milestone~3} then scores the fixed map and strata onto follow-up visits
-(V0\,$\to$\,V1\,$\to$\,V2, never re-estimated) and asks whether the signal \emph{persists}: the measurement is
-shown invariant across visits, and the M2 geometry replays over time --- the cohort slides along the severity
+phenotypes. Scored forward onto follow-up visits
+(V0\,$\to$\,V1\,$\to$\,V2, never re-estimated), the signal is then shown to \emph{persist}: the measurement is
+invariant across visits, and the stratification geometry replays over time --- the cohort slides along the severity
 spine while individual biological positions and phenotype memberships are preserved (\emph{durable biology,
 moving symptoms}), confirmed by a variance decomposition and an independent geometric test that agree.
-\textbf{Milestone~4} then asks whether the map \emph{predicts}: on the fixed objects, an
+The report then asks whether the map \emph{predicts}: on the fixed objects, an
 errors-in-variables Bayesian model tests whether a baseline coordinate or stratum forecasts a two-year
 outcome \emph{incrementally beyond diagnosis, severity, and the baseline outcome}. It does --- but
 \emph{modestly}, and for \emph{functioning} only: the durable metabolic and inflammatory axes and the eight
@@ -93,7 +93,7 @@ schizophrenia), while severity itself is autoregression-determined. Crucially th
 \emph{group-level}: it sharpens a continuous functional forecast and separates archetypes, but the
 individual-decision gain is small (two-year functional-remission AUC $+0.017$ over diagnosis$+$severity),
 and the $14\%$--$60\%$ archetype-remission spread partly reflects baseline-severity differences between
-archetypes rather than the incremental signal alone. \textbf{Milestone~5} then tests whether a stratum
+archetypes rather than the incremental signal alone. Finally, the report tests whether a stratum
 \emph{moderates treatment}. Treatment data --- absent from the harmonized variables but recoverable from
 the per-cohort source dictionaries, and harmonized here to common drug-class exposures --- is run through an
 overlap gate, a propensity model and doubly-robust errors-in-variables moderation. On observational

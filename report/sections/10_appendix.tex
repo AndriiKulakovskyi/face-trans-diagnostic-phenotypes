@@ -25,13 +25,13 @@ $\widehat{R},\;\mathrm{ESS}$ & potential scale reduction factor; effective sampl
 
 \section{The prior atlas}
 \label{app:prioratlas}
-Figure~\ref{fig:prioratlas} is the theory half of the map (Section~\ref{sec:model}): the soft-prior loading
+Figure~\ref{fig:prioratlas} is the theory half of the map (Chapter~\ref{sec:model}): the soft-prior loading
 matrix as an indicator$\times$factor heatmap, generated from configuration alone. Cell shade is the
 prior-permitted loading $|\text{mean}|+\text{sd}$: dark $=$ \code{primary}/\code{g_anchor} (theory expects a
 loading), mid $=$ \code{plausible_cross} (theory allows), light $=$ soft-zero (suppressed unless the data
 surprise the prior). Table~\ref{tab:pool} gives the per-factor prior pool. The fitted \emph{posterior}
-(empirical) atlas is shown beside this prior map in Section~\ref{sec:results}
-(Figures~\ref{fig:priorposterior}--\ref{fig:empatlas}); their comparison is the M1 deliverable.
+(empirical) atlas is shown beside this prior map in Chapter~\ref{sec:results}
+(Figures~\ref{fig:priorposterior}--\ref{fig:empatlas}); their comparison is the central deliverable of the measurement map.
 
 \begin{table}[h]\centering\small\sffamily
 \caption{Per-factor prior pool: primary indicators and likelihood mix. $143$ indicators $\times\,10$ candidate
@@ -61,8 +61,8 @@ substance & 4 & bernoulli 2, gaussian 1, neg-binomial 1 (confirmed; 2-cohort)\\
 \caption{The prior loading atlas (theory). Rows: the $143$ modelled indicators, grouped by home factor.
 Columns: the $10$ candidate factors. The block-diagonal primaries, the faint $G$ column over every specific
 item (the bifactor mechanism), and the homeless cross-loading windows (bottom) are all visible. The empirical
-atlas --- the fitted posterior loadings beside this map, with per-candidate verdicts --- is the M1 deliverable
-(Section~\ref{sec:roadmap}).}
+atlas --- the fitted posterior loadings beside this map, with per-candidate verdicts --- is the central
+deliverable of the measurement map (Chapter~\ref{sec:results}).}
 \label{fig:prioratlas}
 \end{figure}
 
@@ -112,7 +112,68 @@ Symptomatology; STAI State--Trait Anxiety Inventory.\\[3pt]
 applicable information criterion; SRMR standardized root-mean-square residual; DIF differential item
 functioning; ESS effective sample size; BFMI Bayesian fraction of missing information; ZINB zero-inflated
 negative binomial; $\widehat{R}$ potential scale reduction factor.\\[3pt]
-\textbf{Stratification (M2).} ARI adjusted Rand index; $\eta^2$ variance explained; Cram\'er's $V$ nominal
+\textbf{Stratification.} ARI adjusted Rand index; $\eta^2$ variance explained; Cram\'er's $V$ nominal
 association strength; HDBSCAN hierarchical density-based clustering; XD Extreme Deconvolution (a
 measurement-error Gaussian mixture); UMAP uniform manifold approximation \& projection; \emph{archetype} an
 extreme phenotype (a corner of the continuum); \emph{simplex} the space of convex blends of archetypes.}
+
+\section{Plain-language statistical glossary}
+\label{app:statglossary}
+A non-specialist guide to the statistical machinery, each entry giving the intuition rather than the formula.
+{\small
+
+\textbf{Modelling.}
+\emph{Bayesian inference / posterior} --- instead of a single best-fit number, a probability distribution over
+the values consistent with the data, so every estimate carries its own uncertainty.
+\emph{Bifactor / ESEM} --- a factor model in which one general factor touches every item while each specific
+factor touches its own cluster; ESEM additionally lets an item carry small cross-loadings onto other factors
+(a classical confirmatory analysis forbids them).
+\emph{Soft prior} --- a starting expectation for where an item should load that the data are free to override:
+``theory proposes, the data dispose.''
+\emph{Mixed likelihood} --- using the probability model appropriate to each item's type (continuous, binary,
+count, ordinal) rather than forcing everything onto one scale.
+\emph{Observed-data likelihood / FIML (full-information maximum likelihood)} --- fitting from each patient's
+\emph{filled-in} cells only; blank cells contribute nothing and are never imputed.\\[3pt]
+
+\textbf{Computation.}
+\emph{Marginalization} --- averaging over a hidden variable instead of estimating it one case at a time; here
+it removes the per-patient latent scores from the sampler.
+\emph{Woodbury identity} --- a matrix-algebra shortcut that inverts a ``diagonal $+$ a few shared directions''
+matrix cheaply by working in the small factor space, which is what lets the model run on all patients at once.
+\emph{R-hat ($\widehat{R}$)} --- a convergence check: independent sampler runs are compared, and values near
+$1.00$ mean they agree (the sampler mixed).
+\emph{ESS (effective sample size)} --- how many genuinely independent draws the autocorrelated sampler is
+worth.\\[3pt]
+
+\textbf{Fit \& validation.}
+\emph{ELPD / WAIC} --- measures of out-of-sample predictive accuracy (how well the model predicts data it did
+not see); higher ELPD, or lower WAIC, is better.
+\emph{Posterior-predictive check (PPC) / SRMR} --- simulating fresh data from the fitted model and asking
+whether it resembles the real data; an SRMR below $0.08$ is the usual ``good fit'' line.
+\emph{Tucker congruence ($\varphi$)} --- the cosine similarity of two loading patterns: $1.00$ identical,
+$\ge 0.95$ ``the same factor.''
+\emph{Measurement invariance} --- whether an instrument means the same thing across groups (cohorts, visits),
+so that a change in score reflects the patient, not the ruler.\\[3pt]
+
+\textbf{Change \& stratification.}
+\emph{Errors-in-variables / regression dilution} --- correcting for the fact that a predictor is measured with
+error; ignoring it flattens the estimated effect toward zero, worst where the measurement is noisiest.
+\emph{ICC (intraclass correlation)} --- the share of a variable's variation that is stable between patients
+(\emph{trait}) versus fluctuating within a patient over time (\emph{state}).
+\emph{Archetypal analysis / Extreme Deconvolution} --- describing each patient as a blend of a few ``pure
+extremes'' (corners of the cloud); Extreme Deconvolution first subtracts each patient's measurement noise so
+the blend reflects what they \emph{are}.
+\emph{Adjusted Rand index (ARI)} --- agreement between two groupings, scaled so $0$ is chance and $1$ is
+identical.\\[3pt]
+
+\textbf{Causal inference.}
+\emph{Propensity score} --- a patient's estimated probability of receiving a treatment given their baseline
+profile, used to compare like with like.
+\emph{Overlap / common support} --- whether treated and untreated patients are comparable enough to estimate
+an effect at all.
+\emph{IPW / IPTW (inverse-probability-of-treatment weighting)} --- re-weighting patients so the treated and
+untreated groups look alike on measured baseline factors.
+\emph{Doubly-robust estimation} --- pairing a treatment model with an outcome model so the effect estimate
+stays unbiased if \emph{either} one is correct.
+\emph{E-value} --- how strong an unmeasured confounder would have to be to explain a result away; a small
+E-value means a fragile result.}
