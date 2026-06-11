@@ -11,7 +11,7 @@
 \newcommand{\reportauthor}{Andrii Kulakovskyi}
 \newcommand{\reportgroup}{Precision Psychiatry \& Artificial Intelligence}
 \newcommand{\reportdate}{June 2026}
-\newcommand{\reportversion}{Milestones 1--3 --- v3.0 (the map, its strata, and their persistence)}
+\newcommand{\reportversion}{Milestones 1--4 --- v4.0 (the map, its strata, their persistence, and their prognostic value)}
 
 \begin{document}
 \hypersetup{pdfauthor={\reportauthor}}
@@ -23,7 +23,7 @@
 \vspace*{0.15cm}
 {\color{faceaccent}\rule{\linewidth}{1.3pt}}\par\vspace{6pt}
 \noindent{\sffamily\footnotesize\bfseries\color{faceaccent} TECHNICAL REPORT}\hfill%
-{\sffamily\footnotesize\color{facemute} Milestones 1--3 --- the map, its strata, and their persistence \quad\textbar\quad \reportdate}\par
+{\sffamily\footnotesize\color{facemute} Milestones 1--4 --- the map, its strata, their persistence, and their prognosis \quad\textbar\quad \reportdate}\par
 \vspace{1.5cm}
 
 {\sffamily\bfseries\fontsize{37}{42}\selectfont\color{faceink} FACE{\color{faceaccent}-}ATLAS}\par
@@ -38,11 +38,12 @@
 
 {\sffamily\footnotesize\color{facemute} Research program\quad diagnostic cohorts $\:\to\:$
   {\bfseries\color{faceaccent}transdiagnostic dimensions} $\:\to\:$ {\bfseries\color{faceaccent}validated
-  strata} (this report) $\:\to\:$ prognosis\,/\,treatment}\par\vspace{3pt}
+  strata} $\:\to\:$ {\bfseries\color{faceaccent}prognosis} (this report) $\:\to\:$ treatment}\par\vspace{3pt}
 {\sffamily\footnotesize\color{facemute} Scope\quad bipolar disorder, schizophrenia, depression
   ($N=9{,}013$). A certified nine-dimension map; on it a transdiagnostic \emph{continuum} of eight extreme
-  phenotypes; and across follow-up, both shown \emph{temporally coherent}. \textbf{M1\,$+$\,M2\,$+$\,M3
-  complete} --- pending PI sign-off.}\par
+  phenotypes; both shown \emph{temporally coherent}; and the durable axes shown to \emph{predict} two-year
+  functioning beyond diagnosis and severity. \textbf{M1\,$+$\,M2\,$+$\,M3\,$+$\,M4 complete} --- pending PI
+  sign-off.}\par
 \vspace{1.15cm}
 
 {\color{facerule}\rule{\linewidth}{0.6pt}}\par\vspace{7pt}
@@ -80,9 +81,18 @@ phenotypes. \textbf{Milestone~3} then scores the fixed map and strata onto follo
 (V0\,$\to$\,V1\,$\to$\,V2, never re-estimated) and asks whether the signal \emph{persists}: the measurement is
 shown invariant across visits, and the M2 geometry replays over time --- the cohort slides along the severity
 spine while individual biological positions and phenotype memberships are preserved (\emph{durable biology,
-moving symptoms}), confirmed by a variance decomposition and an independent geometric test that agree. Whether
-this description is \emph{clinically} better than diagnosis is deferred, by design, to the predictive and
-treatment milestones.}\par\vspace{7pt}
+moving symptoms}), confirmed by a variance decomposition and an independent geometric test that agree.
+\textbf{Milestone~4} then asks whether the map \emph{predicts}: on the fixed objects, an
+errors-in-variables Bayesian model tests whether a baseline coordinate or stratum forecasts a two-year
+outcome \emph{incrementally beyond diagnosis, severity, and the baseline outcome}. It does, for
+\emph{functioning} --- the durable metabolic and inflammatory axes and the eight archetypes predict future
+functioning (two-year functional remission ranging $14\%$--$60\%$ across archetypes), robust to attrition,
+measurement reliability and a permutation null --- and is \emph{co-informative} with DSM-5 (complementary,
+not a replacement) and \emph{course-dependent} (concentrated in the episodic bipolar and depression
+courses, saturated in chronic schizophrenia); severity itself is autoregression-determined. The map's
+worth is group-level \emph{stratification} and continuous functional forecasting rather than a large
+individual-risk boost. Whether a stratum \emph{moderates treatment} is deferred, by design, to the
+treatment milestone.}\par\vspace{7pt}
 {\color{facerule}\rule{\linewidth}{0.6pt}}
 
 \vfill
@@ -107,6 +117,7 @@ configurations.}
 \input{sections/scoring}
 \input{sections/m2_strata}
 \input{sections/m3_temporal}
+\input{sections/m4_prognosis}
 \input{sections/07_engineering}
 \input{sections/08_roadmap}
 \input{sections/09_limitations}

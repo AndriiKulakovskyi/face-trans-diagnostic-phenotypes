@@ -1,0 +1,13 @@
+check,n,axis,beta,hdi,excludes_0,rhat
+baseline,2114,cognition,-0.022,"[-0.063,+0.023]",False,1.0
+baseline,2114,metabolic,-0.062,"[-0.104,-0.021]",True,1.0
+baseline,2114,inflammatory,-0.06,"[-0.114,-0.011]",True,1.0
+IPW (attrition),2114,cognition,-0.025,"[-0.066,+0.019]",False,1.01
+IPW (attrition),2114,metabolic,-0.059,"[-0.099,-0.018]",True,1.01
+IPW (attrition),2114,inflammatory,-0.056,"[-0.110,-0.005]",True,1.01
+reliability (metab+inflam well),1854,cognition,-0.014,"[-0.057,+0.029]",False,1.0
+reliability (metab+inflam well),1854,metabolic,-0.059,"[-0.103,-0.016]",True,1.0
+reliability (metab+inflam well),1854,inflammatory,-0.06,"[-0.113,-0.010]",True,1.0
+LOCO (drop BP),624,cognition,-0.057,"[-0.139,+0.025]",False,1.0
+LOCO (drop BP),624,metabolic,-0.047,"[-0.126,+0.029]",False,1.0
+LOCO (drop BP),624,inflammatory,-0.065,"[-0.167,+0.037]",False,1.0

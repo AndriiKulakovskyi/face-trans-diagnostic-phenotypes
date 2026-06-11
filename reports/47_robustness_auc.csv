@@ -1,0 +1,4 @@
+check,n,auc_ref,auc_map,d_auc
+baseline,2114,0.763,0.78,0.017
+IPW (attrition),2114,0.767,0.783,0.016
+LOCO (drop BP),624,0.731,0.73,-0.001
