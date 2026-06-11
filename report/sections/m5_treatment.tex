@@ -1,0 +1,98 @@
+\section{Milestone 5: treatment --- does the map change what to do?}
+\label{sec:treatment}
+
+M4 showed the map \emph{forecasts} who will do well; it did not show it \emph{changes management}. M5 asks
+the harder question --- does a stratum \emph{moderate treatment response}, the stratum-by-treatment
+interaction at which a phenotype would alter what you prescribe? An earlier reading judged this
+\emph{data-blocked}: the harmonized variables carry no treatment. That reading was wrong. Treatment data
+exists in the per-cohort source dictionaries (the \texttt{TRAITEMENTS} tabs), unharmonized; recovered and
+mapped to common drug-class exposures, it makes the moderation question answerable --- though only
+\emph{observationally}, which governs everything that follows.
+
+\subsection{The treatment data and the estimand}
+Treatment is captured differently per cohort, all reducible to common drug classes: schizophrenia carries
+per-visit ATC-code lists (current medication), depression drug-class strings, bipolar structured lifetime
+med-class flags plus lithium plasma. The well-powered contrasts are \textbf{lithium in bipolar disorder}
+(the classic maintenance question; 1{,}140 vs 1{,}353), \textbf{clozapine in schizophrenia} (the
+treatment-resistance drug; 180), and antipsychotic/antidepressant exposure across cohorts. The estimand is
+the treatment effect on a two-year outcome \emph{conditional on the durable map axis} --- co-primary
+outcomes functioning (EGF) and CGI response.
+
+\begin{methodsbox}[Confounding by indication: overlap before effect]
+Treatment is prescribed on presentation, not randomized, so a naive interaction is confounded. We emulate
+a target trial per question: a propensity model
+$P(\text{treat}\mid\text{severity }[\text{CGI-S}+\text{error-corrected }G]+\text{DSM-5 arm}+\text{demographics}+\text{the 9 map coordinates})$,
+an \textbf{overlap gate} (is there common support to compare exposed and control at all?), then a
+\emph{doubly-robust} estimate --- stabilized inverse-probability-of-treatment weighting and covariate
+adjustment together --- in the errors-in-variables outcome GLM of \S\ref{sec:prognosis}, now carrying a
+$\text{treat}\times\text{axis}$ interaction. The map is \emph{both} a prescription confounder (it enters
+the propensity model) \emph{and} the moderator under test (its interaction is the estimand); both roles
+are admissible. Each average effect carries an \textbf{E-value} --- the unmeasured confounding that would
+be needed to explain it away.
+\end{methodsbox}
+
+\subsection{The identification gate --- can we even compare?}
+Before any effect, overlap decides what is estimable (Figure~\ref{fig:m5ident}).
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.82\linewidth]{figures/m5_identification.png}
+\caption{Covariate balance (maximum standardized mean difference across confounders) before and after
+IPTW, active-comparator contrast. Lithium balances almost perfectly ($0.30\to0.01$, overlap $100\%$);
+antipsychotic balances ($0.71\to0.09$); \textbf{clozapine cannot be balanced} ($0.44\to0.61$) --- it is
+\emph{channeled} to the treatment-resistant, the honest signature of confounding by indication.}
+\label{fig:m5ident}
+\end{figure}
+
+\begin{keyresult}[Lithium is cleanly identified; clozapine is channeled]
+The lithium-in-bipolar contrast has near-perfect overlap and balances to negligible residual confounding
+--- it is the contrast the data can actually support. Clozapine, reserved by guideline for the resistant,
+has no comparable control group: IPTW makes its imbalance \emph{worse}, and it is reported as
+\textbf{non-estimable} rather than forced. Antipsychotic in bipolar is estimable after weighting.
+\end{keyresult}
+
+\subsection{The map does not reliably moderate treatment response}
+On the common-support samples, the doubly-robust interaction is small and, where the data are clean, null
+(Figure~\ref{fig:m5mod}).
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.96\linewidth]{figures/m5_moderation.png}
+\caption{The durable-axis $\times$ treatment interaction (94\% HDI) for each estimable question and
+co-primary outcome. Teal excludes zero. Lithium shows \emph{no} moderation on either outcome; antipsychotic
+shows a metabolic/inflammatory interaction on functioning; clozapine an inflammatory interaction on
+response --- but clozapine is channeled (above), so it is uninterpretable.}
+\label{fig:m5mod}
+\end{figure}
+
+\begin{keyresult}[A well-identified null where it counts, a hypothesis where it does not]
+For \textbf{lithium in bipolar} --- the best-identified contrast --- the durable axes do \emph{not} moderate
+response, on either functioning or CGI response (held-out $\Delta$ELPD $-1.4$/$-2.8$; no axis interval
+excludes zero). For \textbf{antipsychotic in bipolar}, metabolic ($-0.15$) and inflammatory ($-0.26$)
+interactions on functioning exclude zero, but the held-out $\Delta$ELPD does not confirm them ($+4.6\pm4.2$)
+and the average effect is fragile (E-value $1.79$) --- a \emph{hypothesis for prospective testing}, not a
+result. The average treatment effects are confounding-fragile throughout (E-values $1.1$--$1.8$).
+\end{keyresult}
+
+\subsection{The prognosis survives treatment adjustment (M5 strengthens M4)}
+A standing objection to M4 is that its functional forecast is just unmodelled treatment --- sicker-biology
+patients are medicated differently, and the drugs drive the outcome. Re-fitting the M4 functioning
+prognosis on the treatment-data subset ($N=1{,}324$), with versus without the drug-class exposures as
+covariates on the same sample, answers it: the \textbf{metabolic}$\to$functioning effect \emph{survives}
+($\beta=-0.051\to-0.048$, $4.4\%$ attenuation, interval still excluding zero). M4's headline is not a
+treatment artefact (residual prescribing is bounded by the E-values above, not eliminated).
+
+\subsection{What M5 establishes --- the earned boundary}
+\label{sub:m5limits}
+
+\begin{openbox}[Earned, not assumed: observational treatment-as-usual cannot show the map prescribes]
+M5's contribution is a boundary drawn by evidence rather than by assumption. With real treatment data and a
+proper causal pipeline, the map does \emph{not} reliably moderate treatment-as-usual response: the
+cleanest contrast (lithium) is a well-powered null, the antipsychotic metabolic/inflammatory signal is
+suggestive but unconfirmed, clozapine is confounded by channeling, and average effects are fragile to
+unmeasured confounding. What the milestone delivers is therefore a \emph{well-identified null}, a
+\emph{testable hypothesis} (metabolic/inflammatory $\times$ antipsychotic functioning), a \emph{deployable
+causal method}, and a back-validation of M4. Establishing treatment \emph{selection} --- which drug for
+which phenotype --- would require randomized or trial-arm data a future \emph{M5b} must supply;
+observational prescription data, however rich, cannot. Limits carried forward: confounding by indication
+(the dominant threat); prescription, not protocol; lifetime (bipolar) versus current (schizophrenia/
+depression) exposure; within-cohort questions; channeled treatments non-estimable.
+\end{openbox}

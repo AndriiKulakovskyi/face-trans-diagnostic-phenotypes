@@ -1,0 +1,6 @@
+endpoint,n,polarity,corr_baseline_cgis,rate_lowsev,rate_highsev
+response,2023,good,-0.081,0.556,0.364
+therapeutic_effect,1855,good,-0.066,0.88,0.735
+resistance,2002,poor,0.267,0.181,0.609
+side_effects,1836,poor,0.081,0.125,0.228
+low_adherence,2334,poor,0.177,0.096,0.331

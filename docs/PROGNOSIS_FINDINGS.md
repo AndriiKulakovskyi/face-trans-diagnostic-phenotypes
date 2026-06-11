@@ -14,12 +14,14 @@
 
 ## Headline
 
-**The transdiagnostic biology map carries real, robust prognostic information about 2-year functional
-trajectory — beyond diagnosis and current severity — and it is complementary to DSM-5, not a
-replacement.** A baseline position on the durable ⊥G axes (metabolic, inflammatory) predicts future
-functioning over and above the clinician's reference, surviving attrition, measurement-reliability and
-permutation checks; the 8 archetypes sort patients into groups whose 2-year functional-remission rate
-ranges from **14% to 60%**, transdiagnostically. The signal is **course-dependent** — large in the
+**The transdiagnostic biology map carries a real but *modest*, *group-level* prognostic signal about
+2-year functional trajectory — beyond diagnosis and current severity — complementary to DSM-5, not a
+replacement, and not an individual risk tool.** A baseline position on the durable ⊥G axes (metabolic,
+inflammatory) predicts future functioning over and above the clinician's reference, surviving attrition,
+measurement-reliability and permutation checks; the 8 archetypes sort patients into groups whose 2-year
+functional-remission rate ranges from **14% to 60%**, transdiagnostically — *though that raw spread partly
+reflects baseline-severity differences between archetypes, not the incremental signal alone* (the
+severity-adjusted increment is the small ΔELPD/ΔAUC below, §4). The signal is **course-dependent** — large in the
 episodic courses (bipolar, depression) where the future is not already fixed by baseline severity, and
 absent in the more chronic schizophrenia presentations (foundation saturation). For **severity** (CGI-S)
 the map adds little: severity is largely baseline-determined. *"Persists" became "predicts" — for

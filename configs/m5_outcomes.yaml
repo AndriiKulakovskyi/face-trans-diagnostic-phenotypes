@@ -1,0 +1,25 @@
+# configs/m5_outcomes.yaml — the M5 treatment-response endpoint registry (single source for scripts 50–57).
+# Methods of record: docs/TREATMENT_MODEL.md.
+#
+# Endpoints are derived from the raw harmonized CGI response signals (NOT in the processed tables;
+# read native via the data layer, 0 = not-assessed -> NaN, never imputed). M5 = treatment-response
+# HETEROGENEITY (does the stratum predict response/resistance/tolerability/adherence to treatment-
+# as-usual), NOT treatment moderation/selection (no treatment-identity variable exists in FACE).
+
+meta:
+  predictor_visit: V0
+  primary_horizon: V2          # 2-year
+  secondary_horizon: V1        # 1-year replication
+  hdi_prob: 0.94
+  seed: 20260611
+  mars_low_threshold: 5        # MARS <= 5 (0–10) = low adherence
+  resistance_cgis_min: 4       # CGI-S >= 4 = moderately ill or worse
+
+signals: [cgi02, cgi03a, cgi03b, cgi01, mars]   # raw response signals to extract (native scale)
+
+endpoints:
+  response:           { label: "CGI-Improvement responder (much/very-much improved)", from: cgi02,          polarity: good, role: primary }
+  therapeutic_effect: { label: "CGI therapeutic effect marked/moderate",              from: cgi03a,         polarity: good, role: primary }
+  resistance:         { label: "Treatment-resistant (CGI-S>=4 & not improved)",        from: [cgi01, cgi02], polarity: poor, role: primary }
+  side_effects:       { label: "Significant side-effects (interfere+)",                from: cgi03b,         polarity: poor, role: primary }
+  low_adherence:      { label: "Low adherence (MARS<=5)",                              from: mars,           polarity: poor, role: secondary }

@@ -11,7 +11,7 @@
 \newcommand{\reportauthor}{Andrii Kulakovskyi}
 \newcommand{\reportgroup}{Precision Psychiatry \& Artificial Intelligence}
 \newcommand{\reportdate}{June 2026}
-\newcommand{\reportversion}{Milestones 1--4 --- v4.0 (the map, its strata, their persistence, and their prognostic value)}
+\newcommand{\reportversion}{Milestones 1--5 --- v5.0 (the map, its strata, their persistence, their prognosis, and the treatment boundary)}
 
 \begin{document}
 \hypersetup{pdfauthor={\reportauthor}}
@@ -23,7 +23,7 @@
 \vspace*{0.15cm}
 {\color{faceaccent}\rule{\linewidth}{1.3pt}}\par\vspace{6pt}
 \noindent{\sffamily\footnotesize\bfseries\color{faceaccent} TECHNICAL REPORT}\hfill%
-{\sffamily\footnotesize\color{facemute} Milestones 1--4 --- the map, its strata, their persistence, and their prognosis \quad\textbar\quad \reportdate}\par
+{\sffamily\footnotesize\color{facemute} Milestones 1--5 --- the map, its strata, their persistence, their prognosis, and the treatment boundary \quad\textbar\quad \reportdate}\par
 \vspace{1.5cm}
 
 {\sffamily\bfseries\fontsize{37}{42}\selectfont\color{faceink} FACE{\color{faceaccent}-}ATLAS}\par
@@ -52,7 +52,7 @@
 Psychiatric diagnosis aggregates heterogeneous patients into categories that are neither biologically nor
 prognostically uniform. \textbf{FACE-ATLAS} reorganizes the harmonized, three-cohort FACE baseline
 (bipolar disorder, schizophrenia, major depression; $N=9{,}013$) around \emph{continuous, diagnosis-agnostic
-axes of variation} rather than the diagnostic labels themselves. The program is staged across four milestones
+axes of variation} rather than the diagnostic labels themselves. The program is staged across five milestones
 --- \emph{diagnostic cohorts $\to$ transdiagnostic dimensions $\to$ validated strata $\to$ prognosis/treatment}
 --- of which this report documents the first: the \emph{measurement map}. The map is estimated by a single
 global, missingness-aware \textbf{Bayesian sparse bifactor / ESEM} model with \textbf{mixed likelihoods} and
@@ -84,15 +84,30 @@ spine while individual biological positions and phenotype memberships are preser
 moving symptoms}), confirmed by a variance decomposition and an independent geometric test that agree.
 \textbf{Milestone~4} then asks whether the map \emph{predicts}: on the fixed objects, an
 errors-in-variables Bayesian model tests whether a baseline coordinate or stratum forecasts a two-year
-outcome \emph{incrementally beyond diagnosis, severity, and the baseline outcome}. It does, for
-\emph{functioning} --- the durable metabolic and inflammatory axes and the eight archetypes predict future
-functioning (two-year functional remission ranging $14\%$--$60\%$ across archetypes), robust to attrition,
-measurement reliability and a permutation null --- and is \emph{co-informative} with DSM-5 (complementary,
-not a replacement) and \emph{course-dependent} (concentrated in the episodic bipolar and depression
-courses, saturated in chronic schizophrenia); severity itself is autoregression-determined. The map's
-worth is group-level \emph{stratification} and continuous functional forecasting rather than a large
-individual-risk boost. Whether a stratum \emph{moderates treatment} is deferred, by design, to the
-treatment milestone.}\par\vspace{7pt}
+outcome \emph{incrementally beyond diagnosis, severity, and the baseline outcome}. It does --- but
+\emph{modestly}, and for \emph{functioning} only: the durable metabolic and inflammatory axes and the eight
+archetypes add held-out predictive signal that survives attrition, measurement reliability and a
+permutation null, is \emph{co-informative} with DSM-5 (complementary, not a replacement) and
+\emph{course-dependent} (concentrated in the episodic bipolar and depression courses, saturated in chronic
+schizophrenia), while severity itself is autoregression-determined. Crucially the increment is
+\emph{group-level}: it sharpens a continuous functional forecast and separates archetypes, but the
+individual-decision gain is small (two-year functional-remission AUC $+0.017$ over diagnosis$+$severity),
+and the $14\%$--$60\%$ archetype-remission spread partly reflects baseline-severity differences between
+archetypes rather than the incremental signal alone. \textbf{Milestone~5} then tests whether a stratum
+\emph{moderates treatment}. Treatment data --- absent from the harmonized variables but recoverable from
+the per-cohort source dictionaries, and harmonized here to common drug-class exposures --- is run through an
+overlap gate, a propensity model and doubly-robust errors-in-variables moderation. On observational
+treatment-as-usual the map does \emph{not} reliably moderate response: lithium response in bipolar disorder
+(the best-identified contrast) is a well-powered \emph{null}, an antipsychotic metabolic/inflammatory signal
+is suggestive but unconfirmed, and clozapine is confounded by channeling; the average treatment effects are
+themselves fragile to unmeasured confounding. The prognostic signal does, however, \emph{survive}
+adjustment for the drugs patients received. \textbf{Taken together}, the program demonstrates a
+transdiagnostic biological map that is real, stable, and a graded \emph{continuum} rather than a set of
+biotypes, carrying a small-but-genuine group-level prognostic signal for functioning and \emph{no}
+demonstrable treatment-moderation in observational data --- a deliberately \emph{calibrated} account, with
+the negative and modest results reported as such rather than as another over-claimed biotype. Establishing
+individual-level clinical utility or treatment guidance would require incident-event outcomes, randomized
+treatment data, and external validation that this baseline observational cohort cannot provide.}\par\vspace{7pt}
 {\color{facerule}\rule{\linewidth}{0.6pt}}
 
 \vfill
@@ -118,6 +133,7 @@ configurations.}
 \input{sections/m2_strata}
 \input{sections/m3_temporal}
 \input{sections/m4_prognosis}
+\input{sections/m5_treatment}
 \input{sections/07_engineering}
 \input{sections/08_roadmap}
 \input{sections/09_limitations}
