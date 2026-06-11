@@ -1,6 +1,6 @@
 # configs/priors.yaml — soft-prior tier rules for the ESEM-bifactor loading matrix
 # =====================================================================================
-# src/v3/priors/build_matrix.py expands dimensions.yaml into a FULL (item x factor)
+# src/face/priors/build_matrix.py expands dimensions.yaml into a FULL (item x factor)
 # prior loading matrix using these tiers. Every cell gets a (mean, sd, dist, sign).
 # The model reads the matrix and parameterizes Lambda accordingly — this is the
 # mechanism by which "theory proposes -> data confirms / splits / merges / cross-loads".

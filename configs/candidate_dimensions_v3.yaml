@@ -1,13 +1,13 @@
 # V3 candidate-dimension → indicator map (soft starting ontology)
 # ---------------------------------------------------------------------------
 # This is a CURATED, REVIEWABLE clinical artifact — the "soft prior loading map"
-# of V3 (docs/V3_PLAN.md Phase C). It maps the 10 candidate dimensions (+ a few
-# data-implied ones) onto the FACE common variables that DIRECTLY measure them.
+# (methods of record: docs/MEASUREMENT_MODEL.md). It maps the 10 candidate dimensions
+# (+ a few data-implied ones) onto the FACE common variables that DIRECTLY measure them.
 #
 # It does NOT hand-score patients. It seeds the soft priors; the patient-level
 # latent model may confirm / split / merge / reject / cross-load any of these.
-# `scripts/v3_eligibility_audit.py` resolves these patterns against the data,
-# attaches per-cohort observed coverage, and prints the eligibility verdict.
+# Provenance only: `scripts/v3/01_eligibility_audit.py` + `scripts/v3/03_build_prior_matrix.py`
+# expand this ontology into the committed configs/prior_loading_matrix_v3.csv the engine reads.
 #
 # role: core | extension | module | proxy_only | historical | unsupported | covariate
 # indicators: names: [..]  and/or  sections: [..]  and/or  name_regex: "…"  (− exclude:)

@@ -4,7 +4,8 @@
 > V0 baseline.** This document fixes the *scientific logic* and the *mathematics* of the measurement
 > model and its estimation; it is written to feed the manuscript's Methods section directly. It is the
 > **single methods/plan of record** for the measurement layer. Scope is **V0 measurement only** —
-> strata, prognosis, and treatment are later milestones, named in §10 but not specified here.
+> strata, prognosis, and treatment are separate milestones (all now complete), each specified in its own
+> methods-of-record, not here (§10).
 >
 > *Math is written in plain-text/unicode (code blocks for display, `code spans` inline) so it renders in
 > any markdown viewer; it transcribes directly to LaTeX for the paper.*
@@ -500,6 +501,12 @@ M1 (this document) → **M2 strata** (probabilistic decision regions on the M1 c
 **M3 temporal coherence** (do scores persist V1–V4?) → **M4 prognosis** (incremental value beyond
 diagnosis + severity) → **M5 treatment** (target-trial emulation, only if the data support it). Each is a
 separate milestone with its own gate; none is started before M1 is locked.
+
+> **All five are now complete** (pending PI sign-off) — see [STATE.md](STATE.md) and the per-milestone
+> findings. The calibrated outcome: scientific validity demonstrated (a stable continuum map that forecasts
+> functioning beyond severity), strong-sense clinical utility (individual prediction, treatment guidance)
+> not — M5's target-trial emulation found the data support a moderation *test* but no reliable moderation
+> on treatment-as-usual.
 
 ---
 
