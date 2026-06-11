@@ -1,0 +1,101 @@
+# configs/m4_outcomes.yaml — the M4 prognostic-outcome registry (single source for scripts 40–46).
+# Methods of record: docs/PROGNOSIS_MODEL.md.
+#
+# `source_var` is the harmonized canonical name in data/processed/baseline_v{0,1,2}.parquet, read on
+# the NATIVE clinical scale (NaN = missing, skip-logic decoded, never imputed). A cohort not in
+# `cohort_scope` does not collect the outcome -> stays NaN (verified: SZ has no FAST/MADRS/QIDS/STAI/
+# C-SSRS at follow-up). `family` is the OUTCOME-modeling likelihood (the GLM head), not the M1
+# indicator family. `severity_anchor` selects the R2 baseline-severity rung (see PROGNOSIS_MODEL §ladder):
+#   baseline_outcome -> the outcome's own V0 value (R3y) carries severity; R2 adds G (avoids double-count)
+#   G                -> the error-aware latent severity coordinate (overall_severity)
+#   baseline_cgi     -> the manifest clinician CGI-S at V0
+# Q2 always also reports the alternate severity operationalization. Thresholds (optional) define the
+# binary remission/response arms (stage 43 secondary). `role`: primary = the pre-registered headline.
+
+meta:
+  predictor_visit: V0          # baseline durable coordinates are read at V0
+  primary_horizon: V2          # 2-year prognosis (the headline)
+  secondary_horizon: V1        # 1-year replication (higher N, milder attrition)
+  hdi_prob: 0.94               # project convention
+  seed: 20260610
+
+outcomes:
+  # ---- PRIMARY (3-cohort, co-primary; PI-locked 2026-06-10) ----
+  egf:
+    label: "Global functioning (EGF / GAF, 0–100)"
+    source_var: egf
+    family: gaussian
+    direction: higher_better          # higher EGF = better functioning
+    cohort_scope: [bp, sz, dr]        # 3-cohort (DR thin at V2 ~114); the clean cross-construct prize
+    severity_anchor: baseline_outcome
+    remission_threshold: { ">=": 71 }  # GAF >= 71 ~ functional remission (binary arm)
+    role: primary
+
+  cgi_s:
+    label: "Clinical Global Impression – Severity (1–7)"
+    source_var: cgi01
+    family: gaussian                  # 1–7 scale, modeled gaussian as M1 does; ordinal robustness @ stage 43
+    direction: lower_better
+    cohort_scope: [bp, sz, dr]        # 3-cohort; the autoregression contrast (biology expected to add little)
+    severity_anchor: G                # cgi01 IS the outcome's V0 value (R3y); R2 uses the latent G instead
+    response_threshold: { "drop>=": 2 }  # >= 2-point CGI-S drop V0->V2 = response
+    remission_threshold: { "<=": 2 }     # CGI-S <= 2 = remission
+    role: primary
+
+  # ---- SECONDARY ----
+  fast:
+    label: "Functioning Assessment Short Test (0–72)"
+    source_var: fast
+    family: gaussian
+    direction: lower_better
+    cohort_scope: [bp, dr]            # SZ absent at follow-up; DR thin
+    severity_anchor: baseline_outcome
+    remission_threshold: { "<=": 11 }
+    role: secondary
+
+  eq5d_vas:
+    label: "Quality of life (EQ-5D VAS, 0–100)"
+    source_var: eq5d0206
+    family: gaussian
+    direction: higher_better
+    cohort_scope: [bp, sz, dr]
+    severity_anchor: G
+    role: secondary
+
+  madrs:
+    label: "Depression severity (MADRS, 0–60)"
+    source_var: madrs
+    family: gaussian
+    direction: lower_better
+    cohort_scope: [bp, dr]            # SZ absent
+    severity_anchor: G
+    response_threshold: { "pct_drop>=": 0.5 }
+    remission_threshold: { "<=": 10 }
+    role: secondary
+
+  ymrs:
+    label: "Mania (YMRS, 0–60)"
+    source_var: ymrs
+    family: gaussian
+    direction: lower_better
+    cohort_scope: [bp, sz, dr]
+    severity_anchor: G                # mania coord -> YMRS is the autoregressive bar (same-construct); G here
+    role: secondary
+
+  psqi:
+    label: "Sleep quality (PSQI, 0–21)"
+    source_var: psqi
+    family: gaussian
+    direction: lower_better
+    cohort_scope: [bp, sz, dr]
+    severity_anchor: G                # sleep coord -> PSQI is the autoregressive bar (same-construct); G here
+    role: secondary
+
+  cssrs_active:
+    label: "Active suicidal ideation (C-SSRS item 1)"
+    source_var: cssrs01
+    family: bernoulli
+    direction: lower_better
+    cohort_scope: [bp, dr]            # SZ absent; ideation at a visit, NOT an incident attempt
+    severity_anchor: G                # suicidality coord -> C-SSRS is the autoregressive bar (same-construct); G here
+    role: secondary

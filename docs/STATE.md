@@ -1,6 +1,6 @@
 # STATE — where the project is right now
 
-> **Read this first.** Updated 2026-06-10.
+> **Read this first.** Updated 2026-06-11.
 
 ## TL;DR
 
@@ -24,8 +24,15 @@ biotypes): 8 soft archetypes + a 4-region tessellation, transdiagnostic (ARI≈0
 description than DSM-5 (descriptive). **M3 temporal coherence is COMPLETE** (pending PI sign-off) — the map
 and strata are **temporally coherent** (V0→V1→V2): the measurement holds (G1 invariance), and the M2 geometry
 replays over time — biology/cognition are durable (trait) while severity + symptoms slide (state), and
-archetype identity persists. Findings: [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md). Next: **M4 prognosis**.
-Updated 2026-06-10.
+archetype identity persists. Findings: [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md). **M4 prognosis is
+COMPLETE** (pending PI sign-off) — on the fixed M1/M2/M3 objects, a baseline transdiagnostic profile
+**predicts 2-year functional trajectory incrementally beyond diagnosis + severity** (durable
+metabolic/inflammatory ⊥G; the 8 archetypes stratify functional remission **14%→60%**), robust to
+attrition/reliability/permutation, **co-informative with DSM-5** (complements, not replaces) and
+**course-dependent** (episodic BP/DR, not baseline-saturated SZ); severity itself is
+autoregression-determined. Findings: [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md); clinician atlas:
+[`PROGNOSIS_ATLAS.md`](PROGNOSIS_ATLAS.md). Next: **M5 treatment**.
+Updated 2026-06-11.
 
 ## M2 — stratification (COMPLETE 2026-06-09, pending PI sign-off)
 
@@ -160,6 +167,28 @@ biology (cognition/metabolic/inflammatory), monitor the moving symptoms (severit
 Caveats carried forward: developmental's "state" = CTQ recall noise (trait by design); inflammatory partial;
 substance uninformative (signal ≪ noise); mania/suicidality/substance not G1-tested (explicit block); 3-visit
 window. **PI sign-off locks M3; then M4 prognosis — persists ≠ predicts.**
+
+## M4 — prognosis (COMPLETE 2026-06-11, pending PI sign-off)
+
+Findings [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md) · methods [`PROGNOSIS_MODEL.md`](PROGNOSIS_MODEL.md) ·
+clinician atlas [`PROGNOSIS_ATLAS.md`](PROGNOSIS_ATLAS.md) · dev record [`PROGNOSIS_RESULTS.md`](PROGNOSIS_RESULTS.md).
+Engine `src/face/prognosis/` (frame · reference · glm · compare · endpoints · clinical_value ·
+transdiagnostic · robustness); pipeline `scripts/40–48`; `tests/m4/` (33). Consumes the **fixed**
+M1/M2/M3 objects (panel, draws, strata, IPW) — nothing re-discovered or re-scored.
+
+On the M3 panel, an errors-in-variables Bayesian GLM tests whether a baseline coordinate/stratum
+predicts a 2-year outcome **incrementally beyond DSM-5 + severity + the baseline outcome (R3y bar)**.
+**Verdict (the four gates):** **Q1** the map adds for **functioning** (EGF: archetypes ΔELPD +46;
+remission AUC +0.017, CI excl 0) but **not severity** (CGI-S autoregression-saturated); **Q2** the
+durable metabolic (β −0.062) + inflammatory effects survive the **error-corrected G** severity; **Q3**
+**co-informative with the 7 DSM-5 subtypes** (B−A +47, B−C +40 — complements, not replaces) and
+**course-dependent** (BP/DR yes, SZ null = foundation saturation, not map failure); **Q4** survives
+IPW + reliability + permutation (p=0.001), weakens dropping BP. The **archetype prognostic atlas**:
+2-year functional remission **14%→60%** across the 8 archetypes, transdiagnostic. The map's value is
+**group-level stratification + continuous functional forecasting**, not a large individual-binary boost
+(+0.017 AUC). Honest limits: scale trajectories not events; internal validity; 2-year horizon.
+Hand-off `results/face/m4/{prognosis_summary.csv, prognosis_patient_risk.parquet}`. **PI sign-off locks
+M4; then M5 treatment** (does a stratum *moderate treatment response*?).
 
 ## What's decided
 

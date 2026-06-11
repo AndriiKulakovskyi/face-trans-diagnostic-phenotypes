@@ -306,10 +306,90 @@ def fig_coverage():
     _save(fig, "fig_coverage.png")
 
 
+# ============================================================ M4. prognostic atlas (the "so what")
+_M4_EP = [("egf_remission", "func. remission", "good"), ("egf_recovery", "func. recovery", "good"),
+          ("egf_deterioration", "deterioration", "poor"), ("egf_sustained_impair", "sustained impair", "poor"),
+          ("cgi_remission", "CGI remission", "good"), ("cgi_relapse", "relapse surrog.", "poor"),
+          ("cgi_sustained_severe", "sustained illness", "poor")]
+
+
+def fig_m4_atlas():
+    a = pd.read_csv(REPORTS / "45_archetype_atlas.csv").sort_values("egf_remission", ascending=False)
+    rows = list(a["archetype"])
+    cols = [e for e, _, _ in _M4_EP]
+    rate = a.set_index("archetype")[cols].reindex(rows).values
+    adv = rate.copy()
+    for j, (_, _, pol) in enumerate(_M4_EP):           # adversity: good -> 1-rate (red = adverse uniformly)
+        if pol == "good":
+            adv[:, j] = 1.0 - adv[:, j]
+    fig, ax = plt.subplots(figsize=(7.6, 4.4))
+    im = ax.imshow(adv, cmap=DIV.reversed(), norm=TwoSlopeNorm(vmin=0.15, vcenter=0.5, vmax=0.85), aspect="auto")
+    ax.set_xticks(range(len(cols)))
+    ax.set_xticklabels([f"{lbl}\n({'↑' if pol == 'good' else '↓'})" for _, lbl, pol in _M4_EP],
+                       rotation=30, ha="right", fontsize=7.5)
+    ax.set_yticks(range(len(rows)))
+    ax.set_yticklabels([f"{r}  (n={int(n)})" for r, n in zip(rows, a["n"])], fontsize=8)
+    for i in range(len(rows)):
+        for j in range(len(cols)):
+            v = rate[i, j]
+            if v == v:
+                ax.text(j, i, f"{v:.2f}", ha="center", va="center", fontsize=7,
+                        color="white" if (adv[i, j] > 0.72 or adv[i, j] < 0.28) else INK)
+    ax.set_title("The archetype prognostic atlas — 2-year clinical-endpoint rates", pad=10)
+    ax.text(0.5, -0.42, "blue = favourable · red = adverse (polarity-aware); functional remission "
+            "ranges 14%–60% across archetypes", transform=ax.transAxes, ha="center",
+            fontsize=8, color=MUTE)
+    _save(fig, "m4_atlas.png")
+
+
+def fig_m4_dominance():
+    h = pd.read_csv(REPORTS / "44_h2h_dsm5.csv")
+    order = ["DSM-5 beyond foundation (A−D)", "map beyond foundation (C−D)",
+             "map beyond DSM-5 (B−A)", "DSM-5 beyond map (B−C)"]
+    short = ["DSM-5\nvs base", "map\nvs base", "map beyond\nDSM-5", "DSM-5 beyond\nmap"]
+    outs = [("egf", "EGF (functioning)"), ("cgi_s", "CGI-S (severity)")]
+    fig, ax = plt.subplots(1, 2, figsize=(8.4, 3.4), sharey=False)
+    for k, (oc, title) in enumerate(outs):
+        sub = h[h.outcome == oc].set_index("contrast").reindex(order)
+        vals, ses = sub["d_elpd"].values, sub["se"].values
+        colors = [KR if (v - 2 * s) > 0 else MUTE for v, s in zip(vals, ses)]
+        ax[k].bar(range(4), vals, color=colors, zorder=3)
+        ax[k].errorbar(range(4), vals, yerr=2 * ses, fmt="none", ecolor=INK, capsize=2, lw=0.8)
+        ax[k].axhline(0, color=INK, lw=0.8)
+        ax[k].set_xticks(range(4)); ax[k].set_xticklabels(short, fontsize=7)
+        ax[k].set_title(title, fontsize=9.5)
+        if k == 0:
+            ax[k].set_ylabel(r"$\Delta$ELPD vs reference ($\pm2$SE)")
+    fig.suptitle("Map vs DSM-5: co-informative (each adds beyond the other)", y=1.02,
+                 fontsize=10.5, fontweight="bold", color=ACCENTDK)
+    _save(fig, "m4_dominance.png")
+
+
+def fig_m4_value():
+    c = pd.read_csv(REPORTS / "46_clinical_value.csv")
+    c = c[c.model != "ΔAUC (map added)"]
+    eps = ["egf_remission", "egf_deterioration", "egf_sustained_impair", "cgi_relapse"]
+    models = ["DSM-5 only", "map only", "reference (DSM-5+severity)", "reference + map"]
+    cmap = {"DSM-5 only": OPEN, "map only": "#9DBCE0", "reference (DSM-5+severity)": MUTE,
+            "reference + map": ACCENT}
+    fig, ax = plt.subplots(figsize=(7.8, 3.4))
+    x = np.arange(len(eps)); w = 0.2
+    for i, m in enumerate(models):
+        vals = [float(c[(c.endpoint == e) & (c.model == m)]["auc"].iloc[0]) for e in eps]
+        ax.bar(x + (i - 1.5) * w, vals, w, label=m, color=cmap[m], zorder=3)
+    ax.axhline(0.5, color=INK, lw=0.8, ls="--")
+    ax.set_xticks(x); ax.set_xticklabels([e.replace("egf_", "").replace("cgi_", "CGI ") for e in eps], fontsize=8)
+    ax.set_ylim(0.45, 0.9); ax.set_ylabel("cross-validated AUC")
+    ax.set_title("Clinical value: discrimination of 2-year endpoints (5-fold CV)", pad=10)
+    ax.legend(frameon=False, fontsize=7.5, ncol=2, loc="upper center", bbox_to_anchor=(0.5, -0.18))
+    _save(fig, "m4_value.png")
+
+
 if __name__ == "__main__":
     print(f"Generating manuscript figures -> {OUT.relative_to(REPO)}")
     for fn in [fig_biology_g, fig_phi, fig_empirical_atlas, fig_prior_posterior, fig_waic,
-               fig_invariance, fig_ppc, fig_reliability, fig_soft_priors, fig_coverage]:
+               fig_invariance, fig_ppc, fig_reliability, fig_soft_priors, fig_coverage,
+               fig_m4_atlas, fig_m4_dominance, fig_m4_value]:
         try:
             fn()
         except Exception as e:

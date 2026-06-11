@@ -53,7 +53,7 @@ covariates / validation labels.
   before advancing. Consolidate, don't accrete; one canonical doc per concern.
 - **Output:** scripts write aggregates to `results/`, figures to `docs/figures/`.
 
-## Current state — M1 + M2 + M3 complete (next: M4 prognosis)
+## Current state — M1 + M2 + M3 + M4 complete (next: M5 treatment)
 
 The package is **`src/face/…`**; the engine (`src/face/models/bayesian/continuous_core` + `confirm`,
 `runner`, `scoring`) and pipeline (`scripts/01_build_data`, `04_fit`, `05_confirm`, `06_invariance`,
@@ -81,4 +81,20 @@ M2 geometry replays — **biology/cognition are durable (trait) while severity +
 archetype identity persists (G3 variance ⟷ G4 geometry agree). Honest caveats: developmental's apparent state
 is CTQ recall-noise (trait by design); G5-vs-DSM5 deferred to M4 (`arm` time-invariant). Clinical logic:
 *stratify on the durable biology, monitor the moving symptoms.* Engine `src/face/temporal/`; pipeline
-`scripts/30–37`; hand-off `results/face/patient_panel.parquet`. Next: **M4 prognosis** (persists ≠ predicts).
+`scripts/30–37`; hand-off `results/face/patient_panel.parquet`.
+**M4 prognosis COMPLETE** (pending PI sign-off) — methods **[docs/PROGNOSIS_MODEL.md](docs/PROGNOSIS_MODEL.md)**,
+findings (paper-facing, read first) **[docs/PROGNOSIS_FINDINGS.md](docs/PROGNOSIS_FINDINGS.md)**, clinician-facing
+prognostic atlas **[docs/PROGNOSIS_ATLAS.md](docs/PROGNOSIS_ATLAS.md)**, dev record **[docs/PROGNOSIS_RESULTS.md](docs/PROGNOSIS_RESULTS.md)**.
+On the fixed M1/M2/M3 objects (panel + draws + strata + IPW; never re-scored), an errors-in-variables
+Bayesian GLM tests whether a baseline coordinate/stratum predicts a 2-year outcome **incrementally beyond
+DSM-5 + severity + the baseline outcome**. *Persists became predicts — for functioning, in the open-course
+patients:* the durable **metabolic/inflammatory** ⊥G axes and the **8 archetypes** predict future
+**functioning** (archetypes ΔELPD +46; remission AUC +0.017; metabolic survives the error-corrected-G
+severity), robust to attrition/reliability/permutation — but **not severity** (autoregression-saturated).
+**Co-informative with DSM-5** (complements, not replaces) and **course-dependent** (large in episodic
+BP/DR, null in baseline-saturated SZ). The archetype prognostic atlas: 2-year functional remission
+**14%→60%**, transdiagnostic. The map's value is **group-level stratification + continuous functional
+forecasting**, not a large individual-binary boost — honest limits: scale trajectories not events,
+internal validity, 2-year horizon. Engine `src/face/prognosis/`; pipeline `scripts/40–48`; hand-off
+`results/face/m4/{prognosis_summary.csv, prognosis_patient_risk.parquet}`. Next: **M5 treatment** (does a
+stratum *moderate treatment response*?).

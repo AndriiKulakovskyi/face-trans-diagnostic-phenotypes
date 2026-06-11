@@ -1,12 +1,12 @@
 \section{Roadmap: the milestones ahead}
 \label{sec:roadmap}
 
-This document is a living artifact. \textbf{Milestones 1, 2, and 3 are complete} (pending PI sign-off) --- the
-measurement map, its stratification, and their temporal coherence --- and are the foundation the remaining
-milestones build on. Each is a separate milestone with its own acceptance gate, and none begins before the
-previous is locked. \textbf{M4 is next.}
+This document is a living artifact. \textbf{Milestones 1, 2, 3, and 4 are complete} (pending PI sign-off) ---
+the measurement map, its stratification, their temporal coherence, and their prognostic value --- and are the
+foundation the remaining milestones build on. Each is a separate milestone with its own acceptance gate, and
+none begins before the previous is locked. \textbf{M5 is next.}
 
-\milestonestrip{4}
+\milestonestrip{5}
 
 \paragraph{M2 --- Validated strata.} \statuspill{facekr}{COMPLETE}\ \emph{(Section~\ref{sec:strata}).} On the
 nine-dimension coordinates the transdiagnostic space is a \textbf{continuum, not biotypes}: eight extreme
@@ -21,31 +21,37 @@ the signal is shown to \emph{persist}. This is where invariant~I3 pays off: beca
 baseline, later visits are an honest out-of-sample test. The measurement is invariant across visits (five of
 six backbone axes), and the M2 geometry replays --- the cohort slides along the severity spine (state) while
 individual biological positions and archetype identity are preserved (trait), confirmed by a variance
-decomposition and an independent geometric test that agree. The operative read-out for M4: \emph{stratify on
-the durable biology (cognition, metabolic, inflammatory); monitor the moving symptoms (severity, suicidality,
-sleep)}. Persistence is not prediction --- that is M4.
+decomposition and an independent geometric test that agree. The operative read-out, carried into M4:
+\emph{stratify on the durable biology (cognition, metabolic, inflammatory); monitor the moving symptoms
+(severity, suicidality, sleep)}. Persistence is not prediction --- that was M4.
 
-\paragraph{M4 --- Prognosis.} \planned\ \textbf{The immediate next step.} Does a patient's position on the map carry incremental predictive value
-\emph{beyond} diagnosis and overall severity for clinically meaningful outcomes? The biology$\perp$severity
-finding (Section~\ref{sec:results}) is the substantive bet here: if biological load varies independently of
-burden, biological strata can predict outcomes that a severity score alone misses. Evaluation will be a nested
-head-to-head (diagnosis + severity vs.\ + dimensions), with the downstream cohort \emph{scored} from the
-full-sample map, never driving the measurement fit.
+\paragraph{M4 --- Prognosis.} \statuspill{facekr}{COMPLETE}\ \emph{(Section~\ref{sec:prognosis}).} The
+biology$\perp$severity bet paid off, for \emph{functioning}: on the fixed objects, an errors-in-variables
+nested head-to-head (diagnosis $+$ severity $+$ baseline outcome vs.\ $+$ the map) shows the durable
+metabolic/inflammatory axes and the eight archetypes predict two-year functioning incrementally
+($\Delta$ELPD $+46$; functional remission $14\%$--$60\%$ across archetypes), robust to attrition, reliability
+and a permutation null. The signal is \emph{co-informative} with the DSM-5 subtypes (complementary) and
+\emph{course-dependent} (episodic bipolar/depression, not baseline-saturated schizophrenia); severity itself
+is autoregression-determined. The map's worth is group-level stratification plus continuous functional
+forecasting, not a large individual-binary boost.
 
-\paragraph{M5 --- Treatment.} \planned\ Target-trial emulation, only if the data support it --- estimating
-whether map position modifies treatment response. This is the most demanding milestone and the most
-conditional; it will be specified only after M2--M4 establish that the strata are stable, persistent, and
-prognostic.
+\paragraph{M5 --- Treatment.} \planned\ \textbf{The immediate next step.} Target-trial emulation, only if
+the data support it --- estimating whether map position \emph{moderates} treatment response (the
+stratum-by-treatment interaction). This is the most demanding milestone and the most conditional: it requires
+a treatment or randomization variable the present record may not contain (the enrolment \texttt{arm} is a
+DSM-5 subtype, not an assigned treatment), so its first step is a data-feasibility check.
 
-\subsection{Milestones 1--3 are complete --- and the small follow-ons they leave}
+\subsection{Milestones 1--4 are complete --- and the small follow-ons they leave}
 The deliverables are all in hand: the certified nine-dimension map with its hardening chain
 (Sections~\ref{sec:validation}--\ref{sec:scoring}) and prior$\to$posterior atlas; on those coordinates, the
 validated transdiagnostic continuum --- eight extreme phenotypes and a soft tessellation, internally validated
 and adjudicated against DSM-5 (Section~\ref{sec:strata}); and the demonstration that both \emph{persist} across
-follow-up --- invariant measurement and a replaying spine-versus-corner geometry (Section~\ref{sec:temporal}). What remains is a short, principled list of
+follow-up --- invariant measurement and a replaying spine-versus-corner geometry (Section~\ref{sec:temporal});
+and the demonstration that the durable axes \emph{predict} two-year functioning incrementally beyond diagnosis
+and severity (Section~\ref{sec:prognosis}). What remains is a short, principled list of
 follow-ons, none of which changes a conclusion: full-$N$ full-precision certification of the explicit-latent
 block (the suicidality$\sim$developmental $\Phi$ coupling); full-$N$ projection of the non-Gaussian per-patient
 scores; a separate bootstrap and correlated-$G$ arm for mania/substance (they already carry the 9-dim
 cross-seed $\varphi$ $0.993$); and a hurdle likelihood for \code{isf09a} if its count precision is needed.
-\textbf{PI sign-off on the adjudication, the atlas, and the strata/temporal findings locks
-M1\,$+$\,M2\,$+$\,M3; then M4.}
+\textbf{PI sign-off on the adjudication, the atlas, and the strata/temporal/prognosis findings locks
+M1\,$+$\,M2\,$+$\,M3\,$+$\,M4; then M5.}
