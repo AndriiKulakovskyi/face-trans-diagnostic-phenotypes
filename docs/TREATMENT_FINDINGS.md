@@ -62,9 +62,14 @@ moderation) ready for the data a true M5b needs; and (iv) **back-validated M4**.
 ## The data ask (a true M5b)
 
 Genuine treatment **selection** ("which drug for this phenotype") needs **randomized / trial-arm or
-prospectively-controlled** data — confounding by indication caps what TAU can prove. The concrete next
-step is acquiring or linking such data (the FondaMental data-team check is pending); the M5 method then
-applies directly.
+prospectively-controlled** data — confounding by indication caps what TAU can prove. The feasibility check
+([`reports/59_m5b_feasibility.md`](../reports/59_m5b_feasibility.md)) is now done and is decisive on both
+halves: **(a)** FACE contains **no randomization** (confirmed across CSVs + thesauri — observational by
+design), so true selection requires **external** randomized data linked to FACE patients (the concrete
+data-team ask); **(b)** but BP/SZ carry **per-visit medication trajectories with dates**, so a *stronger
+observational* M5b — longitudinal / time-varying-treatment (g-methods), an upgrade over M5's baseline
+exposure — is feasible **now**, with no new data (DR excluded: no follow-up Rx). The M5 method extends
+directly to either.
 
 ## Honest limits
 
