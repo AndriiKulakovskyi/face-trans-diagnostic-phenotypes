@@ -107,6 +107,23 @@ def fixed_block(sub: pd.DataFrame, cols):
     return mat, list(cols)
 
 
+def foundation_design(sub: pd.DataFrame, spec, *, severity_col: str, horizon: str):
+    """The shared foundation for the head-to-head: age + sex + severity + baseline outcome — **no arm,
+    no map** (site enters as the GLM random intercept). DSM-5 and the map are then added on top, so the
+    four head-to-head models (D / +DSM-5 / +map / +both) are all nested on this same base."""
+    cols = {"age": _z(sub, "age"), "sex": sub["sex"].to_numpy("float64"),
+            f"sev::{severity_col}": _z(sub, severity_col),
+            f"{spec.name}__V0": _z(sub, f"{spec.name}__V0")}
+    names = list(cols)
+    return np.column_stack([cols[n] for n in names]), names
+
+
+def arm_block(sub: pd.DataFrame):
+    """DSM-5 diagnosis as the 7-subtype `arm` dummies (drop-first reference). The competitor to beat."""
+    d = pd.get_dummies(sub["arm"], prefix="arm", drop_first=True)
+    return d.to_numpy("float64"), list(d.columns)
+
+
 def armB_block(sub: pd.DataFrame, *, profiles_path):
     """Per-patient Arm-B (G-residualized) archetype weights: project each patient's 8-specific
     coordinate means onto the FIXED M2 Arm-B archetype profiles (reusing the M2 simplex projection),
