@@ -1,9 +1,9 @@
 """V3 Phase B — missingness atlas + observation-probability models.
 
 In FACE, missingness is not noise: it reflects cohort design, site practice, questionnaire routing,
-and sometimes severity. This script makes it an explicit object (docs/V3_PLAN.md Phase B) so we can
-choose between an observed-likelihood MAR model and an informative-missingness sensitivity model
-(docs/PIPELINE.md §1) with evidence rather than assumption.
+and sometimes severity. This script makes it an explicit object (methods of record:
+docs/MEASUREMENT_MODEL.md) so we can choose between an observed-likelihood MAR model and an
+informative-missingness sensitivity model with evidence rather than assumption.
 
   B1  observation matrix  R_ij = 1[observed]  summarized by cohort / site / age / sex / severity / dimension
   B2  per-variable mechanism class  (structural / clinical-skip / design-or-informative / sporadic)

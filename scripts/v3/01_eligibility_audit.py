@@ -1,7 +1,7 @@
 """V3 Phase A+B+C — measurement-eligibility & data-contract audit.
 
 Turns the 10 candidate dimensions (configs/candidate_dimensions_v3.yaml) into a FACE-grounded
-data contract, the GATE for all V3 modeling (docs/V3_PLAN.md, docs/PIPELINE.md §1):
+data contract — the prior-matrix provenance gate (methods of record: docs/MEASUREMENT_MODEL.md):
 
   • per-cohort OBSERVED coverage at V0 for every usable variable (no imputation)
   • likelihood family per variable  (dtype -> Gaussian / lognormal / ordered-logit / Bernoulli / NB)

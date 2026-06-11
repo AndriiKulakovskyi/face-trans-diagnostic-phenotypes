@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "face-v3"
+name = "face"
 version = "0.1.0"
 description = "FACE precision psychiatry (BP/SZ/DR): harmonized 3-cohort data → patient-level, missingness-aware transdiagnostic dimension discovery → validated probabilistic strata → temporal coherence → prognosis → treatment. Milestones 1–5 complete (pending PI sign-off); see docs/STATE.md."
 requires-python = ">=3.11"
@@ -50,5 +50,5 @@ select = ["E", "F", "W", "I", "UP", "B"]
 # one-liners, E741 single-letter math names (L, l), F601 harmless dup-coercion keys in
 # rules.py (1/1.0/True all map to the same value), F841 throwaway locals in scripts,
 # B008 (call-in-default used deliberately). E402: scripts insert src/ on sys.path
-# before importing v3, so their imports are intentionally not at module top.
+# before importing `face`, so their imports are intentionally not at module top.
 ignore = ["E501", "E702", "E741", "F601", "F841", "B006", "B007", "B008", "B023", "E402"]

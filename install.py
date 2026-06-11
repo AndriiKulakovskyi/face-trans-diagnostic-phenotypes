@@ -157,15 +157,17 @@ def print_activation_hint() -> None:
   Activate the environment:
       {activate}
 
-  Then run the V3 pipeline (see docs/STATE.md):
-      python scripts/v3/01_eligibility_audit.py           # eligibility + coverage
-      python scripts/v3/02_missingness_atlas.py           # missingness mechanism
-      python scripts/v3/03_build_prior_matrix.py          # config -> prior matrix
-      python scripts/v3/04_fit_measurement.py --stage 1   # measurement model
-      python -m pytest tests/ -q                          # unit tests
+  Then run the pipeline (see docs/STATE.md):
+      python scripts/01_build_data.py        # harmonize + build the V0 model table
+      python scripts/04_fit.py --stage 1     # the Bayesian measurement engine (M1)
+      python scripts/05_confirm.py           # in-engine confirmation (PPC + WAIC)
+      python scripts/09_atlas.py             # the dimensional atlas
+      python -m pytest tests/ -q             # unit tests
+  (Milestones 2-5 continue in scripts/20-57; the prior matrix is committed at
+   configs/prior_loading_matrix_v3.csv, regenerable via scripts/v3/03_build_prior_matrix.py.)
 
   Or use the venv Python directly without activating:
-      .venv/bin/python scripts/v3/04_fit_measurement.py --stage 1
+      .venv/bin/python scripts/04_fit.py --stage 1
 
   To update pinned deps after editing pyproject.toml:
       python3 install.py --lock
