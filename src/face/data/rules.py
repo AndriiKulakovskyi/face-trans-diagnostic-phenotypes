@@ -732,3 +732,18 @@ for _canon, _map in (
     @register(_canon)
     def _ltsx(series, cohort, _m=_map):
         return _textual_recode(series, _m, pd_dtype="Int16")
+
+
+@register("mars")
+def harmonize_mars(series: pd.Series, cohort: str) -> pd.Series:
+    """MARS-10 medication-adherence total on the common 0–10, *higher = better adherence* scale.
+
+    The instrument is identical across cohorts (10 binary items MARS01–MARS10, total ``mars_``),
+    but DR's total is summed with the OPPOSITE item polarity: its raw distribution is the mirror
+    image of BP/SZ (DR mean 3.2, skewed low vs BP 7.4 / SZ 6.8, skewed high). Reflecting DR
+    (``10 − x``) maps it onto the BP/SZ orientation and recovers mean 6.8 — matching SZ exactly.
+    BP/SZ pass through unchanged (identical to the prior float ``identity_cast``). Evidence-based
+    reverse-coding correction; flagged for PI confirmation. See reports/58_dr_mars_fix.md.
+    """
+    base = pd.to_numeric(series, errors="coerce").astype("float64")
+    return (10.0 - base) if cohort == "DR" else base

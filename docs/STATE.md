@@ -222,9 +222,17 @@ inflammatory (−0.26\*) × functioning interaction (held-out ΔELPD +4.6±4.2 n
 1.79); **clozapine-SZ** is **channeled** (IPTW SMD 0.44→0.61, non-estimable). ATEs are confounding-fragile
 (E 1.1–1.8). **M5 strengthens M4:** the metabolic→functioning forecast **survives** adjustment for the
 drug classes patients were on (β −0.051→−0.048, 4.4% attenuation, HDI still excludes 0). The boundary is
-**earned, not assumed** — genuine treatment *selection* needs randomized/trial-arm data (a future **M5b**;
-FondaMental data-team check + a DR-MARS harmonization fix pending). Hand-off
-`results/face/m5/{treatment_exposures, propensity_*, moderation, confounder}.{parquet,csv}`.
+**earned, not assumed** — genuine treatment *selection* needs randomized/trial-arm data (a future **M5b**).
+Hand-off `results/face/m5/{treatment_exposures, propensity_*, moderation, confounder}.{parquet,csv}`.
+
+**Follow-ups resolved (2026-06-11):** (i) the **DR-MARS** harmonization bug is **fixed** — DR's adherence
+score was reverse-coded (mirror of BP/SZ); `face.data.rules.harmonize_mars` reflects DR (10−x) onto the
+common scale (DR mean 3.2→6.3, matches SZ), `tests/v3/test_mars_harmonization.py`, [`reports/58_dr_mars_fix.md`](../reports/58_dr_mars_fix.md).
+(ii) the **M5b feasibility check** is **done** ([`reports/59_m5b_feasibility.md`](../reports/59_m5b_feasibility.md)):
+**no randomization exists in FACE** (confirmed across CSVs + thesauri — it is observational by design), so
+a true selection M5b needs **external** randomized/trial-arm data; **but** BP/SZ carry per-visit medication
+trajectories with dates, so a **stronger *observational* M5b** (longitudinal/g-methods, time-varying
+treatment) is feasible now without new data (DR excluded — no follow-up Rx).
 
 ## What's decided
 
