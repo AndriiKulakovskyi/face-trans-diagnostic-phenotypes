@@ -53,7 +53,7 @@ covariates / validation labels.
   before advancing. Consolidate, don't accrete; one canonical doc per concern.
 - **Output:** scripts write aggregates to `results/`, figures to `docs/figures/`.
 
-## Current state — M1 + M2 + M3 + M4 complete (next: M5 treatment)
+## Current state — M1 + M2 + M3 + M4 + M5 complete (next: PI sign-off; a true M5b needs randomized data)
 
 The package is **`src/face/…`**; the engine (`src/face/models/bayesian/continuous_core` + `confirm`,
 `runner`, `scoring`) and pipeline (`scripts/01_build_data`, `04_fit`, `05_confirm`, `06_invariance`,
@@ -96,5 +96,19 @@ BP/DR, null in baseline-saturated SZ). The archetype prognostic atlas: 2-year fu
 **14%→60%**, transdiagnostic. The map's value is **group-level stratification + continuous functional
 forecasting**, not a large individual-binary boost — honest limits: scale trajectories not events,
 internal validity, 2-year horizon. Engine `src/face/prognosis/`; pipeline `scripts/40–48`; hand-off
-`results/face/m4/{prognosis_summary.csv, prognosis_patient_risk.parquet}`. Next: **M5 treatment** (does a
-stratum *moderate treatment response*?).
+`results/face/m4/{prognosis_summary.csv, prognosis_patient_risk.parquet}`.
+**M5 treatment COMPLETE** (pending PI sign-off) — methods **[docs/TREATMENT_MODEL.md](docs/TREATMENT_MODEL.md)**,
+findings (paper-facing, read first) **[docs/TREATMENT_FINDINGS.md](docs/TREATMENT_FINDINGS.md)**. Treatment
+data was found **late** in the per-cohort thesaurus `TRAITEMENTS` tabs (never in the harmonized common set)
+and harmonized to common drug-class exposures (ATC[SZ] / class-string[DR] / lifetime-flag[BP]) — this
+**superseded an earlier wrong "data-blocked → tolerability coda"** conclusion. A proper causal pipeline
+(**overlap gate → propensity[severity+diagnosis+demographics+map] → doubly-robust EIV moderation
+[treat×durable-axis] + E-value**) asks whether the map *moderates* treatment response. *On observational
+treatment-as-usual, it does not reliably:* **lithium-in-BP** (cleanest, 100% overlap) is a **well-identified
+null**; **antipsychotic-BP** a **suggestive-but-unconfirmed** metabolic/inflammatory × functioning
+hypothesis (ATE E-value 1.79); **clozapine-SZ** is **channeled** (non-estimable). ATEs confounding-fragile
+(E 1.1–1.8). **M5 strengthens M4** — the metabolic→functioning forecast **survives** treatment adjustment
+(4.4% attenuation). The boundary is **earned, not assumed**; genuine treatment **selection** needs
+randomized/trial-arm data (a future **M5b**). Engine `src/face/treatment/`; pipeline `scripts/50–57`;
+hand-off `results/face/m5/{treatment_exposures, propensity_*, moderation, confounder}.{parquet,csv}`.
+**Open follow-ups:** FondaMental treatment-data (RCT/prescription) check for M5b; a DR-MARS harmonization fix.

@@ -31,7 +31,15 @@ metabolic/inflammatory ⊥G; the 8 archetypes stratify functional remission **14
 attrition/reliability/permutation, **co-informative with DSM-5** (complements, not replaces) and
 **course-dependent** (episodic BP/DR, not baseline-saturated SZ); severity itself is
 autoregression-determined. Findings: [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md); clinician atlas:
-[`PROGNOSIS_ATLAS.md`](PROGNOSIS_ATLAS.md). Next: **M5 treatment**.
+[`PROGNOSIS_ATLAS.md`](PROGNOSIS_ATLAS.md). **M5 treatment is COMPLETE** (pending PI sign-off) — treatment
+data, found late in the per-cohort thesaurus `TRAITEMENTS` tabs and harmonized to common drug-class
+exposures, runs through a proper causal pipeline (overlap → propensity → doubly-robust EIV moderation +
+E-value); on observational treatment-as-usual the map **does not reliably moderate treatment response**
+(lithium-in-BP a *well-identified null*; a *suggestive-but-unconfirmed* metabolic/inflammatory ×
+antipsychotic-functioning hypothesis; clozapine *channeled*/non-estimable), the boundary is **earned, not
+assumed**, and the metabolic functional forecast **survives treatment adjustment** (strengthens M4).
+Findings: [`TREATMENT_FINDINGS.md`](TREATMENT_FINDINGS.md). **The program is M1–M5 complete (pending PI
+sign-off); a true M5b — treatment *selection* — needs randomized/trial-arm data.**
 Updated 2026-06-11.
 
 ## M2 — stratification (COMPLETE 2026-06-09, pending PI sign-off)
@@ -187,8 +195,29 @@ IPW + reliability + permutation (p=0.001), weakens dropping BP. The **archetype 
 2-year functional remission **14%→60%** across the 8 archetypes, transdiagnostic. The map's value is
 **group-level stratification + continuous functional forecasting**, not a large individual-binary boost
 (+0.017 AUC). Honest limits: scale trajectories not events; internal validity; 2-year horizon.
-Hand-off `results/face/m4/{prognosis_summary.csv, prognosis_patient_risk.parquet}`. **PI sign-off locks
-M4; then M5 treatment** (does a stratum *moderate treatment response*?).
+Hand-off `results/face/m4/{prognosis_summary.csv, prognosis_patient_risk.parquet}`. **PI sign-off pending.**
+
+## M5 — treatment (COMPLETE 2026-06-11, pending PI sign-off)
+
+Findings [`TREATMENT_FINDINGS.md`](TREATMENT_FINDINGS.md) · methods [`TREATMENT_MODEL.md`](TREATMENT_MODEL.md) ·
+dev record `reports/50–57_*.md`. Engine `src/face/treatment/` (endpoints · frame · medications ·
+propensity · moderation); pipeline `scripts/50–57`; `tests/m5/` (11). Treatment data was found **late** in
+the per-cohort thesaurus `TRAITEMENTS` tabs (never in the harmonized set), harmonized to common drug-class
+exposures (ATC[SZ] / class-string[DR] / lifetime-flag[BP]) — the earlier "data-blocked → tolerability
+coda" was superseded.
+
+A proper causal pipeline — **overlap gate → propensity (severity + diagnosis + demographics + the 9 map
+coords) → doubly-robust EIV moderation (treat × durable-axis) + E-value** — asks whether the map
+*moderates* treatment response. **Verdict:** on observational treatment-as-usual the map **does not
+reliably moderate** response. **Lithium-in-BP** (cleanest: 100% overlap, SMD 0.30→0.01) is a
+**well-identified null**; **antipsychotic-BP** shows a **suggestive but unconfirmed** metabolic (−0.15\*) /
+inflammatory (−0.26\*) × functioning interaction (held-out ΔELPD +4.6±4.2 not confirmed; ATE E-value
+1.79); **clozapine-SZ** is **channeled** (IPTW SMD 0.44→0.61, non-estimable). ATEs are confounding-fragile
+(E 1.1–1.8). **M5 strengthens M4:** the metabolic→functioning forecast **survives** adjustment for the
+drug classes patients were on (β −0.051→−0.048, 4.4% attenuation, HDI still excludes 0). The boundary is
+**earned, not assumed** — genuine treatment *selection* needs randomized/trial-arm data (a future **M5b**;
+FondaMental data-team check + a DR-MARS harmonization fix pending). Hand-off
+`results/face/m5/{treatment_exposures, propensity_*, moderation, confounder}.{parquet,csv}`.
 
 ## What's decided
 
