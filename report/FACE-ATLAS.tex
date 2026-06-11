@@ -11,7 +11,7 @@
 \newcommand{\reportauthor}{Andrii Kulakovskyi}
 \newcommand{\reportgroup}{Precision Psychiatry \& Artificial Intelligence}
 \newcommand{\reportdate}{June 2026}
-\newcommand{\reportversion}{Milestones 1--4 --- v4.0 (the map, its strata, their persistence, and their prognostic value)}
+\newcommand{\reportversion}{Milestones 1--5 --- v5.0 (the map, its strata, their persistence, their prognosis, and the treatment boundary)}
 
 \begin{document}
 \hypersetup{pdfauthor={\reportauthor}}
@@ -23,7 +23,7 @@
 \vspace*{0.15cm}
 {\color{faceaccent}\rule{\linewidth}{1.3pt}}\par\vspace{6pt}
 \noindent{\sffamily\footnotesize\bfseries\color{faceaccent} TECHNICAL REPORT}\hfill%
-{\sffamily\footnotesize\color{facemute} Milestones 1--4 --- the map, its strata, their persistence, and their prognosis \quad\textbar\quad \reportdate}\par
+{\sffamily\footnotesize\color{facemute} Milestones 1--5 --- the map, its strata, their persistence, their prognosis, and the treatment boundary \quad\textbar\quad \reportdate}\par
 \vspace{1.5cm}
 
 {\sffamily\bfseries\fontsize{37}{42}\selectfont\color{faceink} FACE{\color{faceaccent}-}ATLAS}\par
@@ -52,7 +52,7 @@
 Psychiatric diagnosis aggregates heterogeneous patients into categories that are neither biologically nor
 prognostically uniform. \textbf{FACE-ATLAS} reorganizes the harmonized, three-cohort FACE baseline
 (bipolar disorder, schizophrenia, major depression; $N=9{,}013$) around \emph{continuous, diagnosis-agnostic
-axes of variation} rather than the diagnostic labels themselves. The program is staged across four milestones
+axes of variation} rather than the diagnostic labels themselves. The program is staged across five milestones
 --- \emph{diagnostic cohorts $\to$ transdiagnostic dimensions $\to$ validated strata $\to$ prognosis/treatment}
 --- of which this report documents the first: the \emph{measurement map}. The map is estimated by a single
 global, missingness-aware \textbf{Bayesian sparse bifactor / ESEM} model with \textbf{mixed likelihoods} and
@@ -133,6 +133,7 @@ configurations.}
 \input{sections/m2_strata}
 \input{sections/m3_temporal}
 \input{sections/m4_prognosis}
+\input{sections/m5_treatment}
 \input{sections/07_engineering}
 \input{sections/08_roadmap}
 \input{sections/09_limitations}

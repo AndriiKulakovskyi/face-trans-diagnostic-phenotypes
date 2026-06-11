@@ -385,11 +385,69 @@ def fig_m4_value():
     _save(fig, "m4_value.png")
 
 
+_M5_Q = {"lithium_bp": "lithium (BP)", "antipsychotic_bp": "antipsychotic (BP)", "clozapine_sz": "clozapine (SZ)"}
+_M5_AX = ["cognition", "metabolic", "inflammatory"]
+
+
+def fig_m5_identification():
+    s = pd.read_csv(REPORTS / "55_propensity_summary.csv")
+    s = s[(s["mode"] == "active_comparator") & s["question"].isin(_M5_Q)].set_index("question").reindex(_M5_Q)
+    x = np.arange(len(s)); w = 0.36
+    fig, ax = plt.subplots(figsize=(7.2, 3.4))
+    ax.bar(x - w / 2, s["max_smd_before"], w, label="before IPTW", color=OPEN, zorder=3)
+    ax.bar(x + w / 2, s["max_smd_after"], w, label="after IPTW", color=ACCENT, zorder=3)
+    ax.axhline(0.1, color=INK, ls=":", lw=0.8); ax.axhline(0.25, color=KR, ls="--", lw=0.9)
+    ax.text(len(s) - 0.5, 0.26, "0.25 (imbalance)", ha="right", va="bottom", fontsize=6.5, color=KR)
+    ax.set_xticks(x); ax.set_xticklabels([_M5_Q[q] for q in s.index], fontsize=8.5)
+    ax.set_ylabel("max |SMD| (covariate imbalance)")
+    for xi, (_, r) in zip(x, s.iterrows()):
+        ax.text(xi, max(r["max_smd_before"], r["max_smd_after"]) + 0.015,
+                f"overlap {r['frac_in_support']:.0%}", ha="center", fontsize=7, color=MUTE)
+    ax.set_title("Identification gate: covariate balance before/after IPTW", pad=10)
+    ax.text(0.5, -0.2, "lithium balances to ≈0; antipsychotic balances; clozapine cannot be balanced "
+            "(channeling)", transform=ax.transAxes, ha="center", fontsize=7.5, color=MUTE)
+    ax.legend(frameon=False, fontsize=8)
+    _save(fig, "m5_identification.png")
+
+
+def fig_m5_moderation():
+    m = pd.read_csv(REPORTS / "56_moderation.csv")
+    outs = [("functioning", "functioning (EGF)"), ("cgi_response", "CGI response")]
+    qs = [q for q in _M5_Q if (m.question == q).any()]
+    fig, axes = plt.subplots(len(outs), len(qs), figsize=(2.7 * len(qs), 4.4), squeeze=False)
+    for ri, (oc, olab) in enumerate(outs):
+        for ci, q in enumerate(qs):
+            ax = axes[ri][ci]
+            r = m[(m.question == q) & (m.outcome == oc)]
+            if len(r):
+                r = r.iloc[0]
+                means = [r[f"int_{a}"] for a in _M5_AX]
+                los = [r[f"int_{a}_lo"] for a in _M5_AX]; his = [r[f"int_{a}_hi"] for a in _M5_AX]
+                cols = [KR if (lo > 0 or hi < 0) else MUTE for lo, hi in zip(los, his)]
+                for yi, (mn, lo, hi, c) in enumerate(zip(means, los, his, cols)):
+                    ax.plot([lo, hi], [yi, yi], color=c, lw=1.6, zorder=2)
+                    ax.plot(mn, yi, "o", color=c, ms=4, zorder=3)
+                ax.axvline(0, color=INK, lw=0.8)
+            ax.set_yticks(range(len(_M5_AX)))
+            ax.set_yticklabels(_M5_AX if ci == 0 else [], fontsize=7.5)
+            if ri == 0:
+                ax.set_title(_M5_Q[q], fontsize=8.5)
+            if ci == 0:
+                ax.set_ylabel(olab, fontsize=8)
+            ax.tick_params(labelsize=7)
+    fig.suptitle("Does the durable biology moderate treatment response? (treat × axis, 94% HDI)",
+                 y=1.0, fontsize=10, fontweight="bold", color=ACCENTDK)
+    fig.text(0.5, -0.01, "red = HDI excludes 0. Lithium: null on both. Antipsychotic: metabolic/"
+             "inflammatory on functioning. Clozapine: channeled (uninterpretable).",
+             ha="center", fontsize=7, color=MUTE)
+    _save(fig, "m5_moderation.png")
+
+
 if __name__ == "__main__":
     print(f"Generating manuscript figures -> {OUT.relative_to(REPO)}")
     for fn in [fig_biology_g, fig_phi, fig_empirical_atlas, fig_prior_posterior, fig_waic,
                fig_invariance, fig_ppc, fig_reliability, fig_soft_priors, fig_coverage,
-               fig_m4_atlas, fig_m4_dominance, fig_m4_value]:
+               fig_m4_atlas, fig_m4_dominance, fig_m4_value, fig_m5_identification, fig_m5_moderation]:
         try:
             fn()
         except Exception as e:

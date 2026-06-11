@@ -1,10 +1,10 @@
 \section{Roadmap: the milestones ahead}
 \label{sec:roadmap}
 
-This document is a living artifact. \textbf{Milestones 1, 2, 3, and 4 are complete} (pending PI sign-off) ---
-the measurement map, its stratification, their temporal coherence, and their prognostic value --- and are the
-foundation the remaining milestones build on. Each is a separate milestone with its own acceptance gate, and
-none begins before the previous is locked. \textbf{M5 is next.}
+This document is a living artifact. \textbf{Milestones 1 through 5 are complete} (pending PI sign-off) ---
+the measurement map, its stratification, their temporal coherence, their prognostic value, and the treatment
+boundary --- each a separate milestone with its own acceptance gate, none begun before the previous was
+locked. \textbf{PI sign-off is next; a true treatment-selection study (M5b) needs randomized data.}
 
 \milestonestrip{5}
 
@@ -35,23 +35,29 @@ and a permutation null. The signal is \emph{co-informative} with the DSM-5 subty
 is autoregression-determined. The map's worth is group-level stratification plus continuous functional
 forecasting, not a large individual-binary boost.
 
-\paragraph{M5 --- Treatment.} \planned\ \textbf{The immediate next step.} Target-trial emulation, only if
-the data support it --- estimating whether map position \emph{moderates} treatment response (the
-stratum-by-treatment interaction). This is the most demanding milestone and the most conditional: it requires
-a treatment or randomization variable the present record may not contain (the enrolment \texttt{arm} is a
-DSM-5 subtype, not an assigned treatment), so its first step is a data-feasibility check.
+\paragraph{M5 --- Treatment.} \statuspill{facekr}{COMPLETE}\ \emph{(Section~\ref{sec:treatment}).} The
+data-feasibility check overturned the initial reading: treatment data exists in the per-cohort source
+dictionaries (unharmonized), and was mapped to common drug-class exposures. A proper causal pipeline
+(overlap gate $\to$ propensity $\to$ doubly-robust errors-in-variables moderation $+$ E-value) shows that,
+on observational treatment-as-usual, map position does \emph{not} reliably \emph{moderate} response: lithium
+in bipolar (the cleanest contrast) is a well-powered \emph{null}, an antipsychotic metabolic/inflammatory
+signal is suggestive but unconfirmed, and clozapine is confounded by channeling. The prognosis
+\emph{survives} treatment adjustment (strengthening M4). The boundary is \emph{earned}, not assumed ---
+treatment \emph{selection} needs the randomized/trial-arm data of a future \textbf{M5b}.
 
-\subsection{Milestones 1--4 are complete --- and the small follow-ons they leave}
+\subsection{Milestones 1--5 are complete --- and the small follow-ons they leave}
 The deliverables are all in hand: the certified nine-dimension map with its hardening chain
 (Sections~\ref{sec:validation}--\ref{sec:scoring}) and prior$\to$posterior atlas; on those coordinates, the
 validated transdiagnostic continuum --- eight extreme phenotypes and a soft tessellation, internally validated
 and adjudicated against DSM-5 (Section~\ref{sec:strata}); and the demonstration that both \emph{persist} across
 follow-up --- invariant measurement and a replaying spine-versus-corner geometry (Section~\ref{sec:temporal});
 and the demonstration that the durable axes \emph{predict} two-year functioning incrementally beyond diagnosis
-and severity (Section~\ref{sec:prognosis}). What remains is a short, principled list of
+and severity (Section~\ref{sec:prognosis}); and, on observational treatment-as-usual, the \emph{earned}
+finding that the map does not reliably moderate treatment, while the prognosis survives treatment adjustment
+(Section~\ref{sec:treatment}). What remains is a short, principled list of
 follow-ons, none of which changes a conclusion: full-$N$ full-precision certification of the explicit-latent
 block (the suicidality$\sim$developmental $\Phi$ coupling); full-$N$ projection of the non-Gaussian per-patient
 scores; a separate bootstrap and correlated-$G$ arm for mania/substance (they already carry the 9-dim
 cross-seed $\varphi$ $0.993$); and a hurdle likelihood for \code{isf09a} if its count precision is needed.
-\textbf{PI sign-off on the adjudication, the atlas, and the strata/temporal/prognosis findings locks
-M1\,$+$\,M2\,$+$\,M3\,$+$\,M4; then M5.}
+\textbf{PI sign-off on the adjudication, the atlas, and the strata/temporal/prognosis/treatment findings
+locks M1\,$+$\,M2\,$+$\,M3\,$+$\,M4\,$+$\,M5; a true treatment-selection study (M5b) needs randomized data.}

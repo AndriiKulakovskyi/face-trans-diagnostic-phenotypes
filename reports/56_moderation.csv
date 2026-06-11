@@ -1,0 +1,7 @@
+question,mode,outcome,n,ate,ate_lo,ate_hi,ate_excludes0,e_value,moderation_d_elpd,moderation_se,moderation_any_axis,int_cognition,int_metabolic,int_inflammatory,int_cognition_lo,int_metabolic_lo,int_inflammatory_lo,int_cognition_hi,int_metabolic_hi,int_inflammatory_hi
+lithium_bp,active_comparator,functioning,660,-0.01,-0.133,0.112,False,1.11,-1.35,2.39,False,0.052,0.072,0.159,-0.09,-0.066,-0.031,0.202,0.211,0.341
+lithium_bp,active_comparator,cgi_response,631,0.095,-0.228,0.417,False,1.28,-2.82,1.8,False,0.131,0.192,0.246,-0.232,-0.196,-0.239,0.507,0.586,0.739
+antipsychotic_bp,active_comparator,functioning,700,-0.24,-0.38,-0.108,True,1.79,4.6,4.24,True,0.011,-0.151,-0.263,-0.134,-0.267,-0.423,0.159,-0.034,-0.098
+antipsychotic_bp,active_comparator,cgi_response,674,-0.29,-0.662,0.075,False,1.58,-2.17,1.87,False,-0.181,0.097,-0.426,-0.599,-0.236,-0.949,0.26,0.436,0.075
+clozapine_sz,on_off,functioning,513,0.023,-0.234,0.286,False,1.17,-3.11,0.83,False,-0.058,-0.018,-0.038,-0.355,-0.284,-0.424,0.241,0.247,0.343
+clozapine_sz,on_off,cgi_response,488,0.342,-0.282,0.962,False,1.66,1.01,2.45,True,-0.114,0.564,-1.313,-0.888,-0.145,-2.467,0.64,1.338,-0.299
