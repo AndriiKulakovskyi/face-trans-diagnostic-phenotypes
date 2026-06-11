@@ -25,7 +25,7 @@ _FAMILIES = {"gaussian", "bernoulli", "ordinal"}
 
 
 def fit_glm(y, X, *, family: str = "gaussian", group=None, n_groups: int | None = None,
-            eiv_obs=None, eiv_sd=None, weights=None, n_cat: int | None = None,
+            eiv_obs=None, eiv_sd=None, eiv_interact=None, weights=None, n_cat: int | None = None,
             draws: int = 1000, tune: int = 1000, chains: int = 4, seed: int = 20260610,
             target_accept: float = 0.9) -> dict:
     """Fit the outcome GLM. `X` is [N, P] (no intercept column); `y` is [N] (z-scored for gaussian,
@@ -50,6 +50,7 @@ def fit_glm(y, X, *, family: str = "gaussian", group=None, n_groups: int | None 
         eiv_sd = np.asarray(eiv_sd, dtype="float64").reshape(N, -1)
         K = eiv_obs.shape[1]
     w = None if weights is None else np.asarray(weights, dtype="float64")
+    ix = None if eiv_interact is None else np.asarray(eiv_interact, dtype="float64").reshape(N)  # treat×axis moderator
 
     def model():
         alpha = numpyro.sample("alpha", dist.Normal(0.0, 2.0))
@@ -69,6 +70,9 @@ def fit_glm(y, X, *, family: str = "gaussian", group=None, n_groups: int | None 
             numpyro.sample("z", dist.Normal(xi, jnp.asarray(eiv_sd)).to_event(1), obs=jnp.asarray(eiv_obs))
             b_eiv = numpyro.sample("beta_eiv", dist.Normal(0.0, 1.0).expand([K]))
             eta = eta + xi @ b_eiv
+            if ix is not None:                                  # moderation: treat × latent-axis
+                b_int = numpyro.sample("beta_eiv_int", dist.Normal(0.0, 1.0).expand([K]))
+                eta = eta + (jnp.asarray(ix)[:, None] * xi) @ b_int
 
         if family == "gaussian":
             sigma = numpyro.sample("sigma", dist.HalfNormal(2.0))
@@ -132,7 +136,7 @@ def _coef_table(idata, P):
     rows = []
     if "alpha" in post:
         rows.append({"term": "alpha", **_summarize(post["alpha"].values)})
-    for v in ("beta", "beta_eiv"):
+    for v in ("beta", "beta_eiv", "beta_eiv_int"):
         if v in post:
             arr = post[v].values
             arr = arr.reshape(-1, arr.shape[-1])
