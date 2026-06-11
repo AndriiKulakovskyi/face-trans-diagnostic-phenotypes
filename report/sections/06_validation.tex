@@ -6,16 +6,19 @@ arms, each asking a different ``could this be an artefact?'' question: of the \e
 (§\ref{sub:confirm}), of the \emph{sampler} (§\ref{sub:cert}), of \emph{resampling / cohort imbalance}
 (§\ref{sub:robust}), of \emph{cross-cohort non-comparability} (§\ref{sub:invariance}), and of \emph{absolute
 misfit} (§\ref{sub:ppc}). Because the marginalized model and FIML share one observed-data objective
-(Section~\ref{sec:estimation}), a separate FIML arm is redundant; confirmation is done \emph{in-engine}.
+(Chapter~\ref{sec:estimation}), a separate FIML arm is redundant; confirmation is done \emph{in-engine}.
 
 \subsection{Not a prior or estimator artefact}
 \label{sub:confirm}
 \certified\ If the soft priors were doing the work, a \emph{flat-prior} refit (identification constraints only)
 would move the loadings. It does not: the prior-free fit reproduces the soft-prior loadings and $\Phi$
-\emph{exactly} --- per-factor Tucker congruence $\varphi = 1.00$, $\max|\Delta\Phi_{\text{off-diag}}| = 0.00$.
+\emph{exactly} --- per-factor \emph{Tucker congruence} $\varphi = 1.00$ (the cosine similarity between two
+loading patterns, where $1$ is the identical factor and $\varphi\ge 0.95$ is the usual threshold for ``the
+same factor''), $\max|\Delta\Phi_{\text{off-diag}}| = 0.00$.
 Since a flat-prior MAP equals the MLE equals FIML, the structure is \textbf{earned from the data, not
-manufactured by the priors}. And the bifactor structure itself is justified by out-of-sample fit: WAIC
-decisively prefers it over both simpler alternatives (Figure~\ref{fig:waic}).
+manufactured by the priors}. And the bifactor structure itself is justified by out-of-sample fit: the WAIC
+(widely-applicable information criterion, an estimate of how well the model predicts unseen data --- lower is
+better) decisively prefers it over both simpler alternatives (Figure~\ref{fig:waic}).
 
 \begin{figure}[h]\centering
 \includegraphics[width=0.78\linewidth]{figures/fig_waic.png}

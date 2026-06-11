@@ -54,7 +54,7 @@ introduced at a known stage with its mitigation); \emph{stability-under-elaborat
 and a natural QC/discussion gate after each step. After the seven-dimension backbone first stabilised, two
 candidates that had been \emph{deferred} (mania, substance) were folded in and the \emph{joint} nine-dimension
 model re-certified --- not bolted on --- so the reported map is one internally consistent object
-(Section~\ref{sec:results}).
+(Chapter~\ref{sec:results}).
 
 \begin{invariantbox}[The interpretation rule]
 \textbf{Only $\mathcal{M}_5$ (the global fit) is interpreted or reported.} Stages S1--S4 are
@@ -68,7 +68,9 @@ tail); $0$ divergences; no Heywood case ($\max_j|\lambda_j|$ within a cap); and 
 grossly violated.
 
 \subsection{The Gaussian-block marginal, and its identity with FIML}
-For continuous indicators the latent factors can be integrated out analytically. Stacking the continuous
+For continuous indicators the latent factors can be integrated out (\emph{marginalized}) analytically ---
+averaged over rather than estimated one patient at a time, which is what removes the per-patient ``funnel''
+that otherwise makes these models hard to sample. Stacking the continuous
 loadings into $\Lambda$, the full factor covariance into $\Phi$, and the residual variances into
 $\Psi=\diagop(\sigma_j^2)$, the marginal over patient $i$'s observed continuous sub-vector is Gaussian with
 \begin{equation}
@@ -82,7 +84,7 @@ Summing $\log\Normal(\cdot)$ over each patient's observed sub-vector is \emph{ex
 The marginalized Bayesian model and a full-information maximum-likelihood SEM optimize the \emph{same}
 observed-data likelihood; they differ only by the presence of priors. A flat-prior MAP therefore equals the
 MLE equals the FIML solution. Hence (i) FIML adds no independent estimator evidence beyond a prior-free refit
-(Section~\ref{sec:validation}), and (ii) this marginal is also the computational route that removes the
+(Chapter~\ref{sec:validation}), and (ii) this marginal is also the computational route that removes the
 per-patient latent funnel for the Gaussian block while keeping the full sample.
 \end{methodsbox}
 
@@ -90,8 +92,11 @@ per-patient latent funnel for the Gaussian block while keeping the full sample.
 Evaluating Eq.~\eqref{eq:marginal} naively costs a determinant and a solve on $\Sigma_{\Obs_i\Obs_i}$, which
 lives in indicator space (up to $71\times 71$ for a well-measured patient) --- and NUTS needs this, with its
 gradient, many times per draw. But $\Sigma=\Psi+\Lambda\Lambda\Tn$ has a diagonal-plus-low-rank structure
-($\Psi$ diagonal; $\Lambda\Lambda\Tn$ rank $F=K{+}1$), so the Woodbury identity and the matrix-determinant
-lemma move the expensive work into factor space. With $W=\Psi^{-1}$ (the observed-cell precision; $W_{ij}=0$
+($\Psi$ diagonal; $\Lambda\Lambda\Tn$ rank $F=K{+}1$) --- per-indicator noise plus a handful of shared factor
+directions. The \textbf{Woodbury identity} (with the matrix-determinant lemma) is the standard algebraic
+shortcut for exactly this shape: it lets the costly determinant and solve be carried out in the small
+\emph{factor} space rather than the full indicator space --- the work moves into a room a few-by-a-few wide
+instead of seventy-by-seventy. With $W=\Psi^{-1}$ (the observed-cell precision; $W_{ij}=0$
 where indicator $j$ is missing for patient $i$),
 \begin{equation}
 A_i \;=\; I_F + \Lambda_{\Obs_i}\Tn\,W_i\,\Lambda_{\Obs_i}\in\R^{F\times F},
@@ -159,7 +164,7 @@ funnels --- so the fix is reparameterization, not more compute. Two moves did it
 specific's $\to G$ cross-loading toward zero (the dimensions that touch non-Gaussian items are $\approx\perp G$
 anyway, so this removes a ridge without touching the biology$\perp G$ estimand), and (ii) building $\Phi$ from
 a \emph{unit-row} Cholesky factor so it stays a valid correlation matrix (the same fix as the $\Phi=LL\Tn$ bug,
-Section~\ref{sec:engineering}). The explicit-latent block remains the documented mixing limit, so the joint map
+Chapter~\ref{sec:engineering}). The explicit-latent block remains the documented mixing limit, so the joint map
 is certified at the \emph{largest $N$ that mixes} with a cross-seed resample-stability guard.
 \end{methodsbox}
 
@@ -196,7 +201,7 @@ marginalization is unavailable.}
 linear algebra & Woodbury identity $+$ determinant lemma (Eq.~\ref{eq:woodbury}) & the per-patient solve moves from indicator space ($\le 71^2$) to factor space ($F^2$, e.g.\ $5^2$)\\
 \rowcolor{facebg} linear algebra & pattern-grouped, batched assembly & $A_i$ as one matrix multiply; its Cholesky computed once per \emph{unique missingness pattern} ($\approx 2.75\times$, log-likelihood-identical)\\
 step size & tuning matched to the (now benign) geometry & lower target acceptance ($0.85$--$0.90$) $+$ tree-depth cap $8$ bound the deep warmup trajectories ($\approx 2.7\times$)\\
-\rowcolor{facebg} warmup length & staged warm-starts (continuation, \S\ref{sec:estimation}) & each stage starts in the previous basin; shorter tuning, fewer failed trajectories\\
+\rowcolor{facebg} warmup length & staged warm-starts (continuation, Chapter~\ref{sec:estimation}) & each stage starts in the previous basin; shorter tuning, fewer failed trajectories\\
 implementation & vectorization $+$ cached preprocessing & the $F\times F$ work is batched over patients; harmonization is not recomputed per fit\\
 \midrule
 \rowcolor{facecav!9} \emph{checkpoints only} & balanced random sub-sample (\emph{labelled approximation}) & the mixed stages, whose non-Gaussian block has no closed-form marginal, run at $N=4$--$5$k\\

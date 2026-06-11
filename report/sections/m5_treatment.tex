@@ -1,9 +1,10 @@
-\section{Milestone 5: treatment --- does the map change what to do?}
+\section{Treatment: does the map change what to do?}
 \label{sec:treatment}
 
-M4 showed the map \emph{forecasts} who will do well; it did not show it \emph{changes management}. M5 asks
-the harder question --- does a stratum \emph{moderate treatment response}, the stratum-by-treatment
-interaction at which a phenotype would alter what you prescribe? An earlier reading judged this
+The previous chapter showed the map \emph{forecasts} who will do well; it did not show it \emph{changes
+management}. This final chapter asks the harder question --- does a stratum \emph{moderate treatment
+response}, the stratum-by-treatment interaction at which a phenotype would alter what you prescribe? An
+earlier reading judged this
 \emph{data-blocked}: the harmonized variables carry no treatment. That reading was wrong. Treatment data
 exists in the per-cohort source dictionaries (the \texttt{TRAITEMENTS} tabs), unharmonized; recovered and
 mapped to common drug-class exposures, it makes the moderation question answerable --- though only
@@ -19,16 +20,21 @@ the treatment effect on a two-year outcome \emph{conditional on the durable map 
 outcomes functioning (EGF) and CGI response.
 
 \begin{methodsbox}[Confounding by indication: overlap before effect]
-Treatment is prescribed on presentation, not randomized, so a naive interaction is confounded. We emulate
-a target trial per question: a propensity model
-$P(\text{treat}\mid\text{severity }[\text{CGI-S}+\text{error-corrected }G]+\text{DSM-5 arm}+\text{demographics}+\text{the 9 map coordinates})$,
-an \textbf{overlap gate} (is there common support to compare exposed and control at all?), then a
-\emph{doubly-robust} estimate --- stabilized inverse-probability-of-treatment weighting and covariate
-adjustment together --- in the errors-in-variables outcome GLM of \S\ref{sec:prognosis}, now carrying a
-$\text{treat}\times\text{axis}$ interaction. The map is \emph{both} a prescription confounder (it enters
-the propensity model) \emph{and} the moderator under test (its interaction is the estimand); both roles
-are admissible. Each average effect carries an \textbf{E-value} --- the unmeasured confounding that would
-be needed to explain it away.
+Treatment is prescribed on presentation, not randomized, so a naive interaction is confounded --- sicker
+patients receive different drugs, and that difference, not the drug, may drive the outcome. We emulate a
+target trial per question. First a \emph{propensity model} estimates each patient's probability of
+receiving the drug given their baseline profile,
+$P(\text{treat}\mid\text{severity }[\text{CGI-S}+\text{error-corrected }G]+\text{DSM-5 arm}+\text{demographics}+\text{the 9 map coordinates})$;
+an \textbf{overlap gate} then checks there is common support --- enough comparable treated and untreated
+patients to compare at all. The effect is estimated \emph{doubly-robustly}: two models, one for who gets
+treated (used to re-weight the sample so the groups look alike on measured baseline factors --- stabilized
+inverse-probability-of-treatment weighting) and one for the outcome (covariate adjustment), arranged so
+that if \emph{either} model is right the estimate is unbiased. This runs inside the errors-in-variables
+outcome GLM of Chapter~\ref{sec:prognosis}, now carrying a $\text{treat}\times\text{axis}$ interaction. The map is
+\emph{both} a prescription confounder (it enters the propensity model) \emph{and} the moderator under test
+(its interaction is the estimand); both roles are admissible. Each average effect carries an
+\textbf{E-value} --- how strong an unmeasured confounder would have to be to explain the effect away, so a
+small E-value means a fragile result.
 \end{methodsbox}
 
 \subsection{The identification gate --- can we even compare?}
@@ -72,27 +78,28 @@ and the average effect is fragile (E-value $1.79$) --- a \emph{hypothesis for pr
 result. The average treatment effects are confounding-fragile throughout (E-values $1.1$--$1.8$).
 \end{keyresult}
 
-\subsection{The prognosis survives treatment adjustment (M5 strengthens M4)}
-A standing objection to M4 is that its functional forecast is just unmodelled treatment --- sicker-biology
-patients are medicated differently, and the drugs drive the outcome. Re-fitting the M4 functioning
-prognosis on the treatment-data subset ($N=1{,}324$), with versus without the drug-class exposures as
-covariates on the same sample, answers it: the \textbf{metabolic}$\to$functioning effect \emph{survives}
-($\beta=-0.051\to-0.048$, $4.4\%$ attenuation, interval still excluding zero). M4's headline is not a
-treatment artefact (residual prescribing is bounded by the E-values above, not eliminated).
+\subsection{The prognosis survives treatment adjustment}
+A standing objection to the prognosis is that its functional forecast is just unmodelled treatment ---
+sicker-biology patients are medicated differently, and the drugs drive the outcome. Re-fitting the
+functioning prognosis on the treatment-data subset ($N=1{,}324$), with versus without the drug-class
+exposures as covariates on the same sample, answers it: the \textbf{metabolic}$\to$functioning effect
+\emph{survives} ($\beta=-0.051\to-0.048$, $4.4\%$ attenuation, interval still excluding zero). The
+prognostic headline is not a treatment artefact (residual prescribing is bounded by the E-values above, not
+eliminated).
 
-\subsection{What M5 establishes --- the earned boundary}
+\subsection{What the treatment analysis establishes --- the earned boundary}
 \label{sub:m5limits}
 
 \begin{openbox}[Earned, not assumed: observational treatment-as-usual cannot show the map prescribes]
-M5's contribution is a boundary drawn by evidence rather than by assumption. With real treatment data and a
-proper causal pipeline, the map does \emph{not} reliably moderate treatment-as-usual response: the
+The contribution here is a boundary drawn by evidence rather than by assumption. With real treatment data
+and a proper causal pipeline, the map does \emph{not} reliably moderate treatment-as-usual response: the
 cleanest contrast (lithium) is a well-powered null, the antipsychotic metabolic/inflammatory signal is
 suggestive but unconfirmed, clozapine is confounded by channeling, and average effects are fragile to
-unmeasured confounding. What the milestone delivers is therefore a \emph{well-identified null}, a
+unmeasured confounding. What the analysis delivers is therefore a \emph{well-identified null}, a
 \emph{testable hypothesis} (metabolic/inflammatory $\times$ antipsychotic functioning), a \emph{deployable
-causal method}, and a back-validation of M4. Establishing treatment \emph{selection} --- which drug for
-which phenotype --- would require randomized or trial-arm data a future \emph{M5b} must supply;
-observational prescription data, however rich, cannot. Limits carried forward: confounding by indication
+causal method}, and a back-validation of the prognosis. Establishing treatment \emph{selection} --- which
+drug for which phenotype --- would require the randomized or trial-arm data of a future treatment-selection
+study; observational prescription data, however rich, cannot. Limits carried forward: confounding by indication
 (the dominant threat); prescription, not protocol; lifetime (bipolar) versus current (schizophrenia/
 depression) exposure; within-cohort questions; channeled treatments non-estimable.
 \end{openbox}

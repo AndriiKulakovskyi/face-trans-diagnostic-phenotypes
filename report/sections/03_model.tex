@@ -6,7 +6,7 @@ Theory proposes a set of candidate dimensions. Mapping them against the FACE \em
 coverage fixes the eligible model set (Table~\ref{tab:candidates}) --- and this map is itself a primary result,
 because stating which candidates have no measurable indicators is a finding, not a failure. At this stage each
 candidate is judged only \emph{testable} (it has indicators) or \emph{not-testable}; the empirical verdict
-(confirmed / split / proxy / rejected) is adjudicated from the fitted model in Section~\ref{sec:results}.
+(confirmed / split / proxy / rejected) is adjudicated from the fitted model in Chapter~\ref{sec:results}.
 
 \begin{table}[h]\centering\small\sffamily
 \caption{The candidate ontology and eligibility. Nine candidates carry usable common indicators and enter the
@@ -36,7 +36,7 @@ Sensory abnormalities & \code{not_testable} & none & ---\\
 The composite depression/anxiety instruments (MADRS, QIDS, STAI) are deliberately \emph{not} a dimension: each
 is seeded as a cross-loading \emph{window} on the axes it clinically touches, and the data place it. There is no
 separate affective factor and no extra ``depression'' dimension unless one emerges under model comparison
-(Section~\ref{sec:validation}). The general factor $G$ does one job --- transdiagnostic functional burden,
+(Chapter~\ref{sec:validation}). The general factor $G$ does one job --- transdiagnostic functional burden,
 anchored by functioning and global severity \emph{only} --- so symptom severity informs the axes it belongs to
 rather than contaminating the general factor.
 
@@ -96,10 +96,14 @@ loading, and $c_i$ are item-level covariates (age, sex, education, site, cohort,
 --- medication). Covariates adjust indicator \emph{means}; they are never dimension indicators. The loading
 matrix $\Lambda\in\R^{J\times(K+1)}$ and the factor-correlation matrix $\Phi$ are the scientific estimands.
 
-The structure is a \textbf{bifactor / ESEM}: every indicator may load on the general factor $G$ \emph{and} on
-its home specific factor, with cross-loadings shrunk by the soft priors (Figure~\ref{fig:bifactor}). The image
-to hold is a hub-and-spoke: $G$ is a hub wired (faintly) to every instrument, each specific factor a spoke
-wired (strongly) to its own pool; a depression/anxiety ``window'' is an instrument wired only to the hub.
+The structure is a \textbf{bifactor / ESEM} (exploratory structural-equation model). \emph{Bifactor} means
+every indicator may load on the general factor $G$ \emph{and} on its home specific factor; \emph{ESEM} means
+an indicator is additionally \emph{allowed} a small cross-loading onto other factors, with those
+cross-loadings shrunk toward zero by the soft priors --- unlike a classical confirmatory factor analysis,
+which forbids cross-loadings outright and so forces every instrument into exactly one box. The image to hold
+is a hub-and-spoke (Figure~\ref{fig:bifactor}): $G$ is a hub wired (faintly) to every instrument, each
+specific factor a spoke wired (strongly) to its own pool; a depression/anxiety ``window'' is an instrument
+wired only to the hub.
 
 \begin{figure}[h]\centering
 \bifactordiagram
@@ -116,12 +120,14 @@ identification for a first stable fit; the specific block correlates only via $\
 \textbf{Correlated-G (sensitivity).} $D_i\sim\Normal(0,\Phi)$ with $\Phi\sim\LKJdist(\eta)$, in a variant that
 \emph{lets} $G$ correlate with the biological specifics. This variant is essential: it tests whether
 ``$G\perp$ biology'' is an empirical finding or merely an artefact of the bifactor constraint
-(Section~\ref{sec:results} shows it refined the magnitude without changing the conclusion).
+(Chapter~\ref{sec:results} shows it refined the magnitude without changing the conclusion).
 \end{definitionbox}
 
 \subsection{Mixed-likelihood observation model}
 Each indicator is given the likelihood appropriate to its type; the project does \emph{not} coerce everything
-onto a shared continuous scale. The observation likelihood is what carries the variable type,
+onto a shared continuous scale. Forcing a yes/no or a count variable onto a continuous ruler manufactures
+covariance that is an artefact of the rescaling and biases the very dimensions we are trying to estimate ---
+so each item keeps its natural scale, and the observation likelihood is what carries the variable type,
 \begin{equation}
 X_{ij}\sim F_j(\eta_{ij},\theta_j),
 \end{equation}
@@ -129,7 +135,7 @@ with $F_j$ chosen per indicator as in Table~\ref{tab:likelihoods}.
 
 \begin{table}[h]\centering\small\sffamily
 \caption{The mixed-likelihood observation model. The continuous block (Gaussian/log-Gaussian) can be
-marginalized analytically (Section~\ref{sec:estimation}); the non-Gaussian block carries explicit latents.}
+marginalized analytically (Chapter~\ref{sec:estimation}); the non-Gaussian block carries explicit latents.}
 \label{tab:likelihoods}
 \begin{tabular}{L{5.0cm} L{4.0cm} L{5.0cm}}
 \toprule
@@ -170,7 +176,7 @@ Appendix~\ref{app:prioratlas}), an indicator$\times$factor heatmap of where each
 to load, generated from configuration alone with no patient data. It encodes a block-diagonal primary structure
 (each factor anchored by its own pool), a faint $G$ column over every specific item (the bifactor mechanism by
 which $G$ becomes ``general'' only if the data put many specifics on it), the homeless cross-loading windows,
-and the hypothesised metabolic$\leftrightarrow$inflammatory bridge. The scientific deliverable of M1 is the
-\emph{prior $\to$ posterior} comparison (Section~\ref{sec:results}): this theory map placed beside the fitted
+and the hypothesised metabolic$\leftrightarrow$inflammatory bridge. The scientific deliverable of the
+measurement map is the \emph{prior $\to$ posterior} comparison (Chapter~\ref{sec:results}): this theory map placed beside the fitted
 empirical atlas, with a per-candidate verdict. As built, $143$ indicators across $10$ candidate factors enter
 as modelled cells.

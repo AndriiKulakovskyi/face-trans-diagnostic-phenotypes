@@ -146,7 +146,6 @@
 \newcommand{\certified}{\statuspill{facekr}{CERTIFIED}}
 \newcommand{\provisional}{\statuspill{facecav}{PROVISIONAL}}
 \newcommand{\rejected}{\statuspill{faceopen}{REJECTED}}
-\newcommand{\planned}{\statuspill{facemeth}{PLANNED}}
 
 % -------------------------------------------------------------------- table helpers
 \newcommand{\hdr}[1]{\textcolor{faceaccent}{\sffamily\bfseries #1}}
@@ -156,9 +155,10 @@
 \arrayrulecolor{facerule!140}
 \renewcommand{\arraystretch}{1.18}
 
-% -------------------------------------------------------------------- milestone pipeline strip
-% \milestonestrip{highlight index 1..4} — draws cohorts -> dimensions -> strata -> prognosis.
-\newcommand{\milestonestrip}[1]{%
+% -------------------------------------------------------------------- program pipeline strip
+% \programstrip{highlight index 0..4} — draws cohorts -> dimensions -> strata -> prognosis/treatment.
+%   index 0 highlights none (the unified, whole-program view); 1..4 emphasises a single layer.
+\newcommand{\programstrip}[1]{%
   \def\m@one{white}\def\m@two{white}\def\m@three{white}\def\m@four{white}%
   \def\t@one{faceink}\def\t@two{faceink}\def\t@three{faceink}\def\t@four{faceink}%
   \ifnum#1=1\def\m@one{faceaccent}\def\t@one{white}\fi

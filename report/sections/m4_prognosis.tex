@@ -1,16 +1,17 @@
-\section{Milestone 4: prognosis --- does the map predict?}
+\section{Prognosis: does the map predict?}
 \label{sec:prognosis}
 
-M3 showed the map and its strata \emph{persist}; M4 asks whether they \emph{predict}. The distinction is
-the whole point of the program: a description can be stable and still clinically idle. The question is
-sharp and deliberately conservative --- does a baseline coordinate or stratum forecast a future clinical
-outcome \emph{incrementally beyond what a clinician already has}, namely the DSM-5 diagnosis, the current
-severity, and the present value of the outcome itself? The bet, placed exactly where M3 pointed, is that
-the \emph{durable} trait axes (cognition, metabolic, inflammatory) predict the \emph{moving} state outcomes
-(functioning, severity). Throughout, M4 is a pure consumer of the fixed M1/M2/M3 objects --- the panel of
-re-scored coordinates, their per-patient uncertainty, the archetype memberships, and the attrition weights
---- never re-estimated (invariant I3). The outcomes are clinical scales re-administered over the dense
-yearly grid V0\,$\to$\,V2; there is no hospitalization or relapse register in the record, so M4 forecasts
+The previous chapter showed the map and its strata \emph{persist}; this one asks whether they
+\emph{predict}. The distinction is the whole point of the program: a description can be stable and still
+clinically idle. The question is sharp and deliberately conservative --- does a baseline coordinate or
+stratum forecast a future clinical outcome \emph{incrementally beyond what a clinician already has}, namely
+the DSM-5 diagnosis, the current severity, and the present value of the outcome itself? The bet, placed
+exactly where temporal coherence pointed, is that the \emph{durable} trait axes (cognition, metabolic,
+inflammatory) predict the \emph{moving} state outcomes (functioning, severity). Throughout, this chapter is
+a pure consumer of the fixed objects from the earlier chapters --- the panel of re-scored coordinates,
+their per-patient uncertainty, the archetype memberships, and the attrition weights --- never re-estimated
+(invariant I3). The outcomes are clinical scales re-administered over the dense yearly grid
+V0\,$\to$\,V2; there is no hospitalization or relapse register in the record, so the forecasts are of
 \emph{scale trajectories}, not events (\S\ref{sub:m4limits}).
 
 \subsection{The estimand and the bar}
@@ -24,9 +25,11 @@ durable coordinates or as archetype/tessellation memberships, and credited only 
 
 \begin{methodsbox}[Errors-in-variables: the map's uncertainty is propagated, not ignored]
 A coordinate is a posterior, not a point. Plugging its mean into a regression would attenuate the
-coefficient toward zero --- worst where the coordinate is least certain. So each map predictor enters as
-a latent true value with the \emph{known} M1 per-patient standard deviation plugged in (the M3
-variance-model trick, Eq.~\ref{eq:traitstate}, generalized to the outcome equation):
+coefficient toward zero --- the textbook \emph{regression-dilution} effect, in which noise in a predictor
+flattens its apparent slope, and the damage is worst exactly where the coordinate is least certain. The
+remedy is to trust each reading in proportion to its precision: each map predictor enters as a latent true
+value carrying the \emph{known} per-patient standard deviation from the map (the variance-model device of
+Eq.~\ref{eq:traitstate}, generalized to the outcome equation):
 \begin{equation}
 \label{eq:eiv}
 g\!\left(\mathbb{E}[Y_{i}]\right)=\alpha+\mathbf{x}_i^{\!\top}\bm\beta+u_{\mathrm{site}(i)}+\xi_i\,\beta_{z},
@@ -43,8 +46,9 @@ On the bar (DSM-5 $+$ severity $+$ baseline outcome), added value splits cleanly
 
 \begin{keyresult}[The transdiagnostic profile predicts two-year functioning]
 For \textbf{functioning} (EGF, $N=2{,}114$) the eight archetypes add held-out $\Delta$ELPD $\mathbf{+46}$
-(the $G$-residualized Arm-B view; $+58$ for the full-phenotype Arm-A) and the four-region tessellation
-$+47$ --- clearly predictive. The durable \emph{biology} coordinates carry it: metabolic
+--- expected log predictive density, a measure of out-of-sample predictive accuracy (higher is better), so
+$+46$ log-likelihood units of held-out fit beyond the bar --- in the $G$-residualized Arm-B view ($+58$ for
+the full-phenotype Arm-A), with the four-region tessellation $+47$ --- clearly predictive. The durable \emph{biology} coordinates carry it: metabolic
 $\beta=-0.062\,[-0.103,-0.022]$ and inflammatory $-0.060\,[-0.112,-0.011]$ both exclude zero (higher
 load $\to$ worse future functioning). For \textbf{severity} (CGI-S, $N=2{,}345$) the map adds essentially
 nothing: severity is autoregression-saturated --- today's CGI-S and $G$ already fix it.
@@ -58,10 +62,10 @@ credible (above) yet adds little \emph{held-out ELPD} ($+7$, ambiguous) is the f
 \subsection{Beyond severity --- the biology is the clean signal (Q2)}
 The load-bearing test is whether the biology effect is more than baseline severity in disguise. It is:
 metabolic survives adjustment for the \emph{error-corrected} $G$ severity ($\beta=-0.055\,[-0.095,-0.015]$)
-as well as the manifest CGI-S. This is the M1 bet --- biology orthogonal to $G$ --- cashed out
-prognostically: the metabolic/inflammatory corner a patient \emph{keeps} (M3 trait) forecasts the
-functional state they \emph{move toward} (M3 state). Cognition does not reach credibility (prior-dominated
-for the untested, and the weakest of the three).
+as well as the manifest CGI-S. This is the central bet of the map --- biology orthogonal to $G$ --- cashed
+out prognostically: the metabolic/inflammatory corner a patient \emph{keeps} (the trait, from the temporal
+chapter) forecasts the functional state they \emph{move toward} (the state). Cognition does not reach
+credibility (prior-dominated for the untested, and the weakest of the three).
 
 \subsection{Versus DSM-5: complementary, and course-dependent (Q3)}
 The deferred G5 test, now answerable because outcomes (unlike the enrolment diagnosis) move. On a shared
@@ -106,7 +110,7 @@ the clinic's own units.
 (remission/recovery good $\uparrow$; deterioration/sustained/relapse adverse $\downarrow$), coloured by
 adversity (blue favourable, red adverse). Archetypes ordered by functional-remission rate; the
 low-burden corner remits and the suicidality/inflammatory corners persist. The trajectories diverge over
-follow-up while keeping rank --- the M3 trait/state geometry, now in outcomes.}
+follow-up while keeping rank --- the trait/state geometry from the temporal chapter, now in outcomes.}
 \label{fig:m4atlas}
 \end{figure}
 
@@ -170,7 +174,7 @@ permutation null & \multicolumn{2}{c}{real $\Delta R^2\,0.006$ vs null $0.003$, 
 \end{tabular}
 \end{table}
 
-\subsection{What M4 establishes --- and what it defers}
+\subsection{What prognosis establishes --- and what it defers}
 \label{sub:m4limits}
 On the fixed map, a baseline transdiagnostic profile predicts two-year \emph{functional} trajectory
 incrementally beyond diagnosis and severity --- robustly, complementarily to DSM-5, and concentrated in
@@ -179,7 +183,7 @@ itself is baseline-determined, and the map's worth is a \emph{stratification} (t
 forecasting, not a large individual-binary boost.
 
 \begin{table}[h]\centering\small\sffamily
-\caption{The M4 gates and verdicts (internal validity, V0$\to$V2; functioning as the primary outcome).}
+\caption{The prognosis gates and verdicts (internal validity, V0$\to$V2; functioning as the primary outcome).}
 \label{tab:m4goals}
 \begin{tabular}{L{2.1cm} L{5.3cm} L{5.4cm}}
 \toprule
@@ -193,12 +197,12 @@ Q4 robust & survives attrition / reliability / chance? & yes; weakens dropping b
 \end{tabular}
 \end{table}
 
-\begin{openbox}[Prediction is not moderation --- that is M5]
-M4 shows the map \emph{forecasts} who will do well; it does not show it \emph{changes what to do}.
+\begin{openbox}[Prediction is not moderation --- that comes next]
+This chapter shows the map \emph{forecasts} who will do well; it does not show it \emph{changes what to do}.
 Whether a stratum \emph{moderates treatment response} --- the stratum-by-treatment interaction, the point
-at which a phenotype alters management --- is M5, and it will require a treatment or randomization
-variable the present record may not contain (the enrolment \texttt{arm} is a DSM-5 subtype, not an
-assigned treatment). Caveats carried forward: scale trajectories, not events; internal association, not a
+at which a phenotype alters management --- is the final chapter's question, and it will require a treatment
+or randomization variable the present record may not contain (the enrolment \texttt{arm} is a DSM-5 subtype,
+not an assigned treatment). Caveats carried forward: scale trajectories, not events; internal association, not a
 validated or causal decision rule; bipolar/depression-concentrated, with the rare archetypes
 (inflammatory, suicidality) wide; a two-year horizon. \emph{Predicts $\ne$ moderates.}
 \end{openbox}
