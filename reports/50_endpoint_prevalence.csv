@@ -1,0 +1,6 @@
+endpoint,label,polarity,role,n,rate,rate_bp,rate_sz,rate_dr
+response,CGI-Improvement responder (much/very-much improved),good,primary,2179,0.516,0.519,0.504,
+therapeutic_effect,CGI therapeutic effect marked/moderate,good,primary,1993,0.856,0.852,0.871,
+resistance,Treatment-resistant (CGI-S≥4 & not improved),poor,primary,2158,0.307,0.267,0.439,
+side_effects,Significant side-effects (interfere+),poor,primary,1972,0.159,0.149,0.193,
+low_adherence,Low adherence (MARS ≤ threshold),poor,secondary,2551,0.159,0.116,0.18,0.889
