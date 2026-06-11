@@ -89,29 +89,31 @@ def fit_glm(y, X, *, family: str = "gaussian", group=None, n_groups: int | None 
 
     mcmc = MCMC(NUTS(model, target_accept_prob=target_accept), num_warmup=tune, num_samples=draws,
                 num_chains=chains, progress_bar=False)
-    mcmc.run(jax.random.PRNGKey(seed))
-    idata = az.from_numpyro(mcmc)
-    _attach_loglik(idata, model, mcmc, site="y")          # az.from_numpyro omits it; LOO needs it
+    mcmc.run(jax.random.PRNGKey(seed), extra_fields=("diverging",))
+    idata = _build_idata(model, mcmc, site="y")           # az.from_dict — avoids from_numpyro re-trace leak
     coef = _coef_table(idata, P)
     diag = _diag(idata)
     return {"idata": idata, "coef": coef, "family": family, "n": int(N), "n_pred": int(P),
             "rhat": diag["rhat"], "divergences": diag["div"], "ess": diag["ess"]}
 
 
-def _attach_loglik(idata, model, mcmc, *, site: str) -> None:
-    """Compute the per-observation log-likelihood of the outcome `site` and add it as the
-    `log_likelihood` group (arviz>=1.1 `from_numpyro` no longer does this, but `az.loo` requires it)."""
+def _build_idata(model, mcmc, *, site: str):
+    """Assemble InferenceData from raw samples via `az.from_dict`. We do NOT use `az.from_numpyro`:
+    arviz>=1.1 re-traces the model to infer predictive dims, which leaks a JAX tracer when the
+    likelihood is wrapped in a `scale` (IPW) handler. Computing the posterior, per-obs log-likelihood
+    and divergences from the samples sidesteps the re-trace entirely."""
+    import arviz as az
     import numpyro
-    import xarray as xr
 
-    ll = np.asarray(numpyro.infer.log_likelihood(model, mcmc.get_samples())[site])   # [S, N]
-    c = idata.posterior.sizes["chain"]
-    d = idata.posterior.sizes["draw"]
-    ll = ll.reshape(c, d, ll.shape[1])
-    ds = xr.Dataset({site: (["chain", "draw", f"{site}_dim_0"], ll)},
-                    coords={"chain": np.asarray(idata.posterior.coords["chain"]),
-                            "draw": np.asarray(idata.posterior.coords["draw"])})
-    idata["log_likelihood"] = ds                          # arviz>=1.1 returns a DataTree (dict assign)
+    post = {k: np.asarray(v) for k, v in mcmc.get_samples(group_by_chain=True).items()}  # [C, D, ...]
+    c, d = next(iter(post.values())).shape[:2]
+    ll = np.asarray(numpyro.infer.log_likelihood(model, mcmc.get_samples())[site])        # [C*D, N]
+    ll = ll.reshape(c, d, ll.shape[-1])
+    data = {"posterior": post, "log_likelihood": {site: ll}}                              # arviz>=1.1 nested-dict
+    extra = mcmc.get_extra_fields(group_by_chain=True)
+    if "diverging" in extra:
+        data["sample_stats"] = {"diverging": np.asarray(extra["diverging"])}
+    return az.from_dict(data)
 
 
 def _summarize(arr) -> dict:

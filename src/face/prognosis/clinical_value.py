@@ -13,28 +13,30 @@ from __future__ import annotations
 import numpy as np
 
 
-def cv_predict(X, y, *, n_splits: int = 5, seed: int = 20260610, C: float = 1.0):
+def cv_predict(X, y, *, weights=None, n_splits: int = 5, seed: int = 20260610, C: float = 1.0):
     """Out-of-fold predicted probabilities from stratified K-fold logistic regression (standardized
-    inputs assumed). Returns p_hat [N] aligned to the rows of X."""
+    inputs assumed). `weights` → per-row sample weights passed to the fit (IPW). Returns p_hat [N]."""
     from sklearn.linear_model import LogisticRegression
     from sklearn.model_selection import StratifiedKFold
 
     X = np.asarray(X, dtype="float64")
     y = np.asarray(y, dtype="int64")
+    w = None if weights is None else np.asarray(weights, dtype="float64")
     p = np.full(len(y), np.nan)
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=seed)
     for tr, te in skf.split(X, y):
-        m = LogisticRegression(max_iter=2000, C=C).fit(X[tr], y[tr])
+        m = LogisticRegression(max_iter=2000, C=C).fit(X[tr], y[tr],
+                                                       sample_weight=None if w is None else w[tr])
         p[te] = m.predict_proba(X[te])[:, 1]
     return p
 
 
-def auc(y, p) -> float:
+def auc(y, p, *, weights=None) -> float:
     from sklearn.metrics import roc_auc_score
     y = np.asarray(y)
     if len(np.unique(y)) < 2:
         return float("nan")
-    return float(roc_auc_score(y, p))
+    return float(roc_auc_score(y, p, sample_weight=weights))
 
 
 def brier(y, p) -> float:
