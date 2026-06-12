@@ -334,7 +334,7 @@ def build_marginalized(prep: CorePrep, psi_floor: float = 0.05, lkj_eta: float =
     N, J = M.shape
     F = len(prep.factor_cols)
     mask = (~np.isnan(M)).astype("float64")
-    x = np.nan_to_num(M, nan=0.0)
+    x = np.nan_to_num(M, nan=0.0)   # fill is irrelevant: masked Woodbury zeroes out missing cells
     kobs = mask.sum(1)
     log2pi = float(np.log(2.0 * np.pi))
     pat_mask, pat_inv = _patterns(mask)
@@ -572,7 +572,7 @@ def build_mixed(mp: MixedPrep, psi_floor: float = 0.05, lkj_eta: float = 2.0):
     F = len(base.factor_cols)
     Ke, Km = len(mp.e_cols), len(mp.m_cols)
     mask = (~np.isnan(M)).astype("float64")
-    x = np.nan_to_num(M, nan=0.0)
+    x = np.nan_to_num(M, nan=0.0)   # fill is irrelevant: masked Woodbury zeroes out missing cells
     kobs = mask.sum(1)
     log2pi = float(np.log(2.0 * np.pi))
     pat_mask, pat_inv = _patterns(mask)

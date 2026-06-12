@@ -1,3 +1,14 @@
+"""Per-variable harmonization transformers for the FACE common-variables pipeline.
+
+Each cohort uses different encodings for the same clinical variable (BP/SZ store
+French text labels; DR often stores integer codes; units sometimes differ). This
+module centralises all such cross-cohort normalization in one place.
+
+Pattern: decorate a function with ``@register("canonical_name")`` to add it to
+the ``RULES`` dict. The loader calls ``RULES[canonical_name](series, cohort)``
+when building the unified frame; variables without a registered rule fall back
+to ``identity_cast``, which only applies dtype coercion and allowed-value checking.
+"""
 from __future__ import annotations
 
 import re

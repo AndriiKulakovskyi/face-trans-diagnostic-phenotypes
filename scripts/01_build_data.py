@@ -42,6 +42,8 @@ def main() -> None:
 
     # ---- modeled-indicator metadata from the prior matrix ----
     m = pd.read_csv(MATRIX)
+    # "primary" = indicator loads mainly on one specific factor; "g_anchor" = G-factor marker.
+    # Cross-loading windows (prior_type="window") have no single home factor → left NaN.
     home = (m[m.prior_type.isin(["primary", "g_anchor"])].drop_duplicates("item")
             .set_index("item")["factor"])
     meta = (m.drop_duplicates("item").set_index("item")
@@ -51,6 +53,8 @@ def main() -> None:
 
     # ---- harmonized full-sample V0 (skip-logic decoded; NaN = missing, never imputed) ----
     variables = load_variables(str(XLSX))
+    # PARTIAL = items harmonized to a coarser scale or with one cohort missing;
+    # included here because the Bayesian model handles missingness natively.
     df = build_unified_dataframe("data", str(XLSX), readiness=["READY", "PARTIAL"], format="long")
     ds = to_harmonized_dataset(df, variables, visit="V0", normalize=False, apply_skip_logic=True)
     X = ds.X
