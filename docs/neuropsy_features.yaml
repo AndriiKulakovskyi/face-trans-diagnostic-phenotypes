@@ -1,0 +1,116 @@
+# Neuropsychology include-list — trans-diagnostic stratification & dimensional analysis
+# Source: data/face-common-vars-v2.xlsx (NEUROPSYCHOLOGIE) + per-cohort CSV verification (BP/SZ/DR).
+#
+# ROLES
+#   feature           -> primary trans-diagnostic feature (clean, comparable, all 3 cohorts)
+#   feature_2cohort   -> sensitivity / within-pair only (present in 2 cohorts; cohort-missingness
+#                        risk in stratification — DO NOT put in the main 3-cohort feature matrix)
+#   covariate         -> residualize features on these; NOT a phenotype feature
+#   drop              -> excluded (reason given)
+#
+# KEY RULES
+#  * Use WAIS *standard* (scaled, 1-19) scores, never raw: SZ mixes WAIS-3 & WAIS-4 editions;
+#    raw scores are not edition-comparable, standard scores are (both normed mean 10, SD 3).
+#  * Z-score and percentile columns are derived twins of the raw/standard score AND have
+#    sign/sentinel defects -> always drop; the standard score carries the signal.
+#  * cols: per-cohort CSV column name; "null" = test/column absent in that cohort.
+
+covariates:
+  - name: age
+    construct: age at cognitive assessment
+    cols: {bp: cclin01_, sz: cclin01_, dr: cclin01}
+    sanity: [16, 90]
+    note: already in engine residualize_on=('age','sex')
+  - name: sex
+    construct: sex
+    cols: {bp: sex, sz: sex, dr: sex}   # from demographics section; standard residualization covariate
+  - name: education_years
+    construct: years of schooling since CP (cognitive reserve)
+    cols: {bp: cclin08_, sz: cclin08_, dr: cclin08}
+    sanity: [0, 30]
+    note: SZ coded as grade level (CP=1..Terminale=12) = years since CP; BP outlier 44 clipped.
+          Add to residualize_on, or use as covariate — do NOT use as a phenotype feature.
+
+features:            # ===== primary trans-diagnostic core (all 3 cohorts, standard scores) =====
+  - name: wais_similitudes_std
+    construct: verbal reasoning
+    cols: {bp: similstd_wais4, sz: similstd_w, dr: similstd}
+    sanity: [1, 19]
+    note: cap SZ stray value 20 -> 19
+  - name: wais_digitspan_std
+    construct: working memory
+    cols: {bp: nstand_w, sz: nstand_w, dr: nstand}
+    sanity: [1, 19]
+    note: USE STANDARD ONLY — BP raw (nbrut_w) & empan endroit (mcodemp_w) are corrupted
+  - name: wais_code_std
+    construct: processing speed
+    cols: {bp: code04_w, sz: sdmt0101_w, dr: code04}
+    sanity: [1, 19]
+  - name: wais_ivt_index
+    construct: processing-speed index (mean 100, SD 15)
+    cols: {bp: ivt01_w, sz: ivt01_wais4, dr: ivt01}
+    sanity: [40, 160]
+  - name: tmt_a_time_sec
+    construct: psychomotor speed
+    cols: {bp: tmta01_, sz: tmt0101_, dr: tmta01}
+    sanity: [5, 400]
+  - name: tmt_b_time_sec
+    construct: executive / set-shifting
+    cols: {bp: tmtb01_, sz: tmt0102_, dr: tmtb01}
+    sanity: [10, 600]
+
+features_2cohort:    # ===== sensitivity only — 2-cohort, keep OUT of the main 3-cohort matrix =====
+  - name: wais_matrices_std        # perceptual reasoning
+    cols: {bp: mat_std_w, sz: mat_std_w, dr: null}
+    sanity: [1, 19]
+  - name: wais_arith_std           # working memory (mental arithmetic)
+    cols: {bp: null, sz: arithstd_w, dr: arithstd}
+    sanity: [1, 19]
+  - name: wais_symbols_std         # processing speed
+    cols: {bp: symbol04_w, sz: null, dr: symbol04}
+    sanity: [1, 19]
+  - name: wais_imt_index           # working-memory index
+    cols: {bp: null, sz: imt02_wais4, dr: imt02}
+    sanity: [40, 160]
+  - name: tmt_ba_time_sec          # interference (B-A); collinear with A & B
+    cols: {bp: tmtba01_, sz: tmtba01_, dr: tmtba01}
+    sanity: [-100, 700]
+  - name: cvlt_recall5             # BP/SZ only (DR absent)
+    cols: {bp: cvlt05_, sz: avl01084_, dr: null}
+    sanity: [0, 16]
+  - name: cvlt_lundi_total         # sum trials 1-5, BP/SZ only
+    cols: {bp: cvlt06_, sz: cvlt06_, dr: null}
+    sanity: [0, 80]
+  - name: cvlt_rlct                # short-delay free recall, BP/SZ only
+    cols: {bp: cvlt08_, sz: avl01103_, dr: null}
+    sanity: [0, 16]
+  - name: cvlt_rllt                # long-delay free recall, BP/SZ only
+    cols: {bp: cvlt10_, sz: avl01135_, dr: null}
+    sanity: [0, 16]
+  - name: commissions_time_min     # BP/SZ only (DR absent)
+    cols: {bp: com01_, sz: com01_, dr: null}
+    sanity: [0, 60]
+
+drop:                # ===== excluded, with reason (column families) =====
+  - pattern: "*_z, note Z (tmt*b_, *z_, ...)"
+    reason: redundant twin of raw/standard score + inconsistent sign convention across cohorts + 99/inf sentinels
+  - pattern: "percentile bands (tmt*a_, fv03/fv14, com*s1, ivt02/imt03 as text)"
+    reason: stored as text bands (format differs BP/SZ vs DR) + redundant with raw/standard
+  - pattern: "WAIS valeur standardisée (*cr_w, vstand_w, *_cr)"
+    reason: linear transform of the standard score -> collinear (keep std only)
+  - pattern: "WAIS raw totals (similtot*, nbrut*, mat_tot*, code01/03, symbol01/03, arithtot*)"
+    reason: not edition-comparable (WAIS-3 vs WAIS-4); standard score is the comparable form
+  - pattern: "BP digit-span raw (nbrut_w, mcodemp_w / empan endroit)"
+    reason: corrupted scale in BP (median ~2, span 0-46) -> use wais_digitspan_std
+  - pattern: "context demographics (cclin02 lateralite, cclin03 langue, cclin09 vision, cclin10 audition, cclin11 ECT, cclin12 psychotrope)"
+    reason: eligibility/validity filters or medication confounds, not phenotype features (see todo for encoding if used as covariates/filters)
+  - pattern: "developmental disorders (trbapp01-10)"
+    reason: BP-only (single cohort) -> not trans-diagnostic
+  - pattern: "verbal fluency P & Animaux (fv01-fv22)"
+    reason: known cohort artifact (rejected by confound battery) + DR letter-P columns shifted by one
+  - pattern: "CVLT Mardi / Reconnaissances / Discriminabilite (cvlt07_, cvlt16/17_, cvlt18_)"
+    reason: scale anomalies (exceed expected range; d' -> 1000)
+  - pattern: "WAIS IMT somme (imt01)"
+    reason: DR exceeds the 2-subtest max (>38)
+  - pattern: "TMT/CVLT/commissions error sub-counts, empan sub-totals, IVT/IMT confidence intervals"
+    reason: low-variance, 2-cohort, or redundant with the standard score above

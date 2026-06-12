@@ -1,133 +1,115 @@
-# FACE — Trans-diagnostic Dimensional Phenotyping (BP · SZ · DR)
+# FACE — Clinical-biological transdiagnostic stratification (BP · SZ · DR)
 
-Across bipolar disorder, schizophrenia and major depression in the FACE cohort,
-the only categorical boundary the data support is **diagnosis itself** — every
-*trans-diagnostic* axis of variation is **continuous**. We harmonize the 3-cohort
-longitudinal data (baseline V0 → 4-year V4) and fit a confound-controlled,
-imputation-free **seven-dimension** model that complements or outperforms DSM
-diagnosis for patient-reported outcomes, and distill it into a parsimonious
-(≤15-item) screening panel. Full write-up: **[MANUSCRIPT.md](MANUSCRIPT.md)**.
+Across bipolar disorder, schizophrenia, and major depression in the FACE cohorts, this project turns the
+harmonized 3-cohort **baseline (V0)** data into a **transdiagnostic dimensional map** — continuous,
+diagnosis-agnostic axes of clinical and biological variation — and then, on that map, into **validated
+patient strata**, a test of their **temporal coherence**, and **prognosis / treatment** decision models.
+Four layers that are never collapsed:
 
-The repo is **self-contained** — the stratification engine (masked similarity →
-multipartite-spectral embedding, enrichment, factor scaffolding) is internalized in
-`src/trans_diag/engine/`; there is no external dependency on the sister
-`face_stratification` / `face_rlvr` projects.
-
-## Repository structure
-
-```
-face-common-bp-sz-dr/
-├── MANUSCRIPT.md             ← the paper (methods, results, figures, references)
-├── README.md  CLAUDE.md      ← this file + the concise project/AI-assistant guide
-├── install.py                ← one-step setup: creates .venv and installs .[full]
-├── pyproject.toml            ← packages = src/trans_diag; deps; ".[full]" extras
-│
-├── data/                     ← inputs (read-only)
-│   ├── face-common-vars.xlsx     • common-variables dictionary (tracked, 103 KB)
-│   ├── thesaurus/                • per-cohort source dictionaries (tracked, reference)
-│   └── {bipolar,schizophrenia,depression}.csv
-│                                 • 3-cohort longitudinal data — CONFIDENTIAL, gitignored
-│
-├── src/trans_diag/           ← the package (all our code)
-│   ├── variable·rules·loader·filters.py      • harmonization
-│   ├── schema_gen·adapter·domains.py         • matrix build + domain aggregation
-│   ├── masked_fa·axes·outcomes.py            • imputation-free FA, axis names, outcome models
-│   └── engine/                               • internalized stratification engine
-│       ├── feature_schema·harmonized_dataset.py   – data contracts
-│       ├── masked_similarity·spectral_base·multipartite.py  – embedding (no imputation)
-│       └── enrichment·clustering.py               – enrichment + kmeans/bootstrap
-│
-├── scripts/                  ← the pipeline; 00_run_all.py orchestrates steps 01–22
-│   └── verify·audit·qa_missingness·build_notebook.py   • utilities (not pipeline steps)
-│
-├── results/                  ← reproducible AGGREGATE artifacts (CSV/JSON; tracked)
-│   └── reports/              ← rendered HTML + figures/ (PNG/SVG; tracked)
-│
-├── tests/                    ← unit + golden-number regression tests (76)
-├── notebooks/                ← FACE_reproduction.ipynb (narrative walk-through)
-└── docs/                     ← ROADMAP · DATA · FINDINGS · LABBOOK
+```text
+diagnostic cohorts  →  transdiagnostic dimensions  →  validated strata  →  prognosis  →  treatment
+  (entry metadata)        (M1 ✓ certified 9-dim)      (M2 ✓ continuum)    (M4 ✓)       (M5 ✓ boundary)
+                                                       (M3 ✓ temporal coherence: trait/state)
 ```
 
-**Imports.** `trans_diag` resolves from `src/`. Scripts insert `src/` on `sys.path`;
-pytest uses `pythonpath = ["src"]`. Or install editable: `pip install -e ".[full]"`.
+> **Status — Milestones 1–5 complete** (pending PI sign-off). **The calibrated bottom line:** a real,
+> stable, **continuum** (not biotype) transdiagnostic map, with biology orthogonal to severity, that
+> carries a **small, group-level** incremental prognostic signal for functioning and shows **no
+> demonstrable treatment moderation** in observational data. *Scientific validity is demonstrated; clinical
+> utility in the strong sense (individual prediction, treatment guidance) is not* — and the modest and null
+> results are reported as the contribution, a calibrated counterweight to biotype/biomarker over-claiming.
+> Read first: **[docs/STATE.md](docs/STATE.md)**.
+
+## What the program found (the arc)
+
+- **M1 — the map *exists*.** One global, missingness-aware Bayesian sparse bifactor/ESEM on observed cells
+  yields a **certified 9-dimension map**: a general functional-burden factor **G** + eight weakly-correlated
+  specific axes. Biology (metabolic, inflammatory) is the **least severity-entangled** domain.
+  → [docs/M1_FINDINGS.md](docs/M1_FINDINGS.md)
+- **M2 — it *organizes*.** A structure-discovery gate finds **no biotypes**: the space is a graded
+  **continuum** — 8 soft archetypes + a 4-region tessellation — transdiagnostic (adjusted Rand ≈ 0 vs the
+  DSM-5 subtypes) and a tighter description of the coordinates than diagnosis.
+  → [docs/STRATA_FINDINGS.md](docs/STRATA_FINDINGS.md)
+- **M3 — it *persists*.** Scored forward onto follow-up (V0→V1→V2, never re-estimated), the measurement is
+  invariant and the geometry replays: **durable biology, moving symptoms** (trait/state).
+  → [docs/TEMPORAL_FINDINGS.md](docs/TEMPORAL_FINDINGS.md)
+- **M4 — it *predicts*.** An errors-in-variables Bayesian GLM shows a baseline coordinate forecasts 2-year
+  **functioning** incrementally beyond diagnosis + severity + baseline — **modestly, and group-level**
+  (remission ΔAUC +0.017; archetype atlas 14%→60%, partly severity), co-informative with DSM-5,
+  course-dependent. → [docs/PROGNOSIS_FINDINGS.md](docs/PROGNOSIS_FINDINGS.md)
+- **M5 — it does *not* (yet) *prescribe*.** Treatment data, found in the per-cohort source dictionaries and
+  harmonized, is run through a causal pipeline (overlap → propensity → doubly-robust EIV moderation +
+  E-value): on observational treatment-as-usual the map does **not** reliably moderate response (lithium-BP
+  a well-identified null; antipsychotic suggestive-unconfirmed; clozapine channeled). The prognosis
+  **survives** treatment adjustment. The boundary is **earned, not assumed**.
+  → [docs/TREATMENT_FINDINGS.md](docs/TREATMENT_FINDINGS.md)
+
+## Method — the discipline
+
+One global Bayesian sparse **bifactor / ESEM** with **mixed likelihoods** estimates the factor structure;
+the data **confirm, split, merge, downgrade, or reject** each candidate; confirmation is **in-engine**
+(prior-free refit + posterior-predictive checks + WAIC — a standalone FIML proved redundant). Everything
+downstream consumes the **fixed** M1/M2/M3 objects (coordinates, per-patient uncertainty, archetype
+memberships, attrition weights) without re-estimation. Three load-bearing invariants:
+
+- **No naive imputation** — structure is estimated from each patient's observed cells (FIML / observed-data
+  likelihood); never a mean/KNN/MICE-filled matrix.
+- **Diagnosis is metadata** — a covariate / invariance grouping / validation label, never a dimension
+  indicator.
+- **Baseline (V0) defines; later visits validate** — no discovery on V1–V4; uncertainty is propagated
+  end-to-end.
+
+## The map (V0) — the certified nine dimensions
+
+**G (functional burden)** + **cognition · metabolic · inflammatory · sleep · developmental-risk ·
+suicidality · mania · substance**. Depression/anxiety instruments (MADRS/QIDS/STAI) enter as **cross-loading
+windows**, not a separate factor; **anhedonia** is **rejected**; **impulsivity / negative-symptoms /
+sensory** are **`not_testable`** (no indicators in the common variables) — *and stating so is a result of
+the analysis, not a failure.* Per-candidate verdicts: [docs/ADJUDICATION.md](docs/ADJUDICATION.md).
+
+## Data foundation (no imputation)
+
+Each dictionary variable → harmonization rule + per-variable **sanity bounds** (out-of-range → NaN, never
+imputed) → native clinical scale, with deterministic **skip-logic** structural-zero decoding. Raw data are
+confidential per-cohort **CSV**; model-ready tables are persisted as **Parquet**. The data layer carries
+each variable's likelihood family and missingness type — the data contract, see [docs/DATA.md](docs/DATA.md).
+
+## Engine & pipeline
+
+The package is **`src/face/…`**: the measurement engine (`models/bayesian`, `confirm`, `runner`, `scoring`)
++ the milestone engines (`strata/`, `temporal/`, `prognosis/`, `treatment/`). The staged pipeline is
+`scripts/01–57` (M1 `01–09,s5_*` · M2 `20–26` · M3 `30–37` · M4 `40–48` · M5 `50–57`); each stage writes a
+`reports/NN_*.md` + figures. Hand-off artifacts (gitignored) live under `results/face/`.
 
 ## Quick start
 
 ```bash
-python3 install.py                   # create .venv and install .[full] + dev tools
-source .venv/bin/activate            # Windows: .venv\Scripts\activate
-python3 scripts/00_run_all.py        # reproduce the whole manuscript pipeline (~5 min, steps 01–22)
+pip install -e ".[full]"        # core + figure export; add ".[bayesian]" for PyMC / NumPyro
+python3 -m pytest tests/ -q     # data-layer, engine, and milestone tests
 ```
 
-`install.py` requires Python ≥ 3.11 and creates an isolated `.venv` in the project root.
-Pass `--no-dev` to skip pytest/ruff, `--check` to verify every import after install,
-or `--force` to wipe the existing `.venv` and reinstall from scratch.
-
-<details>
-<summary>Manual install (no .venv)</summary>
+The manuscript (the FACE Atlas, Milestones 1–5) builds from the project results:
 
 ```bash
-pip install -e ".[full]"             # core + torch + neuroHarmonize (ComBat) + kaleido + ipython + nbformat
+python3 report/make_figures.py          # regenerate figures from tracked reports/*.csv
+cd report && pdflatex FACE-ATLAS.tex    # ×2 for TOC/refs  (PDF is gitignored)
 ```
-</details>
-
-```python
-from trans_diag import build_unified_dataframe, load_variables, to_harmonized_dataset
-
-df = build_unified_dataframe("data", "data/face-common-vars.xlsx",
-                             readiness=["READY", "PARTIAL"], format="long")
-ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), visit="V0")
-# ds.X: MultiIndex[cohort, patient_id] × numeric features (NaN = missing, never imputed here)
-```
-
-The pipeline is numbered in execution order — read or run the scripts top-to-bottom.
-`00_run_all.py` runs steps **01–22**: Table 1 → confound ladder (§3.1) → residualized
-domain scores + embedding → discrete-vs-dimensional structure test → varimax FA →
-autoencoder cross-check → **locked K=7 axes** → longitudinal stability → outcome
-head-to-heads + CIs + de-circularization → ComBat/site robustness → cognition → review
-checks → manuscript figures → general-factor ('p') check → fold-honest CV re-fit →
-within-FACE held-out replication → **parsimonious screening panel**.
-
-## Verify / reproduce
-
-```bash
-python3 -m pytest tests/ -q          # 76 tests: unit (filters, adapter, domains, masked-FA, axes)
-                                     #           + golden-numbers regression against results/
-python3 scripts/verify.py            # end-to-end harmonization smoke test
-python3 scripts/00_run_all.py        # full reproduction → writes results/ + results/reports/
-python3 install.py --check           # re-verify every import in the .venv
-```
-
-- **Golden numbers** (`tests/test_golden_numbers.py`) pin every headline value in the
-  manuscript (with its §/Table) to the committed aggregate in `results/`. A pipeline re-run
-  that changes a result changes the artifact and fails the matching assertion — forcing a
-  synchronized update of both test and manuscript. On a fresh clone without the confidential
-  cohort, these tests **skip** (they read aggregates, never patient data).
-- **Determinism.** Fixed seeds throughout; reproduces to ≤1e-12 (BLAS round-off only). All
-  CV folds are shuffled (the patient matrix is cohort-ordered). Re-running `00_run_all.py`
-  with the source data present yields byte-identical `results/` aggregates; only the rendered
-  `results/reports/*.{html,svg}` carry cosmetic render-metadata diffs.
 
 ## Documentation
 
-- **[MANUSCRIPT.md](MANUSCRIPT.md)** — the paper (methods, results, figures, references).
-- **[CLAUDE.md](CLAUDE.md)** — concise project + repo guide (for collaborators and AI assistants).
-- **[docs/ROADMAP.md](docs/ROADMAP.md)** — research question, methods, phased plan, course-corrections.
-- **[docs/FINDINGS.md](docs/FINDINGS.md)** — running research log (paper-oriented).
-- **[docs/LABBOOK.md](docs/LABBOOK.md)** — chronological lab notebook (full traceability).
-- **[docs/DATA.md](docs/DATA.md)** — how to read the common-variables dictionary.
-- Engine internals → `src/trans_diag/engine/` module docstrings.
+- **[docs/STATE.md](docs/STATE.md)** — where the project is right now (**read first**).
+- **Paper-facing findings (read-first per milestone):** [M1](docs/M1_FINDINGS.md) ·
+  [M2](docs/STRATA_FINDINGS.md) · [M3](docs/TEMPORAL_FINDINGS.md) · [M4](docs/PROGNOSIS_FINDINGS.md) ·
+  [M5](docs/TREATMENT_FINDINGS.md).
+- **Methods of record:** [measurement](docs/MEASUREMENT_MODEL.md) (canonical) ·
+  [stratification](docs/STRATIFICATION_MODEL.md) · [temporal](docs/TEMPORAL_MODEL.md) ·
+  [prognosis](docs/PROGNOSIS_MODEL.md) · [treatment](docs/TREATMENT_MODEL.md).
+- **Clinician-facing atlases:** [strata](docs/STRATA_ATLAS.md) · [prognosis](docs/PROGNOSIS_ATLAS.md).
+- **[docs/DATA.md](docs/DATA.md)** — data contract + dictionary · **[CLAUDE.md](CLAUDE.md)** — guide for
+  collaborators / AI assistants · **`report/`** — the LaTeX manuscript (Milestones 1–5 + Conclusion).
 
-## Confidentiality & what is shared
+## Confidentiality
 
-> ⚠️ The FACE database contains **confidential** clinical data (Fondation FondaMental).
-> The per-cohort `data/*.csv` files and all per-patient derived artifacts
-> (`results/*_scores.parquet`, embeddings, cluster/longitudinal assignments) are
-> **gitignored and have never been committed** (`git log --all --full-history -- 'data/*.csv'`
-> is empty) — they stay on disk as a local working copy only.
->
-> What **is** tracked and safe to share: the code (`src/`, `scripts/`, `tests/`), the small
-> input dictionaries (`data/face-common-vars.xlsx`, `data/thesaurus/`), the **aggregate**
-> results (`results/`: 26 CSV + 16 JSON, no per-patient rows), and the rendered reports and
-> figures (`results/reports/`). Reviewers can read every result and reproduce all figures
-> without the confidential cohort; full numerical reproduction requires the `data/*.csv` files.
+The FACE database is confidential (Fondation FondaMental). The per-cohort `data/*.csv` and all per-patient
+artifacts are **gitignored and never committed**. Tracked + shareable: the code (`src/`, `scripts/`,
+`tests/`), the small input dictionaries, and regenerated **aggregate** results.

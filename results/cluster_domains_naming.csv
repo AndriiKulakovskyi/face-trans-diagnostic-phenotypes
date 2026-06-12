@@ -1,6 +1,0 @@
-cluster,n,cohort_mix,top_domains
-0,1963,"BP 57%, SZ 33%, DR 9%",somat_all(↓); metabolic_syndrome(↑); agedebutpremier_episode(↑); mere_structure(↓); suncf_cigarettes_lt(↓); pere_structure(↓); ymrs(↓); agetrt(↑)
-1,2252,"BP 72%, SZ 21%, DR 6%",suncf_cigarettes_lt(↑); ymrs(↓); somat_all(↓); agetrt(↓); inflammation(↑); agedebutpremier_episode(↓); agedebut_hospitalisation(↓); sudose_cigarettes_lt(↑)
-2,1266,"BP 81%, SZ 12%, DR 6%",metabolic_syndrome(↓); suncf_cigarettes_lt(↓); sudose_cigarettes_lt(↓); inflammation(↓); cholesterol(↓); hodur_hospitalisation_lt(↓); egf(↑); nboccur_hospitalisation_lt(↓)
-3,1430,"BP 78%, SZ 19%, DR 2%",ymrs(↑); altman(↑); somat_all(↓); mathys(↑); bis(↑); wurs(↑); psqi(↑); suncf_cigarettes_lt(↑)
-4,2102,"BP 64%, SZ 30%, DR 5%",somat_all(↑); cardiac_qtc(↑); prolactin(↑); saison(↑); mere_structure(↑); hooccur_arret_travail_actuel(↑); pere_structure(↑); csm(↓)

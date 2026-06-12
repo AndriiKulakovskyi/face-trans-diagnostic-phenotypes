@@ -1,0 +1,144 @@
+item,home_factor,block,family,section,nobs_V0,nobs_V1,nobs_V2,n_paired_v0v1,change_rate_v0v1,temporal_class
+acne_mhoccur,inflammatory,explicit,bernoulli,ANTECEDENTS,7096,860,728,795,0.131,re-administered
+agepere,developmental_risk,continuous,gaussian,PERINATALITE,5989,167,130,149,0.221,re-administered
+alp_lbstresc,metabolic,continuous,lognormal,BILAN BIOLOGIQUE,5205,2304,1718,2046,0.953,re-administered
+alt_lbstresc,metabolic,continuous,lognormal,BILAN BIOLOGIQUE,5391,2398,1761,2178,0.938,re-administered
+altman,mania_activation,continuous,gaussian,AUTO-QUESTIONNAIRES,6311,3014,2135,2947,0.762,re-administered
+apgr0106_1min,developmental_risk,continuous,gaussian,PERINATALITE,938,24,15,20,0.05,untested
+apgr0106_5min,developmental_risk,explicit,ordered_logistic,PERINATALITE,883,22,14,18,0.0,untested
+ast_lbstresc,metabolic,continuous,lognormal,BILAN BIOLOGIQUE,5386,2400,1767,2176,0.923,re-administered
+autcardv_mhoccur,metabolic,explicit,bernoulli,ANTECEDENTS,6995,862,725,795,0.047,re-administered
+autendoc_mhoccur,metabolic,explicit,bernoulli,ANTECEDENTS,6976,853,730,772,0.041,re-administered
+autneuro_mhoccur,developmental_risk,explicit,bernoulli,ANTECEDENTS,7050,865,718,796,0.028,re-administered
+baso_lbstresc,inflammatory,continuous,lognormal,BILAN BIOLOGIQUE,5266,2340,1719,2082,0.732,re-administered
+bili_lbstresc,metabolic,continuous,lognormal,BILAN BIOLOGIQUE,4952,2193,1642,1896,0.915,re-administered
+bmi,metabolic,continuous,gaussian,CONSTANTES ET ECG,8050,3648,2512,3433,0.934,re-administered
+brthcirc,developmental_risk,continuous,gaussian,PERINATALITE,651,10,14,8,0.0,untested
+brthht,developmental_risk,continuous,gaussian,PERINATALITE,1317,33,31,22,0.136,untested
+cgi01,overall_severity,continuous,gaussian,HETERO-QUESTIONNAIRES,8129,3799,2531,3540,0.676,re-administered
+chol,metabolic,continuous,gaussian,BILAN BIOLOGIQUE,7081,3011,2093,2724,0.978,re-administered
+cholhdl_lbstresc,metabolic,continuous,gaussian,BILAN BIOLOGIQUE,6234,2674,1871,2315,0.99,re-administered
+creat_lbstresc,metabolic,continuous,lognormal,BILAN BIOLOGIQUE,5433,2406,1771,2179,0.957,re-administered
+crp,inflammatory,continuous,lognormal,BILAN BIOLOGIQUE,5704,2505,1715,1947,0.854,re-administered
+csm,sleep,continuous,gaussian,AUTO-QUESTIONNAIRES,5748,182,113,173,0.913,re-administered
+cssrs01,suicidality,explicit,bernoulli,SUICIDE,1408,717,512,469,0.345,re-administered
+cssrs02,suicidality,explicit,bernoulli,SUICIDE,1415,723,516,473,0.294,re-administered
+cssrs03,suicidality,explicit,bernoulli,SUICIDE,476,155,98,76,0.289,re-administered
+cssrs04,suicidality,explicit,bernoulli,SUICIDE,478,153,99,74,0.432,re-administered
+cssrs05,suicidality,explicit,bernoulli,SUICIDE,476,151,98,75,0.387,re-administered
+cssrs06,suicidality,explicit,ordered_logistic,SUICIDE,370,150,112,68,0.706,re-administered
+cssrs08,suicidality,explicit,ordered_logistic,SUICIDE,551,198,141,88,0.693,re-administered
+cssrs09,suicidality,explicit,ordered_logistic,SUICIDE,544,195,141,87,0.69,re-administered
+cssrs10,suicidality,explicit,ordered_logistic,SUICIDE,542,195,140,87,0.724,re-administered
+cssrs11,suicidality,explicit,ordered_logistic,SUICIDE,541,194,140,88,0.591,re-administered
+cssrs12,suicidality,explicit,ordered_logistic,SUICIDE,539,194,141,85,0.518,re-administered
+ctq29,developmental_risk,continuous,gaussian,AUTO-QUESTIONNAIRES,8190,107,74,100,0.36,re-administered
+ctq31,developmental_risk,continuous,gaussian,AUTO-QUESTIONNAIRES,8176,105,74,99,0.848,re-administered
+ctq33,developmental_risk,continuous,gaussian,AUTO-QUESTIONNAIRES,8189,106,74,100,0.68,re-administered
+ctq35,developmental_risk,continuous,gaussian,AUTO-QUESTIONNAIRES,8176,105,74,99,0.242,re-administered
+ctq37,developmental_risk,continuous,gaussian,AUTO-QUESTIONNAIRES,8179,106,73,100,0.76,re-administered
+ctq39,developmental_risk,continuous,gaussian,AUTO-QUESTIONNAIRES,8122,104,73,97,0.938,re-administered
+ctq40,developmental_risk,explicit,ordered_logistic,AUTO-QUESTIONNAIRES,8099,90,67,82,0.366,re-administered
+ctq41,developmental_risk,explicit,bernoulli,AUTO-QUESTIONNAIRES,7705,90,67,82,0.232,re-administered
+cvlt_long_delay_free_recall,cognition,continuous,gaussian,NEUROPSYCHOLOGIE,5830,120,1172,56,0.821,re-administered
+cvlt_short_delay_free_recall,cognition,continuous,gaussian,NEUROPSYCHOLOGIE,5833,121,1173,56,0.857,re-administered
+cvlt_total_recall,cognition,continuous,gaussian,NEUROPSYCHOLOGIE,5809,122,1172,57,0.947,re-administered
+diabpstanding,metabolic,continuous,gaussian,CONSTANTES ET ECG,5692,2594,1809,2425,0.94,re-administered
+diabpsupine,metabolic,continuous,gaussian,CONSTANTES ET ECG,7997,3651,2478,3451,0.918,re-administered
+eczema_mhoccur,inflammatory,explicit,bernoulli,ANTECEDENTS,7108,865,728,806,0.104,re-administered
+egf,overall_severity,continuous,gaussian,HETERO-QUESTIONNAIRES,7486,3610,2420,3196,0.868,re-administered
+eghrmn,metabolic,continuous,gaussian,CONSTANTES ET ECG,4599,1479,1505,1173,0.945,re-administered
+eos,inflammatory,continuous,lognormal,BILAN BIOLOGIQUE,6995,3042,2131,2726,0.876,re-administered
+epilepsie_mhoccur,developmental_risk,explicit,bernoulli,ANTECEDENTS,7144,872,728,818,0.011,carried
+eq5d,overall_severity,continuous,gaussian,AUTO-QUESTIONNAIRES,5779,2855,2019,2423,0.876,re-administered
+eq5d0206,overall_severity,continuous,gaussian,AUTO-QUESTIONNAIRES,5581,2730,1917,2234,0.88,re-administered
+ess0109,sleep,continuous,gaussian,AUTO-QUESTIONNAIRES,6259,2967,2094,2882,0.891,re-administered
+fagers,substance,continuous,gaussian,AUTO-QUESTIONNAIRES,3397,1390,900,1160,0.697,re-administered
+fast,overall_severity,continuous,gaussian,HETERO-QUESTIONNAIRES,6188,2783,2088,2669,0.945,re-administered
+fast25,overall_severity,continuous,gaussian,HETERO-QUESTIONNAIRES,6166,2743,2044,2612,0.642,re-administered
+fast26,overall_severity,continuous,gaussian,HETERO-QUESTIONNAIRES,6090,2723,2027,2566,0.625,re-administered
+fast27,overall_severity,continuous,gaussian,HETERO-QUESTIONNAIRES,6166,2737,2036,2604,0.787,re-administered
+fast28,overall_severity,continuous,gaussian,HETERO-QUESTIONNAIRES,6130,2748,2041,2614,0.4,re-administered
+fast30,overall_severity,continuous,gaussian,HETERO-QUESTIONNAIRES,6169,2750,2048,2616,0.66,re-administered
+ggt_lbstresc,metabolic,continuous,lognormal,BILAN BIOLOGIQUE,5354,2354,1745,2119,0.92,re-administered
+gluc,metabolic,continuous,lognormal,BILAN BIOLOGIQUE,6728,2841,1995,2536,0.955,re-administered
+gstabrth,developmental_risk,continuous,gaussian,PERINATALITE,1886,44,22,22,0.318,untested
+hba1c,metabolic,continuous,lognormal,BILAN BIOLOGIQUE,2804,1440,1069,992,0.869,re-administered
+hdl,metabolic,continuous,gaussian,BILAN BIOLOGIQUE,7036,2984,2087,2698,0.951,re-administered
+hodur_arret_travail_actuel,overall_severity,explicit,bernoulli,SOIN SUIVI HOSP ARRET TRAVAIL,867,0,12,0,,untested
+honeonat,developmental_risk,explicit,bernoulli,PERINATALITE,5853,160,124,133,0.023,re-administered
+hooccur_arret_travail_actuel,overall_severity,explicit,bernoulli,SOIN SUIVI HOSP ARRET TRAVAIL,4474,0,50,0,,untested
+hrstanding,metabolic,continuous,gaussian,CONSTANTES ET ECG,5298,2470,1721,2214,0.961,re-administered
+hrsupine,metabolic,continuous,gaussian,CONSTANTES ET ECG,6025,2785,1947,2601,0.97,re-administered
+hta_mhoccur,metabolic,explicit,bernoulli,ANTECEDENTS,7036,870,729,809,0.036,re-administered
+isf01,suicidality,explicit,bernoulli,SUICIDE,8174,3336,2312,3147,0.478,re-administered
+isf02,suicidality,explicit,bernoulli,SUICIDE,8162,3333,2308,3141,0.506,re-administered
+isf03,suicidality,explicit,bernoulli,SUICIDE,8157,3316,2306,3119,0.529,re-administered
+isf04,suicidality,explicit,bernoulli,SUICIDE,8148,3320,2300,3125,0.433,re-administered
+isf05,suicidality,explicit,bernoulli,SUICIDE,8176,3327,2307,3140,0.346,re-administered
+isf07,suicidality,continuous,gaussian,SUICIDE,7974,3305,2294,3069,0.35,re-administered
+isf08,suicidality,explicit,bernoulli,SUICIDE,8010,3307,2292,3073,0.075,re-administered
+isf08a,suicidality,explicit,ordered_logistic,SUICIDE,7988,3306,2291,3069,0.075,re-administered
+isf09,suicidality,explicit,bernoulli,SUICIDE,7981,3306,2291,3070,0.096,re-administered
+isf09a,suicidality,explicit,neg_binomial,SUICIDE,7955,3306,2290,3063,0.094,re-administered
+jobclas,overall_severity,explicit,bernoulli,SOCIAL,2425,0,21,0,,untested
+ldl,metabolic,continuous,gaussian,BILAN BIOLOGIQUE,6777,2929,2012,2535,0.981,re-administered
+ltsg01,suicidality,explicit,ordered_logistic,SUICIDE,490,5,18,1,0.0,untested
+ltsg05,suicidality,explicit,ordered_logistic,SUICIDE,55,2,2,0,,untested
+ltsg06,suicidality,explicit,ordered_logistic,SUICIDE,45,2,0,0,,untested
+ltsv02,suicidality,explicit,ordered_logistic,SUICIDE,64,0,0,0,,untested
+ltsv04,suicidality,explicit,ordered_logistic,SUICIDE,29,1,0,0,,untested
+ltsv05,suicidality,explicit,ordered_logistic,SUICIDE,23,1,0,0,,untested
+ltsv06,suicidality,explicit,ordered_logistic,SUICIDE,31,1,0,0,,untested
+ltsv07,suicidality,explicit,bernoulli,SUICIDE,439,5,10,1,1.0,untested
+ltsv09,suicidality,explicit,bernoulli,SUICIDE,320,7,4,0,,untested
+lvsbjind,overall_severity,continuous,gaussian,SOCIAL,6583,0,93,0,,untested
+lym_lbstresc,inflammatory,continuous,lognormal,BILAN BIOLOGIQUE,5287,2347,1724,2096,0.979,re-administered
+madrs,,continuous,gaussian,HETERO-QUESTIONNAIRES,6580,3152,2213,3092,0.924,re-administered
+mere_structure,developmental_risk,explicit,bernoulli,ANTECEDENTS,7549,71,198,62,0.161,re-administered
+migraine_mhoccur,inflammatory,explicit,bernoulli,ANTECEDENTS,5378,723,622,678,0.134,re-administered
+mono_lbstresc,inflammatory,continuous,lognormal,BILAN BIOLOGIQUE,5282,2345,1724,2087,0.92,re-administered
+naisstyp,developmental_risk,explicit,bernoulli,PERINATALITE,6345,295,176,270,0.052,re-administered
+neut,inflammatory,continuous,lognormal,BILAN BIOLOGIQUE,7006,3054,2134,2736,0.988,re-administered
+pere_structure,developmental_risk,explicit,bernoulli,ANTECEDENTS,7262,71,188,59,0.271,re-administered
+plat,inflammatory,continuous,lognormal,BILAN BIOLOGIQUE,7052,3073,2137,2757,0.981,re-administered
+prembrth,developmental_risk,explicit,ordered_logistic,PERINATALITE,6517,179,141,158,0.032,re-administered
+psoriasis_mhoccur,inflammatory,explicit,bernoulli,ANTECEDENTS,6224,787,694,708,0.051,re-administered
+psqi,sleep,continuous,gaussian,AUTO-QUESTIONNAIRES,7268,3475,2449,3223,0.866,re-administered
+psqi11,sleep,continuous,gaussian,AUTO-QUESTIONNAIRES,7413,3536,2507,3320,0.43,re-administered
+psqi12,sleep,continuous,gaussian,AUTO-QUESTIONNAIRES,7468,3570,2531,3355,0.266,re-administered
+psqi13,sleep,continuous,gaussian,AUTO-QUESTIONNAIRES,7407,3542,2500,3304,0.367,re-administered
+psqi14,sleep,continuous,gaussian,AUTO-QUESTIONNAIRES,7474,3571,2530,3354,0.561,re-administered
+psqi15,sleep,continuous,gaussian,AUTO-QUESTIONNAIRES,7509,3580,2539,3365,0.514,re-administered
+psqi17,sleep,continuous,gaussian,AUTO-QUESTIONNAIRES,7497,3572,2539,3353,0.554,re-administered
+qids_anhedonia_interest,anhedonia,continuous,gaussian,AUTO-QUESTIONNAIRES,6458,3059,2159,2993,0.52,re-administered
+qidsr120,,continuous,gaussian,AUTO-QUESTIONNAIRES,6373,3027,2144,2947,0.919,re-administered
+somat_all,inflammatory,explicit,bernoulli,ANTECEDENTS,7742,979,816,905,0.191,re-administered
+staya,,continuous,gaussian,AUTO-QUESTIONNAIRES,6281,2980,2119,2913,0.964,re-administered
+sudose_cigarettes_lt,substance,explicit,neg_binomial,SUBSTANCES,3572,1441,949,1165,0.783,re-administered
+suoccur_alcool,substance,explicit,bernoulli,SUBSTANCES,8461,4037,2823,4037,0.026,re-administered
+suoccur_cannabis,substance,explicit,bernoulli,SUBSTANCES,8461,4037,2823,4037,0.039,re-administered
+sysbpstanding,metabolic,continuous,gaussian,CONSTANTES ET ECG,5690,2597,1809,2429,0.952,re-administered
+sysbpsupine,metabolic,continuous,gaussian,CONSTANTES ET ECG,8000,3651,2476,3450,0.936,re-administered
+t3fr_lbstresc,metabolic,continuous,gaussian,BILAN BIOLOGIQUE,5078,2269,1684,1989,0.962,re-administered
+t4fr_lbstresc,metabolic,continuous,gaussian,BILAN BIOLOGIQUE,5098,2275,1688,2007,0.98,re-administered
+tmt_a_time_sec,cognition,continuous,gaussian,NEUROPSYCHOLOGIE,6333,947,1287,807,0.941,re-administered
+tmt_b_time_sec,cognition,continuous,gaussian,NEUROPSYCHOLOGIE,6231,928,1281,781,0.974,re-administered
+toxidermi_mhoccur,inflammatory,explicit,bernoulli,ANTECEDENTS,7102,863,725,801,0.067,re-administered
+traumacra_mhoccur,developmental_risk,explicit,bernoulli,ANTECEDENTS,7138,870,727,816,0.087,re-administered
+trig,metabolic,continuous,lognormal,BILAN BIOLOGIQUE,7052,3006,2097,2713,0.965,re-administered
+tsh_lbstresc,metabolic,continuous,gaussian,BILAN BIOLOGIQUE,4993,2096,1535,1828,0.993,re-administered
+urate,metabolic,continuous,lognormal,BILAN BIOLOGIQUE,6547,2901,2049,2522,0.987,re-administered
+urea_lbstresc,metabolic,continuous,gaussian,BILAN BIOLOGIQUE,5160,2293,1684,2046,0.964,re-administered
+verbal_fluency_phonemic,cognition,continuous,gaussian,NEUROPSYCHOLOGIE,5401,571,1252,488,0.908,re-administered
+verbal_fluency_semantic,cognition,continuous,gaussian,NEUROPSYCHOLOGIE,5388,570,1251,486,0.92,re-administered
+vitd,metabolic,continuous,gaussian,BILAN BIOLOGIQUE,1464,656,417,493,0.98,re-administered
+wais_code_std,cognition,continuous,gaussian,NEUROPSYCHOLOGIE,5472,227,1258,161,0.789,re-administered
+wais_digitspan_std,cognition,continuous,gaussian,NEUROPSYCHOLOGIE,6335,938,1282,797,0.762,re-administered
+wais_ivt_index,cognition,continuous,gaussian,NEUROPSYCHOLOGIE,4959,218,1250,153,0.895,re-administered
+wais_similitudes_std,cognition,continuous,gaussian,NEUROPSYCHOLOGIE,2536,164,166,127,0.858,re-administered
+wbc,inflammatory,continuous,lognormal,BILAN BIOLOGIQUE,7097,3071,2134,2767,0.983,re-administered
+weight,metabolic,continuous,gaussian,CONSTANTES ET ECG,8251,3733,2558,3576,0.923,re-administered
+wstcir,metabolic,continuous,gaussian,CONSTANTES ET ECG,7830,3614,2458,3350,0.935,re-administered
+wurs,developmental_risk,continuous,gaussian,AUTO-QUESTIONNAIRES,6017,16,23,14,0.929,untested
+ymrs,mania_activation,continuous,gaussian,HETERO-QUESTIONNAIRES,8435,3957,2733,3852,0.619,re-administered

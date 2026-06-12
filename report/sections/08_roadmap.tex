@@ -1,0 +1,37 @@
+\section{Future directions}
+\label{sec:roadmap}
+
+The results above are internally complete; what remains is a short, principled list of next steps, none of
+which changes a conclusion drawn here. They divide into two kinds: methodological follow-ons that would
+\emph{tighten} the present estimates, and new studies that would be needed to cross from the scientific
+validity demonstrated here to clinical utility in the strong sense.
+
+\subsection{Tightening the present results}
+Four loose ends are documented and bounded; each is a refinement, not a change of method.
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Full-precision certification of the explicit-latent block.} The one slow-mixing coupling ---
+  the suicidality$\sim$developmental $\Phi$ cell --- has a resample-stable point estimate but a provisional
+  precision; a full-$N$, full-precision refit would close it. The continuous backbone and the
+  biology$\perp G$ estimand already mix cleanly at full $N$ (cross-seed Tucker $\varphi$ $0.993$).
+  \item \textbf{Full-$N$ projection of the non-Gaussian scores.} Extending the suicidality, substance, and
+  mania coordinates to all $9{,}013$ patients under the fixed certified parameters --- already validated at
+  Pearson $r\approx1.00$ on the certified subset --- would complete the per-patient coordinate table.
+  \item \textbf{A dedicated bootstrap and correlated-$G$ arm for the thin axes} (mania, substance), which
+  currently inherit the joint nine-dimension certification rather than carrying their own.
+  \item \textbf{A hurdle likelihood for \code{isf09a}} (the suicide-attempt count), the lone item-level
+  mis-fit, should its count precision ever be needed; the suicidality factor itself is unaffected.
+\end{itemize}
+
+\subsection{From scientific validity to clinical utility}
+Three boundaries are drawn by the data, not the method, and each names a defined next study.
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Incident-event outcomes.} Individual-level prognostic utility would require hard endpoints
+  --- hospitalization, relapse, suicide attempt --- rather than the re-administered clinical scales
+  available here; the present forecasts are of scale trajectories, not events.
+  \item \textbf{Randomized or trial-arm treatment data.} Genuine treatment \emph{selection} --- which drug
+  for which phenotype --- cannot be established from observational treatment-as-usual, however carefully
+  adjusted; it requires a randomized or trial-arm study, for which the present work supplies the moderators
+  to test and a deployable causal pipeline.
+  \item \textbf{External validation.} Every result here is internally validated on a single baseline cohort;
+  a clinical claim would require replication in an independent sample.
+\end{itemize}

@@ -1,0 +1,145 @@
+%==============================================================================
+%  FACE-ATLAS — A Transdiagnostic Latent-axis Stratification of Severe Mental Illness
+%  Technical report.
+%  Compile:  pdflatex FACE-ATLAS.tex   (run twice for the table of contents / refs)
+%  Style:    faceatlas.sty  (self-contained; TeX Live "basic" compatible)
+%==============================================================================
+\documentclass[11pt]{article}
+\usepackage{faceatlas}
+
+% --- editable metadata --------------------------------------------------------
+\newcommand{\reportauthor}{Andrii Kulakovskyi}
+\newcommand{\reportgroup}{Precision Psychiatry \& Artificial Intelligence}
+\newcommand{\reportdate}{June 2026}
+\newcommand{\reportversion}{v5.0 --- the map, its strata, their persistence, their prognosis, and the treatment boundary}
+
+\begin{document}
+\hypersetup{pdfauthor={\reportauthor}}
+
+%================================ TITLE PAGE ===================================
+\begin{titlepage}
+\thispagestyle{empty}
+\setlength{\parskip}{0pt}          % the many \par's on the cover must not accrue global parskip
+\vspace*{0.15cm}
+{\color{faceaccent}\rule{\linewidth}{1.3pt}}\par\vspace{6pt}
+\noindent{\sffamily\footnotesize\bfseries\color{faceaccent} TECHNICAL REPORT}\hfill%
+{\sffamily\footnotesize\color{facemute} the map, its strata, their persistence, their prognosis, and the treatment boundary \quad\textbar\quad \reportdate}\par
+\vspace{1.5cm}
+
+{\sffamily\bfseries\fontsize{37}{42}\selectfont\color{faceink} FACE{\color{faceaccent}-}ATLAS}\par
+\vspace{15pt}
+{\fontsize{17}{21}\selectfont\color{faceink} A Transdiagnostic Latent-axis Stratification}\par\vspace{2pt}
+{\fontsize{17}{21}\selectfont\color{faceink} of Severe Mental Illness}\par
+\vspace{24pt}
+
+{\large \reportauthor}\par\vspace{3pt}
+{\normalsize\itshape\color{facemute} \reportgroup}\par
+\vspace{16pt}
+
+{\sffamily\footnotesize\color{facemute} Research program\quad diagnostic cohorts $\:\to\:$
+  {\bfseries\color{faceaccent}transdiagnostic dimensions} $\:\to\:$ {\bfseries\color{faceaccent}validated
+  strata} $\:\to\:$ {\bfseries\color{faceaccent}prognosis} $\:\to\:$ {\bfseries\color{faceaccent}treatment}}\par\vspace{3pt}
+{\sffamily\footnotesize\color{facemute} Scope\quad bipolar disorder, schizophrenia, depression
+  ($N=9{,}013$). A certified nine-dimension map; on it a transdiagnostic \emph{continuum} of eight extreme
+  phenotypes; both shown \emph{temporally coherent}; the durable axes shown to \emph{predict} two-year
+  functioning beyond diagnosis and severity; and the treatment boundary tested and drawn by the evidence.}\par
+\vspace{1.15cm}
+
+{\color{facerule}\rule{\linewidth}{0.6pt}}\par\vspace{7pt}
+{\sffamily\bfseries\color{faceaccent}\small ABSTRACT}\par\vspace{5pt}
+{\small
+Psychiatric diagnosis aggregates heterogeneous patients into categories that are neither biologically nor
+prognostically uniform. \textbf{FACE-ATLAS} reorganizes the harmonized, three-cohort FACE baseline
+(bipolar disorder, schizophrenia, major depression; $N=9{,}013$) around \emph{continuous, diagnosis-agnostic
+axes of variation} rather than the diagnostic labels themselves. The report follows one argument through five
+questions --- does the map \emph{exist}, \emph{organize}, \emph{persist}, \emph{predict}, and \emph{guide
+treatment}? --- across the chain \emph{diagnostic cohorts $\to$ transdiagnostic dimensions $\to$ validated
+strata $\to$ prognosis $\to$ treatment}. It opens with the \emph{measurement map}, estimated by a single
+global, missingness-aware \textbf{Bayesian sparse bifactor / ESEM} model with \textbf{mixed likelihoods} and
+\textbf{soft loading priors}: clinical theory proposes a candidate ontology of ten dimensions, and the data
+\emph{confirm, split, merge, downgrade, or reject} each. Three invariants are enforced throughout: estimation
+uses each patient's \emph{observed cells only} (no imputation, full sample); diagnosis is treated as
+\emph{metadata}, never an indicator; and dimensions are discovered on the baseline visit, with later visits
+reserved for validation. A Gaussian-block marginalization with a low-rank Woodbury likelihood makes the
+full-sample fit tractable without subsampling or imputation; non-Gaussian indicators enter through a hybrid
+explicit/marginalized mixed-likelihood block. On the FACE data the model yields a \textbf{certified
+nine-dimension map} --- a general functional-burden factor $G$ and eight weakly-correlated specific axes
+(cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality, mania, substance) --- with
+depression/anxiety instruments placed as \emph{cross-loading windows} rather than a separate dimension, and
+anhedonia \emph{rejected}. The map is hardened end-to-end (prior/estimator robustness, multi-seed
+certification, resample robustness, cross-cohort invariance, and absolute-fit posterior-predictive checks
+across both likelihood blocks) and projected to per-patient coordinates with reliability flags. The headline
+finding: \textbf{biology --- metabolic and inflammatory load --- is the least severity-entangled domain}
+(a correlation with $G$ of $0.14$ and $0.06$, versus $0.39$ cognition and $0.44$ sleep), so biological risk rides
+on axes that clinical severity does not see. On these coordinates, the report next asks whether patients
+form discrete biotypes: a structure-discovery gate (five independent methods) finds none --- the
+transdiagnostic space is a graded \textbf{continuum}, represented as eight extreme phenotypes with every
+patient a soft blend, organized by biology and cognition far more than by diagnosis (adjusted Rand index
+$\approx 0$ against the seven DSM-5 subtypes; coordinate variance explained $\approx 21\%$ vs $\approx 5\%$).
+Severity is the continuum's spine, not a corner; metabolic and inflammatory load form their own extreme
+phenotypes. Scored forward onto follow-up visits
+(V0\,$\to$\,V1\,$\to$\,V2, never re-estimated), the signal is then shown to \emph{persist}: the measurement is
+invariant across visits, and the stratification geometry replays over time --- the cohort slides along the severity
+spine while individual biological positions and phenotype memberships are preserved (\emph{durable biology,
+moving symptoms}), confirmed by a variance decomposition and an independent geometric test that agree.
+The report then asks whether the map \emph{predicts}: on the fixed objects, an
+errors-in-variables Bayesian model tests whether a baseline coordinate or stratum forecasts a two-year
+outcome \emph{incrementally beyond diagnosis, severity, and the baseline outcome}. It does --- but
+\emph{modestly}, and for \emph{functioning} only: the durable metabolic and inflammatory axes and the eight
+archetypes add held-out predictive signal that survives attrition, measurement reliability and a
+permutation null, is \emph{co-informative} with DSM-5 (complementary, not a replacement) and
+\emph{course-dependent} (concentrated in the episodic bipolar and depression courses, saturated in chronic
+schizophrenia), while severity itself is autoregression-determined. Crucially the increment is
+\emph{group-level}: it sharpens a continuous functional forecast and separates archetypes, but the
+individual-decision gain is small (two-year functional-remission AUC $+0.017$ over diagnosis$+$severity),
+and the $14\%$--$60\%$ archetype-remission spread partly reflects baseline-severity differences between
+archetypes rather than the incremental signal alone. Finally, the report tests whether a stratum
+\emph{moderates treatment}. Treatment data --- absent from the harmonized variables but recoverable from
+the per-cohort source dictionaries, and harmonized here to common drug-class exposures --- is run through an
+overlap gate, a propensity model and doubly-robust errors-in-variables moderation. On observational
+treatment-as-usual the map does \emph{not} reliably moderate response: lithium response in bipolar disorder
+(the best-identified contrast) is a well-powered \emph{null}, an antipsychotic metabolic/inflammatory signal
+is suggestive but unconfirmed, and clozapine is confounded by channeling; the average treatment effects are
+themselves fragile to unmeasured confounding. The prognostic signal does, however, \emph{survive}
+adjustment for the drugs patients received. \textbf{Taken together}, the program demonstrates a
+transdiagnostic biological map that is real, stable, and a graded \emph{continuum} rather than a set of
+biotypes, carrying a small-but-genuine group-level prognostic signal for functioning and \emph{no}
+demonstrable treatment-moderation in observational data --- a deliberately \emph{calibrated} account, with
+the negative and modest results reported as such rather than as another over-claimed biotype. Establishing
+individual-level clinical utility or treatment guidance would require incident-event outcomes, randomized
+treatment data, and external validation that this baseline observational cohort cannot provide.}\par\vspace{7pt}
+{\color{facerule}\rule{\linewidth}{0.6pt}}
+
+\vfill
+{\footnotesize\color{facemute} The FACE database is the property of \emph{Fondation FondaMental}. Per-patient
+cohort data are confidential and never reproduced here; this report contains only aggregate parameters, derived
+structure, and code description. Every figure is reproducible from the project scripts and committed
+configurations.}
+\end{titlepage}
+
+%================================ CONTENTS =====================================
+\thispagestyle{plain}
+{\small\tableofcontents}
+\clearpage
+
+%================================ BODY =========================================
+\input{sections/01_introduction}
+\input{sections/02_data}
+\input{sections/03_model}
+\input{sections/04_estimation}
+\input{sections/05_results}
+\input{sections/06_validation}
+\input{sections/scoring}
+\input{sections/m2_strata}
+\input{sections/m3_temporal}
+\input{sections/m4_prognosis}
+\input{sections/m5_treatment}
+\input{sections/07_engineering}
+\input{sections/08_roadmap}
+\input{sections/09_limitations}
+\input{sections/conclusion}
+\input{sections/10_appendix}
+
+\input{references}
+
+\end{document}

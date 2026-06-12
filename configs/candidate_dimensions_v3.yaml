@@ -1,0 +1,153 @@
+# V3 candidate-dimension → indicator map (soft starting ontology)
+# ---------------------------------------------------------------------------
+# This is a CURATED, REVIEWABLE clinical artifact — the "soft prior loading map"
+# (methods of record: docs/MEASUREMENT_MODEL.md). It maps the 10 candidate dimensions
+# (+ a few data-implied ones) onto the FACE common variables that DIRECTLY measure them.
+#
+# It does NOT hand-score patients. It seeds the soft priors; the patient-level
+# latent model may confirm / split / merge / reject / cross-load any of these.
+# Provenance only: `scripts/v3/01_eligibility_audit.py` + `scripts/v3/03_build_prior_matrix.py`
+# expand this ontology into the committed configs/prior_loading_matrix_v3.csv the engine reads.
+#
+# role: core | extension | module | proxy_only | historical | unsupported | covariate
+# indicators: names: [..]  and/or  sections: [..]  and/or  name_regex: "…"  (− exclude:)
+# ---------------------------------------------------------------------------
+
+covariates: [age, sex, education_years, edulevel, siteid_city, arm, cohort, visit, visitnum, mars]
+# mars = medication-adherence (covariate/outcome, not an indicator)
+
+dimensions:
+
+  # ---- the 10 candidate dimensions ----------------------------------------
+
+  - key: overall_severity
+    role: core
+    is_general_factor: true            # this is the bifactor general burden G
+    definition: General clinical burden / severity & functioning.
+    indicators:
+      names: [cgi01, cgi02, cgi03, cgi03a, cgi03b, egf, eq5d, eq5d0206,
+              fast, fast25, fast26, fast27, fast28, fast29, fast30, lvsbjind]
+    note: Direct markers of G; in a bifactor model many other indicators also load on G.
+
+  - key: cognition
+    role: core
+    definition: General neurocognitive performance (memory, executive, speed, fluency, reasoning).
+    indicators:
+      sections: [NEUROPSYCHOLOGIE]
+      exclude: [education_years]        # cognitive-reserve covariate, not an indicator
+    subdimensions:
+      cognitive_flexibility: {names: [tmt_b_time_sec, wais_code_std, wais_ivt_index]}
+    note: 3-cohort. cognitive_flexibility tested as a sub-factor (TMT-B / coding / IVT).
+
+  - key: negative_symptoms
+    role: unsupported
+    definition: Diminished motivation, expression, social drive (PANSS-N / SANS).
+    indicators: {names: []}
+    note: NO PANSS/SANS in the common dictionary. Do NOT infer from poor functioning.
+          Candidate to ADD from FACE-SZ full data (SZ module) — out of scope for the common-variable core.
+
+  - key: anhedonia
+    role: extension
+    definition: Reduced interest / pleasure.
+    indicators: {names: [qids_anhedonia_interest]}
+    cross_loading: [affective_internalizing, overall_severity]
+    note: Single direct indicator (QIDS item-13), BP/DR only. Cannot form its own factor;
+          cross-loads on affective. Treat as an affective extension marker.
+
+  - key: metabolism_immunometabolic
+    role: core
+    definition: Cardiometabolic + inflammatory biological load (TRIMMED core, not all of BILAN).
+    indicators:
+      names: [bmi, wstcir, weight, chol, hdl, ldl, cholhdl_lbstresc, trig, gluc, hba1c, urate,
+              sysbpsupine, sysbpstanding, diabpsupine, diabpstanding,
+              crp, wbc, neut, lym_lbstresc, mono_lbstresc, eos, baso_lbstresc, plat,
+              hta_mhoccur, autcardv_mhoccur, autendoc_mhoccur]
+    subdimensions:
+      metabolic_load:    {names: [bmi, wstcir, weight, chol, hdl, ldl, cholhdl_lbstresc, trig, gluc, hba1c, urate,
+                                  sysbpsupine, sysbpstanding, diabpsupine, diabpstanding]}
+      inflammatory_load: {names: [crp, wbc, neut, lym_lbstresc, mono_lbstresc, eos, baso_lbstresc, plat]}
+    covariate: [prolctn, qtc, oxcarbaz]   # drug-effect / ECG conduction = exposure/confounder (workbook)
+    note: TRIMMED to the ~26-var cardiometabolic+inflammatory core — dropped the broad
+          BILAN section sweep; **liver/renal/thyroid/red-cell labs are peripheral biology** (load on G or
+          excluded), NOT in the metabolism core. V3 tests the metabolic-vs-inflammatory SPLIT. [V3-5.]
+
+  - key: sleep_circadian
+    role: core
+    definition: Sleep quality/quantity (3-cohort core) + circadian preference (BP/DR extension).
+    indicators:
+      names: [psqi, psqi11, psqi12, psqi13, psqi14, psqi15, psqi17]   # PSQI total + subscores, 3-cohort
+    extension_BPDR: {circadian: [ess0109, csm]}   # Epworth + Morningness: obs_sz=0 -> NOT 3-cohort core
+    covariate: [psqi16]                            # hypnotic use = medication exposure, not sleep quality
+    note: 3-cohort sleep core = PSQI total+subscores. ESS/CSM are **BP/DR-only** (obs_sz=0) -> circadian
+          EXTENSION, not core (FACE_dimension_recommendations workbook + V3-1 audit agree); psqi16
+          (hypnotic use) is an exposure/covariate. [Workbook-enriched, V3-5.]
+
+  - key: suicidality
+    role: core
+    definition: Suicidal ideation, behaviour, lethality (state risk dimension).
+    indicators:
+      sections: [SUICIDE]
+    note: 34 items but SPARSE + skip-logic gated (C-SSRS/ISF/lethality). Mixed likelihoods
+          (binary/ordinal/count) + structural-zero decoding. ISF ideation is the usable core.
+          Keep SEPARATE from future suicide OUTCOMES (no leakage).
+
+  - key: sensory_abnormalities
+    role: unsupported
+    definition: Perceptual/sensory aberrations.
+    indicators: {names: []}
+    note: ZERO indicators in FACE common variables. Do NOT include a sensory factor in the core model.
+
+  - key: neurodevelopment
+    role: proxy_only
+    definition: Neurodevelopmental risk (proxied by perinatal adversity, early onset, childhood adversity).
+    indicators:
+      sections: [PERINATALITE]
+      names: [ctq29, ctq31, ctq33, ctq35, ctq37, ctq39, ctq40, ctq41, wurs,
+              epilepsie_mhoccur, autneuro_mhoccur, traumacra_mhoccur,
+              agedebutpremier_episode, agetrt, mere_suicide, pere_suicide]
+    note: PROXY only — developmental risk / adversity / early onset, NOT direct neurodevelopmental biology.
+          Do not overclaim. Overlaps illness_course on age-of-onset.
+
+  - key: impulsivity
+    role: proxy_only
+    definition: Trait impulsivity / behavioural disinhibition.
+    indicators: {names: []}
+    proxies: [mania_activation, substance]   # ymrs/altman (activation), wurs (developmental ADHD)
+    covariate_only: [suncf_cigarettes_lt, sudose_cigarettes_lt, agedebut_cigarettes_lt, mars, isf05, isf07]
+    note: NO dedicated impulsivity scale (no Barratt/UPPS). Proxy via activation (YMRS/Altman) and
+          substance use only. Smoking/adherence/attempt vars are **downstream behaviour/covariate**, not
+          the construct (workbook). Do NOT call a recovered factor "impulsivity". [V3-5.]
+
+  # ---- data-implied dimensions (NOT in the original 10, but measured) ------
+
+  - key: affective_internalizing
+    role: extension
+    not_in_original_10: true
+    definition: Depression–anxiety–distress severity (the internalizing axis).
+    indicators: {names: [madrs, qidsr120, staya, qids_anhedonia_interest]}
+    cross_loading: [overall_severity]
+    note: BP/DR-anchored — MADRS/QIDS/STAI are 0% in FACE-SZ (SZ scored by proxy via G/functioning/PSQI).
+          The 10-candidate ontology folds depression/anxiety under severity+anhedonia; the data implies a
+          distinct affective factor — let the model adjudicate.
+
+  - key: mania_activation
+    role: module
+    not_in_original_10: true
+    definition: Manic activation / elevated energy.
+    indicators: {names: [ymrs, altman]}
+    note: YMRS is 3-cohort (hetero); Altman BP/DR (auto). Serves as the impulsivity PROXY. Standalone module.
+
+  - key: substance
+    role: module
+    not_in_original_10: true
+    definition: Substance use (alcohol/cannabis SUD, nicotine).
+    indicators: {names: [suoccur_alcool, suoccur_cannabis, fagers, sudose_cigarettes_lt, suncf_cigarettes_lt]}
+    note: alcohol/cannabis SUD = BP/SZ only (never measured in DR). Module/covariate by outcome.
+
+  - key: illness_course
+    role: historical
+    not_in_original_10: true
+    definition: Staging / chronicity (onset timing vs lifetime hospitalization burden).
+    indicators: {names: [agedebutpremier_episode, agetrt, agedebut_hospitalisation,
+                         nboccur_hospitalisation_lt, hodur_hospitalisation_lt]}
+    note: FIXED-HISTORICAL (baseline-only) → a STRATIFIER, never an outcome. ~half-covered in DR.

@@ -122,12 +122,10 @@ VERIFY_IMPORTS = [
     # core
     "pandas", "numpy", "scipy", "sklearn", "pydantic", "yaml",
     "openpyxl", "statsmodels", "plotly", "matplotlib",
-    # full extras
-    "torch", "neuroHarmonize", "neuroCombat", "nibabel", "kaleido",
-    # notebook utilities
-    "IPython", "nbformat",
+    # figures extra
+    "kaleido",
     # the package itself
-    "trans_diag",
+    "v3",
 ]
 
 
@@ -143,7 +141,7 @@ def verify_install() -> None:
             failed.append(pkg)
     if failed:
         print(f"\n  WARNING: {len(failed)} package(s) failed to import: {', '.join(failed)}")
-        print("  Some optional deps (e.g. neuroHarmonize, kaleido) may have system-level requirements.")
+        print("  Some optional deps (e.g. kaleido) may have system-level requirements.")
     else:
         print("\n  All imports OK.")
 
@@ -159,13 +157,17 @@ def print_activation_hint() -> None:
   Activate the environment:
       {activate}
 
-  Then run the pipeline:
-      python scripts/00_run_all.py      # full manuscript pipeline
-      python -m pytest tests/ -q        # 76 unit + golden-number tests
-      python scripts/verify.py          # harmonization smoke test
+  Then run the pipeline (see docs/STATE.md):
+      python scripts/01_build_data.py        # harmonize + build the V0 model table
+      python scripts/04_fit.py --stage 1     # the Bayesian measurement engine (M1)
+      python scripts/05_confirm.py           # in-engine confirmation (PPC + WAIC)
+      python scripts/09_atlas.py             # the dimensional atlas
+      python -m pytest tests/ -q             # unit tests
+  (Milestones 2-5 continue in scripts/20-57; the prior matrix is committed at
+   configs/prior_loading_matrix_v3.csv, regenerable via scripts/v3/03_build_prior_matrix.py.)
 
   Or use the venv Python directly without activating:
-      .venv/bin/python scripts/00_run_all.py
+      .venv/bin/python scripts/04_fit.py --stage 1
 
   To update pinned deps after editing pyproject.toml:
       python3 install.py --lock
@@ -183,7 +185,7 @@ def main() -> None:
     parser.add_argument("--force",  action="store_true", help="Wipe existing .venv and reinstall from scratch")
     args = parser.parse_args()
 
-    print("\n  FACE trans-diagnostic phenotypes — environment setup")
+    print("\n  FACE precision psychiatry (BP·SZ·DR) — V3 environment setup")
     print(f"  Project root: {ROOT}\n")
 
     check_python_version()
@@ -191,8 +193,8 @@ def main() -> None:
     create_venv(force=args.force)
     upgrade_pip()
 
-    # generate lock file if it doesn't exist yet, or if --lock/--force was passed
-    if not LOCK_FILE.exists() or args.lock or args.force:
+    # generate lock file if it doesn't exist yet, or if --lock was passed
+    if not LOCK_FILE.exists() or args.lock:
         generate_lock(include_dev=not args.no_dev)
 
     install_from_lock()

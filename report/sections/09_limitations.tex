@@ -1,0 +1,71 @@
+\section{Limitations and open problems}
+\label{sec:limitations}
+
+The strengths of the map are stated plainly in Chapter~\ref{sec:results}; the honest counterweights follow. None is
+fatal, and each is tracked.
+
+\begin{openbox}[One coupling's precision is the residual mixing limit]
+The map is certified (cross-seed Tucker $\varphi$ $0.993$; $\max|\Delta\Lambda|=0.19$, $\max|\Delta\Phi|=0.05$),
+and the continuous backbone and the biology$\perp$$G$ estimand mix cleanly at full $N$. The heavier
+mixed-likelihood stages ran on random cohort-balanced sub-samples ($N=4{,}000$--$5{,}000$), and the
+explicit/marginalized coupling --- specifically the suicidality$\sim$developmental $\Phi$ cell --- is the one
+slow-mixing block ($\widehat{R}$ up to $1.04$). Its \emph{point estimate} is resample-stable; its
+\emph{precision} (and a full-$N$ projection of the non-Gaussian per-patient scores) is a documented follow-on,
+not a change of method. The suicidality block itself mixes well.
+\end{openbox}
+
+\begin{openbox}[The biology--$G$ magnitude, reconciled]
+Two estimates of metabolic$\sim$$G$ exist: a provisional full-mixed read ($0.28$) and the clean
+continuous-backbone correlated-$G$ fit ($0.12$--$0.14$). \emph{Both agree biology is the least entangled
+domain}; the continuous-backbone value is the cleaner estimate and is the one reported. The direction is
+robust; the exact magnitude of the explicit-block couplings will tighten with the full-$N$ certification above.
+\end{openbox}
+
+\paragraph{Scope and construct caveats.}
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Internal validity only.} The map is estimated on the V0 baseline and validated only within
+  this cohort; there is no external-cohort replication. ``Converged'' denotes sampler convergence, \emph{not}
+  scientific validation. Temporal persistence is established forward in Chapter~\ref{sec:temporal}; external
+  validity remains future work (Chapter~\ref{sec:roadmap}).
+  \item \textbf{Cohort-specific coverage.} Anhedonia and the MADRS/QIDS/STAI windows are BP/DR (SZ has no
+  QIDS/MADRS); the SZ map leans on the shared factors. Each patient's per-dimension reliability must be flagged
+  by observed-indicator count.
+  \item \textbf{Naming caveats.} ``Developmental-risk'' is a \emph{proxy} (early-adversity / liability), not
+  measured neurodevelopment; ``suicidality'' rests on self-report ISF; the DR inflammatory axis is
+  compositionally different (Chapter~\ref{sec:validation}).
+  \item \textbf{Thin and partial axes.} \emph{Mania} rests on only two indicators (YMRS, Altman), so it is
+  flagged \emph{partial} for every patient and its self-rated Altman item does not transfer to DR;
+  \emph{substance} is a declared \emph{2-cohort} axis (its alcohol/cannabis SUD are BP/SZ-only). The lone
+  item-level mis-fit, \code{isf09a} (suicide-attempt count), is flagged and isolated --- the suicidality factor
+  is unaffected.
+  \item \textbf{What the map alone claims.} The measurement map by itself asserts no natural
+  biotypes/subtypes, no causal or treatment effect, and no prognostic value; it claims an
+  empirically-supported set of transdiagnostic dimensions, their measurement structure, and per-patient
+  coordinates with uncertainty, under internal validity. The downstream questions --- structure, persistence,
+  prediction, treatment --- are taken up, and bounded, in their own chapters.
+\end{itemize}
+
+\paragraph{Open methods choices (flagged for decision).} The sparsity prior (soft-normal vs.\ horseshoe);
+Student-$t$ vs.\ Gaussian continuous default; item- vs.\ factor-level covariate adjustment; and the precise
+acceptance-gate thresholds. Defaults are set in the methods-of-record; these are sensitivity arms, not
+silent assumptions.
+
+\begin{openbox}[Positioning: what the program does, and does not, show]
+Across the whole program, the claim is deliberately narrow, and the distinction between two bars is
+the point. \textbf{Demonstrated (scientific validity):} a transdiagnostic biological map that is real and
+identifiable, a graded \emph{continuum} rather than discrete biotypes (adjusted Rand $\approx 0$
+vs.\ the DSM-5 subtypes), temporally coherent with durable biology and moving symptoms, and carrying a
+\emph{small but genuine, robustness-surviving} incremental prognostic signal for two-year \emph{functioning}
+beyond diagnosis and severity, which further \emph{survives} adjustment for observed treatment.
+\textbf{Not demonstrated (clinical utility, in the strong sense):} the individual-level prognostic increment
+is small (functional-remission AUC $+0.017$ over diagnosis$+$severity), so the map is not an individual risk
+calculator; and on observational treatment-as-usual it does \emph{not} moderate treatment response (the
+best-identified contrast, lithium in bipolar disorder, is a well-powered null, antipsychotic effects are
+suggestive-but-unconfirmed, clozapine is confounded by channeling, and average treatment effects are fragile
+to unmeasured confounding), so it does not guide prescribing. These are \emph{different} bars, and the
+program's contribution is to measure \emph{both} and report the modest and null results as such --- a
+calibrated counterweight to a literature that often advances biological-validity evidence as though it were
+clinical utility. Reaching individual-level utility or treatment guidance would require incident-event
+outcomes (not re-administered scales), randomized or trial-arm treatment data (not treatment-as-usual), and
+external validation --- none of which this baseline observational cohort contains.
+\end{openbox}

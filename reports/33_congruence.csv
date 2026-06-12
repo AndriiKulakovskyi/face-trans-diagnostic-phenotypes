@@ -1,0 +1,13 @@
+factor,visit,n_items,phi_mean,phi_min
+overall_severity,V1,10,0.988,0.987
+cognition,V1,11,0.993,0.989
+metabolic,V1,29,0.991,0.99
+inflammatory,V1,8,0.924,0.828
+sleep,V1,9,0.998,0.998
+developmental_risk,V1,7,0.965,0.955
+overall_severity,V2,11,0.992,0.992
+cognition,V2,11,0.994,0.991
+metabolic,V2,29,0.991,0.991
+inflammatory,V2,8,0.901,0.822
+sleep,V2,9,0.996,0.994
+developmental_risk,V2,7,0.959,0.952

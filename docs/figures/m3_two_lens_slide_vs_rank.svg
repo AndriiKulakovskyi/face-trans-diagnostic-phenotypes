@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="322" viewBox="0 0 680 322" font-family="system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" role="img">
+<title>Two lenses on severity: the cohort slides while individual ranks hold</title>
+<desc>Three patient severity lines all decline from V0 to V2, so the population slides (state), yet they stay parallel and ordered, so each patient's relative rank is preserved (trait).</desc>
+<rect width="680" height="322" fill="#ffffff"/>
+<text x="92" y="103" font-size="12" fill="#5F5E5A">severe</text>
+<text x="98" y="250" font-size="12" fill="#5F5E5A">mild</text>
+<line x1="150" y1="94" x2="150" y2="258" stroke="#B4B2A9" stroke-width="0.5"/>
+<text x="340" y="66" text-anchor="middle" font-size="12" fill="#2C2C2A">every patient's severity falls — the cohort slides down (state)</text>
+<polyline points="210,102 350,126 490,144" fill="none" stroke="#1D9E75" stroke-width="2.5"/>
+<circle cx="210" cy="102" r="6" fill="#1D9E75"/><circle cx="350" cy="126" r="6" fill="#1D9E75"/><circle cx="490" cy="144" r="6" fill="#1D9E75"/>
+<polyline points="210,150 350,174 490,192" fill="none" stroke="#378ADD" stroke-width="2.5"/>
+<circle cx="210" cy="150" r="6" fill="#378ADD"/><circle cx="350" cy="174" r="6" fill="#378ADD"/><circle cx="490" cy="192" r="6" fill="#378ADD"/>
+<polyline points="210,206 350,230 490,248" fill="none" stroke="#D85A30" stroke-width="2.5"/>
+<circle cx="210" cy="206" r="6" fill="#D85A30"/><circle cx="350" cy="230" r="6" fill="#D85A30"/><circle cx="490" cy="248" r="6" fill="#D85A30"/>
+<text x="210" y="280" text-anchor="middle" font-size="12" fill="#5F5E5A">V0</text>
+<text x="350" y="280" text-anchor="middle" font-size="12" fill="#5F5E5A">V1</text>
+<text x="490" y="280" text-anchor="middle" font-size="12" fill="#5F5E5A">V2</text>
+<text x="340" y="306" text-anchor="middle" font-size="12" fill="#2C2C2A">but the lines stay parallel & ordered — relative rank is held (trait)</text>
+</svg>

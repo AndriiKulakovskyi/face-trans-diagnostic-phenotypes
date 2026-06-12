@@ -1,126 +1,99 @@
-# FACE Common-Variables Dictionary — Reading & Loading Guide
+# FACE Common-Variables Dictionary + V3 data contract — Reading & Loading Guide
 
-Harmonized data dictionary for the FACE multi-pathology cohort: Bipolar (BP),
-Schizophrenia (SZ), Depression (DR). Use it to pool patients from the three CSV
-files into one merged single-cohort dataset for data-driven clustering, then
-compare clusters against DSM-5 diagnostics.
+The harmonized data dictionary for the FACE 3-cohort data — Bipolar (BP), Schizophrenia (SZ),
+Depression (DR) — and the **V3 data contract** that extends it for patient-level, missingness-aware,
+mixed-likelihood modeling. One row per harmonized variable maps it to its per-cohort source column and
+records how to harmonize + sanity-check it. **The package loads it for you** — this guide explains the
+columns and what V3 adds.
+
+> V3 builds on a harmonization and **no-naive-imputation** foundation and adds modeling metadata (see
+> "V3 data contract" below).
 
 ## Files
-- `data/face-common-vars.xlsx` — the dictionary (Sheet1, 379 rows × 20 columns)
-- `data/bipolar.csv` — BP visit-level (21,343 rows)
-- `data/schizophrenia.csv` — SZ visit-level (6,203 rows)
-- `data/depression.csv` — DR visit-level (1,953 rows)
-- `data/thesaurus/` — original thesaurus reference (BP / SZ / DR)
+- `data/face-common-vars.xlsx` — the harmonized dictionary (Sheet1; 225 rows, **201 usable**, 16 columns)
+- `data/{bipolar,schizophrenia,depression}.csv` — visit-level data (confidential, gitignored)
+- `data/site_lookup.csv` — fondacode → site lookup (for `siteid_city`)
+- `data/thesaurus/` — per-cohort source dictionaries (reference)
 
-## How to read each row of the dictionary (left → right)
-1. **What is this variable?** Cols A–G: Section, BP/SZ/DR thesaurus codes,
-   Label, summary Codage, clinical "Why retained".
-2. **Cross-cohort issue?** Cols H–J: Findings, Rule/action, Observed profile.
-3. **Where in each CSV (+ raw CODAGE)?** K+L = BP, M+N = SZ, O+P = DR.
-4. **Target post-harmonization?** Q = dtype, R = unit / value-set.
-5. **Usable for joint clustering?** S: READY (130) / PARTIAL (221) / NOT USABLE (26).
-6. **Merged-dataset column name?** T: Canonical name.
+## Columns (current dictionary)
+- **Section** — clinical section (AUTO-QUESTIONNAIRES, BILAN BIOLOGIQUE, NEUROPSYCHOLOGIE, …).
+- **Label**, **Codage** — human label + summary coding.
+- **Why retained / Findings / Rule** — clinical rationale, cross-cohort caveats, harmonization rule.
+- **BP / SZ / DR column in CSV** — the per-cohort source column (blank = absent in that cohort).
+- **Final dtype** — `float` · `int8 binary` · `int8 categorical` · `int8 ordinal` · `string` · `date`.
+- **Final unit / value set** — target unit or value set.
+- **Sanity min check / Sanity max check** — per-variable plausibility bounds; out-of-range → NaN
+  (never clipped, never imputed).
+- **Coverage (cohorts present)** — which cohorts contribute data.
+- **Cluster readiness** — READY (3-cohort) / PARTIAL (2-cohort) / NOT USABLE (excluded). The loader
+  keeps **READY + PARTIAL** (199 vars).
+- **Canonical name (merged single-cohort)** — the harmonized variable name (the modelled feature).
 
-Start with S=READY for a clean joint clustering; add S=PARTIAL for richer features.
-
-## Encoding approaches by data type (col Q / R)
-- **`float` (continuous)** — age, labs, scale totals, Z-scores. Verify units
-  per cohort using col J observed range; convert mg/dL→mmol/L, mois→années, etc.
-- **`int8 binary`** — Y/N: harmonize to `{0=Non, 1=Oui, NA=Unknown}`. BP often
-  stores text 'Oui'/'Non'; DR uses 0/1; SZ mixed (verify R425 inversion warning).
-- **`int8 ordinal / categorical`** — 3-10 levels. MARISTAT (1-5), STPROF (0-6),
-  EMPJOB (0-8 INSEE), EDULEVEL (1-20). Each cohort may use slightly different
-  category IDs — see col I per row for the mapping table.
-- **`category` / `string`** — free-text in one or more cohorts (e.g., SZ
-  `EDULEVEL` has 'BAC' literal); recode using col I rules (e.g., 'BAC' → 12).
-- **`date` (YYYY-MM-DD)** — `brthdtc`, `*_mhstdtc`. Verify format consistency
-  before pd.to_datetime.
-- **`string` identifier** — `usubjid_patients`, `fondacode`. Use only for
-  record linkage, not as clustering input.
-
-## Parse-metadata with clinical & scientific relevance
-- **`Why retained` (col G)** — psychiatrist-perspective clinical rationale.
-- **`Findings` (col H)** — construct mismatches, scale-anchor differences,
-  unit traps. Example: R423 `age_first_episode` is mood-onset for BP/DR but
-  psychotic-onset for SZ — same biological construct, different clinical
-  question.
-- **Per-cohort raw CODAGE (cols L, N, P)** — verbatim CODAGE text from each
-  thesaurus; use for verification.
-- **Cluster readiness (col S)** — READY = 3 cohorts available + comparable
-  construct; PARTIAL = 2 of 3 cohorts (Tier B) or with construct caveat; NOT
-  USABLE = real data gap (e.g., DR lacks NEUROPSYCHOLOGIE data entirely).
-
-Special cases to apply before pooling:
-- **SUICIDE timing items (R245–R277)** — BP/SZ have 4 categorical levels in
-  data, DR has 3 — collapse the BP/SZ extra "visit-context" category before pooling.
-- **SITEID (R5)** — disjoint across cohorts — recode to city (canonical
-  `siteid_city`) using a per-cohort lookup table.
-- **R425 PPARTPremier_episode** — DR uses `1=Oui, 2=Non` (not 0/1!) — invert
-  before pooling.
-
-## Building the single merged patient list
-
+## How the package loads it (don't hand-merge)
 ```python
-import pandas as pd
-bp = pd.read_csv('data/bipolar.csv', low_memory=False)
-sz = pd.read_csv('data/schizophrenia.csv', low_memory=False)
-dr = pd.read_csv('data/depression.csv', low_memory=False)
-dico = pd.read_excel('data/face-common-vars.xlsx', sheet_name='Sheet1')
+from face.data import build_unified_dataframe, load_variables, to_harmonized_dataset
+df = build_unified_dataframe("data", "data/face-common-vars.xlsx",
+                             readiness=["READY", "PARTIAL"], format="long")
+ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), visit="V0")
 ```
+`build_unified_dataframe` reads each per-cohort source column, applies the harmonization rule
+(`rules.py`), then the sanity bounds, and concatenates the cohorts. **NaN = missing, never imputed.**
 
-### Step 1 — Decide visit-aggregation strategy
-CSVs are visit-level. Pick one to get one row per patient:
-- Baseline only: `df.sort_values('visitnum').groupby('usubjid_patients').first()`
-- Last visit:    `df.sort_values('visitnum').groupby('usubjid_patients').last()`
-- Mean numeric:  `df.groupby('usubjid_patients').mean(numeric_only=True)`
+---
 
-### Step 2 — Apply harmonization rules per row
-For each dictionary row where S in {READY, PARTIAL}:
-- Read K (BP CSV col), M (SZ CSV col), O (DR CSV col)
-- Apply Rule in col I per cohort (recoding, unit conversion, free-text parse)
-- Cast to dtype in col Q, unit in col R
-- Rename the column in each per-cohort dataframe to T (canonical name)
+## V3 data contract (what V3 adds)
 
-### Step 3 — Concatenate
-```python
-bp_h['cohort'] = 'BP'    # ARM column also kept for DSM-5 sub-diagnosis
-sz_h['cohort'] = 'SZ'
-dr_h['cohort'] = 'DR'
-merged = pd.concat([bp_h, sz_h, dr_h], axis=0, ignore_index=True)
-```
+V3 depends on explicit, machine-readable modeling assumptions — they must live in the dictionary, not
+only in code or prose. The contract is two schemas + config files (specified in
+[`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md) §2–§3).
 
-### Step 4 — QC
-Verify every canonical column matches across the 3 dataframes; check missingness
-is plausible per cohort.
+**Patient-level baseline schema** (one row per patient): `patient_id · cohort(BP/SZ/DR) · site ·
+baseline_date · age · sex · education · diagnosis/DSM-arm · V0 variables · follow-up outcome
+availability`. Plus a **long-format observed-cell table** for modeling (one row per observed
+`(patient, variable)`), so missing cells are simply absent rather than filled.
 
-## Comparing clusters against DSM-5 diagnostics
+**Per-variable modeling metadata** to add to each dictionary row:
 
-Keep `arm` (DSM-5 text label: 'Bipolaire de type 1/2/...', 'Schizophrénie',
-'Trouble dépressif majeur', ...) and `cohort` as LABELS — not as clustering
-inputs.
+| Field | Purpose |
+|---|---|
+| `likelihood_family` | Gaussian · Student-t · lognormal · ordered-logit/probit · Bernoulli · neg-binomial · ZINB — the observation likelihood that **carries the variable type** |
+| `missingness_type` | Structural · Design · Clinical-skip · Sporadic · Informative · Outcome-related (Phase B) |
+| `structural_zero_rule` | the deterministic skip-logic decode, if any (e.g. `attempt_count = 0` when `attempt_ever = 0`) |
+| `candidate_dimensions` + `primary_expected_dimension` + `plausible_cross_loadings` | the **soft prior loading** of this variable on the 10-candidate ontology (priors, *not* hand-tagged scores) |
+| `higher_score_meaning` | reverse-code so **higher = more burden/dysfunction** unless documented (GAF/EGF, EQ-5D VAS, HDL…) |
+| `covariate_status` / `outcome_status` | whether the variable is a measurement covariate or a (future) outcome — **outcomes never enter the baseline dimension model** |
+| `use_in_core_model` / `use_in_extension_model` | measurement-eligibility tier (Core all-cohort · Partial extension · Diagnosis-specific module · Covariate · Outcome · Excluded) |
 
-After running clustering on the harmonized feature matrix:
-1. **Confusion matrix** cluster_id × `arm` — does the clustering recapitulate
-   DSM-5 boundaries or cross them?
-2. **Adjusted Rand Index** between cluster assignment and `arm` — quantifies
-   concordance with the diagnostic system.
-3. **Per-cluster diagnostic composition** — % of each ARM label in each
-   cluster — identifies trans-diagnostic clusters (e.g., depressive-onset
-   cluster containing both BP-type-2 and unipolar MDD).
-4. **Per-ARM cluster spread** — how a single diagnosis splits across clusters —
-   identifies biologically distinct subtypes within a clinical category.
-5. **Cluster-defining features** — top variables (by Cohen's d vs other
-   clusters); interpret biologically using the col G `Why retained` rationales.
+Config artifacts: `data_dictionary_v3.csv`, `variable_schema_v3.yaml`, `likelihood_map_v3.yaml`,
+`construct_prior_map_v3.yaml`, `soft_loading_prior_matrix.{csv,yaml}`.
 
-This is the value of data-driven clustering: identifying trans-diagnostic
-phenotypes that may map onto biology better than the categorical DSM-5 framework.
+### Encoding for V3 (the observation likelihood carries the type)
+V3 does **not** force every variable onto one shared pseudo-continuous metric. Deterministic scaling
+is kept only where useful (e.g. standardizing approximately-continuous scores); skewed labs are
+`log`-transformed; ordinal/binary/count variables keep their nature and get an ordinal/Bernoulli/count
+likelihood.
 
-## Caveats
-- DR CSV has no NEUROPSYCHOLOGIE data → 133 cognitive rows are PARTIAL or
-  NOT USABLE for DR (need separate file or DR-imputation).
-- TRAITEMENTS (medications) section was not extracted — pharmacological
-  exposure is not in this dictionary.
-- 26 NOT USABLE rows are real data gaps; see col H per row for derivation
-  suggestions (e.g., R7 ARMCD: derive from text `arm`).
-- Missingness per cohort depends on the visit-selection strategy chosen in
-  Step 1 — col J shows visit-level missingness, not patient-level.
+### Diagnosis is a covariate / validation target — never a clustering feature
+Keep `arm` (DSM-5 subtype) and `cohort` as **labels** and **measurement-model covariates**. They are
+used to *validate* recovered dimensions/strata (η², ARI, per-group composition, confounding, invariance)
+and to adjust indicator means — **never** as dimension indicators or clustering inputs.
+**Identifiers never modelled on:** `usubjid_patients`, `cohort`, `arm`, `visit`, `visitnum`,
+`siteid_city` (kept loadable for site stratification, excluded from features via
+`ADMINISTRATIVE_FEATURES`).
+
+---
+
+## Notes
+- **Cognition (NEUROPSYCHOLOGIE) is available in all 3 cohorts** (curated in
+  `docs/neuropsy_features.yaml`: WAIS standard scores + TMT + verbal memory/fluency).
+- `siteid_city` is kept loadable (for site stratification) but excluded from the feature matrix.
+- Within-column unit mixing (`mchc` g/L vs g/dL; `hct` % vs L/L) is harmonized by `rules.py`.
+- **QA**: the data-layer tests (`tests/v3/`) validate that every variable loads + passes sanity bounds and
+  that skip-logic structural-zero decoding is correct — load-bearing for the measurement model.
+
+## Known open data caveats
+The sanity bounds + `rules.py` encode the harmonization decisions (unit fixes, sentinel removal, ms→s
+ECG conversion, text→code maps). One minor item remains clinician-pending and does **not** affect the
+modelled features:
+- **Suicide `ltsg07`** — asymmetric "don't know" coding (BP yes/no vs DR yes/no/DK ≈11%); the exact
+  BP↔DR alignment of the rarest high-lethality categories (DR n ≤ 7) is approximate.
