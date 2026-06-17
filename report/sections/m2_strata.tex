@@ -60,7 +60,7 @@ structured high-dimensional data --- and is outweighed.)}
 HDBSCAN (density) & $0$ clusters, $100\%$ ``noise'' & no density peaks or valleys\\
 \rowcolor{facebg} Hartigan dip (PC1) & $p\approx 0.99$ & unimodal main axis\\
 KMeans silhouette & peak $\approx 0.18$, declining & no separated groups at any $K$\\
-\rowcolor{facebg} mixture BIC (Eq.~\ref{eq:xd}) & flat basin ($K4$ $199.3$k $\approx$ $K5$) & no separating $K$\\
+\rowcolor{facebg} mixture BIC (GMM, point coords) & monotone, no interior optimum ($K{\approx}3$ then flat) & no separating $K$\\
 archetype scree & smooth, no elbow & no natural number of extremes\\
 \rowcolor{facebg} Mapper (lens $=$ severity) & one connected chain & a graded backbone, not islands\\
 \bottomrule
