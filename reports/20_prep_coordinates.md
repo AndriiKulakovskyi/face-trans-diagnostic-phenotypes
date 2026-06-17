@@ -1,8 +1,8 @@
 # 20 — M2.0 prep: full-N 9-dim coordinates + validation table
 
-All **9,013** patients now carry **all 9** dimensions with uncertainty (M1 left suicidality/developmental/substance on the ~1,884 fit subsample). Continuous-anchored axes: draw-wise conditional-Gaussian from the certified 9-dim loadings. Explicit axes: full-N projection under fixed certified parameters (no re-fit, no imputation).
+All **9,013** patients now carry **all 9** dimensions with uncertainty (M1 left suicidality/developmental/substance on the ~1,884 fit subsample). **Coherent joint scoring** (P2-01/02/04): every 9D draw comes from ONE model state — the explicit-block latents f_e (incl the explicit-block G) plus the marginalized specifics f_m conditioned on that same f_e under the shared Phi; full-N projection under fixed certified parameters (no re-fit, no imputation). Exports the joint draws AND the full per-patient covariance S_i.
 
-**Projection sampler:** R-hat(z_e) max **1.041** · divergences **0** · draws 800. Runtime 12.8 min.
+**Projection sampler:** R-hat(z_e) max **1.041** · divergences **0** · draws 800. Runtime 0.6 min.
 
 ## QC — projection reproduces the certified f_e on the fit subsample (Pearson r)
 |                    |     r |
@@ -32,9 +32,9 @@ Ordinal re-coding to the certified categories (top-category absorption): ctq40=0
 |                    |   mean |   sd_across_patients |   mean_posterior_SD |
 |:-------------------|-------:|---------------------:|--------------------:|
 | overall_severity   |   0.09 |                 0.82 |                0.29 |
-| cognition          |  -0    |                 0.75 |                0.44 |
+| cognition          |  -0.01 |                 0.75 |                0.44 |
 | metabolic          |  -0.01 |                 0.93 |                0.27 |
-| inflammatory       |  -0    |                 0.77 |                0.55 |
+| inflammatory       |  -0    |                 0.77 |                0.54 |
 | sleep              |  -0.01 |                 0.9  |                0.28 |
 | mania_activation   |  -0.01 |                 0.83 |                0.66 |
 | suicidality        |   0.03 |                 0.96 |                0.48 |
@@ -47,7 +47,8 @@ Ordinal re-coding to the certified categories (top-category absorption): ctq40=0
 
 ## Artifacts (results/face/m2/, gitignored)
 - `coordinates_full.parquet` — per-patient 9-dim mean/SD/HDI/n_obs/reliability (the M2 input).
-- `coordinates_draws.npz` — [200, 9013, 9] posterior draws (the uncertainty arm: full S_i / archetypes-over-draws).
+- `coordinates_draws.npz` — [200, 9013, 9] coherent joint posterior draws (archetypes-over-draws / structure gate).
+- `coordinates_cov.npz` — [9013, 9, 9] full per-patient covariance S_i (coherent; the full-S_i XD arm, P2-04).
 - `validation_table.parquet` — cohort/arm/age/sex/education/site.
 - `proj.npz` — raw explicit projection (mean/sd/draws).
 
