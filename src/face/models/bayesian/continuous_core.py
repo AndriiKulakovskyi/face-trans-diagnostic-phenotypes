@@ -163,7 +163,7 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             cohort_subset: list[str] | None = None, balanced: bool = False,
             keep_index: np.ndarray | None = None, force_factors_continuous: list[str] | None = None,
             n_subsample: int | None = None, emit_moments: bool = False, visit: str = "V0",
-            covariate_adjust: bool = False, age_spline_df: int = 4,
+            covariate_adjust: bool = False, age_spline_df: int = 4, soft_unlikely: bool = False,
             seed: int = 20260605) -> CorePrep | tuple[CorePrep, dict]:
     """Load the persisted V0 baseline, encode the continuous block for `factors`, and resolve
     the per-cell loading priors from the matrix. Three orthogonal switches deform S1 -> S2:
@@ -277,6 +277,13 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
                 elif specific_cross:                     # specific <-> specific (ridge-guarded)
                     sgn_cells.append((j, c, mu, sd * cross_sd_scale))
                     kind[(j, c)] = "cross"
+            elif soft_unlikely and ptype == "unlikely_cross":   # P0-05: shrink unlikely cells, not hard-zero
+                # The methods doc says "unlikely" cells carry a soft Normal(0, 0.05); the default engine
+                # hard-zeros them. This arm instantiates that soft prior on the ~unlikely specific cross
+                # cells (NOT specific<->specific plausible_cross, which stay off — rotationally aliased
+                # with Φ — and NOT G). For the soft-zero-vs-hard-zero sensitivity table.
+                sgn_cells.append((j, c, 0.0, 0.05))
+                kind[(j, c)] = "unlikely"
 
     if flat:                          # §5 confirmation: prior-free (identification-only) priors.
         # Drop the soft-prior informativeness, keep ONLY the identification constraints (home cells
@@ -628,7 +635,21 @@ def _sel(rows: list[int], F: int) -> np.ndarray:
     return S
 
 
-def build_mixed(mp: MixedPrep, psi_floor: float = 0.05, lkj_eta: float = 2.0):
+def _hurdle_nb_logp(pt, y, psi, mu, alpha):
+    """Hurdle-NB log-likelihood from differentiable ops only — NO betainc, so it works under the
+    numpyro/JAX NUTS sampler (``pm.HurdleNegativeBinomial`` uses NB.logcdf → betainc, whose gradient
+    JAX does not support). ``psi`` = P(Y>0): zeros are the gate ``log(1-psi)``; positives are a
+    zero-truncated NB. NB(0) = (α/(α+μ))^α; the truncation divides by 1-NB(0) (log1mexp)."""
+    log_p0 = alpha * (pt.log(alpha) - pt.log(alpha + mu))                 # log NB(0)
+    nb_lpmf = (pt.gammaln(y + alpha) - pt.gammaln(alpha) - pt.gammaln(y + 1.0)
+               + alpha * (pt.log(alpha) - pt.log(alpha + mu))
+               + y * (pt.log(mu) - pt.log(alpha + mu)))
+    pos = pt.log(psi) + nb_lpmf - pt.log1mexp(log_p0)                     # zero-truncated NB, scaled by psi
+    return pt.where(pt.eq(y, 0.0), pt.log1p(-psi), pos)
+
+
+def build_mixed(mp: MixedPrep, psi_floor: float = 0.05, lkj_eta: float = 2.0,
+                hurdle_counts: bool = True):
     """Hybrid explicit/marginalized mixed-likelihood model (S3b). f_e=(G,suic,dev) explicit; the
     continuous specifics marginalized and coupled via the conditional Phi decomposition."""
     import pymc as pm
@@ -685,13 +706,24 @@ def build_mixed(mp: MixedPrep, psi_floor: float = 0.05, lkj_eta: float = 2.0):
             pm.Bernoulli(f"y_{it}", logit_p=eta, observed=y[obs].astype("int8"))
         for k, it in enumerate(mp.cnt_items):
             y = mp.Cnt[:, k]; obs = np.flatnonzero(~np.isnan(y))
+            fh = f_e[:, mp.ng_home[it]][obs]
             a = pm.Normal(f"a_{it}", 0.0, 1.5)
             lh = pm.TruncatedNormal(f"lh_{it}", mu=mp.ng_hp[it][0], sigma=mp.ng_hp[it][1], lower=0.0)
             lg = pm.Normal(f"lg_{it}", mp.ng_gp[it][0], mp.ng_gp[it][1])
-            alpha = pm.HalfNormal(f"alpha_{it}", 2.0)
-            eta = a + lh * f_e[:, mp.ng_home[it]][obs] + lg * f_e[:, 0][obs]
-            pm.NegativeBinomial(f"y_{it}", mu=pt.exp(eta), alpha=alpha,
-                                observed=np.rint(y[obs]).astype("int64"))
+            alpha = pm.Exponential(f"alpha_{it}", 1.0)            # P1-10: dispersion prior matches §3.3
+            eta = a + lh * fh + lg * f_e[:, 0][obs]
+            if hurdle_counts:
+                # P1-03/P1-02: a hurdle ties the zero-spike to the latent, so skip-logic structural zeros
+                # become a modelled gate rather than independent NB zeros that over-predict the high tail
+                # (the isf09a fix: plain NB predicted mean 13.4 vs observed 0.14). psi = P(Y>0 | latent).
+                apsi = pm.Normal(f"apsi_{it}", 0.0, 1.5)
+                lhpsi = pm.Normal(f"lhpsi_{it}", 0.0, 1.0)
+                psi = pm.Deterministic(f"psi_{it}", pm.math.sigmoid(apsi + lhpsi * fh))
+                yv = pt.as_tensor(np.rint(y[obs]).astype("float64"))
+                pm.Potential(f"y_{it}", _hurdle_nb_logp(pt, yv, psi, pt.exp(eta), alpha).sum())
+            else:
+                pm.NegativeBinomial(f"y_{it}", mu=pt.exp(eta), alpha=alpha,
+                                    observed=np.rint(y[obs]).astype("int64"))
         for k, it in enumerate(mp.ord_items):
             y = mp.Ord[:, k]; obs = np.flatnonzero(~np.isnan(y)); K = int(mp.ord_K[k])
             cut = pm.Normal(f"c_{it}", mu=np.linspace(-1.5, 1.5, K - 1), sigma=2.0, shape=K - 1,
