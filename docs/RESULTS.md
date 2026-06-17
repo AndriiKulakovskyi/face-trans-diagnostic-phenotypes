@@ -92,8 +92,9 @@ and the three with no common indicators (impulsivity, negative symptoms, sensory
    DIF — **largely invariant**; partial in G (BP–SZ, no FAST in SZ) and inflammatory (DR), documented.
 5. ~~No FIML triangulation yet~~ **RESOLVED (§5):** standalone FIML dropped (semopy intractable/unreliable;
    §3.5 makes the marginal = FIML) → confirmed **in-engine**. A prior-free (flat-prior) full-N refit
-   reproduces the soft-prior loadings/Φ **exactly** (Tucker φ = 1.00 every factor), PPC SRMR ≈ 0.07, and
-   WAIC decisively prefers the bifactor — the structure is **not a Bayesian-prior artefact**.
+   reproduces the soft-prior loadings/Φ **to 3 d.p.** (Tucker φ = 1.00 every factor, max |ΔΦ| = 0.00),
+   PPC SRMR ≈ 0.07, and WAIC decisively prefers the bifactor — the structure is **not a Bayesian-prior
+   artefact**. *(Independent refit: flat priors, fresh seed, no warm-start from the soft-prior fit.)*
 6. **Cohort-specific coverage** — anhedonia and the MADRS/QIDS windows are BP/DR (SZ has no QIDS/MADRS), and
    substance's alcohol/cannabis SUD are BP/SZ (DR-absent); the per-cohort map leans on the shared factors.
    **RESOLVED (§7):** each patient's per-dimension reliability is now flagged by observed-indicator count

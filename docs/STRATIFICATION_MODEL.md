@@ -376,8 +376,8 @@ Neither count is set by hand:
 
 - **K (mixture) — sparse / overfitted finite mixture** (Malsiner-Walli): generous `K_max` (≈ 12–15), small
   `α` (`α/K ≪ 1`); superfluous components empty out, `K_eff` = components retaining mass in the posterior.
-  (A Dirichlet-process mixture is the equivalent nonparametric alternative.) Cross-checks: WAIC/PSIS-LOO over
-  fixed `K = 2 … K_max`; **BIC** from the classical EM arm; **stability** across seeds/resamples.
+  (A Dirichlet-process mixture is the equivalent nonparametric alternative.) Cross-checks: **BIC** over
+  fixed `K = 2 … K_max` (the classical/XD EM arm) + **stability** across seeds/resamples.
 - **A (archetypes)** — explained-variance scree/elbow, stability of archetypes across resamples, and
   interpretability; reported with a sensitivity table over neighbouring `A`.
 - **The null/continuum is allowed.** If evidence favours `K = 1`, or separation purely along G, or the §3.1

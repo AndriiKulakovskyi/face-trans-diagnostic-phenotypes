@@ -100,8 +100,9 @@ than hidden:
   alcohol/cannabis SUD are BP/SZ-only; not claimed for DR).
 
 ### F8 — The structure is not an artefact of estimator, prior, resampling, cohort, or site
-- **Not a prior/estimator artefact** (§5): a flat-prior refit reproduces the loadings/Φ **exactly** (Tucker
-  φ = 1.00); WAIC decisively prefers the bifactor over unidimensional and correlated-no-G alternatives.
+- **Not a prior/estimator artefact** (§5): an independent flat-prior refit (fresh seed, no warm-start)
+  reproduces the loadings/Φ **to 3 d.p.** (Tucker φ = 1.00, max |ΔΦ| = 0.00); WAIC decisively prefers the
+  bifactor over unidimensional and correlated-no-G alternatives.
 - **Resample-robust** (§8): under leave-one-cohort-out, diagnosis-balanced subsampling, site cluster-
   bootstrap, and 1/n_cohort weighting, the minimum Tucker φ vs the full-sample reference is **0.958**.
   The map is not driven by cohort imbalance, any single cohort, or recruitment-site clustering.
