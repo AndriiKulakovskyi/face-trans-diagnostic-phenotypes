@@ -46,22 +46,52 @@ def _human(sec: float | None) -> str:
     return f"{h}h{m:02d}m" if h else (f"{m}m{s:02d}s" if m else f"{s}s")
 
 
-def _tail(path: Path, n: int = 40) -> list[str]:
+def _tail(path: Path, n: int = 80) -> list[str]:
     if not path.exists():
         return []
-    try:
-        data = path.read_text(errors="replace").splitlines()
+    try:                                    # progress bars use \r; expand to lines so we see live updates
+        data = path.read_text(errors="replace").replace("\r", "\n").splitlines()
     except Exception:
         return []
     return data[-n:]
 
 
-def _last_progress(lines: list[str]) -> str:
-    for ln in reversed(lines):
-        s = ln.strip()
-        if s and _PROG.search(s):
-            return s[-90:]
-    return (lines[-1].strip()[-90:] if lines else "")
+# NumPyro/PyMC progress bar: "Running chain 3:  15%|...| 750/5000 [12:42<1:07:22,  1.05it/s]"
+_CHAIN = re.compile(r"chain (\d+):\s+(\d+)%\|[^|]*\|\s*(\d+)/(\d+)(?:\s*\[[\d:]+<([^,\]]+))?")
+
+
+def _nuts_progress(lines: list[str]) -> str:
+    """Compact live sampler progress from the log: latest %% per chain + slowest ETA."""
+    seen: dict[int, tuple[int, str, str]] = {}
+    for ln in lines:
+        for m in _CHAIN.finditer(ln):
+            seen[int(m.group(1))] = (int(m.group(2)), m.group(4), (m.group(5) or "").strip())
+    if not seen:
+        for ln in reversed(lines):           # fallback: last meaningful log line
+            s = ln.strip()
+            if s and _PROG.search(s):
+                return s[-90:]
+        return (lines[-1].strip()[-90:] if lines else "")
+    chains = sorted(seen.items())
+    body = " ".join(f"c{c}:{p[0]}%" for c, p in chains)
+    etas = [p[2] for _, p in chains if p[2]]
+    total = chains[0][1][1]
+    out = f"chains {body}"
+    if total:
+        out += f" of {total}"
+    if etas:
+        out += f" · slowest ETA {max(etas, key=_eta_secs)}"     # compare durations, not strings
+    return out
+
+
+def _eta_secs(s: str) -> int:
+    try:
+        sec = 0
+        for p in s.split(":"):
+            sec = sec * 60 + int(p)
+        return sec
+    except Exception:
+        return -1
 
 
 def _states() -> list[dict]:
@@ -83,8 +113,12 @@ def _enrich(st: dict) -> dict:
     hb = _parse(st.get("last_heartbeat"))
     st["_hb_age"] = _human(now - hb) if hb else "—"
     job = st.get("name", "?")
-    st["_log_tail"] = _tail(LOGS / f"{job}.log", 40)
-    st["_progress"] = st.get("message") or _last_progress(st["_log_tail"])
+    logp = LOGS / f"{job}.log"
+    # Liveness from the LOG file's mtime (continuously written by the sampler), not the coarse
+    # per-seed heartbeat — a long fit's heartbeat goes stale even while it samples fine.
+    st["_log_age"] = _human(now - logp.stat().st_mtime) if logp.exists() else "—"
+    st["_log_tail"] = _tail(logp, 80)
+    st["_progress"] = _nuts_progress(st["_log_tail"]) or st.get("message") or ""
     return st
 
 
@@ -100,16 +134,15 @@ def render(states: list[dict]) -> str:
         icon = _ICON.get(st.get("status", ""), "?")
         head = f"{icon} {st.get('name','?'):<22} {st.get('status','?'):<10} elapsed {st['_elapsed']:<7}"
         if st.get("status") == "running":
-            head += f"  hb {st['_hb_age']} ago"
+            head += f"  log {st['_log_age']} ago"      # liveness: time since the sampler last wrote
         if st.get("exit_code") not in (None, 0):
             head += f"  rc={st.get('exit_code')}"
         rows.append(head)
         active = st.get("status") in ("running", "launching")
         if active and st.get("stage"):
-            rows.append(f"    stage: {st['stage']}" + (f"  ~{st['progress']*100:.0f}%"
-                        if isinstance(st.get("progress"), int | float) else ""))
+            rows.append(f"    stage: {st['stage']}")
         if st.get("_progress"):
-            rows.append(f"    log:   {st['_progress']}")
+            rows.append(f"    {st['_progress']}")
     rows.append("=" * 72)
     return "\n".join(rows)
 
