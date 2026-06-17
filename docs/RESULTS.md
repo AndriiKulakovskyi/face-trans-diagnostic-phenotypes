@@ -611,8 +611,9 @@ worth drawing — but the earlier "orthogonal" phrasing overstated it; "largely 
 
 ### S5.5 What S5 delivers
 
-The **reported transdiagnostic map**: 7 empirically-supported dimensions with their loadings, the
-inter-dimension Φ, per-patient coordinates (with uncertainty), and the dual-identification G⊥biology test.
+The **S5 transdiagnostic map** (7 empirically-supported dimensions here; mania + substance are later
+integrated → the **reported 9-dim joint map**) with their loadings, the inter-dimension Φ, per-patient
+coordinates (with uncertainty), and the dual-identification G⊥biology test.
 The hybrid discovery worked end-to-end — theory proposed 10 candidates; the FACE data **confirmed 6 + G,
 reshaped one (metabolic/inflammatory split), and rejected/dropped four** (anhedonia, impulsivity, negative
 symptoms, sensory) — with the depression/anxiety instruments placed as cross-loading windows, not a
