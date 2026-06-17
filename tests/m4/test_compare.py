@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 from face.prognosis.compare import delta_elpd, incremental_verdict
 from face.prognosis.glm import fit_glm
@@ -15,6 +16,7 @@ def test_incremental_verdict_bands():
 
 
 def test_delta_elpd_prefers_the_model_with_the_real_predictor():
+    pytest.importorskip("numpyro", reason="needs the NumPyro/JAX backend (pip install -e '.[bayesian]')")
     rng = np.random.default_rng(7)
     n = 200
     xtrue = rng.normal(size=n)

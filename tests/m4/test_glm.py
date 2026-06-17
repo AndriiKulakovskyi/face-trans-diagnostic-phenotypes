@@ -2,8 +2,13 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
 from face.prognosis.glm import fit_glm
+
+# fit_glm runs the NumPyro/JAX NUTS backend (the `bayesian` extra). Light CI installs only `.[dev]`,
+# so skip these sampling tests when the backend is absent — matching how the engine tests guard pymc.
+pytest.importorskip("numpyro", reason="needs the NumPyro/JAX backend (pip install -e '.[bayesian]')")
 
 FIT = dict(draws=300, tune=300, chains=2, seed=0)
 
