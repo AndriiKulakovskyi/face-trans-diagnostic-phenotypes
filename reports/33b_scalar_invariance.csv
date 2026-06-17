@@ -1,0 +1,4 @@
+axis,n_items,n_signif_drift_largeN,max_abs_delta_alpha,median_abs_delta_alpha,scalar_verdict
+overall_severity,20,14,0.074,0.042,scalar-invariant
+sleep,18,16,0.305,0.071,partial
+developmental_risk,24,4,0.688,0.133,partial
