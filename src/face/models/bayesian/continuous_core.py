@@ -97,6 +97,65 @@ def _balanced_idx(cohort: np.ndarray, n_total: int, rng) -> np.ndarray:
     return np.sort(np.concatenate(out))
 
 
+# ----- covariate-adjusted sensitivity arm (issue P0-04) --------------------------------------------
+# The published equation adjusts each item mean by β_jᵀ c_i (age, sex, education, site). For a Gaussian
+# item this is Frisch–Waugh–Lovell-equivalent to residualizing the item on the covariate design BEFORE
+# the factor model — so the marginalized Woodbury kernel is untouched (still zero-mean). Off by default
+# (`covariate_adjust=False`): the primary z-scored encoding is byte-for-byte unchanged. The arm is
+# scoped to age(spline)+sex+education(edulevel)+site (NOT cohort/diagnosis — those stay metadata /
+# invariance grouping, preserving the transdiagnostic between-cohort signal).
+
+def _age_spline(x: np.ndarray, df: int) -> np.ndarray:
+    if df and df > 0:
+        try:
+            from sklearn.preprocessing import SplineTransformer
+            return SplineTransformer(n_knots=df, degree=3, include_bias=False).fit_transform(x)
+        except Exception:                                     # pragma: no cover (old sklearn fallback)
+            return np.column_stack([x, x ** 2, x ** 3])
+    return x
+
+
+def _covariate_design(index: pd.Index, *, age_spline_df: int = 4) -> np.ndarray:
+    """Confounder design aligned to `index`: intercept + ns(age) + age×sex + sex + edulevel + site dummies.
+    Covariate NaNs are mean-imputed for the design only (the item's own NaNs are preserved upstream)."""
+    cov_path, site_path = PROC / "covariates_v0.parquet", PROC / "site_v0.parquet"
+    cov = pd.read_parquet(cov_path).reindex(index) if cov_path.exists() else pd.DataFrame(index=index)
+    n = len(index)
+
+    def _col(name):
+        x = pd.to_numeric(cov[name], errors="coerce").to_numpy("float64") if name in cov.columns \
+            else np.full(n, np.nan)
+        m = float(np.nanmean(x)) if np.isfinite(np.nanmean(x)) else 0.0
+        return np.nan_to_num(x, nan=m).reshape(-1, 1)
+
+    age, sex, edu = _col("age"), _col("sex"), _col("edulevel")
+    age_basis = _age_spline(age, age_spline_df)
+    edu = (edu - edu.mean()) / (edu.std() or 1.0)
+    blocks = [np.ones((n, 1)), age_basis, sex, edu, age_basis * sex]   # age×sex = sex-specific age curve
+    if site_path.exists():
+        site = pd.read_parquet(site_path)["siteid_city"].reindex(index).round().astype("Int64")
+        d = pd.get_dummies(site.astype("object"), prefix="site", dummy_na=False, drop_first=True)
+        if d.shape[1]:
+            blocks.append(d.to_numpy("float64"))
+    return np.column_stack(blocks)
+
+
+def _residualize_on_covariates(Vdf: pd.DataFrame, *, age_spline_df: int = 4) -> pd.DataFrame:
+    """OLS-partial each (pre-z-score) item on the covariate design over its observed rows; NaN preserved."""
+    A = _covariate_design(Vdf.index, age_spline_df=age_spline_df)
+    out = Vdf.copy()
+    min_obs = A.shape[1] + 2
+    for c in out.columns:
+        y = out[c].to_numpy("float64").copy()
+        obs = np.isfinite(y)
+        if int(obs.sum()) < min_obs:
+            continue
+        beta, *_ = np.linalg.lstsq(A[obs], y[obs], rcond=None)
+        y[obs] = y[obs] - A[obs] @ beta
+        out[c] = y
+    return out
+
+
 def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             windows: bool = False, specific_cross: bool = False, g_correlated: bool = False,
             cross_sd_scale: float = 0.25, window_sd_scale: float = 1.0, flat: bool = False,
@@ -104,6 +163,7 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             cohort_subset: list[str] | None = None, balanced: bool = False,
             keep_index: np.ndarray | None = None, force_factors_continuous: list[str] | None = None,
             n_subsample: int | None = None, emit_moments: bool = False, visit: str = "V0",
+            covariate_adjust: bool = False, age_spline_df: int = 4,
             seed: int = 20260605) -> CorePrep | tuple[CorePrep, dict]:
     """Load the persisted V0 baseline, encode the continuous block for `factors`, and resolve
     the per-cell loading priors from the matrix. Three orthogonal switches deform S1 -> S2:
@@ -154,8 +214,8 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
         B = B.iloc[keep_index]
     cohort = np.asarray(B.index.get_level_values("cohort"))
 
-    cols = {}
     moments = {} if emit_moments else None     # frozen V0 transform for follow-up scoring (M3 §3.1)
+    raw, metarec = {}, {}                       # sign-oriented, log-transformed values BEFORE z-scoring
     for it in items:
         v = pd.to_numeric(B[it], errors="coerce").astype(float)
         fam = meta.loc[it, "likelihood_family"]
@@ -164,11 +224,19 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             logmin = float(np.nanmin(v.values))
             v = np.log1p(v - logmin + 1e-6) if (np.isfinite(logmin) and logmin <= 0) else np.log(v)
         sgn = int(meta.loc[it, "item_sign"])
-        v = sgn * v
+        raw[it] = sgn * v
+        metarec[it] = (str(fam), sgn, logmin)
+    Vdf = pd.DataFrame(raw, index=B.index)
+    if covariate_adjust:                        # P0-04 arm: partial out age(spline)+sex+edu+site, then z-score
+        Vdf = _residualize_on_covariates(Vdf, age_spline_df=age_spline_df)
+    cols = {}
+    for it in items:
+        v = Vdf[it]
         mu, sd = v.mean(), v.std()
         cols[it] = (v - mu) / sd if sd and sd > 0 else v * 0.0
         if moments is not None:
-            moments[it] = (str(fam), sgn, logmin, float(mu), float(sd))
+            fam, sgn, logmin = metarec[it]
+            moments[it] = (fam, sgn, logmin, float(mu), float(sd))
     Mdf = pd.DataFrame(cols, index=B.index)
 
     if n_subsample and n_subsample < len(Mdf):
