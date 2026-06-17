@@ -4,7 +4,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from face.treatment.propensity import (define_exposure, overlap, smd, stabilized_iptw)
+from face.treatment.propensity import define_exposure, overlap, smd, stabilized_iptw
 
 
 def _merged():

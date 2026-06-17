@@ -18,7 +18,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from face.prognosis import CANON, DURABLE
+from face.prognosis import CANON
 
 RUNGS = ("R0", "R1", "R2", "R3y")
 _COVARS = ("age", "sex", "siteid_city", "arm")

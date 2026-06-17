@@ -66,8 +66,12 @@ def main():
 
     from face.models.bayesian.continuous_core import PROC, S5_FACTORS, prepare, prepare_mixed
     from face.scoring import reliability_flags
-    from face.strata.scoring import (align_ordinals_to_fit, conditional_gaussian_draws,
-                                     explicit_nobs, project_explicit_full_n)
+    from face.strata.scoring import (
+        align_ordinals_to_fit,
+        conditional_gaussian_draws,
+        explicit_nobs,
+        project_explicit_full_n,
+    )
 
     t0 = time.time()
     idata = az.from_netcdf(REPO / "results/face/s5_cert9_s1/idata.nc")
@@ -93,7 +97,7 @@ def main():
     B = pd.read_parquet(PROC / "baseline_v0.parquet")
     clipped = align_ordinals_to_fit(mp, mpC.base.index, B)     # match certified ordinal coding
     cert_K = {it: int(post[f"c_{it}"].shape[-1]) + 1 for it in mp.ord_items}
-    for it, K in zip(mp.ord_items, mp.ord_K):
+    for it, K in zip(mp.ord_items, mp.ord_K, strict=False):
         assert K == cert_K[it], f"ord K mismatch {it}: {K} vs certified {cert_K[it]}"
 
     proj_cache = OUT / "proj.npz"

@@ -3,11 +3,15 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from face.prognosis.frame import OutcomeSpec
-from face.prognosis.reference import (design_for_rung, modeling_frame, outcome_vector,
-                                      severity_column, site_index)
+from face.prognosis.reference import (
+    design_for_rung,
+    modeling_frame,
+    outcome_vector,
+    severity_column,
+    site_index,
+)
 
 EGF = OutcomeSpec(name="egf", label="egf", source_var="egf", family="gaussian",
                   direction="higher_better", cohort_scope=("bp", "sz", "dr"),

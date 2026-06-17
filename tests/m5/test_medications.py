@@ -3,8 +3,12 @@ from __future__ import annotations
 
 import pandas as pd
 
-from face.treatment.medications import (CLASSES, atc_to_classes, classstr_to_classes,
-                                        extract_exposures)
+from face.treatment.medications import (
+    CLASSES,
+    atc_to_classes,
+    classstr_to_classes,
+    extract_exposures,
+)
 
 
 def test_atc_longest_prefix_and_classes():

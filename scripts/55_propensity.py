@@ -23,8 +23,15 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-from face.treatment.propensity import (QUESTIONS, confounder_matrix, define_exposure,  # noqa: E402
-                                       overlap, propensity_score, smd, stabilized_iptw)
+from face.treatment.propensity import (  # noqa: E402
+    QUESTIONS,
+    confounder_matrix,
+    define_exposure,
+    overlap,
+    propensity_score,
+    smd,
+    stabilized_iptw,
+)
 
 M5 = REPO / "results" / "face" / "m5"
 REPORTS = REPO / "reports"
@@ -90,7 +97,7 @@ def _figure(ps_store):
     qs = [q for q in QUESTIONS if (q, "active_comparator") in ps_store]
     fig, axes = plt.subplots(1, max(len(qs), 1), figsize=(4.4 * max(len(qs), 1), 4))
     axes = np.atleast_1d(axes)
-    for ax, q in zip(axes, qs):
+    for ax, q in zip(axes, qs, strict=False):
         df, diag = ps_store[(q, "active_comparator")]
         ax.hist(df.ps[df.treat == 1], bins=20, alpha=0.6, density=True, label=f"treated (n={diag['n_treated']})", color="#d73027")
         ax.hist(df.ps[df.treat == 0], bins=20, alpha=0.6, density=True, label=f"comparator (n={diag['n_control']})", color="#4575b4")

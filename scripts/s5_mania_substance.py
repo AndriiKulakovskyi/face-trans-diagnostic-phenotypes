@@ -32,7 +32,6 @@ FACTORS = S1_FACTORS + NEW
 
 
 def main(seeds: int = 2):
-    import arviz as az
     rows = {f: [] for f in NEW}            # per-factor: list of (seed) loading/G/phiG dicts
     diags = []
     for si in range(seeds):

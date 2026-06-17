@@ -53,8 +53,11 @@ def _score_followup(visit, spec, post, idata, mp_v0, cert_index, B_v0):
     from scipy.stats import norm
 
     from face.scoring import reliability_flags
-    from face.strata.scoring import (conditional_gaussian_draws, explicit_nobs,
-                                     project_explicit_full_n)
+    from face.strata.scoring import (
+        conditional_gaussian_draws,
+        explicit_nobs,
+        project_explicit_full_n,
+    )
     from face.temporal.standardize import prep_visit_continuous, prep_visit_mixed
     z = float(norm.ppf(0.97))                                        # 94% HDI
     B = pd.read_parquet(PROC / f"baseline_{visit.lower()}.parquet")
@@ -178,7 +181,7 @@ def main():
     _figure(panel)
     n_by_v = panel.groupby("visit").size().reindex(list(VISITS))
     md = ["# 34 — G2: longitudinal coordinate + membership panel (V0 → V1 → V2)", "",
-          f"Per (patient, visit) on the **frozen V0 scale**: 9-dim coordinates + uncertainty, Arm-B "
+          "Per (patient, visit) on the **frozen V0 scale**: 9-dim coordinates + uncertainty, Arm-B "
           "(G-residualized) + Arm-A archetype memberships, and the per-axis G1 license. V0 reused from M2.0 "
           "(prep validated bit-exact); V1/V2 newly projected under fixed certified parameters (no re-fit).", "",
           f"- **Panel rows:** {len(panel):,} — " + " · ".join(f"{v} {int(n_by_v[v]):,}" for v in VISITS) + ".",
@@ -193,7 +196,7 @@ def main():
     traj = pd.DataFrame({f: [panel[panel.visit == v][f"{f}__mean"].mean() for v in VISITS] for f in CANON},
                         index=list(VISITS)).round(3)
     md += [traj.T.to_markdown(), "",
-           f"- License attached per axis: " + ", ".join(f"{f}={lic.get(f,'not-tested')}" for f in CANON) + ".",
+           "- License attached per axis: " + ", ".join(f"{f}={lic.get(f,'not-tested')}" for f in CANON) + ".",
            "", "## Artifacts (results/face/m3/, gitignored)",
            "- `panel_coords.parquet` — the tidy (patient_uid, visit) substrate (coords + memberships + "
            "license + retention).",

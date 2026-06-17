@@ -24,12 +24,22 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-from face.prognosis.clinical_value import (auc, brier, cv_predict, net_benefit,  # noqa: E402
-                                           paired_auc_delta)
+from face.prognosis.clinical_value import (  # noqa: E402
+    auc,
+    brier,
+    cv_predict,
+    net_benefit,
+    paired_auc_delta,
+)
 from face.prognosis.endpoints import ENDPOINTS, build_endpoints  # noqa: E402
 from face.prognosis.frame import load_outcome_config  # noqa: E402
-from face.prognosis.reference import (arm_block, armB_block, design_for_rung,  # noqa: E402
-                                      foundation_design, severity_column)
+from face.prognosis.reference import (  # noqa: E402
+    arm_block,
+    armB_block,
+    design_for_rung,
+    foundation_design,
+    severity_column,
+)
 
 CONFIG = REPO / "configs" / "m4_outcomes.yaml"
 M4 = REPO / "results" / "face" / "m4"

@@ -105,7 +105,8 @@ def main():
 
 
 def _fig_bic(bic):
-    import matplotlib; matplotlib.use("Agg")
+    import matplotlib
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots(figsize=(6.5, 4.5))
     ks = sorted(bic)
@@ -117,7 +118,8 @@ def _fig_bic(bic):
 
 
 def _fig_profiles(mu, names):
-    import matplotlib; matplotlib.use("Agg")
+    import matplotlib
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     K = mu.shape[0]
     fig, ax = plt.subplots(figsize=(10, 0.8 * K + 2))
@@ -134,7 +136,8 @@ def _fig_profiles(mu, names):
 
 
 def _fig_membership(X, df, vt, MAP, K):
-    import matplotlib; matplotlib.use("Agg")
+    import matplotlib
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import umap
     emb = umap.UMAP(n_neighbors=30, min_dist=0.3, random_state=SEED).fit_transform(X)

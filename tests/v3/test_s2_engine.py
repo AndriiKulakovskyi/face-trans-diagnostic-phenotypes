@@ -86,6 +86,7 @@ def test_phi_is_valid_pd_correlation_with_g_orthogonal():
     INDEFINITE (the cause of the S3a NaN). Φ must be PD, unit-diagonal, with G orthogonal."""
     import numpy as np
     import pymc as pm
+
     from face.models.bayesian.continuous_core import S3_FACTORS, build_marginalized
     prep = prepare(S3_FACTORS, correlated=True, windows=True, n_subsample=400)
     model = build_marginalized(prep)

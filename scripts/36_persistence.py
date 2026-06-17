@@ -28,8 +28,12 @@ sys.path.insert(0, str(REPO / "src"))
 warnings.filterwarnings("ignore")
 
 from face.temporal import CANON  # noqa: E402
-from face.temporal.persistence import (BIOLOGY_CORNER, membership_persistence,  # noqa: E402
-                                       reliable_change_rate, spine_corner, trajectory_types)
+from face.temporal.persistence import (  # noqa: E402
+    membership_persistence,
+    reliable_change_rate,
+    spine_corner,
+    trajectory_types,
+)
 
 M3 = REPO / "results" / "face" / "m3"
 REPORTS, FIGS = REPO / "reports", REPO / "docs" / "figures"

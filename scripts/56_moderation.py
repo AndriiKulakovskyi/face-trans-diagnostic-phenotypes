@@ -30,7 +30,12 @@ from face.prognosis import DURABLE  # noqa: E402
 from face.prognosis.compare import delta_elpd  # noqa: E402
 from face.prognosis.frame import OutcomeSpec  # noqa: E402
 from face.prognosis.glm import fit_glm  # noqa: E402
-from face.prognosis.reference import arm_block, coord_eiv_block, foundation_design, site_index  # noqa: E402
+from face.prognosis.reference import (  # noqa: E402
+    arm_block,
+    coord_eiv_block,
+    foundation_design,
+    site_index,
+)
 from face.treatment.moderation import e_value, load_moderation_sample  # noqa: E402
 
 M5 = REPO / "results" / "face" / "m5"
@@ -121,7 +126,7 @@ def _figure(res):
     if res.empty:
         return
     fig, axes = plt.subplots(1, len(res), figsize=(3.5 * len(res), 4), squeeze=False)
-    for ax, (_, r) in zip(axes[0], res.iterrows()):
+    for ax, (_, r) in zip(axes[0], res.iterrows(), strict=False):
         means = [r[f"int_{a}"] for a in DURABLE]
         los = [r[f"int_{a}_lo"] for a in DURABLE]; his = [r[f"int_{a}_hi"] for a in DURABLE]
         ax.errorbar(means, range(len(DURABLE)), xerr=[np.array(means) - np.array(los), np.array(his) - np.array(means)],

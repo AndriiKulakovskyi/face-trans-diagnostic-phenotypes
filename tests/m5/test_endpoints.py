@@ -1,11 +1,12 @@
 """M5.0 — treatment-response endpoint construction (pure; CGI codings, 0=not-assessed -> NaN)."""
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
 from face.treatment.endpoints import build_endpoints, load_m5_config
-from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -21,7 +22,7 @@ def _frame():
 
 
 def _eq(a, b):
-    return all((np.isnan(x) and np.isnan(y)) or x == y for x, y in zip(a, b))
+    return all((np.isnan(x) and np.isnan(y)) or x == y for x, y in zip(a, b, strict=False))
 
 
 def test_endpoint_logic_and_not_assessed_to_nan():

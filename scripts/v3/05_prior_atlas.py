@@ -19,9 +19,10 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt          # noqa: E402
-import pandas as pd                       # noqa: E402
+import matplotlib.pyplot as plt  # noqa: E402
+import pandas as pd  # noqa: E402
 from matplotlib.colors import LinearSegmentedColormap  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
@@ -32,7 +33,7 @@ FACTOR_ORDER = ["overall_severity", "cognition", "metabolic", "inflammatory", "s
                 "suicidality", "developmental_risk", "anhedonia", "mania_activation", "substance"]
 FACTOR_LABEL = dict(zip(FACTOR_ORDER,
     ["G: severity / burden", "cognition", "metabolic", "inflammatory", "sleep",
-     "suicidality", "developmental-risk", "anhedonia", "mania-activation", "substance"]))
+     "suicidality", "developmental-risk", "anhedonia", "mania-activation", "substance"], strict=False))
 
 
 def main() -> None:

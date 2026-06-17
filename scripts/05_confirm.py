@@ -33,7 +33,10 @@ warnings.filterwarnings("ignore")
 
 from face import confirm  # noqa: E402
 from face.models.bayesian.continuous_core import (  # noqa: E402
-    S1_FACTORS, build_marginalized, prepare)
+    S1_FACTORS,
+    build_marginalized,
+    prepare,
+)
 
 REPORTS = REPO / "reports"
 NUTS_KWARGS = {"max_tree_depth": 8}
@@ -107,7 +110,7 @@ def main(smoke: bool = False):
     dphi = float(np.abs(PhiF - Phi2)[np.triu_indices(len(s2.factor_cols), 1)].max())
     rhatA = float(az.summary(idA, var_names=["lam_pos"])["r_hat"].max())
     md += ["## (A) Prior-free refit — flat loading priors vs the soft-prior S2 (full N)",
-           f"- Per-factor Tucker congruence φ(soft, flat): "
+           "- Per-factor Tucker congruence φ(soft, flat): "
            + " · ".join(f"{f.split('_')[0]} **{v}**" for f, v in phis.items()),
            f"- max |ΔΦ off-diagonal| = **{dphi:.3f}** · flat-fit max R-hat(lam_pos) {rhatA:.3f}",
            "- A flat-prior MAP = MLE = FIML (§3.5): loadings/Φ that match the soft-prior fit show the "
@@ -138,7 +141,7 @@ def main(smoke: bool = False):
            "Bayesian-prior artefact. (No classical CFI/RMSEA — see §5 note; available via lavaan on request.)"]
     (REPORTS / "05_confirmation_report.md").write_text("\n".join(md))
     print("\n".join(md))
-    print(f"\nwrote reports/05_confirmation_report.md (+ 05_residual_correlations.csv, 05_waic.csv)")
+    print("\nwrote reports/05_confirmation_report.md (+ 05_residual_correlations.csv, 05_waic.csv)")
 
 
 if __name__ == "__main__":

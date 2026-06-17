@@ -26,7 +26,12 @@ sys.path.insert(0, str(REPO / "src"))
 from face.prognosis.clinical_value import cv_predict  # noqa: E402
 from face.prognosis.endpoints import build_endpoints  # noqa: E402
 from face.prognosis.frame import load_outcome_config  # noqa: E402
-from face.prognosis.reference import arm_block, armB_block, foundation_design, severity_column  # noqa: E402
+from face.prognosis.reference import (  # noqa: E402
+    arm_block,
+    armB_block,
+    foundation_design,
+    severity_column,
+)
 
 CONFIG = REPO / "configs" / "m4_outcomes.yaml"
 M4 = REPO / "results" / "face" / "m4"

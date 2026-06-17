@@ -27,7 +27,11 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from face.prognosis import CANON, DURABLE  # noqa: E402
-from face.prognosis.frame import build_analysis_frame, load_outcome_config, predictor_draw_tensor  # noqa: E402
+from face.prognosis.frame import (  # noqa: E402
+    build_analysis_frame,
+    load_outcome_config,
+    predictor_draw_tensor,
+)
 
 CONFIG = REPO / "configs" / "m4_outcomes.yaml"
 PROC = REPO / "data" / "processed"
@@ -120,7 +124,7 @@ def _report(frame, draws, qc, cfg, horizon):
         f"- **Alignment QC**: corr(mean(draws), panel mean) = **{qc['min_corr']:.4f}** (min across axes, "
         "≈1.0 confirms the tensor is in frame order). The residual per-patient gap matches the "
         "200-draw Monte-Carlo error (median gap ≈ median sd/√200), not a misalignment.",
-        f"- **Durable-axis completeness** (posterior mean present): "
+        "- **Durable-axis completeness** (posterior mean present): "
         + ", ".join(f"{ax} {qc['durable_complete'][ax]}" for ax in DURABLE)
         + " — cognition is prior-dominated for the untested patients (wide SD, down-weighted by EIV, "
         "not missing).",

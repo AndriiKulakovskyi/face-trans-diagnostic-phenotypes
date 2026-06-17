@@ -96,7 +96,7 @@ def load_outcome_config(path: str | Path, *, available_vars=None) -> OutcomeConf
             raise ValueError(f"outcome {name!r}: severity_anchor {anchor!r} not in {sorted(_SEV_ANCHORS)}")
         src = str(o["source_var"])
         if avail is not None and src not in avail:
-            warnings.warn(f"M4 outcome {name!r}: source_var {src!r} absent from harmonized vars — skipping")
+            warnings.warn(f"M4 outcome {name!r}: source_var {src!r} absent from harmonized vars — skipping", stacklevel=2)
             continue
         specs.append(
             OutcomeSpec(

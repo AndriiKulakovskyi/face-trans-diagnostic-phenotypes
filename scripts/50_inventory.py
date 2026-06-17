@@ -133,7 +133,7 @@ def _figure(prev, conf):
     ax[0].set_yticks(range(len(names))); ax[0].set_yticklabels(names, fontsize=8)
     ax[0].invert_yaxis(); ax[0].set_xlabel("prevalence at horizon")
     ax[0].set_title("Treatment-response endpoint prevalence (green good · red adverse)")
-    for i, (r, n) in enumerate(zip(prev["rate"], prev["n"])):
+    for i, (r, n) in enumerate(zip(prev["rate"], prev["n"], strict=False)):
         ax[0].text(r + 0.01, i, f"{r:.2f} (n={int(n)})", va="center", fontsize=7)
     ax[0].grid(axis="x", alpha=0.3)
     if len(conf) and "rate_lowsev" in conf.columns:

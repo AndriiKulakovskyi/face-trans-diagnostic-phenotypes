@@ -39,9 +39,19 @@ from face.prognosis import DURABLE  # noqa: E402
 from face.prognosis.compare import delta_elpd  # noqa: E402
 from face.prognosis.frame import load_outcome_config  # noqa: E402
 from face.prognosis.glm import fit_glm  # noqa: E402
-from face.prognosis.reference import (ARCH_COLS, SPECIFICS, TESS_COLS, armB_block,  # noqa: E402
-                                      coord_eiv_block, design_for_rung, fixed_block, modeling_frame,
-                                      outcome_vector, severity_column, site_index)
+from face.prognosis.reference import (  # noqa: E402
+    ARCH_COLS,
+    SPECIFICS,
+    TESS_COLS,
+    armB_block,
+    coord_eiv_block,
+    design_for_rung,
+    fixed_block,
+    modeling_frame,
+    outcome_vector,
+    severity_column,
+    site_index,
+)
 
 CONFIG = REPO / "configs" / "m4_outcomes.yaml"
 M4 = REPO / "results" / "face" / "m4"
@@ -155,7 +165,7 @@ def _fig_added_value(comp, coef, cfg):
         vals = sub.loc[reps, "d_elpd_vs_ref"].values
         ses = sub.loc[reps, "se_d_elpd"].values
         colors = ["#2c7fb8" if (v - 2 * s) > 0 else ("#888" if (v + 2 * s) > 0 else "#d73027")
-                  for v, s in zip(vals, ses)]
+                  for v, s in zip(vals, ses, strict=False)]
         a.bar(range(len(reps)), vals, color=colors)
         a.errorbar(range(len(reps)), vals, yerr=2 * ses, fmt="none", ecolor="#222", capsize=3)
         a.axhline(0, color="k", lw=0.8)

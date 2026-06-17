@@ -104,7 +104,7 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             cohort_subset: list[str] | None = None, balanced: bool = False,
             keep_index: np.ndarray | None = None, force_factors_continuous: list[str] | None = None,
             n_subsample: int | None = None, emit_moments: bool = False, visit: str = "V0",
-            seed: int = 20260605) -> "CorePrep | tuple[CorePrep, dict]":
+            seed: int = 20260605) -> CorePrep | tuple[CorePrep, dict]:
     """Load the persisted V0 baseline, encode the continuous block for `factors`, and resolve
     the per-cell loading priors from the matrix. Three orthogonal switches deform S1 -> S2:
 

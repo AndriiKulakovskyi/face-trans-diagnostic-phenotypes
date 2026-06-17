@@ -328,7 +328,7 @@ def fig_m4_atlas():
     ax.set_xticklabels([f"{lbl}\n({'↑' if pol == 'good' else '↓'})" for _, lbl, pol in _M4_EP],
                        rotation=30, ha="right", fontsize=7.5)
     ax.set_yticks(range(len(rows)))
-    ax.set_yticklabels([f"{r}  (n={int(n)})" for r, n in zip(rows, a["n"])], fontsize=8)
+    ax.set_yticklabels([f"{r}  (n={int(n)})" for r, n in zip(rows, a["n"], strict=False)], fontsize=8)
     for i in range(len(rows)):
         for j in range(len(cols)):
             v = rate[i, j]
@@ -352,7 +352,7 @@ def fig_m4_dominance():
     for k, (oc, title) in enumerate(outs):
         sub = h[h.outcome == oc].set_index("contrast").reindex(order)
         vals, ses = sub["d_elpd"].values, sub["se"].values
-        colors = [KR if (v - 2 * s) > 0 else MUTE for v, s in zip(vals, ses)]
+        colors = [KR if (v - 2 * s) > 0 else MUTE for v, s in zip(vals, ses, strict=False)]
         ax[k].bar(range(4), vals, color=colors, zorder=3)
         ax[k].errorbar(range(4), vals, yerr=2 * ses, fmt="none", ecolor=INK, capsize=2, lw=0.8)
         ax[k].axhline(0, color=INK, lw=0.8)
@@ -400,7 +400,7 @@ def fig_m5_identification():
     ax.text(len(s) - 0.5, 0.26, "0.25 (imbalance)", ha="right", va="bottom", fontsize=6.5, color=KR)
     ax.set_xticks(x); ax.set_xticklabels([_M5_Q[q] for q in s.index], fontsize=8.5)
     ax.set_ylabel("max |SMD| (covariate imbalance)")
-    for xi, (_, r) in zip(x, s.iterrows()):
+    for xi, (_, r) in zip(x, s.iterrows(), strict=False):
         ax.text(xi, max(r["max_smd_before"], r["max_smd_after"]) + 0.015,
                 f"overlap {r['frac_in_support']:.0%}", ha="center", fontsize=7, color=MUTE)
     ax.set_title("Identification gate: covariate balance before/after IPTW", pad=10)
@@ -423,8 +423,8 @@ def fig_m5_moderation():
                 r = r.iloc[0]
                 means = [r[f"int_{a}"] for a in _M5_AX]
                 los = [r[f"int_{a}_lo"] for a in _M5_AX]; his = [r[f"int_{a}_hi"] for a in _M5_AX]
-                cols = [KR if (lo > 0 or hi < 0) else MUTE for lo, hi in zip(los, his)]
-                for yi, (mn, lo, hi, c) in enumerate(zip(means, los, his, cols)):
+                cols = [KR if (lo > 0 or hi < 0) else MUTE for lo, hi in zip(los, his, strict=False)]
+                for yi, (mn, lo, hi, c) in enumerate(zip(means, los, his, cols, strict=False)):
                     ax.plot([lo, hi], [yi, yi], color=c, lw=1.6, zorder=2)
                     ax.plot(mn, yi, "o", color=c, ms=4, zorder=3)
                 ax.axvline(0, color=INK, lw=0.8)

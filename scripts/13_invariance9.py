@@ -29,7 +29,10 @@ sys.path.insert(0, str(REPO / "src"))
 warnings.filterwarnings("ignore")
 
 from face.models.bayesian.continuous_core import (  # noqa: E402
-    S5_FACTORS, build_mixed, prepare_mixed)
+    S5_FACTORS,
+    build_mixed,
+    prepare_mixed,
+)
 
 REPORTS = REPO / "reports"
 NUTS_KWARGS = {"max_tree_depth": 8}

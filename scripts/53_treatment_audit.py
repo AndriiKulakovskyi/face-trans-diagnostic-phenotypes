@@ -52,7 +52,7 @@ def _atc_classes(cell):
         except (ValueError, SyntaxError):
             vals = [cell]
     out = set()
-    for a in (vals if isinstance(vals, (list, tuple)) else [vals]):
+    for a in (vals if isinstance(vals, list | tuple) else [vals]):
         a = str(a).upper().strip()
         for pre, cls in ATC:
             if a.startswith(pre):

@@ -4,8 +4,7 @@ from __future__ import annotations
 import pandas as pd
 
 from face.temporal import CANON
-from face.temporal.persistence import (membership_persistence, reliable_change_rate,
-                                       spine_corner)
+from face.temporal.persistence import membership_persistence, reliable_change_rate, spine_corner
 
 
 def _panel():

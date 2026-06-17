@@ -25,7 +25,7 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-from face.prognosis.endpoints import ENDPOINTS, build_endpoints, rate_table, wilson_ci  # noqa: E402
+from face.prognosis.endpoints import ENDPOINTS, build_endpoints, wilson_ci  # noqa: E402
 
 M4 = REPO / "results" / "face" / "m4"
 REPORTS = REPO / "reports"
@@ -129,7 +129,7 @@ def _fig_trajectories(traj_egf, traj_cgi, atlas):
 
     order = list(atlas["archetype"])
     cmap = plt.cm.tab10(np.linspace(0, 1, len(order)))
-    colors = dict(zip(order, cmap))
+    colors = dict(zip(order, cmap, strict=False))
     fig, ax = plt.subplots(1, 2, figsize=(13.5, 5.2))
     for a, traj, name in [(ax[0], traj_egf, "EGF / functioning (↑ better)"),
                           (ax[1], traj_cgi, "CGI-S / severity (↓ better)")]:

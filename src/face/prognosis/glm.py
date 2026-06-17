@@ -32,7 +32,6 @@ def fit_glm(y, X, *, family: str = "gaussian", group=None, n_groups: int | None 
     0/1 for bernoulli, 0..K-1 ints for ordinal). `group`/`n_groups` add a site random intercept;
     `eiv_obs`/`eiv_sd` ([N, K]) add K errors-in-variables predictors. Returns the arviz InferenceData
     (with per-obs log-likelihood of the outcome site `y`), a coefficient summary, and convergence."""
-    import arviz as az
     import jax
     import jax.numpy as jnp
     import numpyro

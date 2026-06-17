@@ -21,7 +21,7 @@ def _col(out, name):
 
 
 def _eq(a, b):  # NaN-aware list compare
-    return all((np.isnan(x) and np.isnan(y)) or x == y for x, y in zip(a, b))
+    return all((np.isnan(x) and np.isnan(y)) or x == y for x, y in zip(a, b, strict=False))
 
 
 def test_endpoint_logic_and_nan_propagation():
