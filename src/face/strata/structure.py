@@ -106,7 +106,7 @@ def gap_statistic(X: np.ndarray, Ks=range(1, 13), B: int = 10, seed: int = 0, sa
     for i in range(len(Ks) - 1):
         if gap[i] >= gap[i + 1] - sk[i + 1]:
             kopt = Ks[i]; break
-    return {"gap": {k: float(g) for k, g in zip(Ks, gap)}, "k_opt": int(kopt)}
+    return {"gap": {k: float(g) for k, g in zip(Ks, gap, strict=False)}, "k_opt": int(kopt)}
 
 
 def hdbscan_summary(X: np.ndarray, min_cluster_size: int | None = None) -> dict:
@@ -180,7 +180,7 @@ def uncertainty_sweep(draws: np.ndarray, cols: list[int], n_draw: int = 20, Kmax
         Ks.append(gmm_bic_sweep(Xs, range(1, Kmax + 1), seed=0)["k_best"])
     vals, cnts = np.unique(Ks, return_counts=True)
     return {"hopkins_mean": float(np.mean(Hs)), "hopkins_sd": float(np.std(Hs)),
-            "k_best_distribution": {int(k): int(c) for k, c in zip(vals, cnts)},
+            "k_best_distribution": {int(k): int(c) for k, c in zip(vals, cnts, strict=False)},
             "k_best_mode": int(vals[cnts.argmax()])}
 
 

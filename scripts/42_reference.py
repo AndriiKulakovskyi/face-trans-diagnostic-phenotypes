@@ -33,8 +33,14 @@ sys.path.insert(0, str(REPO / "src"))
 from face.prognosis.compare import coefficient_table, delta_elpd  # noqa: E402
 from face.prognosis.frame import load_outcome_config  # noqa: E402
 from face.prognosis.glm import fit_glm  # noqa: E402
-from face.prognosis.reference import (RUNGS, design_for_rung, modeling_frame,  # noqa: E402
-                                      outcome_vector, severity_column, site_index)
+from face.prognosis.reference import (  # noqa: E402
+    RUNGS,
+    design_for_rung,
+    modeling_frame,
+    outcome_vector,
+    severity_column,
+    site_index,
+)
 
 CONFIG = REPO / "configs" / "m4_outcomes.yaml"
 M4 = REPO / "results" / "face" / "m4"
@@ -105,7 +111,7 @@ def _report(cfg, comp, coefs, horizon, smoke):
         coef = coef[coef.term != "alpha"].reindex(coef[coef.term != "alpha"]["mean"].abs()
                                                   .sort_values(ascending=False).index)
         top = coef.head(6)[["term", "mean", "eti_lo", "eti_hi", "p_direction"]]
-        md += [f"R3y standardized coefficients (top |effect|; outcome z-scored):", "",
+        md += ["R3y standardized coefficients (top |effect|; outcome z-scored):", "",
                top.to_markdown(index=False), ""]
     md += [
         "## Read", "",

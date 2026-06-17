@@ -180,7 +180,7 @@ def main(n_per: int = 600, seeds: int = 2, smoke: bool = False):
            "heterogeneously-measured suicidality) are declared modular (§8)."]
     (REPORTS / "06_invariance_report.md").write_text("\n".join(md))
     print("\n".join(md))
-    print(f"\nwrote reports/06_invariance_report.md (+ 06_congruence.csv, 06_dif_items.csv)")
+    print("\nwrote reports/06_invariance_report.md (+ 06_congruence.csv, 06_dif_items.csv)")
 
 
 if __name__ == "__main__":

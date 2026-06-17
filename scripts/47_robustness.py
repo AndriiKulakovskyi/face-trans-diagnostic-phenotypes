@@ -36,9 +36,17 @@ from face.prognosis.clinical_value import auc, cv_predict  # noqa: E402
 from face.prognosis.endpoints import build_endpoints  # noqa: E402
 from face.prognosis.frame import load_outcome_config  # noqa: E402
 from face.prognosis.glm import fit_glm  # noqa: E402
-from face.prognosis.reference import (arm_block, armB_block, coord_eiv_block,  # noqa: E402
-                                      design_for_rung, foundation_design, modeling_frame,
-                                      outcome_vector, severity_column, site_index)
+from face.prognosis.reference import (  # noqa: E402
+    arm_block,
+    armB_block,
+    coord_eiv_block,
+    design_for_rung,
+    foundation_design,
+    modeling_frame,
+    outcome_vector,
+    severity_column,
+    site_index,
+)
 from face.prognosis.robustness import permutation_null  # noqa: E402
 
 CONFIG = REPO / "configs" / "m4_outcomes.yaml"

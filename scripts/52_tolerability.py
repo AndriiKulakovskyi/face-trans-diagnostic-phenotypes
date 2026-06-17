@@ -31,11 +31,16 @@ sys.path.insert(0, str(REPO / "src"))
 from face.prognosis import DURABLE  # noqa: E402
 from face.prognosis.clinical_value import auc, cv_predict, paired_auc_delta  # noqa: E402
 from face.prognosis.compare import delta_elpd  # noqa: E402
-from face.prognosis.glm import fit_glm  # noqa: E402
-from face.prognosis.reference import (arm_block, armB_block, coord_eiv_block,  # noqa: E402
-                                      design_for_rung, foundation_design, site_index)
-from face.treatment.endpoints import load_m5_config  # noqa: E402
 from face.prognosis.frame import OutcomeSpec  # noqa: E402
+from face.prognosis.glm import fit_glm  # noqa: E402
+from face.prognosis.reference import (  # noqa: E402
+    arm_block,
+    armB_block,
+    coord_eiv_block,
+    foundation_design,
+    site_index,
+)
+from face.treatment.endpoints import load_m5_config  # noqa: E402
 
 CONFIG = REPO / "configs" / "m5_outcomes.yaml"
 PROFILES = REPO / "results" / "face" / "m2" / "archetype_profiles.csv"

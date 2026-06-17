@@ -211,7 +211,7 @@ def _figure(cov, audit, cfg):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    from matplotlib.colors import ListedColormap, BoundaryNorm
+    from matplotlib.colors import BoundaryNorm, ListedColormap
 
     fig, ax = plt.subplots(1, 2, figsize=(14, 5.5), gridspec_kw={"width_ratios": [1.05, 1]})
 
@@ -227,7 +227,7 @@ def _figure(cov, audit, cfg):
     ax[0].set_title("Effective prognostic sample (paired V0→V2) by cohort")
     ax[0].legend(fontsize=8, title="cohort")
     ax[0].grid(axis="y", alpha=0.3)
-    for xi, on in zip(x, names):
+    for xi, on in zip(x, names, strict=False):
         tot = int(cov.loc[cov.outcome == on, "n_paired_V0V2"].iloc[0])
         ax[0].text(xi, tot, f"{tot}", ha="center", va="bottom", fontsize=7, color="#333")
 

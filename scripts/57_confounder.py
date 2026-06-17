@@ -29,7 +29,12 @@ sys.path.insert(0, str(REPO / "src"))
 from face.prognosis import DURABLE  # noqa: E402
 from face.prognosis.frame import OutcomeSpec  # noqa: E402
 from face.prognosis.glm import fit_glm  # noqa: E402
-from face.prognosis.reference import arm_block, coord_eiv_block, foundation_design, site_index  # noqa: E402
+from face.prognosis.reference import (  # noqa: E402
+    arm_block,
+    coord_eiv_block,
+    foundation_design,
+    site_index,
+)
 
 M5 = REPO / "results" / "face" / "m5"
 REPORTS = REPO / "reports"

@@ -35,8 +35,14 @@ warnings.filterwarnings("ignore")
 
 from face.models.bayesian.continuous_core import S3A_FACTORS  # noqa: E402
 from face.temporal import VISITS  # noqa: E402
-from face.temporal.invariance import (MIN_OBS, PHI_GOOD, PHI_OK, axis_license,  # noqa: E402
-                                      congruence_over_visits, fit_visit_backbone)
+from face.temporal.invariance import (  # noqa: E402
+    MIN_OBS,
+    PHI_GOOD,
+    PHI_OK,
+    axis_license,
+    congruence_over_visits,
+    fit_visit_backbone,
+)
 
 REPORTS = REPO / "reports"
 FIGS = REPO / "docs" / "figures"

@@ -3,10 +3,15 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-import pytest
 
-from face.prognosis.frame import (OutcomeSpec, _align_draws, _response, _threshold,
-                                   derive_endpoints, extract_outcomes)
+from face.prognosis.frame import (
+    OutcomeSpec,
+    _align_draws,
+    _response,
+    _threshold,
+    derive_endpoints,
+    extract_outcomes,
+)
 
 
 def _spec(name, src, scope, family="gaussian", direction="lower_better", **kw):

@@ -22,7 +22,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-import numpy as np   # noqa: F401  (kept for parity / future use)
+import numpy as np  # noqa: F401  (kept for parity / future use)
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]

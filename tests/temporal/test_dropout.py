@@ -6,8 +6,13 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from face.temporal.dropout import (_classify_reason, _norm, _visit_order, patient_retention,
-                                   retention_table)
+from face.temporal.dropout import (
+    _classify_reason,
+    _norm,
+    _visit_order,
+    patient_retention,
+    retention_table,
+)
 
 _DATA = Path(__file__).resolve().parents[2] / "data"
 

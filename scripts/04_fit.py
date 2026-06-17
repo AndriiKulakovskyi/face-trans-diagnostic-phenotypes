@@ -30,8 +30,16 @@ sys.path.insert(0, str(REPO / "src"))
 warnings.filterwarnings("ignore")
 
 from face.models.bayesian.continuous_core import (  # noqa: E402
-    S1_FACTORS, S3A_FACTORS, S3_FACTORS, S4_FACTORS, build_marginalized, build_model, prepare,
-    thomson_scores, warmstart_initvals)
+    S1_FACTORS,
+    S3_FACTORS,
+    S3A_FACTORS,
+    S4_FACTORS,
+    build_marginalized,
+    build_model,
+    prepare,
+    thomson_scores,
+    warmstart_initvals,
+)
 
 REPORTS = REPO / "reports"
 GATES = dict(rhat=1.01, ess=400.0, div=0, heywood=2.5)
@@ -238,6 +246,7 @@ def run_mixed(subsample: int | None = None, draws: int = 600, tune: int = 1000,
               chains: int = 4, label: str = "stage3b", seed: int = 20260605) -> dict:
     import arviz as az
     import pymc as pm
+
     from face.models.bayesian.continuous_core import build_mixed, prepare_mixed  # noqa: E402
 
     mp = prepare_mixed(n_subsample=subsample, seed=seed)

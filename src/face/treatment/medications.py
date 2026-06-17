@@ -43,7 +43,7 @@ _COHORT_FILE = {"bp": "bipolar.csv", "sz": "schizophrenia.csv", "dr": "depressio
 def _listify(cell):
     if cell is None or (isinstance(cell, float) and np.isnan(cell)):
         return []
-    if isinstance(cell, (list, tuple)):
+    if isinstance(cell, list | tuple):
         return list(cell)
     s = str(cell)
     if s.strip().startswith("["):

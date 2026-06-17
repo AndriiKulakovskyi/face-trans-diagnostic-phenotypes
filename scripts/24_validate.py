@@ -52,7 +52,7 @@ def main():
     eta_dom = V.eta_squared(DOM, X)
     g_idx = CANON.index("overall_severity")
     spec_idx = [CANON.index(a) for a in SPECIFICS]
-    q2 = {"eta_tess": dict(zip(CANON, eta_tess.round(3))),
+    q2 = {"eta_tess": dict(zip(CANON, eta_tess.round(3), strict=False)),
           "tess_eta_G": float(eta_tess[g_idx]),
           "tess_eta_specifics_mean": float(eta_tess[spec_idx].mean()),
           "tess_eta_specifics_max": float(eta_tess[spec_idx].max()),
@@ -127,7 +127,8 @@ def main():
 
 
 def _fig(eta_tess, eta_dsm, q3):
-    import matplotlib; matplotlib.use("Agg")
+    import matplotlib
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots(1, 2, figsize=(15, 5))
     x = np.arange(len(CANON)); w = 0.38

@@ -17,7 +17,12 @@ Modules (built incrementally):
 """
 from __future__ import annotations
 
-from face.prognosis import CANON, DURABLE, SPINE, VISITS  # one source of dim order, durable axes, grid
+from face.prognosis import (  # one source of dim order, durable axes, grid
+    CANON,
+    DURABLE,
+    SPINE,
+    VISITS,
+)
 
 # Raw harmonized response signals (NOT in the processed tables; extracted native via the data layer).
 RESPONSE_SIGNALS: tuple[str, ...] = ("cgi02", "cgi03a", "cgi03b", "cgi01", "mars")

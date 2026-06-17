@@ -19,7 +19,7 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
 
-from face.prognosis import CANON, DURABLE  # 9-dim order + the durable trio
+from face.prognosis import CANON  # 9-dim order + the durable trio
 
 # question -> {cohort, exposed flag, active-comparator flags, label}
 QUESTIONS = {

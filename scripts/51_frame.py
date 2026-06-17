@@ -57,7 +57,7 @@ def main() -> None:
         f"- **Rows:** {len(frame)} (V0 roster); columns {frame.shape[1]}.",
         f"- **Predictors present:** durable trio (cognition/metabolic/inflammatory mean) for "
         f"{durable_ok}; baseline severity (G + CGI-S) for {sev_ok}.",
-        f"- **Map representations + covariates + IPW** carried from `results/face/m4/analysis_frame.parquet`.",
+        "- **Map representations + covariates + IPW** carried from `results/face/m4/analysis_frame.parquet`.",
         "", "## Endpoint coverage by cohort (non-missing at the horizon)", "",
         cover.to_markdown(index=False), "",
         "- The CGI response endpoints are **BP/SZ only** (DR `n=0` — no CGI efficacy index); "

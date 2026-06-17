@@ -71,7 +71,7 @@ def main() -> None:
         "No imputation — a patient with no medication record at V0 is NaN, not unexposed.", "",
         f"- **Rows:** {len(exp)} ; with a V0 medication record: "
         + " · ".join(f"{r['cohort']}={r['n_with_med_record']}" for _, r in cover.iterrows()) + ".",
-        f"- **Join to the M5 frame** (exposed-or-recorded / frame patients): "
+        "- **Join to the M5 frame** (exposed-or-recorded / frame patients): "
         + " · ".join(f"{c} {v}" for c, v in join_by_cohort.items()) + ".", "",
         "## Exposure coverage (n exposed) by class × cohort (V0)", "",
         cover.to_markdown(index=False), "",

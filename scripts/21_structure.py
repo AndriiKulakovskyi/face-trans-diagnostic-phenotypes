@@ -75,7 +75,8 @@ def main():
 
 
 def _fig_selection(A, B):
-    import matplotlib; matplotlib.use("Agg")
+    import matplotlib
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots(1, 3, figsize=(16, 4.5))
     for arm, d, c in [("A (9d)", A, "#2c7fb8"), ("B (8d)", B, "#d95f0e")]:
@@ -96,7 +97,8 @@ def _fig_selection(A, B):
 
 
 def _fig_embedding(X9, df, vt):
-    import matplotlib; matplotlib.use("Agg")
+    import matplotlib
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import umap
     emb = umap.UMAP(n_neighbors=30, min_dist=0.3, random_state=SEED).fit_transform(X9)
@@ -121,9 +123,11 @@ def _fig_embedding(X9, df, vt):
 
 
 def _fig_mapper(X9, df):
-    import matplotlib; matplotlib.use("Agg")
+    import matplotlib
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import networkx as nx
+
     from face.strata.structure import mapper_graph
     lens = df["overall_severity__mean"].to_numpy()                 # lens = severity (interpretable)
     G, members = mapper_graph(X9, lens, n_cubes=12, overlap=0.4, min_node=25, seed=SEED)

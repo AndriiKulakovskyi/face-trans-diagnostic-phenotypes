@@ -35,11 +35,21 @@ sys.path.insert(0, str(REPO / "src"))
 from face.prognosis.compare import delta_elpd  # noqa: E402
 from face.prognosis.frame import load_outcome_config  # noqa: E402
 from face.prognosis.glm import fit_glm  # noqa: E402
-from face.prognosis.reference import (arm_block, armB_block, design_for_rung,  # noqa: E402
-                                      foundation_design, modeling_frame, outcome_vector,
-                                      severity_column, site_index)
-from face.prognosis.transdiagnostic import (dominance_verdict, head_to_head,  # noqa: E402
-                                            interaction_block)
+from face.prognosis.reference import (  # noqa: E402
+    arm_block,
+    armB_block,
+    design_for_rung,
+    foundation_design,
+    modeling_frame,
+    outcome_vector,
+    severity_column,
+    site_index,
+)
+from face.prognosis.transdiagnostic import (  # noqa: E402
+    dominance_verdict,
+    head_to_head,
+    interaction_block,
+)
 
 CONFIG = REPO / "configs" / "m4_outcomes.yaml"
 M4 = REPO / "results" / "face" / "m4"
@@ -201,7 +211,7 @@ def _fig_dominance(h2h, cfg):
         labels = [c.split(" (")[0] for c in sub["contrast"]]
         vals, ses = sub["d_elpd"].values, sub["se"].values
         colors = ["#2c7fb8" if (v - 2 * s) > 0 else ("#888" if (v + 2 * s) > 0 else "#d73027")
-                  for v, s in zip(vals, ses)]
+                  for v, s in zip(vals, ses, strict=False)]
         a = ax[0][j]
         a.bar(range(len(labels)), vals, color=colors)
         a.errorbar(range(len(labels)), vals, yerr=2 * ses, fmt="none", ecolor="#222", capsize=3)
@@ -229,12 +239,12 @@ def _fig_transdiagnostic(percoh, trans, cfg):
         x = range(len(sub))
         vals = sub["map_d_elpd"].fillna(0).values
         ses = sub["se"].fillna(0).values
-        colors = ["#2c7fb8" if (v - 2 * s) > 0 else "#888" for v, s in zip(vals, ses)]
+        colors = ["#2c7fb8" if (v - 2 * s) > 0 else "#888" for v, s in zip(vals, ses, strict=False)]
         a.bar(x, vals, color=colors)
         a.errorbar(x, vals, yerr=2 * ses, fmt="none", ecolor="#222", capsize=3)
         a.axhline(0, color="k", lw=0.8)
         a.set_xticks(list(x))
-        a.set_xticklabels([f"{c.upper()}\n(N={n})" for c, n in zip(sub["cohort"], sub["n"])], fontsize=8)
+        a.set_xticklabels([f"{c.upper()}\n(N={n})" for c, n in zip(sub["cohort"], sub["n"], strict=False)], fontsize=8)
         a.set_ylabel("map ΔELPD within cohort (±2·SE)")
         a.set_title(f"{name}: within-cohort map value (course-dependent)")
         a.grid(axis="y", alpha=0.3)
@@ -262,7 +272,7 @@ def _report(cfg, h2h, trans, percoh, diag, horizon, smoke):
         md += [f"## {name}  (N = {int(tr.n)})  —  **dominance: {tr.dominance}**", "",
                "Dominance contrasts (ΔELPD vs the noted reference):", "",
                sub.to_markdown(index=False), "",
-               f"- Both the map and DSM-5 add beyond each other → **co-informative**: the map adds real "
+               "- Both the map and DSM-5 add beyond each other → **co-informative**: the map adds real "
                "prognostic value beyond diagnosis+severity (B−A), and diagnosis is **not** redundant "
                "(B−C). The map *complements* DSM-5, it does not replace it.",
                f"- **Raw showdown** (map-only vs DSM-5-only, no autoregressive baseline): "
@@ -274,7 +284,7 @@ def _report(cfg, h2h, trans, percoh, diag, horizon, smoke):
                "**Why it differs — saturation diagnostic** (OLS; a small foundation R² leaves room for "
                "the map, a large one saturates it):", "",
                dg.to_markdown(index=False), "",
-               f"- The map's value tracks **residual prognostic uncertainty**, not diagnosis: it adds "
+               "- The map's value tracks **residual prognostic uncertainty**, not diagnosis: it adds "
                "where the foundation (baseline+severity) is weak (BP, DR — episodic courses) and little "
                "where the foundation already saturates the predictable variance (SZ — more "
                "baseline-locked). SZ outcome variance and map/coordinate spread are comparable to BP, so "

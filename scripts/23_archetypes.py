@@ -133,7 +133,8 @@ def main():
 
 
 def _fig_scree(selA, A):
-    import matplotlib; matplotlib.use("Agg")
+    import matplotlib
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots(figsize=(6.5, 4.5))
     ks = sorted(selA["explained_variance"])
@@ -145,7 +146,8 @@ def _fig_scree(selA, A):
 
 
 def _fig_profiles(Z, names, A):
-    import matplotlib; matplotlib.use("Agg")
+    import matplotlib
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots(figsize=(10, 0.7 * A + 2))
     im = ax.imshow(Z, cmap="RdBu_r", vmin=-2, vmax=2, aspect="auto")
@@ -161,7 +163,8 @@ def _fig_profiles(Z, names, A):
 
 
 def _fig_membership(X9, df, vt, W, dom, names, A):
-    import matplotlib; matplotlib.use("Agg")
+    import matplotlib
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import umap
     emb = umap.UMAP(n_neighbors=30, min_dist=0.3, random_state=SEED).fit_transform(X9)

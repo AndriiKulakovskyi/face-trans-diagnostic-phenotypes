@@ -97,10 +97,11 @@ def main():
 
 
 def _fig(sols):
-    import matplotlib; matplotlib.use("Agg")
+    import matplotlib
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     fig, axes = plt.subplots(2, 2, figsize=(20, 12))
-    for ax, A in zip(axes.flat, AS):
+    for ax, A in zip(axes.flat, AS, strict=False):
         Z = sols[A]["Z"]
         labs = [f"{classify(Z[a])[0]}" for a in range(A)]
         im = ax.imshow(Z, cmap="RdBu_r", vmin=-2.5, vmax=2.5, aspect="auto")
