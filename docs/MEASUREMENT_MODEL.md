@@ -132,8 +132,8 @@ under its `unlikely` / `plausible_cross` prior, so including a weak indicator co
 common variable** as an indicator (core or extension) and reserve `covariate_only` for genuine
 confounders / identifiers.
 
-Audit of the harmonized dictionary (`data/face-common-vars.xlsx`): **201 usable variables** (100 READY
-3-cohort + 91 PARTIAL 2-cohort). The initial pools mapped 119; the audit recovered **~80 unmapped usable
+Audit of the harmonized dictionary (`data/face-common-vars.xlsx`): **201 usable variables** (109 READY
+3-cohort + 92 PARTIAL 2-cohort). The initial pools mapped 119; the audit recovered **~80 unmapped usable
 variables**, re-allocated as:
 
 | Recovered block | → dimension | n | notes |
@@ -404,9 +404,9 @@ every rung.
 ### 4.5 Compute
 
 Develop and smoke-test the model in **PyMC** (readable spec); run the full-sample global fits with the
-**NumPyro / JAX-CUDA** backend (`pm.sample(nuts_sampler="numpyro")`) on the **RTX 4090** (24 GB), which
+**NumPyro / JAX** backend (`pm.sample(nuts_sampler="numpyro")`) on a **Mac (M4 Pro, 24 GB)** — **no GPU** — which
 comfortably accommodates ~9k patients × ~8 latent dimensions with long, well-tuned chains. Running the full
-sample on GPU is what lets us *refuse* the completeness-selected subsample that biased the previous
+sample on a workstation — enabled by the marginalization of §3.5, not by the hardware — is what lets us *refuse* the completeness-selected subsample that biased the previous
 iteration — the single most important rigor decision in M1.
 
 ---
