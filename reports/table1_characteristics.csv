@@ -1,0 +1,45 @@
+characteristic,group,value
+N,bp,6252
+"Age, years — mean (SD)",bp,39.3 (13.4)
+"Age, years — median [IQR]",bp,38 [28–49]
+Female sex — n (%),bp,3969 (63.5%)
+"Education, years — mean (SD)",bp,14.2 (2.8)
+Recruitment sites — n,bp,15
+Age missing — n (%),bp,5 (0.1%)
+Sex missing — n (%),bp,0 (0.0%)
+Education missing — n (%),bp,1803 (28.8%)
+Retained at V1 (12 mo) — % of V0,bp,49.2%
+Retained at V2 (24 mo) — % of V0,bp,35.6%
+N,sz,2209
+"Age, years — mean (SD)",sz,31.1 (9.6)
+"Age, years — median [IQR]",sz,29 [23–37]
+Female sex — n (%),sz,600 (27.2%)
+"Education, years — mean (SD)",sz,12.3 (2.6)
+Recruitment sites — n,sz,12
+Age missing — n (%),sz,2 (0.1%)
+Sex missing — n (%),sz,0 (0.0%)
+Education missing — n (%),sz,1646 (74.5%)
+Retained at V1 (12 mo) — % of V0,sz,43.6%
+Retained at V2 (24 mo) — % of V0,sz,26.9%
+N,dr,552
+"Age, years — mean (SD)",dr,51.0 (13.3)
+"Age, years — median [IQR]",dr,52 [42–60]
+Female sex — n (%),dr,323 (58.5%)
+"Education, years — mean (SD)",dr,13.2 (3.2)
+Recruitment sites — n,dr,13
+Age missing — n (%),dr,0 (0.0%)
+Sex missing — n (%),dr,0 (0.0%)
+Education missing — n (%),dr,228 (41.3%)
+Retained at V1 (12 mo) — % of V0,dr,42.2%
+Retained at V2 (24 mo) — % of V0,dr,24.5%
+N,overall,9013
+"Age, years — mean (SD)",overall,38.0 (13.4)
+"Age, years — median [IQR]",overall,36 [27–48]
+Female sex — n (%),overall,4892 (54.3%)
+"Education, years — mean (SD)",overall,14.0 (2.8)
+Recruitment sites — n,overall,21
+Age missing — n (%),overall,7 (0.1%)
+Sex missing — n (%),overall,0 (0.0%)
+Education missing — n (%),overall,3677 (40.8%)
+Retained at V1 (12 mo) — % of V0,overall,47.4%
+Retained at V2 (24 mo) — % of V0,overall,32.8%

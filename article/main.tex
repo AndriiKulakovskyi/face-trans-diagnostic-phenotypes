@@ -1,0 +1,104 @@
+%==============================================================================
+%  FACE-ATLAS — journal article (one comprehensive, discovery-framed paper)
+%
+%  Build:  pdflatex main  ->  bibtex main  ->  pdflatex main  ->  pdflatex main
+%
+%  Journal-agnostic template (Nature-family / Lancet Psychiatry class). Section
+%  order is Results-first (discovery framing); flip Methods before Results for a
+%  strict-IMRaD clinical venue. See ARTICLE_PLAN.md for the blueprint.
+%
+%  STATUS: first complete draft. Author list, affiliations, ethics/funding are
+%  PLACEHOLDERS to be completed by the PI (see 90_boilerplate.tex).
+%==============================================================================
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{rotating}   % sidewaystable for the wide dimension table
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage[numbers,sort&compress]{natbib}
+
+\graphicspath{{figures/}{../report/figures/}{../docs/figures/}}
+
+\newcommand{\Gfac}{\textit{G}}            % the general functional-burden factor
+\newcommand{\orth}{\ensuremath{\perp}}    % orthogonality, usable in text
+\newcommand{\todo}[1]{\textcolor{red}{[\textbf{TODO:} #1]}}
+
+\title{\bfseries A transdiagnostic clinical--biological map of severe mental
+illness: metabolic and inflammatory load are largely independent of overall
+functional severity}
+
+\author{%
+  Andrii Kulakovskyi$^{1,2}$\ \and \emph{[co-authors / FACE--FondaMental investigators TBD]}%
+  \thanks{Correspondence: andrii.kulakovskyi@gmail.com}%
+}
+\date{%
+  $^{1}$Precision Psychiatry \& Artificial Intelligence \quad
+  $^{2}$[Institution TBD]\\[4pt]
+  \today
+}
+
+\begin{document}
+\maketitle
+
+%================================ ABSTRACT ====================================
+\begin{abstract}
+\noindent
+Psychiatric diagnosis aggregates biologically and prognostically heterogeneous
+patients into single categories. We reorganized the harmonized three-cohort FACE
+baseline (bipolar disorder [BP], schizophrenia [SZ], major depression [DR];
+$N=9{,}013$) around continuous, diagnosis-agnostic axes of variation, estimated
+by one global, missingness-aware Bayesian sparse bifactor/ESEM model with mixed
+likelihoods, fit to each patient's \emph{observed cells only} (no imputation,
+full sample), with diagnosis held out as metadata. From ten candidate constructs
+the data certified a \textbf{nine-dimension map}: a general functional-burden
+factor (\Gfac) plus eight weakly correlated axes---cognition, metabolic,
+inflammatory, sleep, developmental-risk, suicidality, mania and substance. The
+central finding is that \textbf{metabolic and inflammatory load are the least
+severity-entangled domains} (correlation with \Gfac{} of $0.14$ and $0.06$,
+versus $0.39$ for cognition and $0.44$ for sleep). On these coordinates the
+patient space is a graded \textbf{continuum, not discrete biotypes} (five
+structure-discovery methods agree; adjusted Rand index $\approx 0$ against the
+DSM-5 subtypes), describable by eight extreme phenotypes whose two-year
+functional-remission rates range $14\%$--$60\%$. Scored forward onto follow-up
+the geometry \emph{persists}---durable biology, moving symptoms. It also
+\emph{predicts} future functioning incrementally beyond diagnosis and severity,
+but modestly and at the group level (functional-remission AUC $+0.017$;
+course-dependent). On observational treatment-as-usual the map does \emph{not}
+reliably moderate response. FACE-ATLAS provides a real, stable, transdiagnostic
+clinical--biological continuum and a deliberately calibrated account of its
+prognostic reach; establishing individual-level utility or treatment guidance
+would require incident-event outcomes, randomized treatment data and external
+validation.
+\end{abstract}
+
+\noindent\textbf{Keywords:} transdiagnostic psychiatry; dimensional
+psychopathology; bifactor model; metabolic syndrome; inflammation; bipolar
+disorder; schizophrenia; major depression; normative modelling; precision
+psychiatry.
+
+%================================ BODY ========================================
+% Tables defined early so floats are available to LaTeX's placement.
+\input{tables/table1_characteristics}
+\input{tables/table2_dimensions}
+
+\input{sections/01_introduction}
+\input{sections/02_results}
+\input{sections/03_discussion}
+\input{sections/05_methods}
+\input{sections/90_boilerplate}
+
+%================================ REFERENCES ==================================
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\end{document}
