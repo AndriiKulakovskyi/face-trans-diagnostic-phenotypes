@@ -14,6 +14,14 @@
 >    **continuum, not biotypes**. M3–M5 are framed as "how far the map can be pushed," ending at an
 >    honestly-drawn boundary.
 >
+> **Follow-up decisions (2026-06-17, resolved):**
+> - **Table 1** — approved to compute aggregate-only sample characteristics from the confidential data.
+>   **DONE:** `scripts/60_table1.py` → `reports/table1_characteristics.{csv,md}` +
+>   `article/tables/table1_characteristics.md` (no per-patient values leave the machine).
+> - **Treatment (M5)** — the moderation forest moves to **Extended Data**; the main text ends on prognosis
+>   + the treatment boundary stated in prose (keeps the discovery in focus).
+> - **Venue** — proceed **journal-agnostic** to the highest standard (recommendation ranking in §1.3 stands).
+>
 > **How to read this.** §1 fixes strategy; §2–§4 give title/abstract/section-by-section content (every claim
 > tagged with its source report so drafting is copy-traceable); §5 is the display-items plan; **§6 is the
 > figure/table gap report you asked for**; §7–§10 cover references, the claims ledger, the reviewer
@@ -231,7 +239,8 @@ functioning (ATE E-value 1.79); **clozapine-SZ** = channeled, non-estimable. ATE
 (E 1.1–1.8). **M5 strengthens M4:** metabolic→functioning survives drug-class adjustment (β −0.051→−0.048,
 4.4% attenuation). Boundary **earned, not assumed**; treatment *selection* needs randomized/trial-arm data
 (a future M5b). (b) `TREATMENT_FINDINGS.md`, `reports/55_propensity.md`, `56_moderation.md`,
-`57_confounder.md`, `59_m5b_feasibility.md`. (c) → **Fig 6c** (or Extended Data, see §5).
+`57_confounder.md`, `59_m5b_feasibility.md`. (c) → **Extended Data** (moderation forest); main text carries
+this beat in **prose only** (decided 2026-06-17 — keeps the discovery in focus).
 
 ### 4.3 Discussion (~900–1,100 words)
 
@@ -308,13 +317,13 @@ Subsections, each traceable to a methods-of-record doc:
 | **Fig 3** | Biology is least severity-entangled | bar of axis–G correlation + bifactor \|λ_G\| | `fig_biology_g.png` | ready (minor: vector export, font) |
 | **Fig 4** | A continuum, not biotypes | (a) structure-gate verdict; (b) UMAP colored by cohort/severity/inflammatory; (c) 8 archetype profiles | `21_selection.png`, `m2_embedding.png`, `m2_profiles.png` | rework (**embedding is low-res — regenerate**; strip "Arm A" jargon) |
 | **Fig 5** | The geometry persists (trait/state) | (a) trait/state ICC + population slide; (b) spine-slides-while-corners-hold | `35_trait_state.png`, `36_spine_corner.png`, SVGs `m3_two_lens`, `m3_spine_slides` | rework (turn schematic SVGs into final, unify style) |
-| **Fig 6** | Prognostic reach & the treatment boundary | (a) archetype prognostic atlas 14%→60%; (b) incremental value/forest; (c) treatment moderation forest | `m4_atlas.png`, `43_added_value.png`/`m4_value.png`, `m5_moderation.png` | rework (3-panel; consider moving (c) to Extended Data) |
+| **Fig 6** | Prognostic reach (functioning) | (a) archetype prognostic atlas 14%→60%; (b) incremental value + durable-axis forest | `m4_atlas.png`, `43_added_value.png`/`m4_value.png` | rework (2-panel; treatment moderation moved to Extended Data per 2026-06-17 decision) |
 
 ### 5.2 Main tables
 
 | # | Title | Content | Status |
 |---|---|---|---|
-| **Table 1** | Sample characteristics by cohort | N, age, sex, education, DSM-5 subtype distribution, key instrument coverage, V1/V2 retention — aggregate only | **NEW / data needed** (see §6) |
+| **Table 1** | Sample characteristics by cohort | N, age, sex, education, DSM-5 subtype distribution, V1/V2 retention — aggregate only | **DONE** — `scripts/60_table1.py` → `reports/table1_characteristics.{csv,md}`, `article/tables/` (English subtype labels) |
 | **Table 2** | The nine dimensions: indicators, loadings, adjudication, invariance | One row per dimension; anchor indicators, mean \|λ\|, G-correlation, verdict, invariance note | ready (assemble from `ADJUDICATION.md` + `11_s5_9dim_loadings.csv`) |
 
 ### 5.3 Extended Data (8–12 items, candidates)
@@ -323,8 +332,9 @@ Prior atlas (theory); WAIC model comparison (`fig_waic.png`); dual-block PPC + S
 `mixed_ppc.png`); reliability tiers (`fig_reliability.png`); cross-cohort invariance (`fig_invariance.png`,
 `33_congruence.png`); robustness (LOCO/site/weighting, `47_robustness.png`); tessellation/membership
 (`22_*`, `23b_compare.png`); attrition/IPW & longitudinal CONSORT flow (`31_attrition.png`, **new flow**);
-prognosis calibration/decision curves (`46_*`); treatment overlap/propensity (`55_overlap.png`); the
-soft-prior-shrinkage mechanism (`fig_soft_priors.png`).
+prognosis calibration/decision curves (`46_*`); **treatment moderation forest (`m5_moderation.png`) — the
+M5 beat lives here**; treatment overlap/propensity (`55_overlap.png`); the soft-prior-shrinkage mechanism
+(`fig_soft_priors.png`).
 
 ---
 
@@ -336,12 +346,13 @@ genuinely missing items** — not about missing science. Ordered by severity.
 
 ### 6.1 Missing — must create
 
-1. **Table 1 (sample characteristics by cohort) — data not yet in a committed aggregate.** Per-patient
-   demographics live only in the gitignored `validation_table.parquet`. We need an **aggregate-only** table
-   (age mean/SD, % female, education, DSM-5 subtype counts, instrument coverage, V1/V2 retention) generated
-   by a small script that writes to `reports/` so it's confidential-safe and reproducible. *Top-tier
-   reviewers will require this; it does not exist yet.* **Action:** add `scripts/0X_table1.py` →
-   `reports/table1_characteristics.csv`. *(Needs your OK to compute aggregates from the confidential data.)*
+1. ~~**Table 1 (sample characteristics by cohort).**~~ **DONE (2026-06-17).** `scripts/60_table1.py` reads
+   the confidential demographics and writes **aggregate-only** outputs (`reports/table1_characteristics.csv`
+   + `.md`, copy in `article/tables/`): N, age (mean/SD + median[IQR]), % female, education, recruitment
+   sites, demographic missingness, V1/V2 retention, and an English-labelled DSM-5 subtype panel. No
+   per-patient value leaves the machine. *Note for the manuscript: education is 40.8% missing overall
+   (74.5% in SZ) — a real coverage feature, consistent with the observed-likelihood/no-imputation design;
+   worth a one-line footnote.*
 2. **Figure 1 (study-overview / pipeline schematic) as one polished panel.** The pieces exist (report TikZ
    diagrams, M3 SVGs, coverage plot) but not as a single 300-dpi/vector main figure. **Action:** compose in
    a vector tool or matplotlib; keep the "no-imputation, diagnosis-as-metadata, V0-defines" invariants
@@ -366,11 +377,11 @@ genuinely missing items** — not about missing science. Ordered by severity.
 
 ### 6.3 Decisions, not gaps
 
-8. **Fig 6 is dense (3 panels spanning M4+M5).** Likely split: prognosis (a,b) stays main; treatment
-   moderation (c) → Extended Data with a pointer. Keeps the main narrative on the discovery, treatment as
-   the boundary coda.
-9. **A causal DAG for M5** (treatment) would help reviewers if treatment stays in the main text — optional
-   Extended Data item.
+8. ~~**Fig 6 is dense (3 panels spanning M4+M5).**~~ **DECIDED (2026-06-17):** Fig 6 = prognosis only (a,b);
+   the treatment moderation forest (`m5_moderation.png`) → **Extended Data**, with the M5 beat carried in
+   main-text prose. Keeps the main narrative on the discovery; treatment is the boundary coda.
+9. **A causal DAG for M5** (treatment) — now an Extended Data companion to the moderation forest (recommended,
+   since M5 is Extended-Data-only): a small DAG makes the confounding-by-indication argument legible.
 
 **Bottom line for you:** only **#1 (Table 1 aggregates)** needs new data work and your go-ahead on computing
 confidential aggregates; **#2–#3** are new figure composition; **#4–#7** are reprocessing existing assets to
@@ -477,8 +488,8 @@ FondaMental governance (data-availability statement, §10).
 3. **Phase 2 — Methods first** (it's the most reusable and the rigor backbone; lift from methods-of-record).
 4. **Phase 3 — Results** R1→R6, each written against its source report with numbers locked.
 5. **Phase 4 — Intro + Discussion + Limitations** using `LITERATURE_EVIDENCE.md`.
-6. **Phase 5 — display items**: produce Table 1 (after §12 OK), regenerate/compose Figs 1, 4, 5, 6 to print
-   spec; finalize Table 2.
+6. **Phase 5 — display items**: ~~produce Table 1~~ (DONE), regenerate/compose Figs 1, 4, 5, 6 to print
+   spec; finalize Table 2; build the Extended Data set (incl. the M5 moderation forest + optional DAG).
 7. **Phase 6 — abstract/title final, reference `.bib`, boilerplate, checklist.**
 8. **Phase 7 — internal review**: claims-ledger audit, number re-verification against `reports/`, a
    read-through by a "reviewer" subagent, language/formatting pass.
@@ -511,28 +522,28 @@ long-form backup and Supplementary source.
 
 - **I draft** Methods, Results, the figure reworks/compositions, the `.bib`, Table 2, and the
   claims/limitations text — all traceable to committed reports.
-- **You (PI) supply** ethics/registration/funding/authorship, the decision on computing Table 1 aggregates,
-  the final journal choice, and scientific sign-off on wording (esp. §9.1).
+- **You (PI) supply** ethics/registration/funding/authorship, the final journal choice (or confirm
+  journal-agnostic), and scientific sign-off on wording (esp. §9.1).
 
 ---
 
 ## 12. Open questions for you (let's decide together)
 
-1. **Table 1 aggregates.** OK to compute aggregate-only demographics (age, sex, education, DSM-5 subtype
-   counts, coverage, retention) from the confidential data into a committed `reports/` CSV? (Required for a
-   top-tier submission; no per-patient values leave the machine.)
-2. **Treatment (M5) placement.** Keep the treatment-boundary as a main-text beat (Fig 6c) or move it to
-   Extended Data and end the main narrative on prognosis + the boundary stated in prose? (I lean: prose in
-   main text, moderation forest in Extended Data — keeps the discovery in focus.)
-3. **Primary venue when we're ready.** I'll draft journal-agnostic, but knowing the likely target lets me
-   pre-set word/abstract/figure limits. My ranking: Nature Mental Health / Molecular Psychiatry → Lancet
-   Psychiatry → Biological Psychiatry. Any preference or hard constraint (e.g., must be Lancet-family)?
+**Resolved 2026-06-17:** ① Table 1 aggregates — **approved & produced** (`scripts/60_table1.py`).
+② Treatment (M5) placement — **Extended Data** (main text in prose). ③ Venue — **journal-agnostic**, drafted
+to the highest standard (ranking in §1.3 stands as a recommendation, not a constraint).
+
+Still open:
+
 4. **Authorship & cohort policy.** Are there FACE/FondaMental authorship or co-author-review requirements
-   that affect scope or timing?
+   that affect scope or timing? (Also need exact IRB/ethics references + funding for the boilerplate, §10.)
 5. **Companion paper?** You chose one comprehensive paper. Should I still reserve a methods-heavy companion
-   (the Bayesian engine + Woodbury marginalization) as a fallback if a clinical venue asks us to cut Methods?
+   (the Bayesian engine + Woodbury marginalization) as a fallback if a venue asks us to cut Methods?
 6. **The biology⟂severity wording (§9.1).** Confirm you're comfortable adopting "largely independent of a
    general functional-burden axis" with stated boundary conditions as the canonical phrasing.
+7. **Next build step.** Shall I proceed to **Phase 1–2** (scaffold `article/main.tex` + `sections/` and
+   draft Methods first), and assemble **Table 2** (the nine-dimension table) from `ADJUDICATION.md` +
+   `11_s5_9dim_loadings.csv`?
 
 ---
 

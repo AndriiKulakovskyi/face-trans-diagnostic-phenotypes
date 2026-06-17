@@ -8,8 +8,30 @@ distinct from `report/` (the long-form technical report, kept as the canonical b
   the display-items plan, the **figure & table gap report (§6)**, references strategy, the claims ledger,
   the reviewer pre-mortem, and the writing workflow. **Read this first.**
 
-The LaTeX manuscript (`main.tex`, `sections/`, `references.bib`, `figures/`, `tables/`) will be built out per
-the workflow in §11 of the plan, once the open questions in §12 are settled.
+## Manuscript (first complete draft — compiles)
 
-Provenance: numbers come from `reports/` and `docs/*_FINDINGS.md`; citations from
-`docs/LITERATURE_EVIDENCE.md` (PubMed-verified). No per-patient data appears here.
+- **`main.tex`** — preamble, title, abstract, keywords; `\input`s the sections and tables; numeric natbib.
+- **`sections/`** — `01_introduction`, `02_results` (R1–R6), `03_discussion` (+ Limitations),
+  `05_methods`, `90_boilerplate` (data/code/ethics/contributions — PI to complete `[TODO]`s).
+- **`tables/`** — `table1_characteristics.{md,tex}` (aggregate sample table), `table2_dimensions.tex`
+  (the nine dimensions + adjudication + invariance).
+- **`references.bib`** — 54 PubMed-verified entries (per `docs/LITERATURE_EVIDENCE.md`) + 15 canonical
+  methodological references.
+- **`main.pdf`** — compiled output (~20 pp). Build: `latexmk -pdf main.tex` (or
+  `pdflatex → bibtex → pdflatex ×2`).
+
+## Figures (publication-spec, regenerated)
+
+- **`make_figures.py`** regenerates all display items at **300 dpi** (PNG + vector PDF) into `figures/`,
+  in a unified colourblind-aware house style with panel labels, from committed aggregates only (plus the
+  derived per-patient coordinate table for the PCA embedding; no raw clinical value is emitted). Run:
+  `python3 article/make_figures.py`.
+- Main figures: `fig1_overview` (study schematic), `fig2_map` (loading atlas + $\Phi$), `fig3_biology_g`,
+  `fig4_continuum` (PCA embedding + structure gate + archetypes), `fig5_persistence` (trait/state +
+  spine-corner), `fig6_prognosis` (atlas + co-informative value). Extended Data: `edfig_m5_treatment`
+  (identification + moderation forest).
+- Remaining figure polish for submission: journal-specific sizing/CMYK/font embedding and final
+  accessibility pass (plan §6.2, item 7).
+
+Provenance: numbers come from `reports/` and `docs/*_FINDINGS.md`; citations are PubMed-verified. No
+per-patient data appears here.
