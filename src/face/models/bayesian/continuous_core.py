@@ -38,6 +38,7 @@ so the exact S1 Woodbury kernel runs unchanged on ``Lam_tilde``.
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -45,7 +46,9 @@ import numpy as np
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[4]
-PROC = REPO / "data" / "processed"
+# Processed-data dir is overridable via FACE_DATA_DIR so the engine can run on the synthetic
+# FACE-like dataset (synthetic/generate_face_like.py) without the confidential cohort data (P7-03).
+PROC = Path(os.environ.get("FACE_DATA_DIR", str(REPO / "data" / "processed")))
 MATRIX = REPO / "configs" / "prior_loading_matrix_v3.csv"
 
 S1_FACTORS = ["overall_severity", "cognition", "metabolic", "inflammatory", "sleep"]
