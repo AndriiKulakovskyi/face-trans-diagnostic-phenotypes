@@ -243,3 +243,104 @@ def conditional_gaussian_draws(M: np.ndarray, post, factor_cols: list[str], *, n
         eps = rng.standard_normal((n_draws, len(rows), F))
         draws[:, rows, :] = (mu[None, :, :] + eps @ L.T).astype("float32")
     return dict(mean=mean, sd=sd, draws=draws)
+
+
+def conditional_fm_given_fe(mp, P, fe_draws, *, seed: int = 20260609):
+    """Marginalized-specifics draws ``f_m | f_e, x`` conditioned on each explicit-latent draw (P2-02).
+
+    Closes the cross-block incoherence: the old pipeline scored the continuous specifics from a
+    SEPARATE posterior-mean object, so the assembled 9D vector mixed two unrelated posterior states and
+    dropped the cross-block correlation. Here ``f_m`` is conditioned on the SAME ``f_e`` draw under the
+    SAME shared Φ via the model's own conditional decomposition ``f_m = M f_e + δ``, ``δ ~ N(0, S)``,
+    combined with the observed continuous data. Per observed pattern the posterior of ``δ`` is Gaussian
+    (precision ``S⁻¹ + Λ_mᵀ Ψ⁻¹ Λ_m``); its map/cov are pattern-only, computed once and reused over
+    draws. Measurement params are the certified posterior means ``P`` (the explicit-latent block is the
+    documented full-N frontier; loading/cutpoint uncertainty is small vs the conditional uncertainty).
+    Returns ``f_m`` draws ``[S, N, Km]`` in ``mp.m_cols`` order.
+    """
+    rng = np.random.default_rng(seed)
+    base = mp.base
+    M = base.M
+    N, _ = M.shape
+    e, m = mp.e_cols, mp.m_cols
+    Km = len(m)
+    Phi, Lam, sigma = P["Phi"], P["Lam"], P["sigma"]
+    Phi_ee, Phi_mm, Phi_me = Phi[np.ix_(e, e)], Phi[np.ix_(m, m)], Phi[np.ix_(m, e)]
+    Mmat = Phi_me @ np.linalg.inv(Phi_ee)                      # [Km, Ke]
+    Sres = Phi_mm - Mmat @ Phi_me.T                           # [Km, Km] prior residual cov of δ
+    Lam_m = Lam[:, m]                                          # [Jc, Km]
+    Bmat = Lam[:, e] + Lam_m @ Mmat                           # [Jc, Ke] mean loadings on f_e
+    sig2 = sigma ** 2
+    mask = ~np.isnan(M)
+    X = np.nan_to_num(M, nan=0.0)
+    pats, inv = np.unique(mask, axis=0, return_inverse=True)
+    inv = inv.reshape(-1)
+    Sres_inv = np.linalg.inv(Sres + 1e-9 * np.eye(Km))
+
+    patinfo = []                                              # per pattern: (Bd [Km,k] or None, cols, chol(cov))
+    for p in range(pats.shape[0]):
+        cols = np.flatnonzero(pats[p])
+        if cols.size == 0:
+            patinfo.append((None, cols, np.linalg.cholesky(Sres + 1e-9 * np.eye(Km))))
+            continue
+        Lo = Lam_m[cols]                                      # [k, Km]
+        prec = Sres_inv + Lo.T @ (Lo / sig2[cols][:, None])  # [Km, Km]
+        cov = np.linalg.inv(prec)
+        Bd = cov @ Lo.T @ np.diag(1.0 / sig2[cols])          # [Km, k]: μ_δ = Bd @ r_obs
+        patinfo.append((Bd, cols, np.linalg.cholesky(0.5 * (cov + cov.T) + 1e-9 * np.eye(Km))))
+
+    S = fe_draws.shape[0]
+    fm = np.empty((S, N, Km), dtype="float32")
+    for s in range(S):
+        fe = fe_draws[s]                                      # [N, Ke]
+        r = X - fe @ Bmat.T                                   # [N, Jc] residual (observed cols only used)
+        base_fm = fe @ Mmat.T                                 # [N, Km] conditional mean part M f_e
+        for p, (Bd, cols, L) in enumerate(patinfo):
+            rows = np.flatnonzero(inv == p)
+            eps = rng.standard_normal((len(rows), Km)) @ L.T
+            delta = eps if Bd is None else (r[np.ix_(rows, cols)] @ Bd.T + eps)
+            fm[s, rows] = (base_fm[rows] + delta).astype("float32")
+    return fm
+
+
+def coherent_joint_coords(mp, idata, *, projection=None, n_draws: int = 200, proj_draws: int = 400,
+                          proj_tune: int = 500, proj_chains: int = 2, seed: int = 20260609):
+    """One coherent draw-wise 9D coordinate sample (fixes P2-01 comment / P2-02 / P2-04 export).
+
+    Every exported 9D draw comes from ONE internally-coherent model state: the explicit latents ``f_e``
+    (incl the explicit block's OWN G — the old pipeline discarded it and used the continuous block's G)
+    plus the marginalized specifics ``f_m`` conditioned on that same ``f_e`` under the shared Φ. Exports
+    the joint draws AND the full per-patient covariance ``S_i`` (not just the diagonal SD — enabling the
+    full-``S_i`` XD arm, P2-04). Honest scope: measurement parameters are the certified posterior means
+    (the full-N explicit-latent block is the documented frontier); the export propagates explicit-latent
+    + conditional + cross-block-correlation uncertainty coherently, which the old dimension-wise assembly
+    did not.
+
+    Returns ``mean``/``sd`` [N, F], ``cov`` [N, F, F] (per-patient ``S_i``), ``draws`` [S, N, F], the
+    factor names ``cols`` (``mp.base.factor_cols`` order), and the projection ``diag``.
+    """
+    P = fixed_params(idata, mp)
+    if projection is None:
+        projection = project_explicit_full_n(mp, idata, draws=proj_draws, tune=proj_tune,
+                                              chains=proj_chains, seed=seed)
+    fe = projection["draws"]                                  # [Se, N, Ke], cols = e_cols order
+    Se = fe.shape[0]
+    pick = np.unique(np.linspace(0, Se - 1, min(n_draws, Se)).astype(int))
+    fe = fe[pick]
+    fm = conditional_fm_given_fe(mp, P, fe, seed=seed)        # [S, N, Km], m_cols order
+
+    base = mp.base
+    F = len(base.factor_cols)
+    S, N = fe.shape[0], fe.shape[1]
+    coords = np.empty((S, N, F), dtype="float32")
+    for k, c in enumerate(mp.e_cols):
+        coords[:, :, c] = fe[:, :, k]                         # explicit dims incl G (the explicit-block G)
+    for k, c in enumerate(mp.m_cols):
+        coords[:, :, c] = fm[:, :, k]                         # marginalized dims, conditioned on f_e
+
+    mean = coords.mean(0)
+    cc = coords - mean[None]
+    cov = np.einsum("sif,sig->ifg", cc, cc) / max(S - 1, 1)   # [N, F, F] full per-patient S_i
+    sd = np.sqrt(np.clip(np.diagonal(cov, axis1=1, axis2=2), 0.0, None))
+    return dict(mean=mean, sd=sd, cov=cov.astype("float32"), draws=coords,
+                cols=list(base.factor_cols), diag=projection["diag"])
