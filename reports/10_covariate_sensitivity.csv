@@ -1,0 +1,5 @@
+domain,phi_G_unadjusted,phi_G_adjusted,delta
+inflammatory,0.071,0.056,-0.015
+metabolic,0.124,0.058,-0.067
+cognition,0.385,0.229,-0.156
+sleep,0.422,0.409,-0.013

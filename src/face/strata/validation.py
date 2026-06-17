@@ -35,16 +35,35 @@ def ari(a, b):
     return float(adjusted_rand_score(np.asarray(a), np.asarray(b)))
 
 
-def coverage_artifact(nobs, labels, seed=0):
-    """Can the COVERAGE pattern (observed-indicator counts per axis) predict the partition? High accuracy
-    over the majority baseline ⇒ membership is driven by missingness, not values (an artefact)."""
+def coverage_artifact(nobs, labels, seed=0, n_perm=30):
+    """Can the COVERAGE pattern (observed-indicator counts per axis) predict the partition beyond chance?
+
+    Predictive skill ⇒ membership is driven by missingness, not values (an artefact). Plain accuracy is
+    weak under class imbalance (P3-06), so we add imbalance-robust metrics — **balanced accuracy**,
+    **macro-F1**, **log-loss** — and a **permutation test** (does balanced accuracy beat label-permuted
+    nulls?). ``lift`` is retained for backward compatibility."""
     from sklearn.ensemble import RandomForestClassifier
     from sklearn.model_selection import cross_val_score
-    labels = np.asarray(labels)
-    acc = float(cross_val_score(RandomForestClassifier(120, random_state=seed, n_jobs=-1),
-                                np.asarray(nobs), labels, cv=4).mean())
+    rng = np.random.default_rng(seed)
+    nobs, labels = np.asarray(nobs), np.asarray(labels)
+    n_classes = len(np.unique(labels))
+
+    def _clf():
+        return RandomForestClassifier(120, random_state=seed, n_jobs=-1)
+
+    def _bal(y):
+        return float(cross_val_score(_clf(), nobs, y, cv=4, scoring="balanced_accuracy").mean())
+
+    acc = float(cross_val_score(_clf(), nobs, labels, cv=4).mean())
     base = float(np.bincount(labels).max() / len(labels))
-    return {"classifier_acc": acc, "majority_baseline": base, "lift": acc - base}
+    bal = _bal(labels)
+    f1m = float(cross_val_score(_clf(), nobs, labels, cv=4, scoring="f1_macro").mean())
+    ll = float(-cross_val_score(_clf(), nobs, labels, cv=4, scoring="neg_log_loss").mean())
+    null = np.array([_bal(rng.permutation(labels)) for _ in range(n_perm)])
+    p_perm = float((null >= bal).mean())
+    return {"classifier_acc": acc, "majority_baseline": base, "lift": acc - base,
+            "balanced_acc": bal, "balanced_chance": 1.0 / n_classes, "macro_f1": f1m, "log_loss": ll,
+            "perm_p_value": p_perm}
 
 
 def tess_seed_stability(X, S, K, seeds=(1, 2, 3)):

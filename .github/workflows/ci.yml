@@ -15,11 +15,15 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
-      - name: Install (core + dev)
-        run: pip install -e ".[dev]"
+      - name: Install (core + bayesian + dev)
+        # Install the Bayesian backend (pymc/pytensor/numpyro/jax/arviz) so the measurement engine and
+        # its golden tests are actually exercised in CI. requirements.lock pins the EXACT tested versions
+        # (regenerate with scripts/gen_lockfile.py); ranges live in pyproject [bayesian].
+        run: pip install -e ".[bayesian,dev]"
       - name: Lint (ruff)
         run: ruff check .
-      - name: Unit tests + golden-numbers regression
-        # Confidential cohort data is absent in CI; tests use synthetic fixtures and the
-        # committed aggregate result artifacts (golden-numbers tests skip if a file is missing).
+      - name: Unit tests + golden numerical-kernel regression
+        # Confidential cohort data is absent in CI; tests use synthetic fixtures (tests/golden exercises
+        # the Woodbury likelihood / conditional scoring / hurdle on synthetic data) and committed aggregate
+        # artifacts (golden-numbers tests skip if a file is missing).
         run: python -m pytest tests/ -q

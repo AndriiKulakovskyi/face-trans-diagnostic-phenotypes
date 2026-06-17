@@ -26,6 +26,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 warnings.filterwarnings("ignore")
 
+from face.io import manifest, progress  # noqa: E402
 from face.models.bayesian.continuous_core import (  # noqa: E402
     S3_FACTORS,
     S5_FACTORS,
@@ -54,12 +55,14 @@ def fit_seed(n, seed, tune, draws, chains, ta, label):
     if nc.exists():
         print(f"  [cached] {label}", flush=True)
         return az.from_netcdf(str(nc))
+    progress.heartbeat(stage=f"prepare {label}", msg=f"building mixed prep N≈{n}")
     mp = _mp(n, seed)
     base = mp.base
-    model = build_mixed(mp)
+    model = build_mixed(mp)                                    # hurdle_counts=True (P1-03) by default
     prev = prepare(S3_FACTORS, correlated=True, windows=True)
     iv = warmstart_initvals(base, from_stage=3, from_items=prev.items)
     t = time.time()
+    progress.heartbeat(stage=f"sampling {label}", msg=f"N={base.M.shape[0]} {draws}+{tune}×{chains}ch ta {ta}")
     print(f"  [{time.strftime('%H:%M:%S')}] fit {label}: N={base.M.shape[0]} contJ={base.M.shape[1]} "
           f"F=9 explicit=4 ({draws}+{tune}×{chains}ch, ta {ta}) ...", flush=True)
 
@@ -78,6 +81,14 @@ def fit_seed(n, seed, tune, draws, chains, ta, label):
         idata.to_netcdf(str(nc))
     except Exception:
         pass
+    try:                                                       # P2-03: persist exact index + manifest
+        d = struct_diag(idata, mp)
+        manifest.write_manifest(label, out_dir=out, N=base.M.shape[0], index=base.index,
+                                cohort=base.cohort, seed=seed,
+                                diagnostics={k: float(v) for k, v in d.items()},
+                                extra={"stage": "s5_9dim", "hurdle_counts": True})
+    except Exception as e:
+        print(f"  (manifest skipped: {type(e).__name__})", flush=True)
     return idata
 
 
@@ -102,17 +113,20 @@ def struct_diag(idata, mp):
                 div=int(np.asarray(idata.sample_stats["diverging"]).sum()), bfmi=bfmi)
 
 
-def main(n=2000, seeds=2, tune=2000, draws=1500, chains=4, ta=0.9, smoke=False):
+def main(n=2000, seeds=2, tune=2000, draws=1500, chains=4, ta=0.9, smoke=False, tag=""):
     if smoke:
         n, seeds, tune, draws, chains = 800, 1, 150, 150, 2
     seed_list = [20260605 + i for i in range(seeds)]
-    print(f"S5 9-dim certification: N≈{n} balanced · tune {tune} · draws {draws} · {seeds} seed(s)\n", flush=True)
+    print(f"S5 9-dim certification{(' [' + tag + ']') if tag else ''}: N≈{n} balanced · tune {tune} · "
+          f"draws {draws} · {seeds} seed(s)\n", flush=True)
     Lams, diags = {}, []
     mp0 = _mp(n, seed_list[0])
     fcols = mp0.base.factor_cols
     ng = mp0.bin_items + mp0.cnt_items + mp0.ord_items
     for i, seed in enumerate(seed_list):
-        idata = fit_seed(n, seed, tune, draws, chains, ta, "smoke9" if smoke else f"s5_cert9_s{i+1}")
+        progress.heartbeat(stage=f"seed {i+1}/{seeds}", frac=i / max(seeds, 1))
+        label = "smoke9" if smoke else f"s5_cert9{tag}_s{i+1}"
+        idata = fit_seed(n, seed, tune, draws, chains, ta, label)
         d = struct_diag(idata, mp0); d = {"seed": f"s{i+1}", **d}; diags.append(d)
         Lams[i] = idata.posterior["Lam"].mean(("chain", "draw")).values
         print(f"    → R-hat {d['rhat']} · ESS {d['ess']} · div {d['div']} · BFMI {d['bfmi']}", flush=True)
@@ -143,9 +157,11 @@ def main(n=2000, seeds=2, tune=2000, draws=1500, chains=4, ta=0.9, smoke=False):
             f"0 div, BFMI ≥ {dd.bfmi.min():.2f}. As in the 7-dim S5, the explicit-latent block (now incl. "
             "substance) is the mixing limit; point estimates resample-stable, precision provisional. mania + "
             "substance are integrated with the rest under one shared Φ.")]
-    (REPORTS / "11_s5_9dim_report.md").write_text("\n".join(md))
+    rep_tag = "smoke" if smoke else tag        # never let a smoke run clobber the canonical report
+    rep = f"11_s5_9dim_report{('_' + rep_tag) if rep_tag else ''}.md"
+    (REPORTS / rep).write_text("\n".join(md))
     print("\n".join(md))
-    print("\nwrote reports/11_s5_9dim_report.md")
+    print(f"\nwrote reports/{rep}")
 
 
 if __name__ == "__main__":
@@ -157,5 +173,7 @@ if __name__ == "__main__":
     ap.add_argument("--chains", type=int, default=4)
     ap.add_argument("--ta", type=float, default=0.9)
     ap.add_argument("--smoke", action="store_true")
+    ap.add_argument("--tag", type=str, default="", help="suffix for output dirs/report (e.g. 'r' for the "
+                    "remediated re-fit; keeps the old s5_cert9_s* fits for delta comparison)")
     a = ap.parse_args()
-    main(n=a.n, seeds=a.seeds, tune=a.tune, draws=a.draws, chains=a.chains, ta=a.ta, smoke=a.smoke)
+    main(n=a.n, seeds=a.seeds, tune=a.tune, draws=a.draws, chains=a.chains, ta=a.ta, smoke=a.smoke, tag=a.tag)

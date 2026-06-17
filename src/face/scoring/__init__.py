@@ -1,17 +1,20 @@
-"""Per-patient dimension scoring (§7) — draw-wise analytic conditional-Gaussian factor scores.
+"""Per-patient dimension scoring (§7) — analytic conditional-Gaussian factor scores.
 
 The marginalized model integrates the latent factors out, so there are no per-patient latent draws.
-For the continuous factors we recover the proper Bayesian factor-score posterior analytically: for each
-posterior draw of (Λ, Φ, σ) and each patient i with observed continuous cells O_i,
+For the continuous factors we recover the Bayesian factor-score posterior analytically: for patient i
+with observed continuous cells O_i,
 
     f_i | x_{i,O_i}  ~  Normal( Φ Λ_Oᵀ Σ_OO⁻¹ (x_O − μ_O),   Φ − Φ Λ_Oᵀ Σ_OO⁻¹ Λ_O Φ ),
     Σ = Λ Φ Λᵀ + diag(σ²) .
 
-Sampling f_i once per draw propagates BOTH the conditional uncertainty and the parameter uncertainty;
-aggregating over draws gives per-(patient, dimension) mean / SD / HDI. Strictly better than a Thomson
-point score (which discards both). Fit once on the full sample, score every patient (§3.6). The
-conditional cov + regression depend on the row only through its observed pattern, so they are computed
-once per unique pattern per draw (not per patient).
+**Uncertainty scope (honest, issue P2-01).** ``conditional_gaussian_scores`` evaluates this at the
+posterior-MEAN (Λ, Φ, σ), so it propagates the per-patient *conditional* uncertainty only — NOT the
+measurement-parameter (loading / correlation / residual) uncertainty. For well-identified loadings the
+parameter uncertainty is small relative to the conditional uncertainty, but the two are not the same and
+this scorer does not claim to capture both. The coherent draw-wise joint scorer that assembles all 9
+axes from one model state (incl. the explicit block's own G) and exports the full per-patient covariance
+lives in ``face.strata.scoring.coherent_joint_coords`` (P2-02 / P2-04). Conditional cov + regression
+depend on the row only through its observed pattern, so they are computed once per unique pattern.
 """
 from __future__ import annotations
 

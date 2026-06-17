@@ -38,6 +38,7 @@ so the exact S1 Woodbury kernel runs unchanged on ``Lam_tilde``.
 """
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -45,7 +46,9 @@ import numpy as np
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[4]
-PROC = REPO / "data" / "processed"
+# Processed-data dir is overridable via FACE_DATA_DIR so the engine can run on the synthetic
+# FACE-like dataset (synthetic/generate_face_like.py) without the confidential cohort data (P7-03).
+PROC = Path(os.environ.get("FACE_DATA_DIR", str(REPO / "data" / "processed")))
 MATRIX = REPO / "configs" / "prior_loading_matrix_v3.csv"
 
 S1_FACTORS = ["overall_severity", "cognition", "metabolic", "inflammatory", "sleep"]
@@ -97,6 +100,65 @@ def _balanced_idx(cohort: np.ndarray, n_total: int, rng) -> np.ndarray:
     return np.sort(np.concatenate(out))
 
 
+# ----- covariate-adjusted sensitivity arm (issue P0-04) --------------------------------------------
+# The published equation adjusts each item mean by β_jᵀ c_i (age, sex, education, site). For a Gaussian
+# item this is Frisch–Waugh–Lovell-equivalent to residualizing the item on the covariate design BEFORE
+# the factor model — so the marginalized Woodbury kernel is untouched (still zero-mean). Off by default
+# (`covariate_adjust=False`): the primary z-scored encoding is byte-for-byte unchanged. The arm is
+# scoped to age(spline)+sex+education(edulevel)+site (NOT cohort/diagnosis — those stay metadata /
+# invariance grouping, preserving the transdiagnostic between-cohort signal).
+
+def _age_spline(x: np.ndarray, df: int) -> np.ndarray:
+    if df and df > 0:
+        try:
+            from sklearn.preprocessing import SplineTransformer
+            return SplineTransformer(n_knots=df, degree=3, include_bias=False).fit_transform(x)
+        except Exception:                                     # pragma: no cover (old sklearn fallback)
+            return np.column_stack([x, x ** 2, x ** 3])
+    return x
+
+
+def _covariate_design(index: pd.Index, *, age_spline_df: int = 4) -> np.ndarray:
+    """Confounder design aligned to `index`: intercept + ns(age) + age×sex + sex + edulevel + site dummies.
+    Covariate NaNs are mean-imputed for the design only (the item's own NaNs are preserved upstream)."""
+    cov_path, site_path = PROC / "covariates_v0.parquet", PROC / "site_v0.parquet"
+    cov = pd.read_parquet(cov_path).reindex(index) if cov_path.exists() else pd.DataFrame(index=index)
+    n = len(index)
+
+    def _col(name):
+        x = pd.to_numeric(cov[name], errors="coerce").to_numpy("float64") if name in cov.columns \
+            else np.full(n, np.nan)
+        m = float(np.nanmean(x)) if np.isfinite(np.nanmean(x)) else 0.0
+        return np.nan_to_num(x, nan=m).reshape(-1, 1)
+
+    age, sex, edu = _col("age"), _col("sex"), _col("edulevel")
+    age_basis = _age_spline(age, age_spline_df)
+    edu = (edu - edu.mean()) / (edu.std() or 1.0)
+    blocks = [np.ones((n, 1)), age_basis, sex, edu, age_basis * sex]   # age×sex = sex-specific age curve
+    if site_path.exists():
+        site = pd.read_parquet(site_path)["siteid_city"].reindex(index).round().astype("Int64")
+        d = pd.get_dummies(site.astype("object"), prefix="site", dummy_na=False, drop_first=True)
+        if d.shape[1]:
+            blocks.append(d.to_numpy("float64"))
+    return np.column_stack(blocks)
+
+
+def _residualize_on_covariates(Vdf: pd.DataFrame, *, age_spline_df: int = 4) -> pd.DataFrame:
+    """OLS-partial each (pre-z-score) item on the covariate design over its observed rows; NaN preserved."""
+    A = _covariate_design(Vdf.index, age_spline_df=age_spline_df)
+    out = Vdf.copy()
+    min_obs = A.shape[1] + 2
+    for c in out.columns:
+        y = out[c].to_numpy("float64").copy()
+        obs = np.isfinite(y)
+        if int(obs.sum()) < min_obs:
+            continue
+        beta, *_ = np.linalg.lstsq(A[obs], y[obs], rcond=None)
+        y[obs] = y[obs] - A[obs] @ beta
+        out[c] = y
+    return out
+
+
 def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             windows: bool = False, specific_cross: bool = False, g_correlated: bool = False,
             cross_sd_scale: float = 0.25, window_sd_scale: float = 1.0, flat: bool = False,
@@ -104,6 +166,7 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             cohort_subset: list[str] | None = None, balanced: bool = False,
             keep_index: np.ndarray | None = None, force_factors_continuous: list[str] | None = None,
             n_subsample: int | None = None, emit_moments: bool = False, visit: str = "V0",
+            covariate_adjust: bool = False, age_spline_df: int = 4, soft_unlikely: bool = False,
             seed: int = 20260605) -> CorePrep | tuple[CorePrep, dict]:
     """Load the persisted V0 baseline, encode the continuous block for `factors`, and resolve
     the per-cell loading priors from the matrix. Three orthogonal switches deform S1 -> S2:
@@ -154,8 +217,8 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
         B = B.iloc[keep_index]
     cohort = np.asarray(B.index.get_level_values("cohort"))
 
-    cols = {}
     moments = {} if emit_moments else None     # frozen V0 transform for follow-up scoring (M3 §3.1)
+    raw, metarec = {}, {}                       # sign-oriented, log-transformed values BEFORE z-scoring
     for it in items:
         v = pd.to_numeric(B[it], errors="coerce").astype(float)
         fam = meta.loc[it, "likelihood_family"]
@@ -164,11 +227,19 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             logmin = float(np.nanmin(v.values))
             v = np.log1p(v - logmin + 1e-6) if (np.isfinite(logmin) and logmin <= 0) else np.log(v)
         sgn = int(meta.loc[it, "item_sign"])
-        v = sgn * v
+        raw[it] = sgn * v
+        metarec[it] = (str(fam), sgn, logmin)
+    Vdf = pd.DataFrame(raw, index=B.index)
+    if covariate_adjust:                        # P0-04 arm: partial out age(spline)+sex+edu+site, then z-score
+        Vdf = _residualize_on_covariates(Vdf, age_spline_df=age_spline_df)
+    cols = {}
+    for it in items:
+        v = Vdf[it]
         mu, sd = v.mean(), v.std()
         cols[it] = (v - mu) / sd if sd and sd > 0 else v * 0.0
         if moments is not None:
-            moments[it] = (str(fam), sgn, logmin, float(mu), float(sd))
+            fam, sgn, logmin = metarec[it]
+            moments[it] = (fam, sgn, logmin, float(mu), float(sd))
     Mdf = pd.DataFrame(cols, index=B.index)
 
     if n_subsample and n_subsample < len(Mdf):
@@ -209,6 +280,13 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
                 elif specific_cross:                     # specific <-> specific (ridge-guarded)
                     sgn_cells.append((j, c, mu, sd * cross_sd_scale))
                     kind[(j, c)] = "cross"
+            elif soft_unlikely and ptype == "unlikely_cross":   # P0-05: shrink unlikely cells, not hard-zero
+                # The methods doc says "unlikely" cells carry a soft Normal(0, 0.05); the default engine
+                # hard-zeros them. This arm instantiates that soft prior on the ~unlikely specific cross
+                # cells (NOT specific<->specific plausible_cross, which stay off — rotationally aliased
+                # with Φ — and NOT G). For the soft-zero-vs-hard-zero sensitivity table.
+                sgn_cells.append((j, c, 0.0, 0.05))
+                kind[(j, c)] = "unlikely"
 
     if flat:                          # §5 confirmation: prior-free (identification-only) priors.
         # Drop the soft-prior informativeness, keep ONLY the identification constraints (home cells
@@ -560,7 +638,21 @@ def _sel(rows: list[int], F: int) -> np.ndarray:
     return S
 
 
-def build_mixed(mp: MixedPrep, psi_floor: float = 0.05, lkj_eta: float = 2.0):
+def _hurdle_nb_logp(pt, y, psi, mu, alpha):
+    """Hurdle-NB log-likelihood from differentiable ops only — NO betainc, so it works under the
+    numpyro/JAX NUTS sampler (``pm.HurdleNegativeBinomial`` uses NB.logcdf → betainc, whose gradient
+    JAX does not support). ``psi`` = P(Y>0): zeros are the gate ``log(1-psi)``; positives are a
+    zero-truncated NB. NB(0) = (α/(α+μ))^α; the truncation divides by 1-NB(0) (log1mexp)."""
+    log_p0 = alpha * (pt.log(alpha) - pt.log(alpha + mu))                 # log NB(0)
+    nb_lpmf = (pt.gammaln(y + alpha) - pt.gammaln(alpha) - pt.gammaln(y + 1.0)
+               + alpha * (pt.log(alpha) - pt.log(alpha + mu))
+               + y * (pt.log(mu) - pt.log(alpha + mu)))
+    pos = pt.log(psi) + nb_lpmf - pt.log1mexp(log_p0)                     # zero-truncated NB, scaled by psi
+    return pt.where(pt.eq(y, 0.0), pt.log1p(-psi), pos)
+
+
+def build_mixed(mp: MixedPrep, psi_floor: float = 0.05, lkj_eta: float = 2.0,
+                hurdle_counts: bool = False):
     """Hybrid explicit/marginalized mixed-likelihood model (S3b). f_e=(G,suic,dev) explicit; the
     continuous specifics marginalized and coupled via the conditional Phi decomposition."""
     import pymc as pm
@@ -617,13 +709,30 @@ def build_mixed(mp: MixedPrep, psi_floor: float = 0.05, lkj_eta: float = 2.0):
             pm.Bernoulli(f"y_{it}", logit_p=eta, observed=y[obs].astype("int8"))
         for k, it in enumerate(mp.cnt_items):
             y = mp.Cnt[:, k]; obs = np.flatnonzero(~np.isnan(y))
+            fh = f_e[:, mp.ng_home[it]][obs]
             a = pm.Normal(f"a_{it}", 0.0, 1.5)
             lh = pm.TruncatedNormal(f"lh_{it}", mu=mp.ng_hp[it][0], sigma=mp.ng_hp[it][1], lower=0.0)
             lg = pm.Normal(f"lg_{it}", mp.ng_gp[it][0], mp.ng_gp[it][1])
-            alpha = pm.HalfNormal(f"alpha_{it}", 2.0)
-            eta = a + lh * f_e[:, mp.ng_home[it]][obs] + lg * f_e[:, 0][obs]
-            pm.NegativeBinomial(f"y_{it}", mu=pt.exp(eta), alpha=alpha,
-                                observed=np.rint(y[obs]).astype("int64"))
+            alpha = pm.HalfNormal(f"alpha_{it}", 2.0)            # NB concentration (the reported fit's prior)
+            eta = a + lh * fh + lg * f_e[:, 0][obs]
+            if hurdle_counts:
+                # OPT-IN SENSITIVITY (off by default; the reported map uses plain NB). A hurdle separates
+                # the zero spike from the count process so the structural zeros stop being NB draws that
+                # over-predict the high tail (isf09a item-level fix: plain NB predicted mean 13.4 vs obs
+                # 0.14). psi = P(Y>0) is a FREE per-item probability — deliberately NOT latent-coupled (a
+                # psi = sigmoid(a + λ·f_home) double-loads the count item on its factor → a ridge, R-hat
+                # 1.56). Even decoupled, however, perturbing isf09a's likelihood destabilizes the fragile
+                # suicidality↔developmental Φ cell for some seeds (re-fit seed-1 R-hat 1.55 vs the plain-NB
+                # 1.01), so it is NOT adopted as primary — it trades a cosmetic item-level PPC fix for a
+                # structural-correlation's convergence. The suicidality factor is carried by its 7 binary
+                # ISF items (all reproduce in PPC); isf09a is a thin item-level contributor.
+                apsi = pm.Normal(f"apsi_{it}", 0.0, 1.5)
+                psi = pm.Deterministic(f"psi_{it}", pm.math.sigmoid(apsi))
+                yv = pt.as_tensor(np.rint(y[obs]).astype("float64"))
+                pm.Potential(f"y_{it}", _hurdle_nb_logp(pt, yv, psi, pt.exp(eta), alpha).sum())
+            else:
+                pm.NegativeBinomial(f"y_{it}", mu=pt.exp(eta), alpha=alpha,
+                                    observed=np.rint(y[obs]).astype("int64"))
         for k, it in enumerate(mp.ord_items):
             y = mp.Ord[:, k]; obs = np.flatnonzero(~np.isnan(y)); K = int(mp.ord_K[k])
             cut = pm.Normal(f"c_{it}", mu=np.linspace(-1.5, 1.5, K - 1), sigma=2.0, shape=K - 1,

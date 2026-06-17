@@ -134,7 +134,8 @@ def ppc_residual_correlations(M: np.ndarray, post, max_draws: int = 400, psi_flo
 
 
 def pointwise_loglik(M: np.ndarray, post, max_draws: int = 400, psi_floor: float = 0.05) -> np.ndarray:
-    """[S, N] per-patient observed-data log-lik across (thinned) posterior draws — for WAIC/LOO."""
+    """[S, N] per-patient observed-data log-lik across (thinned) posterior draws — for WAIC (the
+    in-engine measurement-model comparison; PSIS-LOO is used only in the M4 prognosis layer)."""
     Lam, Phi, sig = _draws(post, "Lam"), _draws(post, "Phi"), psi_floor + _draws(post, "sigma")
     S = Lam.shape[0]
     idx = np.linspace(0, S - 1, min(S, max_draws)).astype(int)

@@ -68,7 +68,7 @@ def main():
     from face.scoring import reliability_flags
     from face.strata.scoring import (
         align_ordinals_to_fit,
-        conditional_gaussian_draws,
+        coherent_joint_coords,
         explicit_nobs,
         project_explicit_full_n,
     )
@@ -77,13 +77,12 @@ def main():
     idata = az.from_netcdf(REPO / "results/face/s5_cert9_s1/idata.nc")
     post = idata.posterior
 
-    # ---------- 1) continuous block: 6 dims, full N (draw-wise conditional Gaussian) ----------
-    print("[1/4] continuous conditional-Gaussian scores (full N)...", flush=True)
+    # ---------- 1) reliability tiers (observed home-indicator counts; coords scored coherently in 3) ----------
+    print("[1/4] reliability tiers (observed home-indicator counts)...", flush=True)
     prep = prepare(S5_FACTORS, correlated=True, windows=True)
-    fcols = prep.factor_cols                                   # all 9, in canonical order
+    fcols = prep.factor_cols                                   # 9 factors (prep order)
     cidx = {f: i for i, f in enumerate(fcols)}
     base_index = prep.index                                    # MultiIndex (cohort, patient_id)
-    cg = conditional_gaussian_draws(prep.M, post, fcols, n_draws=NDRAW_CONT, seed=SEED)
     nobs_c, tier_c = reliability_flags(prep.M, prep.items, prep.home, fcols)
     N = prep.M.shape[0]
     assert list(base_index) == list(prep.index)
@@ -125,38 +124,35 @@ def main():
     repro = {name: float(np.corrcoef(res["mean"][pos, k], fe_cert[:, k])[0, 1])
              for k, name in enumerate(ecols) if name in EXPL3 or name == "overall_severity"}
 
-    expl_mean = pd.DataFrame(res["mean"], index=mp.base.index, columns=ecols).reindex(base_index)
-    expl_sd = pd.DataFrame(res["sd"], index=mp.base.index, columns=ecols).reindex(base_index)
+    # ---------- 3) coherent joint coordinates (one model state per draw) + full S_i (P2-01/02/04) ----------
+    print("[3/4] coherent joint scoring (explicit-block G; f_m|f_e under shared Phi)...", flush=True)
+    ch = coherent_joint_coords(mp, idata, projection=res, n_draws=NKEEP)
+    cmap = {f: ch["cols"].index(f) for f in CANON}            # CANON dim -> coherent column
+    pos = pd.Index(mp.base.index).get_indexer(pd.Index(base_index))
+    assert (pos >= 0).all(), "coherent coords missing some base_index rows"
 
-    # ---------- 3) assemble coordinates_full + draws export ----------
-    print("[3/4] assembling coordinates + draws...", flush=True)
     z = float(norm.ppf(1 - (1 - HDI) / 2))
     df = pd.DataFrame(index=base_index)
-    pthin = res["draws"]                                       # [nkeep, N_mp, Ke] (already thinned)
-    nkeep = pthin.shape[0]
+    nkeep = ch["draws"].shape[0]
     draws = np.full((nkeep, N, len(CANON)), np.nan, dtype="float32")
-    for f in CANON:
-        di = CANON.index(f)
-        if f in CONT6:
-            i = cidx[f]
-            m, s, n = cg["mean"][:, i], cg["sd"][:, i], nobs_c[:, i]
-            df[f"{f}__mean"] = np.round(m, 3); df[f"{f}__sd"] = np.round(s, 3)
-            df[f"{f}__hdi_lo"] = np.round(m - z * s, 3); df[f"{f}__hdi_hi"] = np.round(m + z * s, 3)
-            df[f"{f}__n_obs"] = n; df[f"{f}__reliability"] = tier_c[:, i]
-            draws[:, :, di] = cg["draws"][:nkeep, :, i]
-        else:
-            m, s = expl_mean[f].to_numpy(), expl_sd[f].to_numpy()
-            n = ne[f].to_numpy()
-            df[f"{f}__mean"] = np.round(m, 3); df[f"{f}__sd"] = np.round(s, 3)
-            df[f"{f}__hdi_lo"] = np.round(m - z * s, 3); df[f"{f}__hdi_hi"] = np.round(m + z * s, 3)
-            df[f"{f}__n_obs"] = n; df[f"{f}__reliability"] = _tier(n)
-            k = ecols.index(f)
-            col = pd.DataFrame(pthin[:, :, k].T, index=mp.base.index).reindex(base_index).to_numpy().T
-            draws[:, :, di] = col.astype("float32")
+    cov_full = np.full((N, len(CANON), len(CANON)), np.nan, dtype="float32")
+    for di, f in enumerate(CANON):
+        ci = cmap[f]
+        m, s = ch["mean"][pos, ci], ch["sd"][pos, ci]
+        n = nobs_c[:, cidx[f]] if f in CONT6 else ne[f].to_numpy()
+        rel = tier_c[:, cidx[f]] if f in CONT6 else _tier(n)
+        df[f"{f}__mean"] = np.round(m, 3); df[f"{f}__sd"] = np.round(s, 3)
+        df[f"{f}__hdi_lo"] = np.round(m - z * s, 3); df[f"{f}__hdi_hi"] = np.round(m + z * s, 3)
+        df[f"{f}__n_obs"] = n; df[f"{f}__reliability"] = rel
+        draws[:, :, di] = ch["draws"][:, pos, ci]
+    order = [cmap[f] for f in CANON]
+    cov_full[:] = ch["cov"][np.ix_(pos, order, order)]        # per-patient S_i in CANON order (the P2-04 arm)
     df.reset_index().to_parquet(OUT / "coordinates_full.parquet")
     coh = np.asarray(base_index.get_level_values("cohort"))
     pid = np.asarray(base_index.get_level_values("patient_id"))
     np.savez_compressed(OUT / "coordinates_draws.npz", draws=draws, dims=np.array(CANON),
+                        cohort=coh, patient_id=pid)
+    np.savez_compressed(OUT / "coordinates_cov.npz", cov=cov_full, dims=np.array(CANON),
                         cohort=coh, patient_id=pid)
 
     # ---------- 4) validation table (validation-only) ----------
@@ -182,9 +178,11 @@ def main():
     dt = time.time() - t0
     md = ["# 20 — M2.0 prep: full-N 9-dim coordinates + validation table", "",
           f"All **{N:,}** patients now carry **all 9** dimensions with uncertainty (M1 left "
-          "suicidality/developmental/substance on the ~1,884 fit subsample). Continuous-anchored axes: "
-          "draw-wise conditional-Gaussian from the certified 9-dim loadings. Explicit axes: full-N "
-          "projection under fixed certified parameters (no re-fit, no imputation).", "",
+          "suicidality/developmental/substance on the ~1,884 fit subsample). **Coherent joint scoring** "
+          "(P2-01/02/04): every 9D draw comes from ONE model state — the explicit-block latents f_e (incl "
+          "the explicit-block G) plus the marginalized specifics f_m conditioned on that same f_e under the "
+          "shared Phi; full-N projection under fixed certified parameters (no re-fit, no imputation). "
+          "Exports the joint draws AND the full per-patient covariance S_i.", "",
           f"**Projection sampler:** R-hat(z_e) max **{res['diag']['max_rhat']:.3f}** · divergences "
           f"**{res['diag']['divergences']}** · draws {res['diag']['n_draws']}. Runtime {dt/60:.1f} min.", "",
           "## QC — projection reproduces the certified f_e on the fit subsample (Pearson r)",
@@ -201,7 +199,8 @@ def main():
           "- coverage: " + ", ".join(f"{c} {int(vt[c].notna().sum())}" for c in vt.columns), "",
           "## Artifacts (results/face/m2/, gitignored)",
           "- `coordinates_full.parquet` — per-patient 9-dim mean/SD/HDI/n_obs/reliability (the M2 input).",
-          f"- `coordinates_draws.npz` — [{NKEEP}, {N}, 9] posterior draws (the uncertainty arm: full S_i / archetypes-over-draws).",
+          f"- `coordinates_draws.npz` — [{NKEEP}, {N}, 9] coherent joint posterior draws (archetypes-over-draws / structure gate).",
+          f"- `coordinates_cov.npz` — [{N}, 9, 9] full per-patient covariance S_i (coherent; the full-S_i XD arm, P2-04).",
           "- `validation_table.parquet` — cohort/arm/age/sex/education/site.",
           "- `proj.npz` — raw explicit projection (mean/sd/draws).", "",
           "Figure: `docs/figures/20_coverage.png`."]

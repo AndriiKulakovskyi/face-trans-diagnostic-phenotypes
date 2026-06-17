@@ -280,7 +280,8 @@ treatment) is feasible now without new data (DR excluded — no follow-up Rx).
   inflammatory scores. Artifacts: `reports/06_invariance_report.md` (+ `06_congruence.csv`, `06_dif_items.csv`);
   `scripts/06_invariance.py` · `src/face/runner.py`. Working pattern: subsample ≈2k + multi-seed + resumable
   cache + progress (§3.6).
-- **S5 certification (§3.6/§4.5, DONE — largest-N documented):** the reported 7-dim map, multi-seed at
+- **S5 certification (§3.6/§4.5, DONE — largest-N documented):** the 7-dim S5 cert (later extended to the
+  **reported 9-dim joint map** — mania + substance integrated, below), multi-seed at
   N≈2,000 cohort-balanced (tune 2000 · draws 1500 · ta 0.9, 2 seeds). **§4.4 rung-3 reparam:** diagnosed
   the slow locus as the **CTQ→G bifactor loadings** (dev is explicit ⇒ 2-explicit-factor ridge, ESS 30);
   the `bifactor_g_sd` knob tightens dev/suic→G toward 0 (they're ≈⊥G) **leaving the biology→G estimand

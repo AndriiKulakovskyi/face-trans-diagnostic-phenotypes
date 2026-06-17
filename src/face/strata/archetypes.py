@@ -66,6 +66,41 @@ def stability(X, A, seeds=(0, 1, 2, 3), n_init=2):
             "min_tucker_congruence": float(min(congr)) if congr else 1.0, "n_seeds": len(seeds)}
 
 
+def archetype_location_uncertainty(X, draws, cols, A, *, ref_Z=None, n_draw=40, n_boot=40,
+                                   hdi_prob=0.94, seed=0, n_init=1):
+    """Archetype ANCHOR (location) uncertainty (P3-04/05).
+
+    The fixed-anchor projection (``project_draws``) fits the anchors ONCE on the posterior-mean
+    coordinates and propagates only MEMBERSHIP uncertainty. This re-fits the anchors across (a) M1
+    posterior draws (measurement-error uncertainty) and (b) patient bootstraps (sampling uncertainty),
+    Hungarian-aligns each re-fit to a reference, and reports where each extreme phenotype ITSELF sits —
+    a profile mean + HDI + stability per archetype, which the rare corners (inflammatory/suicidality)
+    most need. Returns ``Z_ref``/``Z_mean``/``Z_lo``/``Z_hi`` [A,D], ``profile_sd`` [A,D],
+    ``min_tucker_per_arch`` [A], ``n_refits``."""
+    rng = np.random.default_rng(seed)
+    X = np.asarray(X, dtype="float64")
+    if ref_Z is None:
+        _, ref_Z, _, _ = fit_aa(X, A, seed=seed, n_init=4)
+    N, S = X.shape[0], draws.shape[0]
+    aligned = []
+    for s in rng.choice(S, size=min(n_draw, S), replace=False):       # measurement-error re-fits
+        _, Z, _, _ = fit_aa(np.asarray(draws[s])[:, cols], A, seed=seed, n_init=n_init)
+        aligned.append(Z[_align(ref_Z, Z)])
+    for _ in range(n_boot):                                           # patient-bootstrap re-fits
+        _, Z, _, _ = fit_aa(X[rng.integers(0, N, N)], A, seed=seed, n_init=n_init)
+        aligned.append(Z[_align(ref_Z, Z)])
+    stack = np.stack(aligned)                                         # [n_refit, A, D]
+    a = (1.0 - hdi_prob) / 2.0
+    lo, hi = np.quantile(stack, a, 0), np.quantile(stack, 1.0 - a, 0)
+
+    def _tuck(p, q):
+        return float(abs((p * q).sum()) / (np.sqrt((p ** 2).sum()) * np.sqrt((q ** 2).sum()) + 1e-12))
+
+    tuck = np.array([[_tuck(ref_Z[k], aligned[i][k]) for k in range(A)] for i in range(len(aligned))])
+    return {"Z_ref": ref_Z, "Z_mean": stack.mean(0), "Z_lo": lo, "Z_hi": hi,
+            "profile_sd": stack.std(0), "min_tucker_per_arch": tuck.min(0), "n_refits": len(aligned)}
+
+
 def project_to_Z(X, Z):
     """Simplex-constrained least squares: weights w≥0, Σw=1 minimizing ‖x − wZ‖² (the standard AA
     NNLS-with-sum-constraint trick). Used to project M1 draws / new patients onto FIXED archetypes."""

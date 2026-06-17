@@ -238,7 +238,8 @@ identification.
 ```
 
 Remaining priors: intercepts `α_j ~ Normal(0, 1.5)`; residual scale `σ_j ~ Half-t`; ordinal cutpoints
-`τ_j,·` ordered-normal; count dispersion `φ_j ~ Exponential(1)`; factor correlation `Φ ~ LKJ(η)`; latent
+`τ_j,·` ordered-normal; count concentration `α_j ~ Half-Normal(2)` (the NB inverse-dispersion, as fitted);
+factor correlation `Φ ~ LKJ(η)`; latent
 scores `G_i, D_ik ~ Normal(0, 1)`.
 
 The soft-prior block above is the formal mechanism of "theory suggests, data decides": most cross-loadings
@@ -424,8 +425,9 @@ questions more faithfully (script `scripts/05_confirm.py`, module `src/face/conf
 1. **Prior-free refit.** Re-fit the continuous backbone with *flat* loading priors (identification
    constraints only — sign-oriented home cells, signed cells centered at 0). A flat-prior MAP = MLE = FIML
    (§3.5); loadings/Φ that match the soft-prior fit show the structure is **earned from the data, not
-   manufactured by the priors**. *(Result, full N: Tucker congruence φ = 1.00 for every factor; max |ΔΦ|
-   = 0.00; flat-fit R-hat 1.00.)*
+   manufactured by the priors**. *(Result, full N, to 3 d.p.: Tucker congruence φ = 1.00 for every factor;
+   max |ΔΦ| = 0.00; flat-fit R-hat 1.00. The refit is independent — flat priors, fresh seed, no warm-start
+   from the soft-prior fit.)*
 2. **Posterior-predictive checks.** Model-implied vs observed pairwise correlations → a **Bayesian SRMR**
    and residual-correlation matrix (absolute fit), without the χ² asymptotics that fail under heavy
    missingness + non-normal indicators. *(Result: SRMR ≈ 0.07; misfit confined to repeated-measure item

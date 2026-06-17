@@ -84,6 +84,36 @@ def congruence_over_visits(fits: dict, factors, visits, seeds, reference: str = 
     return pd.DataFrame(rows)
 
 
+def intercept_drift(y, latent, visit, *, reference: str = "V0", hdi_prob: float = 0.94) -> dict:
+    """Anchor-based SCALAR-invariance test for one item: does its mean drift across visits BEYOND what
+    the latent change explains (P4-01)? Metric (Tucker) invariance tests loading *shape*; a latent-MEAN
+    change claim additionally needs scalar invariance (stable item intercepts). ANCOVA
+    ``y ~ 1 + latent + C(visit)``: the visit coefficient is the intercept shift after controlling for the
+    latent (standardized by sd(y) → Δα). |Δα| HDI excluding 0 ⇒ that item's intercept drifts (non-scalar).
+    Returns ``{visit: {delta_alpha, se, hdi_lo, hdi_hi, excludes_zero}}`` for each follow-up visit."""
+    from scipy.stats import norm
+    y, latent, visit = np.asarray(y, float), np.asarray(latent, float), np.asarray(visit)
+    ok = np.isfinite(y) & np.isfinite(latent)
+    y, latent, visit = y[ok], latent[ok], visit[ok]
+    vis = [v for v in pd.unique(visit) if v != reference]
+    if len(y) < 20 or not vis:
+        return {}
+    A = np.column_stack([np.ones_like(y), latent] + [(visit == v).astype(float) for v in vis])
+    beta, *_ = np.linalg.lstsq(A, y, rcond=None)
+    resid = y - A @ beta
+    dof = max(len(y) - A.shape[1], 1)
+    cov = (float((resid ** 2).sum()) / dof) * np.linalg.inv(A.T @ A)
+    sd_y = float(y.std()) or 1.0
+    z = float(norm.ppf(1 - (1 - hdi_prob) / 2))
+    out = {}
+    for i, v in enumerate(vis):
+        k = 2 + i
+        da, se = float(beta[k]) / sd_y, float(np.sqrt(max(cov[k, k], 0.0))) / sd_y
+        out[v] = dict(delta_alpha=round(da, 3), se=round(se, 3), hdi_lo=round(da - z * se, 3),
+                      hdi_hi=round(da + z * se, 3), excludes_zero=bool(abs(da) > z * se))
+    return out
+
+
 def axis_license(cong: pd.DataFrame) -> pd.DataFrame:
     """Per-factor temporal-invariance verdict from the worst follow-up φ: invariant (φ≥0.95) / partial
     (≥0.85) / non-invariant. This is the license stage 34 attaches to the panel."""

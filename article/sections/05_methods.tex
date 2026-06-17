@@ -54,8 +54,12 @@ through a single linear predictor
 with item intercept $\alpha_j$, general loading $\lambda_{jG}$, specific loadings
 $\lambda_{jk}$ (row $j$ of the loading matrix
 $\Lambda=[\,\lambda_G\mid\Lambda_D\,]\in\mathbb{R}^{J\times(K+1)}$), and item-level
-covariates $c_i$ (age, sex, education, site, cohort, assessment year) that adjust an
-indicator's \emph{mean} but are never factor indicators. Stacking one patient's items,
+covariates $c_i$ that adjust an indicator's \emph{mean} but are never factor indicators. The
+reported (primary) fit z-scores each indicator and omits the covariate term; covariate adjustment
+(age, sex, education, site; the $\beta_j^{\top}c_i$ / $Bc_i$ term, implemented by residualizing each
+indicator on those covariates before the factor model, Frisch--Waugh--Lovell-equivalent for Gaussian
+items) is a \emph{sensitivity} arm, and the biology--$G$ result is reported under both --- the
+adjustment \emph{strengthens} it (metabolic--$G$ $0.12\!\to\!0.06$; SI). Stacking one patient's items,
 with the general column separated from the specific block,
 \begin{equation}
   x_i=\mu_i+\underbrace{\lambda_G G_i}_{\text{general}}+\underbrace{\Lambda_D D_i}_{\text{specifics}}+\varepsilon_i,
@@ -90,9 +94,14 @@ units), a product over items (local independence), and an integral that removes 
 \paragraph{Bifactor / ESEM.} Equation~\eqref{eq:linpred} is a bifactor exploratory
 structural-equation model~\citep{reise2012bifactor,asparouhov2009esem}: \emph{bifactor}
 because every indicator may load on $G$ \emph{and} on its home specific factor;
-\emph{ESEM} because an indicator is additionally \emph{allowed} small cross-loadings,
-shrunk toward zero by the soft priors \eqref{eq:softprior}---unlike confirmatory factor
-analysis, which forbids cross-loadings outright. Two identifications of the factor
+\emph{ESEM} because an indicator is additionally \emph{allowed} small cross-loadings on its
+plausibly-related factors, shrunk toward zero by the soft priors \eqref{eq:softprior}---unlike
+confirmatory factor analysis, which forbids cross-loadings outright. The reported fit is a
+\emph{Bayesian sparse bifactor with selected ESEM windows} rather than a fully free rotation: cells
+marked \textsc{unlikely} are fixed at (equivalently, shrunk to) zero and specific$\leftrightarrow$specific
+cross-loadings are not freed (they are rotationally aliased with $\Phi$); a soft-zero sensitivity that
+instantiates the $\mathcal{N}(0,0.05^2)$ prior on the unlikely cells reproduces the map to loading
+congruence $0.97$ (SI). Two identifications of the factor
 covariance are estimated. In the \emph{bifactor} model (primary) $G\perp D_k$ and
 $D_k\perp D_l$, so $\Phi$ is block-diagonal, $\Phi=\operatorname{blockdiag}(1,\Phi_D)$;
 this is the cleanest first fit. In the \emph{correlated-\Gfac{}} model (sensitivity) the
@@ -143,7 +152,7 @@ $\rho(j,k)\in\{\textsc{primary},\textsc{cross},\textsc{unlikely},\textsc{forbidd
 where $\mathcal{N}_{+}$ truncates to $(0,\infty)$ and $\delta_0$ fixes the loading at zero.
 Remaining priors are weakly informative: $\alpha_j\sim\mathcal{N}(0,1.5^2)$;
 $\sigma_j=0.05+\mathrm{HalfNormal}(1)$ (the floor guards against a Heywood case);
-ordered-normal cutpoints $\tau_{j\cdot}$; $\phi_j\sim\mathrm{Exponential}(1)$; and
+ordered-normal cutpoints $\tau_{j\cdot}$; the negative-binomial concentration $\alpha_j\sim\mathrm{HalfNormal}(2)$; and
 $\Phi\sim\mathrm{LKJ}(\eta{=}2)$, whose density $\propto\det(\Phi)^{\eta-1}$ gently favours
 weakly correlated factors~\citep{lewandowski2009lkj}. Latent scores use a non-centred
 parameterization ($D_{ik}=z_{ik}$, $z_{ik}\sim\mathcal{N}(0,1)$, scale carried by the

@@ -1,0 +1,5 @@
+metric,diagonal_S,full_S
+BIC,199239.9,198385.6
+max |component mean shift|,,0.045
+MAP partition ARI (diag vs full),,0.914
+mean |off-diagonal S_i| (typical cross-dim uncertainty),,0.0181

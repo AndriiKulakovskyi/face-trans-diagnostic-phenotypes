@@ -113,8 +113,19 @@ data/processed/
 data/interim/
 data/artifacts/
 
-# Stage fit outputs (per-patient scores + idata; regenerable)
+# Stage fit outputs (per-patient scores + idata + persisted patient index; regenerable/confidential)
 results/face/
+
+# Detached-compute orchestration — local job state + logs + dashboard snapshot (regenerable)
+run/
+logs/
+RUN_STATE.md
+
+# Fit manifests are SHAREABLE reproducibility metadata (cohort counts, index HASH, seed, commit,
+# package versions, diagnostics — no per-patient rows), so they are tracked under results/manifests/.
+
+# Synthetic FACE-like data — regenerable from synthetic/generate_face_like.py (the generator is tracked)
+synthetic/data/
 
 # Confidential data archive — never commit
 data.zip

@@ -20,11 +20,18 @@ _LOG2PI = float(np.log(2.0 * np.pi))
 
 
 def _estep_k(X, S, mu_k, V_k):
-    """Per-component: log N(x_i | mu_k, V_k+S_i), plus T_k^{-1} and diff for the M-step. S is [N,D] diag."""
+    """Per-component: log N(x_i | mu_k, V_k+S_i), plus T_k^{-1} and diff for the M-step.
+
+    ``S`` is the known per-patient measurement error: ``[N, D]`` diagonal variances (default) OR the
+    FULL ``[N, D, D]`` covariance (the P2-04 faithfulness arm — uses the coherent-scorer cross-dimension
+    uncertainty instead of only the marginal SDs)."""
     N, D = X.shape
-    idx = np.arange(D)
     T = np.broadcast_to(V_k, (N, D, D)).copy()
-    T[:, idx, idx] += S                                   # T_i = V_k + diag(S_i)
+    if S.ndim == 3:                                       # full per-patient covariance S_i [N,D,D]
+        T = T + S
+    else:                                                 # diagonal noise [N,D]
+        idx = np.arange(D)
+        T[:, idx, idx] += S                               # T_i = V_k + diag(S_i)
     Tinv = np.linalg.inv(T)
     _, logdet = np.linalg.slogdet(T)
     diff = X - mu_k                                        # [N,D]
