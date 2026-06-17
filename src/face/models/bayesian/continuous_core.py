@@ -652,7 +652,7 @@ def _hurdle_nb_logp(pt, y, psi, mu, alpha):
 
 
 def build_mixed(mp: MixedPrep, psi_floor: float = 0.05, lkj_eta: float = 2.0,
-                hurdle_counts: bool = True):
+                hurdle_counts: bool = False):
     """Hybrid explicit/marginalized mixed-likelihood model (S3b). f_e=(G,suic,dev) explicit; the
     continuous specifics marginalized and coupled via the conditional Phi decomposition."""
     import pymc as pm
@@ -713,15 +713,21 @@ def build_mixed(mp: MixedPrep, psi_floor: float = 0.05, lkj_eta: float = 2.0,
             a = pm.Normal(f"a_{it}", 0.0, 1.5)
             lh = pm.TruncatedNormal(f"lh_{it}", mu=mp.ng_hp[it][0], sigma=mp.ng_hp[it][1], lower=0.0)
             lg = pm.Normal(f"lg_{it}", mp.ng_gp[it][0], mp.ng_gp[it][1])
-            alpha = pm.Exponential(f"alpha_{it}", 1.0)            # P1-10: dispersion prior matches §3.3
+            alpha = pm.HalfNormal(f"alpha_{it}", 2.0)            # NB concentration (the reported fit's prior)
             eta = a + lh * fh + lg * f_e[:, 0][obs]
             if hurdle_counts:
-                # P1-03/P1-02: a hurdle ties the zero-spike to the latent, so skip-logic structural zeros
-                # become a modelled gate rather than independent NB zeros that over-predict the high tail
-                # (the isf09a fix: plain NB predicted mean 13.4 vs observed 0.14). psi = P(Y>0 | latent).
+                # OPT-IN SENSITIVITY (off by default; the reported map uses plain NB). A hurdle separates
+                # the zero spike from the count process so the structural zeros stop being NB draws that
+                # over-predict the high tail (isf09a item-level fix: plain NB predicted mean 13.4 vs obs
+                # 0.14). psi = P(Y>0) is a FREE per-item probability — deliberately NOT latent-coupled (a
+                # psi = sigmoid(a + λ·f_home) double-loads the count item on its factor → a ridge, R-hat
+                # 1.56). Even decoupled, however, perturbing isf09a's likelihood destabilizes the fragile
+                # suicidality↔developmental Φ cell for some seeds (re-fit seed-1 R-hat 1.55 vs the plain-NB
+                # 1.01), so it is NOT adopted as primary — it trades a cosmetic item-level PPC fix for a
+                # structural-correlation's convergence. The suicidality factor is carried by its 7 binary
+                # ISF items (all reproduce in PPC); isf09a is a thin item-level contributor.
                 apsi = pm.Normal(f"apsi_{it}", 0.0, 1.5)
-                lhpsi = pm.Normal(f"lhpsi_{it}", 0.0, 1.0)
-                psi = pm.Deterministic(f"psi_{it}", pm.math.sigmoid(apsi + lhpsi * fh))
+                psi = pm.Deterministic(f"psi_{it}", pm.math.sigmoid(apsi))
                 yv = pt.as_tensor(np.rint(y[obs]).astype("float64"))
                 pm.Potential(f"y_{it}", _hurdle_nb_logp(pt, yv, psi, pt.exp(eta), alpha).sum())
             else:

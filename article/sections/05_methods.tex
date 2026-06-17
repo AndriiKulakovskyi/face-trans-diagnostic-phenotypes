@@ -143,7 +143,7 @@ $\rho(j,k)\in\{\textsc{primary},\textsc{cross},\textsc{unlikely},\textsc{forbidd
 where $\mathcal{N}_{+}$ truncates to $(0,\infty)$ and $\delta_0$ fixes the loading at zero.
 Remaining priors are weakly informative: $\alpha_j\sim\mathcal{N}(0,1.5^2)$;
 $\sigma_j=0.05+\mathrm{HalfNormal}(1)$ (the floor guards against a Heywood case);
-ordered-normal cutpoints $\tau_{j\cdot}$; $\phi_j\sim\mathrm{Exponential}(1)$; and
+ordered-normal cutpoints $\tau_{j\cdot}$; the negative-binomial concentration $\alpha_j\sim\mathrm{HalfNormal}(2)$; and
 $\Phi\sim\mathrm{LKJ}(\eta{=}2)$, whose density $\propto\det(\Phi)^{\eta-1}$ gently favours
 weakly correlated factors~\citep{lewandowski2009lkj}. Latent scores use a non-centred
 parameterization ($D_{ik}=z_{ik}$, $z_{ik}\sim\mathcal{N}(0,1)$, scale carried by the

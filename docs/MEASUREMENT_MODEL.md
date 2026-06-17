@@ -238,7 +238,8 @@ identification.
 ```
 
 Remaining priors: intercepts `α_j ~ Normal(0, 1.5)`; residual scale `σ_j ~ Half-t`; ordinal cutpoints
-`τ_j,·` ordered-normal; count dispersion `φ_j ~ Exponential(1)`; factor correlation `Φ ~ LKJ(η)`; latent
+`τ_j,·` ordered-normal; count concentration `α_j ~ Half-Normal(2)` (the NB inverse-dispersion, as fitted);
+factor correlation `Φ ~ LKJ(η)`; latent
 scores `G_i, D_ik ~ Normal(0, 1)`.
 
 The soft-prior block above is the formal mechanism of "theory suggests, data decides": most cross-loadings
