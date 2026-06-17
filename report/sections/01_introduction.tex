@@ -3,75 +3,131 @@
 
 \subsection{The problem: heterogeneity inside the diagnostic label}
 Bipolar disorder (BP), schizophrenia (SZ), and major depressive disorder (DR) are defined by polythetic,
-consensus criteria. Two patients with the same diagnosis can share few symptoms; one patient's biology,
-cognition, and course can resemble a patient with a different diagnosis more than a same-diagnosis peer. For
-treatment selection and prognosis this categorical resolution is too coarse: the label predicts the
-\emph{average} patient, not the patient in front of the clinician. The response, developed over the last decade
-in the NIMH Research Domain Criteria (RDoC) and the Hierarchical Taxonomy of Psychopathology
-(HiTOP)~\cite{insel2010rdoc,kotov2017hitop}, is to describe psychopathology along \emph{continuous dimensions}
-that cut across diagnostic boundaries and units of analysis (behaviour, cognition, physiology).
+consensus criteria: a patient qualifies by meeting some threshold number of symptoms drawn from a longer
+list. Two patients with the \emph{same} diagnosis can therefore share almost no symptoms, while a given
+patient's biology, cognition, and course can resemble someone with a \emph{different} diagnosis more than a
+same-diagnosis peer. For prognosis and treatment selection this categorical resolution is too coarse: the
+label predicts the \emph{average} patient in a class, not the individual in front of the clinician.
 
-FACE-ATLAS operationalizes that idea on the FACE cohorts. It separates two questions that are routinely
-conflated:
+Two research programs have grown up in response, and they bet on opposite shapes for psychiatric variation.
+The \emph{dimensional} program --- the NIMH Research Domain Criteria (RDoC) and the Hierarchical Taxonomy of
+Psychopathology (HiTOP)~\cite{insel2010rdoc,kotov2017hitop} --- replaces categories with \emph{continuous
+axes} of dysfunction that cut across diagnoses and units of analysis (behaviour, cognition, physiology). The
+\emph{biotype} program instead searches for \emph{new discrete subgroups}: data-driven clusters meant to
+carve patients more sharply than DSM does~\cite{clementz2016biotypes}.
+The two make incompatible claims --- smooth gradients versus latent kinds --- and FACE-ATLAS treats that
+disagreement as an empirical question rather than a premise; we return to how the FACE-ATLAS results sit within
+both programs, and the wider biomedical literature, in Chapter~\ref{sec:evidence}.
+
+\subsection{Measurement before stratification}
+Asking the question cleanly requires separating two problems that are routinely conflated.
 \begin{itemize}\setlength{\itemsep}{1pt}
-  \item \textbf{Measurement} --- where does each patient sit on a small set of continuous, diagnosis-agnostic
-  axes of clinical and biological variation? This \emph{builds the map}.
-  \item \textbf{Stratification} --- which regions of that map define decision-relevant subgroups? This
-  \emph{draws validated territories on the map}.
+  \item \textbf{Measurement} --- where does each patient sit on a small set of continuous,
+  diagnosis-agnostic axes of clinical and biological variation? This \emph{builds the map}.
+  \item \textbf{Stratification} --- do those coordinates fall into decision-relevant regions, and are those
+  regions \emph{discrete or graded}? This \emph{draws validated territories on the map}.
 \end{itemize}
-The two must not be collapsed. Clustering raw instruments and naming the clusters is a \emph{theory-imposed
-scoring system}, not discovery; it bakes the answer into the feature choice. FACE-ATLAS instead estimates the
-measurement model first and lets stratification act on the estimated coordinates later.
+Collapsing the two is the classic error. Clustering raw instruments and naming the clusters is a
+\emph{theory-imposed scoring system}, not a discovery: it bakes the answer into the choice of features and the
+choice of distance. FACE-ATLAS instead estimates the measurement model first and lets stratification act on
+the estimated coordinates --- carrying their uncertainty --- only afterwards. Whether the map harbours
+biotypes or a continuum is then something the data \emph{answer} (Chapter~\ref{sec:strata}), not something the
+method assumes.
 
-\subsection{How the report is organized: one map, five questions}
-The work is a single argument, built as five questions that depend on one another --- each can be asked
-honestly only once the previous one is answered, so the order is logical, not administrative. The conceptual
-pipeline runs in four layers (cohorts $\to$ dimensions $\to$ strata $\to$ prognosis/treatment); the five
-questions below walk through it, and each is a chapter of this report.
+\subsection{What this report establishes}
+On the harmonized three-cohort FACE baseline ($N=9{,}013$), the program reaches one calibrated result, stated
+here in advance so the rest of the report can be read as its defence:
+\begin{quote}
+\emph{The FACE cohorts hide a real, stable, transdiagnostic map --- a certified nine dimensions --- on which
+biological load is nearly independent of clinical severity; the map is a graded \textbf{continuum} rather than
+a set of biotypes; it forecasts two-year functioning at the \emph{group} level beyond diagnosis and severity;
+and, on observational data, it does \emph{not} reliably guide treatment.}
+\end{quote}
+The load-bearing finding is the first. Metabolic and inflammatory burden are the \emph{least
+severity-entangled} domains in the map --- they correlate with the general functional-burden factor at only
+$0.14$ and $0.06$, against $0.39$ for cognition and $0.44$ for sleep --- so biological risk rides on axes that
+a clinician's global impression of severity does not see. Two consequences follow and organize the later
+chapters: a stratification can exploit that orthogonal signal (Chapter~\ref{sec:strata}), and a prognostic
+model can read future functioning from it (Chapter~\ref{sec:prognosis}).
+
+A word on stance. The positive claims are deliberately bounded, and the \emph{negative and modest} results ---
+a continuum rather than clean biotypes, a group-level rather than individual-level prognostic gain, and
+\emph{no} demonstrable treatment moderation in observational data --- are reported as the contribution, not
+buried beneath the positive ones. Scientific validity (a real, stable map carrying genuine signal) is within
+reach of this baseline cohort; strong individual-level clinical utility is not, and the report says so wherever
+it applies.
+
+\subsection{The method in one paragraph: hybrid discovery}
+The map is estimated by a \emph{single} global, missingness-aware Bayesian sparse bifactor / ESEM model ---
+a factor model with one general axis touching every indicator (a general dimension of the kind reported across
+psychopathology~\cite{caspi2014pfactor}), plus specific axes for each domain, which
+additionally permits small data-driven cross-loadings (Chapter~\ref{sec:model}) --- with mixed likelihoods,
+fit to the baseline visit. Its candidate structure is a \emph{soft prior ontology}, not a fixed output:
+theory says where each instrument \emph{should} load, and the likelihood is free to \emph{confirm, split,
+merge, downgrade (proxy), reject}, or --- where no indicator exists --- declare a candidate \code{not_testable}.
+The soft priors are the formal mechanism of ``theory proposes, data decides'': most cross-loadings are shrunk
+toward zero, but the likelihood can pull any of them away if the data demand it.
+
+\begin{definitionbox}[Three objects kept distinct throughout]
+\textbf{Candidate construct} --- a clinical idea, encoded as a soft prior over loadings.\quad
+\textbf{Empirical dimension} --- a stable, data-supported axis of covariance.\quad
+\textbf{Patient stratum} --- a recurring, decision-relevant region of the map (the subject of the
+stratification chapter). A candidate is a hypothesis; a dimension is a result; a stratum is an action boundary.
+\end{definitionbox}
+
+Each candidate runs the same gauntlet (Figure~\ref{fig:discovery}): proposed as a soft prior, entered into one
+global fit, and given a verdict. \textbf{Ten constructs were proposed.} Three of them --- impulsivity,
+negative symptoms, and sensory abnormalities --- carry no FACE common-variable indicator and are reported
+\code{not_testable}; stating that is itself a result, not a failure. The fit then placed overall severity as
+the general factor $G$, confirmed cognition, sleep, and suicidality, \emph{split} the single
+metabolism/immunometabolism construct into two weakly-correlated axes (metabolic and inflammatory), and
+downgraded neurodevelopment to a \emph{developmental-risk proxy}; anhedonia, carried by a single thin
+indicator, proved inseparable from $G$ and the depression windows and was \emph{rejected}. Two further
+constructs --- \textbf{mania} and \textbf{substance use} --- were added once their indicators were ingested
+into the harmonized dataset, and both were confirmed. The certified map is therefore \textbf{nine dimensions}:
+$G$ plus cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality, mania, and substance ---
+what survived adversarial checking, not what was assumed.
+
+\begin{figure}[h]\centering
+\discoveryflow
+\caption{Hybrid discovery as a verdict pipeline. Theory proposes; one global fit disposes. Each candidate is
+\emph{confirmed}, \emph{split}, relabelled a \emph{proxy}, \emph{rejected}, or declared \emph{not-testable},
+with the FACE outcomes shown. Mania and substance were added after the original ten, once their indicators
+entered the dataset. This is the formal sense in which the data are allowed to overturn the theory.}
+\label{fig:discovery}
+\end{figure}
+
+\subsection{One argument, five questions}
+The report is a single argument, built as five questions that depend on one another --- each can be asked
+honestly only once the previous one is answered \emph{yes}, so the order is logical, not administrative. The
+conceptual pipeline runs in four layers (cohorts $\to$ dimensions $\to$ strata $\to$ prognosis/treatment); the
+five questions walk through it, and each is a chapter.
 
 \programstrip{0}
 
 \begin{enumerate}\setlength{\itemsep}{1pt}
   \item[\textbf{Exist?}] \textbf{Transdiagnostic dimensions} --- the measurement map, built on the baseline
   visit (Chapters~\ref{sec:data}--\ref{sec:scoring}).
-  \item[\textbf{Organize?}] \textbf{Validated strata} --- the decision regions those coordinates support
-  (Chapter~\ref{sec:strata}).
-  \item[\textbf{Persist?}] \textbf{Temporal coherence} --- whether the coordinates hold across the follow-up
-  visits (Chapter~\ref{sec:temporal}).
+  \item[\textbf{Organize?}] \textbf{Validated strata} --- the decision regions those coordinates support, and
+  whether they are discrete or graded (Chapter~\ref{sec:strata}).
+  \item[\textbf{Persist?}] \textbf{Temporal coherence} --- whether the coordinates and strata hold across the
+  follow-up visits (Chapter~\ref{sec:temporal}).
   \item[\textbf{Predict?}] \textbf{Prognosis} --- incremental predictive value beyond diagnosis and severity
   (Chapter~\ref{sec:prognosis}).
   \item[\textbf{Guide treatment?}] \textbf{Treatment} --- whether a stratum moderates treatment response
   (Chapter~\ref{sec:treatment}).
 \end{enumerate}
 
-\subsection{The method in one paragraph: hybrid discovery}
-The ten candidate dimensions are a \emph{soft prior ontology}, not fixed outputs. Theory proposes a candidate
-structure; the data estimate the actual factor structure, loadings, cross-loadings, hierarchy, and validity. A
-single global, missingness-aware Bayesian sparse bifactor / ESEM model with mixed likelihoods is fit to the
-harmonized baseline, and the data are free to \emph{confirm, split, merge, downgrade (proxy), reject, or declare
-not-testable} any candidate. The soft priors are the formal mechanism of ``theory suggests, data decides'':
-most cross-loadings are shrunk toward zero, but the likelihood can pull any of them away if the data demand it.
-
-\begin{definitionbox}[Three objects kept distinct throughout]
-\textbf{Candidate construct} --- a clinical idea, encoded as a soft prior over loadings.\quad
-\textbf{Empirical dimension} --- a stable, data-supported axis of covariance.\quad
-\textbf{Patient stratum} --- a recurring, decision-relevant region of the map (the subject of the stratification chapter).
-A candidate is a hypothesis; a dimension is a result; a stratum is an action boundary.
-\end{definitionbox}
-
-Each candidate runs the same gauntlet (Figure~\ref{fig:discovery}): it is proposed as a soft prior, enters one
-global fit, and receives a verdict. On the FACE data this loop confirmed nine dimensions (one a \emph{split} of
-the biology candidate, one a \emph{proxy} relabelling), rejected one (anhedonia), and declared three
-\code{not_testable} for want of indicators --- the map is what survived adversarial checking, not what was
-assumed.
-
-\begin{figure}[h]\centering
-\discoveryflow
-\caption{Hybrid discovery as a verdict pipeline. Theory proposes; one global fit disposes. Each candidate is
-\emph{confirmed}, \emph{split}, relabelled a \emph{proxy}, \emph{rejected}, or declared \emph{not-testable},
-with the FACE outcomes shown. This is the formal sense in which the data are allowed to overturn the theory.}
-\label{fig:discovery}
-\end{figure}
+This document is the methods-of-record and the as-built record for the whole program, written at a level of
+detail beyond a journal article so that it can both seed the eventual manuscript and serve as the project's
+standing technical reference. Chapter~\ref{sec:data} describes the data foundation and the no-imputation
+contract; Chapter~\ref{sec:model} specifies the measurement model from first principles; Chapter~\ref{sec:estimation}
+develops the estimation strategy that makes full-sample inference tractable; Chapters~\ref{sec:results}--\ref{sec:scoring}
+report the empirical map, its hardening, and the per-patient coordinates; and Chapters~\ref{sec:strata}--\ref{sec:treatment}
+answer the remaining four questions. Chapter~\ref{sec:engineering} documents the software; Chapter~\ref{sec:roadmap}
+and Chapter~\ref{sec:limitations} collect the future studies and the open problems. Appendices gather notation,
+the prior and empirical atlases, the acceptance-gate definitions, the full factor-correlation matrix, and a
+glossary of instruments.
 
 \subsection{Load-bearing invariants}
 Three commitments are enforced at every layer of the system, from the data loader to the likelihood. They are
@@ -92,39 +148,8 @@ A fourth, structural commitment supports the first three: there is \emph{one} gl
 harmonized matrix. An instrument absent for a cohort is simply a missing cell under the observed-data
 likelihood --- there are no cohort-specific ``modules.'' Coverage is emergent and flagged per patient, never a
 structural sub-model. And crucially, \emph{a dimension requires indicators}: the model can discover a
-statistical dimension but cannot discover a construct that is not measured; a candidate with no valid indicators
-is reported \code{not_testable}, never back-filled with an invented proxy.
-
-\subsection{What this report contributes, and how to read it}
-The claim, in one sentence: \emph{the FACE cohorts hide a real, stable, transdiagnostic biological map --- a
-graded continuum, not a set of biotypes --- on which biological load is nearly independent of clinical
-severity; the map forecasts two-year functioning at the group level beyond diagnosis and severity, yet, on
-observational data, does not reliably guide treatment.} Scientific validity is demonstrated; strong
-individual-level clinical utility is not --- and the modest and negative results are reported as the
-contribution, not buried beneath the positive ones. This document is the methods-of-record and the as-built
-record for the whole program, written at a level of detail beyond a journal article so that it can both seed
-the eventual manuscript and serve as the project's standing technical reference. Chapter~\ref{sec:data}
-describes the data foundation and the no-imputation contract.
-Chapter~\ref{sec:model} specifies the measurement model: the candidate ontology, the soft priors, and the
-bifactor/ESEM generative model with mixed likelihoods. Chapter~\ref{sec:estimation} develops the estimation
-strategy --- the staged continuation, the Gaussian-block marginalization and its identity with FIML, the
-low-rank Woodbury likelihood, and the compute strategy that makes full-$N$ inference tractable.
-Chapter~\ref{sec:results} reports the as-built empirical map (\textbf{nine dimensions}) and the candidate
-adjudication. Chapter~\ref{sec:validation} presents the full hardening chain --- estimator/prior-robustness
-confirmation, multi-seed certification, resample robustness, cross-cohort measurement invariance, and
-absolute-fit posterior-predictive checks across both likelihood blocks. Chapter~\ref{sec:scoring} projects the
-map to per-patient coordinates with reliability flags. Chapter~\ref{sec:strata} asks whether those
-coordinates harbour discrete biotypes (they do not: a continuum) and develops the eight extreme phenotypes,
-the severity spine, and the DSM-5 head-to-head that describe it. Chapter~\ref{sec:temporal} scores the fixed
-map and strata onto the follow-up visits and tests whether they \emph{persist}; Chapter~\ref{sec:prognosis}
-tests whether they \emph{predict} two-year outcomes beyond diagnosis and severity; and
-Chapter~\ref{sec:treatment} tests whether a stratum \emph{moderates} treatment response.
-Chapter~\ref{sec:engineering} documents the software: repository structure, the config-first design, the test
-suite, and the two engineering bugs found and fixed \emph{with measurement}. Chapter~\ref{sec:roadmap}
-collects the future studies the work points to, and Chapter~\ref{sec:limitations} states the limitations and
-open problems. Appendices collect notation,
-the prior and empirical atlases, the acceptance-gate definitions, the full factor-correlation matrix, and a
-glossary of instruments.
+statistical dimension but cannot discover a construct that is not measured; a candidate with no valid
+indicators is reported \code{not_testable}, never back-filled with an invented proxy.
 
 \begin{methodsbox}[Reading conventions]
 Coloured callouts flag \statuspill{facekr}{key results}, \statuspill{facedef}{definitions},

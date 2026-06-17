@@ -1,0 +1,136 @@
+\section{External evidence base: how the findings sit in the literature}
+\label{sec:evidence}
+
+The preceding chapters establish the FACE-ATLAS results internally. This chapter asks the complementary
+question: do they agree with what is already known? The purpose is to show the findings are neither isolated
+nor artefactual --- and the stance is \emph{calibration, not advocacy}. Where the published literature
+qualifies or contradicts a claim, we say so plainly, because a reviewer will probe exactly those points and the
+result is more persuasive for surviving the tension than for ignoring it. Every study cited here was retrieved
+and verified against PubMed (title, authors, journal, year, DOI) before inclusion; the full annotated set,
+including the papers we checked and set aside, is recorded in \file{docs/LITERATURE_EVIDENCE.md}.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{Claim-by-claim verdict against the external literature. ``Supported'' = a substantial independent
+literature agrees; ``open'' = an active, unsettled debate the work contributes to; ``calibrated'' = supported
+in direction but with a boundary the wording must respect.}
+\label{tab:evidence}
+\begin{tabular}{L{4.2cm} L{2.1cm} L{4.2cm} L{3.3cm}}
+\toprule
+\hdr{FACE-ATLAS claim} & \hdr{verdict} & \hdr{anchor support} & \hdr{honest tension}\\
+\midrule
+\rowcolor{facebg} Transdiagnostic dimensions over categories & supported & RDoC, HiTOP & ---\\
+General factor read as \emph{burden}, not a symptom ``p'' & supported & Caspi p-factor (impairment) & p-factor's meaning is contested\\
+\rowcolor{facebg} A graded \emph{continuum}, not discrete biotypes & open debate & normative models (Wolfers, Marquand) & B-SNIP biotypes (Clementz)\\
+\textbf{Biology $\perp$ severity} & \textbf{calibrated} & transdiagnostic metabolic/immune; immuno-metabolic subtype & case-control elevations; biology tracks \emph{function}\\
+\rowcolor{facebg} Metabolic and inflammatory are distinct axes & supported & different drivers / symptom maps & they co-cluster in a subgroup\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The dimensional turn and the general factor}
+The premise that severe mental illness is better described by continuous, diagnosis-crossing dimensions than by
+DSM categories is now a mainstream research program, formalized in the NIMH Research Domain Criteria and the
+Hierarchical Taxonomy of Psychopathology~\cite{insel2010rdoc,kotov2017hitop}. The general factor $G$ has a
+direct precedent: the ``p factor'' of psychopathology, where a single general dimension fit the structure of
+disorders better than internalizing/externalizing/thought-disorder factors and was read --- as $G$ is here ---
+as \emph{life impairment} rather than a specific symptom liability~\cite{caspi2014pfactor}. That dimension is
+also \emph{durable}: across four decades the diagnoses shift while the general dimension persists~\cite{caspi2020dunedin},
+the same trait-vs-state pattern FACE-ATLAS reports longitudinally (Chapter~\ref{sec:temporal}). The bifactor
+machinery itself is well-developed in psychometrics~\cite{reise2012bifactor,lahey2017general}.
+
+The honest qualification is that the \emph{meaning} of a general psychopathology factor is contested:
+symmetrical bifactor models can yield anomalous, sample-dependent solutions~\cite{heinrich2021bifactor}, and
+multi-informant work suggests a single-rater general factor partly reflects method variance~\cite{watts2021pfactor}.
+FACE-ATLAS sidesteps the worst of this by \emph{anchoring} $G$ on functioning and global-severity items only,
+so it carries no symptom content (Chapter~\ref{sec:results}) --- a deliberately conservative reading that
+answers the ``what does the general factor mean'' critique by construction rather than by interpretation.
+
+\subsection{Continuum or biotypes? an unsettled debate}
+FACE-ATLAS's conclusion that the transdiagnostic space is a graded continuum rather than a set of discrete
+biotypes (Chapter~\ref{sec:strata}) enters a live and genuinely unresolved debate, and intellectual honesty
+requires presenting the strongest opposing program as such. On the supporting side, individual-level
+\emph{normative modelling} of brain structure in exactly the FACE disorders finds patient deviations so
+heterogeneous that overlap exceeds a few percent at only a handful of loci --- ``the average patient'' is a
+non-informative construct~\cite{wolfers2018normative}, a framing introduced as a deliberate alternative to
+homogeneous case-control groups~\cite{marquand2016normative} and refined to show heterogeneity at the regional
+scale but partial convergence at the network scale~\cite{segal2023heterogeneity}. On the opposing side, the
+B-SNIP program used brain-based biomarkers to identify \emph{three replicable psychosis biotypes that ignore
+DSM boundaries}~\cite{clementz2016biotypes} --- direct evidence for discrete biological subgroups.
+
+\begin{caveatbox}[The biotype counter-evidence, stated fairly]
+The B-SNIP biotypes are the most serious challenge to a pure-continuum reading, and we do not dismiss them.
+Two points keep the accounts compatible rather than contradictory. First, they interrogate \emph{different
+measurement spaces}: B-SNIP clusters cognitive/electrophysiological brain biomarkers, whereas FACE-ATLAS finds
+no discrete structure on its nine clinical--biological dimensions (a five-method structure gate, adjusted Rand
+index $\approx 0$ vs.\ DSM subtypes; Chapter~\ref{sec:strata}). Clusters in one space need not survive in the
+other. Second, the B-SNIP data themselves described DSM \emph{diagnoses} as ``a single severity
+continuum''~\cite{clementz2016biotypes}, and the program's recent synthesis now endorses \emph{both} categorical
+and dimensional descriptions~\cite{clementz2024biotypes}. FACE-ATLAS is best read as a continuum claim about
+\emph{its} feature space, consistent with the normative-modelling heterogeneity literature, not as a refutation
+of brain-biomarker biotypes.
+\end{caveatbox}
+
+\subsection{The load-bearing claim: biology is largely severity-independent}
+The headline of the measurement map --- that metabolic and inflammatory load are nearly orthogonal to the
+general functional-burden factor ($\phi_{Gd}\approx 0.14$ and $0.06$; Chapter~\ref{sec:results}) --- is the
+claim most in need of external corroboration, and the one we state most carefully. The published literature
+does not report this exact contrast (a within-sample correlation between a biological-load factor and a
+functional-burden factor is, to our reading, novel), but a large body of convergent evidence supports its
+\emph{direction}, and a smaller body bounds its \emph{strength}. We therefore frame the finding as biology
+being \textbf{largely independent of a general clinical/functional-burden axis}, not as strict statistical
+orthogonality.
+
+\textbf{Why the direction is well-grounded.} Cardiometabolic burden in severe mental illness is
+\emph{transdiagnostic} and tracks age, body-mass index, medication and chronicity rather than diagnosis or
+symptom severity: the largest meta-analyses find metabolic-syndrome and diabetes prevalence essentially equal
+across schizophrenia, bipolar disorder and major depression, with multi-episode status and antipsychotic
+exposure --- not severity --- the operative predictors~\cite{vancampfort2015metabolic,vancampfort2016diabetes}.
+The biology is present \emph{before} chronic severity accrues: glucose dysregulation and insulin resistance
+appear in antipsychotic-naïve, first-episode and even pre-onset cohorts~\cite{pillinger2017glucose,perry2019dysglycaemia,garridotorres2022metabolic}.
+Inflammation, in turn, marks a \emph{subgroup} and \emph{specific symptoms} rather than the severity gradient:
+only about a quarter of depressed patients are inflamed by a CRP$>$3\,mg/L threshold~\cite{osimo2019prevalence},
+and where severity is tested directly, C-reactive protein tracks mood \emph{state} but not symptom severity in
+bipolar disorder~\cite{fernandes2016bipolar} and positive --- not negative --- symptoms in
+schizophrenia~\cite{fernandes2016schizophrenia}. Most strikingly, an independently developed framework ---
+\emph{immuno-metabolic depression} --- holds that inflammation and metabolic abnormality co-cluster in a
+$\sim$20--30\% subgroup mapping onto atypical, energy-related symptoms rather than overall
+burden~\cite{penninx2024imd,milaneschi2020imd,lamers2013subtypes,lamers2020profilers}. That is, by entirely
+different methods, the literature already describes biology as a partly separable dimension --- a strong
+convergent validation of the FACE axis.
+
+\textbf{Why ``independent'' must be qualified.} The tension is real and we state it. Case--control inflammatory
+elevations are not null (CRP--depression $d\approx0.15$; larger in some
+meta-analyses)~\cite{howren2009crp,osimo2020inflammation}; a modest severity/duration dose-response with
+metabolic burden exists~\cite{penninx2018metabolic,pillinger2022variability}; and --- the most pointed caveat,
+because $G$ is itself a \emph{functional}-burden axis --- metabolic dysfunction does track cognition and
+functioning in mood disorders~\cite{maksyutynska2024cognition}. Genetic correlations between inflammation and
+depressive symptoms are small but non-zero and largely carried by adiposity~\cite{kappelmann2021mr,khandaker2014il6},
+which is why raw inflammation--severity associations attenuate after body-mass-index adjustment. A
+FondaMental-adjacent study even reports a shared nutritional pathway loading onto \emph{both} symptoms and
+metabolic comorbidity~\cite{faugere2025vitamins}, and treatment-emergent weight gain can co-occur with symptom
+\emph{improvement}~\cite{luckhoff2018weight} --- a reminder that the biology--symptom relationship is
+treatment-mediated, not a simple severity coupling.
+
+\begin{keyresult}[The calibrated verdict on biology $\perp$ severity]
+The external literature \emph{supports the direction} of the FACE finding --- metabolic and inflammatory load
+are driven by medication, adiposity, chronicity and subgroup membership far more than by where a patient sits
+on a global severity axis, and constitute a partly separable biological dimension (the immuno-metabolic-subtype
+literature is almost a conceptual twin). It also \emph{bounds the strength}: case-control elevations and small,
+adiposity-carried severity associations mean the relationship is weak and confounded, not zero. The defensible
+claim is therefore \emph{``largely independent of a general clinical/functional-burden axis,''} with the
+$\phi_{Gd}\approx 0.06$--$0.14$ values read as a \emph{quantification} of a pattern the prior literature had
+described only qualitatively --- a contribution, and one the evidence base buttresses rather than contradicts.
+\end{keyresult}
+
+\subsection{What is novel here}
+Situating the work also clarifies its contribution. Prior transdiagnostic-structure research is either
+symptom-only (the p-factor and HiTOP traditions) or single-modality neuroimaging (the normative-model and
+B-SNIP traditions); the immuno-metabolic literature asserts a separable biological dimension but, to our
+reading, does not measure its correlation with a general bifactor. FACE-ATLAS instead places metabolic and
+inflammatory laboratory markers \emph{directly into} the transdiagnostic factor space --- alongside cognition,
+sleep, suicidality, mania and substance --- across three diagnostic cohorts at once, and \emph{quantifies} how
+entangled each biological axis is with overall functional burden. That immune dysfunction is a large,
+partly CNS-independent system in early psychosis~\cite{pillinger2019multisystem} makes such a measurement
+worth having. The novelty claim is therefore narrow and defensible: FACE-ATLAS is, to our knowledge, the first
+direct measurement --- with propagated uncertainty --- of how independent metabolic and inflammatory load are
+from a transdiagnostic functional-burden axis, converting a qualitatively known pattern into a coordinate.

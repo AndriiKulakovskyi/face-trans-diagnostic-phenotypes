@@ -80,7 +80,7 @@ the proper Bernoulli likelihood — demonstrating that non-Gaussian psychopathol
 the same correlated-factor space as the continuous biology without breaking identification.
 
 ### F6 — The map is larger than seven: mania and substance are real axes
-Two candidates were initially *deferred* (had indicators but were not staged). Closing that gap **confirmed
+Mania and substance were **added after the original ten**, once their indicators were ingested into the harmonized dataset; the joint refit then **confirmed
 both**: **mania** (YMRS/Altman, primary \|λ\| 0.49–0.76, \|G\| 0.15) and **substance** (alcohol/cannabis SUD
 + nicotine under the proper Bernoulli/NegBinom likelihoods, \|G\| 0.13). Re-certifying the **joint 9-dim**
 model integrated them under one shared Φ (R-hat ≤ 1.04, ESS ≥ 112, 0 div, cross-seed Tucker φ 0.993).
@@ -92,10 +92,10 @@ The loadings are **largely invariant** across BP/SZ/DR. The **honest exceptions*
 than hidden:
 - **G** — partial BP–SZ (SZ lacks the FAST anchor; G re-anchored on CGI-S/EGF/EQ-5D there).
 - **inflammatory in DR** — neutrophils load ≈ 0 in DR while eosinophils dominate (a real biological
-  re-weighting of the immune axis in the depression-at-risk cohort).
+  re-weighting of the immune axis in the DR cohort).
 - **mania-Altman in DR** — YMRS holds BP–DR (0.57/0.41) but the **self-rated Altman does not transfer**
   (0.76 → 0.10; Tucker φ 0.764). Self-reported manic activation is a near-floor signal in a
-  depression-at-risk cohort; clinician-rated YMRS carries mania there.
+  DR cohort; clinician-rated YMRS carries mania there.
 - **substance is invariant BP–SZ** (Tucker φ **0.997**) and is declared a **2-cohort axis** (its
   alcohol/cannabis SUD are BP/SZ-only; not claimed for DR).
 
@@ -145,7 +145,7 @@ The methodology is itself a contribution, and the path matters for reproducibili
 - **A resilient long-run compute pattern.** Long mixed fits are run **detached (`nohup`+`disown`) under
   `caffeinate` with a per-seed disk cache** — defeating macOS sleep and background-task reaping, and making
   every multi-hour certification resumable.
-- **The 7→9 discovery loop.** Closing the deferred-candidate gap (mania, substance) revealed the map is
+- **The 7→9 discovery loop.** Ingesting the mania and substance indicators revealed the map is
   larger than first reported; the response was to re-certify the *joint* 9-dim model rather than bolt the new
   axes on — keeping a single, internally consistent reported map.
 
@@ -177,7 +177,7 @@ for mania in DR).
 
 **Honesty as a design principle.** The pipeline is built to *let the data overturn the theory*: anhedonia was
 rejected, the biology candidate was split, neurodevelopment was demoted to a proxy, two candidates were
-promoted from deferred to confirmed, and one count item (`isf09a`) was flagged as mis-specified. The map is
+added and confirmed once their indicators were ingested, and one count item (`isf09a`) was flagged as mis-specified. The map is
 what survived adversarial checking, not what was assumed.
 
 ---

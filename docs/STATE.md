@@ -242,10 +242,10 @@ treatment) is feasible now without new data (DR excluded — no follow-up Rx).
 - **Confirmation:** **in-engine** — prior-free refit + PPC + WAIC (standalone FIML dropped, §5; semopy
   intractable/unreliable on the full backbone, and §3.5 makes the marginal = FIML). **Done** (see below).
 - **Dimension set (V0):** `G(severity)` · `cognition` · `metabolic` · `inflammatory` · `sleep` ·
-  `suicidality` · `developmental-risk` (3-cohort) + `anhedonia` (BP/DR, thin). Dropped: impulsivity,
+  `suicidality` · `developmental-risk` · `mania` · `substance` (mania + substance added once their indicators were ingested). Rejected: `anhedonia` (thin; absorbed by G + depression windows). Not testable: impulsivity,
   negative symptoms, sensory.
 - **Stack:** lean — PyMC + **NumPyro/JAX**. The marginalized (Woodbury) engine **certifies on the Mac M4
-  (CPU)**; the RTX 4090 is optional (faster for later mixed-likelihood stages). YAML configs; Parquet
+  (CPU)** — no GPU needed (the marginalization keeps it within budget). YAML configs; Parquet
   model-ready persistence (raw stays CSV); per-stage reports; notebook later.
 - **Repo:** package **`src/face/…`** (renamed from `src/v3`, tests green). Pipeline built so far:
   `scripts/01_build_data` (full-N V0 → Parquet) · `scripts/04_fit --stage {1,2}` (one canonical engine,
@@ -300,7 +300,7 @@ treatment) is feasible now without new data (DR excluded — no follow-up Rx).
   leave-one-cohort-out + diagnosis-balanced subsampling + **site cluster-bootstrap** + **1/n_cohort-weighted
   fit** (§3.6) — **min φ ≥ 0.85** (map not an artefact of cohort imbalance, any single cohort, or site
   clustering). `scripts/08_robustness.py` → `reports/08_robustness_report.md`.
-- **9-dim joint integration (DONE):** mania + substance closed the deferred gap as **real dimensions**, so
+- **9-dim joint integration (DONE):** mania + substance were **added** (their indicators ingested) as **real dimensions**, so
   the reported map was re-certified at **9 dimensions** — 5 marginalized (cognition/metabolic/inflammatory/
   sleep/**mania**) + 4 explicit (G/suicidality/developmental/**substance**, substance's binary SUD under the
   proper Bernoulli likelihood). Certified: R-hat ≤ 1.04 · ESS ≥ 112 · 0 div · BFMI ≥ 0.41 · cross-seed Tucker

@@ -1,7 +1,21 @@
 \section{The measurement model}
 \label{sec:model}
 
+This chapter builds the measurement model from the bottom up. The promise is that, by the end, the sentence
+\emph{``the likelihood of the Bayesian posterior is an ESEM measurement model marginalized over its latents''}
+is something assembled from parts the reader fully owns, not taken on faith. We start from the candidate
+ontology (\S\ref{sub:ontology}), recall what a likelihood actually is (\S\ref{sub:likelihood}), write the
+generative model and the assumption that earns its factorization (\S\ref{sub:generative}), give each indicator
+its own likelihood (\S\ref{sub:mixed}), integrate the Gaussian latents out into the covariance identity at the
+heart of factor analysis (\S\ref{sub:marginal}), put the general factor under a microscope because the headline
+scientific number lives there (\S\ref{sub:Gdepth}), confront the rotation problem that makes the raw model
+non-identified (\S\ref{sub:identification}), and finally assemble the posterior, where the prior does a second
+job beyond regularization (\S\ref{sub:posterior}). The evaluation of this likelihood at full sample size
+(Woodbury) and the recovery of patient coordinates (scoring) are deferred to Chapters~\ref{sec:estimation}
+and~\ref{sec:scoring}.
+
 \subsection{The candidate ontology and the eligibility map}
+\label{sub:ontology}
 Theory proposes a set of candidate dimensions. Mapping them against the FACE \emph{common-variable} instrument
 coverage fixes the eligible model set (Table~\ref{tab:candidates}) --- and this map is itself a primary result,
 because stating which candidates have no measurable indicators is a finding, not a failure. At this stage each
@@ -9,9 +23,11 @@ candidate is judged only \emph{testable} (it has indicators) or \emph{not-testab
 (confirmed / split / proxy / rejected) is adjudicated from the fitted model in Chapter~\ref{sec:results}.
 
 \begin{table}[h]\centering\small\sffamily
-\caption{The candidate ontology and eligibility. Nine candidates carry usable common indicators and enter the
-model (the hypothesised \emph{split} of biology and \emph{proxy} reading of neurodevelopment are tested, not
-assumed); three have no common indicators and are reported \code{not_testable}.}
+\caption{The candidate ontology and eligibility. Three constructs (impulsivity, negative symptoms, sensory) have
+no FACE common indicator and are reported \code{not_testable}; the rest enter the fit. \emph{Mania} and
+\emph{substance} were added to the original ten once their indicators were ingested. The hypothesised
+\emph{split} of biology and \emph{proxy} reading of neurodevelopment are tested, not assumed; the empirical
+verdicts are adjudicated in Chapter~\ref{sec:results}.}
 \label{tab:candidates}
 \begin{tabular}{L{3.7cm} L{3.5cm} L{5.0cm} C{1.6cm}}
 \toprule
@@ -25,7 +41,7 @@ Sleep / circadian & sleep & PSQI total + sub-scores & 3-cohort\\
 Neurodevelopment & developmental-risk (proxy?) & perinatal, CTQ, age-of-onset, family history & 3-cohort\\
 \rowcolor{facebg} Mania / activation & mania & YMRS, Altman self-report & 3-cohort YMRS\\
 Substance use & substance (mixed) & alcohol/cannabis lifetime SUD, nicotine & BP/SZ\\
-\rowcolor{facebg} Anhedonia & anhedonia (thin) & QIDS anhedonia item & BP/DR\\
+\rowcolor{facebg} Anhedonia & anhedonia (thin; rejected) & QIDS anhedonia item & BP/DR\\
 Impulsivity & \code{not_testable} & no common scale & ---\\
 \rowcolor{facebg} Negative symptoms & \code{not_testable} & no PANSS / SANS & ---\\
 Sensory abnormalities & \code{not_testable} & none & ---\\
@@ -40,17 +56,134 @@ separate affective factor and no extra ``depression'' dimension unless one emerg
 anchored by functioning and global severity \emph{only} --- so symptom severity informs the axes it belongs to
 rather than contaminating the general factor.
 
+\subsection{What a likelihood is, and the object we build}
+\label{sub:likelihood}
+Everything reduces to Bayes' theorem, which is itself the product rule of probability used twice. With $\Theta$
+the unknown structural parameters and $X_{\mathrm{obs}}$ the data,
+\begin{equation}
+\underbrace{p(\Theta\given X_{\mathrm{obs}})}_{\text{posterior}}\;\propto\;
+\underbrace{p(X_{\mathrm{obs}}\given\Theta)}_{\text{likelihood}}\;\cdot\;
+\underbrace{p(\Theta)}_{\text{prior}} .
+\label{eq:skeleton}
+\end{equation}
+That single proportionality is the entire Bayesian skeleton. Everything else is two activities: writing the
+likelihood (\S\ref{sub:generative}--\S\ref{sub:marginal}) and the prior (\S\ref{sub:posterior}), then computing
+with the product (Chapter~\ref{sec:estimation}).
+
+The crux is the word \emph{likelihood}. A probability model assigns a number to data given parameters,
+$p(x\given\theta)$, and the same symbol reads two ways. Fix $\theta$ and let the data vary, and it is a
+distribution \emph{over data} that integrates to one. Fix the data at what was actually observed and let
+$\theta$ vary, and it becomes the \textbf{likelihood} $L(\Theta)=p(X_{\mathrm{obs}}\given\Theta)$: \emph{not} a
+distribution over $\Theta$ (it does not integrate to one), but a \emph{score} answering ``how probable was the
+data I saw, if this were the true $\Theta$?''
+
+\begin{methodsbox}[The detective, not the dice]
+Think of a detective at a fixed crime scene (the data, which cannot change). Running through suspects (values of
+$\Theta$), each is asked: how plausibly would \emph{this} suspect have produced \emph{this exact} scene? The
+likelihood is the plausibility score across suspects --- it need not sum to one over suspects, because suspects
+are hypotheses ranked against fixed evidence, not a probability distribution. Our whole task is to write that
+score for the ESEM model and then multiply it by the prior.
+\end{methodsbox}
+
+For this model the likelihood will turn out to be an ESEM measurement model \emph{marginalized over its latent
+factor scores}. The next subsections construct it.
+
+\subsection{The generative model and the assumption that earns it}
+\label{sub:generative}
+Behind the many measured quantities we posit a few unobserved \emph{causes} --- latent factors. The empirical
+justification is parsimony: dozens of clinical variables move together, and the simplest explanation for
+``everything correlates'' is a small set of shared drivers. Each patient $i$ has a general-factor score and a
+vector of specific scores,
+\begin{equation}
+G_i \sim \Normal(0,1),\qquad D_i = (D_{i1},\dots,D_{iK})\Tn ,
+\end{equation}
+and we model each indicator as a \emph{linear reflection} of those drivers plus item-specific noise, keeping the
+general factor as its own term:
+\begin{equation}
+\label{eq:eta}
+\eta_{ij} \;=\; \alpha_j \;+\; \lambda_{jG}\,G_i \;+\; \sum_{k=1}^{K}\lambda_{jk}\,D_{ik}\;+\;\beta_j\Tn c_i .
+\end{equation}
+Read Eq.~\eqref{eq:eta} as the recipe for the \emph{expected reading} of instrument $j$ in patient $i$: a
+baseline level $\alpha_j$; a contribution $\lambda_{jG}G_i$ from overall burden; contributions $\sum_k
+\lambda_{jk}D_{ik}$ from the specific factors (mostly the home factor, plus small cross-loadings); and an
+adjustment $\beta_j\Tn c_i$ for nuisance covariates $c_i$ (age, sex, education, site, cohort, assessment year,
+and --- later --- medication). Covariates adjust an indicator's \emph{mean}; they are never dimension
+indicators --- like correcting a thermometer for altitude before reading the temperature, where altitude is not
+a ``temperature factor.'' Keeping them out of the factor space is what prevents a cohort difference from
+masquerading as a clinical dimension. The loading matrix $\Lambda\in\R^{J\times(K+1)}$ and the
+factor-correlation matrix $\Phi$ are the scientific estimands. Stacking the items of one patient, with the
+general column separated from the specific block,
+\begin{equation}
+\label{eq:xstack}
+x_i = \mu_i + \underbrace{\lambda_G\,G_i}_{\text{general}} + \underbrace{\Lambda_D\,D_i}_{\text{specifics}} + \varepsilon_i,
+\qquad \mu_i=\alpha+Bc_i,\qquad \Lambda=[\,\lambda_G\mid\Lambda_D\,].
+\end{equation}
+
+\paragraph{Local independence --- the defining assumption.} To get one patient's likelihood we need
+$p(x_i\given f_i)$, where $f_i=(G_i,D_i\Tn)\Tn$ is the full latent vector. Here we make the assumption on which
+all latent-variable measurement rests: given the patient's true latent scores, the items are
+\emph{conditionally independent},
+\begin{equation}
+p(x_i\given f_i,\Theta)\;=\;\prod_{j\in\Obs_i} p(x_{ij}\given f_i,\Theta).
+\end{equation}
+The idea is that the factors are the \emph{only} reason items correlate: knowing where a patient truly sits, the
+leftover wiggle in item~A says nothing about the leftover wiggle in item~B. In the Gaussian linear model this is
+\emph{identical} to ``the residual covariance $\Psi$ is diagonal'' --- local independence and diagonal $\Psi$
+are two faces of one assumption, that the factors \emph{explain away} all shared covariance. (This is also why
+filling missing cells is forbidden: the engine assumes the only thing linking items is the latent, so any
+invented value injects covariance the model would mistake for a real factor.)
+
+Because $f_i$ is unobserved and the likelihood must depend on $\Theta$ alone, we remove $f_i$ by the sum rule
+(integrate over every possibility for it), then multiply across independent patients:
+\begin{equation}
+\label{eq:fulllik}
+L(\Theta)=\prod_{i=1}^N p(x_i\given\Theta)
+=\prod_{i=1}^N \int\Big[\prod_{j\in\Obs_i} p(x_{ij}\given f_i,\Theta)\Big]\,\Normal(f_i;0,\Phi)\,df_i .
+\end{equation}
+This is the complete, first-principles likelihood: a product across patients (independence of units), a product
+across items (local independence), and an integral that removes the latent (the sum rule). Everything from here
+is \emph{evaluating this integral}.
+
+\paragraph{Bifactor / ESEM.} The structure in Eq.~\eqref{eq:eta} is a \textbf{bifactor / ESEM} (exploratory
+structural-equation model)~\cite{reise2012bifactor,asparouhov2009esem,marsh2014esem}. \emph{Bifactor} means
+every indicator may load on the general factor $G$ \emph{and} on its home specific factor; \emph{ESEM} means an
+indicator is additionally \emph{allowed} a small cross-loading onto other factors, shrunk toward zero by the
+soft priors (\S\ref{sub:roles}) --- unlike a classical confirmatory factor analysis, which forbids
+cross-loadings outright and forces every instrument into exactly one box. The image to hold is a hub-and-spoke
+(Figure~\ref{fig:bifactor}): $G$ is a hub wired faintly to every instrument; each specific factor is a spoke
+wired strongly to its own pool; a depression/anxiety ``window'' is an instrument wired only to the hub.
+
+\begin{figure}[h]\centering
+\bifactordiagram
+\caption{The bifactor / ESEM structure (schematic; 3 of the 8 specific factors shown). The general factor $G$
+links to \emph{all} indicators (light grey); each specific factor links to its own indicator pool (blue). A
+cross-loading ``window'' such as MADRS (dashed amber) loads only on $G$. $G$ becomes ``general'' only if the
+data place many indicators on it --- here it does not carry symptom content, so it reads as functional burden.}
+\label{fig:bifactor}
+\end{figure}
+
+\begin{definitionbox}[Two identifications of the specific factors]
+\textbf{Bifactor (primary).} $D_{ik}\sim\Normal(0,1)$, $\Corop(D_k,D_l)=0$, and $G\perp D_k$ --- the cleanest
+identification for a first stable fit; the specific block correlates only via $\Phi$, with $G$ held orthogonal.\\[3pt]
+\textbf{Correlated-$G$ (sensitivity).} $D_i\sim\Normal(0,\Phi_D)$ in a variant that \emph{lets} $G$ correlate
+with the biological specifics. This variant is essential: it tests whether ``$G\perp$ biology'' is an empirical
+finding or merely an artefact of the bifactor constraint (\S\ref{sub:Gdepth}; Chapter~\ref{sec:results} shows
+it refined the magnitude without changing the conclusion).
+\end{definitionbox}
+
 \subsection{Soft-prior loading roles}
-Every (indicator, dimension) cell receives a prior \emph{role}. The default is shrinkage, not hard exclusion:
-theory says where variables \emph{should} load; the likelihood is free to disagree (Figure~\ref{fig:priors}).
-Because a hybrid soft-prior ESEM is safe to over-seed --- an indicator with no real signal shrinks toward zero
---- every construct-relevant usable variable is seeded as an indicator, and only genuine confounders are
-reserved as covariates.
+\label{sub:roles}
+How does theory enter Eq.~\eqref{eq:eta}? Through the prior on each loading. Every (indicator, dimension) cell
+receives a prior \emph{role}; the default is shrinkage, not hard exclusion --- theory says where variables
+\emph{should} load, and the likelihood is free to disagree (Figure~\ref{fig:priors}). Because a hybrid
+soft-prior ESEM is safe to over-seed --- an indicator with no real signal shrinks toward zero --- every
+construct-relevant usable variable is seeded as an indicator, and only genuine confounders are reserved as
+covariates~\cite{carvalho2010horseshoe}.
 
 \begin{table}[h]\centering\small\sffamily
-\caption{Soft-prior roles and the induced prior on the loading $\lambda_{jk}$ (as built; the methods spec uses
-a slightly stronger primary mean of $0.70$). The near-zero \code{g_anchor_on_specific} role is what identifies
-the bifactor $G$ separately from the specifics.}
+\caption{Soft-prior roles and the induced prior on the loading $\lambda_{jk}$ (as built; the methods spec uses a
+slightly stronger primary mean of $0.70$). The near-zero \code{g_anchor_on_specific} role is what identifies the
+bifactor $G$ separately from the specifics.}
 \label{tab:priorroles}
 \begin{tabular}{L{4.6cm} L{5.0cm} L{4.4cm}}
 \toprule
@@ -67,67 +200,24 @@ covariate / outcome & adjust for / reserve for validation & not in $\Lambda$\\
 
 \begin{figure}[h]\centering
 \includegraphics[width=0.86\linewidth]{figures/fig_soft_priors.png}
-\caption{The soft priors are the formal mechanism of \emph{theory proposes, data disposes}. A home (primary)
-loading is pulled toward a substantial positive value; a plausible cross-loading is centred at zero but free to
-move; an unlikely cross-loading is shrunk hard toward zero. None is a hard constraint --- the likelihood can
-overrule any of them.}
+\caption{The soft priors are the formal mechanism of \emph{theory proposes, data disposes}. Picture a rubber
+band on each loading: a home (primary) loading gets a loose band pulling it toward a substantial positive value;
+a plausible cross-loading a band centred at zero but easily stretched; an unlikely cross-loading a short, stiff
+band pulling it hard to zero. None is a hard constraint --- strong evidence stretches even a stiff band, but a
+loading the data say nothing about sits where theory put it.}
 \label{fig:priors}
 \end{figure}
 
 The truncation $\lambda>0$ on home cells sign-anchors the rotation (orienting every factor so that
 \emph{higher} $=$ \emph{more burden/dysfunction}, after per-item sign flips applied in the data layer), which
 together with the soft-prior sparsity controls the rotational indeterminacy that otherwise plagues exploratory
-factor models.
-
-\subsection{The generative model}
-Index patients $i=1,\dots,N$, indicators $j=1,\dots,J$, specific dimensions $k=1,\dots,K$, and one general
-factor $G$. Each patient has a general-factor score and a vector of specific scores,
-\begin{equation}
-G_i \sim \Normal(0,1),\qquad
-D_i = (D_{i1},\dots,D_{iK}),
-\end{equation}
-and the linear predictor for indicator $j$ in patient $i$ is
-\begin{equation}
-\label{eq:eta}
-\eta_{ij} \;=\; \alpha_j \;+\; \lambda_{jG}\,G_i \;+\; \sum_{k=1}^{K}\lambda_{jk}\,D_{ik}\;+\;\beta_j\Tn c_i,
-\end{equation}
-where $\alpha_j$ is the item intercept, $\lambda_{jG}$ the general loading, $\lambda_{jk}$ the specific
-loading, and $c_i$ are item-level covariates (age, sex, education, site, cohort, assessment year, and --- later
---- medication). Covariates adjust indicator \emph{means}; they are never dimension indicators. The loading
-matrix $\Lambda\in\R^{J\times(K+1)}$ and the factor-correlation matrix $\Phi$ are the scientific estimands.
-
-The structure is a \textbf{bifactor / ESEM} (exploratory structural-equation model). \emph{Bifactor} means
-every indicator may load on the general factor $G$ \emph{and} on its home specific factor; \emph{ESEM} means
-an indicator is additionally \emph{allowed} a small cross-loading onto other factors, with those
-cross-loadings shrunk toward zero by the soft priors --- unlike a classical confirmatory factor analysis,
-which forbids cross-loadings outright and so forces every instrument into exactly one box. The image to hold
-is a hub-and-spoke (Figure~\ref{fig:bifactor}): $G$ is a hub wired (faintly) to every instrument, each
-specific factor a spoke wired (strongly) to its own pool; a depression/anxiety ``window'' is an instrument
-wired only to the hub.
-
-\begin{figure}[h]\centering
-\bifactordiagram
-\caption{The bifactor / ESEM structure (schematic; 3 of the 8 specific factors shown). The general factor $G$
-links to \emph{all} indicators (light grey); each specific factor links to its own indicator pool (blue). A
-cross-loading ``window'' such as MADRS (dashed amber) loads only on $G$. $G$ becomes ``general'' only if the
-data place many indicators on it --- here it does not carry symptom content, so it reads as functional burden.}
-\label{fig:bifactor}
-\end{figure}
-
-\begin{definitionbox}[Two identifications of the specific factors]
-\textbf{Bifactor (primary).} $D_{ik}\sim\Normal(0,1)$, $\Corop(D_k,D_l)=0$, and $G\perp D_k$ --- the cleanest
-identification for a first stable fit; the specific block correlates only via $\Phi$, with $G$ held orthogonal.\\[3pt]
-\textbf{Correlated-G (sensitivity).} $D_i\sim\Normal(0,\Phi)$ with $\Phi\sim\LKJdist(\eta)$, in a variant that
-\emph{lets} $G$ correlate with the biological specifics. This variant is essential: it tests whether
-``$G\perp$ biology'' is an empirical finding or merely an artefact of the bifactor constraint
-(Chapter~\ref{sec:results} shows it refined the magnitude without changing the conclusion).
-\end{definitionbox}
+factor models (\S\ref{sub:identification}).
 
 \subsection{Mixed-likelihood observation model}
-Each indicator is given the likelihood appropriate to its type; the project does \emph{not} coerce everything
-onto a shared continuous scale. Forcing a yes/no or a count variable onto a continuous ruler manufactures
-covariance that is an artefact of the rescaling and biases the very dimensions we are trying to estimate ---
-so each item keeps its natural scale, and the observation likelihood is what carries the variable type,
+\label{sub:mixed}
+The per-item factor $p(x_{ij}\given f_i,\Theta)$ uses the distribution appropriate to the variable's type, with
+the linear predictor $\eta_{ij}$ entering through the relevant link. This is generalized-linear-model logic:
+$\eta$ lives on an unbounded scale, and a link maps it to a probability, a rate, or a real value as needed,
 \begin{equation}
 X_{ij}\sim F_j(\eta_{ij},\theta_j),
 \end{equation}
@@ -135,13 +225,15 @@ with $F_j$ chosen per indicator as in Table~\ref{tab:likelihoods}.
 
 \begin{table}[h]\centering\small\sffamily
 \caption{The mixed-likelihood observation model. The continuous block (Gaussian/log-Gaussian) can be
-marginalized analytically (Chapter~\ref{sec:estimation}); the non-Gaussian block carries explicit latents.}
+marginalized analytically (\S\ref{sub:marginal}); the non-Gaussian block carries explicit latents
+(Chapter~\ref{sec:estimation}). The as-built continuous likelihood is Gaussian; Student-$t$ is available but is
+not analytically marginalizable, so it is reserved as a robustness option.}
 \label{tab:likelihoods}
 \begin{tabular}{L{5.0cm} L{4.0cm} L{5.0cm}}
 \toprule
 \hdr{indicator type} & \hdr{likelihood} & \hdr{form}\\
 \midrule
-\rowcolor{facebg} continuous / z-scored neuropsych & Gaussian (Student-$t$) & $X_{ij}\sim\Normal(\eta_{ij},\sigma_j^2)$\\
+\rowcolor{facebg} continuous / z-scored neuropsych & Gaussian (Student-$t$ option) & $X_{ij}\sim\Normal(\eta_{ij},\sigma_j^2)$\\
 skewed lab (CRP, triglycerides) & log-Gaussian & $\log X_{ij}\sim\Normal(\eta_{ij},\sigma_j^2)$\\
 \rowcolor{facebg} ordinal item ($C_j$ categories) & ordered logistic & $P(X_{ij}\!\le\! c)=\logitfn^{-1}(\tau_{jc}-\eta_{ij})$\\
 binary (ISF ideation/attempt; SUD) & Bernoulli-logit & $X_{ij}\sim\Bern(\logitfn^{-1}(\eta_{ij}))$\\
@@ -150,19 +242,17 @@ binary (ISF ideation/attempt; SUD) & Bernoulli-logit & $X_{ij}\sim\Bern(\logitfn
 \end{tabular}
 \end{table}
 
-This is what lets clinically essential but non-continuous constructs --- binary suicidal ideation, ordinal
-attempt lethality, count of cigarettes, lifetime substance-use disorder --- enter the \emph{same} correlated
-factor space as the continuous biology, rather than being crushed onto a pseudo-continuous scale or analysed
-separately.
-
-\subsection{Priors and missing data}
-The remaining priors are weakly informative: intercepts $\alpha_j\sim\Normal(0,1.5)$; residual scales
-$\sigma_j=0.05+\mathrm{HalfNormal}(1)$ (the floor guards against residual-variance collapse, a Heywood
-pathology); ordinal cutpoints ordered-normal; count dispersion $\phi_j\sim\mathrm{Exp}(1)$; and the
-factor-correlation $\Phi\sim\LKJdist(\eta{=}2)$. The likelihood sums over \emph{observed cells only},
+\emph{Use the right ruler for each quantity.} You weigh flour on a scale (continuous), count eggs as whole
+numbers (count), and record ``is the oven on?'' as yes/no (binary). Forcing a count or a yes/no onto a
+continuous ruler manufactures fake covariance --- an artefact of the rescaling --- that then biases the very
+dimensions being estimated. The mixed-likelihood design keeps each item on its native scale and lets the
+\emph{shared} prediction $\eta_{ij}$ be translated into the right kind of output, so binary suicidality and
+continuous biology live in \emph{one} correlated factor space, related through $\Phi$, rather than being crushed
+onto a pseudo-continuous scale or analysed separately.
 
 \begin{definitionbox}[Observed-data likelihood (invariant I1, formalized)]
-With $\Obs_i\subseteq\{1,\dots,J\}$ the indicators observed for patient $i$,
+With $\Obs_i\subseteq\{1,\dots,J\}$ the indicators observed for patient $i$, the log-likelihood sums over
+observed cells only:
 \[
 \log p(X_{\mathrm{obs}}\given\Theta)\;=\;\sum_{i=1}^{N}\sum_{j\in\Obs_i}\log F_j\!\left(X_{ij}\given\eta_{ij},\theta_j\right).
 \]
@@ -170,13 +260,133 @@ Missing cells contribute no term; a patient's latent coordinates are informed on
 indicators, and there is no completed matrix at any point.
 \end{definitionbox}
 
+\subsection{Marginalizing the Gaussian latents: the covariance identity}
+\label{sub:marginal}
+For the Gaussian items the inner integral of Eq.~\eqref{eq:fulllik} has a closed form, and the result is the
+identity at the heart of factor analysis. We derive it from the \emph{definition} of covariance, with the
+general factor explicit so its special role is visible. Using $\E[G_i]=0$, $\Varop(G_i)=1$, $\E[D_i]=0$,
+$\Covop(D_i)=\Phi_D$, $\E[\varepsilon_i\varepsilon_i\Tn]=\Psi$ (diagonal), and the two independence facts that
+do the real work --- $\E[G_iD_i\Tn]=\mathbf{0}$ (the bifactor orthogonality) and $(G_i,D_i)\perp\varepsilon_i$
+--- the cross-terms in $\Covop(x_i)=\E[(x_i-\mu_i)(x_i-\mu_i)\Tn]$ vanish and the survivors sum to
+\begin{equation}
+\label{eq:sigma}
+\Sigma \;=\; \underbrace{\lambda_G\lambda_G\Tn}_{\text{general: rank one}}
+\;+\; \underbrace{\Lambda_D\,\Phi_D\,\Lambda_D\Tn}_{\text{specific factors}}
+\;+\; \underbrace{\Psi}_{\text{private noise}}
+\;=\;\Lambda\,\Phi\,\Lambda\Tn+\Psi ,
+\end{equation}
+where the compact form uses $\Lambda=[\,\lambda_G\mid\Lambda_D\,]$ and the block-diagonal
+$\Phi=\bigl(\begin{smallmatrix}1&\mathbf{0}\Tn\\\mathbf{0}&\Phi_D\end{smallmatrix}\bigr)$ --- the zero
+off-diagonal block being precisely the encoding of $G\perp\text{specifics}$. Because $x_i$ is a linear
+combination of jointly Gaussian quantities it is itself Gaussian, $x_i\sim\Normal(\mu_i,\Sigma)$.
+
+\paragraph{The general factor's footprint.} $G$ contributes a \textbf{rank-one} term $\lambda_G\lambda_G\Tn$:
+every pair of items $j,j'$ co-varies through $G$ by exactly $\lambda_{jG}\lambda_{j'G}$. A single shared source
+touching all items produces a rank-one covariance pattern. The analogy: $G$ is a background hum every microphone
+picks up; because they all carry the \emph{same} hum it correlates every pair of channels, and because it is one
+source that correlation pattern has rank one. The specific factors are extra instruments heard only in their own
+clusters of microphones ($\Lambda_D\Phi_D\Lambda_D\Tn$); the residual $\Psi$ is each microphone's private static.
+
+\paragraph{Missing data is just the marginal property.} For patient $i$ with observed set $\Obs_i$, a foundational
+property of the multivariate normal is that any marginal is obtained by \emph{deleting} the unobserved
+coordinates from $\mu$ and $\Sigma$:
+\begin{equation}
+x_{i,\Obs_i}\sim\Normal\!\left(\mu_{i,\Obs_i},\;\Sigma_{\Obs_i\Obs_i}\right).
+\end{equation}
+``Integrating out the missing cells'' is therefore not an extra procedure --- it is the marginal property of the
+Gaussian. You grade each student only on the exams they actually sat; a blank neither helps nor hurts and is
+never invented. Summing $\log\Normal(\cdot)$ over each patient's observed sub-vector is \emph{exactly} the
+full-information maximum-likelihood (FIML) objective~\cite{enders2010missing} --- the precise identity
+exploited, and turned into a tractable computation by the Woodbury identity, in Chapter~\ref{sec:estimation}.
+Here we need only the fact that the model implies Eq.~\eqref{eq:sigma}.
+
+\subsection{The general factor $G$ in depth}
+\label{sub:Gdepth}
+The general factor is what makes this a \emph{bifactor} model rather than an ordinary correlated-factors model,
+and its (non-)entanglement with the specifics is the central scientific question --- so it is worth a microscope.
+Three facts distinguish $G$: unit variance (which fixes its scale), orthogonality to every specific
+($\E[G_iD_i\Tn]=\mathbf{0}$, the defining bifactor constraint), and independence from the residual. The middle
+fact lets $G$ be ``how much overall'' while the specifics carry ``what kind,'' the two not contaminating each
+other. $G$ is further \emph{anchored}: only functioning and global-severity items are allowed to define it, and
+those anchor items have their \emph{specific} loadings pinned near zero (the \code{g_anchor_on_specific} prior
+of Table~\ref{tab:priorroles}). Without such anchoring a column of nearly equal loadings could be absorbed into
+$G$ or redistributed among the specifics, and the two would be confounded.
+
+\paragraph{The headline lives in the off-diagonal block of $\Phi$.} Recall the term that vanished in
+Eq.~\eqref{eq:sigma} by orthogonality, $\E[G_iD_i\Tn]=\mathbf{0}$. The correlated-$G$ sensitivity model is
+exactly the model that \emph{unzips} that zero, freeing the off-diagonal block $\phi_{Gd}$,
+\begin{equation}
+\label{eq:corrG}
+\Phi=\begin{pmatrix}1 & \phi_{Gd}\Tn\\ \phi_{Gd} & \Phi_D\end{pmatrix},\qquad
+\Sigma=\lambda_G\lambda_G\Tn+\underbrace{\lambda_G\phi_{Gd}\Tn\Lambda_D\Tn+\Lambda_D\phi_{Gd}\lambda_G\Tn}_{\text{the terms orthogonality had removed}}+\Lambda_D\Phi_D\Lambda_D\Tn+\Psi .
+\end{equation}
+
+\begin{keyresult}[The very term the clean derivation dropped is the one the analysis exists to estimate]
+The vector $\phi_{Gd}$ --- the correlations between $G$ and each specific factor --- is the headline of the
+entire enterprise. ``Biology is the least severity-entangled domain'' is, mathematically, the statement that the
+$G$-row of $\Phi$ is near zero for the metabolic and inflammatory entries (values around $0.14$ and $0.06$) and
+far larger for cognition and sleep (around $0.39$ and $0.44$; Chapter~\ref{sec:results}). The bifactor's
+orthogonality is the \emph{null}; the correlated-$G$ arm measures how far from it the data sit. Two related
+lenses agree on the ordering --- the bifactor direct loading $|\lambda_{jG}|$ and the correlation $\phi_{Gd}$ ---
+and reporting both is what turns ``biology is separable'' from an artefact of one constraint into a finding.
+\end{keyresult}
+
+\subsection{Identification and the rotation problem}
+\label{sub:identification}
+One foundational fact explains \emph{why a prior is even needed}. A parameter is \textbf{identifiable} if
+distinct values always produce distinct distributions over the observable data. For Gaussian data the observable
+distribution is captured entirely by $(\mu,\Sigma)$, and the factor model has a disease: take any invertible
+$M$ and rotate,
+\begin{equation}
+\label{eq:rotation}
+\Lambda^\star=\Lambda M,\quad \Phi^\star=M^{-1}\Phi M^{-\top},\quad f^\star=M^{-1}f
+\;\;\Longrightarrow\;\;
+\Lambda^\star\Phi^\star(\Lambda^\star)\Tn+\Psi=\Lambda\Phi\Lambda\Tn+\Psi=\Sigma .
+\end{equation}
+The rotated parameters imply the \emph{identical} $\Sigma$, hence the identical likelihood, and are
+indistinguishable by any amount of data --- two recipes that always yield an identical-tasting dish. The loadings
+are \textbf{not identified} on their own. Confirmatory factor analysis resolves this by fixing enough loadings to
+exactly zero that no nontrivial $M$ preserves the structure; the Bayesian ESEM instead resolves it with the
+prior (\S\ref{sub:posterior}), which is the more flexible route --- it allows cross-loadings but breaks the
+symmetry softly~\cite{asparouhov2009esem,marsh2014esem}.
+
+\subsection{Assembling the posterior, and the prior's second job}
+\label{sub:posterior}
+We now have both ingredients of Eq.~\eqref{eq:skeleton}: the likelihood is the ESEM model of
+\S\ref{sub:generative}--\S\ref{sub:marginal}; the prior encodes theory. Beyond the loading roles
+(Table~\ref{tab:priorroles}), the remaining priors are weakly informative: intercepts
+$\alpha_j\sim\Normal(0,1.5)$; residual scales $\sigma_j=0.05+\mathrm{HalfNormal}(1)$ (the $+0.05$ floor guards
+against a Heywood case --- an item whose noise collapses to zero, claiming a factor explains it perfectly);
+ordinal cutpoints ordered-normal; count dispersion $\phi_j\sim\mathrm{Exp}(1)$; and the factor correlation
+$\Phi\sim\LKJdist(\eta{=}2)$, whose density $\propto\det(\Phi)$ puts more mass on weakly-correlated matrices ---
+a gentle thumb toward near-orthogonal factors, without forbidding correlations~\cite{lewandowski2009lkj}.
+
+The first job of the prior is ordinary regularization. The second is the one \S\ref{sub:identification} set up.
+The likelihood is unchanged by the rotation $\Lambda\to\Lambda M$, but the \textbf{prior is not}
+rotation-invariant: a rotation scrambles the loadings, so an entry the prior wanted near zero is no longer near
+zero and $p(\Lambda)$ drops. Therefore the posterior
+\begin{equation}
+p(\Lambda\given X)\;\propto\;\underbrace{p(X\given\Lambda)}_{\text{rotation-invariant}}\;\underbrace{p(\Lambda)}_{\text{not invariant}}
+\end{equation}
+concentrates at the \emph{one} orientation where the small loadings align with the soft-zero priors and the home
+loadings sit positive and substantial; the positive truncation additionally kills the sign-flip ambiguity.
+
+\begin{keyresult}[The shrinkage priors are the identification device, not decoration]
+The likelihood alone leaves a continuum of equally good loading matrices (Eq.~\eqref{eq:rotation}); the prior
+\emph{selects} the interpretable one. A corollary supplies the natural robustness check: under a flat loading
+prior the posterior mode equals the maximum-likelihood (FIML) solution, so a prior-free refit landing on the
+same loadings shows the structure is \emph{earned from the data, not manufactured by the priors}
+(Chapter~\ref{sec:validation} reports Tucker $\varphi=1.00$).
+\end{keyresult}
+
 \subsection{The prior atlas: the theory half of the deliverable}
+\label{sub:prioratlas}
 The soft-prior loading matrix is itself an artifact --- the \emph{prior atlas} (Figure~\ref{fig:prioratlas},
 Appendix~\ref{app:prioratlas}), an indicator$\times$factor heatmap of where each instrument is \emph{expected}
 to load, generated from configuration alone with no patient data. It encodes a block-diagonal primary structure
 (each factor anchored by its own pool), a faint $G$ column over every specific item (the bifactor mechanism by
 which $G$ becomes ``general'' only if the data put many specifics on it), the homeless cross-loading windows,
 and the hypothesised metabolic$\leftrightarrow$inflammatory bridge. The scientific deliverable of the
-measurement map is the \emph{prior $\to$ posterior} comparison (Chapter~\ref{sec:results}): this theory map placed beside the fitted
-empirical atlas, with a per-candidate verdict. As built, $143$ indicators across $10$ candidate factors enter
-as modelled cells.
+measurement map is the \emph{prior $\to$ posterior} comparison (Chapter~\ref{sec:results}): this theory map
+placed beside the fitted empirical atlas, with a per-candidate verdict. As built, $143$ indicators across the
+candidate factors enter as modelled cells.

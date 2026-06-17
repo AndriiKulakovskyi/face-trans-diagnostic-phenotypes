@@ -48,66 +48,35 @@
 {\color{facerule}\rule{\linewidth}{0.6pt}}\par\vspace{7pt}
 {\sffamily\bfseries\color{faceaccent}\small ABSTRACT}\par\vspace{5pt}
 {\small
-Psychiatric diagnosis aggregates heterogeneous patients into categories that are neither biologically nor
-prognostically uniform. \textbf{FACE-ATLAS} reorganizes the harmonized, three-cohort FACE baseline
-(bipolar disorder, schizophrenia, major depression; $N=9{,}013$) around \emph{continuous, diagnosis-agnostic
-axes of variation} rather than the diagnostic labels themselves. The report follows one argument through five
-questions --- does the map \emph{exist}, \emph{organize}, \emph{persist}, \emph{predict}, and \emph{guide
-treatment}? --- across the chain \emph{diagnostic cohorts $\to$ transdiagnostic dimensions $\to$ validated
-strata $\to$ prognosis $\to$ treatment}. It opens with the \emph{measurement map}, estimated by a single
-global, missingness-aware \textbf{Bayesian sparse bifactor / ESEM} model with \textbf{mixed likelihoods} and
-\textbf{soft loading priors}: clinical theory proposes a candidate ontology of ten dimensions, and the data
-\emph{confirm, split, merge, downgrade, or reject} each. Three invariants are enforced throughout: estimation
-uses each patient's \emph{observed cells only} (no imputation, full sample); diagnosis is treated as
-\emph{metadata}, never an indicator; and dimensions are discovered on the baseline visit, with later visits
-reserved for validation. A Gaussian-block marginalization with a low-rank Woodbury likelihood makes the
-full-sample fit tractable without subsampling or imputation; non-Gaussian indicators enter through a hybrid
-explicit/marginalized mixed-likelihood block. On the FACE data the model yields a \textbf{certified
-nine-dimension map} --- a general functional-burden factor $G$ and eight weakly-correlated specific axes
-(cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality, mania, substance) --- with
-depression/anxiety instruments placed as \emph{cross-loading windows} rather than a separate dimension, and
-anhedonia \emph{rejected}. The map is hardened end-to-end (prior/estimator robustness, multi-seed
-certification, resample robustness, cross-cohort invariance, and absolute-fit posterior-predictive checks
-across both likelihood blocks) and projected to per-patient coordinates with reliability flags. The headline
-finding: \textbf{biology --- metabolic and inflammatory load --- is the least severity-entangled domain}
-(a correlation with $G$ of $0.14$ and $0.06$, versus $0.39$ cognition and $0.44$ sleep), so biological risk rides
-on axes that clinical severity does not see. On these coordinates, the report next asks whether patients
-form discrete biotypes: a structure-discovery gate (five independent methods) finds none --- the
-transdiagnostic space is a graded \textbf{continuum}, represented as eight extreme phenotypes with every
-patient a soft blend, organized by biology and cognition far more than by diagnosis (adjusted Rand index
-$\approx 0$ against the seven DSM-5 subtypes; coordinate variance explained $\approx 21\%$ vs $\approx 5\%$).
-Severity is the continuum's spine, not a corner; metabolic and inflammatory load form their own extreme
-phenotypes. Scored forward onto follow-up visits
-(V0\,$\to$\,V1\,$\to$\,V2, never re-estimated), the signal is then shown to \emph{persist}: the measurement is
-invariant across visits, and the stratification geometry replays over time --- the cohort slides along the severity
-spine while individual biological positions and phenotype memberships are preserved (\emph{durable biology,
-moving symptoms}), confirmed by a variance decomposition and an independent geometric test that agree.
-The report then asks whether the map \emph{predicts}: on the fixed objects, an
-errors-in-variables Bayesian model tests whether a baseline coordinate or stratum forecasts a two-year
-outcome \emph{incrementally beyond diagnosis, severity, and the baseline outcome}. It does --- but
-\emph{modestly}, and for \emph{functioning} only: the durable metabolic and inflammatory axes and the eight
-archetypes add held-out predictive signal that survives attrition, measurement reliability and a
-permutation null, is \emph{co-informative} with DSM-5 (complementary, not a replacement) and
-\emph{course-dependent} (concentrated in the episodic bipolar and depression courses, saturated in chronic
-schizophrenia), while severity itself is autoregression-determined. Crucially the increment is
-\emph{group-level}: it sharpens a continuous functional forecast and separates archetypes, but the
-individual-decision gain is small (two-year functional-remission AUC $+0.017$ over diagnosis$+$severity),
-and the $14\%$--$60\%$ archetype-remission spread partly reflects baseline-severity differences between
-archetypes rather than the incremental signal alone. Finally, the report tests whether a stratum
-\emph{moderates treatment}. Treatment data --- absent from the harmonized variables but recoverable from
-the per-cohort source dictionaries, and harmonized here to common drug-class exposures --- is run through an
-overlap gate, a propensity model and doubly-robust errors-in-variables moderation. On observational
-treatment-as-usual the map does \emph{not} reliably moderate response: lithium response in bipolar disorder
-(the best-identified contrast) is a well-powered \emph{null}, an antipsychotic metabolic/inflammatory signal
-is suggestive but unconfirmed, and clozapine is confounded by channeling; the average treatment effects are
-themselves fragile to unmeasured confounding. The prognostic signal does, however, \emph{survive}
-adjustment for the drugs patients received. \textbf{Taken together}, the program demonstrates a
-transdiagnostic biological map that is real, stable, and a graded \emph{continuum} rather than a set of
-biotypes, carrying a small-but-genuine group-level prognostic signal for functioning and \emph{no}
-demonstrable treatment-moderation in observational data --- a deliberately \emph{calibrated} account, with
-the negative and modest results reported as such rather than as another over-claimed biotype. Establishing
+Psychiatric diagnosis aggregates biologically and prognostically heterogeneous patients into single
+categories. \textbf{FACE-ATLAS} reorganizes the harmonized three-cohort FACE baseline (bipolar disorder,
+schizophrenia, major depression; $N=9{,}013$) around \emph{continuous, diagnosis-agnostic axes of variation},
+and asks how far such a map can be pushed --- through five dependent questions: does it \emph{exist},
+\emph{organize}, \emph{persist}, \emph{predict}, and \emph{guide treatment}?\par\vspace{4pt}
+The map is estimated by a single global, missingness-aware \textbf{Bayesian sparse bifactor / ESEM} model with
+\textbf{mixed likelihoods}, fit to each patient's \emph{observed cells only} (no imputation, full sample), with
+diagnosis held out as \emph{metadata} and the axes discovered on the baseline visit. From ten candidate
+constructs the data certify a \textbf{nine-dimension map} --- a general functional-burden factor $G$ plus eight
+weakly-correlated axes (cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality, mania,
+substance) --- with depression/anxiety instruments placed as \emph{cross-loading windows} and anhedonia
+\emph{rejected}. The headline result: \textbf{biology --- metabolic and inflammatory load --- is the least
+severity-entangled domain} (correlations with $G$ of $0.14$ and $0.06$, versus $0.39$ for cognition and $0.44$
+for sleep), so biological risk rides largely on axes that overall clinical severity does not capture.\par\vspace{4pt}
+On these coordinates the space is a graded \textbf{continuum, not discrete biotypes} (five structure-discovery
+methods agree; adjusted Rand index $\approx 0$ against the DSM-5 subtypes), described by eight extreme
+phenotypes with every patient a soft blend and severity as its spine. Scored forward onto the follow-up visits
+the geometry \emph{persists} --- \emph{durable biology, moving symptoms}. It also \emph{predicts}, but modestly
+and for \emph{functioning} only: the durable biological axes and the archetypes add \emph{group-level} signal
+beyond diagnosis and severity (course-dependent; two-year functional-remission AUC $+0.017$ over
+diagnosis$+$severity), not a large individual-decision gain. And on observational treatment-as-usual the map
+does \emph{not} reliably \emph{moderate treatment} response --- lithium in bipolar disorder, the cleanest
+contrast, is a well-powered \emph{null}.\par\vspace{4pt}
+\textbf{Taken together}, FACE-ATLAS demonstrates a transdiagnostic biological map that is real, stable, and a
+\emph{continuum} rather than a set of biotypes, carrying a small-but-genuine group-level prognostic signal for
+functioning and \emph{no} demonstrable treatment moderation in observational data --- a deliberately
+\emph{calibrated} account in which the modest and negative results are reported as such. Establishing
 individual-level clinical utility or treatment guidance would require incident-event outcomes, randomized
-treatment data, and external validation that this baseline observational cohort cannot provide.}\par\vspace{7pt}
+treatment data, and external validation beyond this baseline observational cohort.}\par\vspace{7pt}
 {\color{facerule}\rule{\linewidth}{0.6pt}}
 
 \vfill
@@ -134,6 +103,7 @@ configurations.}
 \input{sections/m3_temporal}
 \input{sections/m4_prognosis}
 \input{sections/m5_treatment}
+\input{sections/evidence_base}
 \input{sections/07_engineering}
 \input{sections/08_roadmap}
 \input{sections/09_limitations}

@@ -15,7 +15,7 @@
 *Read this first; the per-stage sections below carry the detail and the numbers.*
 
 > **UPDATE (M1 complete, 9-dim):** the staged-fit sections below develop and report the **7-dimension**
-> map; closing the deferred candidates then confirmed **mania** and **substance**, so the final reported
+> map; **mania** and **substance** were then **added** (their indicators ingested) and confirmed, so the final reported
 > map is a **certified 9-dimension joint S5** (+ mania marginalized, + substance explicit with proper
 > Bernoulli SUD likelihood; R-hat ≤ 1.04 · ESS ≥ 112 · 0 div · cross-seed φ 0.993). The current verdict on
 > every candidate is in [`ADJUDICATION.md`](ADJUDICATION.md); the **paper-facing findings + discussion**

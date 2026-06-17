@@ -99,7 +99,7 @@ almost no information with the diagnostic taxonomy; every phenotype and region m
 subtypes (with only weak gradients — Cramér's V 0.18–0.28). **Interpretation:** the strata **cut across**
 DSM-5 — the necessary precondition for adding anything beyond it. Clinically coherent gradients remain
 (the mania corner is BP-heavy with almost no depression-cohort patients; the severity+cognition corner draws
-the most schizophrenia and depression-at-risk patients), but no phenotype *is* a diagnosis.
+the most schizophrenia and major-depression patients), but no phenotype *is* a diagnosis.
 
 ### F6 — The strata describe the cloud better than DSM-5 (descriptively)
 Head-to-head on the coordinates (§1.7): a free 4-region mixture reaches **BIC 199,325 versus 206,016 for a
