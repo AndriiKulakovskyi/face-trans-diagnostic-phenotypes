@@ -24,7 +24,7 @@ diagnostic cohorts → transdiagnostic dimensions → validated strata → progn
    (entry metadata)     (M1 — complete, 9-dim)        (M2 — this)        (M4 / M5)
 ```
 
-M1 delivered the **measurement model**: a certified 9-dimension map and **per-patient coordinates with
+M1 delivered the **measurement model**: a 9-dimension map and **per-patient coordinates with
 uncertainty** on V0. M2 delivers the third arrow: **patient strata** — *recurring, decision-relevant
 regions* of that 9-dimensional space. We keep three objects distinct throughout (M1 §1.2):
 
@@ -131,8 +131,8 @@ different milestones:
   | validator family | example | milestone |
   |---|---|---|
   | antecedent / concurrent | childhood adversity, held-out biology/cognition, demographics | M2 (partial) |
-  | **predictive** ⭐ | relapse, hospitalization, functioning trajectory, suicide attempt | **M4** |
-  | **treatment** ⭐ | stratum × treatment-response interaction (changes management) | **M5** |
+  | **predictive**  | relapse, hospitalization, functioning trajectory, suicide attempt | **M4** |
+  | **treatment**  | stratum × treatment-response interaction (changes management) | **M5** |
 
 This operationalizes the project's central bet (**biology⊥G**): biology-aware strata should predict
 biologically-relevant course/outcomes (metabolic, inflammatory, treatment side-effects) that DSM-5 +
@@ -153,15 +153,15 @@ observed-indicator count, and a reliability tier (`well ≥3` · `partial 1–2`
 
 | # | dimension | M1 source | full-N as scored by M1? |
 |---|---|---|---|
-| 0 | overall_severity (G) | continuous, analytic conditional-Gaussian | ✅ all 9,013 |
-| 1 | cognition | continuous | ✅ (2,506 prior-dominated) |
-| 2 | metabolic | continuous | ✅ |
-| 3 | inflammatory | continuous | ✅ (1,684 prior-dominated) |
-| 4 | sleep | continuous | ✅ |
-| 5 | mania_activation | continuous (2 indicators) | ✅ (**partial for all**) |
-| 6 | suicidality | explicit non-Gaussian `f_e` | ⚠️ subsample only → **M2.0** |
-| 7 | developmental_risk | explicit non-Gaussian `f_e` | ⚠️ subsample only → **M2.0** |
-| 8 | substance | explicit non-Gaussian `f_e` | ⚠️ subsample only + **2-cohort (no DR)** → **M2.0** |
+| 0 | overall_severity (G) | continuous, analytic conditional-Gaussian | yes all 9,013 |
+| 1 | cognition | continuous | yes (2,506 prior-dominated) |
+| 2 | metabolic | continuous | yes |
+| 3 | inflammatory | continuous | yes (1,684 prior-dominated) |
+| 4 | sleep | continuous | yes |
+| 5 | mania_activation | continuous (2 indicators) | yes (**partial for all**) |
+| 6 | suicidality | explicit non-Gaussian `f_e` |  subsample only → **M2.0** |
+| 7 | developmental_risk | explicit non-Gaussian `f_e` |  subsample only → **M2.0** |
+| 8 | substance | explicit non-Gaussian `f_e` |  subsample only + **2-cohort (no DR)** → **M2.0** |
 
 **Decision (planning gate):** strata/archetypes are built on **all nine** dimensions. This makes M2.0 — the
 **full-N projection of the three explicit (non-Gaussian) axes** — a *prerequisite*, not a later extension
@@ -429,7 +429,7 @@ data layer (covariates)─┘       full-N f_e projection · cov/draws · labels
 
 **M2.0 detail (the prerequisite).** The 6 continuous axes are already full-N (analytic conditional-Gaussian,
 M1 §7). The 3 explicit axes are non-Gaussian latents `f_e`; full-N projection scores each patient's posterior
-on `f_e` **conditional on the fixed certified 9-dim measurement parameters** (loadings, cutpoints/thresholds,
+on `f_e` **conditional on the fixed 9-dim measurement parameters** (loadings, cutpoints/thresholds,
 dispersion, Φ) given that patient's observed binary/ordinal/count indicators — a per-patient conditional
 posterior (Laplace/variational or short conditional MCMC under fixed Λ,θ), **not** a re-fit of M1. DR
 contributes no `substance` cell. Output extends `patient_scores.parquet` to full-N × 9 with (mean, SD, HDI,
@@ -577,7 +577,7 @@ reports/  2x_*.md per stage (+ figures in docs/figures/)
 docs/     STRATIFICATION_MODEL.md (this) · STRATA_FINDINGS.md · STRATA_ATLAS.md
 ```
 
-Reuse M1 infrastructure: `src/face/scoring` (conditional scores, reliability flags), the certified 9-dim fit
+Reuse M1 infrastructure: `src/face/scoring` (conditional scores, reliability flags), the 9-dim fit
 (`results/face/s5_cert9_s1/idata.nc`), and the robustness scaffolding (`scripts/08_robustness.py`,
 `results/face/robust_cache`). Lean stack — no DVC/Hydra/MLflow; YAML configs; Parquet model-ready tables;
 fixed seeds; long fits run detached under `caffeinate` with a per-seed cache (the M1 pattern). Every number

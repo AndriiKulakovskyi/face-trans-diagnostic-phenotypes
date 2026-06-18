@@ -127,7 +127,9 @@ def main():
 
     # ---- report ----
     sev = {t: or_tables[t].loc["overall_severity"] for t in TARGETS}
-    sev_dir = ("the sicker LEAVE" if sev["retained_V1"].OR < 1 else "the sicker STAY")
+    sev_row = sev["retained_V1"]
+    sev_dir = (("the sicker LEAVE" if sev_row.OR < 1 else "the sicker STAY")
+               if sev_row.informative else "severity-neutral")
     n_inf = int(coef[coef.target == "retained_V1"].informative.sum())
     bio_inf = coef[(coef.target == "retained_V1") & (coef.axis.isin(["metabolic", "inflammatory"]))
                    & coef.informative]
@@ -140,8 +142,9 @@ def main():
           "retained sample a *fair* draw from the V0 map, or does position predict who stays?", "",
           f"## Informative-dropout verdict — **{verdict}**",
           f"- **Severity (G):** OR(V1) = **{sev['retained_V1'].OR:.2f}** "
-          f"[{sev['retained_V1'].OR_lo:.2f}, {sev['retained_V1'].OR_hi:.2f}] → **{sev_dir}** per +1 SD of "
-          "global burden" + ("." if not sev["retained_V1"].informative else " (CI excludes 1)."),
+          f"[{sev['retained_V1'].OR_lo:.2f}, {sev['retained_V1'].OR_hi:.2f}] → **{sev_dir}** "
+          + ("per +1 SD of global burden (CI excludes 1)." if sev["retained_V1"].informative
+             else "— global burden does not predict dropout per +1 SD; the informative signal is on other axes, not severity."),
           f"- {n_inf}/9 axes are individually informative for V1 retention (94% CI excludes OR=1).",
           ("- **Biology corners** (metabolic/inflammatory) "
            + ("show informative dropout: " + ", ".join(f"{r.axis} OR {r.OR:.2f}" for r in bio_inf.itertuples())

@@ -12,10 +12,10 @@ considered, per-stage observations) → [`STRATA_RESULTS.md`](STRATA_RESULTS.md)
 
 ## 1. Summary
 
-On the **certified M1 9-dimension coordinates** for all **N = 9,013** FACE V0 patients (BP 6,252 · SZ 2,209 ·
+On the **M1 9-dimension coordinates** for all **N = 9,013** FACE V0 patients (BP 6,252 · SZ 2,209 ·
 DR 552), each carrying per-patient posterior uncertainty, we asked whether decision-relevant **strata** exist
 — and, critically, *what kind of structure* the transdiagnostic space has, before imposing any clustering.
-The answer is a **graded continuum, not discrete biotypes**: cluster-tendency, modality, density, and
+The answer is a **graded continuum, with no evidence for well-separated discrete biotypes**: cluster-tendency, modality, density, and
 topology diagnostics converge on "no natural kinds" (gap-statistic K=1, HDBSCAN 0 clusters, unimodal PC1,
 a smooth archetype scree with no elbow, a flat mixture-BIC basin). We therefore represent the continuum two
 complementary, uncertainty-propagating ways: **(i) eight stable extreme phenotypes (archetypes)** — the
@@ -145,7 +145,7 @@ G as a bifactor spine, substance as a low-information 2-cohort axis — and were
   and noting where they agree, is the robustness argument.
 - **A full-N projection that reproduces the joint fit.** M1 had scored three non-Gaussian axes
   (suicidality/developmental/substance) only on its fit subsample; M2.0 projected them onto all 9,013 under
-  the fixed certified parameters and **reproduced the certified latent at Pearson r ≈ 1.00** on the overlap —
+  the fixed parameters and **reproduced the fixed latent at Pearson r ≈ 1.00** on the overlap —
   extending the map to full N with no re-fit and no imputation.
 - **A fair head-to-head vs DSM-5.** Comparing a free mixture to a DSM-5-*constrained* mixture under the
   identical measurement-error likelihood, and decomposing coordinate variance per partition, operationalizes
@@ -170,7 +170,7 @@ subtypes (and severity) on course and treatment response?* — a sharper, more d
 clusters the true kinds?"
 
 **Why biology⊥G is again the consequential finding.** That metabolic and inflammatory load form their own
-extreme phenotypes — orthogonal to the severity spine — is what makes the map worth building. A stratification
+extreme phenotypes — independent of the severity spine — is what makes the map worth building. A stratification
 that only recovered severity tiers would be a re-dressed CGI-S; this one separates patients who look equally
 ill but are biologically opposite, which is the precise hypothesis a precision-psychiatry layer should test.
 

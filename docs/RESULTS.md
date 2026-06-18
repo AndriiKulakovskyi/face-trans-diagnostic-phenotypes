@@ -16,7 +16,7 @@
 
 > **UPDATE (M1 complete, 9-dim):** the staged-fit sections below develop and report the **7-dimension**
 > map; **mania** and **substance** were then **added** (their indicators ingested) and confirmed, so the final reported
-> map is a **certified 9-dimension joint S5** (+ mania marginalized, + substance explicit with proper
+> map is the **largest-N-documented 9-dimension joint S5** (+ mania marginalized, + substance explicit with proper
 > Bernoulli SUD likelihood; R-hat ≤ 1.04 · ESS ≥ 112 · 0 div · cross-seed φ 0.993). The current verdict on
 > every candidate is in [`ADJUDICATION.md`](ADJUDICATION.md); the **paper-facing findings + discussion**
 > synthesis is [`M1_FINDINGS.md`](M1_FINDINGS.md); current status in [`STATE.md`](STATE.md); per-patient
@@ -40,7 +40,7 @@ specific axes — estimated from each patient's *observed* cells (no imputation)
 | **inflammatory** | immuno-inflammatory load | CRP, WBC, neutrophils, platelets | 0.39 |
 | **sleep** | sleep/circadian | PSQI objective sub-scores | 0.48 |
 | **developmental-risk** | early adversity / liability | CTQ childhood trauma, age-of-onset, WURS, perinatal, family history | 0.42 |
-| **suicidality** | ideation/attempt | ISF binary ideation/attempt (+ count), isf07 | binary 2.7–3.4 (logit) |
+| **suicidality** | ideation/attempt | ISF binary ideation/attempt (+ count), isf07 | binary 2.2–2.7 (logit) |
 
 **Inter-dimension correlations (Φ)** are *weak* — mean |off-diagonal| ≈ **0.10**, i.e. the six specifics are
 **genuinely distinct axes**, not facets of one severity factor. The only non-trivial couplings are clinically
@@ -52,10 +52,12 @@ adversity ↔ suicidality), and sleep's mild links to developmental (0.19) and s
 separate "affective" factor and no 11th dimension.
 
 **The load-bearing biology⊥G premise, refined.** Tested under both identifications: in the **bifactor**,
-biology's direct G-loadings are ≈ 0 (metabolic 0.08, inflammatory 0.07); in the **correlated-G** sensitivity,
-the biology *factors* correlate **0.28 (metabolic)** / **0.14 (inflammatory)** with G — vs cognition 0.35,
-sleep 0.47. So biology is **the least severity-entangled domain** (≈ 92–98% of its variance independent of G),
-but **not strictly orthogonal** — the exact claim is *"largely severity-independent,"* not *"orthogonal."*
+biology's direct G-loadings are ≈ 0 (metabolic 0.08, inflammatory 0.07); in the **correlated-G** sensitivity
+(clean continuous-backbone fit), the biology *factors* correlate **0.12 (metabolic)** / **0.07 (inflammatory)**
+with G — vs cognition 0.39, sleep 0.42. So biology is **the least severity-entangled domain** (≈ 98.5–99.5% of
+its variance independent of G), but **not strictly orthogonal** — the exact claim is *"largely
+severity-independent,"* not *"orthogonal."* *(The provisional S5 mixed-fit read of 0.28/0.14 in §S5.3 below is
+superseded; canonical values in [`BIOLOGY_G_TABLE.md`](BIOLOGY_G_TABLE.md).)*
 
 **Hybrid adjudication, end to end.** Of the 10 candidate dimensions, the FACE data **confirmed 6 + G**,
 **split** candidate-5 into metabolic + inflammatory, **rejected** anhedonia (thin; merges into G + depression),
@@ -107,37 +109,37 @@ and the three with no common indicators (impulsivity, negative symptoms, sensory
 
 The map exists; these finish and harden it (all named in the methods doc):
 
-- ✅ **Estimator/prior confirmation** (§5) — **DONE**: prior-free refit (Tucker φ = 1.00) + PPC (SRMR ≈ 0.07)
+- **Estimator/prior confirmation** (§5) — **DONE**: prior-free refit (Tucker φ = 1.00) + PPC (SRMR ≈ 0.07)
   + WAIC (bifactor decisively preferred). See `reports/05_confirmation_report.md`. *(Replaced the planned
   classical FIML — semopy intractable on the full backbone; §3.5 makes the marginal = FIML.)*
-- 🟡 **S5 certification** (§4.5/§3.6) — **DONE (largest-N documented):** multi-seed at N≈2,000 cohort-balanced,
+-  **S5 certification** (§4.5/§3.6) — **DONE (largest-N documented):** multi-seed at N≈2,000 cohort-balanced,
   §4.4 rung-3 reparam (CTQ→G tightened; biology→G free). R-hat 1.03 · ESS 114–158 · 0 div · BFMI 0.40; **
   cross-seed Tucker φ 0.993** (loadings/Φ resample-stable). suic~dev Φ *precision* is the documented limit.
   See `reports/07_s5_certification_report.md`.
-- ✅ **Correlated-G sensitivity** (§3.1, biology⊥G refinement) — **DONE.** Relaxing G⊥specifics (all factors
+- **Correlated-G sensitivity** (§3.1, biology⊥G refinement) — **DONE.** Relaxing G⊥specifics (all factors
   freely correlated, simple structure, clean fit: R-hat 1.01 · ESS 421 · **0 div**) confirms biology is the
-  **least severity-entangled** domain: G correlates **+0.06 inflammatory · +0.14 metabolic** vs **+0.39
-  cognition · +0.44 sleep** — biology's are the lowest, well below cognition/sleep (even cleaner than the
+  **least severity-entangled** domain: G correlates **+0.07 inflammatory · +0.12 metabolic** vs **+0.39
+  cognition · +0.42 sleep** — biology's are the lowest, well below cognition/sleep (even cleaner than the
   provisional 0.14/0.28). Engine fix: `g_correlated` Φ now a **unit-row Cholesky** (pm.LKJCorr n≥5 breaks
   jitter-init; LKJCholeskyCov's nuisance sd funnels → divergences). `scripts/s5_corrg.py` →
   `reports/07_corrG_report.md`. *Remaining S5 sub-item:* mixed-model PPC (the continuous PPC is done, §5).
-- ✅ **Measurement invariance** across BP/SZ/DR (§8) — **DONE** (in-engine, per-cohort simple-structure,
+- **Measurement invariance** across BP/SZ/DR (§8) — **DONE** (in-engine, per-cohort simple-structure,
   N≈600/cohort × 3 seeds, 9/9 converged): **largely invariant** — cognition/metabolic/sleep invariant
   everywhere, G invariant except BP–SZ (partial), **inflammatory non-invariant in DR** (neutrophils load
   ≈0 in DR, eosinophils high). Documented partial invariance. See `reports/06_invariance_report.md`.
-- ✅ **Robustness** (§8) — **DONE:** loading congruence vs the certified S2 reference under leave-one-cohort-out
+- **Robustness** (§8) — **DONE:** loading congruence vs the certified S2 reference under leave-one-cohort-out
   + diagnosis-balanced subsampling + **site cluster-bootstrap** + **1/n_cohort-weighted fit** (§3.6): **min
   Tucker φ ≥ 0.85** — not an artefact of cohort imbalance, any single cohort, or site clustering.
   `reports/08_robustness_report.md`.
-- ✅ **Per-patient scoring at scale** (§7) — **DONE:** all 9,013 patients (continuous core) + suic/dev
+- **Per-patient scoring at scale** (§7) — **DONE:** all 9,013 patients (continuous core) + suic/dev
   (subsample), each with mean/SD/HDI + reliability tier. `results/face/patient_scores.parquet`.
-- ✅ **Prior → posterior empirical atlas** (§2.3) — **DONE:** `docs/figures/empirical_atlas.png` (theory's
+- **Prior → posterior empirical atlas** (§2.3) — **DONE:** `docs/figures/empirical_atlas.png` (theory's
   diagonal → data's mostly-diagonal, with biology≈0 on G and cognition/sleep partial-G).
-- ✅ **Formal adjudication** (§6) — **DONE:** `docs/ADJUDICATION.md` — **9 confirmed** (incl. mania +
-  substance, integrated into the certified 9-dim joint map), anhedonia rejected, 3 not_testable,
+- **Formal adjudication** (§6) — **DONE:** `docs/ADJUDICATION.md` — **9 confirmed** (incl. mania +
+  substance, integrated into the largest-N-documented 9-dim joint map), anhedonia rejected, 3 not_testable,
   depression/anxiety = windows. No candidate deferred.
 
-**M1 is complete** — built, hardened, certified (9-dim), scored, adjudicated. PI sign-off on the
+**M1 is complete** — built, hardened, documented at the largest N (9-dim), scored, adjudicated. PI sign-off on the
 adjudication + atlas locks it; only then do the later milestones begin: **M2 strata** → **M3 temporal
 coherence** → **M4 prognosis** → **M5 treatment** (§10).
 
@@ -380,7 +382,7 @@ load-bearing S1 result is not an artefact of the independence/simple-structure c
 ```
 cohorts → DIMENSIONS (M1, building) → strata (M2) → prognosis (M4) / treatment (M5)
                ▲
-   S1 (G + backbone, Φ=I) ✓ → S2 (Φ + windows, cross-loadings) ✓
+   S1 (G + backbone, Φ=I) → S2 (Φ + windows, cross-loadings) 
    → S3 mixed-likelihood (suicidality, developmental) → S4 anhedonia
    → S5 GLOBAL = the reported map → FIML confirmation → adjudication → empirical atlas
 ```
@@ -474,7 +476,7 @@ otherwise weakly/negatively related to cognition and biology. mean |off-diagonal
 ```
 cohorts → DIMENSIONS (M1, building) → strata (M2) → prognosis (M4) / treatment (M5)
                ▲
-   S1 (G + backbone) ✓ → S2 (Φ + windows) ✓ → S3a (+developmental) ✓ · S3b (+suicidality, mixed) ~prov
+   S1 (G + backbone) → S2 (Φ + windows) → S3a (+developmental) · S3b (+suicidality, mixed) ~prov
    → S4 anhedonia → S5 GLOBAL = the reported map (full N) → FIML → adjudication → empirical atlas
 ```
 
@@ -533,8 +535,8 @@ dimension — confirmed consistently across S2–S4.
 ### S4.3 Position in the roadmap
 
 ```
-S1 (G + backbone) ✓ → S2 (Φ + windows) ✓ → S3a (+developmental) ✓ · S3b (+suicidality, mixed) ~prov
-   → S4 (anhedonia → rejected) ✓ → S5 GLOBAL = the reported map (full N) → FIML → adjudication → atlas
+S1 (G + backbone) → S2 (Φ + windows) → S3a (+developmental) · S3b (+suicidality, mixed) ~prov
+   → S4 (anhedonia → rejected) → S5 GLOBAL = the reported map (full N) → FIML → adjudication → atlas
 ```
 
 S1–S4 (the staged checkpoints) are complete: the eligible dimension set is adjudicated, the mixed-likelihood
@@ -591,12 +593,14 @@ capture heterogeneity severity misses* — is tested under **both** factor ident
 | developmental | 0.12 | 0.28 |
 
 **Honest refinement.** The strict orthogonality from the bifactor (biology G-loadings ≈ 0.07–0.08) is
-**partly a constraint artefact**: when G is *allowed* to correlate, **metabolic shows a modest 0.28 and
-inflammatory a weak 0.14 correlation with G**. So biology is **not strictly ⊥ G**. But the **substantive
-claim holds**: biology is the **least severity-entangled domain** (inflammatory the lowest of all six;
-metabolic below cognition/sleep), with **~92% (metabolic) to ~98% (inflammatory) of its variance independent
-of G**. Two equally-impaired patients can still differ sharply in biological load — biological strata remain
-worth drawing — but the earlier "orthogonal" phrasing overstated it; "largely severity-independent" is exact.
+**partly a constraint artefact**: when G is *allowed* to correlate, biology shows a small correlation with G.
+So biology is **not strictly ⊥ G**. But the **substantive claim holds**: biology is the **least
+severity-entangled domain** (inflammatory the lowest of all; metabolic below cognition/sleep). *(The
+provisional S5 values in the table above — metabolic 0.28 / inflammatory 0.14 — were superseded by the clean
+continuous-backbone correlated-G fit: metabolic 0.124, inflammatory 0.071, i.e. ≈ 98.5–99.5% of variance
+independent of G; canonical numbers in [`BIOLOGY_G_TABLE.md`](BIOLOGY_G_TABLE.md).)* Two equally-impaired
+patients can still differ sharply in biological load — biological strata remain worth drawing — but the
+earlier "orthogonal" phrasing overstated it; "largely severity-independent" is exact.
 
 ### S5.4 Boundaries
 

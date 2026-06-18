@@ -1,8 +1,8 @@
 \section{Results: the nine-dimension measurement map}
 \label{sec:results}
 
-On the harmonized FACE V0 baseline ($N=9{,}013$), the hybrid bifactor/ESEM yields a \textbf{certified
-nine-dimension transdiagnostic map}: a general factor $G$ (functional burden) plus eight specific axes ---
+On the harmonized FACE V0 baseline ($N=9{,}013$), the hybrid bifactor/ESEM yields a \textbf{nine-dimension
+transdiagnostic map}: a general factor $G$ (functional burden) plus eight specific axes ---
 cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality, mania, and substance
 (Table~\ref{tab:map}). Five are continuous-anchored (marginalized: cognition, metabolic, inflammatory, sleep,
 mania); three carry non-Gaussian indicators through explicit latents (suicidality, developmental, substance)
@@ -24,9 +24,9 @@ cognition & CVLT, WAIS coding/digit-span, fluency, TMT-B & 0.57 & 0.27\\
 inflammatory & CRP, WBC, neutrophils, platelets, eosinophils & 0.39 & 0.07\\
 \rowcolor{facebg} sleep & PSQI objective sub-scores, ESS & 0.48 & 0.25\\
 developmental-risk & CTQ, age-of-onset, WURS, perinatal, family history & 0.42 & 0.12\\
-\rowcolor{facebg} suicidality & ISF binary ideation/attempt $+$ count & 2.7--3.4 (logit) & 0.3--0.6\\
+\rowcolor{facebg} suicidality & ISF binary ideation/attempt $+$ count & 2.2--2.7 (logit) & 0.3--0.6\\
 mania & YMRS 0.57, Altman 0.76 (BP) & 0.49--0.76 & 0.15\\
-\rowcolor{facebg} substance & alcohol/cannabis lifetime SUD, nicotine & 0.38--0.83 (logit) & 0.13\\
+\rowcolor{facebg} substance & alcohol/cannabis lifetime SUD, nicotine & 0.38--0.69 (logit) & 0.13\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -69,18 +69,18 @@ with the specifics (Figure~\ref{fig:biologyg}).
 \includegraphics[width=0.80\linewidth]{figures/fig_biology_g.png}
 \caption{Severity entanglement per domain. Bars: the correlated-$G$ factor correlation with $G$; dots: the
 stricter bifactor direct loading $|\lambda_G|$ (the two agree on the ordering). Metabolic ($0.12$) and
-inflammatory ($0.07$) burden are nearly independent of $G$, far below cognition ($0.39$) and sleep ($0.44$).
+inflammatory ($0.07$) burden are nearly independent of $G$, far below cognition ($0.39$) and sleep ($0.42$).
 Mania and substance are likewise low ($|\lambda_G|$ $0.15$ and $0.13$).}
 \label{fig:biologyg}
 \end{figure}
 
 \begin{keyresult}[Biology rides on axes severity does not see]
-Freeing $G$ to correlate with the specifics, it correlates $+0.06$ with inflammatory and $+0.14$ with
-metabolic, versus $+0.39$ with cognition and $+0.44$ with sleep. So metabolic and inflammatory load carry
-$\approx 92$--$98\%$ of their variance \emph{independent} of how impaired a patient is overall. Two patients
+Freeing $G$ to correlate with the specifics, it correlates $+0.07$ with inflammatory and $+0.12$ with
+metabolic, versus $+0.39$ with cognition and $+0.42$ with sleep. So metabolic and inflammatory load carry
+$98.5$--$99.5\%$ of their variance \emph{independent} of how impaired a patient is overall. Two patients
 who look equally ill on a clinician's global impression can differ sharply in biological load --- precisely the
-orthogonal signal a biology-aware stratification can exploit. \emph{(The clean continuous-backbone
-estimate, metabolic$\sim$$G$ $0.12$--$0.14$, supersedes an earlier provisional mixed-fit read of $0.28$; both
+severity-independent signal a biology-aware stratification can exploit. \emph{(The clean continuous-backbone
+estimate, metabolic$\sim$$G$ $0.12$, supersedes an earlier provisional mixed-fit read of $0.28$; both
 agree biology is least entangled --- an honest downward correction the dual-identification test exists to
 produce.)}
 \end{keyresult}
@@ -115,10 +115,10 @@ affective latent --- the model was free to grow an eleventh factor and declined.
 
 \subsection{The map is larger than seven: mania and substance}
 Two candidates had indicators but were initially \emph{deferred} from the staged build. Closing that gap
-\textbf{confirmed both as real, low-$G$ axes} and the joint nine-dimension model was re-certified rather than
+\textbf{confirmed both as real, low-$G$ axes} and the joint nine-dimension model was re-fit rather than
 bolted on. \textbf{Mania} is anchored by YMRS ($0.57$) and the Altman self-report ($0.76$ in BP), with
 $|\lambda_G|$ $0.15$. \textbf{Substance} is anchored by lifetime alcohol/cannabis use-disorder and nicotine
-indicators ($+0.38$ to $+0.83$ on the logit scale) under their proper Bernoulli/negative-binomial likelihoods,
+indicators ($+0.38$ to $+0.69$ on the logit scale) under their proper Bernoulli/negative-binomial likelihoods,
 with $|\lambda_G|$ $0.13$. Manic activation and substance use are thus distinct transdiagnostic axes, not
 reducible to severity --- and worth carrying into stratification.
 
@@ -137,7 +137,7 @@ load on the specific axis \emph{and} on overall burden --- clinically coherent.}
 \toprule
 \hdr{ISF indicator} & \hdr{home (suicidality)} & \hdr{$G$ (bifactor)}\\
 \midrule
-\rowcolor{facebg} isf01--05 (ideation) & $+2.7$ to $+3.4$ & $+0.33$ to $+0.56$\\
+\rowcolor{facebg} isf01--05 (ideation) & $+2.2$ to $+2.7$ & $+0.33$ to $+0.56$\\
 isf08 / isf09 (attempt) & $+1.8$ / $+2.0$ & $+0.12$ / $+0.34$\\
 \rowcolor{facebg} isf08a (attempt, ordinal) & $+1.7$ & $+0.12$\\
 isf09a (attempt, count) & $+1.6$ & $+0.31$\\
@@ -169,7 +169,7 @@ Cognitive flexibility & confirmed & mean primary $0.57$; invariant across cohort
 \rowcolor{facebg} Metabolism / immuno & confirmed (\textbf{split}) & metabolic $+$ inflammatory, $\Phi\approx 0.19$\\
 Sleep / circadian & confirmed & $0.48$; most invariant axis\\
 \rowcolor{facebg} Neurodevelopment & confirmed (\textbf{proxy}) & own axis $0.42$; early-adversity/liability\\
-Suicidality & confirmed (mixed) & binary ISF $+2.7$ to $+3.4$ logit\\
+Suicidality & confirmed (mixed) & binary ISF $+2.2$ to $+2.7$ logit\\
 \rowcolor{facebg} Mania / activation & confirmed & YMRS/Altman $0.49$--$0.76$; $|\lambda_G|$ $0.15$\\
 Substance use & confirmed & SUD + nicotine, Bernoulli/NB; $|\lambda_G|$ $0.13$\\
 \rowcolor{facebg} Anhedonia & \textbf{rejected} & thin; absorbed by $G$ + depression windows\\

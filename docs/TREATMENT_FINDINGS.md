@@ -1,7 +1,7 @@
 # M5 — Treatment: findings (paper-facing, read first)
 
 > What M5 asked, did, and found. Methods of record: [`TREATMENT_MODEL.md`](TREATMENT_MODEL.md);
-> dev record in `reports/50–57_*.md`. *Status: M5 complete (pending PI sign-off). 2026-06-11.*
+> dev record in `reports/50–59_*.md`. *Status: M5 complete (pending PI sign-off). 2026-06-11.*
 
 ## The one-paragraph headline
 
@@ -38,7 +38,7 @@ drugs patients were actually on.
 |---|---|---|---|
 | **lithium-BP** | clean (100% overlap) | **null** (ΔELPD −1.4/−2.8; no axis HDI excludes 0) | the map does **not** pick lithium responders — a well-identified negative |
 | **antipsychotic-BP** | balanced | **suggestive, unconfirmed** — metabolic −0.15\*, inflammatory −0.26\* on functioning; held-out ΔELPD +4.6±4.2 not confirmed; ATE E-value 1.79 | a **hypothesis** for an RCT, not a claim |
-| **clozapine-SZ** | channeled | inflammatory×response −1.3\* but unconfirmed + small | **not trustworthy** (overlap gate) |
+| **clozapine-SZ** | channeled | inflammatory×response −1.3\* — a large coefficient but weakly supported (ΔELPD 1.01) in a channeled, non-estimable arm | **not trustworthy** (overlap gate) |
 
 (\* HDI excludes 0.) Average treatment effects are **confounding-fragile** throughout (E-values 1.1–1.8) —
 exactly the confounding-by-indication the design anticipated.

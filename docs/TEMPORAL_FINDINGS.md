@@ -37,7 +37,7 @@ observed cells only, uncertainty propagated, never re-discovered. Six goals, ans
 | **G1** invariance | does the map measure the same constructs at V1/V2? | **yes** (5/6 backbone axes invariant; inflammatory partial) |
 | **G2** substrate | score the longitudinal panel | done — `patient_panel.parquet`, V0 reproduced at 99.9% |
 | **G3** trait/state | which axes are durable vs fluctuating? | biology/cognition **trait**; severity + symptoms **state** (two lenses) |
-| **G4** persistence | do strata/positions persist? spine-vs-corner? | **yes** — spine moves 2.2× more than the biology corner; archetype identity persists above chance |
+| **G4** persistence | do strata/positions persist? spine-vs-corner? | **yes** — the "spine moves, biology holds" pattern (25.8%) outnumbers its converse (11.5%) by 2.2×; archetype identity persists above chance |
 | **G6** attrition | is the retained sample fair? | dropout **mild** (cognition-leaning); verdicts robust |
 | ~~G5~~ vs DSM-5 | — | **deferred to M4** (diagnosis is time-invariant in-data) |
 

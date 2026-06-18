@@ -1,0 +1,119 @@
+FACE - CLAIM-TO-EVIDENCE TRACEABILITY MATRIX
+============================================
+
+Date: 2026-06-17. Every retained headline claim, its single canonical artifact, the value verified
+in that artifact, and the documents that state it. Tracked, shareable evidence = reports/*.{md,csv}
+and results/manifests/*.json (results/face is gitignored; numbers below are reproduced in the
+re-run from source). Status SUPPORTED = traced and correctly interpreted; all formerly-flagged
+claims were corrected (see AUDIT_CHANGELOG.txt) and are now SUPPORTED.
+
+Shared quantities (identical across all documents and both manuscripts):
+  N = 9,013 (BP 6,252 / SZ 2,209 / DR 552)        reports/table1_characteristics.md, 01_build_data.md
+  Retention V1 47.4% / V2 32.8%                    reports/30_retention.csv
+  Panel rows (V0-V2) = 16,241                      results/face/patient_panel.parquet
+  Archetype remission 14% -> 60%                   reports/45_archetype_atlas.csv (suic 0.138 / low-burden 0.602)
+  Biology-G independence 98.5-99.5%                docs/BIOLOGY_G_TABLE.md (canonical, single source)
+  delta-AUC (remission) +0.017 [0.009,0.026]       reports/46_clinical_value.csv
+  E-values (M5) 1.1-1.8                            reports/56_moderation.csv
+  M5 attenuation 4.4% (-0.051 -> -0.048)           reports/56_moderation.csv / 57_confounder.md
+
+--------------------------------------------------------------------------------
+M1 - MEASUREMENT MAP
+--------------------------------------------------------------------------------
+Claim                                  | Artifact                          | Verified value                         | Status
+A 9-dimension transdiagnostic map      | reports/11_s5_9dim_loadings.csv;  | G + 8 specifics; bifactor/ESEM         | SUPPORTED
+  (G + 8 specifics)                     |   reports/04_stage*_loadings.csv  |                                        |
+Continuous backbone certified full-N   | reports/04_stage1_report.md       | R-hat 1.010, ESS 1939, 0 div, N=9013   | SUPPORTED
+9-dim joint = largest-N documented     | reports/11_s5_9dim_report.md;     | R-hat <=1.04, ESS >=112, certified:    | SUPPORTED
+  (NOT "certified")                     |   results/face/stage5/diagnostics |   false; cross-seed Tucker phi 0.993   |
+Bifactor preferred (WAIC)              | reports/05_waic.csv               | +2,720 vs corr-no-G; +53k vs unidim    | SUPPORTED
+Prior-free refit reproduces structure  | reports/05_confirmation_report.md | Tucker phi 1.00 every factor           | SUPPORTED
+Absolute fit (PPC)                     | reports/05_confirmation_report.md;| SRMR 0.07; non-Gaussian 21/22 in 90%   | SUPPORTED
+                                        |   reports/12_mixed_ppc_report.md  |                                        |
+Biology least severity-entangled       | reports/07_corrG_phi.csv;         | Phi(G): metabolic 0.124 (0.12),        | SUPPORTED
+  (largely independent, NOT orthogonal) |   docs/BIOLOGY_G_TABLE.md         |   inflammatory 0.071 (0.07) vs          |
+                                        |                                   |   cognition 0.385, sleep 0.422 ->       |
+                                        |                                   |   98.5-99.5% independent of G          |
+Biology-G survives covariate adjust    | reports/10_covariate_sensitivity. | metabolic 0.124->0.058,                | SUPPORTED
+                                        |   csv; docs/COVARIATE_SENSITIVITY |   inflammatory 0.071->0.056            |
+Robust under resampling                | reports/08_robustness_report.md   | min Tucker phi 0.958 (LOCO/bootstrap)  | SUPPORTED
+Invariance: 5/6 backbone; infl-DR      | reports/06_congruence.csv;        | inflammatory DR phi 0.712/0.748        | SUPPORTED
+  non-invariant                         |   reports/06_invariance_report.md |   (non-invariant, below 0.85)          |
+Suicidality ideation loadings          | reports/11_s5_9dim_loadings.csv   | +2.2..+2.7 logit (isf01-05; peak 2.74) | SUPPORTED
+Substance loadings (joint map)         | reports/11_s5_9dim_loadings.csv   | +0.38..+0.69 logit                     | SUPPORTED
+Mania/substance low on G               | reports/10_mania_substance_report | |G| 0.15 / 0.13 (bifactor direct)      | SUPPORTED
+Anhedonia rejected; 3 not_testable     | docs/ADJUDICATION.md              | R-hat 1.54; no common indicators       | SUPPORTED
+Depression/anxiety = windows on G      | reports/04_stage2_*; ADJUDICATION | MADRS/QIDS/STAI 0.66-0.80 on G         | SUPPORTED
+
+--------------------------------------------------------------------------------
+M2 - STRATIFICATION
+--------------------------------------------------------------------------------
+Continuum, no well-separated biotypes  | reports/21_structure.md           | gap K=1; HDBSCAN 0; dip p~0.99; 1      | SUPPORTED
+                                        |                                   |   Mapper component                     |
+8 archetypes (soft corners)            | reports/23_archetypes.md          | A=8; cross-seed Tucker 0.999; 75%      | SUPPORTED
+                                        |   reports/23b_archetype_profiles  |   interior blends                      |
+4-region tessellation                  | reports/22_tessellation.md        | K=4; 92% confident MAP                 | SUPPORTED
+Transdiagnostic (ARI ~ 0 vs DSM-5)     | reports/24_validation.md          | ARI 0.020 (DSM-5), 0.007 (cohort)      | SUPPORTED
+Tighter description than DSM-5          | reports/24_validation.md          | BIC 199,325 vs 206,016; eta2 0.209     | SUPPORTED
+                                        |   reports/22_tessellation.md      |   vs 0.048                              |
+Biology-driven, not just severity (Q2) | reports/24_validation.md          | eta2 mania 0.448 / G 0.308             | SUPPORTED
+Not a missingness artefact (Q4)        | reports/24b_missingness_metrics.  | coverage->stratum 0.248 vs 0.323       | SUPPORTED
+                                        |   md                              |   (negative lift)                      |
+
+--------------------------------------------------------------------------------
+M3 - TEMPORAL COHERENCE
+--------------------------------------------------------------------------------
+G1 invariance 5/6 (infl partial ~0.90) | reports/33_congruence.csv         | inflammatory V1 0.924 / V2 0.901       | SUPPORTED
+Durable biology (trait, ICC)           | reports/35_trait_state.csv        | metabolic 0.93, inflammatory 0.85,     | SUPPORTED
+                                        |   reports/37_axis_summary.csv     |   cognition 0.78                       |
+State-like symptoms                    | reports/35_trait_state.csv        | severity 0.66, sleep 0.49, suic 0.46   | SUPPORTED
+Spine moves > biology corner           | reports/36_persistence_report.md  | 34.5% vs 20.2%; "spine moves,          | SUPPORTED
+  (2.2x = 25.8%/11.5%, not 34.5/20.2)   |                                   |   biology holds" 25.8% vs 11.5% = 2.2x |
+Archetype identity persists            | reports/36_persistence_report.md  | 52.3%; kappa 0.27; cosine 0.81         | SUPPORTED
+Attrition severity-neutral             | reports/31_informative_dropout.csv| overall_severity OR 0.972 [0.92,1.03], | SUPPORTED
+  (informative on other axes)           |                                   |   informative=False                    |
+
+--------------------------------------------------------------------------------
+M4 - PROGNOSIS
+--------------------------------------------------------------------------------
+N (EGF 2114 / CGI-S 2345)              | reports/43_incremental.csv;       | egf 2114, cgi_s 2345                    | SUPPORTED
+                                        |   reports/40_outcome_coverage.csv |                                        |
+Archetypes add for functioning         | reports/43_incremental.csv        | dELPD +46 (Arm-B) / +58 (Arm-A);       | SUPPORTED
+  (NOT the durable block, which is +7)  |                                   |   +durable +7.1 (ambiguous)            |
+Severity autoregression-saturated      | reports/43_incremental.csv        | CGI-S durable -0.34; archetypes +13    | SUPPORTED
+Metabolic/inflammatory predict EGF     | reports/43_incremental.csv;       | metabolic beta -0.062 [-0.102,-0.022], | SUPPORTED
+                                        |   reports/47_robustness.csv       |   inflammatory -0.060, exclude 0       |
+Metabolic survives error-corrected G   | reports/43_incremental.csv        | beta -0.055 [-0.095,-0.015]            | SUPPORTED
+Co-informative with DSM-5              | reports/44_h2h_dsm5.csv           | map>DSM-5 +47; DSM-5>map +40 (EGF)     | SUPPORTED
+Course-dependent (BP/DR yes, SZ null)  | reports/44_transdiagnostic.md     | BP +43.5 vs SZ -1.75                   | SUPPORTED
+Modest individual gain                 | reports/46_clinical_value.csv     | dAUC +0.017 [0.009,0.026]              | SUPPORTED
+Robust (IPW/LOCO/perm/anchor-out)      | reports/47_robustness.csv;        | permutation p=0.001; anchor-out        | SUPPORTED
+                                        |   reports/47b_leave_anchor_out.csv|   corr 0.987                           |
+Archetype remission 14% -> 60%         | reports/45_archetype_atlas.csv    | suicidality 0.138 -> low-burden 0.602  | SUPPORTED
+
+--------------------------------------------------------------------------------
+M5 - TREATMENT
+--------------------------------------------------------------------------------
+Lithium-BP well-identified null        | reports/56_moderation.csv;        | ATE -0.01 [-0.133,0.112], E 1.11;      | SUPPORTED
+                                        |   reports/55_propensity_summary   |   SMD 0.30 -> 0.01                      |
+Antipsychotic-BP suggestive/unconfirmd | reports/56_moderation.csv         | ATE -0.24 [-0.38,-0.108], E 1.79;      | SUPPORTED
+                                        |                                   |   metabolic -0.15*, inflammatory -0.26*|
+Clozapine-SZ channeled/non-estimable   | reports/55_propensity_summary.csv | active-comparator SMD after 0.61       | SUPPORTED
+E-values confounding-fragile           | reports/56_moderation.csv         | 1.1 - 1.8                              | SUPPORTED
+M5 strengthens M4 (survives adjust)    | reports/56_moderation.csv;        | metabolic beta -0.051 -> -0.048        | SUPPORTED
+                                        |   reports/57_confounder.md        |   (4.4% attenuation, HDI excludes 0)   |
+M5b needs randomized data              | reports/59_m5b_feasibility.md     | no randomization in FACE (observational| SUPPORTED
+                                        |                                   |   by design)                           |
+
+--------------------------------------------------------------------------------
+NARRATIVE ARC (coherent end to end)
+--------------------------------------------------------------------------------
+diagnostic cohorts -> transdiagnostic dimensions (M1: 9-dim map, biology least severity-entangled)
+  -> validated strata (M2: continuum, 8 archetypes + 4-region tessellation, ARI~0 vs DSM-5)
+  -> temporal coherence (M3: biology durable/trait, symptoms state)
+  -> prognosis (M4: durable axes/archetypes predict 2-yr functioning incrementally; co-informative
+     with DSM-5; course-dependent; modest individual gain)
+  -> treatment (M5: observational TAU does not reliably show moderation; boundary earned; M4 forecast
+     survives treatment adjustment).
+Honest positioning: scientific validity (real, stable continuum carrying small but genuine
+group-level prognostic signal) without strong individual-level clinical utility or external validity.

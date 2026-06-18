@@ -92,13 +92,14 @@ treatment moderation is limited. **Lifetime exposures (BP)** are illness-history
 / the M5 coda, the map's *individual* increments are modest — the value is group-level moderation
 signal, not an individual prescribing rule.
 
-## 8. Pipeline (`scripts/53–58`)
+## 8. Pipeline (`scripts/53–57`)
 
 `53_treatment_audit` *(done)* — exposure feasibility + harmonization audit · `54_exposures` — the
 harmonization layer: build the per-(cohort,patient,visit) drug-class exposure table (ATC/class/flag →
 common classes, current + lifetime; complete the DR vocab) · `55_propensity` — the treatment propensity
 models + balance (per question) · `56_moderation` — the stratum × treatment interaction (lithium-BP,
-clozapine-SZ, antipsychotic) + treatment-as-confounder for M4 (Q1, Q2) · `57_treatment_atlas` —
-per-archetype treatment-response moderation + the clinical read · `58_consolidate` — findings + hand-off.
+clozapine-SZ, antipsychotic) · `57_confounder` — treatment-as-confounder for M4 (Q1, Q2) + the
+unmeasured-confounding (E-value) sensitivity. Reports `58_dr_mars_fix` (DR-MARS harmonization fix) and
+`59_m5b_feasibility` (randomization check / M5b feasibility) close the milestone.
 Reuses the M4 engine + the M5.0 response endpoints. The coda scripts (50 inventory, 51 frame, 52
 tolerability) stand as the response-outcome groundwork. Tests `tests/m5/`.

@@ -23,13 +23,13 @@ Methods; Figure~\ref{fig:overview} summarizes the design.
   $N=9{,}013$) is reorganized around diagnosis-agnostic axes by one global,
   missingness-aware Bayesian bifactor/ESEM model fit to each patient's observed
   cells only, with three load-bearing invariants (no imputation, diagnosis as
-  metadata, baseline defines/follow-up validates). The certified map is then
+  metadata, baseline defines/follow-up validates). The fitted map is then
   interrogated through five dependent questions---exists, organizes, persists,
   predicts, guides treatment---with positive and null results reported alike.}
   \label{fig:overview}
 \end{figure}
 
-\subsection{A certified nine-dimension transdiagnostic map (the map exists)}
+\subsection{A nine-dimension transdiagnostic map (the map exists)}
 
 From ten candidate constructs, one global model returned a stable nine-dimension
 structure: a general functional-burden factor (\Gfac) plus eight weakly correlated
@@ -58,7 +58,7 @@ reproduced within the $90\%$ posterior-predictive interval).
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.98\linewidth]{fig2_map.png}
-  \caption{\textbf{The certified nine-dimension map.} (\textbf{a}) Posterior
+  \caption{\textbf{The nine-dimension map.} (\textbf{a}) Posterior
   loading atlas (indicators $\times$ factors); colour encodes the absolute
   posterior loading, with rows grouped by home factor. Each specific axis is
   anchored by a clinically coherent indicator block, while \Gfac{} (functional
@@ -75,14 +75,14 @@ Because the bifactor identification fixes \Gfac{}~\orth{}~specifics by construct
 we re-estimated the model allowing \Gfac{} to correlate freely with the specific
 axes. Under this correlated-\Gfac{} model, metabolic and inflammatory load were the
 \emph{least} entangled with functional burden: correlations with \Gfac{} of
-$0.14$ (metabolic) and $0.06$ (inflammatory), against $0.39$ for cognition and
-$0.44$ for sleep (Figure~\ref{fig:biologyg}). In other words, two patients with the
+$0.12$ (metabolic) and $0.07$ (inflammatory), against $0.39$ for cognition and
+$0.42$ for sleep (Figure~\ref{fig:biologyg}). In other words, two patients with the
 same overall impairment can carry very different metabolic and immune loads---a
 patient's biological burden rides largely on axes that the global clinical-severity
 picture does not capture. Consistent with a large independent literature
 (see Discussion), we state this as relative, not absolute, independence: biology is
 \emph{largely independent of a general functional-burden axis}, with the
-$0.06$--$0.14$ values quantifying---at the low end of what that literature would
+$0.07$--$0.12$ values quantifying---at the low end of what that literature would
 predict---a pattern previously described only qualitatively.
 
 \begin{figure}[htbp]
@@ -92,7 +92,7 @@ predict---a pattern previously described only qualitatively.
   each specific axis with the general functional-burden factor \Gfac{} under the
   correlated-\Gfac{} model (bars), with the bifactor general loading
   $|\lambda_G|$ (points) shown for comparison. Metabolic and inflammatory load are
-  nearly orthogonal to \Gfac{}, whereas cognition and sleep partly track it.}
+  the least severity-entangled domains, whereas cognition and sleep partly track \Gfac{}.}
   \label{fig:biologyg}
 \end{figure}
 
@@ -153,9 +153,10 @@ inflammatory $0.85$, cognition $0.78$); the moving, state-like axes were the
 symptom ones (sleep $0.49$, suicidality $0.46$). At the population level the cohort
 slid \emph{down} the severity and symptom axes while remaining static on biology.
 A per-patient geometric analysis agreed: severity moved (cleared measurement error)
-in $34.5\%$ of patients versus only $20.2\%$ for the biology corner---a
-$2.2\times$ edge for ``spine slides, corner holds''---and archetype identity
-persisted in $52\%$ of patients ($\kappa = 0.27$ vs a $12.5\%$ chance rate). The
+in $34.5\%$ of patients versus only $20.2\%$ for the biology corner; the
+``spine slides while biology holds'' pattern ($25.8\%$) outnumbered its converse
+($11.5\%$) by $2.2\times$. Archetype identity persisted in $52\%$ of patients
+($\kappa = 0.27$ vs a $12.5\%$ chance rate). The
 clinical reading is compact: \emph{stratify on the durable biology, monitor the
 moving symptoms}.
 

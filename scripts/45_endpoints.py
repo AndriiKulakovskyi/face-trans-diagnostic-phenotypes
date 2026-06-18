@@ -241,7 +241,7 @@ def _report(prev, atlas, sep):
         "rigorous AUC / net-benefit head-to-head is stage 46.", "",
         "## Read",
         "- A stratification's value is a **group-level** property; shown as per-archetype outcome rates "
-        "it is vivid (16%→60% remission) where the individual-level ΔELPD looked modest — same signal, "
+        "it is vivid (14%→60% remission) where the individual-level ΔELPD looked modest — same signal, "
         "decision-relevant granularity.",
         "- Trajectories (`docs/figures/45_atlas_trajectories.png`) show the archetypes diverge over "
         "V0→V1→V2, not just differ at baseline.", "",

@@ -26,7 +26,7 @@ diagnostic cohorts → transdiagnostic dimensions → validated strata → progn
                                   └──────────── M3: do these cohere & persist over time? ───────────┘
 ```
 
-M1 delivered a certified **9-dimension map** with per-patient uncertainty on V0; M2 delivered a
+M1 delivered a **9-dimension map** with per-patient uncertainty on V0; M2 delivered a
 **stratification** of those coordinates — 8 soft **archetypes** + a 4-region measurement-error
 **tessellation** — whose headline is that the space is a *continuum* in which **severity (G) is the
 spine** and the **specific biology axes are the corners**. Both were discovered on V0.

@@ -13,13 +13,13 @@
 
 On the harmonized 3-cohort FACE **V0 baseline** (N = 9,013 = BP 6,252 · SZ 2,209 · DR 552), one global,
 missingness-aware Bayesian sparse **bifactor/ESEM** model — estimated from each patient's *observed cells
-only* (no imputation) — yields a **certified 9-dimension transdiagnostic map**: a general factor **G
+only* (no imputation) — yields a **9-dimension transdiagnostic map**: a general factor **G
 (functional burden)** plus eight specific axes — **cognition, metabolic, inflammatory, sleep,
 developmental-risk, suicidality, mania, substance**. The map is hardened end-to-end (estimator/prior
 robustness, measurement invariance, resample robustness, absolute-fit PPC across both likelihood blocks),
-certified at the largest N that mixes (cross-seed Tucker φ 0.993), and projected to per-patient coordinates
+documented at the largest N that mixes (cross-seed Tucker φ 0.993), and projected to per-patient coordinates
 with uncertainty and reliability flags. The headline scientific finding is that **biology is the least
-severity-entangled domain** — metabolic and inflammatory burden are nearly orthogonal to the general
+severity-entangled domain** — metabolic and inflammatory burden are largely independent of the general
 functional-impairment factor, whereas cognition and sleep partly track it.
 
 ---
@@ -34,9 +34,9 @@ functional-impairment factor, whereas cognition and sleep partly track it.
 | 3 | inflammatory | marginalized | CRP, leukocyte subsets | 0.39 |
 | 4 | sleep | marginalized | sleep/circadian items | 0.48 |
 | 5 | developmental-risk | explicit | childhood adversity (CTQ), birth/parental history | 0.42 |
-| 6 | suicidality | explicit (binary) | ISF ideation/attempt items (+2.7…+3.4 logit) | strong |
+| 6 | suicidality | explicit (binary) | ISF ideation/attempt items (+2.2…+2.7 logit) | strong |
 | 7 | **mania** | marginalized | YMRS (0.57), Altman (0.76 in BP) | 0.49–0.76 |
-| 8 | **substance** | explicit (mixed) | alcohol/cannabis lifetime SUD, nicotine | +0.38…+0.83 |
+| 8 | **substance** | explicit (mixed) | alcohol/cannabis lifetime SUD, nicotine | +0.38…+0.69 |
 
 Inter-dimension correlations Φ are **weak** (mean \|off-diagonal\| ≈ 0.10): the specifics are genuinely
 distinct axes, not a single collapsed factor. Depression/anxiety (MADRS/QIDS/STAI) are **not a dimension** —
@@ -56,12 +56,12 @@ over-claim.
 
 ### F2 — Biology ⊥ G (the load-bearing refinement)
 Under a sensitivity arm that *frees* G to correlate with the specifics (correlated-G, §3.1), G correlates
-**+0.06 with inflammatory** and **+0.14 with metabolic**, versus **+0.39 cognition** and **+0.44 sleep**.
+**+0.07 with inflammatory** and **+0.12 with metabolic**, versus **+0.39 cognition** and **+0.42 sleep**.
 **Result:** metabolic and inflammatory burden are the **least severity-entangled** domains — a patient's
 metabolic/immune load is almost independent of how impaired they are overall, while cognitive and sleep
 burden partly track impairment. **Interpretation:** biological risk is carried on axes the clinical severity
-picture does not see — exactly the kind of orthogonal signal a stratification (M2) can exploit. *(The clean
-continuous-backbone estimate, metabolic~G 0.12–0.14, supersedes an earlier provisional mixed-fit read of
+picture does not see — exactly the kind of largely independent signal a stratification (M2) can exploit. *(The clean
+continuous-backbone estimate, metabolic~G 0.12, supersedes an earlier provisional mixed-fit read of
 0.28; both agree on the ordering.)*
 
 ### F3 — Theory's single "biology" candidate splits into two
@@ -75,14 +75,14 @@ The developmental axis is real and distinct (loading 0.42) but is anchored by **
 *proxy*, not as measured neurodevelopment.
 
 ### F5 — Suicidality composes as a mixed-likelihood axis
-Binary ISF ideation/attempt items load **+2.7…+3.4 on the logit scale** and compose with the shared Φ under
+Binary ISF ideation/attempt items load **+2.2…+2.7 on the logit scale** and compose with the shared Φ under
 the proper Bernoulli likelihood — demonstrating that non-Gaussian psychopathology indicators integrate into
 the same correlated-factor space as the continuous biology without breaking identification.
 
 ### F6 — The map is larger than seven: mania and substance are real axes
 Mania and substance were **added after the original ten**, once their indicators were ingested into the harmonized dataset; the joint refit then **confirmed
 both**: **mania** (YMRS/Altman, primary \|λ\| 0.49–0.76, \|G\| 0.15) and **substance** (alcohol/cannabis SUD
-+ nicotine under the proper Bernoulli/NegBinom likelihoods, \|G\| 0.13). Re-certifying the **joint 9-dim**
++ nicotine under the proper Bernoulli/NegBinom likelihoods, \|G\| 0.13). Re-fitting the **joint 9-dim**
 model integrated them under one shared Φ (R-hat ≤ 1.04, ESS ≥ 112, 0 div, cross-seed Tucker φ 0.993).
 **Interpretation:** manic activation and substance use are distinct, low-G transdiagnostic axes — not
 reducible to severity, and worth carrying into stratification.
@@ -91,7 +91,8 @@ reducible to severity, and worth carrying into stratification.
 The loadings are **largely invariant** across BP/SZ/DR. The **honest exceptions**, each documented rather
 than hidden:
 - **G** — partial BP–SZ (SZ lacks the FAST anchor; G re-anchored on CGI-S/EGF/EQ-5D there).
-- **inflammatory in DR** — neutrophils load ≈ 0 in DR while eosinophils dominate (a real biological
+- **inflammatory in DR** — **non-invariant** (Tucker φ 0.712 BP–DR / 0.748 SZ–DR, below the 0.85 bar):
+  neutrophils load ≈ 0 in DR while eosinophils dominate (a real biological
   re-weighting of the immune axis in the DR cohort).
 - **mania-Altman in DR** — YMRS holds BP–DR (0.57/0.41) but the **self-rated Altman does not transfer**
   (0.76 → 0.10; Tucker φ 0.764). Self-reported manic activation is a near-floor signal in a
@@ -141,13 +142,13 @@ The methodology is itself a contribution, and the path matters for reproducibili
 - **A reparameterization ladder, not hardware, resolved the mixing frontier.** The S3+ mixed-likelihood
   stages were weak-identification *ridges* (slow mixing with 0 divergences), fixed by targeted cross-loading
   shrinkage (tightening every explicit specific's →G loading) and a unit-row-Cholesky Φ — the explicit-latent
-  block remains the documented mixing limit, so the map is certified at the **largest N that mixes** with a
+  block remains the documented mixing limit, so the map is documented at the **largest N that mixes** with a
   cross-seed resample-stability guard (§3.6).
 - **A resilient long-run compute pattern.** Long mixed fits are run **detached (`nohup`+`disown`) under
   `caffeinate` with a per-seed disk cache** — defeating macOS sleep and background-task reaping, and making
   every multi-hour certification resumable.
 - **The 7→9 discovery loop.** Ingesting the mania and substance indicators revealed the map is
-  larger than first reported; the response was to re-certify the *joint* 9-dim model rather than bolt the new
+  larger than first reported; the response was to re-fit the *joint* 9-dim model rather than bolt the new
   axes on — keeping a single, internally consistent reported map.
 
 Chronology of the M1 hardening (each a committed stage + report): estimator/prior confirmation (§5) →
@@ -187,8 +188,8 @@ what survived adversarial checking, not what was assumed.
 
 1. **Internal validity only.** V0 baseline; no temporal (V1–V4) persistence and no external-cohort validation
    — by design, deferred to later milestones.
-2. **Documented invariance partials** (F7): G (BP–SZ), inflammatory (DR), mania-Altman (DR). Cross-cohort
-   comparisons on these must carry the caveat.
+2. **Documented invariance exceptions** (F7): G (BP–SZ partial), mania-Altman (DR partial), and
+   inflammatory (DR **non-invariant**). Cross-cohort comparisons on these must carry the caveat.
 3. **`isf09a` item-level mis-fit** (F9): the suicide-attempt *count* needs a hurdle/zero-inflated likelihood
    if its count precision is ever required; the suicidality *factor* is unaffected.
 4. **Non-Gaussian per-patient scores are on the fit subsample** (suicidality/developmental/substance);
