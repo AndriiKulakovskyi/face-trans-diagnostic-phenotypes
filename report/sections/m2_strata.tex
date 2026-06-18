@@ -45,7 +45,7 @@ conservative --- it defaults to ``continuum'' unless the evidence \emph{converge
 
 \subsection{The verdict: a continuum, not biotypes}
 \label{sub:continuum}
-The gate is unanimous, and the answer is the contrarian one (Table~\ref{tab:structure}).
+The gate converges, and the answer is the contrarian one (Table~\ref{tab:structure}).
 
 \begin{table}[h]\centering\small\sffamily
 \caption{The structure-discovery gate. Every diagnostic, run uncertainty-aware over the map's draws, reports the
@@ -67,7 +67,7 @@ archetype scree & smooth, no elbow & no natural number of extremes\\
 \end{tabular}
 \end{table}
 
-\begin{keyresult}[There are no biotypes --- the space is a graded continuum]
+\begin{keyresult}[No evidence for well-separated discrete biotypes --- the space is a graded continuum]
 Five completely different methods --- density-based clustering (HDBSCAN: $0$ clusters), the gap statistic
 ($K=1$), a modality test (Hartigan's dip, $p\approx 0.99$), the archetype scree (no elbow), and the mixture's
 model evidence (a flat BIC basin) --- all independently say the same thing: \emph{no discrete groups}. The
@@ -165,7 +165,7 @@ The most elegant detail: \textbf{overall severity has no corner of its own.} Geo
 \emph{spine} --- the axis the entire cloud is stretched along (Figure~\ref{fig:simplex}) --- and every
 archetype sits at some severity level. This is the bifactor structure of the map made visible as geometry: severity
 is the \emph{how much}, the specific axes (biology, cognition, sleep, mania, \dots) are the \emph{what kind},
-and they are orthogonal. So a ``maximally inflammatory'' patient and a ``low-burden'' patient can be at the
+and they are largely independent. So a ``maximally inflammatory'' patient and a ``low-burden'' patient can be at the
 \emph{same} severity --- they differ in what is wrong, not how much. The validation confirms it quantitatively:
 the partition's variance-explained is led by the \emph{specific} axes (mania $\eta^2$ $0.45$, developmental
 $0.35$, metabolic $0.21$, sleep $0.19$, cognition $0.17$) more than by severity ($0.31$) --- the maximum

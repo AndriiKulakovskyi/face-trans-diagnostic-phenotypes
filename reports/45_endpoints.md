@@ -49,7 +49,7 @@ Each archetype's cohort mix (transdiagnostic) and 2-year endpoint rates:
 - On this crude spread metric the split is **3 vs 4** and **falls along outcome *type***: archetypes separate the **dynamic transitions** (egf_remission, egf_deterioration, cgi_relapse) better, DSM-5 separates the **severity-level / sustained** outcomes (egf_recovery, egf_sustained_impair, cgi_remission, cgi_sustained_severe) better. The map owns *who changes* (remits / deteriorates / relapses); DSM-5 owns *who stays severe*. Consistent with the M4.4 co-informative split; the rigorous AUC / net-benefit head-to-head is stage 46.
 
 ## Read
-- A stratification's value is a **group-level** property; shown as per-archetype outcome rates it is vivid (16%→60% remission) where the individual-level ΔELPD looked modest — same signal, decision-relevant granularity.
+- A stratification's value is a **group-level** property; shown as per-archetype outcome rates it is vivid (14%→60% remission) where the individual-level ΔELPD looked modest — same signal, decision-relevant granularity.
 - Trajectories (`docs/figures/45_atlas_trajectories.png`) show the archetypes diverge over V0→V1→V2, not just differ at baseline.
 
 ## Decision for the gate

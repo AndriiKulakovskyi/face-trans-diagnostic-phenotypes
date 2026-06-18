@@ -118,7 +118,7 @@ The cleanest, most defensible statement of the FACE result, fully consistent wit
 
 Two points strengthen FACE's position when stated explicitly: (i) FACE's `G` is **functional burden /
 impairment**, not symptom severity per se (Caspi's p is likewise read as impairment) — and biology being
-decoupled from *impairment* while still real is exactly the IMD picture; (ii) the ≈ 0.06–0.14 values are at the
+decoupled from *impairment* while still real is exactly the IMD picture; (ii) the ≈ 0.07–0.12 values are at the
 **low end** of what this literature would predict, so the paper should present them as a *quantification* of a
 known qualitative pattern, with the boundary conditions (BMI confounding, subgroup concentration) named.
 
@@ -234,7 +234,7 @@ following together, which is the defensible novelty claim:
   transdiagnostic factor space** alongside cognition, sleep, suicidality, mania and substance, across **three
   diagnostic cohorts (BP/SZ/MDD)** simultaneously.
 - It **quantifies the entanglement** between each biological axis and a general functional-burden factor (the
-  ≈ 0.06–0.14 correlations) — the immuno-metabolic literature asserts a *separable* dimension but, to our
+  ≈ 0.07–0.12 correlations) — the immuno-metabolic literature asserts a *separable* dimension but, to our
   reading of the retrieved papers, does not report its correlation with a bifactor general factor.
 - It does so with a **full-sample, no-imputation, mixed-likelihood Bayesian bifactor/ESEM** — a methods
   combination not seen in the retrieved transdiagnostic-biology papers, most of which subsample or use

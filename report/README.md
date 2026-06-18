@@ -3,7 +3,7 @@
 The technical report for the FACE-ATLAS project:
 **A Transdiagnostic Latent-axis Stratification of Severe Mental Illness**
 (bipolar disorder · schizophrenia · depression). The report is one continuous argument in chapters — the
-certified nine-dimension **measurement map**, its **stratification** into a transdiagnostic continuum, the
+nine-dimension **measurement map**, its **stratification** into a transdiagnostic continuum, the
 **temporal coherence** of both, the **prognostic** value of the durable axes, and the **treatment** boundary.
 
 ## Build

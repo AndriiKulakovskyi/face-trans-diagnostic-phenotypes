@@ -215,7 +215,7 @@ $\phi_{Gd}=\operatorname{Corr}(G,D)$:
 The vector $\phi_{Gd}$---the correlation of each specific factor with general burden---is
 the headline estimand of the enterprise: ``biology is the least severity-entangled
 domain'' is the statement that its metabolic and inflammatory entries are near zero
-($0.14$ and $0.06$) while cognition and sleep are far larger ($0.39$ and $0.44$). The
+($0.12$ and $0.07$) while cognition and sleep are far larger ($0.39$ and $0.42$). The
 bifactor orthogonality is the \emph{null}; the correlated-\Gfac{} arm measures the
 departure from it, and the bifactor direct loading $|\lambda_{jG}|$ and the correlation
 $\phi_{Gd}$ agree on the ordering---reporting both is what turns ``biology is separable''
@@ -284,9 +284,11 @@ exactly the error to avoid). Sampling used the No-U-Turn
 sampler~\citep{hoffman2014nuts} via PyMC~\citep{abrilpla2023pymc} with the
 NumPyro/JAX backend~\citep{phan2019numpyro} on a workstation (Apple M4 Pro, 24~GB; no
 GPU). A stage advanced only on $\hat{R}\le1.01$, effective sample size $\ge400$, zero
-divergences, no Heywood cases and acceptable posterior-predictive behaviour; the
-reported map was certified at the largest sample that mixed, with a cross-seed
-stability guard (Tucker congruence $\varphi=0.993$).
+divergences, no Heywood cases and acceptable posterior-predictive behaviour. The
+full-$N$ continuous backbone met this strict gate; the joint nine-dimension (mixed)
+map did not certify at full $N$ and is reported at the largest sample that mixes
+($\hat{R}\le1.04$, effective sample size $\ge112$), with a cross-seed stability guard
+(Tucker congruence $\varphi=0.993$).
 
 \subsection{In-engine confirmation}
 
@@ -318,7 +320,7 @@ equally measured.
 
 \subsection{Stratification}
 
-The stratification operates on the certified coordinates $\{x_i,S_i\}_{i=1}^{N}$ with
+The stratification operates on the fitted coordinates $\{x_i,S_i\}_{i=1}^{N}$ with
 $x_i=\hat f_i\in\mathbb{R}^{D}$ ($D=9$) and known posterior covariance $S_i$ from
 \eqref{eq:scores}; uncertainty is carried throughout rather than discarded.
 

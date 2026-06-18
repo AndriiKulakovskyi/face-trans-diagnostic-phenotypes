@@ -14,7 +14,7 @@
 ## 0. The M2 arc and design philosophy
 
 M2 is the third layer of the project (`cohorts → dimensions (M1) → strata (M2) → prognosis/treatment
-(M4/M5)`). It acts only on the certified M1 9-dimension coordinates (N = 9,013; BP 6,252 · SZ 2,209 ·
+(M4/M5)`). It acts only on the M1 9-dimension coordinates (N = 9,013; BP 6,252 · SZ 2,209 ·
 DR 552), each carrying per-patient posterior uncertainty, and never on raw indicators or diagnosis.
 
 Four design commitments shaped everything and are themselves results worth stating:
@@ -54,12 +54,12 @@ stylistic one, and why every method below had to either propagate `S_i` or be re
 
 | approach | uncertainty | missingness | data-driven K | non-convex | soft | out-of-sample | interpretable | role taken |
 |---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|---|
-| **measurement-error mixture** (XD) | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | **engine** (tessellation) |
-| **archetypal analysis** | ⚠️(draws) | ⚠️ | ⚠️ | n/a | ✅ | ✅ | ✅✅ | **lead view** |
-| spectral / community graph | ⚠️ | ⚠️ | ⚠️ | ✅ | ⚠️ | ❌ | ⚠️ | not used (see 1.3) |
-| HDBSCAN / density | ❌ | ❌ | ✅ | ✅ | ⚠️ | ⚠️ | ⚠️ | structure diagnostic |
-| GNN embedding | ❌ | ⚠️ | n/a | ✅ | ⚠️ | ✅ | ❌ | parked → M4 (see 1.3) |
-| TDA / Mapper, dip, gap | ⚠️ | ⚠️ | n/a | ✅ | n/a | ❌ | ✅(shape) | structure gate |
+| **measurement-error mixture** (XD) | yes | yes | yes | no | yes | yes | yes | **engine** (tessellation) |
+| **archetypal analysis** | (draws) |  |  | n/a | yes | yes | yesyes | **lead view** |
+| spectral / community graph |  |  |  | yes |  | no |  | not used (see 1.3) |
+| HDBSCAN / density | no | no | yes | yes |  |  |  | structure diagnostic |
+| GNN embedding | no |  | n/a | yes |  | yes | no | parked → M4 (see 1.3) |
+| TDA / Mapper, dip, gap |  |  | n/a | yes | n/a | no | yes(shape) | structure gate |
 
 ### 1.3 Graph clustering and GNNs — considered and deliberately parked (a Methods-rationale point)
 Graph methods (spectral clustering, Louvain/Leiden community detection, Similarity Network Fusion) and graph
@@ -102,7 +102,7 @@ contribution to state.
 ### 2.1 Method
 M1 left three explicit, non-Gaussian axes (suicidality, developmental-risk, substance) scored only on its
 ~1,884-patient fit subsample. M2.0 projects them to all 9,013 by a **conditional posterior under fixed
-certified parameters**: holding the certified loadings, cutpoints, dispersions, and Φ fixed, we sample each
+parameters**: holding the fixed loadings, cutpoints, dispersions, and Φ fixed, we sample each
 patient's explicit latent `f_e` from their observed binary/ordinal/count cells (reusing the exact S5 mixed
 likelihood; NumPyro NUTS). This is a projection, **not** a re-fit, and **no imputation** — DR patients have
 no substance items, so their substance coordinate is prior-dominated, never filled. The six
@@ -112,7 +112,7 @@ SD · HDI · observed-indicator count · reliability tier, **and** a thinned pos
 the archetype-over-draws fit.
 
 ### 2.2 Faithfulness QC (the key check)
-The full-N projection **reproduces the certified `f_e` at Pearson r ≈ 1.00** on the fit-subsample overlap
+The full-N projection **reproduces the fixed `f_e` at Pearson r ≈ 1.00** on the fit-subsample overlap
 (suicidality / developmental / severity 1.000, substance 0.999; 0 divergences; R-hat(z_e) 1.04 — per-patient
 latent mixing, point estimates exact). So the projection faithfully extends the joint fit to the other
 ~7,100 patients.
@@ -208,10 +208,10 @@ survive** at each A:
 
 | corner appears at | A=5 | A=6 | A=7 | A=8 |
 |---|:--:|:--:|:--:|:--:|
-| metabolic, developmental, suicidality, sleep | ✓ | ✓ | ✓ | ✓ |
-| cognition | – | ✓ | ✓ | ✓ |
-| mania | – | – | ✓ | ✓ |
-| **inflammatory** | – | – | – | **✓** |
+| metabolic, developmental, suicidality, sleep | yes | yes | yes | yes |
+| cognition | – | yes | yes | yes |
+| mania | – | – | yes | yes |
+| **inflammatory** | – | – | – | **yes** |
 
 **A = 8 was chosen (PI-confirmed)** because it is the *only* resolution that resolves **both** biology
 corners (metabolic *and* inflammatory) — the operational biology⊥G story — and it gives the cleanest
@@ -234,7 +234,7 @@ every A is a valid soft basis for the same continuum.
 ### 4.4 The geometric findings (the elegant part)
 - **Severity is the spine, not a corner.** Overall severity (G) forms no archetype at any A — it is the axis
   the whole cloud is stretched along (every archetype sits at some severity level). This is the bifactor
-  structure made visible as geometry: severity = "how much," the specific axes = "what kind," orthogonal.
+  structure made visible as geometry: severity = "how much," the specific axes = "what kind," largely independent.
 - **Substance is absorbed, not a corner.** Substance never anchors an extreme; it appears only as a
   side-loading on the inflammatory corner (A5). Consistent with it being the noisiest, only-2-cohort axis —
   it self-down-weighted, exactly as predicted in M2.0. Both non-corners are *informative* results.
@@ -283,7 +283,7 @@ validation-only.
 The honest answer is a **continuum** (M2.1; reinforced by the smooth scree §4.2 and flat BIC §5.2). The
 strata layer is therefore a soft representation of a continuum, not natural kinds.
 
-### 6.2 Q2 — not just severity ✔ (the headline test)
+### 6.2 Q2 — not just severity (the headline test)
 Per-axis η² of the tessellation partition: **mania 0.45, developmental 0.35**, severity 0.31, metabolic
 0.21, sleep 0.19, cognition 0.17 (inflammatory 0.056, suicidality 0.054, substance 0.094 — the rare/noisy
 axes). **η²(G) = 0.31 vs mean η²(specifics) = 0.20, with the maximum specific (mania, 0.45) exceeding G.**
@@ -291,7 +291,7 @@ The partition is driven by the *specific/biological* axes, not overall severity 
 recovered severity tiers would be a re-dressed CGI-S, and this is not that. Archetypes separate even more
 strongly on specifics (mean η² 0.32).
 
-### 6.3 Q3 — transdiagnostic ✔ (two granularities)
+### 6.3 Q3 — transdiagnostic (two granularities)
 Validated against **both** the 3 cohorts and the **7 DSM-5 subtypes** (BP-I 2,635 / BP-II 2,956 / BP-NOS
 661; Schizophrenia 1,692 / Schizoaffective 476 / Schizophreniform 41; MDD 552 — the granularity at which a
 data-driven stratum can align with, cut across, or split a diagnosis, and where the schizoaffective boundary
@@ -300,7 +300,7 @@ archetypes 0.060 / 0.046. Cramér's V 0.18–0.28 (weak — informative gradient
 **cut across** diagnosis: every phenotype/region mixes all cohorts and subtypes, with clinically coherent
 gradients (mania corner BP-only; severity+cognition corner draws the most SZ and DR).
 
-### 6.4 Q4 — stable & not a missingness artefact ✔
+### 6.4 Q4 — stable & not a missingness artefact 
 Seed-stability: tessellation MAP ARI **0.987** (min 0.967); archetype congruence **0.999**. The critical
 artefact check: a classifier predicting MAP membership from the **per-axis coverage pattern** achieves
 **0.248 accuracy vs a 0.323 majority baseline — a *negative* lift (−0.08)**. Membership is governed by what
@@ -331,7 +331,7 @@ tested are recorded in `STRATIFICATION_MODEL.md` §1.7. Artifacts: `reports/24_v
 
 ## 7. Discussion (extended)
 
-**Why a continuum is the honest *and* the useful answer.** Finding no biotypes is a finding with teeth. It
+**Why a continuum is the honest *and* the useful answer.** Finding no evidence for well-separated discrete biotypes is a finding with teeth. It
 explains the field's biotype non-replication crisis (those results impose K on continua), aligns with the
 dimensional turn in psychiatry (RDoC, HiTOP), and changes the actionable object from "which box?" to
 "position on continuous axes / proximity to extreme phenotypes" — more honest and more flexible for
@@ -339,7 +339,7 @@ individualised decisions. It sharpens M4's question to: *does a continuous, biol
 archetype representation out-predict the 7 DSM-5 subtypes (and severity) on course and treatment response?*
 
 **Why biology⊥G is again the consequential finding.** That metabolic and inflammatory load form their own
-extreme phenotypes, orthogonal to the severity spine, is what makes the map worth building: two patients who
+extreme phenotypes, largely independent of the severity spine, is what makes the map worth building: two patients who
 look equally ill can be biologically opposite phenotypes — exactly the heterogeneity a precision layer should
 exploit, and exactly what a severity-only view is blind to.
 

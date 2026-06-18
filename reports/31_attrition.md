@@ -3,7 +3,7 @@
 V0 roster **N = 9,013**; retained at V1 **47.4%** (4,270), at V2 **32.8%** (2,958). Logistic retention ~ the 9 V0 coordinates + cohort (94% CIs; coordinates are z-scored, so OR is per +1 SD on that axis). The question: is the retained sample a *fair* draw from the V0 map, or does position predict who stays?
 
 ## Informative-dropout verdict — **informative (MAR-given-V0)**
-- **Severity (G):** OR(V1) = **0.97** [0.92, 1.03] → **the sicker LEAVE** per +1 SD of global burden.
+- **Severity (G):** OR(V1) = **0.97** [0.92, 1.03] → **severity-neutral** — global burden does not predict dropout per +1 SD; the informative signal is on other axes, not severity.
 - 4/9 axes are individually informative for V1 retention (94% CI excludes OR=1).
 - **Biology corners** (metabolic/inflammatory) show informative dropout: inflammatory OR 0.94 — biology trajectories must carry the IPW caveat.
 

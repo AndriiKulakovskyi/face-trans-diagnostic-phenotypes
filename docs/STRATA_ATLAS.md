@@ -9,7 +9,7 @@
 
 ## The map in one line
 
-On the certified M1 9-dimension coordinates (N = 9,013, with per-patient uncertainty), the transdiagnostic
+On the M1 9-dimension coordinates (N = 9,013, with per-patient uncertainty), the transdiagnostic
 space is a **graded continuum, not discrete biotypes**, represented two complementary, uncertainty-propagating
 ways: **8 extreme phenotypes (archetypes — lead)** + a **4-region soft tessellation** — both **transdiagnostic**
 (ARI ≈ 0 vs diagnosis), **specific-axis-driven** (not severity), **stable**, **not a missingness artefact**,
@@ -79,12 +79,12 @@ Figures: `docs/figures/22_{bic,profiles,membership}.png`.
 | gate | metric | result | verdict |
 |---|---|---|---|
 | **Q1 existence** | structure battery | continuum (no discrete clusters) | honest — no biotype claim |
-| **Q2 not-just-severity** | per-axis η² of partition | mania 0.45 · dev 0.35 · severity 0.31 · metabolic 0.21 · sleep 0.19 · cognition 0.17; max specific > G | **✔** specifics drive it |
-| **Q3 transdiagnostic** | ARI vs cohort / DSM-5 | **0.007 / 0.020** (tess); 0.06 / 0.05 (arch); Cramér's V 0.18–0.28 | **✔** cuts across diagnosis |
-| **Q4 stable** | seed ARI / congruence | tess **0.987**; arch **0.999** | **✔** reproducible |
-| **Q4 not-artefact** | coverage→membership classifier | acc **0.248** vs majority 0.323 (**lift −0.08**) | **✔** not missingness-driven |
-| **vs DSM-5 (descriptive)** | XD BIC, free vs DSM-5-constrained | **199,325** (K=4) vs **206,016** (7 groups) | **✔** tighter, fewer components |
-| **vs DSM-5 (descriptive)** | mean coordinate η² | free **0.209** vs DSM-5 **0.048** | **✔** DSM-5 barely structures the coordinates |
+| **Q2 not-just-severity** | per-axis η² of partition | mania 0.45 · dev 0.35 · severity 0.31 · metabolic 0.21 · sleep 0.19 · cognition 0.17; max specific > G | **yes** specifics drive it |
+| **Q3 transdiagnostic** | ARI vs cohort / DSM-5 | **0.007 / 0.020** (tess); 0.06 / 0.05 (arch); Cramér's V 0.18–0.28 | **yes** cuts across diagnosis |
+| **Q4 stable** | seed ARI / congruence | tess **0.987**; arch **0.999** | **yes** reproducible |
+| **Q4 not-artefact** | coverage→membership classifier | acc **0.248** vs majority 0.323 (**lift −0.08**) | **yes** not missingness-driven |
+| **vs DSM-5 (descriptive)** | XD BIC, free vs DSM-5-constrained | **199,325** (K=4) vs **206,016** (7 groups) | **yes** tighter, fewer components |
+| **vs DSM-5 (descriptive)** | mean coordinate η² | free **0.209** vs DSM-5 **0.048** | **yes** DSM-5 barely structures the coordinates |
 
 Figure: `docs/figures/24_validation.png`.
 

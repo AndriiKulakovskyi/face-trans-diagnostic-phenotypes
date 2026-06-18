@@ -2,8 +2,8 @@
 
 The stale **"92–98% of variance independent of G"** came from a superseded provisional mixed-fit read
 (metabolic r ≈ 0.28 → 1−r² ≈ 92%). With the current correlated-G continuous-backbone estimates the
-numbers are higher. This is the single source of truth; purge "92–98%" from `RESULTS.md`,
-`MEASUREMENT_MAP_EXPLAINED.md`, `STATE.md`, and `report/sections/05_results.tex`.
+numbers are higher. This is the single source of truth for the biology–G independence figure; cite it rather
+than re-deriving the percentage.
 
 ## Correlated-G factor correlation with G, and variance independent of G
 

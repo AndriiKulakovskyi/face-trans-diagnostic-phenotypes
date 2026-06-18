@@ -49,7 +49,7 @@ and it is a feature to foreground, not hide.
 
 | Beat | Claim | Milestone | Evidential status |
 |---|---|---|---|
-| **Exists** | A certified 9-dimension transdiagnostic map; **biology ⟂ G** | M1 | strong, certified |
+| **Exists** | A 9-dimension transdiagnostic map; **biology ⟂ G** | M1 | strong, certified |
 | **Organizes** | A **continuum, not biotypes**; 8 archetypes; biology corners survive | M2 | strong (internal/descriptive) |
 | **Persists** | Temporally coherent: durable biology, moving symptoms (trait/state) | M3 | moderate–strong |
 | **Predicts** | Modest, group-level, functioning-only, course-dependent | M4 | modest, honest |
@@ -88,7 +88,7 @@ No prior work does all of the following **together**, which is the novelty we cl
   markers directly into the transdiagnostic factor space** alongside cognition, sleep, suicidality, mania
   and substance, across **three diagnostic cohorts (BP/SZ/MDD) at once**.
 - It **quantifies the entanglement** between each biological axis and a general functional-burden factor
-  (the ≈ 0.06–0.14 correlations) — the immuno-metabolic literature asserts a *separable* dimension but does
+  (the ≈ 0.07–0.12 correlations) — the immuno-metabolic literature asserts a *separable* dimension but does
   not report its correlation with a bifactor general factor.
 - It does so with a **full-sample, no-imputation, mixed-likelihood Bayesian bifactor/ESEM** — a combination
   not seen in the retrieved transdiagnostic-biology papers, most of which subsample or use single-modality
@@ -123,10 +123,10 @@ Avoid the word "independent" unqualified (see §9.1).
 > major depression; *N* = 9,013) around continuous, diagnosis-agnostic axes of variation, estimated by one
 > global, missingness-aware **Bayesian sparse bifactor/ESEM** model with mixed likelihoods, fit to each
 > patient's observed cells only (no imputation, full sample), with diagnosis held out as metadata. From ten
-> candidate constructs the data certified a **nine-dimension map** — a general functional-burden factor (G)
+> candidate constructs the data resolved a **nine-dimension map** — a general functional-burden factor (G)
 > plus eight weakly-correlated axes (cognition, metabolic, inflammatory, sleep, developmental-risk,
 > suicidality, mania, substance). The central finding: **metabolic and inflammatory load are the least
-> severity-entangled domains** (correlation with G ≈ 0.06 and 0.14, vs 0.39 cognition, 0.44 sleep). On these
+> severity-entangled domains** (correlation with G ≈ 0.07 and 0.12, vs 0.39 cognition, 0.42 sleep). On these
 > coordinates the patient space is a **graded continuum, not discrete biotypes** (five structure-discovery
 > methods agree; adjusted Rand index ≈ 0 vs DSM-5 subtypes), describable by eight extreme phenotypes whose
 > two-year functional-remission rates range 14%–60%. Scored forward onto follow-up the geometry **persists**
@@ -184,7 +184,7 @@ rewrite if we go to Lancet Psychiatry; keep both in the LaTeX as commented alter
 > Six results subsections, mapping to the arc. Lead with the map; let each subsequent beat be visibly a
 > harder test.
 
-**R1 — A certified nine-dimension transdiagnostic map (M1).**
+**R1 — A nine-dimension transdiagnostic map (M1).**
 (a) One global model on observed cells; ten candidates in, nine dimensions out; depression/anxiety enter as
 **cross-loading windows** (load 0.66–0.80 on G), anhedonia **rejected**, impulsivity/negative-symptoms/
 sensory **not_testable** — *and stating so is a result.* G is **functional burden, not a symptom p-factor**
@@ -193,8 +193,8 @@ inflammatory (Φ ≈ 0.19). (b) `docs/M1_FINDINGS.md` §2–§3, `ADJUDICATION.m
 **Fig 2** (prior→posterior atlas + Φ).
 
 **R2 — Biology is the least severity-entangled domain (M1, the headline).**
-(a) Under the correlated-G sensitivity model, G correlates **+0.06 inflammatory, +0.14 metabolic** vs
-**+0.39 cognition, +0.44 sleep**: metabolic/immune load is carried on axes overall severity does not see.
+(a) Under the correlated-G sensitivity model, G correlates **+0.07 inflammatory, +0.12 metabolic** vs
+**+0.39 cognition, +0.42 sleep**: metabolic/immune load is carried on axes overall severity does not see.
 Word it as **"largely independent of a general functional-burden axis"** with boundary conditions (§9.1).
 (b) `M1_FINDINGS.md` F2, `reports/07_corrG_report.md`, `04_stage5_corrG_phi.csv`. (c) → **Fig 3**.
 
@@ -313,7 +313,7 @@ Subsections, each traceable to a methods-of-record doc:
 | # | Working title | Panels / content | Source asset(s) | Status |
 |---|---|---|---|---|
 | **Fig 1** | Study overview & the five questions | Cohort/coverage + no-imputation pipeline + the exists→…→treatment arc as one schematic | TikZ `\discoveryflow`/`\programstrip` in report; SVGs `m3_*`; `20_coverage.png` | **NEW** (compose one clean publication panel) |
-| **Fig 2** | The certified nine-dimension map | (a) prior→posterior loading atlas; (b) Φ heatmap | `fig_empirical_atlas.png`, `fig_prior_posterior.png`, `fig_phi_heatmap.png` | rework (merge → multi-panel, 300 dpi, panel labels) |
+| **Fig 2** | The nine-dimension map | (a) prior→posterior loading atlas; (b) Φ heatmap | `fig_empirical_atlas.png`, `fig_prior_posterior.png`, `fig_phi_heatmap.png` | rework (merge → multi-panel, 300 dpi, panel labels) |
 | **Fig 3** | Biology is least severity-entangled | bar of axis–G correlation + bifactor \|λ_G\| | `fig_biology_g.png` | ready (minor: vector export, font) |
 | **Fig 4** | A continuum, not biotypes | (a) structure-gate verdict; (b) UMAP colored by cohort/severity/inflammatory; (c) 8 archetype profiles | `21_selection.png`, `m2_embedding.png`, `m2_profiles.png` | rework (**embedding is low-res — regenerate**; strip "Arm A" jargon) |
 | **Fig 5** | The geometry persists (trait/state) | (a) trait/state ICC + population slide; (b) spine-slides-while-corners-hold | `35_trait_state.png`, `36_spine_corner.png`, SVGs `m3_two_lens`, `m3_spine_slides` | rework (turn schematic SVGs into final, unify style) |
@@ -426,7 +426,7 @@ This table is the spine of both the Limitations section and the response-to-revi
 ## 9. Reviewer pre-mortem (anticipated objections + our answer)
 
 **9.1 "'Independent of severity' is overstated."** *Answer:* reword to **"largely independent of a general
-clinical/functional-burden axis"**; report the ≈0.06–0.14 values as a *quantification at the low end* of a
+clinical/functional-burden axis"**; report the ≈0.07–0.12 values as a *quantification at the low end* of a
 known pattern; name boundary conditions (case-control inflammation elevations are real; BMI confounding;
 concentration in a metabolic subgroup). Emphasize G is **functional burden**, not symptom severity. (Source:
 `LITERATURE_EVIDENCE.md` §1.)
