@@ -90,7 +90,7 @@ def fig1_overview():
     # engine
     box(27, 44, 29, 9, "One global Bayesian\nbifactor / ESEM\n(observed cells, mixed)", TEAL, "#0b5a54", fs=8.3)
     # output map
-    box(59, 44, 24, 9, "Certified 9-dimension\ntransdiagnostic map", ACCENTDK, INK, fs=8.6)
+    box(59, 44, 24, 9, "Nine-dimension\ntransdiagnostic map", ACCENTDK, INK, fs=8.6)
     arrow(24, 48.5, 27, 48.5); arrow(56, 48.5, 59, 48.5)
 
     # invariants strip
@@ -99,7 +99,7 @@ def fig1_overview():
             ha="center", va="center", fontsize=7.8, color=MUTE, style="italic")
 
     # five questions funnel
-    q = [("1  EXISTS", "9-dim map;\nbiology ⊥ severity", ACCENT),
+    q = [("1  EXISTS", "9-dim map; biology\nleast-entangled", ACCENT),
          ("2  ORGANIZES", "continuum,\nnot biotypes", TEAL),
          ("3  PERSISTS", "durable biology,\nmoving symptoms", "#3A6EA5"),
          ("4  PREDICTS", "functioning,\nmodest · group-level", AMBER),
