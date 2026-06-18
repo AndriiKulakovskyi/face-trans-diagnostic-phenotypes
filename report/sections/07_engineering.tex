@@ -21,8 +21,8 @@ and committed configs.
 \rowcolor{facebg} \file{src/face/priors/build_matrix.py} & expands the YAML ontology into the prior matrix\\
 \file{src/face/models/bayesian/}\newline\file{continuous_core.py} & the engine: marginalized Woodbury + mixed-likelihood block\\
 \rowcolor{facebg} \file{src/face/confirm.py} & in-engine confirmation (prior-free refit, PPC/SRMR, WAIC)\\
-\file{src/face/strata/} & \textbf{stratification:} structure gate, measurement-error mixture, archetypes, validation\\
-\rowcolor{facebg} \file{scripts/01_build_data.py \dots\ 26_score.py} & the runnable pipeline (map fit $\to$ strata)\\
+\file{src/face/strata/}\newline\file{temporal/, prognosis/, treatment/} & \textbf{milestones M2--M5:} stratification, temporal coherence, prognosis, treatment moderation\\
+\rowcolor{facebg} \file{scripts/01_build_data.py \dots\ 57_confounder.py} & the runnable pipeline (map $\to$ strata $\to$ temporal $\to$ prognosis $\to$ treatment)\\
 \rowcolor{facebg} \file{reports/} \,/\, \file{results/} & shareable aggregates \,/\, per-patient artifacts (gitignored)\\
 \file{tests/} & invariant-guarding test suite (runs without confidential data)\\
 \bottomrule
@@ -44,8 +44,8 @@ The pipeline is a sequence of numbered scripts; each writes a committed aggregat
 per-patient artifacts.
 
 \begin{table}[h]\centering\small\sffamily
-\caption{The pipeline. Stage flags (\code{--stage}, \code{--mixed}, \code{--subsample}, \code{--explicit},
-\code{--gpu}) select the model variant; the engine is one module.}
+\caption{The pipeline. Stage flags (\code{--stage}, \code{--mixed}, \code{--subsample}, \code{--explicit})
+select the model variant; the engine is one module.}
 \label{tab:pipeline}
 \begin{tabular}{L{5.2cm} L{8.6cm}}
 \toprule
@@ -65,6 +65,9 @@ per-patient artifacts.
 \rowcolor{facebg} \file{scripts/21_structure.py} & structure-discovery gate (continuum vs.\ clusters)\\
 \file{scripts/22_mixture.py}, \file{23_archetypes.py} & measurement-error tessellation (XD) $+$ archetypes\\
 \rowcolor{facebg} \file{scripts/24_validate.py}, \file{26_score.py} & validation (Q1--Q4, DSM-5) $+$ per-patient strata\\
+\file{scripts/30\dots37} & \textbf{temporal (M3):} V0--V2 panel, invariance, trait/state, persistence\\
+\rowcolor{facebg} \file{scripts/40\dots48} & \textbf{prognosis (M4):} EIV GLM, incremental ELPD, DSM-5 head-to-head, clinical value\\
+\file{scripts/50\dots57} & \textbf{treatment (M5):} exposures, overlap/propensity, doubly-robust moderation $+$ E-value\\
 \midrule
 \file{report/make_figures.py} & regenerate the measurement-map figures from aggregate CSVs\\
 \bottomrule
@@ -72,7 +75,7 @@ per-patient artifacts.
 \end{table}
 
 \subsection{Tests: guarding the invariants}
-The suite (90 tests, green on CI) runs without the confidential CSVs (synthetic fixtures; integration tests
+The suite (green on CI) runs without the confidential CSVs (synthetic fixtures; integration tests
 skip if data are absent). It guards exactly the load-bearing invariants: sanity bounds null but never clip or
 impute;
 skip-logic fills only gate-determined zeros and never overwrites; the prior matrix is a complete grid with one
