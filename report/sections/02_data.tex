@@ -90,7 +90,7 @@ restricts to the baseline visit and applies skip-logic structural-zero decoding.
 
 \paragraph{Sanity bounds.} Each variable carries plausibility bounds tuned to catch gross scale/unit errors
 (a glucose of $488$ from a mg/dL slip), \emph{not} to trim genuine clinical extremes. Out-of-range cells are set
-to \code{NaN} --- never winsorized to the boundary, never filled. Formally, with bounds $[\ell_j,h_j]$,
+to \code{NaN} --- never winsorized to the boundary, never filled. Formally, with bounds $[\ell_j,h_j]$, 
 \[
 X_{ij} \leftarrow \mathrm{NaN}\quad\text{iff}\quad X_{ij}<\ell_j \;\lor\; X_{ij}>h_j ,
 \qquad\text{(observed cells only; already-missing cells untouched).}
@@ -165,18 +165,8 @@ SZ/DR only. So \textbf{SZ, not DR, is the cohort most often missing an instrumen
 systematic rather than random. That asymmetry shapes later findings rather than corrupting them: because SZ
 lacks the FAST functioning anchor, the general factor $G$ re-anchors there on CGI-S/EGF/EQ-5D (a documented
 invariance partial, Chapter~\ref{sec:validation}); because the substance-use items are BP/SZ-only, substance
-is reported as a two-cohort axis and not claimed for DR. A factor's transdiagnosticity is therefore
-\emph{adjudicated and flagged}, never assumed (Figure~\ref{fig:coverage}).
+is reported as a two-cohort axis and not claimed for DR.
 
-\begin{figure}[h]\centering
-\includegraphics[width=0.82\linewidth]{figures/fig_coverage.png}
-\caption{Observed coverage is structured, not random: it varies by factor block and by cohort. The
-depression/anxiety windows and the mania self-report are absent in SZ (present in BP and DR); the
-substance-use items are absent in DR; biology, cognition, sleep, and the ISF suicidality core are broadly
-covered across all three cohorts. The observed-data likelihood turns this structure from a liability into
-information.}
-\label{fig:coverage}
-\end{figure}
 
 \begin{caveatbox}
 The DR cohort ($N=552$) is small, and the SZ cohort lacks the affective and functioning self-report battery

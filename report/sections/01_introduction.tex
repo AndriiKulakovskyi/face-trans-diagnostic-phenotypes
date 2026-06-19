@@ -62,75 +62,74 @@ The map is estimated by a \emph{single} global, missingness-aware Bayesian spars
 a factor model with one general axis touching every indicator (a general dimension of the kind reported across
 psychopathology~\cite{caspi2014pfactor}), plus specific axes for each domain, which
 additionally permits small data-driven cross-loadings (Chapter~\ref{sec:model}) --- with mixed likelihoods,
-fit to the baseline visit. Its candidate structure is a \emph{soft prior ontology}, not a fixed output:
-theory says where each instrument \emph{should} load, and the likelihood is free to \emph{confirm, split,
-merge, downgrade (proxy), reject}, or --- where no indicator exists --- declare a candidate \code{not_testable}.
-The soft priors are the formal mechanism of ``theory proposes, data decides'': most cross-loadings are shrunk
-toward zero, but the likelihood can pull any of them away if the data demand it.
+fit to the baseline visit. The candidate ontology is an \emph{eligibility map plus soft priors}, not a fixed
+set of labels. It first says which constructs are actually measurable in the FACE common variables; constructs
+with no valid indicators are declared \code{not_testable} before fitting. For the eligible constructs, theory
+says where each instrument \emph{should} load, while the likelihood is free to confirm the axis, split it,
+downgrade it to a proxy, or reject it. The soft priors are the formal mechanism of ``theory proposes, data
+decides'': most cross-loadings are shrunk toward zero, but the likelihood can pull any of them away if the data
+demand it.
 
 \begin{definitionbox}[Three objects kept distinct throughout]
-\textbf{Candidate construct} --- a clinical idea, encoded as a soft prior over loadings.\quad
-\textbf{Empirical dimension} --- a stable, data-supported axis of covariance.\quad
-\textbf{Patient stratum} --- a recurring, decision-relevant region of the map (the subject of the
-stratification chapter). A candidate is a hypothesis; a dimension is a result; a stratum is an action boundary.
+\textbf{Candidate construct} --- a clinical idea, screened for indicators and, if eligible, encoded as soft
+loading priors.\quad
+\textbf{Empirical dimension} --- a stable, data-supported axis of covariance in the measurement map.\quad
+\textbf{Patient stratum} --- a downstream representation of the fixed coordinates: archetype mixtures and a
+coarse soft tessellation (Chapter~\ref{sec:strata}). A candidate is a hypothesis; a dimension is a measurement
+result; a stratum is a validated description of the map's geometry.
 \end{definitionbox}
 
-Each candidate runs the same gauntlet (Figure~\ref{fig:discovery}): proposed as a soft prior, entered into one
-global fit, and given a verdict. \textbf{Ten constructs were proposed.} Three of them --- impulsivity,
-negative symptoms, and sensory abnormalities --- carry no FACE common-variable indicator and are reported
-\code{not_testable}; stating that is itself a result, not a failure. The fit then placed overall severity as
-the general factor $G$, confirmed cognition, sleep, and suicidality, \emph{split} the single
+The discovery pipeline therefore has two gates (Figure~\ref{fig:discovery}). \textbf{Ten constructs were
+originally proposed.} Three of them --- impulsivity, negative symptoms, and sensory abnormalities --- carry no
+FACE common-variable indicator and are reported \code{not_testable}; stating that is itself a result, not a
+failure. The eligible constructs then enter \emph{one} global fit. That fit placed overall severity as the
+general factor $G$, confirmed cognition, sleep, and suicidality, \emph{split} the single
 metabolism/immunometabolism construct into two weakly-correlated axes (metabolic and inflammatory), and
 downgraded neurodevelopment to a \emph{developmental-risk proxy}; anhedonia, carried by a single thin
 indicator, proved inseparable from $G$ and the depression windows and was \emph{rejected}. Two further
-constructs --- \textbf{mania} and \textbf{substance use} --- were added once their indicators were ingested
-into the harmonized dataset, and both were confirmed. The map is therefore \textbf{nine dimensions}:
+constructs --- \textbf{mania} and \textbf{substance use} --- were added once their indicators were ingested into
+the harmonized dataset, re-entered through the same global model, and both were confirmed. The measurement map
+is therefore \textbf{nine dimensions}:
 $G$ plus cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality, mania, and substance ---
-what survived adversarial checking, not what was assumed.
+discovered axes, not strata.
 
 \begin{figure}[h]\centering
 \discoveryflow
-\caption{Hybrid discovery as a verdict pipeline. Theory proposes; one global fit disposes. Each candidate is
-\emph{confirmed}, \emph{split}, relabelled a \emph{proxy}, \emph{rejected}, or declared \emph{not-testable},
-with the FACE outcomes shown. Mania and substance were added after the original ten, once their indicators
-entered the dataset. This is the formal sense in which the data are allowed to overturn the theory.}
+\caption{Hybrid discovery as eligibility plus empirical adjudication. Theory proposes; FACE coverage first
+declares unmeasured constructs \emph{not-testable}; one global fit then adjudicates the eligible constructs as
+\emph{confirmed}, \emph{split}, relabelled a \emph{proxy}, or \emph{rejected}. Mania and substance were added
+after the original ten, once their indicators entered the dataset. This is the formal sense in which the data
+are allowed to overturn the theory.}
 \label{fig:discovery}
 \end{figure}
 
 \subsection{One argument, five questions}
-The report is a single argument, built as five questions that depend on one another --- each can be asked
-honestly only once the previous one is answered \emph{yes}, so the order is logical, not administrative. The
+The report is a single argument, built as five questions that depend on one another --- each can be asked only 
+once the previous one is answered \emph{yes}, so the order is logical, not administrative. The
 conceptual pipeline runs in four layers (cohorts $\to$ dimensions $\to$ strata $\to$ prognosis/treatment); the
 five questions walk through it, and each is a chapter.
 
 \programstrip{0}
 
-\begin{enumerate}\setlength{\itemsep}{1pt}
-  \item[\textbf{Exist?}] \textbf{Transdiagnostic dimensions} --- the measurement map, built on the baseline
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Exist?}\quad\textbf{Transdiagnostic dimensions} --- the measurement map, built on the baseline
   visit (Chapters~\ref{sec:data}--\ref{sec:scoring}).
-  \item[\textbf{Organize?}] \textbf{Validated strata} --- the decision regions those coordinates support, and
+  \item \textbf{Organize?}\quad\textbf{Validated strata} --- the decision regions those coordinates support, and
   whether they are discrete or graded (Chapter~\ref{sec:strata}).
-  \item[\textbf{Persist?}] \textbf{Temporal coherence} --- whether the coordinates and strata hold across the
+  \item \textbf{Persist?}\quad\textbf{Temporal coherence} --- whether the coordinates and strata hold across the
   follow-up visits (Chapter~\ref{sec:temporal}).
-  \item[\textbf{Predict?}] \textbf{Prognosis} --- incremental predictive value beyond diagnosis and severity
+  \item \textbf{Predict?}\quad\textbf{Prognosis} --- incremental predictive value beyond diagnosis and severity
   (Chapter~\ref{sec:prognosis}).
-  \item[\textbf{Guide treatment?}] \textbf{Treatment} --- whether a stratum moderates treatment response
+  \item \textbf{Guide treatment?}\quad\textbf{Treatment} --- whether a stratum moderates treatment response
   (Chapter~\ref{sec:treatment}).
-\end{enumerate}
+\end{itemize}
 
-This document is the methods-of-record and the as-built record for the whole program, written at a level of
-detail beyond a journal article so that it can both seed the eventual manuscript and serve as the project's
-standing technical reference. Chapter~\ref{sec:data} describes the data foundation and the no-imputation
-contract; Chapter~\ref{sec:model} specifies the measurement model from first principles; Chapter~\ref{sec:estimation}
-develops the estimation strategy that makes full-sample inference tractable; Chapters~\ref{sec:results}--\ref{sec:scoring}
-report the empirical map, its hardening, and the per-patient coordinates; and Chapters~\ref{sec:strata}--\ref{sec:treatment}
-answer the remaining four questions. Chapter~\ref{sec:engineering} documents the software; Chapter~\ref{sec:roadmap}
-and Chapter~\ref{sec:limitations} collect the future studies and the open problems. Appendices gather notation,
-the prior and empirical atlases, the acceptance-gate definitions, the full factor-correlation matrix, and a
-glossary of instruments.
+This document is the methods-of-record and the as-built record, written at a level of
+detail so that it can both seed the eventual manuscript and serve as the project's
+standing technical reference.
 
 \subsection{Load-bearing invariants}
-Three commitments are enforced at every layer of the system, from the data loader to the likelihood. They are
+Four commitments are enforced at every layer of the system, from the data loader to the likelihood. They are
 the difference between a defensible map and an artefactual one.
 
 \begin{invariantbox}
@@ -138,23 +137,12 @@ the difference between a defensible map and an artefactual one.
 observed-data likelihood; no completed patient$\times$variable matrix is ever created. Naive imputation
 manufactures covariance and fabricates strata when missingness is cohort-, site-, or severity-dependent --- as
 it is in FACE.\\[3pt]
-\textbf{(I2) Diagnosis is metadata.} BP/SZ/DR labels are never indicators. They enter only as covariates, as a
-measurement-invariance grouping variable, and as a post-hoc validation layer.\\[3pt]
+\textbf{(I2) Diagnosis is metadata.} BP/SZ/DR labels are never indicators. They enter only as a post-hoc validation layer.\\[3pt]
 \textbf{(I3) Baseline defines; follow-up validates.} Dimensions are estimated on the baseline visit V0 only;
-visits V1--V4 are reserved for temporal coherence and prognosis, used \emph{after} the map is fixed.
+visits V1--V4 are reserved for temporal coherence and prognosis, used \emph{after} the map is fixed.\\[3pt]
+\textbf{(I4) One global structure.} There is \emph{one} global factor structure on one harmonized matrix;
+there are no cohort-specific ``modules.'' An instrument absent for a cohort is simply a missing cell under the
+observed-data likelihood, and a candidate with no valid indicators is reported \code{not_testable}, never
+back-filled with an invented proxy.
 \end{invariantbox}
 
-A fourth, structural commitment supports the first three: there is \emph{one} global factor structure on one
-harmonized matrix. An instrument absent for a cohort is simply a missing cell under the observed-data
-likelihood --- there are no cohort-specific ``modules.'' Coverage is emergent and flagged per patient, never a
-structural sub-model. And crucially, \emph{a dimension requires indicators}: the model can discover a
-statistical dimension but cannot discover a construct that is not measured; a candidate with no valid
-indicators is reported \code{not_testable}, never back-filled with an invented proxy.
-
-\begin{methodsbox}[Reading conventions]
-Coloured callouts flag \statuspill{facekr}{key results}, \statuspill{facedef}{definitions},
-\statuspill{faceinv}{invariants}, \statuspill{facemeth}{methods notes}, \statuspill{facecav}{caveats}, and
-\statuspill{faceopen}{open problems}. Status pills mark each finding's evidential standing: \certified\
-(passes the acceptance gate at full $N$), \provisional\ (a checkpoint or sub-sample read), \rejected\ (a
-candidate the data declined). Code identifiers and file paths are set in \code{monospace}.
-\end{methodsbox}

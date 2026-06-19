@@ -45,6 +45,26 @@ diagnostic cohorts  →  transdiagnostic dimensions  →  validated strata  → 
   → [docs/TREATMENT_FINDINGS.md](docs/TREATMENT_FINDINGS.md)
 
 ## Method — the discipline
+flowchart TD
+  dims["dimensions.yaml<br/>(ontology: factors, anchors, windows)"] --> bm["priors/build_matrix.py"]
+  pri["priors.yaml<br/>(soft-prior tiers)"] --> bm
+  lik["likelihood_map_v3.yaml<br/>(per-item family)"] --> bm
+  bm --> mat["prior_loading_matrix_v3.csv<br/>(item x factor cells)"]
+
+  xlsx["face-common-vars.xlsx<br/>(3 cohorts, harmonized)"] --> s01["01_build_data.py<br/>skip-logic, NaN preserved"]
+  s01 --> pq["baseline_v0.parquet"]
+  s02["02_build_covariates.py"] --> covpq["covariates_v0.parquet"]
+
+  mat --> prep["continuous_core.prepare()<br/>encode + resolve priors"]
+  pq --> prep
+  prep --> fit["04_fit.py<br/>build_marginalized / build_mixed"]
+  fit --> idata["idata.nc (Lam, Phi, sigma, f_e)"]
+
+  idata --> conf["05 confirm (PPC/SRMR/WAIC/prior-free)"]
+  idata --> inv["06,13 invariance"]
+  idata --> score["07 score -> 20 full-N coords"]
+  idata --> rob["08 robustness / 10,10b sensitivity"]
+  idata --> atlas["09 atlas / 12 mixed PPC"]
 
 One global Bayesian sparse **bifactor / ESEM** with **mixed likelihoods** estimates the factor structure;
 the data **confirm, split, merge, downgrade, or reject** each candidate; confirmation is **in-engine**
@@ -88,6 +108,9 @@ pip install -e ".[full]"        # core + figure export; add ".[bayesian]" for Py
 python3 -m pytest tests/ -q     # data-layer, engine, and milestone tests
 ```
 
+To **rebuild the model-ready data and re-fit the measurement model (M1) from scratch** — data loading +
+the Bayesian bifactor/ESEM map only — follow **[REPRODUCE.md](REPRODUCE.md)**.
+
 The manuscript (the FACE Atlas, Milestones 1–5) builds from the project results:
 
 ```bash
@@ -105,6 +128,7 @@ cd report && pdflatex FACE-ATLAS.tex    # ×2 for TOC/refs  (PDF is gitignored)
   [stratification](docs/STRATIFICATION_MODEL.md) · [temporal](docs/TEMPORAL_MODEL.md) ·
   [prognosis](docs/PROGNOSIS_MODEL.md) · [treatment](docs/TREATMENT_MODEL.md).
 - **Clinician-facing atlases:** [strata](docs/STRATA_ATLAS.md) · [prognosis](docs/PROGNOSIS_ATLAS.md).
+- **[REPRODUCE.md](REPRODUCE.md)** — step-by-step: build the data + re-fit the measurement model (M1).
 - **[docs/DATA.md](docs/DATA.md)** — data contract + dictionary · **[CLAUDE.md](CLAUDE.md)** — guide for
   collaborators / AI assistants · **`report/`** — the LaTeX manuscript (Milestones 1–5 + Conclusion).
 

@@ -1,17 +1,10 @@
-%==============================================================================
-%  FACE-ATLAS — A Transdiagnostic Latent-axis Stratification of Severe Mental Illness
-%  Technical report.
-%  Compile:  pdflatex FACE-ATLAS.tex   (run twice for the table of contents / refs)
-%  Style:    faceatlas.sty  (self-contained; TeX Live "basic" compatible)
-%==============================================================================
 \documentclass[11pt]{article}
 \usepackage{faceatlas}
 
 % --- editable metadata --------------------------------------------------------
 \newcommand{\reportauthor}{Andrii Kulakovskyi}
-\newcommand{\reportgroup}{Precision Psychiatry \& Artificial Intelligence}
+\newcommand{\reportgroup}{Fondation FondaMental}
 \newcommand{\reportdate}{June 2026}
-\newcommand{\reportversion}{v5.0 --- the map, its strata, their persistence, their prognosis, and the treatment boundary}
 
 \begin{document}
 \hypersetup{pdfauthor={\reportauthor}}
@@ -23,7 +16,7 @@
 \vspace*{0.15cm}
 {\color{faceaccent}\rule{\linewidth}{1.3pt}}\par\vspace{6pt}
 \noindent{\sffamily\footnotesize\bfseries\color{faceaccent} TECHNICAL REPORT}\hfill%
-{\sffamily\footnotesize\color{facemute} the map, its strata, their persistence, their prognosis, and the treatment boundary \quad\textbar\quad \reportdate}\par
+{\sffamily\footnotesize\color{facemute}}\par
 \vspace{1.5cm}
 
 {\sffamily\bfseries\fontsize{37}{42}\selectfont\color{faceink} FACE{\color{faceaccent}-}ATLAS}\par
@@ -36,14 +29,6 @@
 {\normalsize\itshape\color{facemute} \reportgroup}\par
 \vspace{16pt}
 
-{\sffamily\footnotesize\color{facemute} Research program\quad diagnostic cohorts $\:\to\:$
-  {\bfseries\color{faceaccent}transdiagnostic dimensions} $\:\to\:$ {\bfseries\color{faceaccent}validated
-  strata} $\:\to\:$ {\bfseries\color{faceaccent}prognosis} $\:\to\:$ {\bfseries\color{faceaccent}treatment}}\par\vspace{3pt}
-{\sffamily\footnotesize\color{facemute} Scope\quad bipolar disorder, schizophrenia, depression
-  ($N=9{,}013$). A nine-dimension map; on it a transdiagnostic \emph{continuum} of eight extreme
-  phenotypes; both shown \emph{temporally coherent}; the durable axes shown to \emph{predict} two-year
-  functioning beyond diagnosis and severity; and the treatment boundary tested and drawn by the evidence.}\par
-\vspace{1.15cm}
 
 {\color{facerule}\rule{\linewidth}{0.6pt}}\par\vspace{7pt}
 {\sffamily\bfseries\color{faceaccent}\small ABSTRACT}\par\vspace{5pt}
@@ -80,10 +65,6 @@ treatment data, and external validation beyond this baseline observational cohor
 {\color{facerule}\rule{\linewidth}{0.6pt}}
 
 \vfill
-{\footnotesize\color{facemute} The FACE database is the property of \emph{Fondation FondaMental}. Per-patient
-cohort data are confidential and never reproduced here; this report contains only aggregate parameters, derived
-structure, and code description. Every figure is reproducible from the project scripts and committed
-configurations.}
 \end{titlepage}
 
 %================================ CONTENTS =====================================

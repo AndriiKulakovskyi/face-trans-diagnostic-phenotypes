@@ -248,31 +248,34 @@
     \fill[faceaccent!85] (\c,\r) ++(0.06,0.06) rectangle ++(0.8,0.8);}
   \node[rotate=90,font=\sffamily\footnotesize,text=facemute] at (-0.7,2.76) {patients};
   \node[font=\sffamily\footnotesize,text=facemute] at (3.7,-0.8) {indicators};
-  \node[font=\sffamily\scriptsize,text=facecav] at (6.46,6.3) {instrument};
-  \node[font=\sffamily\scriptsize,text=facecav] at (6.46,5.9) {absent here};
-  \draw[facecav,line width=0.7pt] (5.96,-0.1) rectangle (6.98,5.55);
+  \node[font=\sffamily\scriptsize,text=facecav] at (6.46,6.65) {instrument};
+  \node[font=\sffamily\scriptsize,text=facecav] at (6.46,6.25) {absent here};
+  \draw[facecav,line width=0.7pt] (5.96,-0.02) rectangle (6.98,5.96);
   \fill[faceaccent!85] (9.3,4.6) rectangle ++(0.55,0.55); \node[anchor=west,font=\sffamily\scriptsize] at (10.0,4.87){observed --- enters the likelihood};
   \draw[facemute!50] (9.3,3.6) rectangle ++(0.55,0.55); \node[anchor=west,font=\sffamily\scriptsize] at (10.0,3.87){missing --- no term (never imputed)};
 \end{tikzpicture}}\end{center}}
 
-% (4) Hybrid discovery -> adjudication: candidate (soft prior) -> one global fit -> empirical
-%     dimension -> one of five verdicts, with the real FACE outcomes.
+% (4) Hybrid discovery -> adjudication: candidate -> eligibility map (not-testable
+%     if no indicators) -> one global fit -> empirical verdicts, with the real FACE outcomes.
 \newcommand{\discoveryflow}{%
 \begin{center}\resizebox{0.98\linewidth}{!}{%
 \begin{tikzpicture}[>={Stealth[length=2.4mm]},font=\sffamily\footnotesize,
   box/.style={draw=faceaccent,line width=0.8pt,rounded corners=2.5pt,fill=white,align=center,minimum height=13mm,text width=24mm},
   chip/.style={rounded corners=2pt,font=\sffamily\scriptsize\bfseries,text=white,inner xsep=4pt,inner ysep=2.5pt,minimum width=20mm,align=center}]
-  \node[box] (a) {candidate construct\\{\scriptsize (soft prior)}};
-  \node[box,right=9mm of a] (b) {one global\\Bayesian fit};
-  \node[box,right=9mm of b] (c) {empirical\\dimension?};
-  \draw[->,faceaccent,line width=0.9pt] (a)--(b);
+  \node[box] (a) {candidate construct\\{\scriptsize clinical hypothesis}};
+  \node[box,right=8mm of a] (e) {eligibility map\\{\scriptsize valid indicators?}};
+  \node[box,right=8mm of e] (b) {one global\\Bayesian fit};
+  \node[box,right=8mm of b] (c) {empirical\\dimension?};
+  \draw[->,faceaccent,line width=0.9pt] (a)--(e);
+  \draw[->,faceaccent,line width=0.9pt] (e)--(b);
   \draw[->,faceaccent,line width=0.9pt] (b)--(c);
-  \node[chip,fill=facekr,right=14mm of c,yshift=20mm] (v1) {confirmed};
-  \node[chip,fill=facedef,right=14mm of c,yshift=8mm] (v2) {split};
-  \node[chip,fill=faceinv,right=14mm of c,yshift=-4mm] (v3) {proxy};
-  \node[chip,fill=facecav,right=14mm of c,yshift=-16mm] (v4) {rejected};
-  \node[chip,fill=facemute,right=14mm of c,yshift=-28mm] (v5) {not-testable};
-  \foreach \v in {v1,v2,v3,v4,v5} {\draw[->,facemute!80,line width=0.6pt] (c.east) -- (\v.west);}
+  \node[chip,fill=facemute,below=11mm of e] (v5) {not-testable};
+  \draw[->,facemute!80,line width=0.6pt] (e.south) -- (v5.north);
+  \node[chip,fill=facekr,right=14mm of c,yshift=15mm] (v1) {confirmed};
+  \node[chip,fill=facedef,right=14mm of c,yshift=5mm] (v2) {split};
+  \node[chip,fill=faceinv,right=14mm of c,yshift=-5mm] (v3) {proxy};
+  \node[chip,fill=facecav,right=14mm of c,yshift=-15mm] (v4) {rejected};
+  \foreach \v in {v1,v2,v3,v4} {\draw[->,facemute!80,line width=0.6pt] (c.east) -- (\v.west);}
   \node[anchor=west,font=\sffamily\scriptsize,text=facemute] at (v1.east) {\ mania, substance};
   \node[anchor=west,font=\sffamily\scriptsize,text=facemute] at (v2.east) {\ biology $\to$ metabolic\,+\,inflammatory};
   \node[anchor=west,font=\sffamily\scriptsize,text=facemute] at (v3.east) {\ neurodevelopment};
