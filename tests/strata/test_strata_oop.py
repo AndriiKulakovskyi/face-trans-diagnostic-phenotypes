@@ -91,6 +91,17 @@ def test_structure_gate_distinguishes_clusters_from_continuum():
     assert sb > su                                                  # blobs carry more clustered signal
 
 
+def test_null_comparison_separation():
+    """The single-Gaussian null test flags genuine separation (well-separated blobs) and clears a
+    structureless Gaussian (apparent structure = continuum)."""
+    g = StructureGate(StrataConfig())
+    blobs, _, _ = _coords(N=400, K=3, spread=12.0, seed=8)
+    assert g.null_comparison(blobs, n_null=4, Ks=range(2, 5))["z"]["best_silhouette"] > 2.0
+    gauss, _, _ = _coords(N=400, X=np.random.default_rng(8).multivariate_normal(
+        np.zeros(len(CANON)), np.eye(len(CANON)), 400))
+    assert g.null_comparison(gauss, n_null=4, Ks=range(2, 5))["z"]["best_silhouette"] < 2.0
+
+
 def test_assignment_usefulness_gate():
     rng = np.random.default_rng(0)
     conf = np.eye(3)[rng.integers(0, 3, 500)] * 0.9 + 0.05

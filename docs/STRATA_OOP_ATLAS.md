@@ -25,6 +25,61 @@ Both partition the *same* points; they answer different questions. The headline 
 
 ---
 
+## 0b. How do we know there are *no clusters*? (the structure gate, and its limits)
+
+"No clusters" is a negative that cannot be *proved*; what we can do is run a convergent battery of
+complementary tests and a falsification null, and report honestly. The verdict is **continuum** with a
+**clustered-score of 3/6** — i.e. it is a *weak-separation* continuum, not a slam-dunk absence of structure.
+The three signals that fire are tendency/shape signals, not separation signals — and a falsification test
+shows they are spurious.
+
+**The battery (arm A, all 9 axes, 9,013 patients):**
+
+| test | what it measures | result | reads as |
+|---|---|---|---|
+| Hopkins | cluster *tendency* (vs uniform) | 0.79 | fired (but see null below) |
+| GMM-BIC | does >1 Gaussian fit better than 1? | interior optimum, gain 10,326 | fired (but = non-Gaussian shape) |
+| gap statistic | optimal K vs a uniform reference | k=3 | fired |
+| **silhouette** | **separation** of the best K | **peak 0.14** (< 0.15) | **continuum** |
+| dip (PC1) | modality | p = 1.0, unimodal | continuum |
+| HDBSCAN | density clusters (non-convex) | 0 clusters, 100% noise | continuum |
+| Mapper | topology | a single connected component | continuum |
+
+**The falsification null — the decisive test.** We compare the real cloud to a **single multivariate Gaussian
+with the same mean and covariance** — a cloud that has *no clusters by construction* — and ask whether the
+real data's metrics exceed it (`StructureGate.null_comparison`):
+
+| metric | real | single-Gaussian null | z |
+|---|---|---|---|
+| **best silhouette (separation)** | **0.140** | **0.140 ± 0.003** | **0.1** |
+| Hopkins (tendency) | 0.794 | 0.776 ± 0.004 | 4.5 |
+| GMM-BIC gain (shape) | 10,326 | 0 ± 0 | — |
+
+The decisive line is the silhouette: the best clustering of the real data separates patients **no better than
+clustering a structureless Gaussian blob** (z = 0.1). The Hopkins "tendency" is essentially what the null
+already gives (0.79 vs 0.78), so that signal is spurious. The large GMM-BIC gain (real 10,326 vs null 0)
+confirms the cloud is **non-Gaussian** — but the silhouette proves those GMM components are **not separated**,
+so the non-Gaussianity is *shape* (skew + the archetype corners), not *clusters*.
+
+**Accounting for measurement uncertainty.** The coordinates are posterior means with known per-patient
+uncertainty; treating uncertain blobs as points could manufacture or hide structure. Re-running over the
+posterior **draws** (`uncertainty_stability`), the GMM-BIC-optimal K is **1 in all 20 draws** (Hopkins
+0.77 ± 0.01) — the apparent multi-component structure of the means collapses to a single component once
+uncertainty propagates. And the measurement-error mixture itself (Extreme Deconvolution) **deconvolves**
+`S_i`: if tight clusters were hiding under measurement noise it would recover them; instead the region
+covariances are large and heavily overlapping.
+
+**So the precise, honest claim** is *not* "every patient is the same" and *not* a proven "zero clusters
+anywhere." It is: **in the 9-dim baseline copula coordinate space, there are no well-separated, reproducible,
+density- or topology-defined discrete clusters** — separation is statistically identical to a structureless
+continuum, the cloud is one connected unimodal component, density clustering finds none, and the optimal
+component count under uncertainty is 1. That is quantitatively inconsistent with discrete biotypes and (per §4
+of the findings) a tighter description than the DSM-5 categories. **What we cannot rule out:** clusters in the
+raw-indicator space that the 9-dim factor summary blurs, or structure that emerges only with outcomes/
+follow-up (M3/M4). The continuum claim is about *this* baseline measurement map.
+
+---
+
 ## 1. K — the soft tessellation splits on psychiatric symptom burden
 
 ### 1.1 Why K = 2

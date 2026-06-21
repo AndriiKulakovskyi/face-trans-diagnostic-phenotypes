@@ -402,6 +402,36 @@ class StructureGate:
         _, _, cols = coords.arm(arm)
         return uncertainty_sweep(coords.draws, cols, n_draw=n_draw, seed=self.config.seed)
 
+    def null_comparison(self, coords: CoordinateSet, *, arm: str = "A", n_null: int = 10,
+                        Ks=range(2, 7)) -> dict:
+        """Compare the cloud's clustering metrics to a SINGLE-GAUSSIAN 'structureless continuum' null with the
+        same mean/covariance. This is the decisive separation test: Hopkins and GMM-BIC tendency signals fire
+        on the null too (a Gaussian is non-uniform and, here, non-Gaussian shape aside, GMM over-segments), so
+        only the **silhouette** (separation) discriminates clusters from a continuum. If the real silhouette is
+        within the null band (z < ~2), the apparent structure is what a unimodal continuum already produces ->
+        no discrete clusters; the GMM-BIC gain then reflects only the cloud's non-Gaussian shape (its skew /
+        archetype corners), which the archetypes — not clusters — describe."""
+        from face.strata.structure import gmm_bic_sweep, hopkins, silhouette_sweep  # noqa: PLC0415
+        X, _, _ = coords.arm(arm)
+        rng = np.random.default_rng(self.config.seed)
+        mu, cov = X.mean(0), np.cov(X.T)
+
+        def _m(Z):
+            return {"hopkins": float(hopkins(Z, seed=0)),
+                    "best_silhouette": float(silhouette_sweep(Z, Ks, seed=0)["peak"]),
+                    "gmm_bic_gain": float(max(0.0, gmm_bic_sweep(Z, range(1, max(Ks) + 2), seed=0).get("gain_over_k1", 0.0)))}
+
+        real = _m(X)
+        null = [_m(rng.multivariate_normal(mu, cov, size=len(X))) for _ in range(n_null)]
+        out = {"real": real, "null_mean": {}, "null_sd": {}, "z": {}}
+        for k in real:
+            v = np.array([n[k] for n in null])
+            out["null_mean"][k], out["null_sd"][k] = float(v.mean()), float(v.std())
+            out["z"][k] = float((real[k] - v.mean()) / (v.std() + 1e-9))
+        out["verdict"] = ("separation indistinguishable from a structureless continuum"
+                          if out["z"]["best_silhouette"] < 2.0 else "separation exceeds the continuum null")
+        return out
+
 
 # ----------------------------------------------------------------------------------------------------------
 # Soft operational regions  (measurement-error mixture)  -- wraps src/face/strata/mixture.py
