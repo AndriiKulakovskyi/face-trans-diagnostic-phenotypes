@@ -61,9 +61,18 @@ def main() -> None:
     parser.add_argument("--balanced", action="store_true", help="Match a balanced-subsample fit.")
     parser.add_argument("--n-subsample", type=int, default=2000, help="Subsample N the stages were fit on (None for full-N).")
     parser.add_argument("--full-n", action="store_true", help="Stages were fit at full N (ignore --n-subsample).")
+    parser.add_argument("--results-dir", type=Path, default=None, help="Override results dir (e.g. a copula/ subdir).")
+    parser.add_argument("--figure-dir", type=Path, default=None, help="Override figure output dir.")
+    parser.add_argument("--likelihood-mode", choices=["native", "gaussian_copula"], default="native",
+                        help="Must match the fit so the reconstructed core uses the same encoding.")
     args = parser.parse_args()
 
-    config = MeasurementConfig()
+    from dataclasses import replace  # noqa: PLC0415
+    config = MeasurementConfig(likelihood_mode=args.likelihood_mode)
+    if args.results_dir is not None:
+        config = replace(config, output_dir=args.results_dir)
+    if args.figure_dir is not None:
+        config = replace(config, figure_dir=args.figure_dir)
     dataset = MeasurementDataset(config)
     projector = PatientProjector(config)
     visualizer = MeasurementVisualizer(config)

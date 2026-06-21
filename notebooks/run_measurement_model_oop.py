@@ -77,6 +77,27 @@ def parse_args() -> argparse.Namespace:
         help="Soft-unlikely SENSITIVITY arm (free unlikely_cross / near-zero g-anchor cells). "
         "The default is the hard-zero primary; --soft writes to an 'soft/' subdir to keep results separate.",
     )
+    parser.add_argument(
+        "--likelihood-mode",
+        choices=["native", "gaussian_copula"],
+        default="native",
+        help="native = certified tiered mixed likelihood (default); gaussian_copula = rank-INT "
+        "Gaussianize the continuous + high-cardinality ordinal/count block (acceleration vertical). "
+        "Copula runs write to a 'copula/' subdir to keep results separate.",
+    )
+    parser.add_argument(
+        "--cohort-weighted",
+        action="store_true",
+        help="§3.6 cohort-weighted FULL-N fit: use all patients with weights that equalize each "
+        "cohort's influence (transdiagnostic estimand, single coherent posterior). Forces full-N "
+        "stages; writes to a 'weighted/' subdir. The mixed stage at full-N is heavy (run detached).",
+    )
+    parser.add_argument(
+        "--substance-orthogonal",
+        action="store_true",
+        help="Pin the substance factor orthogonal to the other specifics (recommended substance "
+        "handling: its cross-factor correlations are non-identifiable/unstable). Writes to a 'subortho/' subdir.",
+    )
     parser.add_argument("--overwrite", action="store_true", help="Refit stages even when cache exists.")
     parser.add_argument("--no-plots", action="store_true", help="Skip projection and visualization outputs.")
     parser.add_argument("--output-dir", type=Path, default=None, help="Override results directory.")
@@ -98,10 +119,27 @@ def build_config(args: argparse.Namespace) -> MeasurementConfig:
         # Sensitivity arm: keep results separate from the hard-zero primary.
         config = config.with_soft_unlikely()
         config = replace(config, output_dir=config.output_dir / "soft", figure_dir=config.figure_dir / "soft")
+    if args.likelihood_mode == "gaussian_copula":
+        # Acceleration vertical: keep results separate from the native primary.
+        config = config.with_gaussian_copula()
+        config = replace(config, output_dir=config.output_dir / "copula", figure_dir=config.figure_dir / "copula")
+    if args.cohort_weighted:
+        # §3.6 all-data balanced-influence fit; separate subdir.
+        config = config.with_cohort_weighted()
+        config = replace(config, output_dir=config.output_dir / "weighted", figure_dir=config.figure_dir / "weighted")
+    if args.substance_orthogonal:
+        # Recommended substance handling: model it as an independent axis (non-identifiable couplings).
+        config = config.with_substance_orthogonal()
+        config = replace(config, output_dir=config.output_dir / "subortho", figure_dir=config.figure_dir / "subortho")
     return config
 
 
 def build_stages(config: MeasurementConfig, args: argparse.Namespace) -> list[StageDefinition]:
+    if args.cohort_weighted:
+        # Cohort-weighted is a FULL-N method: use all patients (n_subsample=None, not balanced --
+        # the weights handle cohort balance). Keep each rung's native draws/tune (continuous
+        # 1000/1000/4, mixed 1500/2000/4 @ ta 0.95). The mixed full-N rung is the heavy long pole.
+        return [replace(stage, n_subsample=None, balanced=False) for stage in config.stage_plan]
     if args.mode == "smoke":
         return list(config.smoke_stage_plan)
     if args.mode == "mixed-smoke":
@@ -113,7 +151,12 @@ def build_stages(config: MeasurementConfig, args: argparse.Namespace) -> list[St
         # 10b/s5_corrg fits use.  Production (full draws/chains/N) is the default plan.
         stages: list[StageDefinition] = []
         for stage in config.stage_plan:
-            if stage.mixed:
+            if stage.mixed and args.likelihood_mode == "gaussian_copula":
+                # The copula transform converts the mixed residual from multimodal (budget-proof)
+                # to slow-mixing-unimodal, so the fuller budget (4 chains / tune 2000 / 1500 draws)
+                # takes the lone weak correlation (dev<->suicidality) sub-1.05 -- max R-hat 1.04, 0 div.
+                stages.append(replace(stage, n_subsample=stage.n_subsample or 2000, balanced=True, draws=1500, tune=2000, chains=4))
+            elif stage.mixed:
                 stages.append(replace(stage, n_subsample=stage.n_subsample or 2000, balanced=True, draws=800, tune=1200, chains=2))
             else:
                 stages.append(replace(stage, n_subsample=2000, balanced=True, draws=600, tune=800, chains=2))

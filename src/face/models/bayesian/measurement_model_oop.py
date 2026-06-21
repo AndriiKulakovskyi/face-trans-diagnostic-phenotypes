@@ -37,7 +37,7 @@ import pymc as pm  # type: ignore[reportMissingImports]
 import pytensor.tensor as pt  # type: ignore[reportMissingImports]
 from scipy.linalg import solve_triangular  # type: ignore[reportMissingImports]
 from scipy.special import logsumexp  # type: ignore[reportMissingImports]
-from scipy.stats import multivariate_normal, norm  # type: ignore[reportMissingImports]
+from scipy.stats import multivariate_normal, norm, rankdata  # type: ignore[reportMissingImports]
 from sklearn.preprocessing import SplineTransformer  # type: ignore[reportMissingImports]
 
 REPO = Path(__file__).resolve().parents[4]
@@ -45,7 +45,7 @@ PROC = Path(os.environ.get("FACE_DATA_DIR", str(REPO / "data" / "processed")))
 MATRIX = REPO / "configs" / "prior_loading_matrix_v3.csv"
 RESULTS = REPO / "results" / "face" / "oop_measurement"
 FIGURES = REPO / "docs" / "figures" / "oop_measurement"
-MODEL_VERSION = "oop_measurement_2026_06_19_v4"
+MODEL_VERSION = "oop_measurement_2026_06_20_v5"
 
 G_KEY = "overall_severity"
 
@@ -98,6 +98,34 @@ WINDOWS = ["madrs", "qidsr120", "staya"]
 
 CONTINUOUS_FAMILIES = {"gaussian", "lognormal", "student_t"}
 LOG2PI = float(np.log(2.0 * np.pi))
+
+
+def _rank_int(x: np.ndarray) -> np.ndarray:
+    """Rank-based inverse-normal (the Gaussian-copula marginal transform): u = rank/(n+1),
+    z = Phi^-1(u), average ranks for ties. ``x`` is the observed (finite) 1-D array."""
+    r = rankdata(x)
+    return norm.ppf(r / (x.size + 1.0))
+
+
+def _cohort_weights(cohort: np.ndarray) -> np.ndarray:
+    """Per-patient §3.6 cohort weights: w_i = N / (K * n_cohort_i), so each of the K cohorts has
+    total weight N/K (equal influence) and sum(w) = N (total information preserved -> precision stays
+    order-correct, not inflated)."""
+    cohort = np.asarray(cohort)
+    n = cohort.size
+    cohorts = list(dict.fromkeys(cohort))
+    k = len(cohorts)
+    counts = {c: int((cohort == c).sum()) for c in cohorts}
+    return np.array([n / (k * counts[c]) for c in cohort], dtype="float64")
+
+
+def copula_invert(z: np.ndarray, sorted_values: np.ndarray, sorted_z: np.ndarray) -> np.ndarray:
+    """Gaussian-copula inverse: map latent z back to the ORIENTED original scale via the stored
+    empirical map (``CoreData.copula[item]``), y = F_j^-1(Phi(z)) by monotone interpolation on
+    (sorted_z -> sorted_values).  Clipped to the V0 support (np.interp does not extrapolate).  With
+    the per-item sign the raw indicator is ``raw = sign * y``.  Generative recipe for synthetic
+    patients: eta ~ N(0, Phi); z ~ N(Lam eta, Psi); y = copula_invert(z, *copula[item])."""
+    return np.interp(np.asarray(z, dtype="float64"), sorted_z, sorted_values)
 
 
 @dataclass(frozen=True)
@@ -180,6 +208,30 @@ class MeasurementConfig:
     age_spline_knots: int = 4
     fast_mode: bool = False
     max_tree_depth: int = 8
+    # ``likelihood_mode``: "native" (default) = the certified tiered mixed likelihood
+    # (Gaussian/log-Gaussian continuous + Bernoulli/ordered-logistic/neg-binomial explicit);
+    # "gaussian_copula" = the acceleration vertical -- map Gaussianizable indicators through their
+    # empirical CDF (rank-INT: z = Phi^-1(F_j(y))) and run the SAME marginalized Woodbury model on z
+    # (a semiparametric Gaussian copula factor model; invertible for synthetic generation).  Tiering:
+    # continuous always Gaussianized; ordinal/count promoted to the marginalized block iff
+    # n_distinct >= copula_min_distinct AND modal_frequency < copula_max_modal_frac; binary and
+    # low-cardinality ordinal keep their native discrete likelihood.
+    likelihood_mode: str = "native"
+    copula_min_distinct: int = 8
+    copula_max_modal_frac: float = 0.5
+    # ``cohort_weighted`` (methods §3.6): weight each patient's likelihood by w_i = N/(K*n_cohort_i)
+    # so every cohort contributes equally (transdiagnostic estimand) while using ALL patients, in a
+    # single coherent posterior -- the faithful way to "use full N" without BP-dominance.  Weights sum
+    # to N (total information preserved, so precision is order-correct, not falsely inflated).  This is
+    # a composite/pseudo-likelihood: the point estimate is the balanced estimand; the posterior SD is
+    # order-correct but not fully Bayesian-calibrated (validate via cross-seed congruence).
+    cohort_weighted: bool = False
+    # ``orthogonal_factors``: specific factors pinned orthogonal to the correlated block (G is always
+    # pinned -- bifactor).  Use for a factor whose cross-factor correlations are non-identifiable and
+    # unstable across samples/weightings (substance: its SUD indicators are BP/SZ-only + rare, so its
+    # Phi-row swings, e.g. substance↔inflammatory 0.33 vs 0.82).  Pinning models it as an independent
+    # axis -- justified by non-identifiability, not asserted as an empirical zero.
+    orthogonal_factors: tuple[str, ...] = ()
 
     def with_soft_unlikely(self) -> MeasurementConfig:
         """Return the soft-prior sensitivity variant: free the ``unlikely_cross`` and
@@ -194,6 +246,24 @@ class MeasurementConfig:
     def with_fast_mode(self) -> MeasurementConfig:
         """Return a speed-oriented variant (hard-zero, fast-mode flag set)."""
         return replace(self, soft_unlikely=False, soft_g_anchor_specific=False, fast_mode=True)
+
+    def with_gaussian_copula(self) -> MeasurementConfig:
+        """Return the Gaussian-copula acceleration variant (rank-INT Gaussianize the continuous +
+        high-cardinality ordinal/count block, marginalized via Woodbury; binary + low-cardinality
+        ordinal stay native).  An acceleration vertical, not the certified faithful default."""
+        return replace(self, likelihood_mode="gaussian_copula")
+
+    def with_substance_orthogonal(self) -> MeasurementConfig:
+        """Pin the substance factor orthogonal to the other specifics (G stays bifactor-orthogonal too).
+        The recommended substance handling: its cross-factor correlations are non-identifiable and
+        unstable, so it is modeled as an independent axis defined by its own indicators."""
+        return replace(self, orthogonal_factors=tuple(sorted(set(self.orthogonal_factors) | {"substance"})))
+
+    def with_cohort_weighted(self) -> MeasurementConfig:
+        """Return the §3.6 cohort-weighted variant: use ALL patients with per-patient weights that
+        equalize each cohort's influence (transdiagnostic estimand) in one coherent posterior.
+        Pair with full-N stages (no subsample)."""
+        return replace(self, cohort_weighted=True)
 
     def with_smoke_defaults(self) -> MeasurementConfig:
         """Return a notebook-smoke variant optimized for fast wiring checks.
@@ -332,6 +402,9 @@ class CoreData:
     families: dict[str, str]
     signs: dict[str, int]
     moments: dict[str, tuple[str, int, float | None, float, float]] = field(default_factory=dict)
+    # Gaussian-copula inversion map (copula likelihood_mode only): item -> (sorted oriented
+    # observed values, sorted rank-INT z), aligned by rank, for y = F_j^-1(Phi(z)).  None in native mode.
+    copula: dict[str, tuple[np.ndarray, np.ndarray]] | None = None
 
 
 @dataclass
@@ -552,6 +625,19 @@ class MeasurementDataset:
 
         baseline = pd.read_parquet(self.config.processed_dir / f"baseline_{visit.lower()}.parquet")
         items = [item for item in items if item in baseline.columns]
+        if self.config.likelihood_mode == "gaussian_copula":
+            # Promote high-cardinality ordinal/count items (home in this stage's factors) into the
+            # Gaussianized marginalized block; binary + low-cardinality ordinal stay native/explicit.
+            promoted = [
+                it
+                for it, h in self.home.items()
+                if h in factors
+                and it in self.meta.index
+                and it in baseline.columns
+                and self.meta.loc[it, "modeling_block"] == "explicit"
+                and self._gaussianizable(it, baseline)
+            ]
+            items = sorted(set(items) | set(promoted))
         if cohort_subset is not None:
             cohort_mask = np.isin(
                 np.asarray(baseline.index.get_level_values("cohort")), list(cohort_subset)
@@ -561,17 +647,17 @@ class MeasurementDataset:
             baseline = baseline.iloc[keep_index]
         cohort = np.asarray(baseline.index.get_level_values("cohort"))
 
+        copula_mode = self.config.likelihood_mode == "gaussian_copula"
         raw: dict[str, pd.Series] = {}
         moments: dict[str, tuple[str, int, float | None, float, float]] = {}
         for item in items:
             values = pd.to_numeric(baseline[item], errors="coerce").astype(float)
             family = str(self.meta.loc[item, "likelihood_family"])
             log_min: float | None = None
-            if family == "lognormal":
-                # Skewed positive labs are modeled on the log scale.  If a
-                # variable can hit zero or negative values after harmonization,
-                # we shift it just enough to make log1p well-defined.  This is a
-                # deterministic scale transform, not imputation.
+            if family == "lognormal" and not copula_mode:
+                # Skewed positive labs are modeled on the log scale (native only).  The copula
+                # path needs no log -- rank-INT is monotone-invariant -- and stores the raw
+                # oriented values for clean inversion.  Deterministic transform, not imputation.
                 log_min = float(np.nanmin(values.to_numpy()))
                 values = (
                     np.log1p(values - log_min + 1e-6)
@@ -580,40 +666,57 @@ class MeasurementDataset:
                 )
             sign = int(self.meta.loc[item, "item_sign"])
             # Orient every item so that larger encoded values mean "more burden".
-            # Example: better functioning is protective, so its sign is negative
-            # before it enters the factor model.
             raw[item] = sign * values
+            moments[item] = (family, sign, log_min, 0.0, 1.0)  # mu/sd set below in the native path
         raw_df = pd.DataFrame(raw, index=baseline.index)
 
         cov_enabled = self.config.include_covariates if include_covariates is None else include_covariates
         mode = self.config.covariate_mode if cov_enabled else "none"
         empty_cov = (np.zeros((len(raw_df), 0), dtype="float64"), [])
-        if mode == "residualize":
-            # FWL: partial each item out on the covariate design before z-scoring.
-            # The marginalized likelihood then stays zero-mean (no alpha/beta enter
-            # the sampler), which is what keeps the full-N fit tractable.
-            raw_df = self._residualize_on_covariates(raw_df)
+        copula: dict[str, tuple[np.ndarray, np.ndarray]] | None = None
+
+        if copula_mode:
+            # Semiparametric Gaussian copula: each item -> standard-normal marginals via the
+            # empirical CDF (rank-INT).  The same zero-mean Woodbury kernel then applies to z.
+            copula = {}
+            enc: dict[str, pd.Series] = {}
+            for item in items:
+                v = raw_df[item].to_numpy("float64")
+                obs = np.isfinite(v)
+                z = np.full(v.shape, np.nan)
+                xo = v[obs]
+                if xo.size:
+                    zo = _rank_int(xo)
+                    z[obs] = zo
+                    order = np.argsort(xo, kind="mergesort")
+                    copula[item] = (xo[order], np.sort(zo))  # ascending oriented-value <-> z, by rank
+                enc[item] = pd.Series(z, index=raw_df.index)
+            Mdf = pd.DataFrame(enc, index=raw_df.index)
+            if mode == "residualize":
+                # FWL in z-space (keeps ~zero-mean); inversion uses the stored marginal copula map.
+                Mdf = self._residualize_on_covariates(Mdf)
             covariates, covariate_names = empty_cov
-        elif mode == "in_likelihood":
-            covariates, covariate_names = self._covariate_design(raw_df.index)
         else:
-            covariates, covariate_names = empty_cov
+            if mode == "residualize":
+                # FWL: partial each item out on the covariate design before z-scoring, so the
+                # marginalized likelihood stays zero-mean (no alpha/beta enter the sampler).
+                raw_df = self._residualize_on_covariates(raw_df)
+                covariates, covariate_names = empty_cov
+            elif mode == "in_likelihood":
+                covariates, covariate_names = self._covariate_design(raw_df.index)
+            else:
+                covariates, covariate_names = empty_cov
 
-        encoded: dict[str, pd.Series] = {}
-        for item in items:
-            values = raw_df[item]
-            mu = float(values.mean())
-            sd = float(values.std()) if float(values.std()) > 0 else 1.0
-            # Standardization makes loadings comparable across instruments.
-            # Means and standard deviations are computed on observed cells only;
-            # pandas skips NaN by default, so no missing value is invented here.
-            encoded[item] = (values - mu) / sd
-            family = str(self.meta.loc[item, "likelihood_family"])
-            sign = int(self.meta.loc[item, "item_sign"])
-            log_min = moments.get(item, (family, sign, None, mu, sd))[2]
-            moments[item] = (family, sign, log_min, mu, sd)
-
-        Mdf = pd.DataFrame(encoded, index=baseline.index)
+            encoded: dict[str, pd.Series] = {}
+            for item in items:
+                values = raw_df[item]
+                mu = float(values.mean())
+                sd = float(values.std()) if float(values.std()) > 0 else 1.0
+                # Standardize on observed cells only (pandas skips NaN; no missing value invented).
+                encoded[item] = (values - mu) / sd
+                family, sign, log_min, _m, _s = moments[item]
+                moments[item] = (family, sign, log_min, mu, sd)
+            Mdf = pd.DataFrame(encoded, index=baseline.index)
         if n_subsample and n_subsample < len(Mdf):
             rng = np.random.default_rng(seed)
             # Subsampling is a compute strategy, never a completeness filter.
@@ -644,6 +747,7 @@ class MeasurementDataset:
             families=families,
             signs=signs,
             moments=moments,
+            copula=copula,
         )
 
     def mixed(
@@ -694,11 +798,21 @@ class MeasurementDataset:
             and item in full.columns
             and self.meta.loc[item, "modeling_block"] == "explicit"
         ]
+        copula_mode = self.config.likelihood_mode == "gaussian_copula"
         candidates = [
             item
             for item in candidates
             if self._covered(full[item], cohort_full, min_obs=min_obs, min_cohorts=min_cohorts)
+            and not (copula_mode and self._gaussianizable(item, full))  # promoted -> continuous block
         ]
+        if copula_mode:
+            # A factor whose explicit items were all promoted to the Gaussianized block becomes fully
+            # marginalized; keep G + only the explicit factors that still carry an explicit item.
+            surviving = {G_KEY} | {self.home[it] for it in candidates}
+            explicit_factors = [f for f in explicit_factors if f in surviving]
+            e_cols = [base.factor_cols.index(f) for f in explicit_factors if f in base.factor_cols]
+            m_cols = [i for i, f in enumerate(base.factor_cols) if f not in explicit_factors]
+            e_idx = {base.factor_cols[c]: i for i, c in enumerate(e_cols)}
         stage = full.loc[base.index]
         families = {item: str(self.meta.loc[item, "likelihood_family"]) for item in candidates}
         bin_items = sorted(item for item in candidates if families[item] == "bernoulli")
@@ -762,6 +876,26 @@ class MeasurementDataset:
             bifactor_g_sd=bifactor_g_sd,
             flat=flat,
         )
+
+    def _gaussianizable(self, item: str, baseline: pd.DataFrame) -> bool:
+        """Copula-mode tiering. Continuous families are always Gaussianized (rank-INT). An
+        ordinal/count item is promoted into the Gaussianized (marginalized) block iff it is
+        high-cardinality and not point-mass-dominated; binary and low-cardinality ordinal stay
+        in their native discrete likelihood."""
+        fam = str(self.meta.loc[item, "likelihood_family"])
+        if fam in CONTINUOUS_FAMILIES:
+            return True
+        if fam in ("ordered_logistic", "neg_binomial") and item in baseline.columns:
+            v = pd.to_numeric(baseline[item], errors="coerce").to_numpy("float64")
+            v = v[np.isfinite(v)]
+            if v.size == 0:
+                return False
+            _vals, counts = np.unique(v, return_counts=True)
+            return bool(
+                _vals.size >= self.config.copula_min_distinct
+                and counts.max() / v.size < self.config.copula_max_modal_frac
+            )
+        return False
 
     def _cell_type(self, item: str, factor: str) -> str:
         rows = self.matrix[(self.matrix.item == item) & (self.matrix.factor == factor)]
@@ -936,7 +1070,8 @@ class BayesianBifactorESEM:
             pm.Potential("obs_ll", total)
         return model
 
-    def build_mixed(self, mixed: MixedData, spec: LoadingSpec, *, hurdle_counts: bool = False) -> pm.Model:
+    def build_mixed(self, mixed: MixedData, spec: LoadingSpec, *, hurdle_counts: bool = False,
+                    weights: np.ndarray | None = None) -> pm.Model:
         """Build the hybrid explicit/marginalized mixed-likelihood model.
 
         The mixed model keeps two ideas in one posterior:
@@ -952,6 +1087,10 @@ class BayesianBifactorESEM:
         M = base.M
         N, J = M.shape
         F = len(base.factor_cols)
+        # Per-patient likelihood weights (cohort-weighted §3.6 fit): when set, every term is
+        # weighted by w_i so each cohort contributes equally (transdiagnostic estimand) using all
+        # patients.  None -> the standard unweighted model (byte-identical native path).
+        w = None if weights is None else np.asarray(weights, dtype="float64")
         Ke, Km = len(mixed.e_cols), len(mixed.m_cols)
         mask = np.isfinite(M).astype("float64")
         x = np.nan_to_num(M, nan=0.0)
@@ -1007,7 +1146,7 @@ class BayesianBifactorESEM:
             base_resid = pt.as_tensor(x) if mu is None else pt.as_tensor(x) - mu
             residual = base_resid - f_e @ Bmat.T
             ll = self.woodbury_potential(residual, mask, Lt, sigma**2, pat_mask, pat_inv, kobs, Km)
-            pm.Potential("cont_ll", ll.sum())
+            pm.Potential("cont_ll", ll.sum() if w is None else (pt.as_tensor(w) * ll).sum())
 
             for k, item in enumerate(mixed.bin_items):
                 # Bernoulli-logit item: probability of endorsement is a logistic
@@ -1024,7 +1163,12 @@ class BayesianBifactorESEM:
                 )
                 lg = pm.Normal(f"lg_{item}", mixed.ng_gp[item][0], mixed.ng_gp[item][1])
                 eta = a + lh * f_e[:, mixed.ng_home[item]][obs] + lg * f_e[:, 0][obs]
-                pm.Bernoulli(f"y_{item}", logit_p=eta, observed=y[obs].astype("int8"))
+                yv = y[obs].astype("int8")
+                if w is None:
+                    pm.Bernoulli(f"y_{item}", logit_p=eta, observed=yv)
+                else:
+                    lp = pm.logp(pm.Bernoulli.dist(logit_p=eta), pt.as_tensor(yv))
+                    pm.Potential(f"y_{item}", (pt.as_tensor(w[obs]) * lp).sum())
             for k, item in enumerate(mixed.cnt_items):
                 # Count item: use negative binomial so the variance can exceed
                 # the mean, which is typical for clinical count variables.
@@ -1042,17 +1186,15 @@ class BayesianBifactorESEM:
                 eta = a + lh * f_e[:, mixed.ng_home[item]][obs] + lg * f_e[:, 0][obs]
                 if hurdle_counts:
                     psi = pm.Deterministic(f"psi_{item}", pm.math.sigmoid(pm.Normal(f"apsi_{item}", 0.0, 1.5)))
-                    pm.Potential(
-                        f"y_{item}",
-                        _hurdle_nb_logp(pt.as_tensor(np.rint(y[obs]).astype("float64")), psi, pt.exp(eta), alpha).sum(),
-                    )
+                    hl = _hurdle_nb_logp(pt.as_tensor(np.rint(y[obs]).astype("float64")), psi, pt.exp(eta), alpha)
+                    pm.Potential(f"y_{item}", hl.sum() if w is None else (pt.as_tensor(w[obs]) * hl).sum())
                 else:
-                    pm.NegativeBinomial(
-                        f"y_{item}",
-                        mu=pt.exp(eta),
-                        alpha=alpha,
-                        observed=np.rint(y[obs]).astype("int64"),
-                    )
+                    yv = np.rint(y[obs]).astype("int64")
+                    if w is None:
+                        pm.NegativeBinomial(f"y_{item}", mu=pt.exp(eta), alpha=alpha, observed=yv)
+                    else:
+                        lp = pm.logp(pm.NegativeBinomial.dist(mu=pt.exp(eta), alpha=alpha), pt.as_tensor(yv))
+                        pm.Potential(f"y_{item}", (pt.as_tensor(w[obs]) * lp).sum())
             for k, item in enumerate(mixed.ord_items):
                 # Ordinal item: ordered-logistic thresholds map the continuous
                 # latent predictor to ordered clinical categories.
@@ -1074,13 +1216,12 @@ class BayesianBifactorESEM:
                 )
                 lg = pm.Normal(f"lg_{item}", mixed.ng_gp[item][0], mixed.ng_gp[item][1])
                 eta = lh * f_e[:, mixed.ng_home[item]][obs] + lg * f_e[:, 0][obs]
-                pm.OrderedLogistic(
-                    f"y_{item}",
-                    eta=eta,
-                    cutpoints=cut,
-                    observed=y[obs].astype("int32"),
-                    compute_p=False,
-                )
+                yv = y[obs].astype("int32")
+                if w is None:
+                    pm.OrderedLogistic(f"y_{item}", eta=eta, cutpoints=cut, observed=yv, compute_p=False)
+                else:
+                    lp = pm.logp(pm.OrderedLogistic.dist(eta=eta, cutpoints=cut, compute_p=False), pt.as_tensor(yv))
+                    pm.Potential(f"y_{item}", (pt.as_tensor(w[obs]) * lp).sum())
         return model
 
     def _build_loadings(self, spec: LoadingSpec, J: int, F: int):
@@ -1123,29 +1264,34 @@ class BayesianBifactorESEM:
             L = Lr / pt.sqrt((Lr**2).sum(1, keepdims=True))
             Phi = L @ L.T
             return Phi, pt.linalg.cholesky(Phi + 1e-8 * pt.eye(F))
-        spec_idx = [i for i in range(F) if i != core.g_col]
-        ns = len(spec_idx)
-        # Primary bifactor variant: only the specific block is correlated.
-        #
-        # This intentionally avoids pm.LKJCorr here.  In this local environment
-        # LKJCorr initialization can leak shape assumptions between model builds
-        # with different numbers of factors.  The normalized lower-triangle
-        # parameterization is simple, robust, and gives a weakly informative
-        # correlation prior suitable for the staged fits.
+        # Primary bifactor variant: only the *correlated* specific block gets a free correlation.
+        # G is always orthogonal (bifactor); ``orthogonal_factors`` pins additional factors ⊥ the
+        # block too (e.g. substance, whose cross-factor correlations are non-identifiable/unstable --
+        # see docs).  Pinned factors get an identity row/col (correlation 0 with everything by
+        # construction), exactly like G.
+        orthogonal = {core.g_col}
+        for f in self.config.orthogonal_factors:
+            if f in core.factor_cols:
+                orthogonal.add(core.factor_cols.index(f))
+        corr_idx = [i for i in range(F) if i not in orthogonal]
+        ns = len(corr_idx)
+        if ns <= 1:
+            return pt.eye(F), pt.eye(F)  # nothing left to correlate -> all factors orthogonal
+        # Normalized lower-triangle correlation prior (avoids the pm.LKJCorr n>=5 init issues): weakly
+        # informative, guaranteed PD with unit diagonal.
         lower_idx = np.tril_indices(ns, -1)
         lower = pm.Normal("Phi_spec_lower", 0.0, 0.5, shape=len(lower_idx[0]))
         Lr = pt.set_subtensor(pt.eye(ns)[lower_idx], lower)
         Ls = Lr / pt.sqrt((Lr**2).sum(1, keepdims=True))
         Cs = pm.Deterministic("Phi_spec", Ls @ Ls.T)
         E = np.zeros((F, ns))
-        for k, i in enumerate(spec_idx):
+        for k, i in enumerate(corr_idx):
             E[i, k] = 1.0
-        eg = np.zeros((F, 1))
-        eg[core.g_col, 0] = 1.0
-        # Embed the specific correlation block back into the full factor matrix
-        # and add a 1 on the G diagonal.  Because the G row/column has no
-        # off-diagonal entries, G is orthogonal to every specific by construction.
-        Phi = pt.as_tensor(E) @ Cs @ pt.as_tensor(E).T + pt.as_tensor(eg @ eg.T)
+        diag_orth = np.zeros((F, F))
+        for o in orthogonal:
+            diag_orth[o, o] = 1.0
+        # Embed the correlated block; orthogonal factors (G + any pinned) get unit diagonal, zero off.
+        Phi = pt.as_tensor(E) @ Cs @ pt.as_tensor(E).T + pt.as_tensor(diag_orth)
         return Phi, pt.linalg.cholesky(Phi + 1e-8 * pt.eye(F))
 
     @staticmethod
@@ -1289,7 +1435,8 @@ class StageRunner:
                 windows=stage.windows,
                 bifactor_g_sd={f: 0.05 for f in stage.explicit_factors if f != G_KEY},
             )
-            model = self.builder.build_mixed(data, spec)
+            weights = _cohort_weights(data.base.cohort) if self.config.cohort_weighted else None
+            model = self.builder.build_mixed(data, spec, weights=weights)
             payload_data = data.base
         else:
             # Continuous stages are the fast path: no patient latent coordinates
@@ -1303,7 +1450,8 @@ class StageRunner:
                 seed=stage.seed,
             )
             spec = self.dataset.loading_spec(payload_data, windows=stage.windows)
-            model = self.builder.build_marginalized(payload_data, spec, correlated=stage.correlated)
+            weights = _cohort_weights(payload_data.cohort) if self.config.cohort_weighted else None
+            model = self.builder.build_marginalized(payload_data, spec, correlated=stage.correlated, weights=weights)
 
         initvals = self._warmstart(payload_data, spec, prev_stage)
         with model:
@@ -1726,7 +1874,7 @@ def _config_sig(config: MeasurementConfig) -> dict[str, Any]:
 
     Distinguishes a hard-zero fit from a soft-unlikely fit (and the covariate mode),
     which the stage signature alone does not capture."""
-    return {
+    sig = {
         "soft_unlikely": bool(config.soft_unlikely),
         "soft_g_anchor_specific": bool(config.soft_g_anchor_specific),
         "covariate_mode": config.covariate_mode if config.include_covariates else "none",
@@ -1734,7 +1882,14 @@ def _config_sig(config: MeasurementConfig) -> dict[str, Any]:
         "psi_floor": float(config.psi_floor),
         "lkj_eta": float(config.lkj_eta),
         "age_spline_knots": int(config.age_spline_knots),
+        "likelihood_mode": str(config.likelihood_mode),
+        "cohort_weighted": bool(config.cohort_weighted),
+        "orthogonal_factors": sorted(config.orthogonal_factors),
     }
+    if config.likelihood_mode == "gaussian_copula":
+        sig["copula_min_distinct"] = int(config.copula_min_distinct)
+        sig["copula_max_modal_frac"] = float(config.copula_max_modal_frac)
+    return sig
 
 
 def _stage_spec(stage: StageDefinition) -> dict[str, Any]:
