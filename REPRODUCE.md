@@ -63,6 +63,19 @@ writes `reports/01_build_data.md`.
 > Invariant: **no naive imputation, ever.** Missing cells stay `NaN` and are dropped from each patient's
 > likelihood (FIML / observed-data likelihood). Diagnosis (`cohort`) is metadata, never an indicator.
 
+### QA: inspect the indicator distributions
+
+```bash
+PYTHONPATH=$PWD/src python notebooks/run_distribution_report.py
+# -> results/reports/qa_distributions.html  (per-indicator raw + rank-INT-Gaussianized panels,
+#    NAMED empirical form, declared family, recommended copula tier)
+# -> reports/qa_distributions_summary.csv   (committable aggregate; drives the copula tiering)
+```
+
+Use this to see each indicator's true distribution form (e.g. ~60% of the "continuous" block is
+empirically heavy-tailed / count-like / zero-inflated) and which items the `gaussian_copula` vertical
+(§2) will Gaussianize vs keep as native discrete likelihoods.
+
 ---
 
 ## 2. Fit the measurement model (OOP engine)
@@ -125,6 +138,70 @@ python notebooks/oop_make_figures.py --balanced --n-subsample 2000
   `python notebooks/confirm_s5_multiseed.py` (multi-seed cross-seed stability) — the criterion the certified
   pipeline uses for the explicit factors.
 
+### Alternative likelihood vertical: Gaussian copula (acceleration)
+
+```bash
+PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE \
+  python notebooks/run_measurement_model_oop.py --mode medium --likelihood-mode gaussian_copula
+# writes to results/face/oop_measurement/copula/ (kept separate from the native primary)
+```
+
+`gaussian_copula` maps each Gaussianizable indicator through its empirical CDF (rank-INT,
+`z = Φ⁻¹(F_j(y))`) and runs the **same** marginalized Woodbury model on `z` — a semiparametric
+Gaussian copula factor model. Tiering (auditable in `qa_distributions_summary.csv`): continuous always
+Gaussianized; ordinal/count promoted to the marginalized block iff high-cardinality + not point-mass
+dominated; binary + low-cardinality ordinal stay native. The transform is invertible
+(`face.models.bayesian.measurement_model_oop.copula_invert`, `y = F_j⁻¹(Φ(z))`) for synthetic
+generation. Marginal Gaussianity is necessary-not-sufficient — the joint Gaussian-copula assumption is
+validated post-fit by residual/PPC checks.
+
+**Convergence + speed.** The copula transform converts the native model's *multimodal* mixed-stage
+residual (budget-proof) into a single *slow-mixing-unimodal* weak correlation, so `--mode medium
+--likelihood-mode gaussian_copula` uses the fuller S5 budget (4 chains / tune 2000 / 1500 draws) and
+reaches **max structural R-hat 1.04, 0 cells > 1.05, 0 divergences** — which the native mixed stage does
+not at any budget. The continuous rungs also mix 2–3× better (higher ESS) than native at the same
+budget, and biology⊥G is preserved. So copula = better-specified marginals (accuracy) + per-effective-
+sample faster + a clean sub-1.05 9-dim map.
+
+**Maximum precision (cohort-weighted full-N).** `--likelihood-mode gaussian_copula --cohort-weighted` fits
+ALL 9013 patients with §3.6 cohort weights (transdiagnostic estimand, single posterior); writes to
+`copula/weighted/`. The mixed stage at full-N is heavy (~4 h, run detached). It roughly **doubles the
+precision** on the weak dev↔suicidality correlation (posterior SD 0.027→0.013) and is congruent with the
+balanced map (Tucker φ ≥ 0.994). Caveat: a weighted likelihood is composite/pseudo (point estimate =
+balanced estimand; posterior SD order-correct, validated by the congruence), and the **substance** factor's
+correlations are weighting-sensitive (its SUD indicators are BP/SZ-only) — see substance handling below.
+
+**Substance handling (recommended).** Add `--substance-orthogonal` to pin the substance factor orthogonal
+to the other specifics (writes to a `subortho/` subdir). Substance's cross-factor correlations are
+non-identifiable and unstable (e.g. substance↔inflammatory swings 0.33↔0.82 across samples/weightings,
+because its SUD indicators are BP/SZ-only + rare), so it is modeled as an independent axis defined by its own
+indicators — justified by non-identifiability, not asserted as an empirical zero. The other factors are
+unchanged (Tucker φ ≈ 1).
+
+### Store params + generate synthetic patients
+
+```bash
+PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_synthetic_check.py
+# -> results/face/oop_measurement/copula/weighted/fitted_model/  (portable Lambda/Phi/sigma + copula maps
+#    + explicit-item GLM params: arrays.npz + model.json)
+# -> results/reports/synthetic_vs_real.html      (per-indicator real-vs-synthetic overlays + dependence match)
+# -> reports/synthetic_vs_real_summary.csv       (per-item moments, committable)
+```
+
+The copula model is invertible, so it doubles as a generator (`face.models.bayesian.synthetic`):
+`eta~N(0,Phi); z=Lambda eta+eps; continuous y=F_j^-1(Phi(z)); explicit y~fitted GLM`. The synthetic cohort
+reproduces the real marginals (median SD error ~1%; a few ultra-heavy-tailed labs' extreme tails are
+imperfect) and the dependence structure (mean |Δcorr| ≈ 0.05).
+
+**Native (pre-copula) generator — the contrast.** `run_synthetic_check.py --likelihood-mode native` generates
+from the previous-best native model (continuous block = `log+z-score`), inverting parametrically
+(`y = inv_log(z*sd + mu)*sign`) → `results/reports/synthetic_vs_real_native.html`. It reproduces the bulk
+(continuous rel-SD median ~0.8%) but **cannot match the heavy-tailed lab block** (rel-SD p90 ~40% vs copula's
+~7%; |skew| error median ~0.8 vs ~0.03 — bilirubin real skew 36 → native 1.9) because the encoding forces a
+(log)normal marginal, and the native 9-dim mixed fit never converged (R-hat 2.7). This is the concrete
+motivation for the copula. *(Native uses `include_covariates=False` so the stored moments are original-scale —
+the certified fit residualizes covariates, which would otherwise center the recovered marginal at 0.)*
+
 ### Sensitivity arms (optional)
 
 - Soft-unlikely (free the ~980 unlikely cells): `--mode medium --soft` — congruent with the hard-zero map
@@ -137,7 +214,8 @@ python notebooks/oop_make_figures.py --balanced --n-subsample 2000
 ## 3. Tests
 
 ```bash
-PYTHONPATH=$PWD/src python -m pytest tests/golden/test_measurement_model_oop.py -q   # OOP engine
+PYTHONPATH=$PWD/src python -m pytest tests/golden/test_measurement_model_oop.py -q   # OOP engine (incl. copula vertical)
+PYTHONPATH=$PWD/src python -m pytest tests/golden/test_distribution_report.py -q     # QA distribution report
 PYTHONPATH=$PWD/src python -m pytest tests/ -q                                       # full suite (data layer + engines)
 ```
 
