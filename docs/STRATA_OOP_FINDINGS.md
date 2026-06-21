@@ -1,7 +1,9 @@
 # Soft operational regions on the Gaussian-copula map (M2, reworked) — findings
 
 > Paper-facing summary of the reworked M2 stratification, built on the certified cohort-weighted full-N
-> Gaussian-copula 9-dim map. Engine: [`src/face/strata/strata_model_oop.py`](../src/face/strata/strata_model_oop.py);
+> Gaussian-copula 9-dim map. **Detailed analysis of what K and A mean (per-axis split drivers, archetype
+> profiles, compositions): [STRATA_OOP_ATLAS.md](STRATA_OOP_ATLAS.md).** Engine:
+> [`src/face/strata/strata_model_oop.py`](../src/face/strata/strata_model_oop.py);
 > notebook: [`notebooks/m2_oop_strata_fit.ipynb`](../notebooks/m2_oop_strata_fit.ipynb); figures:
 > `docs/figures/strata_oop/`. **Internal/baseline scope** — temporal persistence (M3) and prognosis (M4)
 > are deferred to the later reruns on this object. Pending PI sign-off.
