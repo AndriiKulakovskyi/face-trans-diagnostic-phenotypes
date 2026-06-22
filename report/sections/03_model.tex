@@ -1,18 +1,21 @@
 \section{The measurement model}
 \label{sec:model}
 
-This chapter builds the measurement model from the bottom up. The promise is that, by the end, the sentence
-\emph{``the likelihood of the Bayesian posterior is an ESEM measurement model marginalized over its latents''}
-is something assembled from parts the reader fully owns, not taken on faith. We start from the candidate
-ontology (\S\ref{sub:ontology}), recall what a likelihood actually is (\S\ref{sub:likelihood}), write the
-generative model and the assumption that earns its factorization (\S\ref{sub:generative}), give each indicator
-its own likelihood (\S\ref{sub:mixed}), integrate the Gaussian latents out into the covariance identity at the
-heart of factor analysis (\S\ref{sub:marginal}), put the general factor under a microscope because the headline
-scientific number lives there (\S\ref{sub:Gdepth}), confront the rotation problem that makes the raw model
-non-identified (\S\ref{sub:identification}), and finally assemble the posterior, where the prior does a second
-job beyond regularization (\S\ref{sub:posterior}). The evaluation of this likelihood at full sample size
-(Woodbury) and the recovery of patient coordinates (scoring) are deferred to Chapters~\ref{sec:estimation}
-and~\ref{sec:scoring}.
+This chapter is written as a tutorial rather than as a compressed methods note. The central object is still the
+same: a Bayesian sparse bifactor/ESEM measurement model for the FACE transdiagnostic space. The practical aim is
+that the reader can move from a single clinical measurement, such as BMI or CRP, to the full observed-data
+likelihood used by the sampler, without treating any step as a black box.
+
+The chapter follows the operational order used in the implementation. We first discuss the optional
+\emph{Gaussian-copula} data layer, because it explains what numerical object is actually sent into the Gaussian
+engine in the acceleration variant (\S\ref{sub:copula}). We then write the bifactor/ESEM measurement equation
+and interpret the patient coordinates, loadings, and measurement slopes (\S\ref{sub:generative}). After that we
+separate the native mixed likelihood from the Gaussian-copula acceleration path (\S\ref{sub:mixed}), derive the
+marginal Gaussian likelihood and the role of the factor-correlation matrix $\Phi$ (\S\ref{sub:marginal}), write
+the dense observed-data log-likelihood with and without missing cells (\S\ref{sub:dense_likelihood}), and only
+then introduce Woodbury and Cholesky as computational devices, not as new statistical assumptions
+(\S\ref{sub:woodbury}). The chapter ends with the interpretation of the general factor $G$, the identification
+problem, the priors, and the Bayesian learning procedure used to estimate the model parameters.
 
 \subsection{The candidate ontology and the eligibility map}
 \label{sub:ontology}
@@ -56,184 +59,177 @@ separate affective factor and no extra ``depression'' dimension unless one emerg
 anchored by functioning and global severity \emph{only} --- so symptom severity informs the axes it belongs to
 rather than contaminating the general factor.
 
-\subsection{What a likelihood is, and the object we build}
-\label{sub:likelihood}
-Everything reduces to Bayes' theorem, which is itself the product rule of probability used twice. With $\Theta$
-the unknown structural parameters and $X_{\mathrm{obs}}$ the data,
+\subsection{The Gaussian-copula data layer: when the item scale is not the modelling scale}
+\label{sub:copula}
+Before writing the measurement equation, it is important to be explicit about the scale of the variables entering
+that equation. In the native model, continuous indicators are oriented, transformed if needed (for example a log
+transform for strongly skewed positive laboratories), residualized for covariates when that mode is enabled, and
+then standardized. Binary, ordinal, and count variables keep their native likelihoods. In the optional
+\code{gaussian_copula} mode, however, a broader set of indicators is first mapped to a standard-normal rank
+scale, and the same Gaussian factor machinery is applied to those rank-normalized values.
+
+A copula separates two questions that are otherwise entangled. The first is the \emph{marginal} question: what
+is the distribution of each indicator by itself? CRP may be skewed, BMI may be closer to continuous, and a count
+variable may be integer-valued with a heavy right tail. The second is the \emph{dependence} question: do patients
+who are high on one indicator also tend to be high on another, after translating all indicators onto a comparable
+rank scale? The Gaussian copula keeps the marginal distributions empirical and models the dependence geometry
+through a Gaussian latent representation.
+
+For an oriented raw indicator $y_{ij}$, let $\widehat F_j$ be its empirical cumulative distribution function.
+The Gaussian-copula transform is
 \begin{equation}
-\underbrace{p(\Theta\given X_{\mathrm{obs}})}_{\text{posterior}}\;\propto\;
-\underbrace{p(X_{\mathrm{obs}}\given\Theta)}_{\text{likelihood}}\;\cdot\;
-\underbrace{p(\Theta)}_{\text{prior}} .
-\label{eq:skeleton}
+\label{eq:copula_transform}
+z_{ij} = T_j(y_{ij}) = \Phi_N^{-1}\!\left(\widehat F_j(y_{ij})\right),
 \end{equation}
-That single proportionality is the entire Bayesian skeleton. Everything else is two activities: writing the
-likelihood (\S\ref{sub:generative}--\S\ref{sub:marginal}) and the prior (\S\ref{sub:posterior}), then computing
-with the product (Chapter~\ref{sec:estimation}).
+where $\Phi_N^{-1}$ is the inverse CDF of the standard normal distribution. In the implementation this is the
+rank-based inverse-normal transform
+\begin{equation}
+\label{eq:rank_int}
+u_{ij}=\frac{\mathrm{rank}(y_{ij})}{n_j+1},\qquad z_{ij}=\Phi_N^{-1}(u_{ij}),
+\end{equation}
+with average ranks for ties. The transformation is monotone: a patient with a higher oriented CRP than another
+patient keeps a higher Gaussianized CRP score. What changes is the unit of measurement. A loading in copula mode
+is a slope on the Gaussian rank-score scale, not on the raw biochemical or clinical scale.
 
-The crux is the word \emph{likelihood}. A probability model assigns a number to data given parameters,
-$p(x\given\theta)$, and the same symbol reads two ways. Fix $\theta$ and let the data vary, and it is a
-distribution \emph{over data} that integrates to one. Fix the data at what was actually observed and let
-$\theta$ vary, and it becomes the \textbf{likelihood} $L(\Theta)=p(X_{\mathrm{obs}}\given\Theta)$: \emph{not} a
-distribution over $\Theta$ (it does not integrate to one), but a \emph{score} answering ``how probable was the
-data I saw, if this were the true $\Theta$?''
-
-\begin{methodsbox}[The detective, not the dice]
-Think of a detective at a fixed crime scene (the data, which cannot change). Running through suspects (values of
-$\Theta$), each is asked: how plausibly would \emph{this} suspect have produced \emph{this exact} scene? The
-likelihood is the plausibility score across suspects --- it need not sum to one over suspects, because suspects
-are hypotheses ranked against fixed evidence, not a probability distribution. Our whole task is to write that
-score for the ESEM model and then multiply it by the prior.
+\begin{methodsbox}[The common language analogy]
+The original indicators speak different measurement languages. CRP speaks a skewed biochemical language, BMI a
+continuous anthropometric language, and a high-cardinality count variable an integer language. The Gaussian
+copula translates each variable into the same question: ``where is this patient in the population ranking for
+this item?'' The percentile is then converted into a standard-normal score. The downstream measurement model can
+therefore model dependence on a common scale without pretending that all original variables had Gaussian
+marginal distributions.
 \end{methodsbox}
 
-For this model the likelihood will turn out to be an ESEM measurement model \emph{marginalized over its latent
-factor scores}. The next subsections construct it.
+The copula path is not the certified faithful default. It is an acceleration and sensitivity vertical. Continuous
+families are always Gaussianized in this mode. Ordinal or count indicators are promoted into the Gaussianized
+marginalized block only if they have enough distinct values and are not dominated by one modal category; binary
+and low-cardinality ordinal variables remain in the native discrete likelihood. This tiering avoids a category
+with too little measurement resolution being treated as if it were a genuine continuous ruler.
 
-\subsection{The generative model and the assumption that earns it}
-\label{sub:generative}
-Behind the many measured quantities we posit a few unobserved \emph{causes} --- latent factors. The empirical
-justification is parsimony: dozens of clinical variables move together, and the simplest explanation for
-``everything correlates'' is a small set of shared drivers. Each patient $i$ has a general-factor score and a
-vector of specific scores,
+Once transformed, the same Gaussian factor model is applied to $z_i$ rather than to the native $x_i$:
 \begin{equation}
-G_i \sim \Normal(0,1),\qquad D_i = (D_{i1},\dots,D_{iK})\Tn ,
+\label{eq:copula_gaussian_model}
+z_i \given \Theta \sim \Normal\!\left(0,\;\Lambda\Phi\Lambda\Tn+\Psi\right).
 \end{equation}
-and we model each indicator as a \emph{linear reflection} of those drivers plus item-specific noise, keeping the
-general factor as its own term:
+Thus the copula mode changes the observation scale before the likelihood. It does not change the meaning of
+$\Phi$ as the latent-factor correlation matrix, nor does it change the role of $\Lambda$ as the item-by-factor
+measurement map. It changes the interpretation of the item loadings: they become sensitivities of normalized
+ranks rather than sensitivities of native-scale measurements.
+
+Because the empirical marginal map is stored, the copula model can also be inverted for synthetic generation.
+A generated Gaussian score $z_{ij}$ is mapped back to the oriented original scale by
+\begin{equation}
+\label{eq:copula_inverse}
+y_{ij}=\widehat F_j^{-1}\!\left(\Phi_N(z_{ij})\right),
+\end{equation}
+usually by monotone interpolation on the stored empirical map. A synthetic patient can therefore be generated in
+three conceptual steps: draw latent coordinates $f_i$, draw Gaussianized item scores from the fitted measurement
+model, and invert each item through its empirical marginal distribution.
+
+\subsection{The bifactor/ESEM measurement equation}
+\label{sub:generative}
+We now write the core measurement equation. Behind the many measured quantities we posit a smaller number of
+unobserved causes: latent factors. Each patient $i$ has a general-factor coordinate and a vector of specific
+coordinates,
+\begin{equation}
+G_i\sim\Normal(0,1),\qquad D_i=(D_{i1},\dots,D_{iK})\Tn,
+\end{equation}
+where $G_i$ is the patient's position on the general severity / functional-burden dimension, and $D_{ik}$ is the
+patient's position on specific dimension $k$ --- for example cognition, metabolic burden, inflammation, sleep,
+developmental risk, suicidality, mania/activation, or substance use.
+
+For one observed indicator $j$ in patient $i$, the linear predictor is
 \begin{equation}
 \label{eq:eta}
-\eta_{ij} \;=\; \alpha_j \;+\; \lambda_{jG}\,G_i \;+\; \sum_{k=1}^{K}\lambda_{jk}\,D_{ik}\;+\;\beta_j\Tn c_i .
+\eta_{ij}=\alpha_j+\lambda_{jG}G_i+\sum_{k=1}^{K}\lambda_{jk}D_{ik}+\beta_j\Tn c_i .
 \end{equation}
-Read Eq.~\eqref{eq:eta} as the recipe for the \emph{expected reading} of instrument $j$ in patient $i$: a
-baseline level $\alpha_j$; a contribution $\lambda_{jG}G_i$ from overall burden; contributions $\sum_k
-\lambda_{jk}D_{ik}$ from the specific factors (mostly the home factor, plus small cross-loadings); and an
-adjustment $\beta_j\Tn c_i$ for nuisance covariates $c_i$ (age, sex, education, site, cohort, assessment year,
-and --- later --- medication). Covariates adjust an indicator's \emph{mean}; they are never dimension
-indicators --- like correcting a thermometer for altitude before reading the temperature, where altitude is not
-a ``temperature factor.'' Keeping them out of the factor space is what prevents a cohort difference from
-masquerading as a clinical dimension. The loading matrix $\Lambda\in\R^{J\times(K+1)}$ and the
-factor-correlation matrix $\Phi$ are the scientific estimands. Stacking the items of one patient, with the
-general column separated from the specific block,
+Read Eq.~\eqref{eq:eta} as the recipe for the expected reading of instrument $j$. It contains: a baseline item
+level $\alpha_j$; a contribution from general burden, $\lambda_{jG}G_i$; contributions from the specific factors,
+$\sum_k\lambda_{jk}D_{ik}$; and a covariate calibration term $\beta_j\Tn c_i$. The covariates adjust an item's
+mean. They are not psychiatric dimensions. Correcting an item for age, sex, education, site, or cohort is like
+correcting a thermometer for altitude before reading the temperature; altitude changes the reading, but it is not
+itself the temperature factor.
+
+For a Gaussian indicator, the observed value is the expected value plus item-specific noise,
+\begin{equation}
+\label{eq:item_gaussian}
+x_{ij}=\eta_{ij}+\varepsilon_{ij},\qquad \varepsilon_{ij}\sim\Normal(0,\sigma_j^2).
+\end{equation}
+In copula mode the same equation is written for $z_{ij}$ rather than for native $x_{ij}$.
+
+\paragraph{Coordinates and measurement slopes.} A frequent source of confusion is the difference between a
+patient coordinate and a loading. The coordinate $D_{i,\mathrm{metabolic}}$ says where patient $i$ sits on the
+metabolic axis. The loading $\lambda_{\mathrm{BMI},\mathrm{metabolic}}$ says how sensitive the BMI indicator is
+to movement along that axis. In derivative form,
+\begin{equation}
+\frac{\partial\E[x_{i,\mathrm{BMI}}\given f_i]}{\partial D_{i,\mathrm{metabolic}}}
+=\lambda_{\mathrm{BMI},\mathrm{metabolic}},
+\qquad
+\frac{\partial\E[x_{i,\mathrm{BMI}}\given f_i]}{\partial G_i}
+=\lambda_{\mathrm{BMI},G}.
+\end{equation}
+The word \emph{partial} matters. It means we ask how the expected BMI changes when one latent coordinate moves,
+while all other latent coordinates are held fixed. The loading is therefore a measurement slope: expected item
+change per one-unit movement on a latent axis.
+
+\begin{methodsbox}[The sensor analogy]
+The latent factor is the hidden signal; an observed item is a sensor. BMI is not the metabolic factor. BMI is a
+sensor that reacts to the metabolic coordinate, possibly also to general burden and weak neighbouring axes. A
+large $\lambda_{\mathrm{BMI},\mathrm{metabolic}}$ means BMI is a sensitive metabolic sensor. A small
+$\lambda_{\mathrm{BMI},G}$ means BMI carries little general-severity signal after the metabolic coordinate is
+held fixed.
+\end{methodsbox}
+
+Stacking all $J$ observed indicators of patient $i$ gives
 \begin{equation}
 \label{eq:xstack}
-x_i = \mu_i + \underbrace{\lambda_G\,G_i}_{\text{general}} + \underbrace{\Lambda_D\,D_i}_{\text{specifics}} + \varepsilon_i,
-\qquad \mu_i=\alpha+Bc_i,\qquad \Lambda=[\,\lambda_G\mid\Lambda_D\,].
+x_i = \mu_i + \Lambda f_i + \varepsilon_i,
+\qquad
+f_i=(G_i,D_i\Tn)\Tn,
+\qquad
+\mu_i=\alpha+Bc_i .
 \end{equation}
+Here $x_i\in\R^J$ is the observed item profile, $f_i\in\R^{K+1}$ is the latent coordinate profile,
+$\Lambda\in\R^{J\times(K+1)}$ is the loading matrix, and $\varepsilon_i$ is the residual item-noise vector. The
+matrix product $\Lambda f_i$ simply applies every item row of loadings to the patient's latent coordinates. For
+BMI, the BMI row of $\Lambda$ says how BMI reads general burden, metabolic burden, inflammation, and any other
+allowed factor.
 
-\paragraph{Local independence --- the defining assumption.} To get one patient's likelihood we need
-$p(x_i\given f_i)$, where $f_i=(G_i,D_i\Tn)\Tn$ is the full latent vector. Here we make the assumption on which
-all latent-variable measurement rests: given the patient's true latent scores, the items are
-\emph{conditionally independent},
-\begin{equation}
-p(x_i\given f_i,\Theta)\;=\;\prod_{j\in\Obs_i} p(x_{ij}\given f_i,\Theta).
-\end{equation}
-The idea is that the factors are the \emph{only} reason items correlate: knowing where a patient truly sits, the
-leftover wiggle in item~A says nothing about the leftover wiggle in item~B. In the Gaussian linear model this is
-\emph{identical} to ``the residual covariance $\Psi$ is diagonal'' --- local independence and diagonal $\Psi$
-are two faces of one assumption, that the factors \emph{explain away} all shared covariance. (This is also why
-filling missing cells is forbidden: the engine assumes the only thing linking items is the latent, so any
-invented value injects covariance the model would mistake for a real factor.)
-
-Because $f_i$ is unobserved and the likelihood must depend on $\Theta$ alone, we remove $f_i$ by the sum rule
-(integrate over every possibility for it), then multiply across independent patients:
-\begin{equation}
-\label{eq:fulllik}
-L(\Theta)=\prod_{i=1}^N p(x_i\given\Theta)
-=\prod_{i=1}^N \int\Big[\prod_{j\in\Obs_i} p(x_{ij}\given f_i,\Theta)\Big]\,\Normal(f_i;0,\Phi)\,df_i .
-\end{equation}
-This is the complete, first-principles likelihood: a product across patients (independence of units), a product
-across items (local independence), and an integral that removes the latent (the sum rule). Everything from here
-is \emph{evaluating this integral}.
-
-\paragraph{Bifactor / ESEM.} The structure in Eq.~\eqref{eq:eta} is a \textbf{bifactor / ESEM} (exploratory
-structural-equation model)~\cite{reise2012bifactor,asparouhov2009esem,marsh2014esem}. \emph{Bifactor} means
-every indicator may load on the general factor $G$ \emph{and} on its home specific factor; \emph{ESEM} means an
-indicator is additionally \emph{allowed} a small cross-loading onto other factors, shrunk toward zero by the
-soft priors (\S\ref{sub:roles}) --- unlike a classical confirmatory factor analysis, which forbids
-cross-loadings outright and forces every instrument into exactly one box. The image to hold is a hub-and-spoke
-(Figure~\ref{fig:bifactor}): $G$ is a hub wired faintly to every instrument; each specific factor is a spoke
-wired strongly to its own pool; a depression/anxiety ``window'' is an instrument wired only to the hub.
+This structure is \textbf{bifactor/ESEM}. It is bifactor because a specific-domain indicator may load both on
+the general factor $G$ and on its home specific factor. It is ESEM because an indicator may also have small,
+theory-seeded cross-loadings onto other plausible dimensions, rather than being forced into exactly one box as in
+a rigid confirmatory model. The general factor is the hub; the specific factors are the spokes; broad symptom
+scales such as MADRS, QIDS, and STAI are windows onto several axes rather than standalone dimensions.
 
 \begin{figure}[h]\centering
 \bifactordiagram
 \caption{The bifactor / ESEM structure (schematic; 3 of the 8 specific factors shown). The general factor $G$
 links to \emph{all} indicators (light grey); each specific factor links to its own indicator pool (blue). A
-cross-loading ``window'' such as MADRS (dashed amber) loads only on $G$. $G$ becomes ``general'' only if the
-data place many indicators on it --- here it does not carry symptom content, so it reads as functional burden.}
+cross-loading ``window'' such as MADRS (dashed amber) loads only where theory permits. $G$ becomes ``general''
+only if many indicators carry general-burden signal; here it is anchored by functioning/global-severity content,
+so it reads as functional burden rather than as a generic symptom factor.}
 \label{fig:bifactor}
 \end{figure}
 
-\begin{definitionbox}[Two identifications of the specific factors]
-\textbf{Bifactor (primary).} $D_{ik}\sim\Normal(0,1)$, $\Corop(D_k,D_l)=0$, and $G\perp D_k$ --- the cleanest
-identification for a first stable fit; the specific block correlates only via $\Phi$, with $G$ held orthogonal.\\[3pt]
-\textbf{Correlated-$G$ (sensitivity).} $D_i\sim\Normal(0,\Phi_D)$ in a variant that \emph{lets} $G$ correlate
-with the biological specifics. This variant is essential: it tests whether ``$G\perp$ biology'' is an empirical
-finding or merely an artefact of the bifactor constraint (\S\ref{sub:Gdepth}; Chapter~\ref{sec:results} shows
-it refined the magnitude without changing the conclusion).
-\end{definitionbox}
-
-\subsection{Soft-prior loading roles}
-\label{sub:roles}
-How does theory enter Eq.~\eqref{eq:eta}? Through the prior on each loading. Every (indicator, dimension) cell
-receives a prior \emph{role}; the default is shrinkage, not hard exclusion --- theory says where variables
-\emph{should} load, and the likelihood is free to disagree (Figure~\ref{fig:priors}). Because a hybrid
-soft-prior ESEM is safe to over-seed --- an indicator with no real signal shrinks toward zero --- every
-construct-relevant usable variable is seeded as an indicator, and only genuine confounders are reserved as
-covariates~\cite{carvalho2010horseshoe}.
-
-\begin{table}[h]\centering\small\sffamily
-\caption{Soft-prior roles and the induced prior on the loading $\lambda_{jk}$ (as built; the methods spec uses a
-slightly stronger primary mean of $0.70$). The near-zero \code{g_anchor_on_specific} role is what identifies the
-bifactor $G$ separately from the specifics.}
-\label{tab:priorroles}
-\begin{tabular}{L{4.6cm} L{5.0cm} L{4.4cm}}
-\toprule
-\hdr{role} & \hdr{meaning} & \hdr{prior on $\lambda_{jk}$}\\
-\midrule
-\rowcolor{facebg} \code{primary} / \code{g_anchor} & indicator should load (home cell) & $\Normal_{+}(0.60,\,0.30^2)$, truncated $>0$\\
-\code{plausible_cross} & indicator \emph{may} load & $\Normal(0,\,0.25^2)$\\
-\rowcolor{facebg} \code{unlikely_cross} & should be near zero & $\Normal(0,\,0.05^2)$\\
-\code{g_anchor_on_specific} & $G$-anchor held off the specifics & $\Normal(0,\,0.001^2)$\\
-covariate / outcome & adjust for / reserve for validation & not in $\Lambda$\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{figure}[h]\centering
-\includegraphics[width=0.86\linewidth]{figures/fig_soft_priors.png}
-\caption{The soft priors are the formal mechanism of \emph{theory proposes, data disposes}. Picture a rubber
-band on each loading: a home (primary) loading gets a loose band pulling it toward a substantial positive value;
-a plausible cross-loading a band centred at zero but easily stretched; an unlikely cross-loading a short, stiff
-band pulling it hard to zero. None is a hard constraint --- strong evidence stretches even a stiff band, but a
-loading the data say nothing about sits where theory put it.}
-\label{fig:priors}
-\end{figure}
-
-The truncation $\lambda>0$ on home cells sign-anchors the rotation (orienting every factor so that
-\emph{higher} $=$ \emph{more burden/dysfunction}, after per-item sign flips applied in the data layer), which
-together with the soft-prior sparsity controls the rotational indeterminacy that otherwise plagues exploratory
-factor models (\S\ref{sub:identification}).
-
-\subsection{Mixed-likelihood observation model}
+\subsection{Native mixed likelihood and the Gaussian-copula acceleration branch}
 \label{sub:mixed}
-The per-item factor $p(x_{ij}\given f_i,\Theta)$ uses the distribution appropriate to the variable's type, with
-the linear predictor $\eta_{ij}$ entering through the relevant link. This is generalized-linear-model logic:
-$\eta$ lives on an unbounded scale, and a link maps it to a probability, a rate, or a real value as needed,
+The per-item likelihood $p(x_{ij}\given f_i,\Theta)$ should match the measurement type. This is generalized
+linear-model logic: the same latent predictor $\eta_{ij}$ can be translated through different observation models,
+depending on whether the item is continuous, binary, ordinal, or a count,
 \begin{equation}
-X_{ij}\sim F_j(\eta_{ij},\theta_j),
+X_{ij}\sim F_j(\eta_{ij},\theta_j).
 \end{equation}
-with $F_j$ chosen per indicator as in Table~\ref{tab:likelihoods}.
 
 \begin{table}[h]\centering\small\sffamily
-\caption{The mixed-likelihood observation model. The continuous block (Gaussian/log-Gaussian) can be
-marginalized analytically (\S\ref{sub:marginal}); the non-Gaussian block carries explicit latents
-(Chapter~\ref{sec:estimation}). The as-built continuous likelihood is Gaussian; Student-$t$ is available but is
-not analytically marginalizable, so it is reserved as a robustness option.}
+\caption{The native mixed-likelihood observation model. The continuous block can be marginalized analytically;
+the non-Gaussian block carries explicit patient latents unless a high-resolution item is promoted by the optional
+Gaussian-copula acceleration branch.}
 \label{tab:likelihoods}
 \begin{tabular}{L{5.0cm} L{4.0cm} L{5.0cm}}
 \toprule
-\hdr{indicator type} & \hdr{likelihood} & \hdr{form}\\
+\hdr{indicator type} & \hdr{native likelihood} & \hdr{form}\\
 \midrule
-\rowcolor{facebg} continuous / z-scored neuropsych & Gaussian (Student-$t$ option) & $X_{ij}\sim\Normal(\eta_{ij},\sigma_j^2)$\\
+\rowcolor{facebg} continuous / z-scored neuropsych & Gaussian & $X_{ij}\sim\Normal(\eta_{ij},\sigma_j^2)$\\
 skewed lab (CRP, triglycerides) & log-Gaussian & $\log X_{ij}\sim\Normal(\eta_{ij},\sigma_j^2)$\\
 \rowcolor{facebg} ordinal item ($C_j$ categories) & ordered logistic & $P(X_{ij}\!\le\! c)=\logitfn^{-1}(\tau_{jc}-\eta_{ij})$\\
 binary (ISF ideation/attempt; SUD) & Bernoulli-logit & $X_{ij}\sim\Bern(\logitfn^{-1}(\eta_{ij}))$\\
@@ -242,151 +238,405 @@ binary (ISF ideation/attempt; SUD) & Bernoulli-logit & $X_{ij}\sim\Bern(\logitfn
 \end{tabular}
 \end{table}
 
-\emph{Use the right ruler for each quantity.} You weigh flour on a scale (continuous), count eggs as whole
-numbers (count), and record ``is the oven on?'' as yes/no (binary). Forcing a count or a yes/no onto a
-continuous ruler manufactures fake covariance --- an artefact of the rescaling --- that then biases the very
-dimensions being estimated. The mixed-likelihood design keeps each item on its native scale and lets the
-\emph{shared} prediction $\eta_{ij}$ be translated into the right kind of output, so binary suicidality and
-continuous biology live in \emph{one} correlated factor space, related through $\Phi$, rather than being crushed
-onto a pseudo-continuous scale or analysed separately.
+\emph{Use the right ruler for each quantity.} You weigh flour on a scale, count eggs as whole numbers, and record
+whether the oven is on as yes/no. Forcing all these quantities onto the same continuous ruler can manufacture
+fake covariance. The native mixed-likelihood design therefore keeps binary suicidality, ordinal severity items,
+counts, and continuous biology on appropriate likelihood families while allowing them to live in one latent
+factor space through $\Phi$.
 
-\begin{definitionbox}[Observed-data likelihood (invariant I1, formalized)]
-With $\Obs_i\subseteq\{1,\dots,J\}$ the indicators observed for patient $i$, the log-likelihood sums over
-observed cells only:
+The Gaussian-copula branch is the controlled exception. It asks whether a non-Gaussian item has enough resolution
+to be treated as a monotone measurement of an underlying Gaussian rank score. If yes, it enters the same fast
+marginalized Gaussian block as the continuous indicators. If not, it remains in the native discrete likelihood.
+Thus the branch does not abandon the mixed-likelihood principle; it creates a tiered computational compromise:
+faithful native likelihood for low-resolution variables, Gaussian-copula acceleration for high-resolution
+variables whose rank geometry is more important than their native unit distances.
+
+\begin{definitionbox}[Observed cells only]
+With $\Obs_i\subseteq\{1,\dots,J\}$ the indicators observed for patient $i$, missing cells contribute no
+likelihood term. The model never completes the patient-by-item matrix:
 \[
-\log p(X_{\mathrm{obs}}\given\Theta)\;=\;\sum_{i=1}^{N}\sum_{j\in\Obs_i}\log F_j\!\left(X_{ij}\given\eta_{ij},\theta_j\right).
+\log p(X_{\mathrm{obs}}\given\Theta)
+=\sum_{i=1}^{N}\sum_{j\in\Obs_i}\log F_j\!\left(X_{ij}\given\eta_{ij},\theta_j\right)
 \]
-Missing cells contribute no term; a patient's latent coordinates are informed only by their observed
-indicators, and there is no completed matrix at any point.
+when the latent coordinates are explicit. In the marginalized Gaussian block the same rule appears as an
+observed sub-vector likelihood, developed below.
 \end{definitionbox}
 
-\subsection{Marginalizing the Gaussian latents: the covariance identity}
+\subsection{From conditional likelihood to the marginalized Gaussian likelihood}
 \label{sub:marginal}
-For the Gaussian items the inner integral of Eq.~\eqref{eq:fulllik} has a closed form, and the result is the
-identity at the heart of factor analysis. We derive it from the \emph{definition} of covariance, with the
-general factor explicit so its special role is visible. Using $\E[G_i]=0$, $\Varop(G_i)=1$, $\E[D_i]=0$,
-$\Covop(D_i)=\Phi_D$, $\E[\varepsilon_i\varepsilon_i\Tn]=\Psi$ (diagonal), and the two independence facts that
-do the real work --- $\E[G_iD_i\Tn]=\mathbf{0}$ (the bifactor orthogonality) and $(G_i,D_i)\perp\varepsilon_i$
---- the cross-terms in $\Covop(x_i)=\E[(x_i-\mu_i)(x_i-\mu_i)\Tn]$ vanish and the survivors sum to
+The conditional Gaussian statement follows immediately from Eq.~\eqref{eq:xstack} if
+$\varepsilon_i\sim\Normal(0,\Psi)$:
+\begin{equation}
+\label{eq:conditional_gaussian}
+x_i\given f_i,\Theta \sim \Normal(\mu_i+\Lambda f_i,\Psi).
+\end{equation}
+This assumes we know the patient's latent coordinate vector $f_i$. In reality we do not. Therefore the model
+must also state how patient coordinates are distributed in the population:
+\begin{equation}
+\label{eq:latent_distribution}
+f_i\sim\Normal(0,\Phi).
+\end{equation}
+The matrix $\Phi$ is the latent-factor covariance or correlation matrix. Its diagonal fixes the scale of the
+latent dimensions, usually to one; its off-diagonal entries encode how dimensions co-vary across patients. A
+loading $\lambda_{jk}$ answers how item $j$ reacts to dimension $k$. A correlation $\Phi_{kl}$ answers whether
+patients high on dimension $k$ tend also to be high on dimension $l$. These are different scientific objects.
+
+Because $f_i$ is hidden, the observed-data likelihood averages the conditional likelihood over all plausible
+latent coordinates:
+\begin{equation}
+\label{eq:fulllik}
+p(x_i\given\Theta)
+=\int p(x_i\given f_i,\Theta)\,p(f_i\given\Theta)\,df_i .
+\end{equation}
+This is the probability sum rule. If a hidden cause could have taken many possible values, the probability of the
+observed data is the weighted average of the probability of those data under each possible hidden value.
+
+For Gaussian factors and Gaussian residuals, the integral has a closed form. Taking the mean,
+\begin{equation}
+\E[x_i]=\E[\mu_i+\Lambda f_i+\varepsilon_i]=\mu_i,
+\end{equation}
+because $\E[f_i]=0$ and $\E[\varepsilon_i]=0$. Taking the covariance,
+\begin{equation}
+\Covop(x_i)
+=\Covop(\Lambda f_i+\varepsilon_i)
+=\Lambda\Covop(f_i)\Lambda\Tn+\Covop(\varepsilon_i)
+=\Lambda\Phi\Lambda\Tn+\Psi.
+\end{equation}
+Therefore
 \begin{equation}
 \label{eq:sigma}
-\Sigma \;=\; \underbrace{\lambda_G\lambda_G\Tn}_{\text{general: rank one}}
-\;+\; \underbrace{\Lambda_D\,\Phi_D\,\Lambda_D\Tn}_{\text{specific factors}}
-\;+\; \underbrace{\Psi}_{\text{private noise}}
-\;=\;\Lambda\,\Phi\,\Lambda\Tn+\Psi ,
+x_i\given\Theta\sim\Normal(\mu_i,\Sigma),
+\qquad
+\Sigma=\Lambda\Phi\Lambda\Tn+\Psi.
 \end{equation}
-where the compact form uses $\Lambda=[\,\lambda_G\mid\Lambda_D\,]$ and the block-diagonal
-$\Phi=\bigl(\begin{smallmatrix}1&\mathbf{0}\Tn\\\mathbf{0}&\Phi_D\end{smallmatrix}\bigr)$ --- the zero
-off-diagonal block being precisely the encoding of $G\perp\text{specifics}$. Because $x_i$ is a linear
-combination of jointly Gaussian quantities it is itself Gaussian, $x_i\sim\Normal(\mu_i,\Sigma)$.
+This is the covariance identity at the heart of factor analysis. The shared latent signal creates covariance
+between observed indicators; the diagonal residual matrix $\Psi$ captures private item noise.
 
-\paragraph{The general factor's footprint.} $G$ contributes a \textbf{rank-one} term $\lambda_G\lambda_G\Tn$:
-every pair of items $j,j'$ co-varies through $G$ by exactly $\lambda_{jG}\lambda_{j'G}$. A single shared source
-touching all items produces a rank-one covariance pattern. The analogy: $G$ is a background hum every microphone
-picks up; because they all carry the \emph{same} hum it correlates every pair of channels, and because it is one
-source that correlation pattern has rank one. The specific factors are extra instruments heard only in their own
-clusters of microphones ($\Lambda_D\Phi_D\Lambda_D\Tn$); the residual $\Psi$ is each microphone's private static.
-
-\paragraph{Missing data is just the marginal property.} For patient $i$ with observed set $\Obs_i$, a foundational
-property of the multivariate normal is that any marginal is obtained by \emph{deleting} the unobserved
-coordinates from $\mu$ and $\Sigma$:
+\paragraph{The item-pair view.} For two observed indicators $j$ and $j'$, the implied covariance is
 \begin{equation}
-x_{i,\Obs_i}\sim\Normal\!\left(\mu_{i,\Obs_i},\;\Sigma_{\Obs_i\Obs_i}\right).
+\Covop(x_{ij},x_{ij'}\given\Theta)=\lambda_j\Tn\Phi\lambda_{j'}+\Psi_{jj'},
 \end{equation}
-``Integrating out the missing cells'' is therefore not an extra procedure --- it is the marginal property of the
-Gaussian. You grade each student only on the exams they actually sat; a blank neither helps nor hurts and is
-never invented. Summing $\log\Normal(\cdot)$ over each patient's observed sub-vector is \emph{exactly} the
-full-information maximum-likelihood (FIML) objective~\cite{enders2010missing} --- the precise identity
-exploited, and turned into a tractable computation by the Woodbury identity, in Chapter~\ref{sec:estimation}.
-Here we need only the fact that the model implies Eq.~\eqref{eq:sigma}.
+where $\lambda_j\Tn$ is row $j$ of $\Lambda$. Since $\Psi$ is diagonal, for $j\ne j'$ the residual term is zero:
+\begin{equation}
+\Covop(x_{ij},x_{ij'}\given\Theta)=\lambda_j\Tn\Phi\lambda_{j'}.
+\end{equation}
+That is the operational meaning of local independence: after the latent factors explain shared structure, the
+leftover item noise does not create cross-item covariance.
+
+\subsection{The actual Gaussian log-likelihood: dense, then missing-data}
+\label{sub:dense_likelihood}
+\label{sub:likelihood}
+Equation~\eqref{eq:sigma} gives the distribution. The likelihood is obtained by evaluating the Gaussian density
+of the observed data under candidate parameter values. The data are fixed; the parameters vary. For one
+candidate
+\begin{equation}
+\Theta=\{\Lambda,\Phi,\Psi,\mu\},
+\end{equation}
+the model constructs
+\begin{equation}
+\Sigma(\Theta)=\Lambda\Phi\Lambda\Tn+\Psi
+\end{equation}
+and scores how probable the observed patient profiles are under that covariance structure.
+
+Assume first that every patient has every item observed. For one patient define the residual
+\begin{equation}
+r_i=x_i-\mu_i.
+\end{equation}
+The multivariate Gaussian density is
+\begin{equation}
+p(x_i\given\Theta)
+=\frac{1}{(2\pi)^{J/2}|\Sigma|^{1/2}}
+\exp\!\left[-\frac{1}{2}r_i\Tn\Sigma^{-1}r_i\right].
+\end{equation}
+Taking logs gives
+\begin{equation}
+\label{eq:dense_loglik}
+\log p(x_i\given\Theta)
+=-\frac{1}{2}\left[J\log(2\pi)+\log|\Sigma|+r_i\Tn\Sigma^{-1}r_i\right].
+\end{equation}
+The three pieces have distinct roles. The term $J\log(2\pi)$ is the Gaussian normalizing constant. The
+log-determinant $\log|\Sigma|$ penalizes overly diffuse covariance models: a model that says ``almost anything
+is plausible'' spreads probability mass too widely. The quadratic form $r_i\Tn\Sigma^{-1}r_i$ is the
+covariance-adjusted distance between the observed profile and the expected profile. A residual in a direction
+where the model expects high variability is less surprising; a residual in a direction where the model expects
+low variability is heavily penalized.
+
+For $N$ independent patients,
+\begin{equation}
+\label{eq:full_dense_loglik}
+\log L(\Theta)=\sum_{i=1}^{N}\log p(x_i\given\Theta).
+\end{equation}
+This is not yet a Bayesian posterior; it is only the likelihood score for a candidate value of $\Theta$.
+
+Real FACE data contain missing cells, so each patient contributes the density of their observed sub-vector only.
+Let $\Obs_i$ be the observed item set and $k_i=|\Obs_i|$. The marginal property of the multivariate normal gives
+\begin{equation}
+x_{i,\Obs_i}\given\Theta
+\sim
+\Normal\!\left(\mu_{i,\Obs_i},\Sigma_{\Obs_i\Obs_i}\right),
+\end{equation}
+where the same index appears twice because $\Sigma$ is a matrix: we keep the rows corresponding to observed items
+and the columns corresponding to those same observed items. The observed residual is
+\begin{equation}
+r_{i,\Obs_i}=x_{i,\Obs_i}-\mu_{i,\Obs_i}.
+\end{equation}
+The missing-data Gaussian log-likelihood for patient $i$ is therefore
+\begin{equation}
+\label{eq:missing_loglik}
+\log p(x_{i,\Obs_i}\given\Theta)
+=-\frac{1}{2}\left[
+k_i\log(2\pi)
++\log|\Sigma_{\Obs_i\Obs_i}|
++r_{i,\Obs_i}\Tn\Sigma_{\Obs_i\Obs_i}^{-1}r_{i,\Obs_i}
+\right].
+\end{equation}
+The full observed-data likelihood is
+\begin{equation}
+\label{eq:observed_loglik}
+\log L(\Theta)
+=\sum_{i=1}^{N}\log p(x_{i,\Obs_i}\given\Theta).
+\end{equation}
+No missing value is set to zero, to the mean, or to a model prediction. A zero may appear in code as a finite
+placeholder for tensor arithmetic, but the mask removes that cell from every likelihood term.
+
+\begin{methodsbox}[Likelihood as a candidate-parameter score]
+At each candidate $\Theta$, the model builds $\Sigma(\Theta)$, extracts the observed submatrix
+$\Sigma_{\Obs_i\Obs_i}$ for each patient, computes the residual penalty and log-determinant, and sums the result
+across patients. Candidate A may say BMI and waist share a metabolic factor and CRP shares an inflammatory
+factor; Candidate B may put those relationships elsewhere. The higher likelihood belongs to the candidate whose
+implied covariance makes the actually observed patient profiles less surprising.
+\end{methodsbox}
+
+\subsection{Woodbury and Cholesky: computational devices, not new model assumptions}
+\label{sub:woodbury}
+The dense likelihood in Eq.~\eqref{eq:missing_loglik} is clear but expensive. It appears to require, for many
+patients and many missingness patterns, the determinant and inverse of
+$\Sigma_{\Obs_i\Obs_i}$. The model covariance has special structure:
+\begin{equation}
+\Sigma=\Lambda\Phi\Lambda\Tn+\Psi.
+\end{equation}
+The implementation rewrites the low-rank part as
+\begin{equation}
+\Lambda\Phi\Lambda\Tn=(\Lambda R)(\Lambda R)\Tn,
+\qquad
+RR\Tn=\Phi,
+\end{equation}
+where $R$ is the Cholesky factor, or matrix square root, of $\Phi$. This $R$ has no separate clinical meaning. It
+is an internal computational representation of the factor-correlation matrix. Define
+\begin{equation}
+L_t=\Lambda R,
+\qquad
+\Sigma=L_tL_t\Tn+\Psi.
+\end{equation}
+
+Woodbury then avoids inverting the large item covariance matrix. For an observed item set $O=\Obs_i$, write
+$L_O$ for the observed rows of $L_t$ and $\Psi_O$ for the diagonal residual covariance of the observed items.
+The inverse identity is
+\begin{equation}
+\label{eq:woodbury_inverse}
+(\Psi_O+L_OL_O\Tn)^{-1}
+=\Psi_O^{-1}-\Psi_O^{-1}L_O
+\left(I+L_O\Tn\Psi_O^{-1}L_O\right)^{-1}
+L_O\Tn\Psi_O^{-1}.
+\end{equation}
+The determinant identity is
+\begin{equation}
+\label{eq:woodbury_det}
+\log|\Psi_O+L_OL_O\Tn|
+=\log|\Psi_O|+
+\log\left|I+L_O\Tn\Psi_O^{-1}L_O\right|.
+\end{equation}
+The expensive matrix on the left is $k_i\times k_i$, where $k_i$ is the number of observed items for patient $i$.
+The smaller matrix on the right is $F\times F$, where $F$ is the number of factors. In this application $F$ is far
+smaller than the number of indicators, so the computation is much cheaper.
+
+The matrix
+\begin{equation}
+A_O=I+L_O\Tn\Psi_O^{-1}L_O
+\end{equation}
+is then Cholesky-decomposed for numerical stability. This is the second place Cholesky appears. The first
+Cholesky, $R=\operatorname{chol}(\Phi)$, is used to express the low-rank covariance. The second Cholesky is used
+to compute the log-determinant and solve linear systems involving $A_O$ without materializing a large inverse.
+Neither Cholesky changes the model; both are safe ways to evaluate the same likelihood.
+
+The implementation also groups patients by missingness pattern. The determinant term depends on which columns
+are observed, not on the observed values themselves. Therefore all patients sharing the same observed-item mask
+can reuse the same small matrix work, while each patient's residual vector supplies its own quadratic penalty.
 
 \subsection{The general factor $G$ in depth}
 \label{sub:Gdepth}
-The general factor is what makes this a \emph{bifactor} model rather than an ordinary correlated-factors model,
-and its (non-)entanglement with the specifics is the central scientific question --- so it is worth a microscope.
-Three facts distinguish $G$: unit variance (which fixes its scale), orthogonality to every specific
-($\E[G_iD_i\Tn]=\mathbf{0}$, the defining bifactor constraint), and independence from the residual. The middle
-fact lets $G$ be ``how much overall'' while the specifics carry ``what kind,'' the two not contaminating each
-other. $G$ is further \emph{anchored}: only functioning and global-severity items are allowed to define it, and
-those anchor items have their \emph{specific} loadings pinned near zero (the \code{g_anchor_on_specific} prior
-of Table~\ref{tab:priorroles}). Without such anchoring a column of nearly equal loadings could be absorbed into
-$G$ or redistributed among the specifics, and the two would be confounded.
+The general factor is what makes this a bifactor model rather than an ordinary correlated-factors model. Three
+facts distinguish $G$: unit variance, anchoring by functioning/global-severity indicators, and orthogonality to
+the specific factors in the primary bifactor parameterization. The purpose is conceptual hygiene. $G$ should read
+as ``how much overall functional burden,'' while the specific factors carry ``what kind of burden.''
 
-\paragraph{The headline lives in the off-diagonal block of $\Phi$.} Recall the term that vanished in
-Eq.~\eqref{eq:sigma} by orthogonality, $\E[G_iD_i\Tn]=\mathbf{0}$. The correlated-$G$ sensitivity model is
-exactly the model that \emph{unzips} that zero, freeing the off-diagonal block $\phi_{Gd}$,
+In the primary bifactor model,
+\begin{equation}
+\Phi=\begin{pmatrix}
+1 & \mathbf{0}\Tn\\
+\mathbf{0} & \Phi_D
+\end{pmatrix}.
+\end{equation}
+The zero off-diagonal block encodes $G\perp D_k$. The specific block $\Phi_D$ may still contain correlations
+among the specific dimensions. In a correlated-$G$ sensitivity model, the zero block is relaxed:
 \begin{equation}
 \label{eq:corrG}
-\Phi=\begin{pmatrix}1 & \phi_{Gd}\Tn\\ \phi_{Gd} & \Phi_D\end{pmatrix},\qquad
-\Sigma=\lambda_G\lambda_G\Tn+\underbrace{\lambda_G\phi_{Gd}\Tn\Lambda_D\Tn+\Lambda_D\phi_{Gd}\lambda_G\Tn}_{\text{the terms orthogonality had removed}}+\Lambda_D\Phi_D\Lambda_D\Tn+\Psi .
+\Phi=\begin{pmatrix}1 & \phi_{Gd}\Tn\\ \phi_{Gd} & \Phi_D\end{pmatrix}.
 \end{equation}
+This sensitivity model asks whether severity is empirically entangled with each specific factor. The vector
+$\phi_{Gd}$ is therefore not a nuisance. It is a scientific object: it quantifies how much each domain is tied to
+functional burden.
 
-\begin{keyresult}[The very term the clean derivation dropped is the one the analysis exists to estimate]
-The vector $\phi_{Gd}$ --- the correlations between $G$ and each specific factor --- is the headline of the
-entire enterprise. ``Biology is the least severity-entangled domain'' is, mathematically, the statement that the
-$G$-row of $\Phi$ is near zero for the metabolic and inflammatory entries (values around $0.12$ and $0.07$) and
-far larger for cognition and sleep (around $0.39$ and $0.42$; Chapter~\ref{sec:results}). The bifactor's
-orthogonality is the \emph{null}; the correlated-$G$ arm measures how far from it the data sit. Two related
-lenses agree on the ordering --- the bifactor direct loading $|\lambda_{jG}|$ and the correlation $\phi_{Gd}$ ---
-and reporting both is what turns ``biology is separable'' from an artefact of one constraint into a finding.
+\begin{keyresult}[Why the $G$ row matters]
+The statement ``biology is relatively separable from severity'' is not a visual slogan; it is a statement about
+$\phi_{Gd}$ and about the direct bifactor loadings $\lambda_{jG}$ of biological indicators. If metabolic and
+inflammatory entries in the $G$ row of $\Phi$ remain small in the correlated-$G$ sensitivity model, while sleep
+or cognition are more severity-linked, the model has quantified separability rather than assumed it.
 \end{keyresult}
 
-\subsection{Identification and the rotation problem}
+\subsection{Soft-prior loading roles and identification}
+\label{sub:roles}
 \label{sub:identification}
-One foundational fact explains \emph{why a prior is even needed}. A parameter is \textbf{identifiable} if
-distinct values always produce distinct distributions over the observable data. For Gaussian data the observable
-distribution is captured entirely by $(\mu,\Sigma)$, and the factor model has a disease: take any invertible
-$M$ and rotate,
+Theory enters through the prior on each loading. Every item-factor cell receives a role: a primary/home loading,
+a general-factor loading, a plausible cross-loading, an unlikely cross-loading, or a near-zero cell keeping a
+$G$ anchor off the specifics. The home loadings are positive, which fixes the sign of each factor so that higher
+coordinates mean more burden after item-level sign orientation.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{Soft-prior roles and the induced prior on the loading $\lambda_{jk}$. Hard-zero primary runs fix the
+unlikely cells exactly at zero; the soft-unlikely arm frees them with tight shrinkage as a sensitivity analysis.}
+\label{tab:priorroles}
+\begin{tabular}{L{4.6cm} L{5.0cm} L{4.4cm}}
+\toprule
+\hdr{role} & \hdr{meaning} & \hdr{prior on $\lambda_{jk}$}\\
+\midrule
+\rowcolor{facebg} \code{primary} / \code{g_anchor} & item should define this factor & $\Normal_{+}(0.60,\,0.30^2)$, truncated $>0$\\
+\code{bifactor_G} / \code{plausible_cross} & item may carry this signal & $\Normal(0,\,0.25^2)$, possibly tighter by block\\
+\rowcolor{facebg} \code{unlikely_cross} & should be near zero & exact zero in primary; $\Normal(0,\,0.05^2)$ in soft arm\\
+\code{g_anchor_on_specific} & $G$ anchor held off specifics & exact zero or near-zero sensitivity prior\\
+covariate / outcome & adjust for / reserve for validation & not in $\Lambda$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The prior is more than decoration. A Gaussian factor model has a rotation problem: for suitable invertible
+matrices $M$,
 \begin{equation}
 \label{eq:rotation}
-\Lambda^\star=\Lambda M,\quad \Phi^\star=M^{-1}\Phi M^{-\top},\quad f^\star=M^{-1}f
-\;\;\Longrightarrow\;\;
-\Lambda^\star\Phi^\star(\Lambda^\star)\Tn+\Psi=\Lambda\Phi\Lambda\Tn+\Psi=\Sigma .
+\Lambda^\star=\Lambda M,
+\qquad
+\Phi^\star=M^{-1}\Phi M^{-\top}
+\quad\Longrightarrow\quad
+\Lambda^\star\Phi^\star(\Lambda^\star)\Tn=\Lambda\Phi\Lambda\Tn.
 \end{equation}
-The rotated parameters imply the \emph{identical} $\Sigma$, hence the identical likelihood, and are
-indistinguishable by any amount of data --- two recipes that always yield an identical-tasting dish. The loadings
-are \textbf{not identified} on their own. Confirmatory factor analysis resolves this by fixing enough loadings to
-exactly zero that no nontrivial $M$ preserves the structure; the Bayesian ESEM instead resolves it with the
-prior (\S\ref{sub:posterior}), which is the more flexible route --- it allows cross-loadings but breaks the
-symmetry softly~\cite{asparouhov2009esem,marsh2014esem}.
+The likelihood alone sees the same $\Sigma$ after such a rotation. The loading matrix is therefore not
+identified by the likelihood alone. The sparse prior breaks this symmetry because a rotated loading matrix no
+longer aligns with the theory map: home loadings may no longer be positive and substantial, and cells intended
+to be near zero may become large. The posterior concentrates on the orientation where the empirical covariance
+is explained while the loading pattern remains interpretable.
 
-\subsection{Assembling the posterior, and the prior's second job}
+\begin{methodsbox}[The recipe analogy]
+Two different-looking loading matrices can cook the same observable covariance dish if one is a rotation of the
+other. The likelihood tastes only the final dish. The prior checks whether the recipe respects the intended
+ontology: CRP should define inflammation, BMI should define metabolism, FAST should anchor general burden, and
+unlikely cross-loadings should stay small unless the data strongly justify them.
+\end{methodsbox}
+
+\subsection{Bayesian inference and model-parameter learning}
 \label{sub:posterior}
-We now have both ingredients of Eq.~\eqref{eq:skeleton}: the likelihood is the ESEM model of
-\S\ref{sub:generative}--\S\ref{sub:marginal}; the prior encodes theory. Beyond the loading roles
-(Table~\ref{tab:priorroles}), the remaining priors are weakly informative: intercepts
-$\alpha_j\sim\Normal(0,1.5)$; residual scales $\sigma_j=0.05+\mathrm{HalfNormal}(1)$ (the $+0.05$ floor guards
-against a Heywood case --- an item whose noise collapses to zero, claiming a factor explains it perfectly);
-ordinal cutpoints ordered-normal; count dispersion $\phi_j\sim\mathrm{Exp}(1)$; and the factor correlation
-$\Phi\sim\LKJdist(\eta{=}2)$, whose density $\propto\det(\Phi)$ puts more mass on weakly-correlated matrices ---
-a gentle thumb toward near-orthogonal factors, without forbidding correlations~\cite{lewandowski2009lkj}.
-
-The first job of the prior is ordinary regularization. The second is the one \S\ref{sub:identification} set up.
-The likelihood is unchanged by the rotation $\Lambda\to\Lambda M$, but the \textbf{prior is not}
-rotation-invariant: a rotation scrambles the loadings, so an entry the prior wanted near zero is no longer near
-zero and $p(\Lambda)$ drops. Therefore the posterior
+Bayesian inference combines the likelihood with the priors:
 \begin{equation}
-p(\Lambda\given X)\;\propto\;\underbrace{p(X\given\Lambda)}_{\text{rotation-invariant}}\;\underbrace{p(\Lambda)}_{\text{not invariant}}
+\label{eq:skeleton}
+p(\Theta\given X_{\mathrm{obs}})
+\propto
+p(X_{\mathrm{obs}}\given\Theta)\,p(\Theta).
 \end{equation}
-concentrates at the \emph{one} orientation where the small loadings align with the soft-zero priors and the home
-loadings sit positive and substantial; the positive truncation additionally kills the sign-flip ambiguity.
+In log form,
+\begin{equation}
+\log p(\Theta\given X_{\mathrm{obs}})
+=
+\log L(\Theta)+\log p(\Theta)+C,
+\end{equation}
+where $C$ does not depend on $\Theta$. The data are fixed. The posterior is a landscape over candidate parameter
+values. At one candidate value, the model proposes a loading matrix $\Lambda$, a factor-correlation matrix
+$\Phi$, residual scales $\sigma_j$, and any active intercept/covariate parameters. It builds
+$\Sigma=\Lambda\Phi\Lambda\Tn+\Psi$, evaluates the observed-cell likelihood, adds the prior score, and obtains a
+posterior log density. At another candidate value, this entire score changes.
 
-\begin{keyresult}[The shrinkage priors are the identification device, not decoration]
-The likelihood alone leaves a continuum of equally good loading matrices (Eq.~\eqref{eq:rotation}); the prior
-\emph{selects} the interpretable one. A corollary supplies the natural robustness check: under a flat loading
-prior the posterior mode equals the maximum-likelihood (FIML) solution, so a prior-free refit landing on the
-same loadings shows the structure is \emph{earned from the data, not manufactured by the priors}
-(Chapter~\ref{sec:validation} reports Tucker $\varphi=1.00$).
-\end{keyresult}
+The continuous marginalized model samples structural parameters but not patient coordinates. The Gaussian
+patient scores $f_i$ have been integrated out. Therefore the sampler targets posterior draws of the continuous
+parameter block
+\begin{equation}
+\Theta_{\mathrm{cont}}=\{\Lambda,\Phi,\sigma\}
+\end{equation}
+and, in the in-likelihood covariate mode, also $\alpha$ and $B$. This is why marginalization is computationally
+valuable: instead of sampling thousands of patient-level latent coordinates, the continuous stages sample the
+population-level measurement map.
+
+Parameter learning is performed by MCMC, specifically NUTS/Hamiltonian Monte Carlo in the implementation. It is
+better to think of this as posterior exploration than as ordinary deterministic optimization. A maximum-likelihood
+or MAP optimizer would try to find a single best point. MCMC instead produces draws from the posterior,
+quantifying uncertainty in every loading, correlation, and residual scale. The optimization-like part is the
+sampler's repeated use of gradients to move toward high posterior-density regions; the inferential output is a
+cloud of plausible parameter values, not only one point estimate.
+
+The staged fitting strategy is a continuation method. It first estimates a stable continuous backbone, then adds
+correlations among specific factors and symptom windows, then adds additional continuous factors, and finally
+runs the full mixed stage. Each rung starts from a simpler geometry and hands information forward. This is not a
+change in scientific estimand; it is risk management for a high-dimensional posterior with sparse loadings,
+missingness, and mixed measurement families.
+
+\paragraph{Mixed-stage inference.} In the native mixed model, not all variables can be marginalized. Binary,
+low-cardinality ordinal, and count likelihoods do not collapse into the same Gaussian covariance identity.
+Factors carrying such variables require explicit patient latent coordinates in the sampler. The mixed model
+therefore partitions the factors into explicit and marginalized blocks: the explicit block is sampled per
+patient because discrete likelihoods attach to it, while the remaining Gaussian block is still marginalized
+conditionally. In the Gaussian-copula acceleration path, some high-resolution ordinal/count indicators are
+promoted into the Gaussianized block, reducing the explicit burden.
+
+\paragraph{Diagnostics.} The posterior draws must be checked. $\widehat R$ asks whether independent chains agree;
+ESS asks how many independent samples the autocorrelated chains are worth; divergences flag failures of the
+Hamiltonian trajectories to follow the posterior geometry. These diagnostics are not administrative details.
+They tell us whether the reported loading atlas and factor correlations are numerically credible.
+
+\subsection{Patient scoring after fitting}
+\label{sub:scoring_bridge}
+Fitting estimates the population-level measurement map. Patient scoring asks a different question: after fixing
+$\Lambda$, $\Phi$, and $\Psi$ at fitted values, where does patient $i$ sit in latent space given their observed
+items? For the Gaussian block this is another conditional Gaussian calculation:
+\begin{equation}
+\label{eq:score_mean}
+f_i\given x_{i,O}
+\sim
+\Normal\!\left(
+\Phi\Lambda_O\Tn\Sigma_{OO}^{-1}(x_{i,O}-\mu_{i,O}),
+\;
+\Phi-\Phi\Lambda_O\Tn\Sigma_{OO}^{-1}\Lambda_O\Phi
+\right),
+\end{equation}
+where $O=\Obs_i$. The posterior mean is the patient's coordinate estimate; the posterior covariance gives score
+uncertainty. A patient with many observed home indicators has a tighter coordinate estimate. A patient with few
+or no observed home indicators is partly or fully prior-dominated.
+
+This separation is essential. The marginalized likelihood learns $\Lambda$, $\Phi$, and $\Psi$ without sampling
+patient scores. Scoring then projects patients into the learned map. The two operations are connected by the
+same Gaussian algebra, but they answer different operational questions.
 
 \subsection{The prior atlas: the theory half of the deliverable}
 \label{sub:prioratlas}
 The soft-prior loading matrix is itself an artifact --- the \emph{prior atlas} (Figure~\ref{fig:prioratlas},
 Appendix~\ref{app:prioratlas}), an indicator$\times$factor heatmap of where each instrument is \emph{expected}
 to load, generated from configuration alone with no patient data. It encodes a block-diagonal primary structure
-(each factor anchored by its own pool), a faint $G$ column over every specific item (the bifactor mechanism by
-which $G$ becomes ``general'' only if the data put many specifics on it), the homeless cross-loading windows,
-and the hypothesised metabolic$\leftrightarrow$inflammatory bridge. The scientific deliverable of the
-measurement map is the \emph{prior $\to$ posterior} comparison (Chapter~\ref{sec:results}): this theory map
-placed beside the fitted empirical atlas, with a per-candidate verdict. As built, $143$ indicators across the
-candidate factors enter as modelled cells.
+(each factor anchored by its own pool), a faint $G$ column over every specific item, theory-permitted windows,
+and hypothesised biological bridges. The scientific deliverable of the measurement map is the \emph{prior $\to$
+posterior} comparison: this theory map placed beside the fitted empirical atlas, with a per-candidate verdict.
+As built, $143$ indicators across the candidate factors enter as modelled cells.
+
+\begin{keyresult}[End-to-end summary]
+The measurement pipeline is: orient indicators so higher means more burden; optionally Gaussianize suitable
+marginals through the copula transform; write the bifactor/ESEM measurement equation; integrate Gaussian patient
+latents to obtain $x_i\given\Theta\sim\Normal(\mu_i,\Lambda\Phi\Lambda\Tn+\Psi)$ or its copula-scale equivalent;
+evaluate the observed-cell log-likelihood with missing-data submatrices; compute it efficiently with Woodbury and
+Cholesky; combine it with sparse identifying priors; sample the posterior with NUTS; and finally project patients
+back into the learned latent map with uncertainty.
+\end{keyresult}
