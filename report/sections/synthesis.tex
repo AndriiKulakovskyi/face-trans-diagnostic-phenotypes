@@ -1,0 +1,130 @@
+\section{The chain: persists, then predicts}
+\label{sec:synthesis}
+
+The preceding chapters each answered one question in isolation: is there a map (\S\ref{sec:strata}), does
+it hold still over time (\S\ref{sec:temporal}), does it forecast the future (\S\ref{sec:prognosis}). Read
+separately they are four results. Read together they are a single argument, and the argument is worth
+slowing down for, because its logic is the spine of the whole program: \emph{the part of the map that does
+not move is the part that tells you where the patient is going}. This short chapter is a tutorial on that
+one chain. It introduces no new model and no new number; it explains how three findings lock into each
+other, so that the conclusion --- a biological corner of a continuum, durable in time, predictive of
+functioning --- reads as one claim rather than three coincidences.
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.96\linewidth]{figures/synthesis.png}
+\caption{The chain in one picture. \emph{Left (M2):} the transdiagnostic space is a graded continuum, not
+a set of biotypes; its most distinct extreme is the \emph{biological} corner (archetype $A_0$: high
+metabolic, inflammatory, substance load). \emph{Middle (M3):} scored forward onto follow-up without
+re-estimation, that biological corner is the \emph{durable} part of the map --- metabolic test--retest
+$\text{ICC}=0.91$, a trait --- while symptoms slide. \emph{Right (M4):} that same durable biological corner
+forecasts two-year \emph{functioning}; the patients sitting in it have the worst functional-remission
+prospect ($27\%$, against $60\%$ at the low-burden pole). One arrow, three chapters: \emph{a real corner,
+that lasts, that predicts}.}
+\label{fig:synthesis}
+\end{figure}
+
+\subsection{Link one --- M2: a real continuum, with biology as its most distinct corner}
+The first link establishes the \emph{geometry} the rest of the chain stands on. The stratification chapter
+(\S\ref{sec:strata}) asked the field's oldest question of these data --- are there biotypes? --- and
+answered \emph{no}, by trying hard to find them and failing on every test. A single-Gaussian falsification
+null is the cleanest way to see this: the best clustering of the real coordinates scores a silhouette of
+$0.140$, and a smooth blob simulated to have \emph{no} clusters at all scores $0.140\pm0.003$ (a separation
+of $z=0.1$). The data are statistically indistinguishable from a structureless cloud as far as cluster
+boundaries are concerned. Hopkins, GMM-BIC, density clustering, and a dip test all agree: one component, no
+gaps.
+
+\begin{definitionbox}[Continuum, not biotypes]
+``Continuum'' is not a hedge; it is a finding with teeth. It says there are no natural cut-points --- no
+place where one patient group ends and another begins --- so the map's content lives in \emph{coordinates}
+(where a patient sits) and in \emph{directions of extremity} (which corner they lean toward), not in
+\emph{labels}. Any hard partition imposed on it is a convention, useful only insofar as a downstream task
+rewards it. This is why the program never crowns a single number of clusters; it is also, as link three
+will show, exactly the property that makes the map's signal a continuous gradient rather than a switch.
+\end{definitionbox}
+
+A continuum still has shape. Archetypal analysis reads that shape not as clusters but as \emph{corners} ---
+the extreme profiles that the cloud is a blend of, with most patients ($61\%$) sitting in the interior as
+mixtures rather than at any vertex. At the stable $A=4$ resolution (cross-seed stability $0.979$) the four
+corners are quasi-independent axes of extremity: $A_0$ a \emph{biological} corner (metabolic $+1.99$,
+inflammatory $+2.52$, substance $+2.55$), $A_1$ a \emph{low-burden} pole, $A_2$ a \emph{severe but
+non-biological} corner, $A_3$ a \emph{psychiatric-symptom} corner. The headline of the chapter is that
+these three things --- biology, symptoms, severity --- vary nearly independently: a patient can be
+biologically extreme without being symptomatically or globally severe, and vice versa. And of the four
+corners, the biological one is the most distinct: it is the extreme that the symptom and severity axes
+\emph{cannot} see, the corner you would miss entirely if you looked only at how ill a patient appears. Hold
+that thought; the next two links are about that specific corner.
+
+\subsection{Link two --- M3: that biological corner is the durable one}
+The second link establishes \emph{time}. A map can be real and still be a snapshot of a passing state ---
+in which case forecasting from it would be forecasting from noise. The temporal chapter (\S\ref{sec:temporal})
+scored each follow-up visit onto the \emph{frozen} baseline map --- same loadings, same geometry, never
+re-discovered --- and asked, axis by axis, how much of a patient's coordinate is a stable trait versus a
+moving state. The instrument first had to survive the trip: measurement invariance holds, all five
+continuous backbone axes reproducing across visits at $\varphi\geq0.95$ (metabolic $0.988$, inflammatory
+$0.974$). Only once the ruler is shown not to warp can a coordinate change be read as the patient changing.
+
+\begin{keyresult}[Durable biology, moving symptoms]
+The test--retest reliabilities split the map cleanly along the very seam M2 found. The \emph{biological}
+axes are traits: metabolic $\text{ICC}=0.91$, substance $0.88$, cognition $0.70$, inflammatory $0.62$ ---
+a patient's biological position is close to a fixed property. The \emph{symptom} axes are states: sleep
+$0.47$, suicidality $0.42$, developmental $0.39$ --- they slide visit to visit. Severity is a trait by
+rank ($0.62$) on a population that improves overall. Read against link one, the corner that M2 singled out
+as most distinct (the biological one) is exactly the corner M3 finds most durable. Clinical translation,
+carried forward verbatim: \emph{stratify on the durable biology, monitor the moving symptoms}.
+\end{keyresult}
+
+The two routes to this conclusion --- a variance decomposition (how much of each coordinate is trait) and a
+geometry check (does a patient keep their archetype identity over time) --- agree, which is the kind of
+internal corroboration that makes a finding hard to dismiss. Archetype identity persists across visits
+(weight-cosine median $0.90$; $58\%$ of trajectories stable), and the two routes correlate ($\rho=-0.27$):
+patients whose coordinates are most trait-like are the ones whose archetype membership is most stable. One
+honest seam in this link, flagged here and revisited in the limitations: the \emph{geometry} route
+(reliable-change on archetype weights) is precision-confounded --- patients measured more precisely look
+more stable for a reason that has nothing to do with biology --- so the clean trait/state signal is the
+error-corrected variance route, the ICCs above, not the geometry overlay. The biology-is-durable claim
+rests on the clean route.
+
+\subsection{Link three --- M4: the durable biological corner predicts functioning}
+The third link converts durability into a forecast, and it is the link the program was built to test:
+\emph{persists} is a property of the past, \emph{predicts} is a claim about the future, and they are not the
+same thing. The prognosis chapter (\S\ref{sec:prognosis}) set a deliberately hard bar --- the map is
+credited only if a baseline coordinate forecasts a two-year outcome \emph{incrementally beyond} what a
+clinician already holds: the DSM-5 diagnosis, the current severity, and the present value of the outcome
+itself. Against that bar, held out, the archetype representation buys a real increment on two-year
+\emph{functioning} (egf, $N=2{,}114$): $\Delta\text{ELPD}=+59.4\pm11.1$ for the $A=4$ archetypes, and it is
+robust --- it survives attrition weighting, permutation, and dropping cohorts (with the caveat that the
+signal is course-dependent, carried by the episodic bipolar and depression patients more than by the
+baseline-saturated schizophrenia ones). Severity, by contrast, is autoregression-saturated: the future of
+\emph{how ill} is mostly told by the present of how ill, and the map adds little. The map predicts the
+\emph{trajectory of function}, not the level of severity.
+
+\begin{keyresult}[The biological corner has the worst functional prognosis]
+The prognostic atlas reads the forecast off the corners of link one. Ordered by two-year functional
+remission (GAF $\geq 71$): the \emph{low-burden} pole $A_1$ remits at $60\%$, the symptom corner $A_3$ at
+$43\%$, the severe-non-biological corner $A_2$ at $32\%$, and the \emph{biological corner} $A_0$ at $27\%$
+--- the worst. The corner M2 flagged as most distinct and M3 found most durable is, in M4, the corner with
+the dimmest functional outlook. That is the chain closing on itself: a real biological extreme, that lasts,
+that predicts where functioning goes.
+\end{keyresult}
+
+Two honesties keep this link calibrated, and both are stated here rather than left to the reader to infer.
+First, where the signal lives. The predictive object is the \emph{fuller $A=4$ archetype representation}
+--- biology read as the $A_0$ corner of the whole simplex --- not an isolated three-axis ``durable block''
+pulled out on its own (added alone, the three trait axes give only an ambiguous $+2.2\pm3.1$). The corner
+is biological, but it earns its forecast as a \emph{phenotype} --- a joint position in the space --- not as
+a lone biomarker. Second, the magnitude. A held-out evidence gain of $\Delta\text{ELPD}=+59$ is a
+group-level result; pushed down to an individual yes/no call it collapses to $\Delta\text{AUC}=+0.011$
+(functional-remission $0.745\to0.756$). The chain is genuine and it is modest: it sharpens \emph{who, on
+average, is heading where}, not \emph{will this person remit}.
+
+\begin{caveatbox}[What the chain does and does not buy]
+The three links establish a \emph{scientifically valid} object: a real continuum whose biological corner is
+distinct (M2), durable (M3), and incrementally predictive of two-year functioning, co-informative with
+DSM-5 and robust (M4). They do \emph{not} establish strong clinical utility: the individual increment is
+small ($\Delta\text{AUC}=+0.011$), the predictive content is phenotype-level rather than a single isolated
+axis, the signal is course-dependent, and --- as the treatment chapter (\S\ref{sec:treatment}) shows --- on
+observational treatment-as-usual the map does not reliably tell you \emph{what to do} about any of it. The
+chain says \emph{stratify on the durable biology and forecast functioning at the group level}; it stops
+short of an individual risk calculator or a prescribing rule. The full account of both bars is the subject
+of the conclusion and the limitations.
+\end{caveatbox}
