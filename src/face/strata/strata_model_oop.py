@@ -74,6 +74,10 @@ class StrataStage:
     # region (XD mixture) knobs
     K: int | None = None                       # tessellation granularity; None => operational-K selection
     K_sweep: tuple[int, ...] = (2, 3, 4, 5, 6, 7, 8)
+    K_family: tuple[int, ...] = (2, 3, 4)      # nested K-family exported in the hand-off as conventions; the
+    #                                            OPERATIVE K is deferred to M4/M5 incremental validity (not a
+    #                                            cache key — the consolidate stage always rebuilds, and the
+    #                                            family fits are cheap post-hoc projections of the same cloud)
     # archetype knobs
     A: int | None = None                       # None => scree knee (operational choice)
     A_sweep: tuple[int, ...] = (2, 3, 4, 5, 6, 7, 8)
@@ -809,11 +813,26 @@ class StrataRunner:
             return state
 
         if stage.kind == "consolidate":
-            frame = StrataProjector(self.config).membership_frame(coords, state["arch_A"], state["region_A"])
+            proj = StrataProjector(self.config)
+            # nested K-family overlay (conventions; operative K deferred to M4/M5) — cheap XD refits of the
+            # same cloud, exported alongside the operational tessellation and the continuous/archetype views.
+            family = [self.regions.fit(coords, k, arm="A") for k in stage.K_family]
+            sweep = (state.get("choose_K") or {}).get("sweep")
+            arch_B = state.get("arch_B")
+            frame = proj.membership_frame(coords, state["arch_A"], state["region_A"],
+                                          region_family=family, arch_fit_B=arch_B)
             out.mkdir(parents=True, exist_ok=True)
             frame.to_parquet(out / "patient_strata.parquet")
-            state["patient_strata"] = frame
-            self._write_manifest(out, stage, {"rows": len(frame), "cols": list(frame.columns)}, len(frame))
+            menu = proj.k_family_menu(coords, family, choose_K_sweep=sweep)
+            menu.to_csv(out / "k_family_menu.csv", index=False)
+            # frozen archetype anchors (native archetype_profiles.csv schema) for M4 armB_block + M3 projection
+            proj.archetype_profiles(state["arch_A"], arch_B).to_csv(out / "archetype_profiles.csv", index=False)
+            state["patient_strata"], state["k_family_menu"] = frame, menu
+            self._write_manifest(out, stage, {"rows": len(frame), "cols": list(frame.columns),
+                                              "operational_K": int(state["region_A"].K),
+                                              "K_family": list(stage.K_family),
+                                              "operative_K": "deferred to M4/M5 incremental validity"},
+                                 len(frame))
             return state
 
         raise ValueError(f"unknown stage kind: {stage.kind}")
@@ -857,13 +876,24 @@ class StrataRunner:
 class StrataProjector:
     """Assemble the per-patient membership frame consumed downstream (M3/M4), with soft memberships,
     entropy, confidence tiers and boundary flags. Column contract: keyed (cohort, patient_id); ``arch_*`` /
-    ``tess_*`` prefixes (auto-joined by ``prognosis.frame``); ``arm`` (validation-only)."""
+    ``tess_*`` prefixes (auto-joined by ``prognosis.frame``); ``arm`` (validation-only).
+
+    On a continuum K is a granularity *convention*, not a discovered kind-count, so the hand-off does not
+    privilege a single K: alongside the operational ``tess_*`` tessellation (the smallest confidently
+    assignable + stable K) it carries (i) the load-bearing continuous coordinates + draws (exported by
+    ``StrataData``) and the soft archetype simplex (``arch_*``), and (ii) a nested **K-family** overlay
+    (``tessfam_k{K}_*``, prefix chosen so it never matches the ``tess_`` selector and pollutes the
+    operational contract). The *operative* granularity — which K, if any, adds clinical value — is a
+    downstream question answered by M4/M5 incremental predictive/treatment validity, not by an internal
+    parsimony rule here (``k_family_menu`` is the decision menu they consume)."""
 
     def __init__(self, config: StrataConfig | None = None):
         self.config = config or StrataConfig()
 
     def membership_frame(self, coords: CoordinateSet, arch_fit: ArchetypeFit,
-                         region_fit: RegionFit) -> pd.DataFrame:
+                         region_fit: RegionFit,
+                         region_family: list[RegionFit] | None = None,
+                         arch_fit_B: ArchetypeFit | None = None) -> pd.DataFrame:
         df = pd.DataFrame(index=coords.index)
         for a in range(arch_fit.A):
             df[f"arch_w{a}"] = np.round(arch_fit.W[:, a], 4)
@@ -873,6 +903,13 @@ class StrataProjector:
         df["arch_entropy"] = np.round(arch_fit.entropy, 4)
         df["arch_confidence_tier"] = arch_fit.tier
         df["arch_boundary"] = (arch_fit.tier == "boundary").astype(int)
+        # Arm-B (G-residualized) archetype weights — the clean ⊥G phenotype view M4 uses as `+archetypesB`.
+        if arch_fit_B is not None:
+            for a in range(arch_fit_B.A):
+                df[f"archB_w{a}"] = np.round(arch_fit_B.W[:, a], 4)
+            df["archB_dominant"] = arch_fit_B.map_label.astype(int)
+            df["archB_entropy"] = np.round(arch_fit_B.entropy, 4)
+        # operational tessellation — the M3/M4 ``tess_`` contract (the chosen operational K)
         for k in range(region_fit.K):
             df[f"tess_r{k}"] = np.round(region_fit.resp[:, k], 4)
         df["tess_MAP"] = region_fit.map_label.astype(int)
@@ -880,8 +917,61 @@ class StrataProjector:
         df["tess_entropy"] = np.round(region_fit.entropy, 4)
         df["tess_confidence_tier"] = region_fit.tier
         df["tess_boundary"] = (region_fit.tier == "boundary").astype(int)
+        # nested K-family overlay (conventions; operative K deferred to M4/M5). The ``tessfam_`` prefix does
+        # NOT match prognosis.frame's ``tess_`` selector, so the family never leaks into the operational view.
+        for rf in (region_family or []):
+            for k in range(rf.K):
+                df[f"tessfam_k{rf.K}_r{k}"] = np.round(rf.resp[:, k], 4)
+            df[f"tessfam_k{rf.K}_MAP"] = rf.map_label.astype(int)
+            df[f"tessfam_k{rf.K}_entropy"] = np.round(rf.entropy, 4)
+            df[f"tessfam_k{rf.K}_tier"] = rf.tier
         df["arm"] = coords.validation["arm"].astype(str).to_numpy()
         return df.reset_index()
+
+    def k_family_menu(self, coords: CoordinateSet, region_family: list[RegionFit],
+                      choose_K_sweep: list[dict] | None = None) -> pd.DataFrame:
+        """The decision menu for the nested K-family: per-K assignment confidence + entropy, cross-seed
+        stability (reused from the operational K-sweep), and the per-axis variance explained (eta^2 — what
+        each K actually splits on). It exists so M4/M5 can choose the operative granularity by *external*
+        (predictive/treatment) validity rather than by an internal parsimony tiebreak on a flat BIC basin."""
+        from face.strata.validation import assignment_usefulness, eta_squared  # noqa: PLC0415
+        sweep = {int(r["K"]): r for r in (choose_K_sweep or [])}
+        gi = coords.dims.index(G_KEY)
+        rows = []
+        for rf in region_family:
+            au = assignment_usefulness(rf.resp)
+            eta = eta_squared(rf.map_label, coords.X)
+            spec = float(np.mean([eta[i] for i in range(len(coords.dims)) if i != gi]))
+            s = sweep.get(rf.K, {})
+            row = {"K": int(rf.K), "bic": float(s.get("bic", np.nan)),
+                   "confident_dominant_frac": round(au["confident_dominant_frac"], 4),
+                   "median_norm_entropy": round(au["median_norm_entropy"], 4),
+                   "seed_ari": float(s.get("seed_ari", np.nan)),
+                   "mean_eta_specifics": round(spec, 4),
+                   "eta_overall_severity": round(float(eta[gi]), 4)}
+            for i, d in enumerate(coords.dims):
+                row[f"eta_{d}"] = round(float(eta[i]), 4)
+            rows.append(row)
+        return pd.DataFrame(rows)
+
+    def archetype_profiles(self, arch_fit_A: ArchetypeFit,
+                           arch_fit_B: ArchetypeFit | None = None) -> pd.DataFrame:
+        """The frozen archetype profile anchors, in the native M2 ``archetype_profiles.csv`` schema so the
+        downstream M4 ``reference.armB_block`` (Arm-B projection) and the M3 V1/V2 projection can consume them
+        without re-fitting: one row per archetype per arm, columns = ``arm``/``archetype``/``name`` + one per
+        CANON axis. Arm ``A_all9`` carries all 9 axes; arm ``B_specifics`` carries the 8 ⊥G specifics (its
+        ``overall_severity`` is left NaN — armB_block only reads the specifics)."""
+        rows = []
+        for arm_label, af in (("A_all9", arch_fit_A), ("B_specifics", arch_fit_B)):
+            if af is None:
+                continue
+            for a in range(af.A):
+                row = {"arm": arm_label, "archetype": a, "name": af.names[a]}
+                row.update({ax: np.nan for ax in CANON})
+                for j, dim in enumerate(af.dims):
+                    row[dim] = float(af.Z[a, j])
+                rows.append(row)
+        return pd.DataFrame(rows, columns=["arm", "archetype", "name", *CANON])
 
     def project_new(self, X_new: np.ndarray, arch_fit: ArchetypeFit, region_fit: RegionFit,
                     *, S_new: np.ndarray | None = None) -> pd.DataFrame:

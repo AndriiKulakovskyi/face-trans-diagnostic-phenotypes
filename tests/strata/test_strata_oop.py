@@ -132,6 +132,28 @@ def test_membership_frame_m3_contract():
     assert len(frame) == 300
 
 
+def test_membership_frame_exports_k_family():
+    """The hand-off carries a nested K-family overlay (conventions) without polluting the operational
+    ``tess_`` contract, and ``k_family_menu`` reports the per-K decision metrics M4/M5 consume."""
+    coords, _, _ = _coords(N=300, K=3, seed=5)
+    proj = StrataProjector()
+    rf2 = SoftRegionModel().fit(coords, 2, arm="A")                  # operational K
+    af = ArchetypeModel().fit(coords, 3, arm="A", n_draw=5)
+    family = [SoftRegionModel().fit(coords, k, arm="A") for k in (2, 3, 4)]
+    frame = proj.membership_frame(coords, af, rf2, region_family=family)
+    op = [c for c in frame.columns if c.startswith("tess_")]         # prognosis.frame's selector
+    assert any(c.startswith("tess_r") for c in op)
+    assert not any(c.startswith("tess_k") for c in op)               # family uses tessfam_, never tess_
+    for k in (2, 3, 4):
+        rcols = [f"tessfam_k{k}_r{j}" for j in range(k)]
+        assert set(rcols) <= set(frame.columns)
+        assert np.allclose(frame[rcols].to_numpy().sum(1), 1.0, atol=1e-3)   # valid soft simplex
+        assert {f"tessfam_k{k}_MAP", f"tessfam_k{k}_entropy", f"tessfam_k{k}_tier"} <= set(frame.columns)
+    menu = proj.k_family_menu(coords, family)
+    assert list(menu["K"]) == [2, 3, 4]
+    assert {"mean_eta_specifics", "eta_overall_severity", "confident_dominant_frac"} <= set(menu.columns)
+
+
 def test_select_A_operational_prefers_stable_A():
     """The operational A choice favours a reproducible archetype set: on clean simplex data it returns a
     valid A in the sweep whose reported stability is high (the EV scree alone would over-reach)."""

@@ -5,23 +5,26 @@
 > [`src/face/strata/strata_model_oop.py`](../src/face/strata/strata_model_oop.py). Figures:
 > `docs/figures/strata_oop/`. All coordinates are on the latent z-scale (0 = population mean, units = SD).
 
-## 0. Two views of one continuum — why both K and A
+## 0. One continuum, three views — the load-bearing objects and the (un-privileged) K
 
 The structure gate says the 9-dim space is a **continuum** (no discrete clusters). On a continuum there is no
-"correct number of groups" — so we describe it two complementary ways, and the difference between them is the
-whole point:
+"correct number of groups", so the **load-bearing objects are granularity-free**: the **continuous
+coordinates** (+ uncertainty) and the **archetype simplex** (A extreme phenotypes, each patient a blend). A
+hard tessellation is only a **coarse labelling convention** — useful for communication, but with **no
+privileged K**. We therefore export a **nested K-family** and defer the *operative* K to M4/M5:
 
 | | **K — soft tessellation** | **A — archetypes** |
 |---|---|---|
+| status | coarse convention (not load-bearing) | **load-bearing** (with the continuous coords) |
 | object | `K` soft regions of a measurement-error mixture | `A` extreme phenotypes (corners of the convex hull) |
 | membership | responsibilities `r_i` (sum to 1) | simplex weights `w_i` (sum to 1) — a patient *is* a blend |
 | what it finds | the dominant **density** split — where the cloud is most separable into regions | the **extremes** — the orthogonal directions of maximal phenotype |
 | answer it gives | "which **decision region** is this patient in?" | "**where on the continuum** is this patient — what blend of extremes?" |
-| granularity rule | smallest `K` that stays confidently assignable + stable | largest `A` that stays cross-seed reproducible |
-| result here | **K = 2** | **A = 4** |
+| granularity rule | **nested family** (no privileged K); the operative K → M4/M5 incremental validity | largest `A` that stays cross-seed reproducible |
+| result here | **K = 2 / 3 / 4 exported** (K = 2 is the M3-contract default only) | **A = 4** |
 
-Both partition the *same* points; they answer different questions. The headline finding is that they split on
-**different axes** — and that dissociation is exactly the transdiagnostic structure we are after.
+The headline finding is that the tessellation and the archetypes split on **different axes** — and that
+dissociation is exactly the transdiagnostic structure we are after (§3).
 
 ---
 
@@ -82,22 +85,28 @@ follow-up (M3/M4). The continuum claim is about *this* baseline measurement map.
 
 ## 1. K — the soft tessellation splits on psychiatric symptom burden
 
-### 1.1 Why K = 2
+### 1.1 The K-family (no privileged K)
 
-`K` is a deliberate operational granularity, not a discovered kind-count (a continuum has no natural K). The
-XD-BIC is essentially **flat** across K (a continuum signature — no interior optimum), and assignment
-confidence falls as K grows, so the rule picks the smallest confidently-assignable, reproducible K:
+`K` is a granularity *convention*, not a discovered kind-count (a continuum has no natural K). The XD-BIC is
+essentially **flat** across K (a continuum signature — no interior optimum; the minimum is at **K = 3**, by
+< 0.03%), so an internal parsimony tiebreak would be false precision. Instead we **export the family and let
+M4/M5 pick the operative K by external (predictive/treatment) validity.** The decision menu
+(`results/face/strata_oop/consolidate/k_family_menu.csv`) — assignment + stability + what each K splits on:
 
-| K | XD-BIC | confident-dominant | median entropy | seed-ARI |
-|---|---|---|---|---|
-| **2** | 197,963 | **1.00** | 0.51 | **1.00** |
-| 3 | 197,918 | 0.92 | 0.60 | 0.97 |
-| 4 | 198,108 | 0.87 | 0.55 | 1.00 |
-| 5 | 198,345 | 0.84 | 0.49 | 0.97 |
-| 8 | 199,545 | 0.69 | 0.50 | 0.77 |
+| K | XD-BIC | confident-dominant | seed-ARI | η² specifics | η² G | η² suicidality | η² metabolic | η² inflammatory |
+|---|---|---|---|---|---|---|---|---|
+| **2** (contract default) | 197,963 | **1.00** | 0.998 | 0.122 | 0.008 | 0.543 | 0.003 | 0.004 |
+| **3** (BIC-best) | **197,918** | 0.92 | 0.968 | 0.141 | 0.165 | 0.436 | 0.064 | 0.011 |
+| **4** | 198,108 | 0.87 | 0.996 | 0.154 | **0.332** | 0.557 | **0.102** | 0.031 |
 
-BIC moves < 1% across the whole range — there is no "right" K; K=2 is the parsimonious decision-region scheme.
-(K=3–4 remain confident + stable if finer regions are wanted; they sub-divide the same symptom axis.)
+BIC moves < 1% across the whole range (K = 2–8: 197.9k–199.5k) — there is no "right" K. **Two honest reads:**
+(i) every K splits *first* on suicidality-anchored symptom burden (the dominant density direction); but
+(ii) **finer K progressively captures the severity (G) and biology gradient that K = 2 discards** — metabolic
+η² 0.003 → 0.064 → 0.102, inflammatory 0.004 → 0.011 → 0.031, G 0.008 → 0.165 → 0.332. Biology has no density
+*gap* (so it never forms a clean region boundary at any K — §2/§3), but a finer tiling picks up more of its
+continuous gradient. K = 2 is the sharpest-assigning convention and the **M3-contract default** (a concrete
+`tess_*` is needed downstream); K = 3 is BIC-best and still confident + stable; K = 4 is richest on
+severity/biology. The full family ships as `tessfam_k{2,3,4}_*` so the operative choice is M4/M5's, not ours.
 
 ### 1.2 The two regions are a symptom-burden gradient
 
@@ -234,15 +243,20 @@ but continuous, density-gapless, orthogonal dimension.
 
 ## 4. Clinical / scientific reading (with the honest limits)
 
-* **Operationally:** for a coarse decision-region label, stratify on the **symptom-burden** axis (K=2,
-  suicidality-anchored). For the richer phenotype, place a patient as a **blend of the four archetypes** —
-  reading their biological (A0) load separately from their symptom (A3) and severity (A2) load.
-* **Transdiagnostic:** neither view re-encodes diagnosis (ARI ≈ 0); the structure cuts across BP/SZ/DR and the
+* **Operationally:** the patient *is* their **continuous position** + **blend of the four archetypes** —
+  reading their biological (A0) load separately from their symptom (A3) and severity (A2) load. If a coarse
+  hard label is wanted, the tessellation family offers it at a granularity of choice: K = 2 (a clean
+  symptom-burden split), K = 3 (BIC-best, adds a severity/biology gradient), or K = 4 (richest on
+  severity/biology). **No single K is privileged** — which one (if any) earns its keep is decided by outcomes.
+* **Transdiagnostic:** no view re-encodes diagnosis (ARI ≈ 0); the structure cuts across BP/SZ/DR and the
   DSM-5 subtypes.
-* **Internal/baseline only.** Whether these regions/archetypes *predict* 2-year course or treatment response —
-  i.e. whether "splits on symptoms / has a biology corner" is *useful for decisions* — is the **M3/M4 rerun**
-  on this object, not claimed here. The biology corner (A0) is the natural candidate to carry durable/prognostic
-  signal (it did on the native map), but that is a hypothesis for M3/M4.
-* **Caveats:** K=2 is coarse by design; the biology signal lives in the archetypes, not the tessellation;
-  archetype granularity is copula-sensitive (only A=2, 4 stable); substance is thin (2 SUD binaries, DR=0) and
-  carried with wide uncertainty.
+* **Internal/baseline only — and this is *how* the operative K should be chosen.** Whether the regions /
+  archetypes *predict* 2-year course or treatment response is the **M3/M4 rerun** on this object, not claimed
+  here. The biology corner (A0) and the K = 3/4 biology gradient are the natural candidates to carry
+  durable/prognostic signal (A0 did on the native map); M4 selects the operative K from the family by
+  **incremental validity over DSM-5 + severity**, which is the non-circular way to honour "choose K for
+  actionability" (an internal parsimony tiebreak on a flat basin would not be).
+* **Caveats:** the tessellation is a coarse convention (the load-bearing objects are the continuous coords +
+  the A = 4 archetypes); biology shows up as an archetype corner / a continuous gradient, not a clean region
+  boundary; archetype granularity is copula-sensitive (only A = 2, 4 stable); substance is thin (2 SUD
+  binaries, DR = 0) and carried with wide uncertainty.

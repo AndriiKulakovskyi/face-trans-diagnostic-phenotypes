@@ -112,6 +112,10 @@ def main() -> None:
         summary["usefulness"] = state["usefulness"]["summary"]
     if "patient_strata" in state:
         summary["patient_strata_rows"] = len(state["patient_strata"])
+    if "k_family_menu" in state:
+        m = state["k_family_menu"]
+        summary["k_family"] = {"Ks": [int(k) for k in m["K"]],
+                               "operative_K": "deferred to M4/M5 incremental validity"}
 
     if not args.no_plots and "region_A" in state:
         summary["figures"] = make_figures(config, state)
