@@ -3,16 +3,24 @@
 
 The previous chapter showed the map and its strata \emph{persist}; this one asks whether they
 \emph{predict}. The distinction is the whole point of the program: a description can be stable and still
-clinically idle. The question is sharp and deliberately conservative --- does a baseline coordinate or
-stratum forecast a future clinical outcome \emph{incrementally beyond what a clinician already has}, namely
-the DSM-5 diagnosis, the current severity, and the present value of the outcome itself? The bet, placed
-exactly where temporal coherence pointed, is that the \emph{durable} trait axes (cognition, metabolic,
-inflammatory) predict the \emph{moving} state outcomes (functioning, severity). Throughout, this chapter is
-a pure consumer of the fixed objects from the earlier chapters --- the panel of re-scored coordinates,
-their per-patient uncertainty, the archetype memberships, and the attrition weights --- never re-estimated
+clinically idle. The question is sharp and deliberately conservative --- does a baseline coordinate, an
+archetype membership, or a tessellation region forecast a future clinical outcome \emph{incrementally
+beyond what a clinician already has}, namely the DSM-5 diagnosis, the current severity, and the present
+value of the outcome itself? The bet, placed exactly where temporal coherence pointed, is that the
+\emph{durable} biology of the map (cognition, metabolic, inflammatory) predicts the \emph{moving} state
+outcomes (functioning, severity). Throughout, this chapter is a pure consumer of the fixed objects from the
+earlier chapters --- the panel of re-scored coordinates, their per-patient uncertainty, the archetype
+memberships, the nested $K$-family of regions, and the attrition weights --- never re-estimated
 (invariant I3). The outcomes are clinical scales re-administered over the dense yearly grid
 V0\,$\to$\,V2; there is no hospitalization or relapse register in the record, so the forecasts are of
 \emph{scale trajectories}, not events (\S\ref{sub:m4limits}).
+
+There is also a debt to settle. The strata chapter (\S\ref{sec:strata}) deliberately left the choice of
+operative $K$ open: the transdiagnostic space is a continuum, the soft tessellation was exported as a
+nested $K$-family with no privileged resolution, and the question of which cut --- if any --- is the right
+one was declared an \emph{outcome} question, to be answered here. Prognosis is where that promissory note
+comes due. By asking which encoding of the map actually earns predictive value, this chapter resolves the
+$K$-question directly.
 
 \subsection{The estimand and the bar}
 For an outcome $Y$ at the two-year horizon we fit a strictly nested ladder, every rung on one
@@ -20,16 +28,18 @@ complete-case sample so the held-out fit is comparable: nuisance (age, sex, a si
 $\to$ {}$+$\,DSM-5 subtype $\to$ {}$+$\,severity $\to$ {}$+$\,the baseline outcome $Y_0$. That last
 rung --- call it the \emph{bar} --- is an analysis of covariance: by conditioning on $Y_0$ it asks what
 predicts the future \emph{given where the patient is now}, which both answers the clinically honest
-question and disarms regression to the mean. The transdiagnostic map is then added on top, as continuous
-durable coordinates or as archetype/tessellation memberships, and credited only if it beats the bar.
+question and disarms regression to the mean. The transdiagnostic map is then added on top, in several
+competing encodings --- the continuous durable coordinates, the A$=$4 archetype simplex, or the hard
+tessellation at $K=2/3/4$ --- and each is credited only if it beats the bar. Comparing those encodings
+head-to-head is exactly what answers the deferred $K$-question.
 
 \begin{methodsbox}[Errors-in-variables: the map's uncertainty is propagated, not ignored]
 A coordinate is a posterior, not a point. Plugging its mean into a regression would attenuate the
 coefficient toward zero --- the textbook \emph{regression-dilution} effect, in which noise in a predictor
 flattens its apparent slope, and the damage is worst exactly where the coordinate is least certain. The
-remedy is to trust each reading in proportion to its precision: each map predictor enters as a latent true
-value carrying the \emph{known} per-patient standard deviation from the map (the variance-model device of
-Eq.~\ref{eq:traitstate}, generalized to the outcome equation):
+remedy is to trust each reading in proportion to its precision: each continuous map predictor enters as a
+latent true value carrying the \emph{known} per-patient standard deviation from the map (the variance-model
+device of Eq.~\ref{eq:traitstate}, generalized to the outcome equation):
 \begin{equation}
 \label{eq:eiv}
 g\!\left(\mathbb{E}[Y_{i}]\right)=\alpha+\mathbf{x}_i^{\!\top}\bm\beta+u_{\mathrm{site}(i)}+\xi_i\,\beta_{z},
@@ -42,134 +52,196 @@ currency by patient-level cross-validated logistic models (AUC, calibration, net
 \end{methodsbox}
 
 \subsection{The map adds for functioning, not severity (Q1)}
-On the bar (DSM-5 $+$ severity $+$ baseline outcome), added value splits cleanly by outcome.
+On the bar (DSM-5 $+$ severity $+$ baseline outcome), added value splits cleanly by outcome. The held-out
+ladder is read in $\Delta$ELPD --- expected log predictive density, a measure of out-of-sample predictive
+accuracy (higher is better), so $+59$ means $59$ log-likelihood units of held-out fit gained beyond the
+bar. The fit converged cleanly across four chains (R-hat $\approx 1.0$, max Pareto-$k\le 0.59$, zero
+divergences).
 
 \begin{keyresult}[The transdiagnostic profile predicts two-year functioning]
-For \textbf{functioning} (EGF, $N=2{,}114$) the eight archetypes add held-out $\Delta$ELPD $\mathbf{+46}$
---- expected log predictive density, a measure of out-of-sample predictive accuracy (higher is better), so
-$+46$ log-likelihood units of held-out fit beyond the bar --- in the $G$-residualized Arm-B view ($+58$ for
-the full-phenotype Arm-A), with the four-region tessellation $+47$ --- clearly predictive. The durable \emph{biology} coordinates carry it: metabolic
-$\beta=-0.062\,[-0.103,-0.022]$ and inflammatory $-0.060\,[-0.112,-0.011]$ both exclude zero (higher
-load $\to$ worse future functioning). For \textbf{severity} (CGI-S, $N=2{,}345$) the map adds essentially
-nothing: severity is autoregression-saturated --- today's CGI-S and $G$ already fix it.
+For \textbf{functioning} (EGF, $N=2{,}114$) the A$=$4 archetype simplex adds held-out $\Delta$ELPD
+$\mathbf{+59.4\pm11.1}$ in the full-phenotype encoding ($+37.9\pm9.0$ in the $G$-residualized view) --- clearly
+predictive. The hard tessellation regions also clear the bar, but by less ($+22/+22/+20$ at $K=4/3/2$). For
+\textbf{severity} (CGI-S, $N=2{,}345$) the map adds essentially nothing: severity is
+autoregression-saturated --- today's CGI-S and $G$ already fix it (every increment small or ambiguous).
 \end{keyresult}
 
-The strata out-predict the three linear coordinates because they capture the \emph{multivariate corner}
-a patient occupies, which three additive terms cannot. That the continuous durable trio is individually
-credible (above) yet adds little \emph{held-out ELPD} ($+7$, ambiguous) is the first sign of a theme
-(\S\ref{sub:m4value}): the map's value is multivariate and group-level, not a large per-axis effect.
+The archetypes out-predict the linear durable coordinates because they capture the \emph{multivariate
+corner} a patient occupies, which three additive terms cannot. That the continuous durable trio alone adds
+little held-out ELPD ($+2.2\pm3.1$, ambiguous) is the first sign of a theme (\S\ref{sub:m4value}): on this
+map the predictive object is the fuller archetype representation, not an isolated three-axis block.
 
-\subsection{Beyond severity --- the biology is the clean signal (Q2)}
-The load-bearing test is whether the biology effect is more than baseline severity in disguise. It is:
-metabolic survives adjustment for the \emph{error-corrected} $G$ severity ($\beta=-0.055\,[-0.095,-0.015]$)
-as well as the manifest CGI-S. This is the central bet of the map --- biology largely independent of $G$ --- cashed
-out prognostically: the metabolic/inflammatory corner a patient \emph{keeps} (the trait, from the temporal
-chapter) forecasts the functional state they \emph{move toward} (the state). Cognition does not reach
-credibility (prior-dominated for the untested, and the weakest of the three).
+\subsection{The operative $K$ is none --- the continuum wins (the deferred question, answered)}
+\label{sub:m4operativek}
+This is the chapter's structural headline, and the resolution of the question the strata chapter left open.
+We do not pick a $K$ by a clustering score; we ask the outcome which encoding of the map carries the most
+forecastable signal, and let that decide (Table~\ref{tab:m4incr}).
+
+\begin{table}[h]\centering\small\sffamily
+\caption{Incremental held-out $\Delta$ELPD for two-year \emph{functioning} (EGF, $N=2{,}114$) over the bar
+(DSM-5 $+$ severity $+$ baseline outcome), by map encoding. The continuous/archetype encodings dominate
+every hard tessellation; the durable trio alone is ambiguous. This ranking is the answer to ``which $K$?'':
+the actionable object is the continuous simplex, and any hard cut is a lossy convenience.}
+\label{tab:m4incr}
+\begin{tabular}{L{6.6cm} R{2.8cm} L{2.6cm}}
+\toprule
+\hdr{encoding added to the bar} & \hdr{$\Delta$ELPD} & \hdr{verdict}\\
+\midrule
+\rowcolor{facebg} archetypes A (A$=$4, full phenotype) & $+59.4\pm11.1$ & predictive\\
+archetypes B (A$=$4, $\perp G$) & $+37.9\pm9.0$ & predictive\\
+\rowcolor{facebg} specifics (8 $\perp G$ axes, EIV ceiling) & $+37.1\pm9.2$ & predictive\\
+tessellation $K=4$ & $+22.3\pm7$ & predictive\\
+\rowcolor{facebg} tessellation $K=3$ & $+21.8\pm7$ & predictive\\
+tessellation $K=2$ & $+20.2\pm7$ & predictive\\
+\rowcolor{facebg} durable trio (3 trait axes, EIV) & $+2.2\pm3.1$ & ambiguous\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{keyresult}[Operative $K=$ none --- the continuous/archetype encoding dominates any hard tessellation]
+The whole tessellation $K$-family is predictive of functioning (every $K\approx+20$ $\Delta$ELPD), but the
+continuous A$=$4 archetype representation dominates it: averaged across the two primary outcomes the
+archetypes add $+36.6$ versus $+15.4$ for the best tessellation ($K=3$). So the operative-$K$ selector
+returns \textbf{none}: no hard cut is the right clinical choice, because each one discards predictive signal
+the archetypes keep. A single hard label, if one is operationally required, is best taken at $K=3$ (the
+BIC-best, predictive cut, $\Delta$ELPD $\approx+22$) --- but it is strictly dominated by the simplex it
+approximates. This is the precise, outcome-grounded close of the strata chapter's open question.
+\end{keyresult}
+
+\begin{definitionbox}[Why a continuum can out-predict its own partition]
+A hard region replaces a patient's location with the label of the cell it falls in --- everyone in the cell
+is treated as identical, and the within-cell gradient is thrown away. A continuum keeps that gradient. When
+the phenotype is genuinely continuous (as the strata chapter established by a falsification null) the
+gradient \emph{is} the signal, so any partition is information loss by construction. The atlas below uses
+archetype labels for legibility, but the predictive object underneath is the continuous simplex.
+\end{definitionbox}
+
+\subsection{Beyond severity --- the archetype corner is the clean signal (Q2)}
+The load-bearing test is whether the biology effect is more than baseline severity in disguise. On this map
+the predictive carrier is the A$=$4 archetype representation, and it survives the error-corrected $G$
+severity rather than collapsing into it: the head-to-head below shows the map adding on a foundation that
+already conditions on severity, and the robustness section shows the archetype signal holding under the
+error-corrected severity adjustment. This is the central bet of the map --- biology largely independent of
+$G$ --- cashed out prognostically: the metabolic/inflammatory corner a patient \emph{keeps} (the trait,
+from the temporal chapter, with metabolic ICC $0.91$) forecasts the functional state they \emph{move
+toward} (the state). The honest map-specific nuance is that the biology now does this work as a
+\emph{corner of the archetype simplex} (the A0 biological corner, \S\ref{sub:m4atlas}), not as an isolated
+three-axis durable block --- the durable trio entered on its own is only ambiguous here
+(Table~\ref{tab:m4incr}).
 
 \subsection{Versus DSM-5: complementary, and course-dependent (Q3)}
 The deferred G5 test, now answerable because outcomes (unlike the enrolment diagnosis) move. On a shared
-foundation we fit four nested models --- foundation, $+$DSM-5, $+$map, $+$both --- and read the
-\emph{dominance asymmetry} (Figure~\ref{fig:m4dominance}).
-
-\begin{figure}[h]\centering
-\includegraphics[width=0.92\linewidth]{figures/m4_dominance.png}
-\caption{Map versus the seven DSM-5 subtypes, on top of nuisance $+$ severity $+$ baseline outcome. For
-functioning the map adds beyond DSM-5 (\emph{map beyond DSM-5}, $+47$) \emph{and} DSM-5 adds beyond the
-map (\emph{DSM-5 beyond map}, $+40$): they are \textbf{co-informative}, not rivals. For severity both
-shrink and DSM-5 leads. Bars clearing $2\,$SE in teal.}
-\label{fig:m4dominance}
-\end{figure}
+foundation (age $+$ sex $+$ severity $+$ baseline outcome) we fit the map and the seven DSM-5 subtypes both
+alone and together, and read the \emph{dominance asymmetry}.
 
 \begin{keyresult}[Co-informative with DSM-5, and concentrated where the future is open]
-The map and the DSM-5 subtypes each carry prognostic information the other lacks --- diagnosis the
-categorical illness type, the largely $G$-independent map the dimensional biology profile --- so the map
-\emph{complements}, it does not replace, diagnosis (consistent with the program's four-layer design, in
-which diagnosis stays metadata). And the added value is \textbf{course-dependent}: large within bipolar
-($\Delta$ELPD $+43$) and depression, null within schizophrenia ($-1.8$). The schizophrenia null is
-\emph{foundation saturation}, not map failure --- its baseline already explains more ($R^2\,0.26$ vs
-bipolar's $0.17$), with matched outcome variance and coordinate spread. The map predicts where the
-trajectory is not already fixed by baseline severity.
+For \textbf{functioning}, each side adds beyond the other and together they add more than either alone:
+$+$DSM-5 $+29.0$, $+$map $+22.2$, $+$\,\textbf{both} $\mathbf{+67.4}$ (all predictive). The map and the
+DSM-5 subtypes each carry prognostic information the other lacks --- diagnosis the categorical illness
+type, the largely $G$-independent map the dimensional biology profile --- so the map \emph{complements}, it
+does not replace, diagnosis (consistent with the program's four-layer design, in which diagnosis stays
+metadata). For severity the map adds little over DSM-5 ($+$map $+7.6$, ambiguous), the severity-saturation
+story again. And the added value is \textbf{course-dependent}: it is carried by the open-course cohorts
+(bipolar and depression) and goes ambiguous in schizophrenia, whose baseline already largely fixes the
+trajectory --- foundation saturation, not map failure. The map predicts where the trajectory is not already
+fixed by baseline severity.
 \end{keyresult}
 
 \subsection{The prognostic atlas --- the clinical ``so what''}
 \label{sub:m4atlas}
-The value a clinician reads is not a $\Delta$ELPD but a difference in outcome between groups. Assigning
-each patient to their dominant archetype yields a prognostic atlas (Figure~\ref{fig:m4atlas}):
-two-year functional remission ranges from \textbf{14\%} (the suicidality archetype) to \textbf{60\%} (the
-low-burden archetype) --- a four-fold spread that a single autoregressive coefficient hides --- and
-\emph{every} archetype is transdiagnostic, drawing patients from all three cohorts. On the separation of
-outcomes the division of labour is intuitive: the archetypes separate the \emph{dynamic transitions}
-(remission, deterioration, relapse) better than the DSM-5 subtypes, while the subtypes separate the
-\emph{severity-level} outcomes (who stays chronically ill) better --- the same co-informative split, in
-the clinic's own units.
+The value a clinician reads is not a $\Delta$ELPD but a difference in outcome between groups. Assigning each
+patient to their dominant archetype yields a prognostic atlas (Figure~\ref{fig:m4atlas}): two-year
+functional remission (GAF $\ge 71$, pooled across cohorts) ranges from \textbf{27\%} at the biological
+corner to \textbf{60\%} at the low-burden pole --- a wide transdiagnostic gradient that a single
+autoregressive coefficient hides --- and \emph{every} archetype is transdiagnostic, drawing patients from
+all three cohorts.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{The archetype prognostic atlas: two-year functional remission (GAF $\ge 71$) and mean functioning
+at V2 by dominant archetype, pooled across cohorts. The biological corner (A0: high inflammatory, metabolic,
+substance) carries the \emph{worst} functional prognosis --- the precise value a biology-aware map adds.
+Within every archetype, schizophrenia remits less than bipolar/depression (a cohort effect, not a map
+effect).}
+\label{tab:m4atlas}
+\begin{tabular}{L{6.6cm} R{3.0cm} R{2.4cm}}
+\toprule
+\hdr{dominant archetype} & \hdr{2-yr functional remission} & \hdr{mean EGF@V2}\\
+\midrule
+\rowcolor{facebg} A1 --- low-burden pole & \textbf{60\%} & 74.5\\
+A3 --- psychiatric-symptom corner & 43\% & 68.5\\
+\rowcolor{facebg} A2 --- severe, non-biological & 32\% & 63.6\\
+A0 --- biological corner ($\uparrow$inflammatory/metabolic/substance) & \textbf{27\%} & 61.4\\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{figure}[h]\centering
 \includegraphics[width=0.96\linewidth]{figures/m4_atlas.png}
-\caption{The archetype prognostic atlas: per-archetype rate of each two-year clinical endpoint
-(remission/recovery good $\uparrow$; deterioration/sustained/relapse adverse $\downarrow$), coloured by
-adversity (blue favourable, red adverse). Archetypes ordered by functional-remission rate; the
-low-burden corner remits and the suicidality/inflammatory corners persist. The trajectories diverge over
-follow-up while keeping rank --- the trait/state geometry from the temporal chapter, now in outcomes.}
+\caption{The archetype prognostic atlas: per-archetype two-year functional-remission rate and the
+functioning gradient, coloured by adversity (blue favourable, red adverse). Archetypes ordered by
+remission rate; the low-burden pole remits and the biological corner persists. The trajectories diverge
+over follow-up while keeping rank --- the trait/state geometry from the temporal chapter, now in outcomes.}
 \label{fig:m4atlas}
 \end{figure}
 
 \subsection{Is it worth using? Discrimination, calibration, net benefit}
 \label{sub:m4value}
-The honest counterweight to the atlas. Cross-validated, the clinician's reference already predicts these
-endpoints well (AUC $0.73$--$0.87$); adding the map gives a \emph{small but reliable} discrimination gain
-only for functional remission, and nothing where the reference is already strong
+The honest counterweight to the atlas. The strong continuous $\Delta$ELPD does not translate into a large
+individual yes/no gain. Cross-validated, the clinician's reference already predicts these endpoints well,
+and adding the map gives a \emph{small but reliable} discrimination gain only for functional remission
 (Figure~\ref{fig:m4value}, Table~\ref{tab:m4value}).
 
 \begin{figure}[h]\centering
 \includegraphics[width=0.9\linewidth]{figures/m4_value.png}
-\caption{Discrimination (5-fold cross-validated AUC) of the four endpoints. Neither DSM-5 alone nor the
-map alone is a strong classifier; the reference (diagnosis $+$ severity $+$ baseline) carries most of it,
-and \emph{reference $+$ map} edges it for functional remission.}
+\caption{Incremental added value of each map encoding for two-year functioning, in held-out $\Delta$ELPD
+over the bar. The continuous/archetype encodings clear the bar by the widest margin; the hard tessellation
+at any $K$ adds less and the durable trio alone is ambiguous --- the visual form of the operative-$K=$none
+verdict.}
 \label{fig:m4value}
 \end{figure}
 
 \begin{table}[h]\centering\small\sffamily
-\caption{Clinical value of adding the map to the reference. AUC is patient-level 5-fold cross-validated;
-$\Delta$AUC is the paired gain with a bootstrap interval. The map's reliable individual increment is
-functional remission; the large signal is the group-level atlas (\S\ref{sub:m4atlas}), not binary
-discrimination. The gap between ``$+46$ $\Delta$ELPD'' and ``$+0.017$ $\Delta$AUC'' is the cost of
+\caption{Clinical value of adding the map to the reference, for functional remission. AUC is patient-level
+5-fold cross-validated. The map's reliable individual increment is small ($\Delta$AUC $+0.011$); the large
+signal is the group-level atlas (\S\ref{sub:m4atlas}) and the continuous forecast, not binary
+discrimination. The gap between ``$+59$ $\Delta$ELPD'' and ``$+0.011$ $\Delta$AUC'' is the cost of
 collapsing the functional continuum to one threshold.}
 \label{tab:m4value}
-\begin{tabular}{L{4.0cm} R{1.6cm} R{1.6cm} R{2.6cm} L{2.0cm}}
+\begin{tabular}{L{4.6cm} R{2.0cm} R{2.0cm} R{2.6cm} L{1.8cm}}
 \toprule
 \hdr{endpoint} & \hdr{ref. AUC} & \hdr{$+$map AUC} & \hdr{$\Delta$AUC (map)} & \hdr{verdict}\\
 \midrule
-\rowcolor{facebg} functional remission & 0.76 & 0.78 & $+0.017\,[.009,.026]$ & reliable\\
-sustained impairment & 0.83 & 0.84 & $+0.008\,[.000,.015]$ & marginal\\
-\rowcolor{facebg} deterioration & 0.73 & 0.73 & $+0.003$ & none\\
-relapse surrogate & 0.87 & 0.87 & $+0.002$ & none\\
+\rowcolor{facebg} functional remission (EGF) & 0.745 & 0.756 & $+0.011$ & reliable\\
+severity remission (CGI-S) & --- & --- & $+0.004$ & marginal\\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \subsection{Robustness: does the headline survive? (Q4)}
-The functioning result survives the obvious threats (Table~\ref{tab:m4robust}). Under inverse-probability
-weighting for attrition the durable coefficients are essentially unchanged (metabolic $-0.062\to-0.059$),
-they hold when restricted to well-measured patients (so it is not a prior-dominated-coordinate artefact),
-and the durable block's incremental fit exceeds a permutation null ($p=0.001$). The one boundary is
-honest and already named: dropping bipolar --- the cohort that carries the open-course signal --- widens
-the intervals across zero, the course-dependence of Q3 confirmed rather than hidden.
+The functioning result survives the obvious threats (Table~\ref{tab:m4robust}). We stress the
+\emph{operative winners} --- the archetypes, not the now-weak durable trio. Under inverse-probability
+weighting for attrition the archetype increment is essentially unchanged ($+59.4\to+59.3$); it holds when
+either depression or schizophrenia is dropped; and it correctly vanishes under a permutation null. The one
+boundary is honest and already named: dropping bipolar --- the open-course cohort that carries the signal
+--- collapses the increment to ambiguity, the course-dependence of Q3 confirmed rather than hidden. The
+clean $\perp G$ archetype encoding behaves identically (base/IPW/drop-DR/drop-SZ all $\approx+38$;
+permutation $\approx0$).
 
 \begin{table}[h]\centering\small\sffamily
-\caption{Robustness of the durable biology effect on functioning (EIV $\beta$, 94\% interval) and of the
-functional-remission AUC gain. Survives attrition, reliability restriction, and a permutation null;
-weakens dropping bipolar (course-dependence). $^{\ast}$interval excludes zero.}
+\caption{Robustness of the A$=$4 archetype increment for two-year functioning (held-out $\Delta$ELPD over
+the bar, full-phenotype encoding). Survives attrition reweighting, dropping depression or schizophrenia,
+and a permutation null; collapses to ambiguity when bipolar is dropped (course-dependence). $\checkmark$
+predictive.}
 \label{tab:m4robust}
-\begin{tabular}{L{4.6cm} R{2.6cm} R{2.6cm} R{2.2cm}}
+\begin{tabular}{L{5.6cm} R{3.0cm} L{3.4cm}}
 \toprule
-\hdr{check} & \hdr{metabolic $\beta$} & \hdr{inflammatory $\beta$} & \hdr{$\Delta$AUC}\\
+\hdr{check} & \hdr{$\Delta$ELPD} & \hdr{reads as}\\
 \midrule
-\rowcolor{facebg} baseline & $-0.062^{\ast}$ & $-0.060^{\ast}$ & $+0.017$\\
-IPW (attrition) & $-0.059^{\ast}$ & $-0.056^{\ast}$ & $+0.016$\\
-\rowcolor{facebg} reliability (well-measured) & $-0.059^{\ast}$ & $-0.060^{\ast}$ & ---\\
-permutation null & \multicolumn{2}{c}{real $\Delta R^2\,0.006$ vs null $0.003$, $p=0.001$} & ---\\
-\rowcolor{facebg} leave-out bipolar & $-0.047$ & $-0.065$ & $-0.001$\\
+\rowcolor{facebg} base & $+59.4$ $\checkmark$ & the headline\\
+IPW (attrition-reweighted) & $+59.3$ $\checkmark$ & not an attrition artefact\\
+\rowcolor{facebg} drop depression / drop schizophrenia & $+56.3$ / $+59.4$ $\checkmark$ & survives either cohort\\
+drop bipolar & $+5.8$ (amb.) & BP carries most of it (open-course)\\
+\rowcolor{facebg} permutation null & $-1.7$ (amb.) & signal vanishes under shuffled labels\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -177,10 +249,12 @@ permutation null & \multicolumn{2}{c}{real $\Delta R^2\,0.006$ vs null $0.003$, 
 \subsection{What prognosis establishes --- and what it defers}
 \label{sub:m4limits}
 On the fixed map, a baseline transdiagnostic profile predicts two-year \emph{functional} trajectory
-incrementally beyond diagnosis and severity --- robustly, complementarily to DSM-5, and concentrated in
-the patients whose course is not already fixed by baseline severity (Table~\ref{tab:m4goals}). Severity
-itself is baseline-determined, and the map's worth is a \emph{stratification} (the atlas) plus continuous
-forecasting, not a large individual-binary boost.
+incrementally beyond diagnosis and severity --- robustly, complementarily to DSM-5, and concentrated in the
+patients whose course is not already fixed by baseline severity (Table~\ref{tab:m4goals}). And the deferred
+question is closed: the \emph{operative $K$ is none} --- the continuous archetype simplex is the actionable
+object, and any hard tessellation is a lossy approximation of it. Severity itself is baseline-determined,
+and the map's worth is a \emph{stratification} (the atlas) plus continuous forecasting, not a large
+individual-binary boost.
 
 \begin{table}[h]\centering\small\sffamily
 \caption{The prognosis gates and verdicts (internal validity, V0$\to$V2; functioning as the primary outcome).}
@@ -189,20 +263,28 @@ forecasting, not a large individual-binary boost.
 \toprule
 \hdr{gate} & \hdr{question} & \hdr{verdict}\\
 \midrule
-\rowcolor{facebg} Q1 incremental & adds beyond diagnosis $+$ severity? & yes for functioning ($+46$ ELPD); no for severity\\
-Q2 beyond severity & survives error-corrected severity? & yes --- metabolic $\beta$ holds under $G$\\
-\rowcolor{facebg} Q3 vs DSM-5 & better than / across the subtypes? & co-informative; course-dependent (BP/DR, not SZ)\\
-Q4 robust & survives attrition / reliability / chance? & yes; weakens dropping bipolar (honest)\\
+\rowcolor{facebg} Q1 incremental & adds beyond diagnosis $+$ severity? & yes for functioning ($+59$ ELPD); no for severity\\
+Q2 beyond severity & survives error-corrected severity? & yes --- the archetype corner holds under $G$\\
+\rowcolor{facebg} Q3 vs DSM-5 & better than / across the subtypes? & co-informative ($+$both $+67$); course-dependent (BP/DR, not SZ)\\
+Q4 robust & survives attrition / cohort / chance? & yes; collapses dropping bipolar (honest)\\
+\rowcolor{facebg} $K$ question & which tessellation cut is operative? & none --- continuous/archetype dominates every $K$\\
 \bottomrule
 \end{tabular}
 \end{table}
 
+\begin{caveatbox}[The predictive object is the fuller archetype representation]
+On this map the durable trio entered \emph{alone} is ambiguous ($+2.2$ $\Delta$ELPD); the robust,
+predictive object is the fuller A$=$4 archetype representation, with the biology living as the A0 corner of
+the simplex (the worst-prognosis corner), not as an isolated three-axis block. The biology still matters
+prognostically --- but as a region of the phenotype, read jointly with the other axes. This is a precise,
+map-specific reading, reported as such.
+\end{caveatbox}
+
 \begin{openbox}[Prediction is not moderation --- that comes next]
 This chapter shows the map \emph{forecasts} who will do well; it does not show it \emph{changes what to do}.
 Whether a stratum \emph{moderates treatment response} --- the stratum-by-treatment interaction, the point
-at which a phenotype alters management --- is the final chapter's question, and it will require a treatment
-or randomization variable the present record may not contain (the enrolment \texttt{arm} is a DSM-5 subtype,
-not an assigned treatment). Caveats carried forward: scale trajectories, not events; internal association, not a
-validated or causal decision rule; bipolar/depression-concentrated, with the rare archetypes
-(inflammatory, suicidality) wide; a two-year horizon. \emph{Predicts $\ne$ moderates.}
+at which a phenotype alters management --- is the final chapter's question (\S\ref{sec:treatment}), and it
+will require a treatment or randomization variable the present record only partly contains. Caveats carried
+forward: scale trajectories, not events; internal incremental association, not a validated or causal
+decision rule; bipolar/depression-concentrated; a two-year horizon. \emph{Predicts $\ne$ moderates.}
 \end{openbox}

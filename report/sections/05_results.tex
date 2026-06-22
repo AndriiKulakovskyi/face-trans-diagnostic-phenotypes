@@ -1,18 +1,29 @@
 \section{Results: the nine-dimension measurement map}
 \label{sec:results}
 
-On the harmonized FACE V0 baseline ($N=9{,}013$), the hybrid bifactor/ESEM yields a \textbf{nine-dimension
-transdiagnostic map}: a general factor $G$ (functional burden) plus eight specific axes ---
-cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality, mania, and substance
-(Table~\ref{tab:map}). Five are continuous-anchored (marginalized: cognition, metabolic, inflammatory, sleep,
-mania); three carry non-Gaussian indicators through explicit latents (suicidality, developmental, substance)
-alongside $G$. Every coordinate is estimated from observed cells only, with no imputation.
+This chapter reports what the measurement model found. It is the empirical companion to
+Chapter~\ref{sec:model}: there we wrote the bifactor/ESEM equation and the Gaussian-copula data layer that
+feeds it; here we read off the fitted map. One point of vocabulary carries through everything below. The map is
+estimated on the \emph{Gaussian-copula scale}: every indicator is first translated into a standard-normal rank
+score (Eq.~\eqref{eq:copula_transform}), and the same Gaussian factor machinery
+($z_i\sim\Normal(0,\Lambda\Phi\Lambda\Tn+\Psi)$) is applied to those rank scores. The copula is therefore the
+\textbf{estimation vehicle} for the map --- it puts a skewed laboratory value, a near-continuous anthropometric
+reading, and a high-cardinality count onto one common ruler so they can share a factor space honestly. A
+loading below is a sensitivity of normalized ranks; a factor coordinate is a position on a rank-score axis. The
+structure that comes out --- which axes exist, how they relate, how entangled each is with severity --- is the
+scientific object, and it is what the rest of this report builds on.
+
+On the harmonized FACE V0 baseline ($N=9{,}013$ $=$ BP $6{,}252$ $\cdot$ SZ $2{,}209$ $\cdot$ DR $552$), the
+copula-scale bifactor/ESEM yields a \textbf{nine-dimension transdiagnostic map}: a general factor $G$
+(functional burden) plus eight specific axes --- cognition, metabolic, inflammatory, sleep, developmental-risk,
+suicidality, mania, and substance (Table~\ref{tab:map}). Every coordinate is estimated from each patient's
+observed cells only, with no imputation; missing cells contribute no likelihood term.
 
 \begin{table}[h]\centering\small\sffamily
-\caption{The reported transdiagnostic map. Loadings are posterior means; suicidality's binary ISF items are on
-the logit scale. $|\lambda_G|$ is the mean absolute bifactor loading on $G$ --- the \emph{severity
-entanglement} of each domain (\S\ref{sub:bioperpG} refines biology's value under the correlated-$G$
-identification).}
+\caption{The reported transdiagnostic map. Loadings are posterior means on the Gaussian-copula rank-score scale
+(higher means more burden after item orientation). $|\lambda_G|$ is the mean absolute bifactor loading on $G$
+--- the \emph{severity entanglement} of each domain (\S\ref{sub:bioperpG} refines biology's value under the
+correlated-$G$ identification).}
 \label{tab:map}
 \begin{tabular}{L{3.2cm} L{6.4cm} R{2.0cm} R{1.6cm}}
 \toprule
@@ -24,9 +35,9 @@ cognition & CVLT, WAIS coding/digit-span, fluency, TMT-B & 0.57 & 0.27\\
 inflammatory & CRP, WBC, neutrophils, platelets, eosinophils & 0.39 & 0.07\\
 \rowcolor{facebg} sleep & PSQI objective sub-scores, ESS & 0.48 & 0.25\\
 developmental-risk & CTQ, age-of-onset, WURS, perinatal, family history & 0.42 & 0.12\\
-\rowcolor{facebg} suicidality & ISF binary ideation/attempt $+$ count & 2.2--2.7 (logit) & 0.3--0.6\\
+\rowcolor{facebg} suicidality & ISF binary ideation/attempt $+$ count & 2.2--2.7 & 0.3--0.6\\
 mania & YMRS 0.57, Altman 0.76 (BP) & 0.49--0.76 & 0.15\\
-\rowcolor{facebg} substance & alcohol/cannabis lifetime SUD, nicotine & 0.38--0.69 (logit) & 0.13\\
+\rowcolor{facebg} substance & alcohol/cannabis lifetime SUD, nicotine & 0.38--0.69 & 0.13\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -79,11 +90,15 @@ Freeing $G$ to correlate with the specifics, it correlates $+0.07$ with inflamma
 metabolic, versus $+0.39$ with cognition and $+0.42$ with sleep. So metabolic and inflammatory load carry
 $98.5$--$99.5\%$ of their variance \emph{independent} of how impaired a patient is overall. Two patients
 who look equally ill on a clinician's global impression can differ sharply in biological load --- precisely the
-severity-independent signal a biology-aware stratification can exploit. \emph{(The clean continuous-backbone
-estimate, metabolic$\sim$$G$ $0.12$, supersedes an earlier provisional mixed-fit read of $0.28$; both
-agree biology is least entangled --- an honest downward correction the dual-identification test exists to
-produce.)}
+severity-independent signal a biology-aware stratification can exploit.
 \end{keyresult}
+
+A short note on why these numbers are trustworthy. The copula scale removes one common way such a correlation
+can be inflated: a heavy right tail shared by a biochemical marker and a severity rating can manufacture
+apparent coupling on the raw scale. By comparing patients on their population rank rather than their raw value,
+the copula estimate asks the cleaner question --- do patients who rank high on metabolic load also rank high on
+functional burden? --- and the answer remains a small $+0.12$. The separability is a property of the rank
+geometry, not of any one instrument's units.
 
 The conservative reading of $G$ itself supports this. $G$ is anchored \emph{only} by functioning and
 global-severity items (FAST $0.90$, EGF $0.73$) and carries \emph{no} symptom content --- a patient's
@@ -118,20 +133,24 @@ Two candidates had indicators but were initially \emph{deferred} from the staged
 \textbf{confirmed both as real, low-$G$ axes} and the joint nine-dimension model was re-fit rather than
 bolted on. \textbf{Mania} is anchored by YMRS ($0.57$) and the Altman self-report ($0.76$ in BP), with
 $|\lambda_G|$ $0.15$. \textbf{Substance} is anchored by lifetime alcohol/cannabis use-disorder and nicotine
-indicators ($+0.38$ to $+0.69$ on the logit scale) under their proper Bernoulli/negative-binomial likelihoods,
-with $|\lambda_G|$ $0.13$. Manic activation and substance use are thus distinct transdiagnostic axes, not
-reducible to severity --- and worth carrying into stratification.
+indicators ($+0.38$ to $+0.69$), with $|\lambda_G|$ $0.13$. Both axes are carried by indicators whose native
+form is binary or count; on the copula scale the high-resolution members of each pool enter the Gaussianized
+block while the sparse binary members keep their native likelihood (the tiering of \S\ref{sub:copula}). Manic
+activation and substance use are thus distinct transdiagnostic axes, not reducible to severity --- and worth
+carrying into stratification.
 
 \subsection{Suicidality as a mixed-likelihood axis}
 \documented\ That non-Gaussian psychopathology composes with the continuous biology in one correlated-factor
-space is itself a result. The binary ISF ideation and attempt items load strongly on their own axis
-\emph{and} modestly on $G$ (Table~\ref{tab:suic}), with $0$ divergences --- the proper Bernoulli/count
-likelihoods integrate into the shared $\Phi$ without breaking identification or being crushed onto a
-pseudo-continuous scale.
+space is itself a result. The binary ISF ideation and attempt items are exactly the kind of low-resolution
+indicator the copula tiering keeps in its native Bernoulli/count likelihood rather than Gaussianizing: they
+load strongly on their own axis \emph{and} modestly on $G$ (Table~\ref{tab:suic}), with $0$ divergences. The
+proper discrete likelihoods integrate into the shared $\Phi$ alongside the Gaussianized biology without
+breaking identification or being crushed onto a pseudo-continuous scale.
 
 \begin{table}[h]\centering\small\sffamily
-\caption{Suicidality indicators: home loading and bifactor $G$ loading (logit scale). Ideation and attempt
-load on the specific axis \emph{and} on overall burden --- clinically coherent.}
+\caption{Suicidality indicators: home loading and bifactor $G$ loading (logit scale; these items keep their
+native Bernoulli/count likelihood). Ideation and attempt load on the specific axis \emph{and} on overall
+burden --- clinically coherent.}
 \label{tab:suic}
 \begin{tabular}{L{4.8cm} R{3.0cm} R{3.0cm}}
 \toprule

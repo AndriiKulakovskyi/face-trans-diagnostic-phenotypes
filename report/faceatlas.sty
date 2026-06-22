@@ -283,30 +283,30 @@
   \node[anchor=west,font=\sffamily\scriptsize,text=facemute] at (v5.east) {\ sensory, impulsivity, neg.\ symptoms};
 \end{tikzpicture}}\end{center}}
 
-% -------------------------------------------------------------------- M2: structure-gate-first pipeline
+% -------------------------------------------------------------------- M2: structure-gate-first pipeline (falsification null)
 \newcommand{\structuregateflow}{%
 \begin{center}\resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[>={Stealth[length=2.6mm]},font=\sffamily\footnotesize,
    bx/.style={draw=faceaccent,line width=0.7pt,rounded corners=2.5pt,fill=white,minimum height=18mm,text width=30mm,align=center,inner sep=3pt},
-   gate/.style={draw=facemeth,line width=0.9pt,rounded corners=2.5pt,fill=facebg,minimum height=18mm,text width=35mm,align=center,inner sep=3pt},
-   verdict/.style={draw=facekr,line width=1.1pt,rounded corners=2.5pt,fill=facekr!8,minimum height=18mm,text width=27mm,align=center,inner sep=3pt},
-   rep/.style={draw=faceaccent,line width=0.8pt,rounded corners=2.5pt,fill=faceaccent!6,minimum height=11mm,text width=31mm,align=center,inner sep=3pt}]
-  \node[bx] (c) {\bfseries M1 coordinates\\[1pt]\scriptsize 9{,}013 $\times$ 9-D\\[-1pt]\scriptsize $+$ per-patient uncertainty};
-  \node[gate,right=8mm of c] (g) {\bfseries structure gate\\[1pt]\scriptsize \emph{is there cluster}\\[-2pt]\scriptsize \emph{structure at all?}\\[1pt]\scriptsize gap $\cdot$ HDBSCAN $\cdot$ dip\\[-2pt]\scriptsize scree $\cdot$ BIC $\cdot$ Mapper};
-  \node[verdict,right=8mm of g] (v) {\bfseries verdict\\[1pt]\normalsize CONTINUUM\\[1pt]\scriptsize no discrete biotypes};
-  \node[rep,right=10mm of v,yshift=11mm] (a) {\bfseries 8 archetypes\\[-1pt]\scriptsize extreme phenotypes (lead)};
-  \node[rep,right=10mm of v,yshift=-11mm] (t) {\bfseries 4-region tessellation\\[-1pt]\scriptsize coarse soft overlay};
+   gate/.style={draw=facemeth,line width=0.9pt,rounded corners=2.5pt,fill=facebg,minimum height=20mm,text width=36mm,align=center,inner sep=3pt},
+   verdict/.style={draw=facekr,line width=1.1pt,rounded corners=2.5pt,fill=facekr!8,minimum height=20mm,text width=28mm,align=center,inner sep=3pt},
+   rep/.style={draw=faceaccent,line width=0.8pt,rounded corners=2.5pt,fill=faceaccent!6,minimum height=12mm,text width=33mm,align=center,inner sep=3pt}]
+  \node[bx] (c) {\bfseries copula map\\[1pt]\scriptsize 9{,}013 $\times$ 9-D\\[-1pt]\scriptsize $+$ per-patient uncertainty};
+  \node[gate,right=8mm of c] (g) {\bfseries falsification null\\[1pt]\scriptsize \emph{does the best split beat}\\[-2pt]\scriptsize \emph{a structureless blob?}\\[1pt]\scriptsize silhouette $0.140$ real\\[-2pt]\scriptsize vs $0.140{\pm}0.003$ null};
+  \node[verdict,right=8mm of g] (v) {\bfseries verdict\\[1pt]\normalsize CONTINUUM\\[1pt]\scriptsize $z=0.1$: no biotypes};
+  \node[rep,right=10mm of v,yshift=12mm] (a) {\bfseries $A=4$ archetypes\\[-1pt]\scriptsize extreme phenotypes (load-bearing)};
+  \node[rep,right=10mm of v,yshift=-12mm] (t) {\bfseries $K$-family $2/3/4$\\[-1pt]\scriptsize coarse convention, no privileged $K$};
   \draw[->,faceaccent,line width=0.9pt] (c)--(g);
   \draw[->,faceaccent,line width=0.9pt] (g)--(v);
   \draw[->,faceaccent,line width=0.9pt] (v.east)--(a.west);
   \draw[->,faceaccent,line width=0.9pt] (v.east)--(t.west);
 \end{tikzpicture}}\end{center}}
 
-% -------------------------------------------------------------------- M2: continuum-with-corners / severity spine
+% -------------------------------------------------------------------- M2: continuum-with-corners / severity spine (A=4)
 \newcommand{\archetypesimplex}{%
 \begin{center}\resizebox{0.95\linewidth}{!}{%
 \begin{tikzpicture}[font=\sffamily\scriptsize,
-   cnr/.style={fill=white,rounded corners=2pt,line width=0.7pt,inner sep=2.5pt}]
+   cnr/.style={fill=white,rounded corners=2pt,line width=0.8pt,inner sep=3pt,align=center}]
   \fill[faceaccent!6] (0,0) ellipse [x radius=6.2cm, y radius=2.7cm];
   \draw[faceaccent!25,line width=0.6pt] (0,0) ellipse [x radius=6.2cm, y radius=2.7cm];
   \foreach \x/\y in {-1/0.5,0.5/-0.4,1.5/0.8,-2/-0.6,2.5/0.3,0/0.9,3/-0.5,-3/0.6,1/-0.9,-1.5/-0.2,2/1.0,-0.5/0.3,-2.6/-0.3,1.3/0.1}
@@ -315,14 +315,10 @@
   \node[font=\sffamily\scriptsize\itshape,text=faceink] at (-5.2,0.42) {less};
   \node[font=\sffamily\scriptsize\itshape,text=faceink] at (5.05,0.42) {more severe};
   \node[fill=white,inner sep=1.5pt,font=\sffamily\bfseries\footnotesize,text=faceink] at (0,0) {severity $=$ the spine (how much)};
-  \node[cnr,draw=facemeth,text=facemeth] at (-5.2,1.5) {low-burden};
-  \node[cnr,draw=faceaccent,text=faceaccent] at (-1.9,2.35) {sleep};
-  \node[cnr,draw=faceaccent,text=faceaccent] at (1.5,2.4) {cognition\,$+$\,severity};
-  \node[cnr,draw=facekr,text=facekr] at (4.5,1.55) {metabolic};
-  \node[cnr,draw=facekr,text=facekr] at (5.0,-1.4) {inflammatory};
-  \node[cnr,draw=faceaccent,text=faceaccent] at (-3.3,-2.0) {developmental};
-  \node[cnr,draw=faceinv,text=faceinv] at (-0.2,-2.45) {mania};
-  \node[cnr,draw=faceopen,text=faceopen] at (2.7,-2.15) {suicidality};
+  \node[cnr,draw=facemeth,text=facemeth] at (-5.0,1.7) {\textbf{A1} low-burden\\\scriptsize pole};
+  \node[cnr,draw=facekr,text=facekr] at (4.7,1.7) {\textbf{A0} biological\\\scriptsize metabolic\,$+$\,inflam.\,$+$\,subst.};
+  \node[cnr,draw=faceinv,text=faceinv] at (4.4,-1.85) {\textbf{A2} severe,\\\scriptsize biology \emph{low}};
+  \node[cnr,draw=faceopen,text=faceopen] at (-4.4,-1.85) {\textbf{A3} psychiatric\\\scriptsize sleep\,$+$\,dev.\,$+$\,mania\,$+$\,suic.};
 \end{tikzpicture}}\end{center}}
 
 \newcommand{\temporalspine}{%

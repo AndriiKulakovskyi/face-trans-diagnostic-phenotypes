@@ -50,12 +50,25 @@ a clinician's global impression of severity does not see. Two consequences follo
 chapters: a stratification can exploit that largely independent signal (Chapter~\ref{sec:strata}), and a prognostic
 model can read future functioning from it (Chapter~\ref{sec:prognosis}).
 
+The shape of that map is the second framing decision, and it is settled by evidence, not assumed. When we
+project patients onto the nine coordinates and ask whether they fall into clean clusters, the honest answer is
+\emph{no}: the space is a graded continuum. The decisive check is a \textbf{single-Gaussian falsification null}
+--- we ask how clustered a deliberately structureless cloud (one smooth Gaussian blob with the same shape as
+our data) would \emph{look} to the same clustering tools, and the real data are no more clustered than that
+straw man (the best silhouette is $0.140$ in the data against $0.140\pm0.003$ in the null). What organizes the
+continuum instead is a small set of \textbf{four extreme phenotypes} --- an $A{=}4$ archetype simplex, with
+every patient a soft blend of the corners rather than a member of one box (Chapter~\ref{sec:strata}). When a
+clinician needs hard groups anyway, we export a nested family of soft tessellations with \textbf{no privileged
+$K$}: the right number of regions is not a property of the geometry but a question about what the regions are
+\emph{for}, and that question is answered downstream in prognosis (the operative answer there is: none ---
+the continuous and archetype encodings dominate any hard cut).
+
 A word on stance. The positive claims are deliberately bounded, and the \emph{negative and modest} results ---
 a continuum rather than clean biotypes, a group-level rather than individual-level prognostic gain, and
 \emph{no} demonstrable treatment moderation in observational data --- are reported as the contribution, not
 buried beneath the positive ones. Scientific validity (a real, stable map carrying genuine signal) is within
-reach of this baseline cohort; strong individual-level clinical utility is not, and the report says so wherever
-it applies.
+reach of this baseline cohort; strong individual-level clinical utility is not (the two-year functional-remission
+gain over diagnosis and severity is only $\mathrm{AUC}\,+0.011$), and the report says so wherever it applies.
 
 \subsection{The method in one paragraph: hybrid discovery}
 The map is estimated by a \emph{single} global, missingness-aware Bayesian sparse bifactor / ESEM model ---

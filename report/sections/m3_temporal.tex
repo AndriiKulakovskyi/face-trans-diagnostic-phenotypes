@@ -7,11 +7,35 @@ day they enrolled, the strata a momentary arrangement that dissolves by the next
 question that makes the first two mean something --- does the signal \emph{cohere and persist} over
 follow-up? Concretely: does the measurement mean the same thing a year later; which of the nine axes are
 \emph{trait-like} (stable, worth stratifying on) versus \emph{state-like} (fluctuating, worth monitoring); and
-do the phenotype memberships persist? Throughout, the follow-up visits are scored onto the \emph{fixed} map and
+do the archetype memberships persist? Throughout, the follow-up visits are scored onto the \emph{fixed} map and
 strata --- observed cells only, uncertainty propagated, never re-estimated on later data (invariant
 I3). The window is the dense yearly grid V0\,$\to$\,V1\,$\to$\,V2, where all three cohorts are well represented
 ($9{,}013 \to 4{,}270 \to 2{,}958$ patients). The analysis runs as a sequence of checks --- labelled G1--G6 and
 gathered in Table~\ref{tab:m3goals} --- each of which could refute the claim.
+
+\subsection{Scoring a follow-up visit onto the fixed map}
+\label{sub:scoring}
+Before any temporal claim can be made, a patient's V1 and V2 readings have to land on the \emph{same} coordinate
+ruler as V0. This is the one genuinely new piece of machinery in the chapter, and it is worth being explicit
+about, because the map was estimated with the Gaussian-copula likelihood (Chapter~\ref{sec:model}): each
+indicator was carried onto a standard-normal rank scale by its frozen empirical map $z=\Phi^{-1}(\widehat
+F_j(y))$, and then covariate-residualized. A follow-up score must therefore retrace exactly those steps with the
+\emph{baseline} maps held fixed --- never refitted on later data.
+
+\begin{methodsbox}[Four frozen steps from a follow-up reading to a coordinate]
+For each observed follow-up cell: (1) orient it and push it through the \emph{frozen V0} copula map
+$\widehat F_j$ so it lands on the same rank-normal scale the map was built on; (2) apply the \emph{frozen V0}
+covariate residualization (age-spline, sex, education, site) using that visit's covariates; (3) project onto the
+fixed copula loading map $\Lambda$, factor correlation $\Phi$, and residual scales $\sigma$ --- a conditional
+Gaussian draw for the continuous block, an explicit projection for the non-Gaussian axes --- carrying the
+per-patient posterior uncertainty forward; (4) project onto the $A{=}4$ archetype simplex. Nothing is
+re-estimated; the follow-up visit is a passive consumer of the baseline objects.
+\end{methodsbox}
+
+The check that this works is direct: running V0 itself back through the same path reproduces the baseline copula
+coordinates at Pearson $r=0.99$ across the six continuous axes. V0, V1, and V2 therefore live on one scale, and a
+coordinate difference between visits is a difference in the patient, not in the ruler. The longitudinal panel is
+$16{,}241$ rows (V0 $9{,}013$ $\cdot$ V1 $4{,}270$ $\cdot$ V2 $2{,}958$), every axis fully scored at every visit.
 
 \subsection{A geometrically derived, falsifiable prediction}
 This is not a fishing expedition. The stratification geometry makes a specific prediction (Figure~\ref{fig:temporalspine}):
@@ -33,28 +57,29 @@ geometric decomposition (G4).}
 \subsection{The precondition: the map does not drift (G1)}
 A change in a patient's coordinate is interpretable as \emph{patient} change only if the instrument still works
 the same way --- otherwise apparent movement is measurement drift. So before interpreting anything, we refit
-the simple-structure backbone separately at each visit (z-scored in-sample, since Tucker congruence compares
-loading \emph{shape} and is scale-free) and compares the loadings to baseline. This is the temporal analogue of
-the map's cross-cohort invariance test, with cohort swapped for visit.
+the simple-structure backbone separately at each visit (scale-invariant by design, since Tucker congruence
+compares loading \emph{shape}) and compare the loadings to baseline. This is the temporal analogue of the map's
+cross-cohort invariance test, with cohort swapped for visit.
 
 \begin{keyresult}[The map measures the same constructs at follow-up]
-Five of the six testable backbone axes are metric-invariant across V0\,$\to$\,V1\,$\to$\,V2 --- severity
-($\varphi=0.99$), cognition ($0.99$), metabolic ($0.99$), sleep ($1.00$), developmental ($0.96$). Inflammatory
-is \emph{partial} ($\varphi=0.90$): its white-cell differential (white-cell count, monocytes, eosinophils)
-drifts --- an acute-phase signature --- so inflammatory change carries a documented caveat. The precondition
+All five testable backbone axes are metric-invariant across V0\,$\to$\,V1\,$\to$\,V2: sleep ($\varphi=0.996$),
+cognition ($0.995$), severity ($0.991$), metabolic ($0.988$), and inflammatory ($0.974$) all clear the
+$\varphi\ge0.95$ bar at their worst follow-up. The constructs are measured consistently over time, so a patient's
+\emph{change} on these axes is interpretable as real movement rather than instrument drift. The precondition
 holds; the licence to read coordinate change as patient change is earned (Figure~\ref{fig:m3invariance}).
 \end{keyresult}
 
 \begin{figure}[h]\centering
 \includegraphics[width=0.86\linewidth]{figures/m3_invariance.png}
 \caption{Longitudinal metric invariance. Tucker congruence $\varphi$ of the primary loadings at V1 and V2
-against V0, per backbone axis (green band $=$ invariant $\varphi\ge 0.95$, amber $=$ partial). Severity (the
-spine) and the trait candidates (cognition, metabolic, developmental) are invariant; only inflammatory drifts.}
+against V0, per backbone axis (green band $=$ invariant $\varphi\ge 0.95$). All five backbone axes --- severity
+(the spine) and the four biology/sleep axes --- sit above the bar; the map does not drift.}
 \label{fig:m3invariance}
 \end{figure}
 
-The three explicit, non-Gaussian axes (suicidality, substance) and thin mania are not backbone-testable; their
-change is reported descriptively, never as licensed patient-change.
+The three explicit, non-Gaussian axes (suicidality, developmental, substance) are not part of the continuous
+backbone test, and thin mania is data-limited; their change is reported descriptively, never as licensed
+patient-change.
 
 \subsection{Trait versus state needs two lenses}
 \label{sub:traitstate}
@@ -72,49 +97,51 @@ where $\mu_{d,t}$ are \emph{visit fixed effects} (any population trajectory shap
 
 \begin{methodsbox}[Two design choices that make the answer honest]
 Plugging the known $s^2_{i,d,t}$ (rather than letting it inflate $\sigma^2_w$) is what stops a low-reliability
-axis from \emph{masquerading} as state --- the correction bites hardest where reliability is low (developmental
-raw ICC $0.56\to0.39$ corrected). And the visit fixed effects $\mu_{d,t}$ absorb the \emph{population}
-trajectory, so a shared improvement is not miscounted as \emph{individual} instability. That second choice is
-what forces the chapter's central nuance.
+axis from \emph{masquerading} as state --- the correction bites hardest where reliability is low, as on
+developmental. And the visit fixed effects $\mu_{d,t}$ absorb the \emph{population} trajectory, so a shared
+improvement is not miscounted as \emph{individual} instability. That second choice is what forces the chapter's
+central nuance about severity.
 \end{methodsbox}
 
 The result splits cleanly into two lenses, and the split is the point (Table~\ref{tab:m3traitstate},
 Figure~\ref{fig:m3traitstate}):
 
 \begin{itemize}
-\item \textbf{Population slide} (the cohort trend $\mu_{d,t}$): the cohort improves on the \emph{symptom/severity}
-axes --- suicidality $-0.89$, severity $-0.34$, mania and cognition $\approx-0.16$ --- and is \emph{static on
-biology} (metabolic $+0.10$, inflammatory $+0.05$). The cloud slides down severity and symptoms; the biology
-stays.
+\item \textbf{Population slide} (the cohort trend $\mu_{d,t}$): the cohort improves on \emph{severity} ---
+$\mu$ falls by $0.46$ over V0$\to$V2 --- while staying essentially static on the biology axes. The cloud slides
+down the severity spine; the biology stays.
 \item \textbf{Individual rank-stability} (ICC, after removing that slide): once the shared improvement is
-removed, individual positions are mostly \emph{preserved} --- metabolic $0.93$, inflammatory $0.85$, cognition
-$0.78$, severity $0.66$ (trait); sleep $0.49$, suicidality $0.46$, developmental $0.39$ (mixed/state).
+removed, individual positions on the biology axes are strongly \emph{preserved} --- metabolic $0.91$, cognition
+$0.70$, inflammatory $0.62$ (trait) --- while the symptom axes carry more state (sleep $0.47$, suicidality
+$0.42$, developmental $0.39$).
 \end{itemize}
 
 \begin{table}[h]\centering\small\sffamily
-\caption{The trait/state profile, axes ordered state$\to$trait by the individual-rank ICC. ``Slide'' is the
-cohort's V0$\to$V2 population trend (removed before the ICC); ``moves'' is the fraction of patients with a
-reliable V0$\to$V2 change (Eq.~\ref{eq:rci}); ``licence'' is the G1 verdict. The clean, licensed, predicted-trait
-matches --- metabolic and cognition --- land exactly.}
+\caption{The trait/state profile, axes ordered state$\to$trait by the individual-rank ICC (94\% HDI). The clean,
+licensed, predicted-trait matches --- metabolic, cognition, inflammatory --- land at the durable end, while the
+symptom axes carry the state. Severity is trait by individual rank yet slides at the population level (the central
+nuance, \S\ref{sub:traitstate}); developmental's low ICC is a CTQ recall-noise artefact (caveat below); mania is
+uninformative (two indicators, signal below noise).}
 \label{tab:m3traitstate}
-\begin{tabular}{L{3.4cm} R{1.3cm} R{1.3cm} R{1.3cm} L{2.0cm} L{2.2cm}}
+\begin{tabular}{L{3.6cm} R{2.2cm} L{2.0cm} L{2.2cm}}
 \toprule
-\hdr{axis} & \hdr{ICC} & \hdr{slide} & \hdr{moves} & \hdr{verdict} & \hdr{G1 licence}\\
+\hdr{axis} & \hdr{ICC [94\% HDI]} & \hdr{verdict} & \hdr{G1 licence}\\
 \midrule
-\rowcolor{facebg} developmental & 0.39 & $-0.17$ & 9\% & state\textsuperscript{$\dagger$} & invariant\\
-suicidality & 0.46 & $-0.89$ & 32\% & mixed & not tested\\
-\rowcolor{facebg} sleep & 0.49 & $-0.08$ & 53\% & mixed & invariant\\
-severity (spine) & 0.66 & $-0.34$ & 33\% & trait\textsuperscript{$\ast$} & invariant\\
-\rowcolor{facebg} mania & 0.72 & $-0.18$ & 8\% & trait & not tested\\
-cognition & \textbf{0.78} & $-0.16$ & 10\% & \textbf{trait} & invariant\\
-\rowcolor{facebg} inflammatory & 0.85 & $+0.05$ & 6\% & trait & partial\\
-metabolic & \textbf{0.93} & $+0.10$ & 17\% & \textbf{trait} & invariant\\
-\rowcolor{facebg} substance & --- & $-0.07$ & 0\% & uninformative & not tested\\
+\rowcolor{facebg} developmental & 0.39 [0.34,\,0.44] & state\textsuperscript{$\dagger$} & not tested\\
+suicidality & 0.42 [0.39,\,0.46] & mixed & not tested\\
+\rowcolor{facebg} sleep & 0.47 [0.45,\,0.48] & mixed & invariant\\
+severity (spine) & 0.62 [0.60,\,0.63] & trait\textsuperscript{$\ast$} & invariant\\
+\rowcolor{facebg} inflammatory & 0.62 [0.61,\,0.64] & trait & invariant\\
+cognition & \textbf{0.70} [0.66,\,0.72] & \textbf{trait} & invariant\\
+\rowcolor{facebg} substance & 0.88 [0.86,\,0.90] & trait & not tested\\
+mania & 0.88 [0.81,\,0.94] & uninformative & not tested\\
+\rowcolor{facebg} metabolic & \textbf{0.91} [0.90,\,0.91] & \textbf{trait} & invariant\\
 \bottomrule
 \end{tabular}
 \\[2pt]\footnotesize\raggedright
-\textsuperscript{$\ast$}severity is trait by individual rank but slides at the population level (\S\ref{sub:traitstate}).\quad
-\textsuperscript{$\dagger$}developmental's ``state'' is a CTQ recall-noise artefact, not change (see caveat below).
+\textsuperscript{$\ast$}severity is trait by individual rank but slides at the population level
+($\mu$ slide $-0.46$, \S\ref{sub:traitstate}).\quad
+\textsuperscript{$\dagger$}developmental's ``state'' is partly a CTQ recall-noise artefact, not change (see caveat below).
 \end{table}
 
 \begin{figure}[h]\centering
@@ -125,13 +152,13 @@ $0=$ state). Metabolic and cognition are durable; the symptom axes carry more st
 \label{fig:m3traitstate}
 \end{figure}
 
-\begin{caveatbox}[Developmental's ``state'' is measurement, not change]
+\begin{caveatbox}[Developmental's ``state'' is partly measurement, not change]
 The model has a blind spot, and the data found it. Childhood trauma is \emph{fixed}, yet developmental came out
-the most state-like axis. The plugged variance captures \emph{within-visit} uncertainty, not \emph{cross-visit}
-recall inconsistency --- re-administering the childhood-trauma questionnaire produces different answers, and that
-wobble lands in $\sigma^2_w$. The tell is that completers (three administrations) look \emph{more} state, not
-less; and the reliable-change rule below, robust to sub-band wobble, correctly says developmental holds. The
-construct is trait by design; its low ICC is a documented measurement limitation.
+the most state-like axis (ICC $0.39$). The plugged variance captures \emph{within-visit} uncertainty, not
+\emph{cross-visit} recall inconsistency --- re-administering the childhood-trauma questionnaire produces
+different answers, and that wobble lands in $\sigma^2_w$. The construct is trait by design; its low ICC is a
+documented measurement limitation, not evidence that childhood adversity changed. Interpret developmental's
+apparent state with care.
 \end{caveatbox}
 
 \subsection{The geometry replays: the spine slides, the corners hold (G4)}
@@ -144,60 +171,67 @@ measurement error --- the reliable-change rule
 \text{reliable}\iff |\mathrm{RCI}|\ge 1.96 .
 \end{equation}
 Decomposing each patient's V0$\to$V2 displacement into a movement along the severity spine and a movement in
-the biology corner gives the test directly.
+the biology corner gives the test directly, and we ask separately whether the patient keeps their archetype
+identity over follow-up.
 
-\begin{keyresult}[The spine moves, the biology corner holds --- and the archetype persists]
-Severity moves reliably in $34.5\%$ of patients; the biology corner (metabolic, inflammatory, cognition) moves
-in only $20.2\%$. The predicted cell --- spine moves \emph{while} biology holds --- is $25.8\%$ of patients
-versus the anti-pattern (biology moves, spine holds) at $11.5\%$: a $2.2\times$ edge. And the
-$G$-residualized (corner-only) archetype identity persists: patients keep their dominant corner phenotype
-$52\%$ of the time --- far above the $12.5\%$ chance rate ($\kappa=0.27$, weight-vector cosine $0.81$), as a
-soft continuum should (central patients churn their argmax by geometry; the corners stay put)
-(Figure~\ref{fig:m3spinecorner}).
+\begin{keyresult}[The spine slides, the biology corner holds --- and the archetype persists]
+Over the V0$\to$V2 completers ($n=2{,}958$) the $G$-residualized archetype weight vector \emph{persists}: the
+median weight-vector cosine between baseline and V2 is $0.90$ (10th percentile $0.70$), and $58\%$ of patients
+have a stable severity-spine trajectory ($35\%$ drifting, $7\%$ oscillating). The argmax archetype label agrees
+$49\%$ of the time ($\kappa=0.30$) --- exactly the \emph{churn of the argmax} a soft continuum should produce:
+central, blended patients flip their dominant label on tiny geometric moves while their weight vector barely
+shifts, and the corner patients stay put (Figure~\ref{fig:m3spinecorner}).
 \end{keyresult}
 
 \begin{figure}[h]\centering
 \includegraphics[width=0.96\linewidth]{figures/m3_spinecorner.png}
 \caption{Spine-versus-corner. \emph{Left:} the per-axis reliable-change rate, coloured by the G3 trait/state
-verdict --- the symptom axes (sleep, severity, suicidality) move, the biology axes hold. \emph{Right:} the
-spine moves markedly more often than the biology corner ($34.5\%$ vs $20.2\%$); the ``slide on severity, keep the
-phenotype'' pattern outnumbers its converse by $2.2\times$ ($25.8\%$ vs $11.5\%$).}
+verdict --- the symptom axes (sleep, suicidality, developmental) move, the biology axes hold. \emph{Right:} the
+archetype weight vector persists (median cosine $0.90$) while the argmax label churns on the continuum's
+interior, and the severity-spine trajectory is stable in $58\%$ of patients.}
 \label{fig:m3spinecorner}
 \end{figure}
 
 \subsection{Two routes, one conclusion}
 \label{sub:synthesis}
 The real test is whether the variance route (G3) and the geometry route (G4) \emph{agree}. The
-simple correlation between an axis's reliable-change rate and its ICC is $\rho=-0.33$ --- the right sign, but
-weak --- and the dilution is itself informative, because \emph{exactly two} axes diverge, for reasons we can
-name: \textbf{severity} (trait by individual rank, yet it moves via the population slide --- the two routes
-measure different things, both correct) and \textbf{developmental} (the recall-noise artefact, where the
-reliable-change rule is the more robust route and says it holds). Strip those two principled exceptions and the
-core agrees both ways: biology and cognition are durable, the symptom axes move.
+Spearman correlation between an axis's reliable-change rate and its ICC is $\rho=-0.27$ --- the right sign (trait
+axes change less, state axes more), weak at nine axes ($p=0.49$), but pointing the predicted way. The two routes
+corroborate one another: the durable biology axes change least and carry the highest trait variance, the symptom
+axes change most and carry the most state, and the archetype identity persists under both lenses.
+
+\begin{caveatbox}[Read G3 as the headline, G4 as the corroboration]
+The G4 reliable-change rate is \emph{measurement-precision-confounded}. Metabolic is measured very precisely
+(tight posterior SD), so even tiny real shifts can clear the reliable-change threshold --- its raw movement rate
+can overstate instability. The error-corrected G3 ICC \emph{removes} measurement variance and is therefore the
+clean trait/state signal; it is unambiguous (metabolic ICC $0.91$ $=$ trait). So the geometry route corroborates,
+but the variance route adjudicates: where they could disagree, the ICC is the load-bearing number.
+\end{caveatbox}
 
 \begin{keyresult}[A weak synthesis correlation is the healthier result]
 A near-perfect correlation between two operationalizations of the same quantity would signal redundancy, not
 corroboration. Two \emph{independent} routes --- a variance decomposition and a geometric one --- agreeing on
-the core while diverging for \emph{named} reasons is the stronger evidence. The stratification geometry --- severity the
-spine, biology the corners --- is temporally coherent.
+direction while a precision confound dilutes the strength is the stronger evidence. The stratification geometry
+--- severity the spine, biology the corners --- is temporally coherent.
 \end{keyresult}
 
 \subsection{Honesty: is the retained sample fair? (G6)}
 Attrition is the temporal selection threat --- the analogue of the map's completeness concern. If the sicker
 systematically dropped out, the retained sample would drift toward health and we could mistake \emph{dropout}
-for \emph{improvement}. We regress retention on the nine baseline coordinates.
+for \emph{improvement}. We regress retention on the nine baseline coordinates and carry inverse-probability
+weights forward for the downstream chapters.
 
 \begin{keyresult}[Dropout is mild and severity-neutral]
-Retention is only weakly predicted by baseline position. Severity is essentially neutral (odds ratio $0.97$ per
-SD; the improved do \emph{not} preferentially leave); the one real signal is cognitive impairment (OR $0.83$ ---
-the impaired drop out somewhat more); biology is flat. All effects are small ($|d|<0.15$). The trait/state
-verdicts are robust completers-versus-all (max $|\Delta\mathrm{ICC}|=0.14$), with inverse-probability weights
-available --- so the slide is genuine improvement, not survivorship.
+Retention is only weakly predicted by baseline position: severity is essentially neutral (the improved do
+\emph{not} preferentially leave) and biology is flat. The trait/state verdicts are robust completers-versus-all,
+with inverse-probability weights available --- so the population slide on severity is genuine improvement, not
+survivorship. The temporal-coherence claim is internal-validity only; the V0-reused / V1--V2-projected asymmetry
+is bounded by the $r\approx0.99$ V0 reproduction (\S\ref{sub:scoring}).
 \end{keyresult}
 
 \subsection{What temporal coherence establishes --- and what it defers}
 This chapter takes the baseline map and strata and shows they are \emph{temporally coherent}: the measurement holds
-across follow-up (G1), and the stratification geometry replays --- the cohort slides on severity and symptoms while
+across follow-up (G1), and the stratification geometry replays --- the cohort slides on severity while
 individual biology positions and archetype identity persist --- confirmed two independent ways
 (Table~\ref{tab:m3goals}). The operative consequence for what comes next is sharp:
 \textbf{stratify on the durable biology (cognition, metabolic, inflammatory); monitor the moving symptoms
@@ -206,17 +240,17 @@ individual biology positions and archetype identity persist --- confirmed two in
 \begin{table}[h]\centering\small\sffamily
 \caption{The goals and verdicts of this chapter (internal validity, V0$\to$V2). G5 --- a temporal head-to-head against the
 diagnostic labels --- is absent by data design: the enrolment diagnosis is time-invariant in the record, so it
-is deferred to the prognosis chapter with the diagnosis-change exit signal captured for it.}
+is deferred to the prognosis chapter.}
 \label{tab:m3goals}
 \begin{tabular}{L{2.0cm} L{5.4cm} L{5.4cm}}
 \toprule
 \hdr{goal} & \hdr{question} & \hdr{verdict}\\
 \midrule
-\rowcolor{facebg} G1 invariance & same constructs at follow-up? & yes --- 5/6 invariant, inflammatory partial\\
-G2 substrate & the longitudinal panel & built; V0 reproduces the strata at $99.9\%$\\
+\rowcolor{facebg} G1 invariance & same constructs at follow-up? & yes --- all 5 backbone axes invariant\\
+G2 substrate & the longitudinal panel & built; V0 reproduces the coordinates at $r\approx0.99$\\
 \rowcolor{facebg} G3 trait/state & which axes are durable? & biology/cognition trait; severity/symptoms state\\
-G4 persistence & spine moves, corner holds? & yes --- $2.2\times$ edge; archetype persists $52\%$\\
-\rowcolor{facebg} G3 $\leftrightarrow$ G4 & do the two routes agree? & core yes; two understood exceptions\\
+G4 persistence & spine slides, corner holds? & yes --- weight-cosine $0.90$, $58\%$ stable spine\\
+\rowcolor{facebg} G3 $\leftrightarrow$ G4 & do the two routes agree? & yes --- $\rho=-0.27$, right direction\\
 G6 attrition & is the retained sample fair? & dropout mild, severity-neutral\\
 \bottomrule
 \end{tabular}
@@ -224,9 +258,9 @@ G6 attrition & is the retained sample fair? & dropout mild, severity-neutral\\
 
 \begin{openbox}[Persistence is not prediction --- that comes next]
 This chapter establishes that the signal \emph{coheres and persists}; it makes no prognostic, treatment, or external
-claim. Whether a baseline coordinate or stratum \emph{predicts} a future outcome --- incrementally beyond
+claim. Whether a baseline coordinate or archetype \emph{predicts} a future outcome --- incrementally beyond
 diagnosis and severity --- is the next chapter's question, and the durable axes identified here (cognition, metabolic, inflammatory) are
-exactly where that bet is placed. Caveats carried forward: developmental's apparent state is measurement
-(recall noise); inflammatory is partial-invariant; substance is uninformative (signal below noise); and the
-three-visit window makes trajectory typing coarse. \emph{Persists $\ne$ predicts.}
+exactly where that bet is placed. Caveats carried forward: developmental's apparent state is partly measurement
+(recall noise); mania is uninformative (signal below noise); the G4 movement rate is precision-confounded (G3 ICC
+is the clean signal); and the three-visit window makes trajectory typing coarse. \emph{Persists $\ne$ predicts.}
 \end{openbox}

@@ -1,49 +1,103 @@
 \section{Limitations and open problems}
 \label{sec:limitations}
 
-The strengths of the map are stated plainly in Chapter~\ref{sec:results}; the honest counterweights follow. None is
-fatal, and each is tracked.
+The strengths of the map are stated plainly in Chapter~\ref{sec:results}; the honest counterweights follow.
+None is fatal, and each is tracked. The organizing principle is the one the conclusion drew: scientific
+validity is demonstrated, strong clinical utility is not, and most of what follows is a precise account of
+\emph{where} the second bar is not yet cleared.
 
-\begin{openbox}[One coupling's precision is the residual mixing limit]
-The continuous backbone is certified at full $N$ and the joint mixed-likelihood map is documented at the largest $N$ that mixes (cross-seed Tucker $\varphi$ $0.993$; $\max|\Delta\Lambda|=0.19$, $\max|\Delta\Phi|=0.05$),
-and the continuous backbone and the biology$\perp$$G$ estimand mix cleanly at full $N$. The heavier
-mixed-likelihood stages ran on random cohort-balanced sub-samples ($N=4{,}000$--$5{,}000$), and the
-explicit/marginalized coupling --- specifically the suicidality$\sim$developmental $\Phi$ cell --- is the one
-slow-mixing block ($\widehat{R}$ up to $1.04$). Its \emph{point estimate} is resample-stable; its
-\emph{precision} (and a full-$N$ projection of the non-Gaussian per-patient scores) is a documented follow-on,
-not a change of method. The suicidality block itself mixes well.
+\begin{openbox}[The predictive carrier is a phenotype, not an isolated axis]
+The temporal chapter points at three durable biological axes (cognition, metabolic, inflammatory), and it
+is tempting to read the prognosis result as ``those three axes predict functioning.'' They do not, on their
+own: entered as an isolated three-axis durable block the increment is only $\Delta\text{ELPD}=+2.2\pm3.1$,
+ambiguous. The signal that survives the bar is the fuller four-archetype representation
+($+59.4\pm11.1$ on functioning), in which biology appears as the $A_0$ \emph{corner} of the whole space ---
+a joint position, high on metabolic/inflammatory/substance \emph{and} severity together --- rather than any
+single axis read alone. The predictive object is therefore a phenotype, and the claim is stated at that
+resolution. This is a limit on \emph{how} the map predicts, not on whether it does.
 \end{openbox}
 
-\begin{openbox}[The biology--$G$ magnitude, reconciled]
-Two estimates of metabolic$\sim$$G$ exist: a provisional full-mixed read ($0.28$) and the clean
-continuous-backbone correlated-$G$ fit ($0.12$). \emph{Both agree biology is the least entangled
-domain}; the continuous-backbone value is the cleaner estimate and is the one reported. The direction is
-robust; the exact magnitude of the explicit-block couplings will tighten with the full-$N$ certification above.
+\begin{openbox}[Group-level signal, small individual increment]
+The prognostic gain is real, robust, and co-informative with DSM-5, but it is a \emph{group-level} gain.
+The held-out evidence improvement of $\Delta\text{ELPD}=+59$ for two-year functioning collapses, when
+pushed to an individual yes/no remission call, to $\Delta\text{AUC}=+0.011$ (functional-remission
+$0.745\to0.756$). The map sharpens who, on average, is heading where; it is not an individual risk
+calculator. Reaching individual-level utility would require incident-event outcomes (hospitalization,
+relapse) rather than the re-administered clinical scales available here --- a defined next study, not a
+re-analysis of these data.
+\end{openbox}
+
+\begin{openbox}[The prognostic signal is course-dependent]
+The functioning forecast is carried by the patients with room to move. It is large in the episodic bipolar
+and depression cohorts and near-null in schizophrenia, where the baseline outcome already saturates the
+two-year prediction (the autoregression leaves little for any predictor to add). Dropping schizophrenia
+barely changes the result; dropping bipolar nearly erases it. This is clinically sensible --- a map of
+trajectory helps most where the trajectory is not already fixed --- but it means the headline increment is
+not uniform across the diagnostic span, and should not be quoted as a single cohort-agnostic number.
+\end{openbox}
+
+\begin{openbox}[No privileged number of regions]
+Because the space is a continuum and not a set of biotypes, no single number of hard regions is natural:
+the cross-validated information criterion is essentially flat across a nested $K=2/3/4$ family
+(XD-BIC $197.9$k--$199.5$k), and finer partitions simply recover more of the severity/biology gradient that
+coarser ones discard, without ever revealing a density gap. The report therefore exports a \emph{family}
+with no privileged $K$ rather than a single tessellation --- operationally awkward, but the honest encoding
+of a graded space. The prognosis chapter then resolves the awkwardness in the only way that matters: the
+continuous/archetype encoding dominates \emph{every} hard partition for forecasting functioning, so the
+``operative $K$'' for clinical use is effectively none. The hard regions are a convention; the coordinates
+and corners are the object.
+\end{openbox}
+
+\begin{openbox}[Clean trait/state signal vs.\ precision-confounded geometry]
+Durability is read two ways, and they are not equally clean. The \emph{variance} route --- the
+error-corrected test--retest reliabilities (metabolic $\text{ICC}=0.91$, inflammatory $0.62$, sleep
+$0.47$) --- is the primary trait/state signal, because the measurement-error correction removes the
+artifact that more-precisely-measured patients look more stable. The parallel \emph{geometry} route
+(reliable-change on archetype weights) is \emph{precision-confounded} for exactly that reason and is
+treated as corroboration of the variance route, not as an independent measurement. The two agree
+($\rho=-0.27$ between the routes), which is why the trait/state conclusion is reported with confidence ---
+but the number to trust is the corrected ICC, not the geometry overlay. Separately, the
+\emph{developmental} axis scores partly as ``state'' from CTQ recall noise, although it is a trait by
+design; its apparent movement is a measurement property, not patient change.
 \end{openbox}
 
 \paragraph{Scope and construct caveats.}
 \begin{itemize}\setlength{\itemsep}{1pt}
   \item \textbf{Internal validity only.} The map is estimated on the V0 baseline and validated only within
   this cohort; there is no external-cohort replication. ``Converged'' denotes sampler convergence, \emph{not}
-  scientific validation. Temporal persistence is established forward in Chapter~\ref{sec:temporal}; external
-  validity remains future work (Chapter~\ref{sec:roadmap}).
+  scientific validation, and the prognostic outcomes are \emph{scale trajectories}, not incident events,
+  over a two-year horizon. Temporal persistence is established forward in Chapter~\ref{sec:temporal};
+  external validity remains future work (Chapter~\ref{sec:roadmap}).
   \item \textbf{Cohort-specific coverage.} Anhedonia and the MADRS/QIDS/STAI windows are BP/DR (SZ has no
-  QIDS/MADRS); the SZ map leans on the shared factors. Each patient's per-dimension reliability must be flagged
-  by observed-indicator count.
+  QIDS/MADRS); the SZ map leans on the shared factors. Each patient's per-dimension reliability must be
+  flagged by observed-indicator count.
   \item \textbf{Naming caveats.} ``Developmental-risk'' is a \emph{proxy} (early-adversity / liability), not
   measured neurodevelopment; ``suicidality'' rests on self-report ISF; the DR inflammatory axis is
   compositionally different (Chapter~\ref{sec:validation}).
-  \item \textbf{Thin and partial axes.} \emph{Mania} rests on only two indicators (YMRS, Altman), so it is
-  flagged \emph{partial} for every patient and its self-rated Altman item does not transfer to DR;
-  \emph{substance} is a declared \emph{2-cohort} axis (its alcohol/cannabis SUD are BP/SZ-only). The lone
-  item-level mis-fit, \code{isf09a} (suicide-attempt count), is flagged and isolated --- the suicidality factor
-  is unaffected.
+  \item \textbf{Thin and uninformative axes.} \emph{Mania} rests on only two indicators (YMRS, Altman): it
+  is reliable-looking but its signal ratio is low, it is temporally and prognostically uninformative, and
+  it is flagged \emph{partial} for every patient (its self-rated Altman item does not transfer to DR).
+  \emph{Substance} is a declared \emph{2-cohort} axis (its alcohol/cannabis SUD are BP/SZ-only). These axes
+  are reported, but not over-read.
   \item \textbf{What the map alone claims.} The measurement map by itself asserts no natural
   biotypes/subtypes, no causal or treatment effect, and no prognostic value; it claims an
   empirically-supported set of transdiagnostic dimensions, their measurement structure, and per-patient
   coordinates with uncertainty, under internal validity. The downstream questions --- structure, persistence,
   prediction, treatment --- are taken up, and bounded, in their own chapters.
 \end{itemize}
+
+\paragraph{Treatment: an earned boundary, not an assumed one.} The treatment chapter
+(\S\ref{sec:treatment}) does not stop at ``no data''; it runs the proper causal pipeline and reports that,
+\emph{on observational treatment-as-usual, the map does not reliably moderate response}. The best-identified
+contrast --- lithium in bipolar disorder, $99.7\%$ overlap --- is a well-powered null (interaction E-value
+$1.06$); the antipsychotic effect in bipolar disorder is suggestive-but-unconfirmed (E-value $1.77$, the
+interaction HDI excludes zero but the moderation evidence is weak); clozapine in schizophrenia is confounded
+by channeling and is non-decisive. Average treatment effects are fragile to unmeasured confounding
+(E-values $1.06$--$1.78$). The boundary is therefore earned from the analysis, not assumed from missingness.
+Crucially, M5 \emph{strengthens} M4: the archetype prognostic carrier survives adjustment for the treatments
+patients received ($4.7\%$ attenuation), so the functioning forecast is not a treatment artifact. Treatment
+\emph{selection} --- whether the map can tell a clinician what to prescribe --- requires randomized or
+trial-arm data, which this cohort does not contain; it is scoped as a defined future study (M5b).
 
 \paragraph{Open methods choices (flagged for decision).} The sparsity prior (soft-normal vs.\ horseshoe);
 Student-$t$ vs.\ Gaussian continuous default; item- vs.\ factor-level covariate adjustment; and the precise
@@ -56,13 +110,12 @@ the point. \textbf{Demonstrated (scientific validity):} a transdiagnostic biolog
 identifiable, a graded \emph{continuum} rather than discrete biotypes (adjusted Rand $\approx 0$
 vs.\ the DSM-5 subtypes), temporally coherent with durable biology and moving symptoms, and carrying a
 \emph{small but genuine, robustness-surviving} incremental prognostic signal for two-year \emph{functioning}
-beyond diagnosis and severity, which further \emph{survives} adjustment for observed treatment.
-\textbf{Not demonstrated (clinical utility, in the strong sense):} the individual-level prognostic increment
-is small (functional-remission AUC $+0.017$ over diagnosis$+$severity), so the map is not an individual risk
-calculator; and on observational treatment-as-usual it does \emph{not} moderate treatment response (the
-best-identified contrast, lithium in bipolar disorder, is a well-powered null, antipsychotic effects are
-suggestive-but-unconfirmed, clozapine is confounded by channeling, and average treatment effects are fragile
-to unmeasured confounding), so it does not guide prescribing. These are \emph{different} bars, and the
+beyond diagnosis and severity, co-informative with DSM-5, which further \emph{survives} adjustment for
+observed treatment. \textbf{Not demonstrated (clinical utility, in the strong sense):} the individual-level
+prognostic increment is small (functional-remission $\Delta\text{AUC}=+0.011$ over diagnosis$+$severity), so
+the map is not an individual risk calculator; the predictive content is phenotype-level rather than an
+isolated axis; the signal is course-dependent; and on observational treatment-as-usual it does \emph{not}
+moderate treatment response, so it does not guide prescribing. These are \emph{different} bars, and the
 program's contribution is to measure \emph{both} and report the modest and null results as such --- a
 calibrated counterweight to a literature that often advances biological-validity evidence as though it were
 clinical utility. Reaching individual-level utility or treatment guidance would require incident-event

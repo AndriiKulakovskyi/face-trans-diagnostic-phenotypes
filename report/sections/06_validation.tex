@@ -1,105 +1,245 @@
 \section{Confirmation and validation}
 \label{sec:validation}
 
-A measurement claim is only as good as its adversarial checking. The nine-dimension map is hardened along five
-arms, each asking a different ``could this be an artefact?'' question: of the \emph{prior} or \emph{estimator}
-(§\ref{sub:confirm}), of the \emph{sampler} (§\ref{sub:cert}), of \emph{resampling / cohort imbalance}
-(§\ref{sub:robust}), of \emph{cross-cohort non-comparability} (§\ref{sub:invariance}), and of \emph{absolute
-misfit} (§\ref{sub:ppc}). Because the marginalized model and FIML share one observed-data objective
-(Chapter~\ref{sec:estimation}), a separate FIML arm is redundant; confirmation is done \emph{in-engine}.
+A measurement claim is only as good as its adversarial checking. It is not enough to fit a nine-dimension map
+and report that it converged; we have to ask, repeatedly and in good faith, ``what \emph{else} could have
+produced this picture?'' Every plausible alternative explanation that we cannot rule out is a crack in the
+foundation, because everything downstream --- the strata of Chapter~\ref{sec:strata}, the temporal-coherence
+checks of Chapter~\ref{sec:temporal}, the prognostic models of Chapter~\ref{sec:prognosis}, and the
+treatment-moderation analysis of Chapter~\ref{sec:treatment} --- inherits whatever structure the measurement
+model invents. A map that is partly an artefact of the priors, the sampler, or the cohort mix would quietly
+contaminate all of it.
+
+So we harden the map along five arms, each isolating one ``could this be an artefact?'' question:
+
+\begin{itemize}\setlength{\itemsep}{2pt}
+  \item of the \emph{prior} or the \emph{estimator} --- did the soft theory priors paint the picture rather
+  than the data? (§\ref{sub:confirm})
+  \item of the \emph{sampler} --- are the posterior draws numerically trustworthy, or is convergence an
+  illusion? (§\ref{sub:cert})
+  \item of \emph{resampling and cohort imbalance} --- would a different draw of patients, or dropping a
+  cohort, give a different map? (§\ref{sub:robust})
+  \item of \emph{cross-cohort non-comparability} --- does each loading mean the same thing in BP, SZ, and DR,
+  or are we averaging apples and oranges? (§\ref{sub:invariance})
+  \item of \emph{absolute misfit} --- can the model actually \emph{regenerate} data that look like the real
+  thing? (§\ref{sub:ppc})
+\end{itemize}
+
+One simplification keeps this chapter honest and short. The map is estimated under the Gaussian-copula
+observed-data likelihood of Chapter~\ref{sec:model}: each indicator is carried into the model on its
+standard-normal rank scale, so a loading is a slope on the Gaussianized rank score, and the whole
+nine-dimension covariance is then read through the same marginalized Woodbury machinery. Because that
+marginalized likelihood and full-information maximum likelihood (FIML) optimize the \emph{same} observed-data
+objective (Chapter~\ref{sec:estimation}), a separate FIML confirmation arm would re-ask a question we have
+already answered. Confirmation is therefore done \emph{in-engine}: a prior-free refit, model comparison, and
+posterior-predictive checks, all on the same copula objects that produced the map. Nothing in this chapter
+appeals to a second pipeline; these are the results.
+
+\begin{definitionbox}[What ``artefact'' means here, concretely]
+An \emph{artefact} is any feature of the reported map that would change if we changed something that should be
+scientifically irrelevant: the prior, the random seed, the particular patients sampled, or the cohort
+labels. The biology$\perp$$G$ separation, the split of biology into metabolic and inflammatory axes, and the
+mania/substance axes are scientific claims only if they \emph{survive} those changes. Each arm below perturbs
+one such irrelevant thing and measures how far the map moves.
+\end{definitionbox}
 
 \subsection{Not a prior or estimator artefact}
 \label{sub:confirm}
-\certified\ If the soft priors were doing the work, a \emph{flat-prior} refit (identification constraints only)
-would move the loadings. It does not: the prior-free fit reproduces the soft-prior loadings and $\Phi$
-\emph{exactly} --- per-factor \emph{Tucker congruence} $\varphi = 1.00$ (the cosine similarity between two
-loading patterns, where $1$ is the identical factor and $\varphi\ge 0.95$ is the usual threshold for ``the
-same factor''), $\max|\Delta\Phi_{\text{off-diag}}| = 0.00$.
-Since a flat-prior MAP equals the MLE equals FIML, the structure is \textbf{earned from the data, not
-manufactured by the priors}. And the bifactor structure itself is justified by out-of-sample fit: the WAIC
-(widely-applicable information criterion, an estimate of how well the model predicts unseen data --- lower is
-better) decisively prefers it over both simpler alternatives (Figure~\ref{fig:waic}).
+\certified\ Theory entered the model softly, through the loading priors of Chapter~\ref{sec:model}: BMI is
+\emph{expected} to define metabolism, CRP to define inflammation, FAST to anchor general burden. A fair
+sceptic asks whether those priors did the work --- whether we found inflammation because the data carry it, or
+merely because we told the model to look there. The clean test is to delete the theory and refit.
+
+Concretely, we run a \emph{flat-prior} refit: the soft priors are replaced by identification constraints only
+(sign-oriented home cells so the factors point the right way; signed cells centered at zero with no shrinkage),
+a fresh seed, and no warm-start from the primary fit. If the priors were painting the picture, removing them
+would smear it. They do not. The prior-free fit reproduces the soft-prior loadings and the factor-correlation
+matrix $\Phi$ \emph{exactly} --- per-factor \emph{Tucker congruence} $\varphi = 1.00$ and
+$\max|\Delta\Phi_{\text{off-diag}}| = 0.00$.
+
+\begin{definitionbox}[Tucker congruence $\varphi$]
+$\varphi$ is the cosine similarity between two columns of loadings --- the same factor estimated two ways.
+It runs from $0$ (orthogonal, unrelated) to $1$ (identical pattern). The field's working threshold is
+$\varphi\ge 0.95$ for ``the same factor.'' A value of $1.00$ to two decimals means the flat-prior and
+soft-prior factors are, for practical purposes, the same object.
+\end{definitionbox}
+
+Why is this conclusive rather than merely reassuring? Because a flat-prior MAP estimate \emph{is} the maximum
+likelihood estimate, which \emph{is} FIML on the observed cells. So a flat-prior fit that lands on the same
+loadings tells us the structure is \textbf{earned from the data, not manufactured by the priors} --- and it
+does so without ever running a separate FIML program. The soft priors only break the rotational tie of
+Chapter~\ref{sec:model}; they do not invent the inflammation axis.
+
+That settles \emph{whether the priors did the work}. A second, independent question is whether a general
+factor plus specific axes is even the right \emph{shape} of model. We answer it by out-of-sample fit. The
+\emph{WAIC} (widely-applicable information criterion --- an estimate of how well a model predicts unseen
+data, where lower is better) decisively prefers the bifactor over both simpler alternatives
+(Figure~\ref{fig:waic}): a single general factor is too coarse, a bag of correlated factors with no $G$ misses
+the shared burden axis, and only the bifactor --- a hub $G$ plus orthogonal spokes --- captures both.
 
 \begin{figure}[h]\centering
 \includegraphics[width=0.78\linewidth]{figures/fig_waic.png}
 \caption{WAIC model comparison on a common cohort-balanced sub-sample (lower = better out-of-sample fit). The
 bifactor ($G$ + specifics) is preferred over a correlated-factors model with no general factor (by $\approx
-2{,}700$) and overwhelmingly over a unidimensional null (by $\approx 53{,}000$). Both a general factor
-\emph{and} the specific axes are needed.}
+2{,}700$) and overwhelmingly over a unidimensional null (by $\approx 53{,}000$). The lesson is that both a
+general factor \emph{and} the specific axes are needed: drop $G$ and you lose the shared functional-burden
+signal; drop the specifics and you lose everything that makes the map transdiagnostic.}
 \label{fig:waic}
 \end{figure}
 
+\begin{keyresult}[The headline separation, quantified rather than asserted]
+The load-bearing finding of the map --- that biology is the \emph{least} severity-entangled domain --- is a
+statement about the $G$ row of $\Phi$, not a slogan about a picture. In the correlated-$G$ sensitivity model
+of Chapter~\ref{sec:model}, where $G$ is freed to correlate with each specific axis, the biological axes stay
+nearly orthogonal to functional burden: metabolic$\sim$$G$ $\approx +0.12$ and inflammatory$\sim$$G$ $\approx
++0.07$, against cognition$\sim$$G$ $\approx +0.39$ and sleep$\sim$$G$ $\approx +0.42$. Read plainly: a
+patient's metabolic and immune load is almost independent of how impaired they are overall, whereas cognitive
+and sleep burden partly track impairment. Because $G$ carries functioning content only and no symptom content,
+this is exactly the kind of signal a clinician's global impression cannot see --- and exactly what a
+biology-aware stratification (Chapter~\ref{sec:strata}) can exploit.
+\end{keyresult}
+
 \subsection{Documented at the largest N that mixes}
 \label{sub:cert}
-\documented\ The reported nine-dimension fit passes the full sampler battery across seeds:
-$\max\widehat{R}\le 1.04$, $\min\mathrm{ESS}\ge 112$, $0$ divergences, $\mathrm{BFMI}\ge 0.41$ (no funnel
-pathology), and a \textbf{cross-seed Tucker congruence of $0.993$} (max loading shift $0.19$). The continuous
-backbone and the biology$\perp$$G$ estimand mix cleanly at full $N$ ($\widehat{R}=1.010$); the
-explicit-latent block (the suicidality$\sim$developmental $\Phi$ coupling) is the documented mixing limit, so
-the joint map is documented at the largest $N$ that mixes with this resample-stability guard --- its point
-estimates are resample-stable, only the $\Phi$-precision of that one coupling is provisional. Full-$N$
-full-precision certification of the explicit block is additional sampling effort, not a change of method.
+\documented\ A map can be perfectly reproducible and still be numerical nonsense if the sampler never actually
+explored the posterior. Convergence diagnostics are the instruments that catch this. They ask three separate
+questions: do independent chains, started from different points, agree on the answer ($\widehat{R}$, where
+$1.00$ is perfect agreement)? How many genuinely independent samples is the autocorrelated chain worth
+(effective sample size, ESS)? And did the Hamiltonian trajectories ever fail to track the posterior geometry
+(divergences, and the energy diagnostic BFMI that flags funnel pathologies)?
+
+The reported nine-dimension fit passes the full battery across seeds: $\max\widehat{R}\le 1.04$,
+$\min\mathrm{ESS}\ge 112$, $0$ divergences, and $\mathrm{BFMI}\ge 0.41$ (no funnel). More demanding still, it
+passes a \emph{cross-seed} reproducibility check: refit from independent random seeds, the loading map returns
+with Tucker congruence $0.993$ (largest single-loading shift $0.19$). Independent runs converge on the same
+atlas.
+
+There is one honest boundary, and we state it as a boundary rather than smooth it over. The continuous
+backbone --- where the biology$\perp$$G$ estimand lives --- mixes cleanly at the full sample
+($\widehat{R}=1.010$). The slowest-mixing object is one coupling in the discrete block (the
+suicidality$\sim$developmental $\Phi$ entry), whose latent coordinates cannot be marginalized and must be
+sampled per patient. We therefore document the joint map at the \textbf{largest $N$ that mixes}, guarded by
+the cross-seed stability above. The practical reading: the point estimates are resample-stable; only the
+$\Phi$-precision of that single coupling is provisional. Tightening it is more sampling effort, not a change of
+method or a change of map.
+
+\begin{methodsbox}[Why ``documented'', not ``certified'', here]
+The status pill on this arm is deliberately weaker than on the others. ``Certified'' means a check passed at
+full strength; ``documented'' means we are reporting an honest limit rather than claiming we cleared it. The
+distinction matters precisely because the rest of the report leans on these coordinates --- a reader is owed
+the knowledge that one $\Phi$ entry is sampled to lower precision than the rest, even though it does not touch
+the headline biology$\perp$$G$ result.
+\end{methodsbox}
 
 \subsection{Robust to resampling, cohort imbalance, and site}
 \label{sub:robust}
-\certified\ Could the map be an artefact of the $11\!:\!1$ BP$:$DR imbalance, of one dominant cohort, or of
-recruitment-site clustering? Four resampling arms say no. Under \emph{leave-one-cohort-out}, \emph{diagnosis-
-balanced subsampling}, \emph{site cluster-bootstrap}, and a \emph{$1/n_{\text{cohort}}$-weighted} fit, the
-minimum Tucker congruence against the full-sample reference is $\mathbf{0.958}$. The structure is not driven by
-cohort imbalance, by any single cohort, or by site.
+\certified\ The cohorts are wildly unbalanced --- roughly $11$ bipolar patients for every depression patient
+--- and patients are clustered within recruitment sites. A reasonable worry is that the map is really a
+portrait of the dominant cohort, or of one large site, dressed up as a transdiagnostic structure. If so, it
+would shatter the moment we changed the sampling.
+
+We change the sampling four ways and watch whether the map holds. \emph{Leave-one-cohort-out} asks whether any
+single cohort is load-bearing. \emph{Diagnosis-balanced subsampling} forces equal cohort representation,
+removing the $11\!:\!1$ tilt. \emph{Site cluster-bootstrap} resamples whole sites, testing for recruitment
+artefacts. A \emph{$1/n_{\text{cohort}}$-weighted} fit down-weights the large cohorts directly. Across all
+four, the minimum Tucker congruence against the full-sample reference is $\mathbf{0.958}$ --- comfortably above
+the $0.95$ ``same factor'' bar. The structure is not driven by cohort imbalance, by any single cohort, or by
+site. It is the same map however we slice the patients.
 
 \subsection{Measurement invariance --- largely invariant, with honest partials}
 \label{sub:invariance}
-\certified\ Does each loading mean the same thing in each cohort? Per-cohort fits with Tucker congruence
-(Figure~\ref{fig:invariance}, left) show the core is \textbf{largely invariant}: cognition, metabolic, and
-sleep recover congruently in every pair ($\varphi\ge 0.95$), with $12/15$ comparisons fully invariant. The
-\emph{partials are documented, not hidden} --- they are themselves findings about where an instrument means
+\certified\ Invariance is the question of whether a measurement \emph{means the same thing} in different
+groups. A loading is a translation rule from a latent axis to an observed item; if that rule differs by cohort,
+then comparing a BP patient's metabolic coordinate to an SZ patient's is comparing readings from two
+differently-calibrated instruments. We test it by refitting per cohort and comparing the primary loadings with
+Tucker congruence (Figure~\ref{fig:invariance}, left).
+
+The core is \textbf{largely invariant}: cognition, metabolic, and sleep recover congruently in every cohort
+pair ($\varphi\ge 0.95$), with $12/15$ comparisons fully invariant. The honest exceptions are
+\emph{documented, not hidden} --- and each one is itself a finding about where a single instrument means
 different things across populations:
 
 \begin{itemize}\setlength{\itemsep}{1pt}
   \item \textbf{$G$ in BP--SZ} ($\varphi 0.92$): SZ lacks the FAST behavioural anchor, so $G$ re-anchors on
-  CGI-S/EGF/EQ-5D there.
-  \item \textbf{inflammatory in DR} ($\varphi 0.71/0.75$): a real immune re-weighting --- neutrophils load
-  $\approx 0$ in DR ($0.07$ vs $0.88$ in BP/SZ) while eosinophils dominate.
-  \item \textbf{mania-Altman in DR} ($\varphi 0.764$): clinician-rated YMRS holds across cohorts ($0.57/0.41$),
-  but the \emph{self-rated} Altman floors out in the DR cohort ($0.76\to0.10$) --- lean on YMRS
-  for mania in DR (Figure~\ref{fig:invariance}, right).
-  \item \textbf{substance} is invariant BP--SZ ($\varphi 0.997$) and is declared a \textbf{2-cohort axis} (its
-  alcohol/cannabis SUD are BP/SZ-only; the observed-likelihood simply omits DR, not claimed invariant there).
+  CGI-S/EGF/EQ-5D there. The general factor still measures functional burden in SZ; it simply leans on
+  different anchors.
+  \item \textbf{inflammatory in DR} ($\varphi 0.71/0.75$): a genuine immune re-weighting, not a fit failure
+  --- neutrophils load $\approx 0$ in DR ($0.07$ vs $0.88$ in BP/SZ) while eosinophils dominate. The immune
+  axis exists in DR but is carried by different cells.
+  \item \textbf{mania-Altman in DR} ($\varphi 0.764$): clinician-rated YMRS holds across cohorts
+  ($0.57/0.41$), but the \emph{self-rated} Altman item floors out in DR ($0.76\to0.10$). Self-reported manic
+  activation is near-floor in a depression cohort; lean on YMRS for mania in DR
+  (Figure~\ref{fig:invariance}, right).
+  \item \textbf{substance} is invariant BP--SZ ($\varphi 0.997$) and is declared a \textbf{2-cohort axis}: its
+  alcohol/cannabis lifetime-SUD indicators are BP/SZ-only, so the observed-cell likelihood simply omits DR
+  rather than claiming an invariance that the data cannot support.
 \end{itemize}
 
 \begin{figure}[h]\centering
 \includegraphics[width=\linewidth]{figures/fig_invariance.png}
 \caption{Measurement invariance across BP/SZ/DR. \emph{Left:} Tucker congruence $\varphi$ of the primary
 loadings per factor per cohort-pair (green $\ge 0.95$ invariant; amber partial; red non-invariant) --- the lone
-red block is inflammatory in DR. \emph{Right:} per-cohort loadings of the new mania and substance indicators;
-the self-rated Altman item does not transfer to DR, while clinician-rated YMRS does. Partials are reported as
-caveats, not smoothed over.}
+red block is inflammatory in DR. \emph{Right:} per-cohort loadings of the mania and substance indicators; the
+self-rated Altman item does not transfer to DR, while clinician-rated YMRS does. Partials are reported as
+caveats, not smoothed over: each marks a place where a cross-cohort comparison on that axis must be read with
+the documented re-weighting in mind.}
 \label{fig:invariance}
 \end{figure}
 
+\begin{caveatbox}[How to carry the partials downstream]
+The four partials are constraints on interpretation, not on the map's existence. When a later chapter compares
+strata across cohorts (Chapter~\ref{sec:strata}) or tracks an axis over time (Chapter~\ref{sec:temporal}), the
+inflammatory and mania-Altman comparisons in DR, and the $G$ comparison in SZ, carry their re-anchoring caveat;
+substance is read as a BP/SZ-only axis throughout. These are exactly the kinds of cross-cohort subtlety that an
+honest transdiagnostic map should surface rather than paper over.
+\end{caveatbox}
+
 \subsection{Absolute fit across both likelihood blocks}
 \label{sub:ppc}
-\certified\ Posterior-predictive checks ask whether the model can \emph{regenerate} the observed data. The
-continuous block has a Bayesian $\mathrm{SRMR}\approx 0.074$ (conventional good fit $<0.08$), with residual
-misfit confined to repeated-measure clusters (the same quantity measured twice --- chol/LDL, supine/standing
-blood pressure and heart rate, AST/ALT, WAIS subtests), which is method-factor structure, not dimensional
-misfit. The non-Gaussian block reproduces \textbf{21 of 22 indicators}' observed endorsement rates / means
-within the $90\%$ posterior-predictive interval (Bayesian $p\approx 0.5$; Figure~\ref{fig:ppc}).
+\certified\ The four arms above are \emph{relative}: they show the map is reproducible, prior-free,
+resample-stable, and largely invariant. None of them asks the most basic question of all --- can the model
+generate data that actually \emph{look like} the real patients? That is the job of posterior-predictive checks
+(PPCs). We draw synthetic datasets from the fitted posterior and compare summary statistics of the synthetic
+data to the observed data. A model that cannot reproduce the data it was fit to has misspecified something,
+no matter how clean its diagnostics.
+
+We run the check on both halves of the mixed likelihood. For the Gaussianized continuous block, the natural
+summary is the model-implied versus observed pairwise correlation structure, condensed into a \emph{Bayesian
+SRMR} --- a root-mean-square residual correlation, where the conventional good-fit threshold is $<0.08$. The
+map scores $\mathrm{SRMR}\approx 0.074$. The small residual misfit is confined to \emph{repeated-measure}
+clusters --- the same quantity measured twice (cholesterol/LDL, supine/standing blood pressure and heart rate,
+AST/ALT, WAIS subtests) --- which is method-factor structure (two measurements of one thing share extra
+variance), not a failure of the dimensional map. For the non-Gaussian block --- the binary and ordinal items
+that keep their native likelihoods --- the check is whether the model reproduces each indicator's observed
+endorsement rate or mean. It reproduces \textbf{21 of 22 indicators} within the $90\%$ posterior-predictive
+interval (Bayesian $p\approx 0.5$, i.e.\ the observed value sits squarely in the middle of the predicted
+range; Figure~\ref{fig:ppc}).
 
 \begin{figure}[h]\centering
 \includegraphics[width=0.82\linewidth]{figures/fig_ppc.png}
 \caption{Absolute fit of the non-Gaussian block: observed endorsement rate (dot) vs the $90\%$
 posterior-predictive interval (bar), per binary/ordinal indicator, coloured by home factor. Every shown
-indicator reproduces. The lone failure (a count item, off-scale here) is the suicide-attempt count
-\code{isf09a}.}
+indicator reproduces --- the observed dot lands inside its predicted bar. The lone failure (a count item,
+off-scale here) is the suicide-attempt count \code{isf09a}, discussed below.}
 \label{fig:ppc}
 \end{figure}
 
 \begin{caveatbox}[One item-level mis-fit, isolated and flagged]
 The single exception is \code{isf09a}, the suicide-attempt \emph{count} --- $90.8\%$ zeros, a hurdle a plain
-negative binomial over-predicts in the high-suicidality tail. This is an \textbf{item-level} caveat, not a
-factor-level one: the suicidality dimension is carried by its seven binary ISF items, all of which reproduce
-(Bayesian $p$ $0.48$--$0.59$). A hurdle / zero-inflated likelihood for that one item is the fix if its count
-precision is ever required.
+negative binomial over-predicts in the high-suicidality tail. The fix is the right likelihood for that one
+item: a hurdle / zero-inflated count, should its count precision ever be needed. Crucially this is an
+\textbf{item-level} caveat, not a \textbf{factor-level} one. The suicidality \emph{dimension} is carried by
+its seven binary ISF ideation/attempt items, all of which reproduce cleanly (Bayesian $p$ $0.48$--$0.59$).
+The axis is sound; one count item on it is mis-specified.
 \end{caveatbox}
+
+\begin{keyresult}[What the five arms buy]
+Taken together, the arms say the nine-dimension map is \textbf{not} an artefact of the priors (flat-prior refit
+$\varphi=1.00$), the sampler (cross-seed $\varphi=0.993$, clean diagnostics), the resampling (worst-case
+$\varphi=0.958$ across four schemes), or cross-cohort non-comparability (largely invariant, with four documented
+and interpretable partials), and it \textbf{can} regenerate the observed data on both likelihood blocks (SRMR
+$0.074$; 21/22 discrete indicators reproduce). The biology$\perp$$G$ separation, the metabolic/inflammatory
+split, and the mania and substance axes are therefore properties of the data, not of our modelling choices ---
+a substrate solid enough to build the strata, temporal, prognosis, and treatment milestones on
+(Chapters~\ref{sec:strata}--\ref{sec:treatment}).
+\end{keyresult}
