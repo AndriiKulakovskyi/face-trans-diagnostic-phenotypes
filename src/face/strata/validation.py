@@ -72,3 +72,47 @@ def tess_seed_stability(X, S, K, seeds=(1, 2, 3)):
     base = xd_em(X, S, K, seed=0)["resp"].argmax(1)
     aris = [ari(base, xd_em(X, S, K, seed=s)["resp"].argmax(1)) for s in seeds]
     return {"mean_ari": float(np.mean(aris)), "min_ari": float(np.min(aris))}
+
+
+def assignment_usefulness(resp, *, tau: float = 0.5):
+    """Are the soft regions OPERATIONALLY useful — i.e. are patients actually assignable, or is everyone
+    in the mushy middle? (A scheme where 95% of patients are 50/50 is not useful, however "real" it is.)
+
+    ``resp`` is the [N, K] soft membership (XD responsibilities or archetype simplex weights). Reports the
+    confident-dominant fraction (max membership > tau), the normalized-entropy distribution, the
+    boundary-patient fraction (near-uniform membership), and the effective number of regions actually used
+    (perplexity exp(mean entropy)). Gate: PASS if confident-dominant >= 0.50 and median normalized entropy
+    <= 0.6; FAIL if confident-dominant < 0.30 (mushy middle); else CONDITIONAL."""
+    r = np.clip(np.asarray(resp, dtype="float64"), 1e-12, 1.0)
+    N, K = r.shape
+    raw_H = -(r * np.log(r)).sum(1)                        # nats
+    H = raw_H / np.log(K) if K > 1 else np.zeros(N)        # normalized to [0, 1]
+    mx = r.max(1)
+    conf = float((mx > tau).mean())
+    med_H = float(np.median(H))
+    gate = "PASS" if (conf >= 0.5 and med_H <= 0.6) else ("FAIL" if conf < 0.3 else "CONDITIONAL")
+    return {"K": int(K), "confident_dominant_frac": conf, "median_norm_entropy": med_H,
+            "iqr_norm_entropy": [float(np.quantile(H, 0.25)), float(np.quantile(H, 0.75))],
+            "boundary_frac": float((mx < (1.0 / K + 0.05)).mean()),
+            "effective_n_regions": float(np.exp(raw_H.mean())), "tau": float(tau), "gate": gate}
+
+
+def choose_K_operational(X, S, Ks=range(2, 9), seeds=(1, 2, 3), seed=0):
+    """Choose the operational number of regions when the cloud is a CONTINUUM (no natural K). K is then a
+    granularity choice, not a discovered kind-count: pick the SMALLEST K that keeps confident assignment
+    (>=0.5) and stability (seed-ARI >=0.8); report the full sweep + the deliberate choice. Internal-only
+    criteria (parsimony + assignment confidence + stability) — no external/predictive validity here."""
+    from face.strata.mixture import xd_em
+    rows = []
+    for K in Ks:
+        fit = xd_em(X, S, K, seed=seed)
+        au = assignment_usefulness(fit["resp"])
+        stab = tess_seed_stability(X, S, K, seeds=seeds)["mean_ari"]
+        rows.append({"K": int(K), "bic": float(fit["bic"]),
+                     "confident_dominant_frac": au["confident_dominant_frac"],
+                     "median_norm_entropy": au["median_norm_entropy"], "seed_ari": float(stab)})
+    ok = [r for r in rows if r["confident_dominant_frac"] >= 0.5 and r["seed_ari"] >= 0.8]
+    chosen = min(ok, key=lambda r: r["K"]) if ok else max(rows, key=lambda r: r["confident_dominant_frac"])
+    return {"sweep": rows, "chosen_K": int(chosen["K"]),
+            "rationale": ("smallest K with confident-dominant>=0.5 and seed-ARI>=0.8" if ok
+                          else "no K met both gates; fell back to max confident-dominant")}

@@ -17,21 +17,38 @@ domain (correlated-G §3.1); resample-robust (min φ ≥ 0.85 under LOCO + site-
 with per-patient coordinates + uncertainty + reliability flags (§7). Anhedonia **rejected**;
 impulsivity/negative-symptoms/sensory **not_testable**; depression/anxiety are cross-loading **windows**.
 Engine in `src/face/{models/bayesian,confirm,runner,scoring}.py`; pipeline `scripts/01,04–09,s5_*`; results
-in `reports/01,04–11`. **M2 stratification COMPLETE** (pending PI sign-off) — findings
-[`STRATA_FINDINGS.md`](STRATA_FINDINGS.md), atlas [`STRATA_ATLAS.md`](STRATA_ATLAS.md), methods
-[`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md). The transdiagnostic space is a **continuum** (not
-biotypes): 8 soft archetypes + a 4-region tessellation, transdiagnostic (ARI≈0 vs DSM-5) and a tighter
-description than DSM-5 (descriptive). **M3 temporal coherence is COMPLETE** (pending PI sign-off) — the map
+in `reports/01,04–11`. **M2 stratification COMPLETE** (pending PI sign-off), **reworked on the certified Gaussian-copula map** —
+canonical findings [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md), atlas
+[`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md), methods [`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md)
+(the native-map [`STRATA_FINDINGS.md`](STRATA_FINDINGS.md) / [`STRATA_ATLAS.md`](STRATA_ATLAS.md) now
+redirect). The transdiagnostic space is a **continuum** (not biotypes; confirmed by a single-Gaussian
+falsification null): the **load-bearing objects are the continuous 9-dim coordinates + a stable A=4 archetype
+simplex** (biology⊥symptoms⊥severity), and the soft tessellation is a coarse convention exported as a **nested
+K-family (2/3/4) with no privileged K** — the operative K is deferred to M4/M5 incremental validity.
+Transdiagnostic (ARI≈0 vs DSM-5) and tighter than DSM-5 (descriptive). *M3/M4/M5 as reported below were run on
+the prior native-map M2 (8 archetypes / K=4); their rerun on this copula object is pending.* **M3 temporal coherence is COMPLETE** (pending PI sign-off) — the map
 and strata are **temporally coherent** (V0→V1→V2): the measurement holds (G1 invariance), and the M2 geometry
 replays over time — biology/cognition are durable (trait) while severity + symptoms slide (state), and
-archetype identity persists. Findings: [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md). **M4 prognosis is
+archetype identity persists. Findings: [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md). **M3 has now been
+*reworked on the copula M1/M2 objects*** (parallel OOP engine `src/face/temporal/temporal_model_oop.py`;
+canonical [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md)): V1/V2 scored under the fixed copula M1
+(`copula_forward` + frozen-V0 covariate-FWL; V0 reproduced at r≈0.99) → the result **replays** — G1 all 5
+backbone axes invariant (inflammatory now invariant, vs partial native), G3 biology trait (metabolic ICC
+**0.91**, cognition 0.70) / symptoms state (developmental 0.39) / severity trait-by-rank with population
+improvement, G4 archetype weights persist (cosine 0.90). **M4 prognosis is
 COMPLETE** (pending PI sign-off) — on the fixed M1/M2/M3 objects, a baseline transdiagnostic profile
 **predicts 2-year functional trajectory incrementally beyond diagnosis + severity** (durable
 metabolic/inflammatory ⊥G; the 8 archetypes stratify functional remission **14%→60%**), robust to
 attrition/reliability/permutation, **co-informative with DSM-5** (complements, not replaces) and
 **course-dependent** (episodic BP/DR, not baseline-saturated SZ); severity itself is
 autoregression-determined. Findings: [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md); clinician atlas:
-[`PROGNOSIS_ATLAS.md`](PROGNOSIS_ATLAS.md). **M5 treatment is COMPLETE** (pending PI sign-off) — treatment
+[`PROGNOSIS_ATLAS.md`](PROGNOSIS_ATLAS.md). **M4 has now been *reworked on the copula M2 object*** (parallel OOP
+engine `src/face/prognosis/prognosis_model_oop.py`; canonical [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md)):
+the result replays — the map predicts 2-yr **functioning** (archetypes ΔELPD **+59** on egf, co-informative with
+DSM-5), functional remission **27%→60%** across the A=4 archetypes (biology corner worst), and — the answer to
+the M2 K-question — **operative K = none** (the continuous/archetype encoding dominates any hard tessellation;
+all K=2/3/4 are predictive of functioning but add less). Honest copula shift: the *durable-trio-alone* EIV is
+no longer robust; the predictive object is the fuller archetype representation. **M5 treatment is COMPLETE** (pending PI sign-off) — treatment
 data, found late in the per-cohort thesaurus `TRAITEMENTS` tabs and harmonized to common drug-class
 exposures, runs through a proper causal pipeline (overlap → propensity → doubly-robust EIV moderation +
 E-value); on observational treatment-as-usual the map **does not reliably moderate treatment response**
@@ -50,6 +67,15 @@ randomized treatment data, and external validation this baseline cohort lacks.
 Updated 2026-06-11.
 
 ## M2 — stratification (COMPLETE 2026-06-09, pending PI sign-off)
+
+> **Reworked on the Gaussian-copula map (2026-06-22). Canonical record:
+> [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md) + [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md).** On the
+> copula coordinates the continuum verdict holds (now with a single-Gaussian falsification null), the
+> archetypes are **A=4 stable** (native A=8 does not reproduce), and the tessellation is exported as a
+> **nested K-family (2/3/4) with no privileged K** — the load-bearing objects are the continuous coordinates +
+> the A=4 simplex; the operative K is deferred to M4/M5. Engine: `src/face/strata/strata_model_oop.py`;
+> hand-off `results/face/strata_oop/consolidate/{patient_strata.parquet, k_family_menu.csv}`. **The native-map
+> detail below is retained as provenance** (it is what the reported M3/M4/M5 consumed).
 
 **Methods of record: [`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md).** Scope: **internal discovery +
 validation** of probabilistic strata on the M1 9-dim V0 coordinates — decision-relevance deferred to

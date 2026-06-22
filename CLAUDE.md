@@ -64,14 +64,20 @@ substance** — built, hardened (confirmation §5 / invariance §8 / robustness 
 and adjudicated (§6). **Findings + discussion (paper-facing, read first): [docs/M1_FINDINGS.md](docs/M1_FINDINGS.md).**
 Current status: **[docs/STATE.md](docs/STATE.md)**; per-candidate verdict:
 **[docs/ADJUDICATION.md](docs/ADJUDICATION.md)**; per-stage detail: [docs/RESULTS.md](docs/RESULTS.md).
-**M2 strata COMPLETE** (pending PI sign-off) — methods **[docs/STRATIFICATION_MODEL.md](docs/STRATIFICATION_MODEL.md)**,
-findings **[docs/STRATA_FINDINGS.md](docs/STRATA_FINDINGS.md)**, atlas **[docs/STRATA_ATLAS.md](docs/STRATA_ATLAS.md)**,
-detailed dev record **[docs/STRATA_RESULTS.md](docs/STRATA_RESULTS.md)**.
-On the 9-dim coordinates (uncertainty-propagated, diagnosis = validation-only) the transdiagnostic space is a
-**continuum, not biotypes**: 8 soft **archetypes** (lead) + a 4-region measurement-error **tessellation** —
-transdiagnostic (ARI≈0 vs the 7 DSM-5 subtypes), specific-axis-driven (biology⊥G as phenotypes), stable, not
-a missingness artefact, and a tighter *description* than DSM-5 (predictive/treatment validity → M4/M5).
-Engine `src/face/strata/`; pipeline `scripts/20–26`.
+**M2 strata COMPLETE** (pending PI sign-off), **reworked on the Gaussian-copula map** — methods
+**[docs/STRATIFICATION_MODEL.md](docs/STRATIFICATION_MODEL.md)**, canonical findings
+**[docs/STRATA_OOP_FINDINGS.md](docs/STRATA_OOP_FINDINGS.md)**, atlas **[docs/STRATA_OOP_ATLAS.md](docs/STRATA_OOP_ATLAS.md)**
+(native-map `STRATA_FINDINGS`/`STRATA_ATLAS`/`STRATA_RESULTS` now redirect / are provenance).
+On the 9-dim copula coordinates (uncertainty-propagated, diagnosis = validation-only) the transdiagnostic space
+is a **continuum, not biotypes** (confirmed by a single-Gaussian falsification null). The **load-bearing
+objects are the continuous coordinates + a stable A=4 archetype simplex** (biology⊥symptoms⊥severity; native
+A=8 doesn't reproduce on the copula); the soft **tessellation** is a coarse convention exported as a **nested
+K-family (2/3/4) with no privileged K** — the operative K is **deferred to M4/M5 incremental validity** (K=2 is
+only the M3-contract default; finer K captures the severity/biology gradient K=2 drops). Transdiagnostic
+(ARI≈0 vs DSM-5), stable, not a missingness artefact, tighter *description* than DSM-5. New OOP engine
+`src/face/strata/strata_model_oop.py` (wraps the proven kernels); driver `notebooks/run_strata_model_oop.py`;
+hand-off `results/face/strata_oop/consolidate/{patient_strata.parquet, k_family_menu.csv}` + continuous coords
+in `results/face/strata_oop/coordinates/`. (Native pipeline `scripts/20–26` retained as provenance.)
 **M3 temporal coherence COMPLETE** (pending PI sign-off) — methods **[docs/TEMPORAL_MODEL.md](docs/TEMPORAL_MODEL.md)**,
 findings (paper-facing, read first) **[docs/TEMPORAL_FINDINGS.md](docs/TEMPORAL_FINDINGS.md)**, dev record
 **[docs/TEMPORAL_RESULTS.md](docs/TEMPORAL_RESULTS.md)**. Scoring follow-up (V0→V1→V2) onto the **fixed** M1/M2
@@ -82,6 +88,14 @@ archetype identity persists (G3 variance ⟷ G4 geometry agree). Honest caveats:
 is CTQ recall-noise (trait by design); G5-vs-DSM5 deferred to M4 (`arm` time-invariant). Clinical logic:
 *stratify on the durable biology, monitor the moving symptoms.* Engine `src/face/temporal/`; pipeline
 `scripts/30–37`; hand-off `results/face/patient_panel.parquet`.
+**M3 reworked on the copula M1/M2 objects** (parallel OOP engine `src/face/temporal/temporal_model_oop.py`,
+wraps the kernels; driver `notebooks/run_temporal_model_oop.py`; canonical **[docs/TEMPORAL_OOP_FINDINGS.md](docs/TEMPORAL_OOP_FINDINGS.md)**;
+hand-off `results/face/temporal_oop/`). The one new piece is scoring V1/V2 under the **fixed copula M1**
+(`copula_forward` + frozen-V0 covariate-FWL residualization → `conditional_gaussian_draws`/
+`project_explicit_full_n`; V0 reproduced at r≈0.99). Result **replays**: G1 all 5 backbone axes invariant
+(inflammatory now invariant vs partial native), G3 biology trait (metabolic ICC 0.91, cognition 0.70) / symptoms
+state / severity trait-by-rank with population improvement, G4 archetype weights persist (cosine 0.90).
+Native M3 (`scripts/30–37`) kept as provenance.
 **M4 prognosis COMPLETE** (pending PI sign-off) — methods **[docs/PROGNOSIS_MODEL.md](docs/PROGNOSIS_MODEL.md)**,
 findings (paper-facing, read first) **[docs/PROGNOSIS_FINDINGS.md](docs/PROGNOSIS_FINDINGS.md)**, clinician-facing
 prognostic atlas **[docs/PROGNOSIS_ATLAS.md](docs/PROGNOSIS_ATLAS.md)**, dev record **[docs/PROGNOSIS_RESULTS.md](docs/PROGNOSIS_RESULTS.md)**.
@@ -97,6 +111,14 @@ BP/DR, null in baseline-saturated SZ). The archetype prognostic atlas: 2-year fu
 forecasting**, not a large individual-binary boost — honest limits: scale trajectories not events,
 internal validity, 2-year horizon. Engine `src/face/prognosis/`; pipeline `scripts/40–48`; hand-off
 `results/face/m4/{prognosis_summary.csv, prognosis_patient_risk.parquet}`.
+**M4 reworked on the copula M2 object** (parallel OOP engine `src/face/prognosis/prognosis_model_oop.py`,
+wraps the kernels; driver `notebooks/run_prognosis_model_oop.py`; canonical **[docs/PROGNOSIS_OOP_FINDINGS.md](docs/PROGNOSIS_OOP_FINDINGS.md)**;
+hand-off `results/face/prognosis_oop/`). Result replays: predicts 2-yr **functioning** (archetypes ΔELPD +59 on
+egf, co-informative with DSM-5), functional remission **27%→60%** across A=4 archetypes (biology corner worst);
+**the answer to the M2 K-question — operative K = none**: the continuous/archetype encoding dominates any hard
+tessellation (all K=2/3/4 predictive of functioning but add less). Honest copula shift: durable-trio-alone EIV
+no longer robust → the predictive object is the fuller archetype representation. Native M4 (`scripts/40–48`)
+kept as provenance.
 **M5 treatment COMPLETE** (pending PI sign-off) — methods **[docs/TREATMENT_MODEL.md](docs/TREATMENT_MODEL.md)**,
 findings (paper-facing, read first) **[docs/TREATMENT_FINDINGS.md](docs/TREATMENT_FINDINGS.md)**. Treatment
 data was found **late** in the per-cohort thesaurus `TRAITEMENTS` tabs (never in the harmonized common set)
