@@ -29,7 +29,13 @@ Transdiagnostic (ARI≈0 vs DSM-5) and tighter than DSM-5 (descriptive). *M3/M4/
 the prior native-map M2 (8 archetypes / K=4); their rerun on this copula object is pending.* **M3 temporal coherence is COMPLETE** (pending PI sign-off) — the map
 and strata are **temporally coherent** (V0→V1→V2): the measurement holds (G1 invariance), and the M2 geometry
 replays over time — biology/cognition are durable (trait) while severity + symptoms slide (state), and
-archetype identity persists. Findings: [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md). **M4 prognosis is
+archetype identity persists. Findings: [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md). **M3 has now been
+*reworked on the copula M1/M2 objects*** (parallel OOP engine `src/face/temporal/temporal_model_oop.py`;
+canonical [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md)): V1/V2 scored under the fixed copula M1
+(`copula_forward` + frozen-V0 covariate-FWL; V0 reproduced at r≈0.99) → the result **replays** — G1 all 5
+backbone axes invariant (inflammatory now invariant, vs partial native), G3 biology trait (metabolic ICC
+**0.91**, cognition 0.70) / symptoms state (developmental 0.39) / severity trait-by-rank with population
+improvement, G4 archetype weights persist (cosine 0.90). **M4 prognosis is
 COMPLETE** (pending PI sign-off) — on the fixed M1/M2/M3 objects, a baseline transdiagnostic profile
 **predicts 2-year functional trajectory incrementally beyond diagnosis + severity** (durable
 metabolic/inflammatory ⊥G; the 8 archetypes stratify functional remission **14%→60%**), robust to
