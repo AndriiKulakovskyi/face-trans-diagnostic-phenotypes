@@ -1,9 +1,10 @@
-# The Gaussian-copula vertical — consolidated findings (M2 · M3 · M4)
+# The Gaussian-copula vertical — consolidated findings (M2 · M3 · M4 · M5)
 
 > **Paper-facing synthesis of the reworked vertical.** On the certified cohort-weighted full-N
-> **Gaussian-copula** measurement map (M1), the M2 stratification, M3 temporal coherence, and M4 prognosis
-> were each rebuilt as **parallel OOP engines that wrap the proven kernels** and leave the native pipelines
-> (`scripts/20-48`) untouched. This is the one-page read of what the vertical found and what it means.
+> **Gaussian-copula** measurement map (M1), the M2 stratification, M3 temporal coherence, M4 prognosis, and M5
+> treatment moderation were each rebuilt as **parallel OOP engines that wrap the proven kernels** and leave the
+> native pipelines (`scripts/20-57`) untouched. This is the one-page read of what the vertical found and what it
+> means.
 > Per-milestone canonical records: [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md) ·
 > [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md) · [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md) ·
 > [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md). One-figure summary:
@@ -69,6 +70,18 @@ with uncertainty propagated and no imputation at any step. A stratification that
 would be a re-dressed CGI-S; this one separates patients who look equally ill but are biologically opposite,
 and that separation is durable and prognostically meaningful.
 
+## M5 — treatment: the earned boundary holds (full record: [TREATMENT_OOP_FINDINGS.md](TREATMENT_OOP_FINDINGS.md))
+
+Does the map *moderate* treatment response? On observational treatment-as-usual, **no — reliably not**, the
+honest boundary reproduced on the copula object: lithium-BP a **well-identified null** (overlap 0.997, E-value
+1.06); antipsychotic-BP **suggestive-but-unconfirmed** (ATE −0.23 excludes 0, **E-value 1.77 ≈ native's 1.79**,
+moderation ΔELPD weak); clozapine-SZ non-decisive. But two positive reads: the **archetype carrier survives
+treatment adjustment** (low-burden archetype, 4.7% attenuation — the functional forecast is not a treatment
+proxy; *M5 strengthens M4*), and the **archetypes predict response heterogeneity** (resistance ΔELPD +20, CGI
+response +16, side-effects +10, all archetype-driven). So the map *describes* who responds/resists, even though
+it does not *causally select* a drug — true selection needs randomized data (M5b). Figure:
+`docs/figures/treatment_oop/moderation.png`.
+
 ## Honest tensions (the calibration)
 
 1. **The biology carrier shifted between map versions.** On the native map the *isolated durable trio*
@@ -90,17 +103,19 @@ and that separation is durable and prognostically meaningful.
 **Scientific validity: yes** — a real, stable, continuum (not biotype) map; biology⊥symptoms⊥severity; durable
 biology; a genuine group-level incremental prognostic signal for functioning, co-informative with DSM-5, robust
 to attrition/cohort/permutation. **Strong clinical utility: not demonstrated** — small individual-level gain;
-treatment moderation not shown (native M5 was a well-identified null); internal validity only. Reporting the
-modest/null pieces plainly is a deliberate correction to biotype/biomarker overclaiming.
+treatment moderation does not hold on observational TAU (M5: lithium-BP a well-identified null, antipsychotic-BP
+suggestive-unconfirmed E 1.77); internal validity only. Reporting the modest/null pieces plainly is a deliberate
+correction to biotype/biomarker overclaiming.
 
-**Remaining:** the **M5 treatment** rerun on the copula object (the one milestone not yet reworked); then the
-external/causal/randomized evidence this baseline cohort fundamentally cannot supply.
+**Remaining:** the full copula vertical (M1→M2→M3→M4→M5) is now reworked. What this baseline cohort cannot
+supply: **M5b** (true treatment *selection* — randomized/trial-arm data) and external/causal validation.
 
 ## Engineering provenance
 
 Parallel OOP engines, each wrapping the proven kernels with **no edits to the native pipelines**, on branch
 `oop-strata-soft-regions`: `src/face/strata/strata_model_oop.py` (M2), `src/face/prognosis/prognosis_model_oop.py`
-(M4), `src/face/temporal/temporal_model_oop.py` (M3). Built on the certified copula M1
+(M4), `src/face/temporal/temporal_model_oop.py` (M3), `src/face/treatment/treatment_model_oop.py` (M5). Built on
+the certified copula M1
 (`src/face/models/bayesian/measurement_model_oop.py`, `likelihood_mode="gaussian_copula"`). Validated end-to-end
 (M3 V0 reproduces the M2 coords at r ≈ 0.99); uncertainty propagated; no imputation; adversarial structure-testing
 (the single-Gaussian null). Outputs under `results/face/{strata_oop,prognosis_oop,temporal_oop}/`; 45 tests across

@@ -55,7 +55,14 @@ E-value); on observational treatment-as-usual the map **does not reliably modera
 (lithium-in-BP a *well-identified null*; a *suggestive-but-unconfirmed* metabolic/inflammatory ×
 antipsychotic-functioning hypothesis; clozapine *channeled*/non-estimable), the boundary is **earned, not
 assumed**, and the metabolic functional forecast **survives treatment adjustment** (strengthens M4).
-Findings: [`TREATMENT_FINDINGS.md`](TREATMENT_FINDINGS.md). **The program is M1–M5 complete (pending PI
+Findings: [`TREATMENT_FINDINGS.md`](TREATMENT_FINDINGS.md). **M5 has now been *reworked on the copula objects***
+(parallel OOP engine `src/face/treatment/treatment_model_oop.py`; canonical
+[`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md)): the earned boundary **replays** — lithium-BP a
+well-identified null (E 1.06), antipsychotic-BP suggestive-unconfirmed (ATE −0.23, **E-value 1.77 ≈ native
+1.79**), clozapine non-decisive; the **archetype carrier survives treatment adjustment** (4.7% attenuation,
+strengthens M4) and the **archetypes predict response heterogeneity** (resistance/response ΔELPD +20/+16).
+**The full Gaussian-copula vertical (M1→M2→M3→M4→M5) is now reworked** (consolidated synthesis:
+[`COPULA_VERTICAL_FINDINGS.md`](COPULA_VERTICAL_FINDINGS.md)). **The program is M1–M5 complete (pending PI
 sign-off); a true M5b — treatment *selection* — needs randomized/trial-arm data.**
 **Honest positioning (the calibrated claim):** the program demonstrates **scientific validity** — a real,
 stable, *continuum* (not biotypes) map carrying a *small but genuine, group-level* incremental prognostic
