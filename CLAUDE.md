@@ -66,8 +66,7 @@ Current status: **[docs/STATE.md](docs/STATE.md)**; per-candidate verdict:
 **[docs/ADJUDICATION.md](docs/ADJUDICATION.md)**; per-stage detail: [docs/RESULTS.md](docs/RESULTS.md).
 **M2 strata COMPLETE** (pending PI sign-off), **reworked on the Gaussian-copula map** — methods
 **[docs/STRATIFICATION_MODEL.md](docs/STRATIFICATION_MODEL.md)**, canonical findings
-**[docs/STRATA_OOP_FINDINGS.md](docs/STRATA_OOP_FINDINGS.md)**, atlas **[docs/STRATA_OOP_ATLAS.md](docs/STRATA_OOP_ATLAS.md)**
-(native-map `STRATA_FINDINGS`/`STRATA_ATLAS`/`STRATA_RESULTS` now redirect / are provenance).
+**[docs/STRATA_OOP_FINDINGS.md](docs/STRATA_OOP_FINDINGS.md)**, atlas **[docs/STRATA_OOP_ATLAS.md](docs/STRATA_OOP_ATLAS.md)**.
 On the 9-dim copula coordinates (uncertainty-propagated, diagnosis = validation-only) the transdiagnostic space
 is a **continuum, not biotypes** (confirmed by a single-Gaussian falsification null). The **load-bearing
 objects are the continuous coordinates + a stable A=4 archetype simplex** (biology⊥symptoms⊥severity; native
@@ -79,8 +78,7 @@ only the M3-contract default; finer K captures the severity/biology gradient K=2
 hand-off `results/face/strata_oop/consolidate/{patient_strata.parquet, k_family_menu.csv}` + continuous coords
 in `results/face/strata_oop/coordinates/`. (Native pipeline `scripts/20–26` retained as provenance.)
 **M3 temporal coherence COMPLETE** (pending PI sign-off) — methods **[docs/TEMPORAL_MODEL.md](docs/TEMPORAL_MODEL.md)**,
-findings (paper-facing, read first) **[docs/TEMPORAL_FINDINGS.md](docs/TEMPORAL_FINDINGS.md)**, dev record
-**[docs/TEMPORAL_RESULTS.md](docs/TEMPORAL_RESULTS.md)**. Scoring follow-up (V0→V1→V2) onto the **fixed** M1/M2
+findings (paper-facing, read first) **[docs/TEMPORAL_OOP_FINDINGS.md](docs/TEMPORAL_OOP_FINDINGS.md)**. Scoring follow-up (V0→V1→V2) onto the **fixed** M1/M2
 model (observed cells, uncertainty propagated, never re-discovered), the map + strata are **temporally
 coherent**: the measurement holds (G1 invariance: 5/6 backbone axes invariant, inflammatory partial), and the
 M2 geometry replays — **biology/cognition are durable (trait) while severity + symptoms slide (state)**, and
@@ -97,8 +95,8 @@ hand-off `results/face/temporal_oop/`). The one new piece is scoring V1/V2 under
 state / severity trait-by-rank with population improvement, G4 archetype weights persist (cosine 0.90).
 Native M3 (`scripts/30–37`) kept as provenance.
 **M4 prognosis COMPLETE** (pending PI sign-off) — methods **[docs/PROGNOSIS_MODEL.md](docs/PROGNOSIS_MODEL.md)**,
-findings (paper-facing, read first) **[docs/PROGNOSIS_FINDINGS.md](docs/PROGNOSIS_FINDINGS.md)**, clinician-facing
-prognostic atlas **[docs/PROGNOSIS_ATLAS.md](docs/PROGNOSIS_ATLAS.md)**, dev record **[docs/PROGNOSIS_RESULTS.md](docs/PROGNOSIS_RESULTS.md)**.
+findings (paper-facing, read first) **[docs/PROGNOSIS_OOP_FINDINGS.md](docs/PROGNOSIS_OOP_FINDINGS.md)**, clinician-facing
+prognostic atlas **[docs/PROGNOSIS_OOP_FINDINGS.md](docs/PROGNOSIS_OOP_FINDINGS.md)**.
 On the fixed M1/M2/M3 objects (panel + draws + strata + IPW; never re-scored), an errors-in-variables
 Bayesian GLM tests whether a baseline coordinate/stratum predicts a 2-year outcome **incrementally beyond
 DSM-5 + severity + the baseline outcome**. *Persists became predicts — for functioning, in the open-course
@@ -120,7 +118,7 @@ tessellation (all K=2/3/4 predictive of functioning but add less). Honest copula
 no longer robust → the predictive object is the fuller archetype representation. Native M4 (`scripts/40–48`)
 kept as provenance.
 **M5 treatment COMPLETE** (pending PI sign-off) — methods **[docs/TREATMENT_MODEL.md](docs/TREATMENT_MODEL.md)**,
-findings (paper-facing, read first) **[docs/TREATMENT_FINDINGS.md](docs/TREATMENT_FINDINGS.md)**. Treatment
+findings (paper-facing, read first) **[docs/TREATMENT_OOP_FINDINGS.md](docs/TREATMENT_OOP_FINDINGS.md)**. Treatment
 data was found **late** in the per-cohort thesaurus `TRAITEMENTS` tabs (never in the harmonized common set)
 and harmonized to common drug-class exposures (ATC[SZ] / class-string[DR] / lifetime-flag[BP]) — this
 **superseded an earlier wrong "data-blocked → tolerability coda"** conclusion. A proper causal pipeline

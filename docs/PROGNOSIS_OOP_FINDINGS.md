@@ -5,8 +5,7 @@
 > [`src/face/prognosis/prognosis_model_oop.py`](../src/face/prognosis/prognosis_model_oop.py) (wraps the proven
 > kernels — `glm.fit_glm`, `compare.delta_elpd`, the `reference.py` design builders — with **no edits** to the
 > native M4); driver [`notebooks/run_prognosis_model_oop.py`](../notebooks/run_prognosis_model_oop.py); figures
-> `docs/figures/prognosis_oop/`. The native-map [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md) is retained as
-> provenance. **Internal incremental-association validity only.** Pending PI sign-off. Updated 2026-06-22.
+> `docs/figures/prognosis_oop/`. **Internal incremental-association validity only.** Pending PI sign-off. Updated 2026-06-22.
 
 ## What this is
 

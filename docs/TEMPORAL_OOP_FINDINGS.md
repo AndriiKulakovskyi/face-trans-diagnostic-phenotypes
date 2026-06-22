@@ -5,7 +5,7 @@
 > `scripts/30-37`. Engine [`src/face/temporal/temporal_model_oop.py`](../src/face/temporal/temporal_model_oop.py)
 > (wraps the proven kernels — `invariance`/`variance`/`persistence`/`membership` + the strata scoring kernels —
 > with **no edits** to native M3); driver [`notebooks/run_temporal_model_oop.py`](../notebooks/run_temporal_model_oop.py).
-> The native-map [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md) is retained as provenance. Pending PI sign-off.
+> Pending PI sign-off.
 > Updated 2026-06-22.
 
 ## What this is

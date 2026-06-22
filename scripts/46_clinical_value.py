@@ -214,7 +214,7 @@ def _report(res, dca):
         "- **Net benefit** translates discrimination into a decision: is the map worth acting on.", "",
         "## Decision for the gate",
         "Confirm the clinical-value verdicts; fold the AUC / net-benefit numbers into "
-        "`docs/PROGNOSIS_ATLAS.md §5`, then proceed to the robustness sweep (47).", "",
+        "`docs/PROGNOSIS_OOP_FINDINGS.md §5`, then proceed to the robustness sweep (47).", "",
         "Artifacts: `results/face/m4/clinical_value.csv` · "
         "`docs/figures/46_{auc,decision_curve,calibration}.png`.",
     ]

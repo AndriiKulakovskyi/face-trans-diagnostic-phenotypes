@@ -19,7 +19,7 @@ manuscript, README, docs, and generated reports.
   False** for the mixed block — only the prose over-reached.
 - The 2026-06-17 re-fit confirmed the original plain-NB fit (`s5_cert9_s1/s2`, R-hat 1.01/1.04) is the
   **reported map**; the suicidality hurdle is an opt-in sensitivity (it destabilizes the
-  suicidality↔developmental Φ cell — see `REVIEWER_RESPONSE.md` P1-03).
+  suicidality↔developmental Φ cell).
 
 ## Rule
 

@@ -5,7 +5,7 @@
 > [`src/face/treatment/treatment_model_oop.py`](../src/face/treatment/treatment_model_oop.py) (wraps the proven
 > kernels — `treatment.{medications,endpoints,propensity,moderation}`, `prognosis.{glm,reference,compare}` —
 > with **no edits** to native M5); driver [`notebooks/run_treatment_model_oop.py`](../notebooks/run_treatment_model_oop.py).
-> Native-map [`TREATMENT_FINDINGS.md`](TREATMENT_FINDINGS.md) kept as provenance. Pending PI sign-off.
+> Pending PI sign-off.
 > Updated 2026-06-22.
 
 ## What this is

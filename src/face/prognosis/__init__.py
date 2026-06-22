@@ -28,7 +28,7 @@ from __future__ import annotations
 from face.temporal import CANON, VISITS  # single source of dim order + the follow-up grid
 
 # The durable trait axes M3 certified (high ICC, licensed invariant) — the stratify-on / predict-on
-# biology corner. M4's headline predictors. See docs/TEMPORAL_FINDINGS.md §8.
+# biology corner. M4's headline predictors. See docs/TEMPORAL_OOP_FINDINGS.md §8.
 DURABLE: tuple[str, ...] = ("cognition", "metabolic", "inflammatory")
 
 # The general factor (functional-burden / impairment axis). It is the error-aware baseline-severity

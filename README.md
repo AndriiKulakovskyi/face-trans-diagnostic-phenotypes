@@ -29,20 +29,20 @@ diagnostic cohorts  →  transdiagnostic dimensions  →  validated strata  → 
 - **M2 — it *organizes*.** A structure-discovery gate finds **no biotypes**: the space is a graded
   **continuum** — 8 soft archetypes + a 4-region tessellation — transdiagnostic (adjusted Rand ≈ 0 vs the
   DSM-5 subtypes) and a tighter description of the coordinates than diagnosis.
-  → [docs/STRATA_FINDINGS.md](docs/STRATA_FINDINGS.md)
+  → [docs/STRATA_OOP_FINDINGS.md](docs/STRATA_OOP_FINDINGS.md)
 - **M3 — it *persists*.** Scored forward onto follow-up (V0→V1→V2, never re-estimated), the measurement is
   invariant and the geometry replays: **durable biology, moving symptoms** (trait/state).
-  → [docs/TEMPORAL_FINDINGS.md](docs/TEMPORAL_FINDINGS.md)
+  → [docs/TEMPORAL_OOP_FINDINGS.md](docs/TEMPORAL_OOP_FINDINGS.md)
 - **M4 — it *predicts*.** An errors-in-variables Bayesian GLM shows a baseline coordinate forecasts 2-year
   **functioning** incrementally beyond diagnosis + severity + baseline — **modestly, and group-level**
   (remission ΔAUC +0.017; archetype atlas 14%→60%, partly severity), co-informative with DSM-5,
-  course-dependent. → [docs/PROGNOSIS_FINDINGS.md](docs/PROGNOSIS_FINDINGS.md)
+  course-dependent. → [docs/PROGNOSIS_OOP_FINDINGS.md](docs/PROGNOSIS_OOP_FINDINGS.md)
 - **M5 — it does *not* (yet) *prescribe*.** Treatment data, found in the per-cohort source dictionaries and
   harmonized, is run through a causal pipeline (overlap → propensity → doubly-robust EIV moderation +
   E-value): on observational treatment-as-usual the map does **not** reliably moderate response (lithium-BP
   a well-identified null; antipsychotic suggestive-unconfirmed; clozapine channeled). The prognosis
   **survives** treatment adjustment. The boundary is **earned, not assumed**.
-  → [docs/TREATMENT_FINDINGS.md](docs/TREATMENT_FINDINGS.md)
+  → [docs/TREATMENT_OOP_FINDINGS.md](docs/TREATMENT_OOP_FINDINGS.md)
 
 ## Method — the discipline
 flowchart TD
@@ -122,12 +122,12 @@ cd report && pdflatex FACE-ATLAS.tex    # ×2 for TOC/refs  (PDF is gitignored)
 
 - **[docs/STATE.md](docs/STATE.md)** — where the project is right now (**read first**).
 - **Paper-facing findings (read-first per milestone):** [M1](docs/M1_FINDINGS.md) ·
-  [M2](docs/STRATA_FINDINGS.md) · [M3](docs/TEMPORAL_FINDINGS.md) · [M4](docs/PROGNOSIS_FINDINGS.md) ·
-  [M5](docs/TREATMENT_FINDINGS.md).
+  [M2](docs/STRATA_OOP_FINDINGS.md) · [M3](docs/TEMPORAL_OOP_FINDINGS.md) · [M4](docs/PROGNOSIS_OOP_FINDINGS.md) ·
+  [M5](docs/TREATMENT_OOP_FINDINGS.md).
 - **Methods of record:** [measurement](docs/MEASUREMENT_MODEL.md) (canonical) ·
   [stratification](docs/STRATIFICATION_MODEL.md) · [temporal](docs/TEMPORAL_MODEL.md) ·
   [prognosis](docs/PROGNOSIS_MODEL.md) · [treatment](docs/TREATMENT_MODEL.md).
-- **Clinician-facing atlases:** [strata](docs/STRATA_ATLAS.md) · [prognosis](docs/PROGNOSIS_ATLAS.md).
+- **Clinician-facing atlases:** [strata](docs/STRATA_OOP_ATLAS.md) · [prognosis](docs/PROGNOSIS_OOP_FINDINGS.md).
 - **[REPRODUCE.md](REPRODUCE.md)** — step-by-step: build the data + re-fit the measurement model (M1).
 - **[docs/DATA.md](docs/DATA.md)** — data contract + dictionary · **[CLAUDE.md](CLAUDE.md)** — guide for
   collaborators / AI assistants · **`report/`** — the LaTeX manuscript (Milestones 1–5 + Conclusion).

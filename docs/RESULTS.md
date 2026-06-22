@@ -57,7 +57,7 @@ biology's direct G-loadings are ≈ 0 (metabolic 0.08, inflammatory 0.07); in th
 with G — vs cognition 0.39, sleep 0.42. So biology is **the least severity-entangled domain** (≈ 98.5–99.5% of
 its variance independent of G), but **not strictly orthogonal** — the exact claim is *"largely
 severity-independent,"* not *"orthogonal."* *(The provisional S5 mixed-fit read of 0.28/0.14 in §S5.3 below is
-superseded; canonical values in [`BIOLOGY_G_TABLE.md`](BIOLOGY_G_TABLE.md).)*
+superseded.)*
 
 **Hybrid adjudication, end to end.** Of the 10 candidate dimensions, the FACE data **confirmed 6 + G**,
 **split** candidate-5 into metabolic + inflammatory, **rejected** anhedonia (thin; merges into G + depression),
@@ -598,7 +598,7 @@ So biology is **not strictly ⊥ G**. But the **substantive claim holds**: biolo
 severity-entangled domain** (inflammatory the lowest of all; metabolic below cognition/sleep). *(The
 provisional S5 values in the table above — metabolic 0.28 / inflammatory 0.14 — were superseded by the clean
 continuous-backbone correlated-G fit: metabolic 0.124, inflammatory 0.071, i.e. ≈ 98.5–99.5% of variance
-independent of G; canonical numbers in [`BIOLOGY_G_TABLE.md`](BIOLOGY_G_TABLE.md).)* Two equally-impaired
+independent of G.)* Two equally-impaired
 patients can still differ sharply in biological load — biological strata remain worth drawing — but the
 earlier "orthogonal" phrasing overstated it; "largely severity-independent" is exact.
 

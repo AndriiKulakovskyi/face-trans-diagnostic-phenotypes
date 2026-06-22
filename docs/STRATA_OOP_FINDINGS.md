@@ -1,7 +1,7 @@
 # Soft operational regions on the Gaussian-copula map (M2) — findings
 
 > **Canonical M2 findings record.** Built on the certified cohort-weighted full-N Gaussian-copula 9-dim map.
-> (The earlier native-map M2 docs `STRATA_FINDINGS.md` / `STRATA_ATLAS.md` now redirect here.) **Detailed
+> **Detailed
 > analysis of what the K-family and A mean: [STRATA_OOP_ATLAS.md](STRATA_OOP_ATLAS.md).** Engine:
 > [`src/face/strata/strata_model_oop.py`](../src/face/strata/strata_model_oop.py);
 > driver: [`notebooks/run_strata_model_oop.py`](../notebooks/run_strata_model_oop.py); figures:

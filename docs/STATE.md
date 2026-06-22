@@ -19,9 +19,7 @@ impulsivity/negative-symptoms/sensory **not_testable**; depression/anxiety are c
 Engine in `src/face/{models/bayesian,confirm,runner,scoring}.py`; pipeline `scripts/01,04–09,s5_*`; results
 in `reports/01,04–11`. **M2 stratification COMPLETE** (pending PI sign-off), **reworked on the certified Gaussian-copula map** —
 canonical findings [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md), atlas
-[`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md), methods [`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md)
-(the native-map [`STRATA_FINDINGS.md`](STRATA_FINDINGS.md) / [`STRATA_ATLAS.md`](STRATA_ATLAS.md) now
-redirect). The transdiagnostic space is a **continuum** (not biotypes; confirmed by a single-Gaussian
+[`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md), methods [`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md). The transdiagnostic space is a **continuum** (not biotypes; confirmed by a single-Gaussian
 falsification null): the **load-bearing objects are the continuous 9-dim coordinates + a stable A=4 archetype
 simplex** (biology⊥symptoms⊥severity), and the soft tessellation is a coarse convention exported as a **nested
 K-family (2/3/4) with no privileged K** — the operative K is deferred to M4/M5 incremental validity.
@@ -29,7 +27,7 @@ Transdiagnostic (ARI≈0 vs DSM-5) and tighter than DSM-5 (descriptive). *M3/M4/
 the prior native-map M2 (8 archetypes / K=4); their rerun on this copula object is pending.* **M3 temporal coherence is COMPLETE** (pending PI sign-off) — the map
 and strata are **temporally coherent** (V0→V1→V2): the measurement holds (G1 invariance), and the M2 geometry
 replays over time — biology/cognition are durable (trait) while severity + symptoms slide (state), and
-archetype identity persists. Findings: [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md). **M3 has now been
+archetype identity persists. Findings: [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md). **M3 has now been
 *reworked on the copula M1/M2 objects*** (parallel OOP engine `src/face/temporal/temporal_model_oop.py`;
 canonical [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md)): V1/V2 scored under the fixed copula M1
 (`copula_forward` + frozen-V0 covariate-FWL; V0 reproduced at r≈0.99) → the result **replays** — G1 all 5
@@ -41,8 +39,8 @@ COMPLETE** (pending PI sign-off) — on the fixed M1/M2/M3 objects, a baseline t
 metabolic/inflammatory ⊥G; the 8 archetypes stratify functional remission **14%→60%**), robust to
 attrition/reliability/permutation, **co-informative with DSM-5** (complements, not replaces) and
 **course-dependent** (episodic BP/DR, not baseline-saturated SZ); severity itself is
-autoregression-determined. Findings: [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md); clinician atlas:
-[`PROGNOSIS_ATLAS.md`](PROGNOSIS_ATLAS.md). **M4 has now been *reworked on the copula M2 object*** (parallel OOP
+autoregression-determined. Findings: [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md); clinician atlas:
+[`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md). **M4 has now been *reworked on the copula M2 object*** (parallel OOP
 engine `src/face/prognosis/prognosis_model_oop.py`; canonical [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md)):
 the result replays — the map predicts 2-yr **functioning** (archetypes ΔELPD **+59** on egf, co-informative with
 DSM-5), functional remission **27%→60%** across the A=4 archetypes (biology corner worst), and — the answer to
@@ -55,7 +53,7 @@ E-value); on observational treatment-as-usual the map **does not reliably modera
 (lithium-in-BP a *well-identified null*; a *suggestive-but-unconfirmed* metabolic/inflammatory ×
 antipsychotic-functioning hypothesis; clozapine *channeled*/non-estimable), the boundary is **earned, not
 assumed**, and the metabolic functional forecast **survives treatment adjustment** (strengthens M4).
-Findings: [`TREATMENT_FINDINGS.md`](TREATMENT_FINDINGS.md). **M5 has now been *reworked on the copula objects***
+Findings: [`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md). **M5 has now been *reworked on the copula objects***
 (parallel OOP engine `src/face/treatment/treatment_model_oop.py`; canonical
 [`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md)): the earned boundary **replays** — lithium-BP a
 well-identified null (E 1.06), antipsychotic-BP suggestive-unconfirmed (ATE −0.23, **E-value 1.77 ≈ native
@@ -173,17 +171,14 @@ M4/M5. Engine `src/face/strata/validation.py` + `mixture.xd_fixed_labels`; `scri
 **M2.5 consolidation DONE (2026-06-09) — M2 COMPLETE (pending PI sign-off).** Unified hand-off
 `results/face/patient_strata.parquet` (9,013 × 29: archetype weights + sd, tessellation responsibilities,
 dominant labels, entropy, arm — diagnosis for validation only); paper-facing
-[`STRATA_FINDINGS.md`](STRATA_FINDINGS.md) + [`STRATA_ATLAS.md`](STRATA_ATLAS.md) + detailed development
-record [`STRATA_RESULTS.md`](STRATA_RESULTS.md) (methods rationale, ideas, per-stage observations, extended
-discussion); `scripts/26_score.py`.
+[`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md) + [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md); `scripts/26_score.py`.
 Pipeline `scripts/20–26` + `src/face/strata/{scoring,structure,mixture,archetypes,validation}.py`; 90 tests
 green. **PI sign-off on the findings + atlas locks M2; then M3 temporal coherence (do the coordinates +
 phenotype memberships persist V1–V4?).**
 
 ## M3 — temporal coherence (COMPLETE 2026-06-10, pending PI sign-off)
 
-**Findings: [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md); methods: [`TEMPORAL_MODEL.md`](TEMPORAL_MODEL.md);
-dev record: [`TEMPORAL_RESULTS.md`](TEMPORAL_RESULTS.md).** Does the V0 map + strata cohere and persist over
+**Findings: [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md); methods: [`TEMPORAL_MODEL.md`](TEMPORAL_MODEL.md).** Does the V0 map + strata cohere and persist over
 follow-up (V0→V1→V2, yearly)? Scored onto the **FIXED** M1/M2 model — observed cells only, uncertainty
 propagated, **never re-discovered**. Engine `src/face/temporal/`; pipeline `scripts/30–37`; **36 tests**.
 Window V0–V2 (all 3 cohorts well-represented; DR collapses at V3). G5 (vs DSM-5) **deferred to M4** (`arm` is
@@ -218,8 +213,8 @@ window. **PI sign-off locks M3; then M4 prognosis — persists ≠ predicts.**
 
 ## M4 — prognosis (COMPLETE 2026-06-11, pending PI sign-off)
 
-Findings [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md) · methods [`PROGNOSIS_MODEL.md`](PROGNOSIS_MODEL.md) ·
-clinician atlas [`PROGNOSIS_ATLAS.md`](PROGNOSIS_ATLAS.md) · dev record [`PROGNOSIS_RESULTS.md`](PROGNOSIS_RESULTS.md).
+Findings [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md) · methods [`PROGNOSIS_MODEL.md`](PROGNOSIS_MODEL.md) ·
+clinician atlas [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
 Engine `src/face/prognosis/` (frame · reference · glm · compare · endpoints · clinical_value ·
 transdiagnostic · robustness); pipeline `scripts/40–48`; `tests/m4/` (33). Consumes the **fixed**
 M1/M2/M3 objects (panel, draws, strata, IPW) — nothing re-discovered or re-scored.
@@ -239,7 +234,7 @@ Hand-off `results/face/m4/{prognosis_summary.csv, prognosis_patient_risk.parquet
 
 ## M5 — treatment (COMPLETE 2026-06-11, pending PI sign-off)
 
-Findings [`TREATMENT_FINDINGS.md`](TREATMENT_FINDINGS.md) · methods [`TREATMENT_MODEL.md`](TREATMENT_MODEL.md) ·
+Findings [`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md) · methods [`TREATMENT_MODEL.md`](TREATMENT_MODEL.md) ·
 dev record `reports/50–57_*.md`. Engine `src/face/treatment/` (endpoints · frame · medications ·
 propensity · moderation); pipeline `scripts/50–57`; `tests/m5/` (11). Treatment data was found **late** in
 the per-cohort thesaurus `TRAITEMENTS` tabs (never in the harmonized set), harmonized to common drug-class
@@ -378,7 +373,7 @@ status file to keep one current narrative. The canonical M1 record is
 [`M1_FINDINGS.md`](M1_FINDINGS.md) (paper-facing), [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md)
 (methods of record), [`ADJUDICATION.md`](ADJUDICATION.md) (per-candidate verdicts) and
 [`RESULTS.md`](RESULTS.md) (findings log), with per-stage tables under `reports/04_stage*`.
-Biology–G independence is defined once in [`BIOLOGY_G_TABLE.md`](BIOLOGY_G_TABLE.md);
+Biology–G independence is reported in [`RESULTS.md`](RESULTS.md) / [`M1_FINDINGS.md`](M1_FINDINGS.md);
 certification tiers in [`CERTIFICATION_TIERS.md`](CERTIFICATION_TIERS.md).
 
 ## What to read

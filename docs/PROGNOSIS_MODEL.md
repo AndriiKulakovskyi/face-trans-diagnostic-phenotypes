@@ -2,8 +2,8 @@
 
 > **The methods + math of record for Milestone 4.** Logic, estimand, the nested model ladder, the
 > errors-in-variables engine, the clinical-endpoint layer, the acceptance gates, and the staged
-> pipeline. Findings: [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md); clinician atlas:
-> [`PROGNOSIS_ATLAS.md`](PROGNOSIS_ATLAS.md); dev record: [`PROGNOSIS_RESULTS.md`](PROGNOSIS_RESULTS.md).
+> pipeline. Findings: [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md); clinician atlas:
+> [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
 > Read before any M4 modelling work. *Status: COMPLETE, pending PI sign-off. 2026-06-11.*
 
 ## 1. Estimand and invariants

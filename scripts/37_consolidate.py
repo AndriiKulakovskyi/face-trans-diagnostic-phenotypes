@@ -76,8 +76,7 @@ def main():
           "- **G6 (attrition):** dropout is mild/cognition-leaning; verdicts robust to survivorship.",
           "- **Bottom line:** the transdiagnostic map and strata are **temporally coherent** — *stratify on "
           "the durable biology, monitor the moving symptoms.* Persists ≠ predicts (M4).", "",
-          "Docs: `docs/TEMPORAL_FINDINGS.md` (paper-facing) · `docs/TEMPORAL_MODEL.md` (methods) · "
-          "`docs/TEMPORAL_RESULTS.md` (per-stage). Hand-off: `results/face/patient_panel.parquet`."]
+          "Docs: `docs/TEMPORAL_OOP_FINDINGS.md` (paper-facing) · `docs/TEMPORAL_MODEL.md` (methods). Hand-off: `results/face/patient_panel.parquet`."]
     (REPORTS / "37_panel.md").write_text("\n".join(md))
     print("\n".join(md))
     print(f"\n[done] wrote patient_panel.parquet ({panel.shape}) + 37_axis_summary.csv")
