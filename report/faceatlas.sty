@@ -190,26 +190,62 @@
 % (1) Bifactor/ESEM path diagram: G links to ALL indicators (general, light), each specific to its
 %     own pool (accent); a depression/anxiety "window" loads on G only (dashed amber).
 \newcommand{\bifactordiagram}{%
-\begin{center}\resizebox{0.95\linewidth}{!}{%
+\begin{center}\resizebox{0.98\linewidth}{!}{%
 \begin{tikzpicture}[>={Stealth[length=2mm]},
-  lat/.style={draw=faceaccent,line width=0.8pt,fill=faceaccent!8,ellipse,minimum width=16mm,minimum height=8mm,font=\sffamily\footnotesize\bfseries},
-  gen/.style={draw=faceaccentdk,line width=1.1pt,fill=faceaccentdk!12,ellipse,minimum width=20mm,minimum height=10mm,font=\sffamily\footnotesize\bfseries},
-  ind/.style={draw=facemute,line width=0.5pt,fill=white,minimum width=6mm,minimum height=5mm},
-  gline/.style={facemute!65,line width=0.4pt},
-  sline/.style={faceaccent,line width=0.7pt}]
-  \node[gen] (G) at (0,3.3) {G};
-  \node[lat] (cog) at (-4,1.6) {cognition};
-  \node[lat] (met) at (0,1.6) {metabolic};
-  \node[lat] (slp) at (4,1.6) {sleep};
-  \foreach \x/\n in {-5/c1,-4/c2,-3/c3} {\node[ind] (\n) at (\x,0) {};}
-  \foreach \x/\n in {-1/m1,0/m2,1/m3} {\node[ind] (\n) at (\x,0) {};}
-  \foreach \x/\n in {3/s1,4/s2,5/s3} {\node[ind] (\n) at (\x,0) {};}
-  \foreach \n in {c1,c2,c3,m1,m2,m3,s1,s2,s3} {\draw[gline] (G)--(\n);}
-  \foreach \n in {c1,c2,c3} {\draw[sline] (cog)--(\n);}
-  \foreach \n in {m1,m2,m3} {\draw[sline] (met)--(\n);}
-  \foreach \n in {s1,s2,s3} {\draw[sline] (slp)--(\n);}
-  \node[ind,draw=facecav,fill=facecav!10,minimum width=12mm] (w) at (7.0,1.6) {\sffamily\scriptsize MADRS};
-  \draw[facecav,line width=0.8pt,dashed] (w) to[bend left=12] (G);
+  gen/.style={draw=faceaccentdk,line width=1.1pt,fill=faceaccentdk!12,ellipse,minimum width=42mm,minimum height=13mm,font=\sffamily\small\bfseries,align=center},
+  lat/.style={draw=faceaccent,line width=0.9pt,fill=faceaccent!12,ellipse,minimum width=23mm,minimum height=9.5mm,font=\sffamily\footnotesize\bfseries},
+  ind/.style={draw=facemute,line width=0.5pt,fill=white,rounded corners=1pt,minimum width=11mm,minimum height=6.5mm,font=\sffamily\scriptsize},
+  anc/.style={ind,draw=faceaccentdk,line width=0.8pt,fill=faceaccentdk!9},
+  win/.style={ind,draw=facecav,line width=0.8pt,fill=facecav!12},
+  gline/.style={facemute!55,line width=0.45pt},
+  aline/.style={faceaccentdk!80,line width=1.0pt},
+  sline/.style={faceaccent,line width=0.9pt},
+  wline/.style={facecav,line width=0.9pt,dashed}]
+  % --- specific-factor centres as coordinates: the ellipses are drawn LAST, on top of the
+  %     loading lines, so any line that passes behind a factor is hidden (no tangle) ---
+  \coordinate (cogC) at (1.35,2.5);
+  \coordinate (metC) at (8.4,2.5);
+  \coordinate (slpC) at (11.2,2.5);
+  % --- the general factor, anchored by functioning / global-severity content ---
+  \node[gen] (G) at (5.0,5.0) {$G$\\[-1pt]{\scriptsize general functional burden}};
+  % --- a faint band groups the functioning/severity anchor pool that defines G ---
+  \fill[faceaccentdk!7,rounded corners=2pt] (2.85,-0.45) rectangle (6.75,0.45);
+  % --- indicators (bottom row): the G-anchor pool, then one pool per specific factor ---
+  \node[anc] (a1) at (3.5,0) {FAST};
+  \node[anc] (a2) at (4.8,0) {EGF};
+  \node[anc] (a3) at (6.1,0) {CGI-S};
+  \node[ind] (c1) at (0.5,0) {TMT};
+  \node[ind] (c2) at (2.2,0) {DSST};
+  \node[ind] (e1) at (7.7,0) {BMI};
+  \node[ind] (e2) at (9.1,0) {lipids};
+  \node[ind] (p1) at (10.5,0) {PSQI};
+  \node[ind] (p2) at (11.9,0) {ISI};
+  \node[win] (w)  at (13.4,0) {MADRS};
+  % --- general loadings: G touches every indicator (light grey) ---
+  \foreach \n in {c1,c2,e1,e2,p1,p2} {\draw[gline] (G)--(\n);}
+  % --- anchor loadings: the functioning / global-severity pool that DEFINES G (solid, dark);
+  %     it has no competing specific factor, so G reads as burden, not a generic symptom factor ---
+  \foreach \n in {a1,a2,a3} {\draw[aline] (G)--(\n);}
+  % --- specific loadings (blue): each factor to its own pool ---
+  \draw[sline] (cogC)--(c1); \draw[sline] (cogC)--(c2);
+  \draw[sline] (metC)--(e1); \draw[sline] (metC)--(e2);
+  \draw[sline] (slpC)--(p1); \draw[sline] (slpC)--(p2);
+  % --- a cross-loading "window": MADRS loads on G and (only where theory permits) on sleep ---
+  \draw[wline] (w) to[bend right=8] (G);
+  \draw[wline] (w) -- (slpC);
+  % --- specific-factor ellipses, drawn on top to hide the lines that pass behind them ---
+  \node[lat] at (cogC) {cognition};
+  \node[lat] at (metC) {metabolic};
+  \node[lat] at (slpC) {sleep};
+  \node[font=\sffamily\scriptsize\itshape,text=faceaccentdk] at (5.0,-1.0)
+       {functioning / severity anchors --- they \emph{define} $G$};
+  % --- legend ---
+  \begin{scope}[shift={(0.0,-2.6)},font=\sffamily\scriptsize]
+    \draw[aline] (0,0)--(0.7,0);            \node[anchor=west] at (0.82,0) {anchors $G$ $\Rightarrow$ \emph{functional burden}};
+    \draw[gline] (6.7,0)--(7.4,0);          \node[anchor=west] at (7.52,0) {general loading (every indicator)};
+    \draw[sline] (0,-0.62)--(0.7,-0.62);    \node[anchor=west] at (0.82,-0.62) {specific loading (home factor)};
+    \draw[wline] (6.7,-0.62)--(7.4,-0.62);  \node[anchor=west] at (7.52,-0.62) {cross-loading window (only where theory permits)};
+  \end{scope}
 \end{tikzpicture}}\end{center}}
 
 % (2) Marginalization + Woodbury: explicit (big indicator-space Σ, ≈70k latents) -> marginalized
