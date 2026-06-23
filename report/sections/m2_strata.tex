@@ -24,7 +24,7 @@ has no structure at all?} If it cannot, there are no biotypes to find, and a bio
 \structuregateflow
 \caption{Falsification-first. Before clustering, the best partition of the real coordinates is compared against
 the best partition of a single Gaussian blob with the same mean and covariance --- a cloud that has \emph{no}
-clusters by construction. The real data separate no better ($z=0.1$): the verdict is a \emph{continuum}, which
+clusters by construction. The real data separate no better ($z=-0.36$): the verdict is a \emph{continuum}, which
 is then represented two complementary, uncertainty-propagating ways --- four extreme phenotypes (the
 load-bearing view) and a coarse soft tessellation exported as a nested $K$-family with no privileged $K$. The
 gate is the stratification analogue of the map chapter's ``the eligibility map is itself a result.''}
@@ -69,12 +69,12 @@ gain) are matched by the null or reflect skew/corner \emph{shape}, not clusters.
 \toprule
 \hdr{diagnostic} & \hdr{result} & \hdr{reads as}\\
 \midrule
-\rowcolor{facebg} silhouette vs.\ Gaussian null & real $0.140$ vs.\ null $0.140\pm0.003$ ($z=0.1$) & \textbf{no separation beyond a blob}\\
+\rowcolor{facebg} silhouette vs.\ Gaussian null & real $0.140$ vs.\ null $0.141\pm0.002$ ($z=-0.36$) & \textbf{no separation beyond a blob}\\
 KMeans silhouette by $K$ & peak $0.140$ ($K{=}2$), declining ($0.123,0.107,\dots$) & $<0.15$ at every $K$\\
 \rowcolor{facebg} Hartigan dip (PC1) & $p\approx 0.99$ & unimodal main axis\\
 HDBSCAN (density) & $0$ clusters, $100\%$ ``noise'' & no density peaks or valleys\\
 \rowcolor{facebg} GMM-BIC over draws & optimal $K=1$ in all $20$ posterior draws & one component once uncertainty propagates\\
-GMM-BIC gain (point coords) & $10{,}326$ vs.\ null $0$ & non-Gaussian \emph{shape}, not clusters\\
+GMM-BIC gain (point coords) & $9{,}495$ vs.\ null $0$ & non-Gaussian \emph{shape}, not clusters\\
 \rowcolor{facebg} Hopkins (tendency) & $0.795$ vs.\ null $0.776\pm0.004$ & essentially the null --- spurious\\
 Mapper (topology) & one connected component & a graded backbone, not islands\\
 \bottomrule
@@ -86,14 +86,14 @@ Mapper (topology) & one connected component & a graded backbone, not islands\\
 \caption{The falsification null. \emph{Left:} silhouette by $K$ for the real coordinates --- the peak ($0.140$
 at $K{=}2$) sits below the $0.15$ separation floor and declines from there, so no $K$ yields separated groups.
 \emph{Right:} the decisive comparison --- the best silhouette of the real data ($0.140$) lands squarely inside
-the distribution of best silhouettes from a single-Gaussian blob ($0.140\pm0.003$, $z=0.1$). The real cloud is
+the distribution of best silhouettes from a single-Gaussian blob ($0.141\pm0.002$, $z=-0.36$). The real cloud is
 statistically indistinguishable from a structureless continuum.}
 \label{fig:structure}
 \end{figure}
 
 \begin{keyresult}[No evidence for well-separated discrete biotypes --- the space is a graded continuum]
 The best partition of the real nine-dimensional cloud separates patients \emph{no better} than the best
-partition of a single structureless Gaussian blob (silhouette $0.140$ vs.\ $0.140\pm0.003$, $z=0.1$). Five
+partition of a single structureless Gaussian blob (silhouette $0.140$ vs.\ $0.141\pm0.002$, $z=-0.36$). Five
 further methods agree: the main axis is unimodal (dip $p\approx 0.99$), density clustering finds nothing
 (HDBSCAN: $0$ clusters), the topology is one connected component (Mapper), and once the per-patient
 uncertainty is propagated the optimal number of components collapses to $1$ in all $20$ posterior draws. The
@@ -105,7 +105,7 @@ This is the central finding of this chapter, and it has teeth precisely because 
 says most published ``biotype'' results are probably artefacts of forcing a cluster count onto data that has
 none --- which is exactly why those results famously fail to replicate --- and it lands squarely where serious
 psychiatry has been heading (the dimensional RDoC/HiTOP view). It is also a \emph{calibrated} negative, not a
-slogan: the GMM-BIC gain over a single Gaussian is large ($10{,}326$), so the cloud is genuinely
+slogan: the GMM-BIC gain over a single Gaussian is large ($9{,}495$), so the cloud is genuinely
 \emph{non-Gaussian} --- but the silhouette proves those extra components are not \emph{separated}, so the
 non-Gaussianity is \emph{shape} (skew and the archetype corners we meet next), not clusters. What we cannot
 rule out is structure hiding in the raw indicators that the nine-dimensional summary blurs, or structure that
@@ -247,7 +247,7 @@ incremental-validity test in the prognosis chapter (Chapter~\ref{sec:prognosis})
 
 \begin{definitionbox}[Why a $K$-family, not a $K$]
 The mixture's own evidence (the cross-validated XD-BIC) is essentially \emph{flat} across $K$:
-$197{,}918$--$199{,}505$ over $K=2$--$8$, a spread under $1\%$, with the nominal minimum at $K=3$. A flat basin
+$197{,}918$--$199{,}545$ over $K=2$--$8$, a spread under $1\%$, with the nominal minimum at $K=3$. A flat basin
 \emph{is} the continuum signature --- there is no natural number of regions, and an internal tiebreak would be
 false precision. So we ship the family and let external (predictive) validity decide. $K=2$ is exported as the
 \emph{contract default} the downstream pipeline needs, not a privileged scientific choice.
@@ -319,8 +319,8 @@ full mix of diagnoses: the symptom corner (A3) is the most bipolar-leaning at $8
 shuffled right through the cloud.
 
 \textbf{The map describes patients far better than the labels.} A free soft tessellation beats a
-DSM-5-constrained mixture on model evidence --- XD-BIC $197{,}963$ versus $201{,}292$, a tighter description
-with \emph{fewer} groups --- and explains more than four times the coordinate variance (mean $\eta^2\,0.108$
+DSM-5-constrained mixture on model evidence --- XD-BIC $197{,}963$ versus $201{,}294$, a tighter description
+with \emph{fewer} groups --- and explains more than four times the coordinate variance (mean $\eta^2\,0.109$
 vs.\ $0.025$). The diagnoses barely organize this biological/cognitive landscape at all.
 
 \begin{table}[h]\centering\small\sffamily
@@ -336,9 +336,9 @@ transdiagnostic, stable, not a missingness artefact, and a tighter description t
 Q2 --- more than severity? & $\eta^2$ specifics $0.122 \gg \eta^2$ $G$ $0.008$ & specifics drive it\\
 \rowcolor{facebg} Q3 --- transdiagnostic? & ARI $0.00$ cohort / $0.01$ DSM-5 & cuts across diagnosis\\
 Q4 --- stable? & seed-ARI $0.998$ (tess) $\cdot$ congruence $0.979$ (arch) & reproducible\\
-\rowcolor{facebg} Q4 --- not an artefact? & coverage perm-$p$ $0.60$, lift $-0.055$ & \textbf{negative} lift\\
-vs DSM-5 (BIC) & free tessellation \textbf{197{,}963} vs DSM-5 201{,}292 & tighter, fewer groups\\
-\rowcolor{facebg} vs DSM-5 (variance) & coordinate $\eta^2$ free \textbf{0.108} vs DSM-5 0.025 & DSM-5 barely structures it\\
+\rowcolor{facebg} Q4 --- not an artefact? & coverage perm-$p$ $0.23$, lift $-0.052$ & \textbf{negative} lift\\
+vs DSM-5 (BIC) & free tessellation \textbf{197{,}963} vs DSM-5 201{,}294 & tighter, fewer groups\\
+\rowcolor{facebg} vs DSM-5 (variance) & coordinate $\eta^2$ free \textbf{0.109} vs DSM-5 0.025 & DSM-5 barely structures it\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -356,7 +356,7 @@ representation out-predict the DSM-5 subtypes on course and treatment response?'
 The classic trap in clustering messy clinical data is accidentally grouping patients by \emph{who got which
 tests} rather than what they are like --- people with bloodwork versus without form fake ``biotypes.'' We
 tested exactly that: a classifier predicting a patient's region from the \emph{pattern of what was measured}
-yields a \emph{negative} lift ($-0.055$, permutation $p=0.60$), worse than chance. Membership is governed by
+yields a \emph{negative} lift ($-0.052$, permutation $p=0.23$), worse than chance. Membership is governed by
 what patients \emph{are}, not by what was measured on them. The whole measurement-error apparatus ---
 propagating each patient's uncertainty the entire way (Eq.~\ref{eq:xd}) --- did its job, and this vindicates the
 map's ``propagate the uncertainty'' design.
@@ -384,10 +384,10 @@ different directions --- a severity gradient and a biological gradient. Not a co
 
 \begin{figure}[h]\centering
 \includegraphics[width=\linewidth]{figures/m2_embedding.png}
-\caption{The continuum in one picture (PCA/UMAP, \emph{visualization-only} --- never a clustering input).
-\emph{Left:} by cohort --- BP/SZ/DR fully intermixed, no diagnostic territories. \emph{Centre:} by DSM-5
-subtype --- the same intermixing. \emph{Right:} smooth gradients of severity and of inflammatory load, crossing
-the cloud in \emph{different} directions --- the geometry of biology largely independent of severity.}
+\caption{The continuum in one picture (PCA, \emph{visualization-only} --- never a clustering input).
+\emph{Left:} by cohort --- BP/SZ/DR fully intermixed, no diagnostic territories. \emph{Centre:} the severity
+($G$) gradient. \emph{Right:} the inflammatory gradient --- crossing the cloud in a \emph{different} direction
+from severity, the geometry of biology largely independent of how impaired a patient is overall.}
 \label{fig:embedding}
 \end{figure}
 

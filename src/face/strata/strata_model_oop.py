@@ -754,10 +754,14 @@ class StrataRunner:
                 res = {arm: self.gate.battery(coords, arm=arm) for arm in stage.arms}
                 res["uncertainty_A"] = self.gate.uncertainty_stability(coords, arm="A",
                                                                        n_draw=stage.n_uncertainty_draws)
+                # serialize the single-Gaussian falsification null (the decisive separation test) so the
+                # real-vs-null silhouette / z / GMM-gain are traceable artifacts, not plotting-time constants.
+                res["falsification_null"] = self.gate.null_comparison(coords, arm="A")
                 _save_payload(out, {"verdict_A": res["A"]["verdict"], "verdict_B": res["B"]["verdict"],
                                     "diagnostics_A": res["A"]["diagnostics"],
                                     "diagnostics_B": res["B"]["diagnostics"],
-                                    "uncertainty_A": res["uncertainty_A"]})
+                                    "uncertainty_A": res["uncertainty_A"],
+                                    "falsification_null": res["falsification_null"]})
                 state["structure"] = _load_payload(out)
             self._write_manifest(out, stage, {"verdict_A": state["structure"]["verdict_A"]["label"]},
                                  coords.X.shape[0])

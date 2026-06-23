@@ -69,7 +69,7 @@ the maximum standardized mean difference across confounders after weighting.
 \begin{table}[h]\centering\small\sffamily
 \caption{The overlap gate. Propensity $P(\text{treat}\mid\text{severity}+\text{DSM-5}+\text{demographics}+\text{the
 9 copula coordinates})$, active-comparator primary. Overlap is common support; the post-IPTW max-SMD is the
-residual confounding after weighting.}
+residual confounding after weighting. The clozapine row uses the on/off contrast (its active comparator is channeled).}
 \label{tab:m5overlap}
 \begin{tabular}{L{5.6cm} C{2.2cm} C{2.8cm} L{3.4cm}}
 \toprule
@@ -102,7 +102,7 @@ The result is the central, honest finding of the chapter: where the data are cle
 \includegraphics[width=0.96\linewidth]{figures/m5_moderation.png}
 \caption{Per-drug average treatment effect (point estimate and 94\% interval) with its E-value. Lithium in
 bipolar sits on zero with an E-value of $1.06$ --- a well-identified null. Antipsychotic in bipolar shows a
-metabolic/inflammatory $\times$ functioning interaction whose interval excludes zero (ATE $-0.231$, E-value
+metabolic $\times$ functioning interaction whose interval excludes zero (inflammatory same-direction but spanning zero; ATE $-0.231$, E-value
 $1.77$) but whose held-out moderation gain is weak --- suggestive but unconfirmed. Clozapine, channeled, is
 non-decisive. The durable-axis and $A{=}4$-archetype encodings agree throughout.}
 \label{fig:m5mod}
@@ -129,7 +129,7 @@ clozapine-SZ $\cdot$ functioning & $+0.02\,[-0.24,+0.29]$ & $1.16$ & no reliable
 For \textbf{lithium in bipolar} --- the best-identified contrast --- the map does \emph{not} moderate response:
 the ATE sits on zero ($-0.003$, interval spanning zero) and the E-value of $1.06$ says even a trivial unmeasured
 confounder would erase it. The map does not pick lithium responders. For \textbf{antipsychotic in bipolar}, the
-metabolic/inflammatory $\times$ functioning interaction excludes zero (ATE $-0.231$, E-value $1.77$), but the
+metabolic $\times$ functioning interaction excludes zero (inflammatory same-direction but spanning zero; ATE $-0.231$, E-value $1.77$), but the
 held-out moderation gain does not clear its band --- a \emph{hypothesis for prospective testing}, not a result.
 Clozapine is non-decisive. The average effects are confounding-fragile throughout (E-values $1.06$--$1.78$). On
 observational treatment-as-usual, the map does not reliably moderate treatment response.
@@ -192,10 +192,10 @@ on observational data.
 \begin{openbox}[Earned, not assumed: observational treatment-as-usual cannot show the map prescribes]
 The contribution of this chapter is a boundary drawn by evidence rather than by assumption. With real treatment
 data and a proper causal pipeline, the map does \emph{not} reliably moderate treatment-as-usual response: the
-cleanest contrast (lithium) is a well-identified null, the antipsychotic metabolic/inflammatory signal is
+cleanest contrast (lithium) is a well-identified null, the antipsychotic metabolic signal is
 suggestive but unconfirmed, clozapine is confounded by channeling, and the average effects are fragile to
 unmeasured confounding (E-values $1.06$--$1.78$). What the analysis \emph{does} deliver is a well-identified
-null where it counts, a testable hypothesis (metabolic/inflammatory $\times$ antipsychotic functioning), a
+null where it counts, a testable hypothesis (metabolic $\times$ antipsychotic functioning), a
 deployable causal method, a back-validation of the prognosis (the archetype carrier survives treatment
 adjustment, $4.7\%$ attenuation), and a descriptive response-stratification signal (the archetypes predict
 resistance/response/side-effects). Establishing treatment \emph{selection} --- which drug for which phenotype ---
