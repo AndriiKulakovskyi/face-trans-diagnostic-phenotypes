@@ -1,5 +1,12 @@
 # Soft operational regions on the Gaussian-copula map (M2) — findings
 
+> **Reframe note (2026-06-23).** M2 is now framed as a *coordinate system + reading guide*, not a typology. The
+> 9-dim copula space is a **continuum**; the **continuous coordinates** are the load-bearing object, and the
+> archetype corners / K-tessellation are **interpretation lenses**, not discovered decision-regions or natural
+> kinds (M4 confirms: *operative K = none*). Canonical now: docs/STRATA_READING_GUIDE.md + report §sec:strata.
+> Read the stratification/archetype/tessellation framing below as the *derivation* of those lenses, not a claim
+> that patients fall into discrete strata.
+
 > **Canonical M2 findings record.** Built on the certified cohort-weighted full-N Gaussian-copula 9-dim map.
 > **Detailed
 > analysis of what the K-family and A mean: [STRATA_OOP_ATLAS.md](STRATA_OOP_ATLAS.md).** Engine:

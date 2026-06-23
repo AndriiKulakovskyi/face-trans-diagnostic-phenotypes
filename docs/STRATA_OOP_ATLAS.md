@@ -1,5 +1,12 @@
 # M2 soft-region atlas — what K and A mean, in detail (copula map)
 
+> **Reframe note (2026-06-23).** M2 is now framed as a *coordinate system + reading guide*, not a typology. The
+> 9-dim copula space is a **continuum**; the **continuous coordinates** are the load-bearing object, and the
+> archetype corners / K-tessellation are **interpretation lenses**, not discovered decision-regions or natural
+> kinds (M4 confirms: *operative K = none*). Canonical now: docs/STRATA_READING_GUIDE.md + report §sec:strata.
+> Read the stratification/archetype/tessellation framing below as the *derivation* of those lenses, not a claim
+> that patients fall into discrete strata.
+
 > Detailed results analysis for the reworked M2 (the continuum of soft operational regions on the
 > Gaussian-copula map). Paper-facing summary: [STRATA_OOP_FINDINGS.md](STRATA_OOP_FINDINGS.md). Engine:
 > [`src/face/strata/strata_model_oop.py`](../src/face/strata/strata_model_oop.py). Figures:
@@ -54,7 +61,7 @@ real data's metrics exceed it (`StructureGate.null_comparison`):
 
 | metric | real | single-Gaussian null | z |
 |---|---|---|---|
-| **best silhouette (separation)** | **0.140** | **0.141 ± 0.002** | **0.1** |
+| **best silhouette (separation)** | **0.140** | **0.141 ± 0.002** | **-0.36** |
 | Hopkins (tendency) | 0.794 | 0.776 ± 0.004 | 4.5 |
 | GMM-BIC gain (shape) | 9,495 | 0 ± 0 | — |
 
