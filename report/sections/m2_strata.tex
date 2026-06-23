@@ -79,7 +79,7 @@ from severity. One diffuse mass with crossing gradients, not a constellation of 
 A continuum has no clusters, but it still has a \emph{shape}, and the shape has \textbf{corners} --- extreme
 phenotypes that the cloud stretches toward. Archetypal analysis recovers them: it finds a small set of extreme
 profiles such that every patient is a convex \emph{blend} of them. Four corners are the stable resolution
-(cross-seed Tucker congruence $0.98$; finer counts do not reproduce). Because a pure corner is an extreme almost
+(a robustness battery, below, confirms it: cross-seed Tucker $0.997$, while $A{=}5$ fails to reproduce). Because a pure corner is an extreme almost
 nobody sits exactly at, we report each corner three ways: its \textbf{pole} (the defining extreme), its
 \textbf{typical representative} (the centroid of patients who lean toward it --- what a representative patient
 looks like), and a real \textbf{exemplar} patient (the medoid). Plain clinical labels make them legible
@@ -128,6 +128,30 @@ $\sim$3$\times$ milder than the pure pole --- which is why we report the pole / 
 triplet rather than a single ``type.'' ``A0 vs A2'' is a way to \emph{talk about positions on the map}, not a
 claim of discrete kinds.
 \end{caveatbox}
+
+\paragraph{Are the corners real, or does the method invent them?}
+Archetypal analysis \emph{always} returns $A$ corners --- so, exactly as we falsified clusters before trusting
+them, we falsify the corners before leaning on them (a full battery; Figure~\ref{fig:archrobust}). The verdict
+is \textbf{8 of 9 checks pass}. $A{=}4$ is the right count (cross-seed reproducibility is $\approx 1.0$ through
+$A{=}4$ and \emph{collapses} to $0.51$ at $A{=}5$); the corners reproduce across seeds (Tucker $0.997$),
+independent halves ($0.94$), and patient bootstraps ($0.95$), are not duplicates (pairwise cosine $-0.11$), and
+the \emph{native} $A{=}8$ does not transfer to the copula ($0.32$) --- confirming it was a native-map artefact.
+Two results are themselves informative: a \emph{single} optimization restart is unreliable (congruence
+scatters $0.36$--$0.99$), so the production protocol uses four (necessary and sufficient $\to 1.0$); and the
+one conditional check is that the corner \emph{locations} under fully propagated measurement uncertainty are
+only moderately precise (median Tucker $0.69$ over single posterior draws, vs $0.95$ under resampling) ---
+which is precisely \emph{why} the load-bearing object is the continuous coordinates with their uncertainty, and
+the corners are a reading lens rather than fixed coordinates.
+
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figures/m2_archetype_robustness.png}
+\caption{Archetype-robustness battery (the AA counterpart of the structure gate). \emph{Top-left:} explained
+variance always rises with $A$, but cross-seed reproducibility holds only to $A{=}4$ then collapses --- a
+stability-gated $A{=}4$. \emph{Top-right:} each corner reproduces across seeds. \emph{Bottom-left:} the corner
+profiles survive bootstrap and measurement-draw refits (bands). \emph{Bottom-right:} $8$ of $9$ checks pass;
+the one conditional is corner-location precision under propagated measurement uncertainty.}
+\label{fig:archrobust}
+\end{figure}
 
 \subsection{Reading the map (II): a patient and its nearest neighbours}
 \label{sub:similarity}
