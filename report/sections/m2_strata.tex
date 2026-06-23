@@ -79,7 +79,7 @@ from severity. One diffuse mass with crossing gradients, not a constellation of 
 A continuum has no clusters, but it still has a \emph{shape}, and the shape has \textbf{corners} --- extreme
 phenotypes that the cloud stretches toward. Archetypal analysis recovers them: it finds a small set of extreme
 profiles such that every patient is a convex \emph{blend} of them. Four corners are the stable resolution
-(cross-seed Tucker congruence $0.98$; finer counts do not reproduce). Because a pure corner is an extreme almost
+(a robustness battery, below, confirms it: cross-seed Tucker $0.997$, while $A{=}5$ fails to reproduce). Because a pure corner is an extreme almost
 nobody sits exactly at, we report each corner three ways: its \textbf{pole} (the defining extreme), its
 \textbf{typical representative} (the centroid of patients who lean toward it --- what a representative patient
 looks like), and a real \textbf{exemplar} patient (the medoid). Plain clinical labels make them legible
@@ -128,6 +128,64 @@ $\sim$3$\times$ milder than the pure pole --- which is why we report the pole / 
 triplet rather than a single ``type.'' ``A0 vs A2'' is a way to \emph{talk about positions on the map}, not a
 claim of discrete kinds.
 \end{caveatbox}
+
+\subsection{Are the corners real? An archetype-robustness battery}
+\label{sub:archrobust}
+Archetypal analysis \emph{always} returns $A$ corners --- so, exactly as we falsified clusters before trusting
+them (\S\ref{sub:continuum}), we falsify the corners before leaning on them. This matters here twice over,
+because the $A{=}4$ corners are both this chapter's reading lens \emph{and} (as the prognosis chapter shows) the
+predictive carrier of the map. A nine-check battery --- the archetypal-analysis counterpart of the structure
+gate --- interrogates whether $A{=}4$ is the right count and whether the corners are reproducible and
+non-artefactual (Table~\ref{tab:archrobust}, Figure~\ref{fig:archrobust}). The verdict is \textbf{eight of nine
+checks pass}, with one informative conditional.
+
+\begin{table}[h]\centering\small\sffamily
+\caption{The archetype-robustness battery, on the fixed copula coordinates (wrapping the production
+archetypal-analysis kernels --- no re-derivation of the map). Reference corners are the persisted production fit;
+reproducibility uses four optimization restarts; refit-heavy checks subsample to $N{=}3{,}500$ (validated to
+reproduce the production corners at Tucker $\approx 0.985$). Tucker congruence measures profile agreement after
+matching corners.}
+\label{tab:archrobust}
+\begin{tabular}{L{4.7cm} L{6.6cm} L{1.9cm}}
+\toprule
+\hdr{check} & \hdr{result} & \hdr{verdict}\\
+\midrule
+\rowcolor{facebg} 1. $A$-selection (stability-gated) & chosen $A{=}4$; Tucker $1.0/0.94/\mathbf{1.0}/0.51/0.41$ across $A{=}2\!\ldots\!6$ & PASS\\
+2. cross-seed reproducibility @$A{=}4$ & min Tucker $0.997$ (full $N$; every corner $\ge 0.997$) & PASS\\
+\rowcolor{facebg} 3. $n_\mathrm{init}$ sensitivity & single restart scatters $0.36$--$0.99$; four restarts $\to 1.0$ & PASS\\
+4. anchor recovery (bootstrap / draws) & bootstrap median $0.95$; measurement-draw median $0.69$ & COND.\\
+\rowcolor{facebg} 5. granularity ($A{=}4$ ceiling) & Tucker $A{=}4$ $1.0 \to A{=}5$ $0.51$ ($<0.8$) & PASS\\
+6. native $A{=}8$ does not transfer & $A{=}8$ Tucker $0.32 \ll A{=}4$ $1.0$ & PASS\\
+\rowcolor{facebg} 7. no degenerate corners & max pairwise corner cosine $-0.11$ & PASS\\
+8. membership health (continuum-honest) & blend entropy $0.78$; only $39\%$ near a pole & PASS\\
+\rowcolor{facebg} 9. split-half out-of-sample & cross-half Tucker $0.94$; out-of-sample $R^2$ $0.51$ & PASS\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figures/m2_archetype_robustness.png}
+\caption{Archetype-robustness battery (the AA counterpart of the structure gate). \emph{Top-left:} explained
+variance always rises with $A$, but cross-seed reproducibility holds only to $A{=}4$ then collapses --- a
+stability-gated $A{=}4$. \emph{Top-right:} each corner reproduces across seeds. \emph{Bottom-left:} the corner
+profiles survive bootstrap and measurement-draw refits (bands). \emph{Bottom-right:} $8$ of $9$ checks pass;
+the one conditional is corner-location precision under propagated measurement uncertainty.}
+\label{fig:archrobust}
+\end{figure}
+
+\begin{keyresult}[The corners are a reproducible reading lens, not a fitting artefact]
+$A{=}4$ is the right count --- reproducibility is $\approx 1.0$ through $A{=}4$ and \emph{collapses} to $0.51$
+at $A{=}5$ --- and the corners reproduce across seeds (Tucker $0.997$), independent halves ($0.94$) and patient
+bootstraps ($0.95$), are not duplicates (cosine $-0.11$), while the \emph{native} $A{=}8$ does not transfer to
+the copula ($0.32$, confirming it was a native-map artefact). Two results are themselves load-bearing. First, a
+\emph{single} optimization restart is unreliable (congruence scatters $0.36$--$0.99$), so the production protocol
+uses four restarts (necessary and sufficient, $\to 1.0$). Second --- the one conditional --- the corner
+\emph{locations} under fully propagated measurement uncertainty are only moderately precise (median Tucker
+$0.69$ over single posterior draws, vs $0.95$ under resampling): the corner \emph{structure} is sample-stable,
+but its exact coordinates carry measurement noise. That is precisely \emph{why} the load-bearing object is the
+continuous coordinates with their uncertainty, and the corners are a \textbf{reading lens}, not fixed
+coordinates.
+\end{keyresult}
 
 \subsection{Reading the map (II): a patient and its nearest neighbours}
 \label{sub:similarity}

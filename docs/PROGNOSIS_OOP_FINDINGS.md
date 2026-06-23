@@ -71,8 +71,30 @@ Head-to-head on a shared foundation (age+sex+severity+baseline), **egf**: +DSM-5
 | A0 — biological corner (↑inflammatory/metabolic/substance) | **27%** | 61.4 |
 
 A **27%→60%** transdiagnostic gradient; the **biological corner carries the worst functional prognosis** — the
-precise value a biology-aware map adds. (Within every archetype, SZ remits less than BP/DR — a cohort effect,
-not a map effect.)
+precise value a biology-aware map adds.
+
+## Result 4b — the 27→60 gradient is a *within-diagnosis* effect, not a cohort-composition artefact
+
+The corners have very different cohort mixes (A1 is 74% BP; A0 carries more SZ) and the cohorts have very
+different remission floors (BP 33–69%, SZ **8–23%**), so the pooled gradient could be a Simpson's-paradox
+artefact. De-confounding it three ways (`notebooks/within_cohort/within_cohort_breakdown.py` →
+`results/face/prognosis_oop/within_cohort/`; figure `report/figures/m4_within_cohort.png`):
+
+1. **Within every cohort the rank holds** (A0 worst → A1 best): BP 0.33→0.69, SZ 0.08→0.23, DR 0.38→0.78.
+2. **Direct standardization** to a common cohort mix barely moves the gradient (0.27→0.59 vs raw 0.27→0.60):
+   **composition explains only ~6%** of the pooled A0→A1 spread — it is a genuine within-diagnosis effect.
+3. **Logistic decomposition** `remission ~ corner + cohort (+interaction)`: the cohort-adjusted corner effect
+   is large (**A1-vs-A0 OR ≈ 4.2**), the cohort main effect is the **dominant axis** (SZ-vs-BP **OR 0.16** —
+   everyone in SZ remits far less), and the **corner×cohort interaction is NS** (p=0.36). So the corner effect
+   is *relatively* homogeneous (OR≈4 in every cohort); the *absolute* spread is wider in BP only because SZ
+   sits on a low baseline floor (logit non-linearity).
+
+**Within-cohort incremental validity** (does the corner add beyond baseline functioning + severity, fit inside
+each cohort; the frequentist complement to the LOCO ΔELPD): **BP yes** (LR χ²=34, p=1.6e-7), **DR yes**
+(p=0.02, small n), **SZ no** (p=0.16). This is *why* the LOCO ΔELPD is BP-carried (drop-BP → +5.8 amb.): the
+predictive **increment** — an absolute-scale, power-weighted quantity — concentrates in the open-course cohorts
+that have room above the floor, even though the *relative* gradient is present everywhere. Reconciles M4's
+"course-dependent" verdict precisely.
 
 ## Result 5 — group-level forecasting, not a large individual-binary boost (honest)
 

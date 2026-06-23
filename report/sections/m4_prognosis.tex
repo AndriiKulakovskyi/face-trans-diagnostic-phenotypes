@@ -184,6 +184,39 @@ mirrors the trait/state geometry from the temporal chapter, now read out in outc
 \label{fig:m4atlas}
 \end{figure}
 
+\subsection{De-confounding the gradient: it is a within-diagnosis effect}
+\label{sub:m4within}
+The atlas pools across cohorts, and the corners have very different cohort mixes (A1 is $74\%$ bipolar; A0
+carries more schizophrenia) while the cohorts have very different remission floors (bipolar $33$--$69\%$,
+schizophrenia $8$--$23\%$). So the $27\%\to60\%$ gradient could be a composition artefact --- the corners
+merely re-sorting diagnoses. It is not (Figure~\ref{fig:m4within}). The rank \emph{holds within every cohort}
+(bipolar $0.33\to0.69$, schizophrenia $0.08\to0.23$, depression $0.38\to0.78$); direct standardization to a
+common cohort mix barely moves it ($0.27\to0.59$ vs the raw $0.27\to0.60$ --- composition explains only
+$\sim$6\% of the spread); and a logistic decomposition gives a cohort-adjusted corner effect of
+A1-vs-A0 odds-ratio $\approx 4.2$. The biology$\to$functioning gradient is a genuine \emph{within-diagnosis}
+phenomenon, not Simpson's paradox.
+
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figures/m4_within_cohort.png}
+\caption{The remission gradient de-confounded. \emph{Left:} within each cohort the rank holds (biological
+corner worst $\to$ low-burden pole best); the absolute spread is wider in bipolar only because schizophrenia
+sits on a low baseline floor. \emph{Right:} pooled vs.\ cohort-standardized per-corner remission nearly
+coincide --- composition explains $\sim$6\% of the gradient.}
+\label{fig:m4within}
+\end{figure}
+
+\begin{keyresult}[The gradient is within-diagnosis; the increment is course-dependent]
+Diagnosis is the \emph{dominant} prognostic axis (schizophrenia-vs-bipolar OR $0.16$ --- everyone in
+schizophrenia remits far less), and the corner effect is \emph{relatively} homogeneous across cohorts
+(corner$\times$cohort interaction not significant, $p=0.36$; OR$\approx$4 everywhere) --- the absolute spread
+differs only because the cohorts sit at different baseline floors. This is exactly \emph{why} the predictive
+\emph{increment} concentrates in the open-course cohorts: fitting the model \emph{inside} each cohort, the
+corner adds beyond baseline functioning and severity in bipolar ($\chi^2{=}34$, $p{=}1.6\mathrm{e}{-}7$) and
+depression ($p{=}0.02$), but \emph{not} in schizophrenia ($p{=}0.16$, baseline-saturated) --- the
+within-cohort mirror of the leave-one-cohort-out result, and a precise statement of the ``course-dependent''
+verdict.
+\end{keyresult}
+
 \subsection{Is it worth using? Discrimination, calibration, net benefit}
 \label{sub:m4value}
 The honest counterweight to the atlas. The strong continuous $\Delta$ELPD does not translate into a large
