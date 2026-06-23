@@ -121,8 +121,20 @@ finding far less interesting, even trivial:
   between-cohort scale artefact in a transdiagnostic costume.
 \end{itemize}
 
-We test all three by re-deriving $\Phi(G,\cdot)$ on the same correlated-$G$ model, partialling each continuous
-indicator on a \emph{growing} design of confounders before the factor model is fit.
+\begin{definitionbox}[Partialling out a confounder, intuitively]
+To ``adjust for'' a confounder is to ask a counterfactual: \emph{among patients matched on age, sex, education,
+recruitment site, and medication, is metabolic load still independent of severity?} We answer it the direct way
+--- by \emph{subtraction}. For each measurement we remove the part a confounder can predict (regress, say, CRP
+on age/sex/site/antipsychotic and keep the leftover) and re-estimate the factor correlations on those leftovers,
+the \emph{residuals}. The logic is a sieve: if the biology$\perp$$G$ separation were really the confounder
+wearing a biological mask, then subtracting the confounder would wash it out and the residuals would show
+nothing. If the separation is still there after the confounder's whole footprint has been removed, it was never
+the confounder to begin with. Each rung of the ladder below subtracts one more suspect and re-reads
+$\Phi(G,\cdot)$ in what remains.
+\end{definitionbox}
+
+We run this on the same correlated-$G$ model that produced the headline, partialling each continuous indicator
+on a \emph{growing} design of confounders before the factor model is fit.
 
 \begin{methodsbox}[The adjustment, and why it is conservative]
 For a Gaussian item, adjusting its mean by the published covariate term $\beta_j^\top c_i$ is
