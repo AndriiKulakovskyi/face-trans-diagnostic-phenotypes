@@ -772,9 +772,47 @@ def fig_synthesis():
     _save(fig, "synthesis.png")
 
 
+# ============================================================ M1.x biology⊥G confound sensitivity
+def fig_biology_g_confound():
+    """Φ(G, domain) across the confound-adjustment ladder: biology stays the least severity-entangled
+    domain after age/sex/edu/site + antipsychotic adjustment (A3/BMI omitted — degenerate)."""
+    f = REPO / "reports" / "12_biology_g_confound.csv"
+    if not f.exists():
+        print("  -- biology_g_confound skipped: reports/12_biology_g_confound.csv missing")
+        return
+    df = pd.read_csv(f).set_index("domain")
+    arms = ["A0_unadjusted", "A1_demo_site", "A2_antipsychotic"]     # A3 degenerate -> not plotted
+    labels = ["A0\nunadjusted", "A1\n+ demo + site", "A2\n+ antipsychotic"]
+    x = np.arange(len(arms))
+    style = {"metabolic": (KR, "-o", 2.2), "inflammatory": (VIOLET, "-o", 2.2),
+             "cognition": (MUTE, "--s", 1.4), "sleep": (MUTE, "--^", 1.4)}
+    fig, ax = plt.subplots(figsize=(7.8, 4.3))
+    ax.axhspan(0, 0.15, color=KR, alpha=0.06, zorder=0)
+    ax.text(0.04, 0.143, "biology band ($\\leq 0.15$)", fontsize=7, color=KR, va="top")
+    for dom, (col, ls, lw) in style.items():
+        if dom not in df.index:
+            continue
+        y = [float(df.loc[dom, a]) for a in arms]
+        ax.plot(x, y, ls, color=col, lw=lw, ms=6, zorder=4, label=PRETTY.get(dom, dom))
+        ax.annotate(f"{y[-1]:+.2f}", (x[-1], y[-1]), xytext=(7, 0), textcoords="offset points",
+                    fontsize=7.8, color=col, va="center", fontweight="bold")
+    ax.set_xticks(x); ax.set_xticklabels(labels, fontsize=8.6)
+    ax.set_xlim(-0.25, len(arms) - 0.35)
+    ax.set_ylabel(r"$\Phi(G,\ \mathrm{domain})$  —  entanglement with severity")
+    ax.set_ylim(-0.02, 0.46)
+    ax.set_title("Biology $\\perp G$ survives medication + site adjustment", pad=10)
+    ax.legend(frameon=False, fontsize=8, loc="center right")
+    ax.text(0.5, -0.22, "A3 (BMI as covariate) omitted — degenerate ($\\widehat{R}\\,1.83$): BMI is itself a "
+            "metabolic indicator, so it cannot be partialled out of its own factor.",
+            transform=ax.transAxes, fontsize=6.8, color=MUTE, ha="center")
+    fig.tight_layout()
+    _save(fig, "biology_g_confound.png")
+
+
 # ════════════════════════════════════════════════════════════════════════════════════════════
 _M1_FIGS = [fig_biology_g, fig_phi, fig_empirical_atlas, fig_prior_posterior, fig_waic,
-            fig_invariance, fig_ppc, fig_reliability, fig_soft_priors, fig_coverage]
+            fig_invariance, fig_ppc, fig_reliability, fig_soft_priors, fig_coverage,
+            fig_biology_g_confound]
 _MILESTONE_FIGS = [fig_m2_structure, fig_m2_archetypes, fig_m2_regions, fig_m2_confidence,
                    fig_m2_embedding, fig_m3_traitstate, fig_m3_invariance, fig_m3_spinecorner, fig_m4_value,
                    fig_m4_atlas, fig_m5_moderation, fig_synthesis]
