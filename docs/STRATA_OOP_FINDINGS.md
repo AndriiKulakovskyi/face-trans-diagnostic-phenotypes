@@ -45,8 +45,8 @@ The structure-discovery gate (Hopkins / dip / silhouette / gap / GMM-BIC / HDBSC
 over draws) returns **continuum** on the copula map: 3/6 clustered signals, silhouette peak **0.14**
 (< 0.15 = no separation), PC1 dip p = **1.0** (unimodal), HDBSCAN **0 clusters**, Mapper a **single connected
 component** (one chain). A single-Gaussian falsification null is decisive: the best partition separates
-patients **no better than slicing a structureless Gaussian blob** (silhouette real 0.140 vs null 0.140±0.003,
-z = 0.1; over draws the GMM-optimal K collapses to 1 in all 20). So there are **no well-separated,
+patients **no better than slicing a structureless Gaussian blob** (silhouette real 0.140 vs null 0.141±0.002,
+z = -0.36; over draws the GMM-optimal K collapses to 1 in all 20). So there are **no well-separated,
 reproducible discrete clusters** — K is a granularity convention, not a discovered kind-count.
 Figure: `structure_panel.png`. Full analysis + limits: [STRATA_OOP_ATLAS.md §0b](STRATA_OOP_ATLAS.md).
 
@@ -102,7 +102,7 @@ Run on the K = 2 contract default (the gates hold across the confident-stable fa
 | assignment (assignable, not 50/50) | **PASS** | confident-dominant 1.00, median entropy 0.51 |
 | not-just-severity (Q2) | **PASS** | η²(specifics) 0.122 ≫ η²(G) 0.008 |
 | transdiagnostic (Q3) | **PASS** | ARI 0.00 vs cohort, 0.01 vs DSM-5 |
-| stable / not-a-missingness-artefact (Q4) | **PASS** | seed-ARI 1.0; coverage perm-p 0.60, lift −0.055 |
+| stable / not-a-missingness-artefact (Q4) | **PASS** | seed-ARI 1.0; coverage perm-p 0.23, lift −0.052 |
 | tighter than DSM-5 | **PASS** | XD-BIC 197.9k vs 201.3k; mean η² 0.108 vs 0.025 |
 
 So the soft regions are operationally assignable, driven by specific biology/symptoms beyond severity,

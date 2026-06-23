@@ -348,21 +348,24 @@ def fig_m2_structure():
     ks = sorted(int(k) for k in sil)
     vals = [sil[str(k)] for k in ks]
     peak = max(vals)
-    null_m, null_s = 0.140, 0.003                              # single-Gaussian falsification null
-    z = (peak - null_m) / null_s
+    fn = d["falsification_null"]                               # serialized single-Gaussian null (traceable)
+    real_sil = float(fn["real"]["best_silhouette"])
+    null_m = float(fn["null_mean"]["best_silhouette"])
+    null_s = float(fn["null_sd"]["best_silhouette"])
+    z = float(fn["z"]["best_silhouette"])
 
     fig, axes = plt.subplots(1, 2, figsize=(9.4, 3.4), gridspec_kw={"width_ratios": [1.55, 1]})
     ax = axes[0]
     # null band
     ax.axhspan(null_m - null_s, null_m + null_s, color=OPEN, alpha=0.14, zorder=1)
     ax.axhline(null_m, color=OPEN, lw=1.0, ls="--", zorder=2)
-    ax.text(ks[-1], null_m + null_s + 0.0015, "single-Gaussian null  0.140 ± 0.003",
+    ax.text(ks[-1], null_m + null_s + 0.0015, f"single-Gaussian null  {null_m:.3f} ± {null_s:.3f}",
             ha="right", va="bottom", fontsize=7.4, color=OPEN)
     # real silhouette curve
     ax.plot(ks, vals, "-o", color=ACCENT, lw=1.8, ms=5, zorder=4, label="real coordinates")
     ax.plot(ks[0], vals[0], "o", color=ACCENTDK, ms=8, zorder=5)
-    ax.annotate(f"real peak {peak:.3f} ≈ null {null_m:.3f} ± {null_s:.3f}\n"
-                f"(z = {z:.1f}) → continuum, not clusters",
+    ax.annotate(f"real best {real_sil:.3f} ≈ null {null_m:.3f} ± {null_s:.3f}\n"
+                f"(z = {z:.2f}) → continuum, not clusters",
                 xy=(ks[0], vals[0]), xytext=(ks[0] + 1.6, vals[0] - 0.012),
                 fontsize=7.6, color=INK,
                 arrowprops=dict(arrowstyle="->", color=INK, lw=0.8))
@@ -472,19 +475,17 @@ def fig_m2_confidence():
     bfrac = float(use["boundary_frac"])
 
     fig, ax = plt.subplots(figsize=(7.2, 3.4))
-    x = np.arange(len(ks)); w = 0.36
-    b1 = ax.bar(x - w / 2, ent, w, color=ACCENT, zorder=3, label="median assignment entropy (0 = crisp, 1 = blend)")
-    b2 = ax.bar(x + w / 2, conf, w, color="#9DBCE0", zorder=3, label="confident-dominant fraction")
-    for xi, e in zip(x - w / 2, ent):
-        ax.text(xi, e + 0.012, f"{e:.2f}", ha="center", fontsize=7.4, color=INK)
-    for xi, c in zip(x + w / 2, conf):
-        ax.text(xi, c + 0.012, f"{c:.2f}", ha="center", fontsize=7.4, color=MUTE)
+    x = np.arange(len(ks)); w = 0.5
+    ax.bar(x, ent, w, color=ACCENT, zorder=3, label="median normalised entropy (0 = crisp, 1 = maximal blend)")
+    for xi, e in zip(x, ent):
+        ax.text(xi, e + 0.012, f"{e:.2f}", ha="center", fontsize=7.6, color=INK)
+    ax.axhline(0.5, color=MUTE, lw=0.7, ls=":", zorder=2)
     ax.set_xticks(x); ax.set_xticklabels([f"K = {k}" for k in ks], fontsize=9)
-    ax.set_ylim(0, 1.34); ax.set_ylabel("fraction")
-    ax.set_title("Most patients are blends, not crisp members", pad=10)
-    ax.legend(frameon=False, fontsize=7.4, loc="upper center", bbox_to_anchor=(0.5, -0.13), ncol=1)
-    ax.text(0.5, 1.30, f"at K = 2: median normalised entropy ≈ {ent[0]:.2f}, only {bfrac:.1%} of patients "
-            "sit on a hard boundary —\nthe tessellation is a coarse convention over a continuum.",
+    ax.set_ylim(0, 1.05); ax.set_ylabel("median assignment entropy")
+    ax.set_title("Soft assignment: most patients are blends", pad=10)
+    ax.legend(frameon=False, fontsize=7.4, loc="upper right")
+    ax.text(0.5, 1.14, f"tessellation entropy stays high (median {ent[0]:.2f} at K=2); only {bfrac:.1%} of patients "
+            "sit on a hard\nboundary, and the archetype simplex is softer still --- most have no dominant archetype.",
             transform=ax.transAxes, fontsize=7.2, color=MUTE, va="top", ha="center",
             bbox=dict(boxstyle="round,pad=0.4", fc="white", ec=MUTE, lw=0.5, alpha=0.95))
     _save(fig, "m2_confidence.png")
@@ -509,15 +510,35 @@ def fig_m2_embedding():
     pc = (Xs - Xs.mean(0)) @ Vt[:2].T
     ev = (S ** 2) / (S ** 2).sum()
 
-    fig, ax = plt.subplots(figsize=(6.6, 5.2))
-    sc = ax.scatter(pc[:, 0], pc[:, 1], c=g, cmap=SEQ, s=4, alpha=0.45,
-                    linewidths=0, rasterized=True)
-    ax.set_xlabel(f"PC1 ({ev[0]:.0%} var)"); ax.set_ylabel(f"PC2 ({ev[1]:.0%} var)")
-    ax.set_title("The transdiagnostic space is a continuous smear (PCA, viz-only)", pad=10)
-    cb = fig.colorbar(sc, ax=ax, fraction=0.046, pad=0.04)
-    cb.set_label("G (severity) coordinate", fontsize=8); cb.ax.tick_params(labelsize=7)
-    ax.text(0.015, 0.015, f"n = {len(pc):,} patients · no island structure (continuum)",
-            transform=ax.transAxes, fontsize=7.4, color=MUTE, va="bottom", ha="left")
+    coh = df["cohort"].astype(str).values[ok]
+    infl = df["inflammatory__mean"].astype(float).values[ok]
+
+    fig, axes = plt.subplots(1, 3, figsize=(11.4, 4.0))
+    # panel 1: by cohort -- the transdiagnostic intermixing (no diagnostic territories)
+    ax = axes[0]
+    for c, col in {"bp": ACCENT, "sz": OPEN, "dr": KR}.items():
+        m = coh == c
+        ax.scatter(pc[m, 0], pc[m, 1], c=col, s=4, alpha=0.40, linewidths=0,
+                   rasterized=True, label=c.upper())
+    ax.set_title("by cohort --- fully intermixed", fontsize=9.5)
+    ax.legend(frameon=False, fontsize=7.6, markerscale=2.5, loc="upper right")
+    # panel 2: the severity (G) gradient
+    sc1 = axes[1].scatter(pc[:, 0], pc[:, 1], c=g, cmap=SEQ, s=4, alpha=0.45,
+                          linewidths=0, rasterized=True)
+    axes[1].set_title("severity ($G$) gradient", fontsize=9.5)
+    fig.colorbar(sc1, ax=axes[1], fraction=0.046, pad=0.04).ax.tick_params(labelsize=6.5)
+    # panel 3: the inflammatory gradient -- crosses the cloud in a different direction
+    sc2 = axes[2].scatter(pc[:, 0], pc[:, 1], c=infl, cmap=SEQ, s=4, alpha=0.45,
+                          linewidths=0, rasterized=True)
+    axes[2].set_title("inflammatory gradient", fontsize=9.5)
+    fig.colorbar(sc2, ax=axes[2], fraction=0.046, pad=0.04).ax.tick_params(labelsize=6.5)
+    for ax in axes:
+        ax.set_xlabel(f"PC1 ({ev[0]:.0%})", fontsize=8); ax.set_xticks([]); ax.set_yticks([])
+    axes[0].set_ylabel(f"PC2 ({ev[1]:.0%})", fontsize=8)
+    fig.suptitle(f"The continuum in one picture (PCA, viz-only · n = {len(pc):,}) --- "
+                 "severity and biology cross in different directions",
+                 y=1.03, fontsize=10.5, fontweight="bold", color=ACCENTDK)
+    fig.tight_layout()
     _save(fig, "m2_embedding.png")
 
 
@@ -751,9 +772,47 @@ def fig_synthesis():
     _save(fig, "synthesis.png")
 
 
+# ============================================================ M1.x biology⊥G confound sensitivity
+def fig_biology_g_confound():
+    """Φ(G, domain) across the confound-adjustment ladder: biology stays the least severity-entangled
+    domain after age/sex/edu/site + antipsychotic adjustment (A3/BMI omitted — degenerate)."""
+    f = REPO / "reports" / "12_biology_g_confound.csv"
+    if not f.exists():
+        print("  -- biology_g_confound skipped: reports/12_biology_g_confound.csv missing")
+        return
+    df = pd.read_csv(f).set_index("domain")
+    arms = ["A0_unadjusted", "A1_demo_site", "A2_antipsychotic"]     # A3 degenerate -> not plotted
+    labels = ["A0\nunadjusted", "A1\n+ demo + site", "A2\n+ antipsychotic"]
+    x = np.arange(len(arms))
+    style = {"metabolic": (KR, "-o", 2.2), "inflammatory": (VIOLET, "-o", 2.2),
+             "cognition": (MUTE, "--s", 1.4), "sleep": (MUTE, "--^", 1.4)}
+    fig, ax = plt.subplots(figsize=(7.8, 4.3))
+    ax.axhspan(0, 0.15, color=KR, alpha=0.06, zorder=0)
+    ax.text(0.04, 0.143, "biology band ($\\leq 0.15$)", fontsize=7, color=KR, va="top")
+    for dom, (col, ls, lw) in style.items():
+        if dom not in df.index:
+            continue
+        y = [float(df.loc[dom, a]) for a in arms]
+        ax.plot(x, y, ls, color=col, lw=lw, ms=6, zorder=4, label=PRETTY.get(dom, dom))
+        ax.annotate(f"{y[-1]:+.2f}", (x[-1], y[-1]), xytext=(7, 0), textcoords="offset points",
+                    fontsize=7.8, color=col, va="center", fontweight="bold")
+    ax.set_xticks(x); ax.set_xticklabels(labels, fontsize=8.6)
+    ax.set_xlim(-0.25, len(arms) - 0.35)
+    ax.set_ylabel(r"$\Phi(G,\ \mathrm{domain})$  —  entanglement with severity")
+    ax.set_ylim(-0.02, 0.46)
+    ax.set_title("Biology $\\perp G$ survives medication + site adjustment", pad=10)
+    ax.legend(frameon=False, fontsize=8, loc="center right")
+    ax.text(0.5, -0.22, "A3 (BMI as covariate) omitted — degenerate ($\\widehat{R}\\,1.83$): BMI is itself a "
+            "metabolic indicator, so it cannot be partialled out of its own factor.",
+            transform=ax.transAxes, fontsize=6.8, color=MUTE, ha="center")
+    fig.tight_layout()
+    _save(fig, "biology_g_confound.png")
+
+
 # ════════════════════════════════════════════════════════════════════════════════════════════
 _M1_FIGS = [fig_biology_g, fig_phi, fig_empirical_atlas, fig_prior_posterior, fig_waic,
-            fig_invariance, fig_ppc, fig_reliability, fig_soft_priors, fig_coverage]
+            fig_invariance, fig_ppc, fig_reliability, fig_soft_priors, fig_coverage,
+            fig_biology_g_confound]
 _MILESTONE_FIGS = [fig_m2_structure, fig_m2_archetypes, fig_m2_regions, fig_m2_confidence,
                    fig_m2_embedding, fig_m3_traitstate, fig_m3_invariance, fig_m3_spinecorner, fig_m4_value,
                    fig_m4_atlas, fig_m5_moderation, fig_synthesis]

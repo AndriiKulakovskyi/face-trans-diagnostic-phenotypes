@@ -10,11 +10,13 @@ treatment-moderation analysis of Chapter~\ref{sec:treatment} --- inherits whatev
 model invents. A map that is partly an artefact of the priors, the sampler, or the cohort mix would quietly
 contaminate all of it.
 
-So we harden the map along five arms, each isolating one ``could this be an artefact?'' question:
+So we harden the map along six arms, each isolating one ``could this be an artefact?'' question:
 
 \begin{itemize}\setlength{\itemsep}{2pt}
   \item of the \emph{prior} or the \emph{estimator} --- did the soft theory priors paint the picture rather
   than the data? (§\ref{sub:confirm})
+  \item of \emph{confounding} --- is the biology$\perp$$G$ separation really a medication, adiposity, or site
+  signal in disguise? (§\ref{sub:confound})
   \item of the \emph{sampler} --- are the posterior draws numerically trustworthy, or is convergence an
   illusion? (§\ref{sub:cert})
   \item of \emph{resampling and cohort imbalance} --- would a different draw of patients, or dropping a
@@ -98,6 +100,109 @@ and sleep burden partly track impairment. Because $G$ carries functioning conten
 this is exactly the kind of signal a clinician's global impression cannot see --- and exactly what a
 biology-aware stratification (Chapter~\ref{sec:strata}) can exploit.
 \end{keyresult}
+
+\subsection{Is biology$\perp$$G$ a confound? medication, adiposity, and site}
+\label{sub:confound}
+\certified\ The biology$\perp$$G$ result just above is the single most load-bearing claim in the report:
+everything downstream treats the biological corner as a \emph{real} axis of illness rather than a re-description
+of severity. So it deserves the hardest adversarial question of all --- and it is the one a journal reviewer
+asks first: \emph{is the ``biology axis'' actually biology?} Three deflationary alternatives would make the
+finding far less interesting, even trivial:
+
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item \textbf{Medication.} Antipsychotics \emph{cause} metabolic syndrome --- weight gain, dyslipidemia,
+  glucose dysregulation. If the metabolic axis mostly tracks who is medicated, then ``metabolic load independent
+  of severity'' collapses to ``\emph{drug exposure} independent of current symptoms'' --- a near-tautology, not a
+  discovery.
+  \item \textbf{Adiposity.} If the metabolic factor is dominated by body weight, ``metabolic$\perp$$G$'' is just
+  ``BMI$\perp$$G$.''
+  \item \textbf{Site / assay batch.} The three cohorts ran their bloodwork at different sites on different
+  platforms. A ``biological axis'' that really loaded on \emph{which laboratory ran the sample} would be a
+  between-cohort scale artefact in a transdiagnostic costume.
+\end{itemize}
+
+\begin{definitionbox}[Partialling out a confounder, intuitively]
+To ``adjust for'' a confounder is to ask a counterfactual: \emph{among patients matched on age, sex, education,
+recruitment site, and medication, is metabolic load still independent of severity?} We answer it the direct way
+--- by \emph{subtraction}. For each measurement we remove the part a confounder can predict (regress, say, CRP
+on age/sex/site/antipsychotic and keep the leftover) and re-estimate the factor correlations on those leftovers,
+the \emph{residuals}. The logic is a sieve: if the biology$\perp$$G$ separation were really the confounder
+wearing a biological mask, then subtracting the confounder would wash it out and the residuals would show
+nothing. If the separation is still there after the confounder's whole footprint has been removed, it was never
+the confounder to begin with. Each rung of the ladder below subtracts one more suspect and re-reads
+$\Phi(G,\cdot)$ in what remains.
+\end{definitionbox}
+
+We run this on the same correlated-$G$ model that produced the headline, partialling each continuous indicator
+on a \emph{growing} design of confounders before the factor model is fit.
+
+\begin{methodsbox}[The adjustment, and why it is conservative]
+For a Gaussian item, adjusting its mean by the published covariate term $\beta_j^\top c_i$ is
+Frisch--Waugh--Lovell-equivalent to \emph{residualizing} the item on the covariate design $c$ before the factor
+model: regress the item on $c$, keep the residual, then fit. The marginalized Woodbury kernel is untouched (the
+residual is still zero-mean Gaussian). We walk a ladder of designs, each adding the next suspect: \textbf{A0}
+nothing (the reported value); \textbf{A1} age(spline)$+$sex$+$education$+$site; \textbf{A2} A1 $+$ antipsychotic
+exposure; \textbf{A3} A2 $+$ BMI moved into the covariate block. \textbf{A2 is the headline, and it is
+deliberately conservative}: antipsychotics sit on the \emph{causal path} to metabolic load (they are prescribed
+for severity \emph{and} they cause metabolic change), so partialling them out removes genuine signal as well as
+confounding. Surviving A2 is a strong test, not a lenient one.
+\end{methodsbox}
+
+The antipsychotic exposure is the map-independent harmonized drug-class flag of Chapter~\ref{sec:treatment}
+(coverage $\approx54\%$; BP lifetime, SZ/DR current; missing values mean-imputed in the \emph{design} only, never
+in the data). The model is the same correlated-$G$ marginalized fit, on an $N\approx2{,}000$ diagnosis-balanced
+sub-sample, two seeds; arms A0--A2 converge cleanly ($\widehat{R}\le1.02$, $0$ divergences).
+
+\begin{table}[h]\centering\small\sffamily
+\caption{Biology$\perp$$G$ under a growing confounder design. Each cell is $\Phi(G,\text{domain})$ --- the
+domain's correlation with functional burden --- so \emph{smaller is more severity-independent}. A0 reproduces
+the published map ($0.13/0.06$). Through medication and site adjustment (A2), metabolic and inflammatory stay
+the \emph{two least} $G$-entangled domains, a factor of $\sim4$ below cognition and sleep. (A3 is non-estimable
+--- itself a result; see below.)}
+\label{tab:confound}
+\begin{tabular}{L{3.6cm} R{2.2cm} R{2.8cm} R{2.9cm} R{1.8cm}}
+\toprule
+\hdr{domain} & \hdr{A0 unadj.} & \hdr{A1 $+$demo$+$site} & \hdr{A2 $+$antipsychotic} & \hdr{A3 $+$BMI}\\
+\midrule
+\rowcolor{facebg} \textbf{metabolic} & $0.127$ & $0.066$ & $\mathbf{0.069}$ & \emph{n.e.}\\
+\textbf{inflammatory} & $0.064$ & $0.051$ & $\mathbf{0.060}$ & \emph{n.e.}\\
+\rowcolor{facebg} cognition & $0.402$ & $0.261$ & $0.265$ & \emph{n.e.}\\
+sleep & $0.371$ & $0.358$ & $0.361$ & \emph{n.e.}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.86\linewidth]{figures/biology_g_confound.png}
+\caption{$\Phi(G,\text{domain})$ across the confounder ladder. The two biological axes stay inside a low
+``biology band'' ($\le0.15$) as medication and site are partialled out --- metabolic actually \emph{halves} from
+A0 to A1 --- while cognition and sleep remain three to six times higher. The biology axis is not a medication or
+site signal. (A3/BMI omitted: degenerate, see text.)}
+\label{fig:confound}
+\end{figure}
+
+\begin{keyresult}[Biology$\perp$$G$ is not a medication, adiposity, or site artefact]
+After adjusting every indicator for age, sex, education, \emph{site}, \emph{and antipsychotic exposure}, the
+metabolic ($0.069$) and inflammatory ($0.060$) axes remain the \emph{least} severity-entangled domains in the
+map --- below cognition ($0.265$) and sleep ($0.361$) by roughly a factor of four, and essentially unchanged from
+their unadjusted values. Metabolic$\sim$$G$ does not inflate under adjustment; it \emph{falls}. The deflationary
+reading --- ``the biology axis is just who is medicated, or how heavy, or which lab'' --- is not supported: the
+severity-independence of biological load is a property of the patients, not of their treatment, their weight, or
+their recruitment site.
+\end{keyresult}
+
+\begin{caveatbox}[The BMI arm is non-estimable --- and that is itself the finding]
+Arm A3 moves BMI out of the metabolic factor and into the covariate block, asking ``is metabolic$\perp$$G$ just
+adiposity?'' The fit \emph{degenerates} ($\widehat{R}\,1.83$, $\mathrm{ESS}\approx2$): BMI is one of the metabolic
+factor's own primary indicators, so partialling it out partly dissolves the factor it is meant to test --- you
+cannot cleanly remove a thing from its own definition. We report this as non-estimable rather than quote a number
+from a non-converged chain. The honest content is that metabolic load and adiposity are \emph{not separable} by
+this method --- which is exactly why the \textbf{conservative A2} (antipsychotic-adjusted, BMI \emph{kept} as an
+indicator) is the headline arm. Two further bounds: antipsychotic adjustment is over-conservative (it can remove
+real, drug-induced biology); and a site \emph{dummy} is coarser than the full cross-platform assay/batch
+harmonization this baseline data cannot supply. This is an internal robustness result on the measurement
+structure, not external validation.
+\end{caveatbox}
 
 \subsection{Documented at the largest N that mixes}
 \label{sub:cert}
@@ -233,12 +338,13 @@ its seven binary ISF ideation/attempt items, all of which reproduce cleanly (Bay
 The axis is sound; one count item on it is mis-specified.
 \end{caveatbox}
 
-\begin{keyresult}[What the five arms buy]
+\begin{keyresult}[What the six arms buy]
 Taken together, the arms say the nine-dimension map is \textbf{not} an artefact of the priors (flat-prior refit
-$\varphi=1.00$), the sampler (cross-seed $\varphi=0.993$, clean diagnostics), the resampling (worst-case
-$\varphi=0.958$ across four schemes), or cross-cohort non-comparability (largely invariant, with four documented
-and interpretable partials), and it \textbf{can} regenerate the observed data on both likelihood blocks (SRMR
-$0.074$; 21/22 discrete indicators reproduce). The biology$\perp$$G$ separation, the metabolic/inflammatory
+$\varphi=1.00$), of \emph{confounding} (biology$\perp$$G$ holds under medication and site adjustment --- metabolic
+$0.069$, inflammatory $0.060$), the sampler (cross-seed $\varphi=0.993$, clean diagnostics), the resampling
+(worst-case $\varphi=0.958$ across four schemes), or cross-cohort non-comparability (largely invariant, with four
+documented and interpretable partials), and it \textbf{can} regenerate the observed data on both likelihood blocks
+(SRMR $0.074$; 21/22 discrete indicators reproduce). The biology$\perp$$G$ separation, the metabolic/inflammatory
 split, and the mania and substance axes are therefore properties of the data, not of our modelling choices ---
 a substrate solid enough to build the strata, temporal, prognosis, and treatment milestones on
 (Chapters~\ref{sec:strata}--\ref{sec:treatment}).

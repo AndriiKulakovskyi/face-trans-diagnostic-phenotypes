@@ -118,9 +118,12 @@ def _age_spline(x: np.ndarray, df: int) -> np.ndarray:
     return x
 
 
-def _covariate_design(index: pd.Index, *, age_spline_df: int = 4) -> np.ndarray:
+def _covariate_design(index: pd.Index, *, age_spline_df: int = 4,
+                      extra_cols: tuple[str, ...] = ()) -> np.ndarray:
     """Confounder design aligned to `index`: intercept + ns(age) + age×sex + sex + edulevel + site dummies.
-    Covariate NaNs are mean-imputed for the design only (the item's own NaNs are preserved upstream)."""
+    Covariate NaNs are mean-imputed for the design only (the item's own NaNs are preserved upstream).
+    `extra_cols` optionally appends further standardized confounders (e.g. ``on_antipsychotic``, ``bmi``)
+    pulled from covariates_v0.parquet — the biology⊥G confound-sensitivity arm; empty by default (no change)."""
     cov_path, site_path = PROC / "covariates_v0.parquet", PROC / "site_v0.parquet"
     cov = pd.read_parquet(cov_path).reindex(index) if cov_path.exists() else pd.DataFrame(index=index)
     n = len(index)
@@ -140,12 +143,16 @@ def _covariate_design(index: pd.Index, *, age_spline_df: int = 4) -> np.ndarray:
         d = pd.get_dummies(site.astype("object"), prefix="site", dummy_na=False, drop_first=True)
         if d.shape[1]:
             blocks.append(d.to_numpy("float64"))
+    for name in extra_cols:                            # confound-sensitivity covariates (standardized)
+        x = _col(name)
+        blocks.append((x - x.mean()) / (x.std() or 1.0))
     return np.column_stack(blocks)
 
 
-def _residualize_on_covariates(Vdf: pd.DataFrame, *, age_spline_df: int = 4) -> pd.DataFrame:
+def _residualize_on_covariates(Vdf: pd.DataFrame, *, age_spline_df: int = 4,
+                               extra_cols: tuple[str, ...] = ()) -> pd.DataFrame:
     """OLS-partial each (pre-z-score) item on the covariate design over its observed rows; NaN preserved."""
-    A = _covariate_design(Vdf.index, age_spline_df=age_spline_df)
+    A = _covariate_design(Vdf.index, age_spline_df=age_spline_df, extra_cols=extra_cols)
     out = Vdf.copy()
     min_obs = A.shape[1] + 2
     for c in out.columns:
@@ -166,7 +173,8 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
             cohort_subset: list[str] | None = None, balanced: bool = False,
             keep_index: np.ndarray | None = None, force_factors_continuous: list[str] | None = None,
             n_subsample: int | None = None, emit_moments: bool = False, visit: str = "V0",
-            covariate_adjust: bool = False, age_spline_df: int = 4, soft_unlikely: bool = False,
+            covariate_adjust: bool = False, age_spline_df: int = 4,
+            covariate_extra_cols: tuple[str, ...] = (), soft_unlikely: bool = False,
             seed: int = 20260605) -> CorePrep | tuple[CorePrep, dict]:
     """Load the persisted V0 baseline, encode the continuous block for `factors`, and resolve
     the per-cell loading priors from the matrix. Three orthogonal switches deform S1 -> S2:
@@ -231,7 +239,8 @@ def prepare(factors: list[str] = S1_FACTORS, *, correlated: bool = False,
         metarec[it] = (str(fam), sgn, logmin)
     Vdf = pd.DataFrame(raw, index=B.index)
     if covariate_adjust:                        # P0-04 arm: partial out age(spline)+sex+edu+site, then z-score
-        Vdf = _residualize_on_covariates(Vdf, age_spline_df=age_spline_df)
+        Vdf = _residualize_on_covariates(Vdf, age_spline_df=age_spline_df,
+                                         extra_cols=covariate_extra_cols)
     cols = {}
     for it in items:
         v = Vdf[it]

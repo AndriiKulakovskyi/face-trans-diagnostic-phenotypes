@@ -41,7 +41,7 @@ shows they are spurious.
 | test | what it measures | result | reads as |
 |---|---|---|---|
 | Hopkins | cluster *tendency* (vs uniform) | 0.79 | fired (but see null below) |
-| GMM-BIC | does >1 Gaussian fit better than 1? | interior optimum, gain 10,326 | fired (but = non-Gaussian shape) |
+| GMM-BIC | does >1 Gaussian fit better than 1? | interior optimum, gain 9,495 | fired (but = non-Gaussian shape) |
 | gap statistic | optimal K vs a uniform reference | k=3 | fired |
 | **silhouette** | **separation** of the best K | **peak 0.14** (< 0.15) | **continuum** |
 | dip (PC1) | modality | p = 1.0, unimodal | continuum |
@@ -54,13 +54,13 @@ real data's metrics exceed it (`StructureGate.null_comparison`):
 
 | metric | real | single-Gaussian null | z |
 |---|---|---|---|
-| **best silhouette (separation)** | **0.140** | **0.140 ± 0.003** | **0.1** |
+| **best silhouette (separation)** | **0.140** | **0.141 ± 0.002** | **0.1** |
 | Hopkins (tendency) | 0.794 | 0.776 ± 0.004 | 4.5 |
-| GMM-BIC gain (shape) | 10,326 | 0 ± 0 | — |
+| GMM-BIC gain (shape) | 9,495 | 0 ± 0 | — |
 
 The decisive line is the silhouette: the best clustering of the real data separates patients **no better than
-clustering a structureless Gaussian blob** (z = 0.1). The Hopkins "tendency" is essentially what the null
-already gives (0.79 vs 0.78), so that signal is spurious. The large GMM-BIC gain (real 10,326 vs null 0)
+clustering a structureless Gaussian blob** (z = -0.36). The Hopkins "tendency" is essentially what the null
+already gives (0.79 vs 0.78), so that signal is spurious. The large GMM-BIC gain (real 9,495 vs null 0)
 confirms the cloud is **non-Gaussian** — but the silhouette proves those GMM components are **not separated**,
 so the non-Gaussianity is *shape* (skew + the archetype corners), not *clusters*.
 
