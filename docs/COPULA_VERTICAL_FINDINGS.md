@@ -26,8 +26,8 @@ findings do not depend on the Gaussian-vs-copula likelihood).
 ## M2 — the structure: a continuum with stable extremes (no privileged K)
 
 - **Continuum, not biotypes**, established by a single-Gaussian falsification null: the best partition of the
-  cloud separates patients no better than a structureless Gaussian (silhouette **0.140 real vs 0.140 ± 0.003
-  null, z = 0.1**; GMM-optimal K = 1 in all 20 posterior draws).
+  cloud separates patients no better than a structureless Gaussian (silhouette **0.140 real vs 0.141 ± 0.002
+  null, z = -0.36**; GMM-optimal K = 1 in all 20 posterior draws).
 - The tessellation is therefore a **nested K-family (2/3/4), no privileged K** (XD-BIC flat 197.9k–199.5k).
   The load-bearing object is the **A = 4 stable archetype simplex** (only A = 2 and A = 4 reproduce
   cross-seed; native A = 8 does not).

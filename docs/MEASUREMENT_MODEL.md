@@ -217,8 +217,8 @@ X_ij  ~  F_j( η_ij , θ_j )
 
 | Indicator type | Likelihood | Form (linear predictor `η_ij` → likelihood) |
 |---|---|---|
-| continuous clinical / z-scored neuropsych | Student-t (Gaussian as ν→∞) | `X_ij ~ t(ν_j, η_ij, σ_j)` |
-| skewed lab (CRP, triglycerides) | log-Student-t | `log X_ij ~ t(ν_j, η_ij, σ_j)` |
+| continuous clinical / z-scored neuropsych | Gaussian (on the rank/copula scale) | `X_ij ~ Normal(η_ij, σ_j²)` |
+| skewed lab (CRP, triglycerides) | log-Gaussian | `log X_ij ~ Normal(η_ij, σ_j²)` |
 | ordinal item (`C_j` categories) | ordered logistic | `P(X_ij ≤ c) = logit⁻¹(τ_jc − η_ij)`, ordered `τ_j1 < … < τ_j,Cj−1` |
 | binary (ISF ideation/attempt) | Bernoulli-logit | `X_ij ~ Bernoulli(logit⁻¹(η_ij))` |
 | count (attempts, hospitalizations) | negative binomial | `X_ij ~ NegBin(μ_ij = exp(η_ij), φ_j)` |
@@ -226,6 +226,32 @@ X_ij  ~  F_j( η_ij , θ_j )
 (Zero-inflated NB is available if excess structural zeros remain after decoding, §3.4.) For non-Gaussian
 likelihoods the intercept is absorbed into the cutpoints/offset and the factor scale is fixed for
 identification.
+
+### 3.2.1 Gaussian-copula likelihood (the reported measurement vehicle)
+
+The reported M1 map is fit through a **Gaussian-copula** observation layer that decouples each indicator's
+marginal shape from the latent dependence geometry. For an oriented observed value `y_ij`, let `F̂_j` be the
+**empirical (mid-rank) CDF** of indicator `j` over its **observed** values only; the rank-inverse-normal
+transform is
+
+```
+z_ij  =  Φ⁻¹( F̂_j(y_ij) )
+```
+
+with `Φ⁻¹` the standard-normal quantile function and average ranks for ties. The transform is **tiered**:
+continuous indicators and **high-cardinality ordinal/count** indicators (enough distinct values, not
+dominated by one modal category) are gaussianized this way, while **binary and low-cardinality ordinal**
+indicators keep their native (ordered-)probit/logit likelihood from §3.2 — a category with too little
+resolution is never treated as a continuous ruler. The latent bifactor/ESEM model is then fit on `z`
+through the **same marginalized-Woodbury observed-cell likelihood** (FIML, §3.4–§3.5): `z_i` is modelled as
+`Normal(μ_i, Λ·Φ_full·Λᵀ + Ψ)` on the rank scale, missing cells contribute no term, and **no value is
+imputed**. Because `F̂_j` is stored, the transform is **invertible** (`y_ij = F̂_j⁻¹(Φ(z_ij))`), so
+scoring/prediction return to native clinical scale. Rationale: the QA distribution report found ~60% of the
+"continuous" block is heavy-tailed / count-like / zero-inflated, so the copula makes the Gaussian-factor
+assumption **hold on the rank scale** rather than approximately via Student-t.
+
+The native-likelihood fit (§3.2) is retained for provenance, but the **copula fit is the reported object**
+for the M1→M5 vertical.
 
 ### 3.3 Priors
 

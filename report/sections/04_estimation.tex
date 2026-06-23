@@ -114,10 +114,10 @@ so each patient's marginal log-likelihood is
 \quad k_i=|\Obs_i| .
 \end{equation}
 The only matrix factorized is $A_i$, of size $F\times F$ (e.g.\ $5\times 5$ at S1) rather than up to
-$68\times 68$. Correlated factors fold in through the reparameterization $\widetilde\Lambda=\Lambda\,\mathrm{chol}(\Phi)$,
+$71\times 71$. Correlated factors fold in through the reparameterization $\widetilde\Lambda=\Lambda\,\mathrm{chol}(\Phi)$,
 so $\Lambda\Phi\Lambda\Tn+\Psi=\widetilde\Lambda\widetilde\Lambda\Tn+\Psi$ and the same kernel runs unchanged.
 The likelihood is added to the model as a single potential $\sum_i\ell_i$; NUTS then samples only the
-loading/residual parameters --- the $\sim$45{,}000 patient latents are gone.
+loading/residual parameters --- the $\sim$70{,}000 patient latents are gone.
 
 \begin{figure}[h]\centering
 \woodburydiagram

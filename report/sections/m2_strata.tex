@@ -40,7 +40,7 @@ the real data ($0.140$) lands squarely inside the distribution of best silhouett
 
 \begin{keyresult}[No evidence for discrete biotypes --- the space is a graded continuum]
 The best partition of the real nine-dimensional cloud separates patients \emph{no better} than the best
-partition of a structureless Gaussian blob (silhouette $0.140$ vs.\ $0.141\pm0.002$, $z=-0.36$). Five further
+partition of a structureless Gaussian blob (silhouette $0.140$ vs.\ $0.141\pm0.002$, $z=-0.36$). Four further
 methods agree: the main axis is unimodal (dip $p\approx 0.99$), density clustering finds nothing (HDBSCAN: $0$
 clusters), the topology is one connected component (Mapper), and once each patient's measurement uncertainty is
 propagated the optimal number of mixture components collapses to $1$ in all $20$ posterior draws. There is no
@@ -160,7 +160,7 @@ For any patient the tool returns their nearest real neighbours across \emph{all 
 transdiagnostic promise made operational (``your most similar patients, regardless of diagnosis, look like
 this''). And the \emph{in-kind} space recovers clinical kind independent of severity: where the
 \emph{overall} neighbours of a symptom-driven patient are a severity-mixed set, the in-kind neighbours are
-overwhelmingly other symptom-driven patients. Position $+$ neighbours is the continuum-native decision object;
+overwhelmingly other symptom-driven patients (4 of 5 nearest, versus a severity-mixed overall set). Position $+$ neighbours is the continuum-native decision object;
 the corners are its human-readable summary.
 \end{keyresult}
 
@@ -170,7 +170,7 @@ Some workflows need boxes. For them we export a \textbf{nested $K$-family} ($K=2
 Deconvolution (a measurement-error mixture, $x_i\sim\sum_k\pi_k\,\Normal(m_k,V_k+S_i)$, which clusters what
 patients \emph{are} after the noise in how they were measured is removed). But we report it as a
 \emph{convenience}, not a discovery, for two reasons. First, there is \textbf{no privileged $K$}: the model
-evidence is flat across $K$ (XD-BIC $197{,}918$--$199{,}545$, $<1\%$). Second, the partition splits the cloud
+evidence is flat across $K$ (XD-BIC $197{,}918$--$198{,}108$, $<0.1\%$). Second, the partition splits the cloud
 first on \textbf{suicidality} --- a symptom-burden gradient ($\eta^2$ $0.54$) --- with the biological axes
 contributing almost nothing ($\eta^2$ $\approx 0.003$); the specific axes together carry the split
 ($\eta^2_{\text{specifics}}$ $0.122$) far more than $G$ ($0.008$), but no hard region is ``the biological one.''
@@ -195,7 +195,7 @@ and the seven DSM-5 subtypes is $\approx 0$ ($-0.00$ / $0.01$); every corner mix
 \textbf{stable} --- re-fits across seeds agree (seed-ARI $0.998$). It is \textbf{not a missingness artefact} --- a
 classifier predicting a patient's region from the \emph{pattern of what was measured} scores \emph{below} chance
 (coverage permutation $p=0.23$, lift $-0.052$): membership is governed by what patients are, not by who got which
-tests. And it is a \textbf{tighter description of the data than diagnosis} --- a free four-region mixture beats a
+tests. And it is a \textbf{tighter description of the data than diagnosis} --- the free mixture (BIC-best at $K{=}2$) beats a
 DSM-5-constrained seven-group one on model evidence (XD-BIC $197{,}963$ vs $201{,}294$), and the coordinates'
 variance is four times better explained by the data's own structure than by the diagnostic labels
 ($\eta^2$ $0.109$ vs $0.025$).
@@ -214,7 +214,7 @@ Q2 --- more than severity? & $\eta^2_{\text{specifics}}$ $0.122$ $\gg$ $\eta^2_G
 \rowcolor{facebg} Q3 --- transdiagnostic? & ARI vs cohort / DSM-5 $=-0.00$ / $0.01$ & cuts across diagnosis\\
 Q4 --- stable? & seed-ARI $0.998$ & reproducible\\
 \rowcolor{facebg} Q4 --- not an artefact? & coverage$\to$membership perm-$p$ $0.23$, lift $-0.052$ & \textbf{negative} lift\\
-vs DSM-5 (BIC) & free $K{=}4$ \textbf{197{,}963} vs DSM-5 7-group $201{,}294$ & tighter, fewer groups\\
+vs DSM-5 (BIC) & free $K{=}2$ \textbf{197{,}963} vs DSM-5 7-group $201{,}294$ & tighter, fewer groups\\
 \rowcolor{facebg} vs DSM-5 (variance) & coordinate $\eta^2$ \textbf{0.109} vs DSM-5 $0.025$ & DSM-5 barely structures it\\
 \bottomrule
 \end{tabular}
