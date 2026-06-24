@@ -56,9 +56,10 @@ covariates / validation labels.
 ## Current state — M1 + M2 + M3 + M4 + M5 complete (next: PI sign-off; a true M5b needs randomized data)
 
 The package is **`src/face/…`**; the engine (`src/face/models/bayesian/continuous_core` + `confirm`,
-`runner`, `scoring`) and pipeline (`scripts/01_build_data`, `04_fit`, `05_confirm`, `06_invariance`,
-`07_score`, `08_robustness`, `09_atlas`, `s5_certify{,9}`, `s5_corrg`) consume
-`configs/prior_loading_matrix_v3.csv`. **M1 is complete (pending PI sign-off):** a **certified 9-dimension**
+`runner`, `scoring`) consumes `configs/prior_loading_matrix_v3.csv` and the kept **data/config layer**
+(`scripts/01_build_data` → `data/processed/`, `scripts/02_build_covariates`). The native M1 *modeling* scripts
+(`04_fit … 09_atlas`, `10*`, `12`, `13`, `s5_*`) were **retired 2026-06-24** — the canonical M1 is the
+Gaussian-copula OOP fit (`src/face/models/bayesian/measurement_model_oop.py`). **M1 is complete (pending PI sign-off):** a **certified 9-dimension**
 transdiagnostic map — G + cognition/metabolic/inflammatory/sleep/developmental-risk/suicidality **+ mania +
 substance** — built, hardened (confirmation §5 / invariance §8 / robustness §8), certified (§4), scored (§7),
 and adjudicated (§6). **Findings + discussion (paper-facing, read first): [docs/M1_FINDINGS.md](docs/M1_FINDINGS.md).**
@@ -76,7 +77,8 @@ only the M3-contract default; finer K captures the severity/biology gradient K=2
 (ARI≈0 vs DSM-5), stable, not a missingness artefact, tighter *description* than DSM-5. New OOP engine
 `src/face/strata/strata_model_oop.py` (wraps the proven kernels); driver `notebooks/run_strata_model_oop.py`;
 hand-off `results/face/strata_oop/consolidate/{patient_strata.parquet, k_family_menu.csv}` + continuous coords
-in `results/face/strata_oop/coordinates/`. (Native pipeline `scripts/20–26` retained as provenance.)
+in `results/face/strata_oop/coordinates/`. (Native M2 pipeline `scripts/20–26` **retired 2026-06-24**; the
+copula OOP engine `strata_model_oop.py` is canonical.)
 **M3 temporal coherence COMPLETE** (pending PI sign-off) — methods **[docs/TEMPORAL_MODEL.md](docs/TEMPORAL_MODEL.md)**,
 findings (paper-facing, read first) **[docs/TEMPORAL_OOP_FINDINGS.md](docs/TEMPORAL_OOP_FINDINGS.md)**. Scoring follow-up (V0→V1→V2) onto the **fixed** M1/M2
 model (observed cells, uncertainty propagated, never re-discovered), the map + strata are **temporally

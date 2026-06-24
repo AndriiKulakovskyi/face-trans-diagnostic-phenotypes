@@ -16,7 +16,8 @@ with its continuous backbone **certified at full N** and the joint 9-dim **docum
 domain (correlated-G §3.1); resample-robust (min φ ≥ 0.85 under LOCO + site-bootstrap + weighting, §8);
 with per-patient coordinates + uncertainty + reliability flags (§7). Anhedonia **rejected**;
 impulsivity/negative-symptoms/sensory **not_testable**; depression/anxiety are cross-loading **windows**.
-Engine in `src/face/{models/bayesian,confirm,runner,scoring}.py`; pipeline `scripts/01,04–09,s5_*`; results
+Engine in `src/face/{models/bayesian,confirm,runner,scoring}.py`; data layer `scripts/01_build_data` kept,
+native M1 modeling scripts (`04–09,10*,12,13,s5_*`) **retired 2026-06-24** (canonical = copula OOP fit); results
 in `reports/01,04–11`. **M2 stratification COMPLETE** (pending PI sign-off), **reworked on the certified Gaussian-copula map** —
 canonical findings [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md), atlas
 [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md), methods [`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md). The transdiagnostic space is a **continuum** (not biotypes; confirmed by a single-Gaussian
