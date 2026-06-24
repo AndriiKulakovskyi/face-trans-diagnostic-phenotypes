@@ -6,7 +6,6 @@ import pandas as pd
 
 from face.prognosis.frame import (
     OutcomeSpec,
-    _align_draws,
     _response,
     _threshold,
     derive_endpoints,
@@ -64,22 +63,3 @@ def test_extract_outcomes_absent_var_is_all_nan(tmp_path):
     assert out["ghost__V0"].isna().all()
 
 
-# ---- draw-tensor alignment ----
-def test_align_draws_orders_to_frame_and_flags_missing():
-    draws = np.arange(3 * 4 * 2, dtype=float).reshape(3, 4, 2)   # [S=3, M=4, D=2]
-    uid = ["a", "b", "c", "d"]
-    vis = ["V0", "V0", "V1", "V0"]
-    dims = ["x", "y"]
-    out, missing = _align_draws(draws, uid, vis, dims, ["d", "a", "ghost"], ["x", "y"], visit="V0")
-    assert out.shape == (3, 3, 2)
-    assert missing == ["ghost"]
-    np.testing.assert_array_equal(out[:, 0, :], draws[:, 3, :])      # d -> row 3
-    np.testing.assert_array_equal(out[:, 1, :], draws[:, 0, :])      # a -> row 0
-    assert np.isnan(out[:, 2, :]).all()                             # ghost -> NaN
-
-
-def test_align_draws_subsets_axes():
-    draws = np.arange(2 * 2 * 3, dtype=float).reshape(2, 2, 3)
-    out, _ = _align_draws(draws, ["a", "b"], ["V0", "V0"], ["x", "y", "z"], ["a"], ["z"], visit="V0")
-    assert out.shape == (2, 1, 1)
-    np.testing.assert_array_equal(out[:, 0, 0], draws[:, 0, 2])      # selected axis 'z' == col 2

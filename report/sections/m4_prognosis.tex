@@ -279,6 +279,68 @@ drop bipolar & $+5.8$ (amb.) & BP carries most of it (open-course)\\
 \end{tabular}
 \end{table}
 
+\subsection{Is the map a sufficient representation? A raw-vs-map benchmark}
+\label{sub:m4repbench}
+The map is a \emph{compression}: nine coordinates distilled from $143$ raw indicators. A fair question is
+whether that compression \emph{loses} prognostic signal. The honest framing is \textbf{sufficiency, not
+supremacy} --- the coordinates are a function of the raw cells, so a flexible model on raw weakly dominates
+in-distribution, and a \emph{tie} is the win. We benchmark three representations under one fixed, regularised
+gradient-boosted model on identical cross-validation folds --- the clinician bar \textbf{REF} ($=$ DSM-5 $+$
+severity $+$ baseline GAF), \textbf{REF$+$map} ($=$ the nine coordinates $+$ uncertainty $+$ archetypes), and
+\textbf{REF$+$raw} ($=$ the $143$ indicators) --- predicting two-year functional \emph{recovery}
+(impaired $\to$ GAF$\ge 71$) and \emph{deterioration} (GAF drop $\ge 10$), at one and two years, pooled and in
+BP$+$DR (methods: \texttt{docs/M4\_REPRESENTATION\_BENCHMARK.md}).
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.74\linewidth]{figures/repbench_sufficiency.png}
+\caption{Out-of-fold AUC for the three representations (pooled). For \textbf{deterioration} the map matches raw
+(a tie --- the compression loses nothing); for \textbf{recovery} raw edges the map by $\approx 0.04$ AUC,
+replicated at one and two years. Dropping baseline GAF (the REF0 sensitivity) moves AUC by $\approx 0$, so this
+is \emph{not} an autoregression artefact --- the latent $G$ coordinate already carries baseline functioning.}
+\label{fig:repbench_suff}
+\end{figure}
+
+Sufficiency is therefore \emph{target-dependent}: the map is sufficient for the baseline-saturated deterioration
+outcome and \emph{near}-sufficient (a $\approx 0.04$ gap) for recovery. What does raw carry that the map drops? A
+TreeSHAP decomposition answers sharply (Figure~\ref{fig:repbench_gap}): \textbf{$97\%$} of raw's
+recovery-predictive importance sits \emph{within} the nine modelled factors --- the top predictors are the
+factor anchors themselves (CRP, BMI/HbA1c/lipids, CVLT/WAIS, Fagerstr\"om, CTQ) --- and only $3\%$ is off-map
+(the depression/anxiety \emph{window} items). The gap is \textbf{within-factor compression of item-level
+resolution}, not a missing dimension.
+
+\begin{figure}[h]\centering
+\includegraphics[width=\linewidth]{figures/repbench_recovery_gap.png}
+\caption{\emph{Left:} $97\%$ of raw's recovery-predictive SHAP mass lies within the nine factors. \emph{Right:}
+the top raw predictors of recovery, coloured by M1 home factor --- they \emph{are} the factor anchors. The map
+has the right structure; it trades item-level resolution for parsimony.}
+\label{fig:repbench_gap}
+\end{figure}
+
+Three further probes agree. \textbf{Honest uncertainty} (an errors-in-variables Bayesian GLM that infers the
+true coordinate with the per-patient SD plugged in) adds \emph{modestly} for recovery ($\Delta$ELPD
+$+3.1\pm1.7$ over the mean-only fit) and nothing for deterioration --- it does not close the gap, confirming the
+gap is compression, not noise. \textbf{Efficiency}: at small $N$ the map shows no advantage (the regularised raw
+model does not over-fit away its resolution edge). \textbf{Transport} (leave-one-cohort-out,
+Figure~\ref{fig:repbench_loco}): the map transfers \emph{as well or better} than raw for deterioration on the
+well-powered held-out cohorts, while raw transfers better for recovery. The map's advantages materialise exactly
+where it is sufficient.
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.9\linewidth]{figures/repbench_loco.png}
+\caption{Leave-one-cohort-out transport (out-of-sample AUC on the held-out cohort). For deterioration the
+nine-dim map transfers as well or better than the $143$ raw indicators; for recovery raw transfers better --- the
+same target split as sufficiency.}
+\label{fig:repbench_loco}
+\end{figure}
+
+\begin{keyresult}[The map is a faithful, parsimonious summary --- sufficient where it matters]
+The copula nine-dimension map is a \textbf{sufficient, uncertainty-honest, transportable} summary for
+deterioration, and a \textbf{near-sufficient, structurally faithful} summary for recovery whose small residual
+gap is item-level compression --- $97\%$ of it lives inside the map's own factors, not in a missing axis. The
+map trades a sliver of task-specific resolution for parsimony, interpretability, transportability, and honest
+uncertainty: a favourable trade everywhere the outcome is not dominated by item-level detail.
+\end{keyresult}
+
 \subsection{What prognosis establishes --- and what it defers}
 \label{sub:m4limits}
 On the fixed map, a baseline transdiagnostic profile predicts two-year \emph{functional} trajectory

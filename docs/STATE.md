@@ -16,7 +16,8 @@ with its continuous backbone **certified at full N** and the joint 9-dim **docum
 domain (correlated-G §3.1); resample-robust (min φ ≥ 0.85 under LOCO + site-bootstrap + weighting, §8);
 with per-patient coordinates + uncertainty + reliability flags (§7). Anhedonia **rejected**;
 impulsivity/negative-symptoms/sensory **not_testable**; depression/anxiety are cross-loading **windows**.
-Engine in `src/face/{models/bayesian,confirm,runner,scoring}.py`; pipeline `scripts/01,04–09,s5_*`; results
+Engine in `src/face/{models/bayesian,confirm,runner,scoring}.py`; data layer `scripts/01_build_data` kept,
+native M1 modeling scripts (`04–09,10*,12,13,s5_*`) **retired 2026-06-24** (canonical = copula OOP fit); results
 in `reports/01,04–11`. **M2 stratification COMPLETE** (pending PI sign-off), **reworked on the certified Gaussian-copula map** —
 canonical findings [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md), atlas
 [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md), methods [`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md). The transdiagnostic space is a **continuum** (not biotypes; confirmed by a single-Gaussian
@@ -180,7 +181,8 @@ phenotype memberships persist V1–V4?).**
 
 **Findings: [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md); methods: [`TEMPORAL_MODEL.md`](TEMPORAL_MODEL.md).** Does the V0 map + strata cohere and persist over
 follow-up (V0→V1→V2, yearly)? Scored onto the **FIXED** M1/M2 model — observed cells only, uncertainty
-propagated, **never re-discovered**. Engine `src/face/temporal/`; pipeline `scripts/30–37`; **36 tests**.
+propagated, **never re-discovered**. Engine `src/face/temporal/`; native pipeline `scripts/30–37` **retired
+2026-06-24** (copula OOP M3 canonical; its `temporal_oop/attrition/` IPW now feeds M4); **36 tests**.
 Window V0–V2 (all 3 cohorts well-represented; DR collapses at V3). G5 (vs DSM-5) **retired/subsumed** (`arm` is
 time-invariant in-data so the symmetric test is unmeasurable, and on the continuum there are no strata-labels to
 switch; its intent is carried by G3/G4, the incremental claim by M4). Two minimal, default-off `prepare()` adds
@@ -217,7 +219,8 @@ window. **PI sign-off locks M3; then M4 prognosis — persists ≠ predicts.**
 Findings [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md) · methods [`PROGNOSIS_MODEL.md`](PROGNOSIS_MODEL.md) ·
 clinician atlas [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
 Engine `src/face/prognosis/` (frame · reference · glm · compare · endpoints · clinical_value ·
-transdiagnostic · robustness); pipeline `scripts/40–48`; `tests/m4/` (33). Consumes the **fixed**
+transdiagnostic · robustness); native pipeline `scripts/40–48` **retired 2026-06-24** (shared kernels +
+`tests/m4/` retained; canonical M4 = copula OOP + the representation benchmark). Consumes the **fixed**
 M1/M2/M3 objects (panel, draws, strata, IPW) — nothing re-discovered or re-scored.
 
 On the M3 panel, an errors-in-variables Bayesian GLM tests whether a baseline coordinate/stratum
@@ -231,13 +234,20 @@ IPW + reliability + permutation (p=0.001), weakens dropping BP. The **archetype 
 2-year functional remission **14%→60%** across the 8 archetypes, transdiagnostic. The map's value is
 **group-level stratification + continuous functional forecasting**, not a large individual-binary boost
 (+0.017 AUC). Honest limits: scale trajectories not events; internal validity; 2-year horizon.
-Hand-off `results/face/m4/{prognosis_summary.csv, prognosis_patient_risk.parquet}`. **PI sign-off pending.**
+Hand-off `results/face/m4/{prognosis_summary.csv, prognosis_patient_risk.parquet}`.
+**Representation benchmark** (raw-vs-map; [`M4_REPRESENTATION_BENCHMARK.md`](M4_REPRESENTATION_BENCHMARK.md),
+engine `src/face/prognosis/repbench/`): against the 143 raw indicators under a matched XGBoost, the 9-dim copula
+map is **sufficient for deterioration** (AUC tie) and **near-sufficient for recovery** (raw +0.04 AUC) — the
+residual is **within-factor compression** (97% of raw's recovery signal lives inside the 9 factors), not a
+missing axis; honest uncertainty (EIV-GLM) adds a little, no small-N efficiency edge, the map transports as
+well/better than raw where it is sufficient. *Structurally faithful summary, parsimony for a sliver of
+resolution.* **PI sign-off pending.**
 
 ## M5 — treatment (COMPLETE 2026-06-11, pending PI sign-off)
 
 Findings [`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md) · methods [`TREATMENT_MODEL.md`](TREATMENT_MODEL.md) ·
 dev record `reports/50–57_*.md`. Engine `src/face/treatment/` (endpoints · frame · medications ·
-propensity · moderation); pipeline `scripts/50–57`; `tests/m5/` (11). Treatment data was found **late** in
+propensity · moderation); native pipeline `scripts/50–57` **retired 2026-06-24** (shared kernels + `tests/m5/` retained; canonical M5 = the OOP treatment engine). Treatment data was found **late** in
 the per-cohort thesaurus `TRAITEMENTS` tabs (never in the harmonized set), harmonized to common drug-class
 exposures (ATC[SZ] / class-string[DR] / lifetime-flag[BP]) — the earlier "data-blocked → tolerability
 coda" was superseded.

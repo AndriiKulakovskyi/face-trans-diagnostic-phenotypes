@@ -120,6 +120,32 @@ The clean ⊥G `+archetypesB` behaves identically (base/IPW/drop-DR/drop-SZ all 
 null ≈ 0). So the archetype functioning forecast is **robust to attrition and to dropping DR or SZ, vanishes
 under permutation, and is BP-driven** (the episodic, open-course cohort). (`robustness/robustness.csv`.)
 
+## Result 7 — the map is a *sufficient representation* (raw-vs-map benchmark)
+
+Methods + full results: [`M4_REPRESENTATION_BENCHMARK.md`](M4_REPRESENTATION_BENCHMARK.md); engine
+`src/face/prognosis/repbench/`; figures `docs/figures/repbench/`. The 9-dim map is a *compression* of the 143
+raw indicators, so the honest question is **sufficiency, not supremacy** (raw weakly dominates in-distribution; a
+tie is the win). One fixed regularised XGBoost, identical CV folds, three representations (REF $=$
+DSM-5+severity+baseline GAF; REF+map $=$ 9 coords + uncertainty + archetypes; REF+raw $=$ 143 indicators),
+predicting recovery (impaired→GAF≥71) & deterioration (GAF drop≥10), V1+V2, pooled + BP/DR.
+
+- **Sufficiency is target-dependent.** Deterioration: map $=$ raw (AUC tie → **sufficient**). Recovery: raw edges
+  the map by **ΔAUC ≈ +0.04** (pooled V1 +0.040, V2 +0.039), replicated across horizons and **not an
+  autoregression artefact** (dropping baseline GAF, REF0, moves AUC ≈ 0 — latent G already carries baseline
+  functioning).
+- **The recovery gap is within-factor compression, not a missing axis.** TreeSHAP: **97%** of raw's
+  recovery-predictive mass sits *within* the 9 modelled factors (top drivers are the anchors CRP, BMI/HbA1c/
+  lipids, CVLT/WAIS, Fagerström, CTQ); only 3% off-map (depression/anxiety window items).
+- **Honest uncertainty (EIV-GLM)** adds modestly for recovery (EIV vs mean ΔELPD +3.1±1.7) and null for
+  deterioration — does **not** close the gap (gap = compression, not noise).
+- **Efficiency:** no small-N advantage for the map (raw regularises well). **Transport (LOCO):** the map
+  transfers as well/better than raw for deterioration (BP/SZ held-out), raw better for recovery.
+
+**Calibrated claim:** the copula 9-dim map is a **sufficient, uncertainty-honest, transportable** summary for
+deterioration and a **near-sufficient, structurally faithful** summary for recovery whose ≈0.04-AUC residual is
+item-level compression (97% inside its own factors) — trading task-specific resolution for parsimony,
+interpretability, transport, and honest uncertainty.
+
 ## Honest caveats
 
 * **The durable-trio-alone signal does not survive on the copula map.** Unlike the native M4 (where
