@@ -107,16 +107,22 @@ severity), robust to attrition/reliability/permutation — but **not severity** 
 BP/DR, null in baseline-saturated SZ). The archetype prognostic atlas: 2-year functional remission
 **14%→60%**, transdiagnostic. The map's value is **group-level stratification + continuous functional
 forecasting**, not a large individual-binary boost — honest limits: scale trajectories not events,
-internal validity, 2-year horizon. Engine `src/face/prognosis/`; pipeline `scripts/40–48`; hand-off
-`results/face/m4/{prognosis_summary.csv, prognosis_patient_risk.parquet}`.
+internal validity, 2-year horizon. Engine `src/face/prognosis/` (shared kernels); the native pipeline
+`scripts/40–48` was **retired 2026-06-24**; native hand-off `results/face/m4/` (provenance).
 **M4 reworked on the copula M2 object** (parallel OOP engine `src/face/prognosis/prognosis_model_oop.py`,
 wraps the kernels; driver `notebooks/run_prognosis_model_oop.py`; canonical **[docs/PROGNOSIS_OOP_FINDINGS.md](docs/PROGNOSIS_OOP_FINDINGS.md)**;
 hand-off `results/face/prognosis_oop/`). Result replays: predicts 2-yr **functioning** (archetypes ΔELPD +59 on
 egf, co-informative with DSM-5), functional remission **27%→60%** across A=4 archetypes (biology corner worst);
 **the answer to the M2 K-question — operative K = none**: the continuous/archetype encoding dominates any hard
 tessellation (all K=2/3/4 predictive of functioning but add less). Honest copula shift: durable-trio-alone EIV
-no longer robust → the predictive object is the fuller archetype representation. Native M4 (`scripts/40–48`)
-kept as provenance.
+no longer robust → the predictive object is the fuller archetype representation.
+**Representation benchmark** (`src/face/prognosis/repbench/`, [docs/M4_REPRESENTATION_BENCHMARK.md](docs/M4_REPRESENTATION_BENCHMARK.md)):
+vs the 143 raw indicators under a matched XGBoost, the 9-dim copula map is **sufficient for deterioration**
+(AUC tie) and **near-sufficient for recovery** (raw +0.04 AUC), and that residual is **within-factor
+compression** (97% of raw's recovery signal lives inside the 9 factors), not a missing axis — structurally
+faithful, parsimony for a sliver of resolution.
+**The native M4 pipeline (`scripts/40–48`) was retired 2026-06-24**; the shared kernels in
+`src/face/prognosis/` remain (consumed by the OOP M4 and the benchmark).
 **M5 treatment COMPLETE** (pending PI sign-off) — methods **[docs/TREATMENT_MODEL.md](docs/TREATMENT_MODEL.md)**,
 findings (paper-facing, read first) **[docs/TREATMENT_OOP_FINDINGS.md](docs/TREATMENT_OOP_FINDINGS.md)**. Treatment
 data was found **late** in the per-cohort thesaurus `TRAITEMENTS` tabs (never in the harmonized common set)

@@ -217,7 +217,8 @@ window. **PI sign-off locks M3; then M4 prognosis — persists ≠ predicts.**
 Findings [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md) · methods [`PROGNOSIS_MODEL.md`](PROGNOSIS_MODEL.md) ·
 clinician atlas [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
 Engine `src/face/prognosis/` (frame · reference · glm · compare · endpoints · clinical_value ·
-transdiagnostic · robustness); pipeline `scripts/40–48`; `tests/m4/` (33). Consumes the **fixed**
+transdiagnostic · robustness); native pipeline `scripts/40–48` **retired 2026-06-24** (shared kernels +
+`tests/m4/` retained; canonical M4 = copula OOP + the representation benchmark). Consumes the **fixed**
 M1/M2/M3 objects (panel, draws, strata, IPW) — nothing re-discovered or re-scored.
 
 On the M3 panel, an errors-in-variables Bayesian GLM tests whether a baseline coordinate/stratum

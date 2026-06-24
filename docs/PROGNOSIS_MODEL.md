@@ -88,7 +88,13 @@ EIV ladder is the uncertainty-aware backbone.
 
 The milestone locks when, per primary outcome, Q1+Q2 pass and Q3+Q4 pass-or-documented-partial.
 
-## 6. Pipeline (`scripts/40–48`) and engine (`src/face/prognosis/`)
+## 6. Pipeline (`scripts/40–48`, **RETIRED 2026-06-24**) and engine (`src/face/prognosis/`)
+
+> The native driver pipeline below was **retired** — the canonical M4 is the copula OOP engine
+> (`prognosis_model_oop.py`, [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md)) plus the representation
+> benchmark ([`M4_REPRESENTATION_BENCHMARK.md`](M4_REPRESENTATION_BENCHMARK.md)). The shared array-in/array-out
+> kernels in `src/face/prognosis/` (glm · compare · clinical_value · frame · endpoints · reference ·
+> transdiagnostic · robustness) and `tests/m4/` remain. The script list is kept as the native methods record.
 
 `40_inventory` (feasibility + circularity audit) · `41_frame` (the EIV analysis frame + predictor draw
 tensor) · `42_reference` (the R0–R3y bar) · `43_incremental` (Tc/Ta/Tt/Tf vs R3y; +Arm-B refinement) ·
