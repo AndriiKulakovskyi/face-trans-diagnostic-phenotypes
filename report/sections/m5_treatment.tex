@@ -12,8 +12,10 @@ one phenotype and not another, the statistical object at which a coordinate woul
 The honest answer, set up carefully below, is a boundary rather than a breakthrough: on the observational
 treatment-as-usual contained in these cohorts, the map does \emph{not} reliably moderate treatment response. That
 boundary is worth drawing precisely, because it is \emph{earned} from a proper causal pipeline rather than assumed
-from a shrug --- and because, in drawing it, the analysis also back-validates the prognosis of the previous
-chapter and shows the archetypes describe real response heterogeneity even where they do not causally prescribe.
+from a shrug --- and because, in drawing it, the analysis delivers two results it can stand behind: it
+back-validates the prognosis of the previous chapter (the carrier is not a treatment proxy), and it yields a
+\emph{treatment-course atlas} that flags which phenotype faces a difficult course --- monitoring, even where the
+map cannot prescribe.
 
 \subsection{The treatment data and the estimand}
 \label{sub:m5data}
@@ -101,10 +103,11 @@ The result is the central, honest finding of the chapter: where the data are cle
 \begin{figure}[h]\centering
 \includegraphics[width=0.96\linewidth]{figures/m5_moderation.png}
 \caption{Per-drug average treatment effect (point estimate and 94\% interval) with its E-value. Lithium in
-bipolar sits on zero with an E-value of $1.06$ --- a well-identified null. Antipsychotic in bipolar shows a
-metabolic $\times$ functioning interaction whose interval excludes zero (inflammatory same-direction but spanning zero; ATE $-0.231$, E-value
-$1.77$) but whose held-out moderation gain is weak --- suggestive but unconfirmed. Clozapine, channeled, is
-non-decisive. The durable-axis and $A{=}4$-archetype encodings agree throughout.}
+bipolar sits on zero with an E-value of $1.06$ --- a null the minimum-detectable-effect check bounds (it could
+have resolved a $\approx 0.19$\,SD interaction). Antipsychotic in bipolar has an average effect that excludes
+zero (ATE $-0.231$, E-value $1.77$) but no reliable moderation --- the held-out gain spans zero and the two
+encodings disagree on the driving axis. Clozapine, channeled and underpowered, is non-decisive. The
+durable-axis and $A{=}4$-archetype encodings agree throughout.}
 \label{fig:m5mod}
 \end{figure}
 
@@ -117,22 +120,27 @@ $-0.231$ durable vs $-0.233$ archetype; E-value $1.77$ vs $1.78$).}
 \toprule
 \hdr{question $\cdot$ outcome} & \hdr{ATE [94\% ETI]} & \hdr{E-value} & \hdr{verdict}\\
 \midrule
-\rowcolor{facebg} lithium-BP $\cdot$ functioning & $-0.003\,[-0.13,+0.12]$ & $1.06$ & \textbf{well-identified null}\\
-antipsychotic-BP $\cdot$ functioning & $-0.231\,[-0.36,-0.10]$ & $1.77$ & suggestive (unconfirmed)\\
+\rowcolor{facebg} lithium-BP $\cdot$ functioning & $-0.003\,[-0.13,+0.12]$ & $1.06$ & \textbf{bounded null} (MDE $0.19$)\\
+antipsychotic-BP $\cdot$ functioning & $-0.231\,[-0.36,-0.10]$ & $1.77$ & no reliable moderation (noise)\\
 \rowcolor{facebg} antipsychotic-BP $\cdot$ CGI response & $-0.29\,[-0.66,+0.07]$ & $1.59$ & no reliable moderation\\
-clozapine-SZ $\cdot$ functioning & $+0.02\,[-0.24,+0.29]$ & $1.16$ & no reliable moderation\\
+clozapine-SZ $\cdot$ functioning & $+0.02\,[-0.24,+0.29]$ & $1.16$ & non-decisive (underpowered)\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{keyresult}[A well-identified null where it counts, a hypothesis where it does not]
+\begin{keyresult}[A bounded null where it counts, noise where it does not]
 For \textbf{lithium in bipolar} --- the best-identified contrast --- the map does \emph{not} moderate response:
-the ATE sits on zero ($-0.003$, interval spanning zero) and the E-value of $1.06$ says even a trivial unmeasured
-confounder would erase it. The map does not pick lithium responders. For \textbf{antipsychotic in bipolar}, the
-metabolic $\times$ functioning interaction excludes zero (inflammatory same-direction but spanning zero; ATE $-0.231$, E-value $1.77$), but the
-held-out moderation gain does not clear its band --- a \emph{hypothesis for prospective testing}, not a result.
-Clozapine is non-decisive. The average effects are confounding-fragile throughout (E-values $1.06$--$1.78$). On
-observational treatment-as-usual, the map does not reliably moderate treatment response.
+the ATE sits on zero ($-0.003$) with an E-value of $1.06$, and a \textbf{minimum-detectable-effect} check makes
+the null \emph{bounded} rather than blind --- the design could have resolved a per-axis interaction of
+$\approx 0.19$ standard deviations at 80\% power and saw nothing approaching it. The map does not pick lithium
+responders. For \textbf{antipsychotic in bipolar}, the \emph{average} effect excludes zero ($-0.231$) but is
+confounding-fragile (E-value $1.77$) and the \emph{moderation} is noise: the held-out gain spans zero and the
+two map encodings \emph{disagree on which axis carries the interaction} (durable $\to$ metabolic, archetype
+$\to$ the biological-corner weight) --- the signature of a false positive, not a phenotype. \textbf{Clozapine}
+is non-decisive: its minimum detectable effect ($\approx 0.4$--$0.7$ SD) shows the arm is genuinely
+\emph{underpowered}, not a clean null. The average effects are confounding-fragile throughout (E-values
+$1.06$--$1.78$). On observational treatment-as-usual, the map does not reliably moderate treatment response ---
+a boundary the minimum-detectable-effect check makes \emph{earned}, not merely unobserved.
 \end{keyresult}
 
 \subsection{The prognosis survives treatment adjustment}
@@ -146,9 +154,12 @@ same sample, and ask whether the prognostic carrier survives the adjustment.
 \begin{keyresult}[M5 strengthens M4: the carrier is not a treatment proxy]
 The prognostic carrier --- the low-burden archetype A1, the corner the previous chapter identified as the best
 functional outcome --- \textbf{survives} treatment adjustment: its coefficient moves only $\beta=0.164\to0.156$
-($4.7\%$ attenuation) and its interval still excludes zero. The map's functional forecast is therefore not merely
-a relabelling of which drugs the patient was on; it holds after adjusting for the drug classes. M5 strengthens
-M4 rather than undermining it (residual prescribing is bounded by the E-values above, not eliminated).
+($4.7\%$ attenuation) and its interval still excludes zero. It survives \emph{again} under the attrition
+inverse-probability weighting of Chapter~\ref{sec:temporal} ($\beta=0.147\to0.141$, $3.9\%$ attenuation,
+$N=1{,}068$, interval still excluding zero) --- so the back-validation is not itself a dropout artifact. The
+map's functional forecast is therefore not merely a relabelling of which drugs the patient was on; it holds
+after adjusting for the drug classes the patient was on, weighted or unweighted. M5 strengthens M4 rather than
+undermining it (residual prescribing is bounded by the E-values above, not eliminated).
 \end{keyresult}
 
 Consistent with Chapter~\ref{sec:prognosis}, the predictive signal lives in the \emph{fuller $A{=}4$ archetype
@@ -157,52 +168,85 @@ block. On this map the durable trio alone does not survive the same adjustment (
 the archetype carrier does. The lesson of the prognosis chapter repeats here: the load-bearing object is the
 whole archetype geometry, with biology as one corner of it, rather than a stripped-down handful of axes.
 
-\subsection{The map describes treatment-response heterogeneity}
-\label{sub:m5heterogeneity}
-Causally moderating a \emph{specific} drug and \emph{describing} response heterogeneity are different claims, and
-the map can do the second even where it cannot do the first. The archetypes predict the treatment-response
-endpoints --- resistance, CGI response, significant side-effects --- beyond diagnosis and severity, measured by
-held-out $\Delta$ELPD (the same incremental-fit currency as Chapter~\ref{sec:prognosis}).
+\subsection{The treatment-course atlas: who faces a difficult course}
+\label{sub:m5atlas}
+Causally moderating a \emph{specific} drug and \emph{describing who faces a difficult course} are different
+claims, and the map can do the second cleanly even where it cannot do the first. This is the chapter's
+forward-looking result --- the practical complement to the prognostic atlas of Chapter~\ref{sec:prognosis}. The
+baseline archetype sorts patients into very different two-year treatment courses
+(Table~\ref{tab:m5atlas}, Figure~\ref{fig:m5atlas}): the biological corner (A0) is consistently the hardest ---
+most treatment-resistant, least responsive, most side-effect burden --- and the low-burden corner (A1) the
+easiest, a roughly two-fold spread.
 
 \begin{table}[h]\centering\small\sffamily
-\caption{Response-heterogeneity description. Held-out $\Delta$ELPD of the $A{=}4$ archetypes (and of the durable
-trio alone) over diagnosis $+$ severity. The archetype simplex carries a real response-stratification signal;
-the durable trio alone does not.}
-\label{tab:m5heterogeneity}
-\begin{tabular}{L{5.4cm} C{3.4cm} C{2.6cm}}
+\caption{The treatment-course atlas. Two-year rate (Wilson 95\% interval) of each treatment-response endpoint by
+$A{=}4$ archetype corner, pooled across the cohorts where the endpoint is observed (bipolar $+$ schizophrenia).
+The biological corner carries the difficult course; the low-burden corner the benign one.}
+\label{tab:m5atlas}
+\begin{tabular}{L{3.8cm} C{3.0cm} C{3.0cm} C{3.0cm}}
 \toprule
-\hdr{endpoint} & \hdr{archetypes $\Delta$ELPD} & \hdr{durable $\Delta$ELPD}\\
+\hdr{archetype corner} & \hdr{treatment-resistant} & \hdr{CGI responds} & \hdr{side-effects}\\
 \midrule
-\rowcolor{facebg} treatment resistance & $+20.0\pm6.8$ & $-2.6$\\
-CGI response & $+16.5\pm6.2$ & $-2.9$\\
-\rowcolor{facebg} significant side-effects & $+10.4\pm5.3$ & $+2.7$\\
+\rowcolor{facebg} A0 biological & $\mathbf{43\%}\,[38,47]$ & $46\%\,[42,51]$ & $\mathbf{23\%}\,[19,27]$\\
+A2 severe$\cdot$low-bio & $38\%\,[33,43]$ & $50\%\,[44,55]$ & $18\%\,[14,22]$\\
+\rowcolor{facebg} A3 symptom & $33\%\,[29,38]$ & $45\%\,[40,49]$ & $17\%\,[14,22]$\\
+A1 low-burden & $\mathbf{20\%}\,[18,23]$ & $\mathbf{59\%}\,[56,62]$ & $\mathbf{11\%}\,[9,13]$\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The archetypes describe \emph{who} tends to be treatment-resistant, who responds, and who carries side-effect
-burden, with the resistance and response gains comfortably exceeding twice their standard error. This is a
-descriptive stratification signal, not a causal prescription: it says the map sees structure in how patients
-respond, while the moderation analysis above says that structure is not yet a clean instruction to switch drugs
-on observational data.
+\begin{figure}[h]\centering
+\includegraphics[width=0.98\linewidth]{figures/m5_treatment_atlas.png}
+\caption{The treatment-course atlas. Two-year rate of treatment resistance, CGI response, and significant
+side-effects by archetype corner (Wilson intervals). The biological corner (A0) carries the difficult course
+across all three endpoints; each panel notes the corner's significance beyond baseline severity, substance
+comorbidity, and demographics, and the held-out discrimination permutation $p$.}
+\label{fig:m5atlas}
+\end{figure}
 
-\subsection{What the treatment analysis establishes --- the earned boundary}
+What makes this a \emph{proven} stratification rather than a coincidence is a layered set of gates --- and the
+honesty is in the layering. The corner adds \textbf{beyond baseline severity, substance comorbidity, and
+demographics} (likelihood-ratio $p=2\times10^{-4}$ for resistance and response, $3\times10^{-3}$ for
+side-effects); it is a \textbf{within-diagnosis} gradient, not a composition artifact (it holds inside both
+bipolar and schizophrenia, direct standardization to a common cohort mix leaves it essentially unchanged ---
+composition share $\le6\%$ --- and the corner$\times$cohort interaction is non-significant); and the held-out
+incremental fit is large ($\Delta$ELPD $+20/+16.5/+10.4$ for resistance/response/side-effects, the durable trio
+alone flat). It is a \emph{configural} signal --- the biological \emph{corner}, not any single axis: the durable
+trio alone is flat and substance comorbidity alone is only marginal, yet the corner adds beyond both.
+
+\begin{keyresult}[Stratification for monitoring, honestly bounded at the individual]
+The map \textbf{flags which phenotype} tends toward resistance, poor response, and side-effect burden --- a
+roughly two-fold risk band, the kind of signal that sets how closely to watch a patient. But the claim is
+\emph{stratification}, not individual prediction, and the held-out discrimination is modest: under a permutation
+null the response ($p=0.015$) and side-effect ($p=0.005$) gains in area-under-curve clear, while
+\textbf{resistance --- the steepest gradient --- is itself area-under-curve-marginal} ($p=0.185$; the map adds
+$\approx0.015$ AUC over a baseline of $0.68$). This is the same continuous-to-group collapse the prognosis
+chapter reported: a real, group-level \emph{monitoring} signal, not a per-patient calculator and never a
+prescription.
+\end{keyresult}
+
+\subsection{What the treatment analysis establishes --- it bounds, it defends, it monitors}
 \label{sub:m5limits}
 
-\begin{openbox}[Earned, not assumed: observational treatment-as-usual cannot show the map prescribes]
-The contribution of this chapter is a boundary drawn by evidence rather than by assumption. With real treatment
-data and a proper causal pipeline, the map does \emph{not} reliably moderate treatment-as-usual response: the
-cleanest contrast (lithium) is a well-identified null, the antipsychotic metabolic signal is
-suggestive but unconfirmed, clozapine is confounded by channeling, and the average effects are fragile to
-unmeasured confounding (E-values $1.06$--$1.78$). What the analysis \emph{does} deliver is a well-identified
-null where it counts, a testable hypothesis (metabolic $\times$ antipsychotic functioning), a
-deployable causal method, a back-validation of the prognosis (the archetype carrier survives treatment
-adjustment, $4.7\%$ attenuation), and a descriptive response-stratification signal (the archetypes predict
-resistance/response/side-effects). Establishing treatment \emph{selection} --- which drug for which phenotype ---
-would require the randomized or trial-arm data of a future treatment-selection study (M5b); observational
-prescription data, however rich, cannot. Limits carried forward: confounding by indication is the dominant
-threat; prescription, not protocol; lifetime (bipolar) versus current (schizophrenia) exposure; within-cohort
-questions; channeled treatments non-estimable; held-out $\Delta$ELPD is itself unreliable on the IPTW-weighted
-fits, so the moderation verdict rests on the per-axis interaction interval and the E-value, reported
-transparently.
+\begin{openbox}[Earned, not assumed: the map describes and predicts, it does not prescribe]
+The contribution of this chapter is to draw the map's clinical ceiling by evidence rather than by assumption.
+With real treatment data and a proper causal pipeline, the map does \emph{not} reliably moderate
+treatment-as-usual response: the cleanest contrast (lithium) is a \emph{bounded} null --- one a
+minimum-detectable-effect check shows the design could have broken and did not --- the antipsychotic average
+effect carries no reliable moderation (the encodings disagree on the driving axis), clozapine is underpowered
+and channeled, and the average effects are fragile to unmeasured confounding (E-values $1.06$--$1.78$). What the
+analysis \emph{does} deliver is three things it can stand behind: (i) a \textbf{bounded} moderation null --- the
+ceiling, the map is prognostic and descriptive, not prescriptive; (ii) a \textbf{back-validation of the
+prognosis} --- the archetype carrier survives treatment adjustment ($4.7\%$ attenuation, and again $3.9\%$ under
+attrition weighting), so the functional forecast is not a treatment proxy; and (iii) a \textbf{treatment-course
+atlas} --- the biological corner carries roughly twice the resistance and side-effect risk of the low-burden
+corner, beyond severity, substance, and demographics, and within diagnosis --- a stratification useful for
+\emph{monitoring}. Establishing treatment \emph{selection} --- which drug for which phenotype --- would require
+the randomized or trial-arm data of a future treatment-selection study (M5b); observational prescription data,
+however rich, cannot. Limits carried forward: confounding by indication is the dominant threat; prescription,
+not protocol; lifetime (bipolar) versus current (schizophrenia) exposure; within-cohort questions; channeled
+treatments non-estimable; the atlas is stratification, not individual prediction (its held-out discrimination is
+modest, and resistance in particular is area-under-curve-marginal); and held-out $\Delta$ELPD is unreliable on
+the IPTW-weighted moderation fits, so that verdict rests on the per-axis interval, the E-value, and the
+minimum-detectable-effect, reported transparently.
 \end{openbox}

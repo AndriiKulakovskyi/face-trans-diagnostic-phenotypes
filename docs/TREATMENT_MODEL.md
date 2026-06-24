@@ -1,9 +1,19 @@
-# M5 — Treatment: methods of record (the full treatment milestone)
+# M5 — Treatment: methods of record (bounds-and-defends)
 
 > **The methods + math of record for Milestone 5.** Estimand, the treatment-exposure data (now found),
 > the causal design for observational treatment moderation, the acceptance gates, and the staged
 > pipeline. Read before any M5 modelling work. Sibling of [`PROGNOSIS_MODEL.md`](PROGNOSIS_MODEL.md).
-> *Status: full treatment milestone; M5.0 audit done. 2026-06-11.*
+> *Status: methods of record; copula re-scope 2026-06-24 (M5.0 audit 2026-06-11).*
+
+> **Re-scope (2026-06-24) — what M5 credibly delivers.** This baseline cohort has **no randomization**
+> (`arm` is a DSM-5 subtype, not a randomized assignment) and only coarse, late-found drug-class
+> exposure, so treatment *selection* (which drug for whom) is structurally out of reach — it is M5b, and
+> needs randomized / trial-arm data. M5's standalone contribution is therefore to **bound and defend** the
+> vertical's clinical claim: it (1) maps the **ceiling** of what the map licenses — *prognostic +
+> descriptive, not prescriptive* — via a rigorous, **MDE-bounded** moderation null; (2) **defends M4** by
+> showing the prognostic carrier is not a treatment proxy; and (3) **describes** treatment-response
+> heterogeneity. The causal pipeline below — **overlap → propensity → doubly-robust EIV moderation →
+> E-value → MDE** — is the reusable template for "can an *observational* map moderate treatment?".
 
 ## 1. The pivot, and the estimand
 
@@ -62,14 +72,25 @@ The crux. A naive `outcome ~ treatment × stratum` interaction is confounded by 
    moderation substrate; lifetime exposures (BP `cmoccur_*`) are reported as the confounded-but-powered
    complement, with the limitation stated.
 5. **Treatment-as-confounder for M4**: re-fit the M4 prognosis adding treatment exposure — does the
-   map's prognostic signal survive? (a rigor check that also strengthens M4).
+   map's prognostic signal survive? (a rigor check that also strengthens M4). Reported both unweighted
+   and under the M3 strata-independent attrition IPW (`w_retained_V2`).
+6. **MDE / power closure (the bounded-null guard)**: a null moderation is only informative if the design
+   *could* have seen a meaningful effect. From each interaction/ATE posterior SD, report the minimum
+   detectable effect at 80% power — `MDE = (z_{0.975} + z_{0.80})·SD ≈ 2.802·SD` — separating a
+   **bounded** null (small MDE, e.g. lithium-BP ≈ 0.19 SD) from an **underpowered** one (large MDE, e.g.
+   clozapine-SZ ≈ 0.4–0.7 SD). This closes the template: *overlap → propensity → DR-EIV → E-value → MDE*.
 
 ## 5. Engine
 
 Reuses the M4 stack — the EIV Bayesian GLM (`face.prognosis.glm`), nested ΔELPD (`compare`), clinical
 metrics (`clinical_value`), IPW — adding `face.treatment.medications` (the harmonization layer) and a
 propensity model. The interaction model: `g(E[Y]) = confounders + βT·treat + stratum + βTS·(treat×stratum)`,
-with the map coordinates entering EIV. Per-cohort fits (the questions are within-cohort).
+with the map coordinates entering EIV. Per-cohort fits (the questions are within-cohort). The copula rework
+(`src/face/treatment/treatment_model_oop.py`) adds the re-scope machinery: `moderation.mde` /
+`moderation.sd_from_eti` (the MDE/power guard, off the already-fitted posteriors — no refit), an
+IPW-weighted variant of the confounder-survival stage, and a degeneracy-free **held-out ΔAUC** heterogeneity
+stage (`clinical_value.cv_predict` / `paired_auc_delta`) that re-states the response-heterogeneity result in
+the clinician's currency without the IPTW-LOO degeneracy.
 
 ## 6. Acceptance gates (Q1–Q4)
 
@@ -77,6 +98,8 @@ with the map coordinates entering EIV. Per-cohort fits (the questions are within
   credible interaction coefficient, for a powered question (lithium-BP, clozapine-SZ).
 - **Q2 beyond confounders (make-or-break)** — survives propensity adjustment (severity + diagnosis +
   map) and is not regression-to-the-mean; an E-value / unmeasured-confounding sensitivity is reported.
+  **A null counts only if it is bounded** — the MDE must show the design could have resolved a
+  clinically meaningful interaction (else the verdict is "underpowered", not "no moderation").
 - **Q3 transdiagnostic / specificity** — within-cohort; where a treatment spans cohorts (antipsychotic),
   is the moderation consistent?
 - **Q4 robust** — IPW vs covariate-adjustment agree; lifetime-vs-current agree in sign; leave-one-site/

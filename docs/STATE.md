@@ -47,19 +47,21 @@ the result replays — the map predicts 2-yr **functioning** (archetypes ΔELPD 
 DSM-5), functional remission **27%→60%** across the A=4 archetypes (biology corner worst), and — the answer to
 the M2 K-question — **operative K = none** (the continuous/archetype encoding dominates any hard tessellation;
 all K=2/3/4 are predictive of functioning but add less). Honest copula shift: the *durable-trio-alone* EIV is
-no longer robust; the predictive object is the fuller archetype representation. **M5 treatment is COMPLETE** (pending PI sign-off) — treatment
-data, found late in the per-cohort thesaurus `TRAITEMENTS` tabs and harmonized to common drug-class
-exposures, runs through a proper causal pipeline (overlap → propensity → doubly-robust EIV moderation +
-E-value); on observational treatment-as-usual the map **does not reliably moderate treatment response**
-(lithium-in-BP a *well-identified null*; a *suggestive-but-unconfirmed* metabolic/inflammatory ×
-antipsychotic-functioning hypothesis; clozapine *channeled*/non-estimable), the boundary is **earned, not
-assumed**, and the metabolic functional forecast **survives treatment adjustment** (strengthens M4).
-Findings: [`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md). **M5 has now been *reworked on the copula objects***
-(parallel OOP engine `src/face/treatment/treatment_model_oop.py`; canonical
-[`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md)): the earned boundary **replays** — lithium-BP a
-well-identified null (E 1.06), antipsychotic-BP suggestive-unconfirmed (ATE −0.23, **E-value 1.77 ≈ native
-1.79**), clozapine non-decisive; the **archetype carrier survives treatment adjustment** (4.7% attenuation,
-strengthens M4) and the **archetypes predict response heterogeneity** (resistance/response ΔELPD +20/+16).
+no longer robust; the predictive object is the fuller archetype representation. **M5 treatment is COMPLETE** (pending PI sign-off), **re-scoped as bounds-and-defends** (this baseline cohort
+has no randomization — `arm` is a DSM-5 subtype — so treatment *selection* is genuinely **M5b**). Treatment
+data, found late in the per-cohort thesaurus `TRAITEMENTS` tabs and harmonized to common drug-class exposures,
+runs through a proper causal pipeline — **overlap → propensity → doubly-robust EIV moderation → E-value →
+MDE**. **(1) The ceiling:** on observational TAU the map does **not** reliably moderate/select treatment —
+lithium-BP a **well-identified, MDE-bounded null** (overlap 0.997, E 1.06, interaction MDE ≈ 0.19 → the design
+could have seen an effect and didn't), antipsychotic-BP a confounded *average* effect (E 1.77) with **no
+reliable moderation** (the two map encodings disagree on the driving axis — false-positive behavior),
+clozapine-SZ non-decisive (underpowered, MDE ≈ 0.4–0.7); the map is *prognostic + descriptive, not
+prescriptive*. **(2) Defends M4:** the **archetype carrier survives treatment adjustment** (4.7% attenuation,
+HDI excludes 0, and **robust to M3 attrition IPW** — 3.9%) — the functional forecast is not a treatment proxy.
+**(3) Describes** response heterogeneity: archetypes predict resistance/response/side-effects beyond severity +
+diagnosis (held-out ΔELPD +20/+16/+10 **and** degeneracy-free ΔAUC +0.015/+0.028/+0.041, P(>0) ≈ 0.997;
+within-cohort de-confounded, BP/SZ). Canonical engine `src/face/treatment/treatment_model_oop.py`; findings
+[`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md).
 **The full Gaussian-copula vertical (M1→M2→M3→M4→M5) is now reworked** (consolidated synthesis:
 [`COPULA_VERTICAL_FINDINGS.md`](COPULA_VERTICAL_FINDINGS.md)). **The program is M1–M5 complete (pending PI
 sign-off); a true M5b — treatment *selection* — needs randomized/trial-arm data.**
@@ -259,10 +261,14 @@ reliably moderate** response. **Lithium-in-BP** (cleanest: 100% overlap, SMD 0.3
 **well-identified null**; **antipsychotic-BP** shows a **suggestive but unconfirmed** metabolic (−0.15\*) /
 inflammatory (−0.26\*) × functioning interaction (held-out ΔELPD +4.6±4.2 not confirmed; ATE E-value
 1.79); **clozapine-SZ** is **channeled** (IPTW SMD 0.44→0.61, non-estimable). ATEs are confounding-fragile
-(E 1.1–1.8). **M5 strengthens M4:** the metabolic→functioning forecast **survives** adjustment for the
-drug classes patients were on (β −0.051→−0.048, 4.4% attenuation, HDI still excludes 0). The boundary is
-**earned, not assumed** — genuine treatment *selection* needs randomized/trial-arm data (a future **M5b**).
-Hand-off `results/face/m5/{treatment_exposures, propensity_*, moderation, confounder}.{parquet,csv}`.
+(E 1.1–1.8). **M5 strengthens M4:** the prognostic carrier **survives** adjustment for the drug classes
+patients were on — canonically (copula) the **archetype A1 carrier** (β 0.164→0.156, 4.7%; **IPW-robust** 3.9%);
+the native run carried it on the metabolic axis (β −0.051→−0.048, 4.4%). The boundary is **earned, not
+assumed**, and now **MDE-bounded** (lithium interaction MDE ≈ 0.19 → a bounded null, not underpowered) — genuine
+treatment *selection* needs randomized/trial-arm data (a future **M5b**).
+*(Native provenance; the canonical bounds-and-defends record is the copula re-scope above +
+[`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md).)* Hand-off (native)
+`results/face/m5/{treatment_exposures, propensity_*, moderation, confounder}.{parquet,csv}`.
 
 **Follow-ups resolved (2026-06-11):** (i) the **DR-MARS** harmonization bug is **fixed** — DR's adherence
 score was reverse-coded (mirror of BP/SZ); `face.data.rules.harmonize_mars` reflects DR (10−x) onto the
