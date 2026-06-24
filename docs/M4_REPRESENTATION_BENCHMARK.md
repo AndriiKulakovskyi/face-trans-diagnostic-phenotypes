@@ -231,3 +231,27 @@ outcome and a **near-sufficient (≈0.04-AUC lossy)** summary for recovery — n
 carries a little recovery-specific signal the transdiagnostic compression drops. **Caveat:** XGBoost-only; the
 EIV-GLM uncertainty arm, the recovery-gap diagnostic (which raw features?), efficiency learning-curves, and LOCO
 transport are P2.
+
+## P2 findings — diagnostics, uncertainty, efficiency, transport
+
+1. **Recovery-gap (SHAP, `diagnostic.py`).** Of raw's recovery-predictive SHAP mass, **97% sits *within* the 9
+   modelled factors** — the top drivers are the factor anchors (CRP/platelets/eosinophils, BMI/HbA1c/lipids/urate,
+   CVLT/WAIS/TMT, Fagerström, CTQ, FAST/EQ-5D); only **3% is off-map** (the depression/anxiety *window* items
+   QIDS/STAI/MADRS that M1 folds into G). So the ~0.04-AUC recovery gap is **within-factor compression loss** —
+   item-level resolution the factor scores blend away — **not a missing dimension**.
+2. **Uncertainty (EIV-GLM, `eiv.py`, H3).** Honest per-patient uncertainty adds **modestly for recovery**
+   (EIV vs mean ΔELPD **+3.1 ± 1.7**, ≈1.8 SE — suggestive, not decisive) and is **null for deterioration**
+   (−0.9 ± 0.8). It does **not** close the raw gap → consistent with "compression, not noise". (Linear EIV-GLM,
+   so absolute gains < nonlinear XGBoost; this isolates the uncertainty contribution.)
+3. **Efficiency (learning curves, `curves.py`, H2).** **Not supported for recovery** — raw dominates at every N
+   (150 → full, 0.68 → 0.73 vs LAT-A 0.65 → 0.68); the regularised 143-feature model does not over-fit away its
+   item-resolution edge.
+4. **Transport (LOCO, `curves.py`, H4).** The map transports **as well or better than raw for deterioration** on
+   the well-powered held-out cohorts (BP, SZ); raw transports better for recovery. The map's transport advantage
+   holds **where it is sufficient**.
+
+**Calibrated representation claim.** The copula 9-dim map is a **sufficient, uncertainty-honest, transportable**
+summary for the deterioration outcome, and a **near-sufficient, structurally-faithful** summary for recovery
+whose small residual gap is **item-level compression** (not a missing axis, only marginally noise). It **trades a
+sliver of task-specific resolution for parsimony, interpretability, transportability, and honest uncertainty** —
+a favourable trade exactly where the outcome is not dominated by item-level detail.
