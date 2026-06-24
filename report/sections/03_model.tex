@@ -1,20 +1,22 @@
 \section{The measurement model}
 \label{sec:model}
 
-This section details the Bayesian sparse bifactor exploratory structural equation modeling (ESEM) framework 
-developed for the FACE transdiagnostic space. The mathematical formulation maps heterogeneous clinical \& biological
-indicators to the joint observed-data likelihood to establish a complete generative model.
+This chapter is the engine room of the first pillar: it writes down, precisely, the model that turns a sparse
+matrix of heterogeneous clinical and biological readings into the nine-dimension map. Everything Pillar~I claims
+--- that the axes are earned from the data, that biology is separable from severity, that each patient's
+coordinate carries honest uncertainty --- is a property of the generative model specified here, so the
+specification is worth stating in full.
 
-The exposition is structured systematically. First, the optional Gaussian-copula data transformation layer designed 
-to normalize continuous and ordinal indicators is introduced (\S\ref{sub:copula}). Next, the general bifactor/ESEM 
-measurement equations are defined, specifying the mapping of latent individual coordinates and factor loadings 
-onto the indicator space (\S\ref{sub:generative}). Section \S\ref{sub:mixed} distinguishes between the native mixed-type 
-likelihood formulation and the accelerated Gaussian-copula representation. This is followed by the derivation of 
-the marginal likelihood and the parameterization of the factor covariance structure, denoted by $\Phi$ (\S\ref{sub:marginal}). 
-The joint log-likelihood under complete and incomplete data matrices is subsequently formulated (\S\ref{sub:dense_likelihood}), 
-before introducing computational optimizations leveraging the Woodbury matrix identity and Cholesky 
-factorization (\S\ref{sub:woodbury}). The section concludes with the structural identification of the general 
-factor $G$, the assignment of prior distributions, and the Markov chain Monte Carlo (MCMC) sampling procedure.
+The build proceeds in the order the model is assembled. We first fix the candidate ontology and the eligibility
+map (\S\ref{sub:ontology}); introduce the Gaussian-copula data layer that puts skewed labs, near-continuous
+anthropometrics, and high-cardinality counts onto one common ruler (\S\ref{sub:copula}); and write the bifactor/
+ESEM measurement equation that maps latent patient coordinates and factor loadings onto the indicators
+(\S\ref{sub:generative}). We then distinguish the native mixed-likelihood formulation from the Gaussian-copula
+acceleration (\S\ref{sub:mixed}); derive the marginal likelihood and the factor-covariance structure $\Phi$
+(\S\ref{sub:marginal}); state the observed-cell log-likelihood for complete and incomplete data
+(\S\ref{sub:dense_likelihood}); and make it tractable with the Woodbury identity and Cholesky factorization
+(\S\ref{sub:woodbury}). The chapter closes with the identification of the general factor $G$, the soft loading
+priors that encode ``theory proposes, data decides,'' and the MCMC procedure.
 
 \subsection{The candidate ontology and the eligibility map}
 \label{sub:ontology}

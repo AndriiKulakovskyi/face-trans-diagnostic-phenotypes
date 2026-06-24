@@ -1,14 +1,17 @@
 \section{The chain: a real corner, that lasts, that predicts}
 \label{sec:synthesis}
 
-The preceding chapters each answered one question in isolation: is the space a continuum or hidden biotypes (\S\ref{sec:strata}), does
-it hold still over time (\S\ref{sec:temporal}), does it forecast the future (\S\ref{sec:prognosis}). Read
-separately they are three results. Read together they are a single argument, and the argument is worth
-slowing down for, because its logic is the spine of the whole program: \emph{the part of the map that does
-not move is the part that tells you where the patient is going}. This short chapter is a tutorial on that
-one chain. It introduces no new model and no new number; it explains how three findings lock into each
-other, so that the conclusion --- a biological corner of a continuum, durable in time, predictive of
-functioning --- reads as one claim rather than three coincidences.
+This chapter is the keystone of the third pillar: it shows that the three payoffs of operating in the latent
+space are not three lucky findings but one mechanism. The earlier chapters each answered a question in
+isolation --- is the space a continuum or hidden biotypes (\S\ref{sec:strata}), does it hold still over time
+(\S\ref{sec:temporal}), does it forecast the future (\S\ref{sec:prognosis}). Read separately they are three
+results. Read together they are a single argument, and the argument is worth slowing down for, because its
+logic is the spine of the whole program: \emph{the part of the map that does not move is the part that tells
+you where the patient is going}. This short chapter is a tutorial on that one chain. It introduces no new
+model and no new number; it explains how three findings lock into each other, so that the conclusion --- a
+biological corner of a continuum, durable in time, predictive of functioning --- reads as one claim rather
+than three coincidences, and so that the clinical value of the latent-space view (stratify on the durable
+biology, forecast functioning, monitor the moving symptoms) reads as \emph{earned}.
 
 \begin{figure}[h]\centering
 \includegraphics[width=0.96\linewidth]{figures/synthesis.png}
@@ -30,8 +33,12 @@ answered \emph{no}, by trying hard to find them and failing on every test. A sin
 null is the cleanest way to see this: the best clustering of the real coordinates scores a silhouette of
 $0.140$, and a smooth blob simulated to have \emph{no} clusters at all scores $0.141\pm0.002$ (a separation
 of $z=-0.36$). The data are statistically indistinguishable from a structureless cloud as far as cluster
-boundaries are concerned. Hopkins, GMM-BIC, density clustering, and a dip test all agree: one component, no
-gaps.
+boundaries are concerned. Every test that probes for \emph{separation} concurs: the principal axis is unimodal
+(dip $p\approx1$), density clustering finds nothing (HDBSCAN returns zero clusters), the topology is a single
+connected component, and once each patient's measurement uncertainty is propagated the optimal mixture
+collapses to one component in all twenty posterior draws. The two tests that \emph{do} fire --- Hopkins
+clusterability and a GMM-BIC interior optimum --- are precisely the clustering-\emph{tendency} signals the null
+reproduces, so they register the cloud's non-Gaussian \emph{shape}, not a set of gaps.
 
 \begin{definitionbox}[Continuum, not biotypes]
 ``Continuum'' is not a hedge; it is a finding with teeth. It says there are no natural cut-points --- no
@@ -44,8 +51,8 @@ will show, exactly the property that makes the map's signal a continuous gradien
 
 A continuum still has shape. Archetypal analysis reads that shape not as clusters but as \emph{corners} ---
 the extreme profiles that the cloud is a blend of, with most patients ($61\%$) sitting in the interior as
-mixtures rather than at any vertex. At the stable $A=4$ resolution (cross-seed stability $0.979$) the four
-corners are quasi-independent axes of extremity: $A_0$ a \emph{biological} corner (metabolic $+1.99$,
+mixtures rather than at any vertex. At the stable $A=4$ resolution (cross-seed Tucker congruence $0.997$) the
+four corners are quasi-independent axes of extremity: $A_0$ a \emph{biological} corner (metabolic $+1.99$,
 inflammatory $+2.52$, substance $+2.55$), $A_1$ a \emph{low-burden} pole, $A_2$ a \emph{severe but
 non-biological} corner, $A_3$ a \emph{psychiatric-symptom} corner. The headline of the chapter is that
 these three things --- biology, symptoms, severity --- vary nearly independently: a patient can be
@@ -66,8 +73,9 @@ $0.974$). Only once the ruler is shown not to warp can a coordinate change be re
 \begin{keyresult}[Durable biology, moving symptoms]
 The test--retest reliabilities split the map cleanly along the very seam M2 found. The \emph{biological}
 axes are traits: metabolic $\text{ICC}=0.91$, substance $0.88$, cognition $0.70$, inflammatory $0.62$ ---
-a patient's biological position is close to a fixed property. The \emph{symptom} axes are states: sleep
-$0.47$, suicidality $0.42$, developmental $0.39$ --- they slide visit to visit. Severity is a trait by
+a patient's biological position is close to a fixed property. The \emph{symptom} axes carry the state: sleep
+($0.47$) and suicidality ($0.42$) are mixed, developmental ($0.39$) clearly state --- they slide visit to
+visit. Severity is a trait by
 rank ($0.62$) on a population that improves overall. Read against link one, the corner that M2 singled out
 as most distinct (the biological one) is exactly the corner M3 finds most durable. Clinical translation,
 carried forward verbatim: \emph{stratify on the durable biology, monitor the moving symptoms}.

@@ -412,6 +412,35 @@
   \node[fill=white,inner sep=1pt,font=\sffamily\itshape,text=facekr] at (-4.4,0) {corners hold};
 \end{tikzpicture}}\end{center}}
 
+% -------------------------------------------------------------------- pillar divider
+% \pillardivider{roman number}{title}{tagline}{framing body}
+%   A dedicated part-opening page that names one of the report's three pillars and
+%   frames it claim -> evidence -> significance. Numbered sections continue underneath.
+\newcommand{\pillarframe}[3]{% {claim}{evidence}{why it matters}
+  \par\vspace{2pt}%
+  {\sffamily\bfseries\color{faceaccent}\footnotesize CLAIM.\ }{\color{faceink}#1}\par\vspace{6pt}%
+  {\sffamily\bfseries\color{faceaccent}\footnotesize EVIDENCE.\ }{\color{faceink}#2}\par\vspace{6pt}%
+  {\sffamily\bfseries\color{faceaccent}\footnotesize WHY IT MATTERS.\ }{\color{faceink}#3}\par}
+\newcommand{\pillardivider}[4]{%
+  \clearpage
+  \thispagestyle{plain}%
+  \phantomsection
+  \addcontentsline{toc}{section}{Pillar~#1\quad #2}%
+  \vspace*{0.12\textheight}
+  \noindent{\color{faceaccent}\rule{\linewidth}{1.3pt}}\par\vspace{5pt}
+  \noindent{\sffamily\footnotesize\bfseries\color{faceaccent} PILLAR~#1}\hfill
+  {\sffamily\footnotesize\color{facemute} FACE-ATLAS}\par\vspace{20pt}
+  \noindent{\sffamily\bfseries\fontsize{31}{35}\selectfont\color{faceink} #2}\par\vspace{12pt}
+  \noindent{\large\itshape\color{facemute} #3}\par\vspace{16pt}
+  \noindent{\color{facerule}\rule{\linewidth}{0.6pt}}\par\vspace{12pt}
+  \noindent\begin{minipage}{\linewidth}\setlength{\parskip}{0.55ex}\small #4\end{minipage}%
+  \vfill
+  \noindent{\color{faceaccent}\rule{\linewidth}{1.0pt}}%
+  \clearpage
+}
+% \thesisbox{statement} — the central thesis, set off prominently.
+\newenvironment{thesisbox}{\begin{facecallout}{faceaccentdk}{THE CENTRAL THESIS}}{\end{facecallout}}
+
 % -------------------------------------------------------------------- misc
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{0.7ex plus 0.2ex}

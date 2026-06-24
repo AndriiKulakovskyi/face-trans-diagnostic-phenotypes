@@ -168,6 +168,16 @@ Chapter~\ref{sec:engineering}). The explicit-latent block remains the documented
 is documented at the \emph{largest $N$ that mixes} with a cross-seed resample-stability guard.
 \end{methodsbox}
 
+A third lever is the Gaussian copula itself. Because the copula tiering (\S\ref{sub:copula}) promotes the
+high-resolution ordinal and count indicators into the analytically-marginalized Gaussian block --- indicators
+that under the native mixed likelihood would each carry a \emph{sampled} per-patient latent --- it
+\emph{shrinks} the explicit-latent block $f_e$ that is the sole remaining mixing bottleneck. That is a proximate
+reason the cohort-weighted joint fit finally clears sub-$1.05$ $\widehat R$: the nine-dimension joint mixes at
+$\widehat R\le1.04$ at the largest $N$ that mixes, with the continuous backbone certified at full $N$
+($\widehat R=1.01$). Crucially, the copula \emph{expanded} the reach of analytic marginalization; it did not
+\emph{create} it --- the Gaussian latents were always integrated out (Eq.~\ref{eq:marginal}), and the copula
+merely moved more indicators under that same exact integral.
+
 \subsection{What makes the fit expensive --- and the optimizations that remove it}
 \label{sub:cost}
 It is worth being explicit about where the time goes. The cost of one NUTS draw factorizes as

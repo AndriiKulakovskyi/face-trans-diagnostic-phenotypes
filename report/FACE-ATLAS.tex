@@ -33,38 +33,43 @@
 {\color{facerule}\rule{\linewidth}{0.6pt}}\par\vspace{7pt}
 {\sffamily\bfseries\color{faceaccent}\small ABSTRACT}\par\vspace{5pt}
 {\small
-Psychiatric diagnosis aggregates biologically and prognostically heterogeneous patients into single
-categories. \textbf{FACE-ATLAS} reorganizes the harmonized three-cohort FACE baseline (bipolar disorder,
-schizophrenia, major depression; $N=9{,}013$) around \emph{continuous, diagnosis-agnostic axes of variation},
-and asks how far such a map can be pushed --- through five dependent questions: does it \emph{exist},
-\emph{organize}, \emph{persist}, \emph{predict}, and \emph{guide treatment}?\par\vspace{4pt}
-The map is estimated by a single global, missingness-aware \textbf{Bayesian sparse bifactor / ESEM} model with
-\textbf{mixed likelihoods}, fit to each patient's \emph{observed cells only} (no imputation, full sample), with
-diagnosis held out as \emph{metadata} and the axes discovered on the baseline visit. From ten candidate
-constructs the data resolve a \textbf{nine-dimension map} --- a general functional-burden factor $G$ plus eight
-weakly-correlated axes (cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality, mania,
-substance) --- with depression/anxiety instruments placed as \emph{cross-loading windows} and anhedonia
-\emph{rejected}. The headline result: \textbf{biology --- metabolic and inflammatory load --- is the least
-severity-entangled domain} (correlations with $G$ of $0.12$ and $0.07$, versus $0.39$ for cognition and $0.42$
-for sleep), so biological risk rides largely on axes that overall clinical severity does not capture.\par\vspace{4pt}
-On these coordinates the space is a graded \textbf{continuum, not discrete biotypes} (five structure-discovery
-methods agree, and a single-Gaussian falsification null reproduces the apparent clustering --- the best
-silhouette is $0.140$ against a null of $0.141\pm0.002$; adjusted Rand index $\approx 0$ against the DSM-5
-subtypes), described by \textbf{four extreme phenotypes (an $A{=}4$ archetype simplex)} with every patient a
-soft blend and severity as its spine. The soft tessellation is exported as a nested $K$-family with
-\textbf{no privileged $K$} --- the operative granularity is an outcome question, settled in the prognosis
-chapter: none. Scored forward onto the follow-up visits the geometry \emph{persists} --- \emph{durable biology,
-moving symptoms}. It also \emph{predicts}, but modestly and for \emph{functioning} only: the four archetypes --- biology read as the
-worst-prognosis corner of the simplex --- add \emph{group-level} signal beyond diagnosis, severity, and the
-baseline outcome (course-dependent; two-year functional-remission AUC $+0.011$), not a large individual-decision gain. And on observational treatment-as-usual the map
-does \emph{not} reliably \emph{moderate treatment} response --- lithium in bipolar disorder, the cleanest
-contrast, is a well-powered \emph{null}.\par\vspace{4pt}
-\textbf{Taken together}, FACE-ATLAS demonstrates a transdiagnostic biological map that is real, stable, and a
-\emph{continuum} rather than a set of biotypes, carrying a small-but-genuine group-level prognostic signal for
-functioning and \emph{no} demonstrable treatment moderation in observational data --- a deliberately
-\emph{calibrated} account in which the modest and negative results are reported as such. Establishing
-individual-level clinical utility or treatment guidance would require incident-event outcomes, randomized
-treatment data, and external validation beyond this baseline observational cohort.}\par\vspace{7pt}
+A psychiatric diagnosis predicts the \emph{average} patient in a class, not the individual in the room: bipolar
+disorder, schizophrenia, and major depression each aggregate biologically and prognostically heterogeneous
+people under one label. \textbf{FACE-ATLAS} asks what is recovered when the harmonized three-cohort FACE
+baseline ($N=9{,}013$) is reorganized around \emph{continuous, diagnosis-agnostic latent dimensions} instead of
+categories. The answer is a single coherent argument resting on \textbf{three pillars}.\par\vspace{4pt}
+\textbf{(I)~Dimensional analysis recovers a map the categories hide.} One global, missingness-aware Bayesian
+sparse bifactor/ESEM model --- fit to each patient's \emph{observed cells only} (no imputation, full sample),
+diagnosis held out as \emph{metadata}, axes discovered on baseline --- resolves a \textbf{nine-dimension
+transdiagnostic map}: a general functional-burden factor $G$ plus eight weakly-correlated axes (cognition,
+metabolic, inflammatory, sleep, developmental-risk, suicidality, mania, substance). Its load-bearing payoff is
+a \textbf{three-way dissociation --- biology $\perp$ symptoms $\perp$ severity}: metabolic and inflammatory load
+correlate with the severity factor $G$ at only $0.12$ and $0.07$ (versus $0.39$ for cognition, $0.42$ for
+sleep), sit at the $\approx 0.10$ floor against the symptom axes, and survive adjustment for medication,
+adiposity, and site --- so two patients who are equally ill \emph{and} equally symptomatic can still differ
+sharply in biological load. The map is transdiagnostic (adjusted Rand $\approx 0$ vs.\ DSM-5) and a
+\emph{tighter} description of the patients than diagnosis.\par\vspace{4pt}
+\textbf{(II)~Archetypes make the map interpretable and clinically legible.} On these coordinates the space is a
+graded \textbf{continuum, not discrete biotypes} (a single-Gaussian falsification null reproduces the apparent
+clustering: best silhouette $0.140$ vs.\ $0.141\pm0.002$). Its shape is read through \textbf{four extreme
+phenotypes} --- an $A{=}4$ archetype simplex in which biology, symptoms, and severity vary nearly independently
+and every patient is a soft blend. The corners compress a nine-vector into a handful of weights a clinician can
+say aloud, and make the key dissociation pointable: the biological corner is equally ill yet biologically
+opposite to a non-biological severe corner.\par\vspace{4pt}
+\textbf{(III)~Operating in this latent space pays off --- with honestly drawn bounds.} Scored forward onto
+follow-up without re-estimation, the geometry \emph{persists}: \emph{durable biology} (metabolic test--retest
+$\text{ICC}=0.91$), \emph{moving symptoms}. It \emph{forecasts} two-year \textbf{functioning} beyond diagnosis,
+severity, and the baseline outcome (archetypes $\Delta\text{ELPD}=+59$; functional remission $27\%\!\to\!60\%$
+across the corners; co-informative with DSM-5), and it is a \emph{sufficient, faithful} compression of the
+$143$ raw indicators. The bounds are stated as plainly as the gains: the individual-level remission increment is
+small ($\Delta\text{AUC}=+0.011$), the signal is course-dependent, and on observational treatment-as-usual the
+map does \emph{not} reliably moderate treatment (lithium in bipolar disorder, the cleanest contrast, is a
+\emph{well-powered null}).\par\vspace{4pt}
+\textbf{The deliverable} is a transdiagnostic biological map that is real, stable, interpretable, and useful at
+the \emph{group} level --- demonstrated scientific value plus genuine clinical value as stratification,
+continuous forecasting, and monitoring --- with each remaining step to \emph{individual-level} utility named as
+a defined next study (incident-event outcomes, randomized treatment data, external validation). A trustworthy
+map, and an honest account of how far it reaches.}\par\vspace{7pt}
 {\color{facerule}\rule{\linewidth}{0.6pt}}
 
 \vfill
@@ -77,13 +82,65 @@ treatment data, and external validation beyond this baseline observational cohor
 
 %================================ BODY =========================================
 \input{sections/01_introduction}
+
+\pillardivider{I}{Dimensional analysis}{The map the categories hide}{%
+\pillarframe
+{A small set of continuous, diagnosis-agnostic axes describes these patients better than the diagnostic
+label --- and one of them, \emph{biological load}, is nearly invisible to a reading built on diagnosis,
+severity, or symptoms alike.}
+{One global Bayesian fit on observed cells (no imputation, diagnosis held out) resolves \textbf{nine
+transdiagnostic dimensions}. Metabolic and inflammatory load correlate with the severity factor $G$ at just
+$0.12$ and $0.07$ (against $0.39$ for cognition and $0.42$ for sleep) \emph{and} sit at the $\approx 0.10$ floor
+against the symptom axes --- a three-way \textbf{biology $\perp$ symptoms $\perp$ severity} dissociation that
+survives medication, adiposity, and site adjustment. The map is transdiagnostic (adjusted Rand $\approx 0$ vs.\
+DSM-5), a tighter description than diagnosis, hardened across six adversarial validation arms, and shipped as
+per-patient coordinates carrying honest uncertainty.}
+{\emph{Scientifically,} this is the first direct, uncertainty-propagated measurement of how independent
+metabolic/inflammatory load is from \emph{both} a transdiagnostic severity axis and the symptom axes.
+\emph{Clinically,} it surfaces a risk axis that neither diagnosis, a global-severity impression, nor a symptom
+checklist can see --- the foundation everything downstream is built on.}}
+
 \input{sections/02_data}
 \input{sections/03_model}
 \input{sections/04_estimation}
 \input{sections/05_results}
 \input{sections/06_validation}
 \input{sections/scoring}
+
+\pillardivider{II}{Archetypes}{Reading the continuum without inventing types}{%
+\pillarframe
+{The map is a graded \emph{continuum}, not a set of biotypes; its shape is best read through four extreme
+phenotypes that make the transdiagnostic dissociations pointable and clinically legible --- without
+manufacturing false kinds.}
+{A single-Gaussian falsification null cannot be separated from the real cloud (best silhouette $0.140$ vs.\
+$0.141\pm0.002$). A stability-gated \textbf{$A{=}4$ archetype simplex} separates biology $\perp$ symptoms
+$\perp$ severity, with $61\%$ of patients genuine blends rather than members of a type; the biological corner is
+\emph{equally ill yet biologically opposite} to a severe non-biological corner. A nested $K$-family is exported
+with \textbf{no privileged $K$}.}
+{\emph{Scientifically,} it settles the field's continuum-versus-biotype question with a falsification test most
+biotype papers skip, and keeps biology a first-class \emph{extreme} no density-gap partition could find.
+\emph{Clinically,} it compresses a nine-vector into a handful of weights a clinician can say aloud, and answers
+``your most similar patients, across diagnoses, look like this.''}}
+
 \input{sections/m2_strata}
+
+\pillardivider{III}{Operating in the latent space}{Persistence, prognosis, treatment --- and the road to utility}{%
+\pillarframe
+{Working in this latent space delivers value the categorical default cannot reach: a \emph{durable} biological
+signal that \emph{forecasts function}, a faithful compression of the raw data, and an honest, \emph{earned}
+boundary on treatment with a defined path forward.}
+{The measurement holds over follow-up (all five backbone axes invariant) and splits into \emph{durable biology}
+(metabolic $\text{ICC}=0.91$) versus \emph{moving symptoms}. The archetype phenotype forecasts two-year
+\textbf{functioning} beyond diagnosis $+$ severity $+$ baseline ($\Delta\text{ELPD}=+59$; remission
+$27\%\!\to\!60\%$ across the corners; co-informative with DSM-5, $+$both~$+67$), is \emph{sufficient} for
+deterioration against all $143$ raw indicators, and its prognostic carrier \emph{survives} adjustment for the
+treatments patients received. On observational treatment-as-usual, moderation is a \emph{well-identified null}
+(lithium E-value $1.06$).}
+{\emph{Scientifically,} \emph{persists}$\to$\emph{predicts} turns a description into a forecast, in a
+representation that is transportable and uncertainty-honest. \emph{Clinically,} the map already delivers
+group-level stratification, continuous functional forecasting, and a monitoring atlas; the individual-level
+calculator and treatment \emph{selection} it does \emph{not} yet deliver define precisely the next studies.}}
+
 \input{sections/m3_temporal}
 \input{sections/m4_prognosis}
 \input{sections/m5_treatment}

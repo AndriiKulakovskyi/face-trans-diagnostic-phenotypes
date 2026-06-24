@@ -1,82 +1,89 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-This program set out to ask whether the harmonized baseline of three diagnostic cohorts --- bipolar
-disorder, schizophrenia, and depression --- can be reorganized into a transdiagnostic, biology-aware
-coordinate system that \emph{describes}, \emph{tracks}, \emph{forecasts}, and ultimately \emph{guides}
-care better than the diagnostic labels themselves. It pursued that question under a discipline that
-refuses to collapse its four layers (cohorts $\to$ dimensions $\to$ strata $\to$ prognosis/treatment) or
-to manufacture certainty it has not earned: an observed-data likelihood with \emph{no imputation},
-diagnosis held as metadata rather than a feature, dimensions fixed on the baseline visit and only ever
-\emph{validated} forward, and every estimate carrying its own uncertainty into the next.
+This program asked whether the harmonized baseline of three diagnostic cohorts --- bipolar disorder,
+schizophrenia, and depression --- can be reorganized from a set of categories into a transdiagnostic,
+biology-aware coordinate system that \emph{describes}, \emph{tracks}, \emph{forecasts}, and ultimately
+\emph{guides} care better than the diagnostic labels themselves. It pursued that question under a discipline
+that refuses to collapse its four layers (cohorts $\to$ dimensions $\to$ strata $\to$ prognosis/treatment) or to
+manufacture certainty it has not earned: an observed-data likelihood with \emph{no imputation}, diagnosis held
+as metadata rather than a feature, dimensions fixed on the baseline visit and only ever \emph{validated}
+forward, and every estimate carrying its own uncertainty into the next. The answer is the three-pillar thesis
+this report has defended, and it is best read by leading with what the work \emph{delivers}.
 
-The report answers the question in escalating senses. The map \textbf{exists}: one global
-Bayesian bifactor/ESEM on observed cells yields a nine-dimension structure --- a general
-functional-burden factor $G$ and eight weakly-correlated specific axes --- in which biology (metabolic,
-inflammatory load) is the \emph{least} severity-entangled domain (metabolic$\sim$$G$ $+0.12$,
-inflammatory$\sim$$G$ $+0.07$, against $0.39$ for cognition and $0.42$ for sleep), riding on axes that
-clinical severity does not see. It \textbf{organizes}: on those coordinates patients form not discrete
-biotypes but a graded \emph{continuum} --- a single-Gaussian falsification null cannot be separated from
-the real data (best silhouette $0.140$ vs.\ $0.141\pm0.002$) --- across which four stable soft archetypes
-mark quasi-independent corners of biology, symptoms, and severity, cutting across the DSM-5 subtypes
-(adjusted Rand $\approx 0$) while describing the data more tightly than diagnosis does. It
-\textbf{persists}: scored forward onto follow-up without re-estimation, the measurement is invariant (all
-five backbone axes $\varphi\geq0.95$) and the geometry replays --- durable biology (metabolic test--retest
-$\text{ICC}=0.91$), moving symptoms. It \textbf{predicts}: a baseline coordinate forecasts two-year
-functioning incrementally beyond diagnosis, severity, and the present outcome
-($\Delta\text{ELPD}=+59$ for the archetypes), with the biological corner carrying the worst functional
-prognosis ($27\%$ remission, against $60\%$ at the low-burden pole). And it does \textbf{not}, on the
-evidence available, \textbf{prescribe}: with treatment exposures recovered from the per-cohort source
-dictionaries and run through a proper overlap-gated causal pipeline, the map does not reliably
-\emph{moderate} treatment-as-usual response.
+\textbf{Pillar~I --- dimensional analysis delivered a map the categories hide.} One global Bayesian
+bifactor/ESEM on observed cells yields a nine-dimension structure --- a general functional-burden factor $G$ and
+eight weakly-correlated specific axes --- that is real, identifiable, hardened across six adversarial validation
+arms, transdiagnostic (adjusted Rand $\approx 0$ vs.\ the DSM-5 subtypes), and a \emph{tighter} description of
+the patients than diagnosis. Its load-bearing result is a \emph{three-way} dissociation,
+\textbf{biology $\perp$ symptoms $\perp$ severity}: metabolic and inflammatory load are the \emph{least}
+severity-entangled domain in the map (metabolic$\sim$$G$ $+0.12$, inflammatory$\sim$$G$ $+0.07$, against $0.39$
+for cognition and $0.42$ for sleep) \emph{and} sit at the $\approx 0.10$ off-diagonal floor against the symptom
+axes, both legs surviving adjustment for medication, adiposity, and site. Two patients equally ill by a
+clinician's global impression, and presenting with the same symptoms, can still differ sharply in biological
+load: the dimensional reading surfaces a risk axis that neither the category, the severity scale, nor the
+symptom profile can.
 
-The honest reading separates two bars the field too often conflates. On \textbf{scientific validity} the
-program succeeds: the map is real, identifiable, stable, transdiagnostic, a continuum rather than a set of
-biotypes, with biology the least severity-entangled domain and a genuine, robustness-surviving prognostic
-signal for functioning that is co-informative with DSM-5 and even \emph{survives} adjustment for the
-treatments patients received. On \textbf{clinical utility, in the strong sense}, it does not: the
-individual-level prognostic increment is small (the $+59$-ELPD group-level gain collapses to a
-functional-remission $\Delta\text{AUC}$ of only $+0.011$, $0.745\to0.756$), and the map does not moderate
-treatment in observational data. Several of the program's most secure findings are therefore
-\emph{negative or modest} --- no biotypes, no reliable treatment moderation, a group-level rather than
-individual prognostic gain --- and they are presented as the contribution, not buried beneath the
-seductive numbers.
+\textbf{Pillar~II --- archetypes made the map interpretable.} On these coordinates patients form not discrete
+biotypes but a graded \emph{continuum} --- a single-Gaussian falsification null cannot be separated from the
+real data (best silhouette $0.140$ vs.\ $0.141\pm0.002$) --- across which four stable soft archetypes mark
+quasi-independent corners of biology, symptoms, and severity. The archetypes are what make a continuum usable:
+they compress a nine-vector into a handful of clinically nameable weights, render the biology$\perp$severity
+dissociation as two patients a clinician can point to (a biological corner and a non-biological severe corner,
+\emph{equally ill, biologically opposite}), and supply a transdiagnostic patient-similarity tool. Where hard
+groups are demanded, a nested $K$-family is exported with no privileged $K$ --- honestly, because a continuum
+has none.
 
-The result must also be carried with its tensions stated, not smoothed over, because each marks the exact
-edge of what the data support. The predictive object is a \emph{phenotype}, not an isolated axis: the
-forecast lives in the fuller four-archetype representation --- biology read as a corner of the whole space
---- and not in a lone three-axis ``durable block'', which on its own is only ambiguous. The prognostic
-gain is real but \emph{group-level}, sharpening who on average is heading where rather than calling an
-individual remission. It is \emph{course-dependent}, carried by the episodic bipolar and depression
-patients and near-null in the baseline-saturated schizophrenia cohort. The tessellation has \emph{no
-privileged number of regions} --- an operationally awkward but honest consequence of the continuum, with
-the ``operative'' resolution deferred to, and then dissolved by, the prognosis question (the
-continuous/archetype encoding dominates any hard partition). Durability is cleanest in the
-\emph{variance} decomposition (the error-corrected trait/state ICCs); the parallel geometry route is
-precision-confounded and is treated as corroboration, not as the primary signal. And the map's thinnest
-axis, \emph{mania} (two indicators), is reliable-looking but prognostically and temporally uninformative,
-and is flagged as such rather than over-read.
+\textbf{Pillar~III --- operating in the latent space paid off.} Scored forward onto follow-up without
+re-estimation, the measurement is invariant (all five backbone axes $\varphi\ge0.95$) and the geometry replays
+as \emph{durable biology} (metabolic test--retest $\text{ICC}=0.91$) and \emph{moving symptoms}. A baseline
+coordinate then \emph{forecasts} two-year functioning incrementally beyond diagnosis, severity, and the present
+outcome (the archetype phenotype adds $\Delta\text{ELPD}=+59$, co-informative with DSM-5, $+$both $+67$), with
+the biological corner carrying the worst functional prognosis ($27\%$ remission against $60\%$ at the low-burden
+pole). The map is moreover a \emph{sufficient, structurally faithful} compression of the $143$ raw indicators,
+and its prognostic carrier even \emph{survives} adjustment for the treatments patients received. The clinical
+objects this yields are real and usable now: group-level stratification, continuous functional forecasting, and
+a treatment-course monitoring atlas.
 
-What the work establishes, then, is a transdiagnostic biological map that \textbf{complements} the
-diagnostic system rather than replacing it: co-informative with DSM-5 prognostically, a tighter
-description of the coordinates than diagnosis, and a continuous, uncertainty-aware representation of where
-a patient sits in biology-and-severity space. What it does not establish is an individual risk calculator
-or a prescribing rule. In a literature replete with biological-validity evidence advanced as though it
-were clinical utility, a study that measures \emph{both} and reports the modest and null results as such
-is itself a contribution --- a calibrated counterweight, and a reusable, principled pipeline (no
-imputation, uncertainty propagated end-to-end, fixed-then-validated objects, overlap-gated causal
-inference) for asking these questions without over-claiming.
+The honest reading separates two bars the field too often conflates, and the bounds are stated as plainly as the
+gains. On \textbf{scientific validity} the program succeeds: the map is real, identifiable, stable,
+transdiagnostic, a continuum rather than a set of biotypes, with biology the least severity-entangled domain and
+a genuine, robustness-surviving prognostic signal for functioning. On \textbf{clinical utility in the strong
+sense} it does not yet: the individual-level prognostic increment is small (the $+59$-ELPD group-level gain
+collapses to a functional-remission $\Delta\text{AUC}$ of only $+0.011$, $0.745\to0.756$), and the map does not
+moderate treatment in observational data (lithium in bipolar disorder, the cleanest contrast, is a well-powered
+null; E-values $1.06$--$1.78$). Several of the program's most secure findings are therefore \emph{negative or
+modest} --- no biotypes, no reliable treatment moderation, a group-level rather than individual prognostic gain
+--- and they are presented as part of the contribution, not buried beneath the seductive numbers nor inflated
+beyond what the data carry.
 
-The boundary is drawn by the data, not by the method, and the work names its own exits
-(Chapter~\ref{sec:limitations}). Individual-level clinical utility would require incident-event outcomes
-rather than re-administered scales; treatment \emph{selection} would require randomized or trial-arm data
-rather than treatment-as-usual --- a defined future study (M5b); and any clinical claim would require
-external validation beyond this internally-validated baseline cohort. Each is a defined next study, and the
-present program is the methods-and-feasibility foundation on which they can be built.
+Each tension marks the exact edge of what the data support, and is carried with the claim rather than smoothed
+over. The predictive object is a \emph{phenotype}, not an isolated axis: the forecast lives in the fuller
+four-archetype representation --- biology read as a corner of the whole space --- not in a lone three-axis
+``durable block'', which on its own is only ambiguous. The prognostic gain is \emph{group-level}, sharpening who
+on average is heading where rather than calling an individual remission, and it is \emph{course-dependent},
+carried by the episodic bipolar and depression patients and near-null in the baseline-saturated schizophrenia
+cohort. Durability is cleanest in the \emph{variance} decomposition (the error-corrected trait/state ICCs); the
+parallel geometry route is precision-confounded and is treated as corroboration. And the map's thinnest axis,
+\emph{mania} (two indicators), is reliable-looking but prognostically and temporally uninformative, and is
+flagged as such rather than over-read.
+
+What the work establishes, then, is a transdiagnostic biological map that \textbf{complements} the diagnostic
+system rather than replacing it: co-informative with DSM-5 prognostically, a tighter description of the
+coordinates than diagnosis, and a continuous, uncertainty-aware representation of where a patient sits in
+biology-and-severity space. The boundary is drawn by the data, not by the method, and the work names its own
+exits (Chapter~\ref{sec:limitations}): individual-level clinical utility would require incident-event outcomes
+rather than re-administered scales; treatment \emph{selection} would require randomized or trial-arm data rather
+than treatment-as-usual --- a defined future study (M5b); and any clinical claim would require external
+validation beyond this internally-validated baseline cohort. Each is a defined next study, and the present
+program is the methods-and-feasibility foundation on which they can be built --- together with a reusable,
+principled pipeline (no imputation, uncertainty propagated end-to-end, fixed-then-validated objects,
+overlap-gated causal inference) for asking these questions without over-claiming.
 
 \begin{keyresult}[The deliverable, stated plainly]
-A stable, transdiagnostic biological map that is a \emph{continuum} rather than a set of
-biotypes, whose durable biological corner forecasts two-year functioning beyond diagnosis and severity at
-the group level, and that --- on observational data --- does not yet guide treatment. A trustworthy map,
-and an honest account of how far it reaches.
+A stable, transdiagnostic biological map, made interpretable by a four-archetype geometry, whose durable
+biological corner forecasts two-year functioning beyond diagnosis and severity at the group level, and that ---
+on observational data --- does not yet guide treatment. Real scientific value, genuine group-level clinical
+value, and an honest account of how far it reaches: a trustworthy map, and a marked road to the studies that
+would carry it to the bedside.
 \end{keyresult}

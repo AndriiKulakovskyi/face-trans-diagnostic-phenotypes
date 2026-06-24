@@ -34,41 +34,65 @@ the estimated coordinates --- carrying their uncertainty --- only afterwards. Wh
 biotypes or a continuum is then something the data \emph{answer} (Chapter~\ref{sec:strata}), not something the
 method assumes.
 
-\subsection{What this report establishes}
-On the harmonized three-cohort FACE baseline ($N=9{,}013$), the program reaches one calibrated result, stated
-here in advance so the rest of the report can be read as its defence:
-\begin{quote}
-\emph{The FACE cohorts hide a real, stable, transdiagnostic map --- nine dimensions --- on which
-biological load is nearly independent of clinical severity; the map is a graded \textbf{continuum} rather than
-a set of biotypes; it forecasts two-year functioning at the \emph{group} level beyond diagnosis and severity;
-and, on observational data, it does \emph{not} reliably guide treatment.}
-\end{quote}
-The load-bearing finding is the first. Metabolic and inflammatory burden are the \emph{least
-severity-entangled} domains in the map --- they correlate with the general functional-burden factor at only
-$0.12$ and $0.07$, against $0.39$ for cognition and $0.42$ for sleep --- so biological risk rides on axes that
-a clinician's global impression of severity does not see. Two consequences follow and organize the later
-chapters: a stratification can exploit that largely independent signal (Chapter~\ref{sec:strata}), and a prognostic
-model can read future functioning from it (Chapter~\ref{sec:prognosis}).
+\subsection{What this report establishes: one thesis, three pillars}
+On the harmonized three-cohort FACE baseline ($N=9{,}013$), the program reaches a single result, stated here in
+advance so that the rest of the report reads as its defence.
 
-The shape of that map is the second framing decision, and it is settled by evidence, not assumed. When we
-project patients onto the nine coordinates and ask whether they fall into clean clusters, the honest answer is
-\emph{no}: the space is a graded continuum. The decisive check is a \textbf{single-Gaussian falsification null}
---- we ask how clustered a deliberately structureless cloud (one smooth Gaussian blob with the same shape as
-our data) would \emph{look} to the same clustering tools, and the real data are no more clustered than that
-straw man (the best silhouette is $0.140$ in the data against $0.141\pm0.002$ in the null). What organizes the
-continuum instead is a small set of \textbf{four extreme phenotypes} --- an $A{=}4$ archetype simplex, with
-every patient a soft blend of the corners rather than a member of one box (Chapter~\ref{sec:strata}). When a
-clinician needs hard groups anyway, we export a nested family of soft tessellations with \textbf{no privileged
-$K$}: the right number of regions is not a property of the geometry but a question about what the regions are
-\emph{for}, and that question is answered downstream in prognosis (the operative answer there is: none ---
-the continuous and archetype encodings dominate any hard cut).
+\begin{thesisbox}
+Reorganizing severe mental illness around \emph{continuous, diagnosis-agnostic latent dimensions} --- rather
+than diagnostic categories --- yields a measurement map that is real, stable, and transdiagnostic; its
+\textbf{archetype} geometry turns that map into an interpretable, clinically legible object; and
+\textbf{operating in that latent space} delivers durable biology, group-level functional prognosis, and a
+principled path toward clinical utility that the categorical default cannot reach. The value is demonstrated
+wherever the data can carry it, and bounded honestly wherever they cannot.
+\end{thesisbox}
 
-A word on stance. The positive claims are deliberately bounded, and the \emph{negative and modest} results ---
-a continuum rather than clean biotypes, a group-level rather than individual-level prognostic gain, and
-\emph{no} demonstrable treatment moderation in observational data --- are reported as the contribution, not
-buried beneath the positive ones. Scientific validity (a real, stable map carrying genuine signal) is within
-reach of this baseline cohort; strong individual-level clinical utility is not (the two-year functional-remission
-gain over diagnosis, severity, and the baseline outcome is only $\mathrm{AUC}\,+0.011$), and the report says so wherever it applies.
+The argument is built on \textbf{three pillars}, and the report is organized around them.
+
+\textbf{Pillar~I --- dimensional analysis (Chapters~\ref{sec:data}--\ref{sec:scoring}).} A dimensional reading
+recovers structure the categorical label discards. The load-bearing payoff is a \textbf{three-way dissociation,
+biology $\perp$ symptoms $\perp$ severity}: metabolic and inflammatory burden are the \emph{least
+severity-entangled} domains in the map (correlating with the general functional-burden factor $G$ at only
+$0.12$ and $0.07$, against $0.39$ for cognition and $0.42$ for sleep), and they are \emph{equally} weakly tied
+to the symptom axes (their couplings to suicidality, sleep, and mania sit at the $\approx 0.10$ off-diagonal
+floor) --- both legs surviving adjustment for medication, adiposity, and site. Biological risk therefore rides
+on an axis that neither a clinician's global-severity impression nor the patient's symptom profile reveals.
+From a precision-psychiatry standpoint this is the crux: you cannot read a patient's biology off how ill they
+look or which symptoms they report. The map is also transdiagnostic (adjusted Rand $\approx 0$ vs.\ the DSM-5
+subtypes) and a \emph{tighter} description of the patients than diagnosis. This is the foundation; the next two
+pillars build on it.
+
+\textbf{Pillar~II --- archetypes (Chapter~\ref{sec:strata}).} The map's shape is settled by evidence, not
+assumed. Projected onto the nine coordinates, patients do \emph{not} fall into clean clusters: the space is a
+graded \emph{continuum}. The decisive check is a \textbf{single-Gaussian falsification null} --- we ask how
+clustered a deliberately structureless cloud (one smooth Gaussian blob with our data's shape) would \emph{look}
+to the same tools, and the real data separate no better (best silhouette $0.140$ vs.\ $0.141\pm0.002$). What
+organizes the continuum is a small set of \textbf{four extreme phenotypes} --- an $A{=}4$ archetype simplex in
+which biology, symptoms, and severity vary nearly independently and every patient is a soft blend rather than a
+member of a box. The archetypes are what make the map \emph{readable}: they compress a nine-vector into a few
+clinically nameable weights and render the biology$\perp$severity dissociation as two patients you can point to.
+(When hard groups are unavoidable, a nested $K$-family is exported with \textbf{no privileged $K$} --- the right
+number of regions is an outcome question, answered in Pillar~III: none.)
+
+\textbf{Pillar~III --- operating in the latent space (Chapters~\ref{sec:temporal}--\ref{sec:evidence}).} The
+payoff of working in these coordinates is what the categorical default cannot reach. Scored forward onto
+follow-up without re-estimation, the geometry \emph{persists} as \emph{durable biology, moving symptoms}
+(metabolic test--retest $\text{ICC}=0.91$). It \emph{forecasts} two-year \textbf{functioning} beyond diagnosis,
+severity, and the baseline outcome (the archetype phenotype adds $\Delta\text{ELPD}=+59$; functional remission
+runs $27\%\!\to\!60\%$ across the corners; it is co-informative with DSM-5), and it is a \emph{sufficient,
+structurally faithful} compression of the $143$ raw indicators. These are real clinical objects: group-level
+stratification, continuous functional forecasting, and a monitoring atlas.
+
+A word on stance, because it is the difference between a persuasive report and an over-sold one. \emph{The value
+leads, and the bounds are stated as plainly as the gains} --- not buried, and not inflated. Scientific validity
+(a real, stable, transdiagnostic map carrying genuine, robustness-surviving prognostic signal) is firmly within
+reach of this baseline cohort. Strong \emph{individual-level} utility is not yet: the two-year
+functional-remission gain over diagnosis, severity, and the baseline outcome is only $\mathrm{AUC}\,+0.011$; the
+signal is course-dependent; and on observational treatment-as-usual the map does not reliably tell a clinician
+what to prescribe (lithium in bipolar disorder, the cleanest contrast, is a well-powered \emph{null}). Each of
+these limits is not a shortfall but a precisely drawn edge that names a defined next study --- and a study that
+reports its modest and null results as carefully as its positive ones is, in a field prone to advancing
+biological-validity evidence as though it were clinical utility, itself part of the contribution.
 
 \subsection{The method in one paragraph: hybrid discovery}
 The map is estimated by a \emph{single} global, missingness-aware Bayesian sparse bifactor / ESEM model ---
@@ -116,29 +140,29 @@ are allowed to overturn the theory.}
 \label{fig:discovery}
 \end{figure}
 
-\subsection{One argument, five questions}
-The report is a single argument, built as five questions that depend on one another --- each can be asked only 
-once the previous one is answered \emph{yes}, so the order is logical, not administrative. The
-conceptual pipeline runs in four layers (cohorts $\to$ dimensions $\to$ strata $\to$ prognosis/treatment); the
-five questions walk through it, and each is a chapter.
+\subsection{Three pillars, five tests}
+The three pillars are not three separate studies; they are one argument, advanced by \emph{five dependent
+tests}, each of which can be asked only once the previous one is answered \emph{yes}. The order is logical, not
+administrative. The conceptual pipeline runs in four layers (cohorts $\to$ dimensions $\to$ strata $\to$
+prognosis/treatment); the five tests walk through it, and each is a chapter. The pillars group those tests by
+the claim they serve.
 
 \programstrip{0}
 
 \begin{itemize}\setlength{\itemsep}{1pt}
-  \item \textbf{Exist?}\quad\textbf{Transdiagnostic dimensions} --- the measurement map, built on the baseline
-  visit (Chapters~\ref{sec:data}--\ref{sec:scoring}).
-  \item \textbf{Organize?}\quad\textbf{How the coordinates are organized} --- discrete types, or a graded
-  continuum? (the answer reshapes M2 into a coordinate system with a reading guide) (Chapter~\ref{sec:strata}).
-  \item \textbf{Persist?}\quad\textbf{Temporal coherence} --- whether the coordinates and strata hold across the
-  follow-up visits (Chapter~\ref{sec:temporal}).
-  \item \textbf{Predict?}\quad\textbf{Prognosis} --- incremental predictive value beyond diagnosis and severity
-  (Chapter~\ref{sec:prognosis}).
-  \item \textbf{Guide treatment?}\quad\textbf{Treatment} --- whether a stratum moderates treatment response
-  (Chapter~\ref{sec:treatment}).
+  \item \textbf{Pillar~I --- dimensional analysis.}\quad \emph{Does the map exist?} The transdiagnostic
+  measurement map, built on the baseline visit (Chapters~\ref{sec:data}--\ref{sec:scoring}).
+  \item \textbf{Pillar~II --- archetypes.}\quad \emph{How are the coordinates organized} --- discrete types, or
+  a graded continuum, and how do we read a patient's position? (Chapter~\ref{sec:strata}).
+  \item \textbf{Pillar~III --- operating in the latent space.}\quad Three tests of the payoff: \emph{do the
+  coordinates persist?} (temporal coherence, Chapter~\ref{sec:temporal}); \emph{do they predict?} (prognosis
+  beyond diagnosis and severity, Chapter~\ref{sec:prognosis}); \emph{do they guide treatment?} (moderation,
+  Chapter~\ref{sec:treatment}).
 \end{itemize}
 
-This document is the methods-of-record and the as-built record, written at a level of
-detail so that it can both seed the eventual manuscript and serve as the project's
+Each pillar opens with its own claim$\to$evidence$\to$significance divider, so the reader always knows which
+part of the thesis a chapter is defending. This document is the methods-of-record and the as-built record,
+written at a level of detail so that it can both seed the eventual manuscript and serve as the project's
 standing technical reference.
 
 \subsection{Load-bearing invariants}

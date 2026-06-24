@@ -174,3 +174,21 @@ The DR cohort ($N=552$) is small, and the SZ cohort lacks the affective and func
 invariance (Chapter~\ref{sec:validation}) and their per-patient reliability is flagged by observed-indicator
 count, rather than assuming a uniform map across cohorts.
 \end{caveatbox}
+
+\subsection{Distributional shape: why the map lives on the rank scale}
+\label{sub:distqa}
+A second data reality, alongside missingness, dictates how the measurement model must be written. A
+distributional QA of every modelled indicator (\file{reports/qa_distributions_summary.csv}) shows that the
+``continuous'' block is mostly \emph{not} Gaussian: of the $88$ indicators a raw-scale factor model would treat
+as continuous, roughly \textbf{$60\%$ are heavy-tailed, count-like, or zero-inflated} (skewed laboratories such
+as CRP and triglycerides, reaction-time counts, sub-scale tallies), and \textbf{$87$ of $88$ reject normality}
+on the raw scale (D'Agostino--Pearson $p<0.05$). A plain Gaussian factor model would therefore be misspecified
+for most of the block, and a Student-$t$ relaxation would only \emph{approximate} the right marginals. The fix,
+specified in Chapter~\ref{sec:model}, is to model dependence on the population \emph{rank} scale: each such
+indicator is carried through its own empirical CDF onto a standard-normal score
+($z=\Phi^{-1}(\widehat F_j(y))$, Eq.~\eqref{eq:copula_transform}), so the Gaussian-factor assumption holds
+\emph{exactly} on the rank scale rather than approximately on the raw one. The transform is applied
+\emph{tiered} --- high-resolution continuous and ordinal/count indicators are Gaussianized, while binary and
+low-cardinality ordinal items keep their native probit/logit likelihood --- and, because each $\widehat F_j$ is
+stored, it is invertible, so every coordinate returns to native clinical units for reporting. This distributional
+fact is why the reported map is the Gaussian-copula fit, not a raw-scale one.
