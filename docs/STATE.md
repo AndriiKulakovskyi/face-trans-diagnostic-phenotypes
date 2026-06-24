@@ -245,7 +245,7 @@ resolution.* **PI sign-off pending.**
 
 Findings [`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md) · methods [`TREATMENT_MODEL.md`](TREATMENT_MODEL.md) ·
 dev record `reports/50–57_*.md`. Engine `src/face/treatment/` (endpoints · frame · medications ·
-propensity · moderation); pipeline `scripts/50–57`; `tests/m5/` (11). Treatment data was found **late** in
+propensity · moderation); native pipeline `scripts/50–57` **retired 2026-06-24** (shared kernels + `tests/m5/` retained; canonical M5 = the OOP treatment engine). Treatment data was found **late** in
 the per-cohort thesaurus `TRAITEMENTS` tabs (never in the harmonized set), harmonized to common drug-class
 exposures (ATC[SZ] / class-string[DR] / lifetime-flag[BP]) — the earlier "data-blocked → tolerability
 coda" was superseded.

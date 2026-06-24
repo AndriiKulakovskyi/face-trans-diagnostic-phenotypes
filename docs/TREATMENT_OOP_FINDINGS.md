@@ -1,7 +1,8 @@
 # M5 treatment moderation on the Gaussian-copula objects — findings
 
 > **Canonical M5 findings record for the copula rerun.** Reworks the FACE M5 treatment causal pipeline on the
-> copula map + the A=4 copula archetypes, parallel to native `scripts/50-57`. Engine
+> copula map + the A=4 copula archetypes (the native `scripts/50-57` pipeline was **retired 2026-06-24**;
+> the shared `src/face/treatment/` kernels are the canonical engine). Engine
 > [`src/face/treatment/treatment_model_oop.py`](../src/face/treatment/treatment_model_oop.py) (wraps the proven
 > kernels — `treatment.{medications,endpoints,propensity,moderation}`, `prognosis.{glm,reference,compare}` —
 > with **no edits** to native M5); driver [`notebooks/run_treatment_model_oop.py`](../notebooks/run_treatment_model_oop.py).
