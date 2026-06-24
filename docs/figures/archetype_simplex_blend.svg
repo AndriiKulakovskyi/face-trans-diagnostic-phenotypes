@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 392" width="680" height="392" font-family="Helvetica, Arial, sans-serif" role="img">
+  <title>The archetype simplex — every patient a convex blend of four extremes</title>
+  <desc>Four extreme-phenotype corners (A0 biological, A1 low-burden, A2 severe-low-biology, A3 symptom) form a simplex; each patient sits inside as a convex blend of the four corners summing to one. A0 and A2 are equally severe but biologically opposite. Design source for the FACE-ATLAS report TikZ figure; colours match the faceatlas palette.</desc>
+
+  <!-- simplex hull: the convex region patients live inside -->
+  <polyline points="125,73 555,73 555,319 125,319 125,73" fill="none" stroke="#C7CED9" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+  <!-- the blend: patient = convex combination of the four corners -->
+  <g stroke="#5B6573" stroke-width="1">
+    <line x1="410" y1="150" x2="125" y2="73"/>
+    <line x1="410" y1="150" x2="555" y2="73"/>
+    <line x1="410" y1="150" x2="125" y2="319"/>
+    <line x1="410" y1="150" x2="555" y2="319"/>
+  </g>
+
+  <!-- A0 <-> A2 contrast: same severity, opposite biology -->
+  <line x1="600" y1="104" x2="600" y2="288" stroke="#B45309" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="618" y="196" transform="rotate(-90 618 196)" text-anchor="middle" font-size="12" font-style="italic" fill="#B45309">same severity, opposite biology</text>
+
+  <!-- corner phenotypes (convex-hull extremes) -->
+  <g>
+    <rect x="40" y="44" width="170" height="58" rx="6" fill="#ffffff" stroke="#47556A" stroke-width="2"/>
+    <text x="125" y="70" text-anchor="middle" font-size="14" font-weight="bold" fill="#47556A">A1 · low-burden</text>
+    <text x="125" y="88" text-anchor="middle" font-size="12" fill="#47556A">relatively well</text>
+  </g>
+  <g>
+    <rect x="470" y="44" width="170" height="58" rx="6" fill="#ffffff" stroke="#0F766E" stroke-width="2"/>
+    <text x="555" y="70" text-anchor="middle" font-size="14" font-weight="bold" fill="#0F766E">A0 · biological</text>
+    <text x="555" y="88" text-anchor="middle" font-size="12" fill="#0F766E">metabolic + inflammatory</text>
+  </g>
+  <g>
+    <rect x="40" y="290" width="170" height="58" rx="6" fill="#ffffff" stroke="#B42318" stroke-width="2"/>
+    <text x="125" y="316" text-anchor="middle" font-size="14" font-weight="bold" fill="#B42318">A3 · symptom</text>
+    <text x="125" y="334" text-anchor="middle" font-size="12" fill="#B42318">sleep, mood, adversity</text>
+  </g>
+  <g>
+    <rect x="470" y="290" width="170" height="58" rx="6" fill="#ffffff" stroke="#6D28D9" stroke-width="2"/>
+    <text x="555" y="316" text-anchor="middle" font-size="14" font-weight="bold" fill="#6D28D9">A2 · severe</text>
+    <text x="555" y="334" text-anchor="middle" font-size="12" fill="#6D28D9">biology low</text>
+  </g>
+
+  <!-- the patient itself -->
+  <circle cx="410" cy="150" r="7" fill="#14181F"/>
+  <text x="410" y="176" text-anchor="middle" font-size="13" fill="#14181F">one patient</text>
+  <text x="410" y="192" text-anchor="middle" font-size="11" fill="#14181F">a convex blend, &#931; w = 1</text>
+
+  <!-- this patient's archetype weights as a stacked bar -->
+  <rect x="240" y="352" width="110" height="18" fill="#0F766E"/>
+  <rect x="350" y="352" width="50"  height="18" fill="#6D28D9"/>
+  <rect x="400" y="352" width="30"  height="18" fill="#B42318"/>
+  <rect x="430" y="352" width="10"  height="18" fill="#47556A"/>
+  <text x="240" y="346" font-size="11" fill="#5B6573">this patient = 0.55&#183;A0 + 0.25&#183;A2 + 0.15&#183;A3 + 0.05&#183;A1</text>
+</svg>

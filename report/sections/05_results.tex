@@ -42,6 +42,36 @@ mania & YMRS 0.57, Altman 0.76 (BP) & 0.49--0.76 & 0.15\\
 \end{tabular}
 \end{table}
 
+\subsection{The per-patient coordinate object: a point with honest error bars}
+\label{sub:coords}
+The loadings above describe the \emph{axes}; the other half of the deliverable is \emph{where each patient
+sits} on them. Every one of the $9{,}013$ patients is a single \textbf{point in this nine-dimensional space},
+its coordinates oriented so higher means more burden and scaled so $0$ is the population mean and $\pm1$ one
+standard deviation. So ``metabolic $+1.5$, inflammatory $+1.2$, suicidality $-0.3$'' is a complete,
+quantitative, \emph{transdiagnostic} description of one person --- built without ever using their diagnosis.
+
+The crucial part is that the point is \textbf{not} a point. Each coordinate carries a posterior \textbf{mean},
+\textbf{SD}, and \textbf{HDI}, a \textbf{reliability tier}, and --- in the faithful arm --- the full per-patient
+covariance $S_i$ and joint posterior \emph{draws} (\S\ref{sec:scoring}). Clinically this is the difference
+between confidence and bluff: a patient with a full laboratory panel gets a \emph{tight} biological coordinate;
+a patient with two substance items and no labs gets a \emph{fuzzy} substance coordinate --- not a confident
+wrong one. Unobserved or structurally-absent cells (substance for the DR cohort, skip-logic zeros) are
+\textbf{marginalized, never imputed}: they neither place the patient nor get filled in.
+
+These error bars are load-bearing, not decoration. If one clustered the posterior \emph{means} as though they
+were exact, the precisely measured axes (metabolic, inflammatory) would dominate the geometry while the
+ill-measured ones injected phantom structure. Propagating the uncertainty instead is exactly what dissolves that
+artefact: re-run over the posterior draws, the apparent multi-component look of the means collapses to a
+\emph{single} component in all twenty draws (\S\ref{sub:continuum}). The same uncertainty makes
+patient-to-patient similarity honest --- nearest neighbours are ranked by an uncertainty-weighted distance,
+\begin{equation}
+d^2(i,j)=\sum_d \frac{(\mu_{i,d}-\mu_{j,d})^2}{\sigma_{i,d}^2+\sigma_{j,d}^2+\varepsilon},
+\label{eq:uwdist}
+\end{equation}
+so an axis a patient is uncertain about contributes little to who counts as similar, and an ill-measured patient
+simply gets a \emph{fuzzy} neighbourhood (the M2 similarity tool, \S\ref{sub:similarity}). That is the
+continuum-honest core of the whole map: ``your most similar patients, across diagnoses, look like this.''
+
 \subsection{The empirical atlas, beside the theory}
 The scientific deliverable of the measurement map is the \emph{prior $\to$ posterior} comparison
 (Figure~\ref{fig:priorposterior}): the theory map of where instruments were \emph{expected} to load, placed
@@ -197,3 +227,12 @@ Impulsivity / Negative symptoms / Sensory & \code{not_testable} & no common indi
 \bottomrule
 \end{tabular}
 \end{table}
+
+\medskip\noindent\emph{The chapter in one object.} The measurement model delivers two things at once: a set of
+\emph{axes} --- nine validated, transdiagnostic dimensions, with biology the least severity-entangled of them
+(\S\ref{sub:bioperpG}) --- and a per-patient \emph{coordinate object} on those axes, every position carried with
+honest uncertainty rather than as a false point (\S\ref{sub:coords}). Neither half is the deliverable alone: the
+axes without the coordinates are a factor structure, the coordinates without the uncertainty an over-confident
+table. Together they are the map every later chapter reads from --- a place to put any patient, and a calibrated
+statement of how sure that placement is. The next chapter asks the obvious question of any such map: do its
+positions cluster into \emph{types}, or is it a continuum?

@@ -357,6 +357,43 @@
   \node[cnr,draw=faceopen,text=faceopen] at (-4.4,-1.85) {\textbf{A3} psychiatric\\\scriptsize sleep\,$+$\,dev.\,$+$\,mania\,$+$\,suic.};
 \end{tikzpicture}}\end{center}}
 
+% -------------------------------------------------------------------- M2: the simplex as a convex blend (each patient inside)
+\newcommand{\archetypesimplexblend}{%
+\begin{center}\resizebox{0.95\linewidth}{!}{%
+\begin{tikzpicture}[font=\sffamily\scriptsize,
+   cnr/.style={fill=white,rounded corners=2pt,line width=0.9pt,inner sep=3.5pt,align=center}]
+  \coordinate (a1) at (-4.4,2.2);
+  \coordinate (a0) at ( 4.4,2.2);
+  \coordinate (a2) at ( 4.4,-2.2);
+  \coordinate (a3) at (-4.4,-2.2);
+  \coordinate (p)  at (1.7,0.85);
+  % the simplex --- the convex region every patient lives inside
+  \draw[facerule,line width=0.7pt,dashed] (a1)--(a0)--(a2)--(a3)--cycle;
+  % the blend: this patient = a convex combination of the four corners
+  \draw[facemute,line width=0.5pt] (p)--(a1); \draw[facemute,line width=0.5pt] (p)--(a0);
+  \draw[facemute,line width=0.5pt] (p)--(a2); \draw[facemute,line width=0.5pt] (p)--(a3);
+  % A0 <-> A2 contrast: same severity, opposite biology
+  \draw[facecav,line width=1pt,dash pattern=on 3pt off 2pt] (6.15,1.5)--(6.15,-1.5);
+  \node[rotate=-90,font=\sffamily\scriptsize\itshape,text=facecav] at (6.6,0) {same severity, opposite biology};
+  % corner phenotypes (the convex-hull extremes)
+  \node[cnr,draw=facemeth,text=facemeth] at (a1) {\textbf{A1} low-burden\\\scriptsize relatively well};
+  \node[cnr,draw=facekr,text=facekr]     at (a0) {\textbf{A0} biological\\\scriptsize metabolic\,$+$\,inflam.};
+  \node[cnr,draw=faceinv,text=faceinv]   at (a2) {\textbf{A2} severe\\\scriptsize biology \emph{low}};
+  \node[cnr,draw=faceopen,text=faceopen] at (a3) {\textbf{A3} symptom\\\scriptsize sleep, mood, adversity};
+  % the patient itself
+  \fill[faceink] (p) circle (2.6pt);
+  \node[font=\sffamily\scriptsize,text=faceink,align=center,anchor=north] at (1.7,0.5)
+       {one patient\\[-1pt]\scriptsize a convex blend, $\textstyle\sum_a w_a=1$};
+  % this patient's archetype weights, as a stacked bar
+  \fill[facekr]   (-2.4,-3.45) rectangle (0.24,-3.03);
+  \fill[faceinv]  ( 0.24,-3.45) rectangle (1.44,-3.03);
+  \fill[faceopen] ( 1.44,-3.45) rectangle (2.16,-3.03);
+  \fill[facemeth] ( 2.16,-3.45) rectangle (2.40,-3.03);
+  \draw[white,line width=0.6pt] (0.24,-3.45)--(0.24,-3.03) (1.44,-3.45)--(1.44,-3.03) (2.16,-3.45)--(2.16,-3.03);
+  \node[font=\sffamily\scriptsize,text=faceink,anchor=north] at (0,-3.58)
+       {this patient $=0.55\,$A0 $+\,0.25\,$A2 $+\,0.15\,$A3 $+\,0.05\,$A1};
+\end{tikzpicture}}\end{center}}
+
 \newcommand{\temporalspine}{%
 \begin{center}\resizebox{0.9\linewidth}{!}{%
 \begin{tikzpicture}[font=\sffamily\scriptsize,
