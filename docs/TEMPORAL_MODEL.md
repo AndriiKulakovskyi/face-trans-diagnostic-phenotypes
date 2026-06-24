@@ -319,8 +319,11 @@ extractor + informative-dropout), `standardize` (V0 spec — the core new piece)
 `project_explicit_full_n`, `align_ordinals_to_fit`, `project_to_Z`, `project_draws`, `xd_em`/`_estep_k`,
 `tucker_phi` + the `06` harness, `eta_squared`/`ari`/`cramers_v`, `prepare`/`prepare_mixed`.
 
-**Pipeline** `scripts/30–37` (run order = file order; each writes `reports/3N_*.md` + a figure, then a
-discussion gate): 30 inventory **(done)** · 31 attrition (G6) · 32 build-panel + V0 spec · 33 invariance
+**Pipeline** `scripts/30–37` (**RETIRED 2026-06-24** — canonical M3 is the copula OOP engine
+`temporal_model_oop.py` / [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md); the IPW it produces under
+`results/face/temporal_oop/attrition/` now feeds M4. Script list kept as the native methods record): run order =
+file order; each writes `reports/3N_*.md` + a figure, then a
+discussion gate: 30 inventory **(done)** · 31 attrition (G6) · 32 build-panel + V0 spec · 33 invariance
 (G1) · 34 score-panel (G2) · 35 variance (G3) · 36 persistence (G4) · 37 consolidate. The one M2 change is
 a 6-line `tessellation_fit.npz` export in `scripts/22` (secondary view only).
 

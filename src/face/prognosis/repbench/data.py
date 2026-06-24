@@ -25,7 +25,7 @@ REPO = Path(__file__).resolve().parents[4]
 PROC = REPO / "data" / "processed"
 COPULA_COORDS = REPO / "results" / "face" / "strata_oop" / "coordinates"
 COPULA_CONSOLIDATE = REPO / "results" / "face" / "strata_oop" / "consolidate"
-IPW_PATH = REPO / "results" / "face" / "m3" / "ipw_weights.parquet"
+IPW_PATH = REPO / "results" / "face" / "temporal_oop" / "attrition" / "ipw_weights.parquet"  # copula OOP M3
 
 KEY = ["cohort", "patient_id"]
 

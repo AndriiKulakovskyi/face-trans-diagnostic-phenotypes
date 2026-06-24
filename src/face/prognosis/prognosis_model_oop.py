@@ -62,7 +62,7 @@ from face.prognosis.glm import fit_glm
 
 REPO = Path(__file__).resolve().parents[3]
 COPULA_STRATA = REPO / "results" / "face" / "strata_oop"          # the copula M2 hand-off (input)
-NATIVE_M3 = REPO / "results" / "face" / "m3"                      # strata-independent IPW (reused)
+COPULA_M3_IPW = REPO / "results" / "face" / "temporal_oop" / "attrition"   # copula OOP M3 strata-independent IPW
 RESULTS = REPO / "results" / "face" / "prognosis_oop"            # parallel output (never touches results/face/m4)
 FIGURES = REPO / "docs" / "figures" / "prognosis_oop"
 CONFIG = REPO / "configs" / "m4_outcomes.yaml"
@@ -164,7 +164,7 @@ class PrognosisConfig:
     """Central config: input paths to the copula M2 object + the outcome registry, the parallel output dir,
     and the MCMC knobs. Model-affecting fields enter ``_config_sig`` (cache key)."""
     strata_dir: Path = COPULA_STRATA          # copula M2 hand-off: coordinates/ + consolidate/
-    ipw_dir: Path = NATIVE_M3                  # reused strata-independent attrition weights
+    ipw_dir: Path = COPULA_M3_IPW              # copula OOP M3 strata-independent attrition weights
     config_path: Path = CONFIG
     proc_dir: Path = PROC
     output_dir: Path = RESULTS

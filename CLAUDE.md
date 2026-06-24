@@ -86,8 +86,8 @@ coherent**: the measurement holds (G1 invariance: 5/6 backbone axes invariant, i
 M2 geometry replays — **biology/cognition are durable (trait) while severity + symptoms slide (state)**, and
 archetype identity persists (G3 variance ⟷ G4 geometry agree). Honest caveats: developmental's apparent state
 is CTQ recall-noise (trait by design); G5-vs-DSM5 deferred to M4 (`arm` time-invariant). Clinical logic:
-*stratify on the durable biology, monitor the moving symptoms.* Engine `src/face/temporal/`; pipeline
-`scripts/30–37`; hand-off `results/face/patient_panel.parquet`.
+*stratify on the durable biology, monitor the moving symptoms.* Engine `src/face/temporal/` (shared kernels);
+native pipeline `scripts/30–37` **retired 2026-06-24**; native hand-off `results/face/patient_panel.parquet`.
 **M3 reworked on the copula M1/M2 objects** (parallel OOP engine `src/face/temporal/temporal_model_oop.py`,
 wraps the kernels; driver `notebooks/run_temporal_model_oop.py`; canonical **[docs/TEMPORAL_OOP_FINDINGS.md](docs/TEMPORAL_OOP_FINDINGS.md)**;
 hand-off `results/face/temporal_oop/`). The one new piece is scoring V1/V2 under the **fixed copula M1**
@@ -95,7 +95,10 @@ hand-off `results/face/temporal_oop/`). The one new piece is scoring V1/V2 under
 `project_explicit_full_n`; V0 reproduced at r≈0.99). Result **replays**: G1 all 5 backbone axes invariant
 (inflammatory now invariant vs partial native), G3 biology trait (metabolic ICC 0.91, cognition 0.70) / symptoms
 state / severity trait-by-rank with population improvement, G4 archetype weights persist (cosine 0.90).
-Native M3 (`scripts/30–37`) kept as provenance.
+The native M3 pipeline (`scripts/30–37`) was **retired 2026-06-24**; the copula OOP M3 (`temporal_model_oop.py`)
+is canonical, and its strata-independent IPW (`results/face/temporal_oop/attrition/ipw_weights.parquet`) now
+feeds the copula M4 + repbench (previously the native `results/face/m3/`). **All native M1–M5 pipeline scripts
+are now retired; only the data/config layer (`scripts/01_build_data`, `02_build_covariates`) + utilities remain.**
 **M4 prognosis COMPLETE** (pending PI sign-off) — methods **[docs/PROGNOSIS_MODEL.md](docs/PROGNOSIS_MODEL.md)**,
 findings (paper-facing, read first) **[docs/PROGNOSIS_OOP_FINDINGS.md](docs/PROGNOSIS_OOP_FINDINGS.md)**, clinician-facing
 prognostic atlas **[docs/PROGNOSIS_OOP_FINDINGS.md](docs/PROGNOSIS_OOP_FINDINGS.md)**.
