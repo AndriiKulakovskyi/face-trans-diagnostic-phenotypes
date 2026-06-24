@@ -191,3 +191,43 @@ Frozen before any model is fit. All inputs come from the **Gaussian-copula verti
 - **Sufficiency test:** `Δ(REF+RAW+LAT − REF+LAT)` with paired bootstrap CI; tie if within ±1 SE of the raw arm.
 - **Invariants:** no imputation (RAW keeps NaN + mask); diagnosis/cohort = stratification only, never a feature;
   targets never enter any input matrix; all joins on `(cohort, patient_id)`.
+
+**Amendment A (2026-06-24, during P1 — recorded, not silently changed).** Two additions, prompted by the
+autoregression question:
+1. **Both horizons** are run — V1 (1-year) and V2 (2-year). V1 roughly doubles the sample (recovery 1,744 vs
+   1,087; deterioration 3,196 vs 2,121; milder attrition), so it is the better-powered replication.
+2. **REF0 baseline (no baseline GAF).** Beside REF (DSM-5 + latent-G severity + baseline GAF) we add
+   **REF0 = DSM-5 + latent-G severity, with baseline GAF dropped**, plus `REF0+RAW` / `REF0+LAT-A`. REF − REF0
+   *quantifies the autoregression contribution*; sufficiency is reported under **both** the with-GAF (REF) and
+   no-GAF (REF0) contrasts. Dropping GAF does not "fix" saturation — it changes the question from *incremental
+   beyond baseline* to *unconditional*; both are reported.
+
+   Note on missingness: recovery is, by definition, evaluated among the **baseline-impaired (GAF<61)**, and the
+   1,527 / 9,013 patients missing baseline GAF have **no definable functional-change outcome** — they are out of
+   scope, not a maskable-missingness case. Within every eligible set baseline GAF is present for 100%.
+
+## P1 findings — XGBoost, V1+V2, REF/REF0 (results in `results/face/m4_repbench/`)
+
+Out-of-fold (5×2 stratified CV, 2000 bootstraps). Eligible N: recovery 1,087 (pooled V2) / 681 (BP+DR V2) /
+1,744 (V1); deterioration 2,121 / 3,196 (V1).
+
+1. **Autoregression is not the driver (the REF0 test).** Dropping baseline GAF changes AUC by ≈0 everywhere
+   (REF − REF0: recovery V2 pooled +0.000, V1 +0.001; deterioration −0.008..+0.002). The latent-G coordinate
+   already encodes baseline functioning, and recovery-among-impaired compresses the baseline range — so raw GAF
+   is redundant, and **every result below holds with baseline GAF dropped.** Not an autoregression artefact.
+2. **Sufficiency is target-dependent, replicated across horizons.**
+   - **Recovery — the map is slightly lossy.** Raw beats the latent map by **ΔAUC ≈ +0.04** (pooled V1 +0.040
+     CI[0.022,0.057]; V2 +0.039 CI[0.018,0.059]; BP+DR V1 +0.063 CI[0.032,0.095]), robust under both REF and
+     REF0. The map captures most of it (REF 0.65 → LAT-A 0.71 → RAW 0.75) but not all. BP+DR V2 is underpowered
+     (tie, N=681).
+   - **Deterioration — the map is sufficient** (AUC tie everywhere) — though nothing beats REF much
+     (baseline-saturated). Raw sharpens the continuous CRPS by a clinically negligible fraction of a GAF point.
+3. **Uncertainty + archetypes add within the latent arm** (recovery V2 pooled: LAT-μ 0.690 → LAT-σ 0.696 →
+   LAT-A 0.707), consistent with H3 — but this is XGBoost using sd as a feature; the faithful test is the
+   EIV-GLM (P2).
+
+**Honest headline:** the copula 9-dim map is a **sufficient** summary for the baseline-saturated deterioration
+outcome and a **near-sufficient (≈0.04-AUC lossy)** summary for recovery — not an autoregression artefact. Raw
+carries a little recovery-specific signal the transdiagnostic compression drops. **Caveat:** XGBoost-only; the
+EIV-GLM uncertainty arm, the recovery-gap diagnostic (which raw features?), efficiency learning-curves, and LOCO
+transport are P2.

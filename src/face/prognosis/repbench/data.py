@@ -81,13 +81,21 @@ def _visit_scale(visit: str, src_var: str, index: pd.MultiIndex) -> pd.Series:
 
 def load_outcomes() -> pd.DataFrame:
     """Build the functional-outcome panel (egf/cgi_s at V0/V1/V2) and the derived endpoints. Keeps the
-    continuous ``egf__V0`` / ``egf__V2`` (backbone + autoregression) and the binary ``ep_egf_*`` targets."""
+    continuous ``egf__V{0,1,2}`` (backbone + autoregression) and the binary endpoints at BOTH horizons:
+    ``ep_egf_recovery__V{1,2}`` (impaired GAF<61 -> GAF>=71) and ``ep_egf_deterioration__V{1,2}`` (drop >=10).
+    The unsuffixed ``ep_egf_*`` (V2) from ``build_endpoints`` are kept for back-compat."""
     idx = load_raw().index
     panel = pd.DataFrame(index=idx)
     for visit, tag in (("v0", "V0"), ("v1", "V1"), ("v2", "V2")):
         panel[f"egf__{tag}"] = _visit_scale(visit, "egf", idx)
         panel[f"cgi_s__{tag}"] = _visit_scale(visit, "cgi01", idx)
     panel = build_endpoints(panel)
+    e0 = panel["egf__V0"]
+    for h in ("V1", "V2"):                                     # horizon-explicit endpoints (1-yr and 2-yr)
+        eh = panel[f"egf__{h}"]
+        have = e0.notna() & eh.notna()
+        panel[f"ep_egf_recovery__{h}"] = ((e0 < 61) & (eh >= 71)).where(have & (e0 < 61)).astype(float)
+        panel[f"ep_egf_deterioration__{h}"] = (eh <= e0 - 10).where(have).astype(float)
     return panel
 
 
@@ -141,7 +149,10 @@ def cohort_of(frame: pd.DataFrame) -> np.ndarray:
     return frame.index.get_level_values("cohort").to_numpy()
 
 
-def eligible(frame: pd.DataFrame, target: str) -> np.ndarray:
-    """Boolean mask of rows with a defined (non-missing) target — recovery is auto-restricted to the
-    baseline-impaired by ``build_endpoints``; deterioration to those with V0&V2 GAF."""
-    return frame[f"ep_{target}"].notna().to_numpy()
+def eligible(frame: pd.DataFrame, target: str, horizon: str = "V2") -> np.ndarray:
+    """Boolean mask of rows with a defined (non-missing) target at the given horizon — recovery is
+    auto-restricted to the baseline-impaired (GAF<61); deterioration to those with V0&V{horizon} GAF."""
+    col = f"ep_{target}__{horizon}"
+    if col not in frame.columns:
+        col = f"ep_{target}"
+    return frame[col].notna().to_numpy()

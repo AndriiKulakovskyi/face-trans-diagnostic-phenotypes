@@ -12,18 +12,22 @@ import numpy as np
 from scipy.stats import norm
 
 # reuse the certified decision-curve + Brier/AUC kernels (do not reimplement)
-from ..clinical_value import auc, brier, net_benefit  # noqa: F401
+from ..clinical_value import auc, brier, net_benefit, paired_auc_delta  # noqa: F401
 
 
-def crps_gaussian(y, mu, sigma) -> float:
-    """Mean CRPS of Gaussian predictive ``N(mu, sigma)`` against observations ``y`` (Gneiting & Raftery 2007,
-    closed form). Lower is better; units = the outcome scale. ``sigma`` is clipped away from 0."""
+def crps_gaussian_pointwise(y, mu, sigma) -> np.ndarray:
+    """Per-observation CRPS of Gaussian predictive ``N(mu, sigma)`` (Gneiting & Raftery 2007, closed form).
+    Returned as an array so it can be averaged or bootstrap-resampled."""
     y = np.asarray(y, dtype="float64")
     mu = np.asarray(mu, dtype="float64")
     sigma = np.clip(np.asarray(sigma, dtype="float64"), 1e-9, None)
     z = (y - mu) / sigma
-    crps = sigma * (z * (2.0 * norm.cdf(z) - 1.0) + 2.0 * norm.pdf(z) - 1.0 / np.sqrt(np.pi))
-    return float(np.mean(crps))
+    return sigma * (z * (2.0 * norm.cdf(z) - 1.0) + 2.0 * norm.pdf(z) - 1.0 / np.sqrt(np.pi))
+
+
+def crps_gaussian(y, mu, sigma) -> float:
+    """Mean CRPS of Gaussian predictive ``N(mu, sigma)`` (lower is better; units = the outcome scale)."""
+    return float(np.mean(crps_gaussian_pointwise(y, mu, sigma)))
 
 
 def crps_ensemble(y, samples) -> float:
