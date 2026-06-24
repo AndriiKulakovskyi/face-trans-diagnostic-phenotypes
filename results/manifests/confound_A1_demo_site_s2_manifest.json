@@ -1,0 +1,35 @@
+{
+  "stage": "confound_A1_demo_site_s2",
+  "created_at": "2026-06-23T05:55:52Z",
+  "N": 1884,
+  "cohort_counts": {
+    "bp": 666,
+    "dr": 552,
+    "sz": 666
+  },
+  "seed": 20260624,
+  "patient_index_hash": "f53bea1b9fcabb87",
+  "git_commit": "62f551e6601cc15559a97ef91d2bf51252ed2363",
+  "package_versions": {
+    "python": "3.13.9",
+    "numpy": "2.3.5",
+    "scipy": "1.16.3",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "pymc": "6.0.1",
+    "pytensor": "3.0.4",
+    "numpyro": "0.21.0",
+    "jax": "0.10.1",
+    "jaxlib": "0.10.1",
+    "arviz": "1.1.0",
+    "h5netcdf": "1.8.1"
+  },
+  "diagnostics": {
+    "rhat": 1.01,
+    "ess": 455.0,
+    "div": 0.0
+  },
+  "arm": "A1_demo_site",
+  "covariate_adjust": true,
+  "extra_cols": []
+}

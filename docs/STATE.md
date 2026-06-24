@@ -181,8 +181,9 @@ phenotype memberships persist V1–V4?).**
 **Findings: [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md); methods: [`TEMPORAL_MODEL.md`](TEMPORAL_MODEL.md).** Does the V0 map + strata cohere and persist over
 follow-up (V0→V1→V2, yearly)? Scored onto the **FIXED** M1/M2 model — observed cells only, uncertainty
 propagated, **never re-discovered**. Engine `src/face/temporal/`; pipeline `scripts/30–37`; **36 tests**.
-Window V0–V2 (all 3 cohorts well-represented; DR collapses at V3). G5 (vs DSM-5) **deferred to M4** (`arm` is
-time-invariant in-data; diagnosis-change exits captured for M4). Two minimal, default-off `prepare()` adds
+Window V0–V2 (all 3 cohorts well-represented; DR collapses at V3). G5 (vs DSM-5) **retired/subsumed** (`arm` is
+time-invariant in-data so the symmetric test is unmeasurable, and on the continuum there are no strata-labels to
+switch; its intent is carried by G3/G4, the incremental claim by M4). Two minimal, default-off `prepare()` adds
 (`emit_moments`, `visit=`) proven non-disruptive (90 v3 tests stay green).
 
 - **G1 invariance (precondition) ** — per-visit backbone refit, Tucker φ vs V0: severity/cognition/metabolic/

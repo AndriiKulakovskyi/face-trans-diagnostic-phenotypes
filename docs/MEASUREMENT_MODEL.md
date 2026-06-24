@@ -28,8 +28,8 @@ Psychiatric heterogeneity has two levels that must not be conflated:
 The architecture is strictly ordered:
 
 ```
-diagnostic cohorts → transdiagnostic dimensions → validated strata → prognosis / treatment
-   (entry metadata)      (M1 — this document)        (later)            (later)
+diagnostic cohorts → transdiagnostic dimensions → continuous map + A=4 archetypes → prognosis / treatment
+   (entry metadata)      (M1 — this document)        (M2 — continuum)                 (M4 / M5)
 ```
 
 M1 delivers only the first arrow: the **measurement model**, the **dimension atlas**, and **per-patient

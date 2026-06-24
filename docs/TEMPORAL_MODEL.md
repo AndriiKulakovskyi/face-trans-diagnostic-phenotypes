@@ -21,8 +21,8 @@
 The project's four layers stay distinct (M1 §1.1):
 
 ```
-diagnostic cohorts → transdiagnostic dimensions → validated strata → prognosis / treatment
-   (entry metadata)     (M1 — complete, 9-dim)     (M2 — complete)      (M4 / M5)
+diagnostic cohorts → transdiagnostic dimensions → continuous map + A=4 archetypes → prognosis / treatment
+   (entry metadata)     (M1 — complete, 9-dim)     (M2 — continuum, no privileged K)  (M4 / M5)
                                   └──────────── M3: do these cohere & persist over time? ───────────┘
 ```
 
@@ -61,9 +61,13 @@ claim prognostic, treatment, or external validity. **"Persists" ≠ "predicts."*
 - **Balanced full program** — all M3 goals at full depth; **G3 (trait/state)** and **G4 (persistence /
   spine-vs-corner)** are the twin scientific headlines; **G1 (time-invariance)** and **G6 (attrition)**
   are honesty gates.
-- **G5 (head-to-head vs DSM-5 over time) is deferred to M4.** DSM-5 diagnosis is time-invariant in the
-  data, so a symmetric "strata switch less than DSM labels" test is **not internally measurable** here
-  (§A). The signal is *captured* for M4, not analysed in M3.
+- **G5 (head-to-head vs DSM-5 over time) is retired/subsumed.** Two reasons converge: DSM-5 diagnosis is
+  time-invariant in the data, so a symmetric "labels switch less than DSM labels" test is **not internally
+  measurable** here (§A); and under the M2 continuum reframe there are **no discrete strata-labels to switch**,
+  so the test is **ill-posed**. Its scientific intent — that the map is a more durable phenotype than diagnosis
+  — is already delivered by **G3/G4** (biology is trait; archetype identity persists), and the incremental
+  "better than DSM-5" claim lives in M4's predictive limb. The arm / diagnosis-change signal is still
+  *captured* for M4.
 - **Yearly window V0 → V1 → V2 only.** Dense, all three cohorts well-represented. V3+ (where DR collapses
   to n=3) and the interim `_mois` visits are out of scope for M3.
 
@@ -351,13 +355,16 @@ caveats.
 
 ---
 
-## Appendix A — Why the DSM-5 head-to-head (G5) is deferred to M4
+## Appendix A — Why the DSM-5 head-to-head (G5) is retired (subsumed by G3/G4)
 
 Verified in the raw data: **DSM-5 diagnosis (`arm`) is time-invariant** — 0 / 9,013 patients change arm
 across visits (it is the enrollment diagnosis, carried forward by the harmonizer). Diagnostic conversion
 surfaces only as a **sparse exit reason** in the lost-to-follow-up text ("Changement de diagnostic"):
 **BP 60 patients, SZ 17** (G6 / stage 31); DR records numeric reason codes (not decoded). It is an *exit*
-signal — the patient leaves the cohort and the in-data `arm` never updates — so a symmetric "our strata
+signal — the patient leaves the cohort and the in-data `arm` never updates — so a symmetric "our positions
 switch less than DSM labels" test is **not internally measurable** in M3: DSM labels cannot switch here by
-construction. The arm + diagnosis-change signals are **captured by G6** so M4 can use them against genuine
-outcomes; the temporal "better than DSM-5" claim lives in M4's predictive limb, not M3.
+construction. Under the M2 continuum reframe the test is moreover **ill-posed** — there are no discrete
+strata-labels to switch — and its intent (the map is a more durable phenotype than diagnosis) is already
+delivered by **G3/G4** (biology is trait; archetype identity persists). The arm + diagnosis-change signals are
+**captured by G6** so M4 can still use them against genuine outcomes; the temporal "better than DSM-5" claim
+lives in M4's predictive limb, not M3.

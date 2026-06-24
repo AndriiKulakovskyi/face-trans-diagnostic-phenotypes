@@ -8,7 +8,7 @@
 > Per-milestone canonical records: [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md) ·
 > [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md) · [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md) ·
 > [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md). One-figure summary:
-> `docs/figures/copula_vertical/synthesis.png`. Pending PI sign-off. Updated 2026-06-22.
+> `docs/figures/copula_vertical/synthesis.png`. Pending PI sign-off. Updated 2026-06-24.
 
 ![synthesis](figures/copula_vertical/synthesis.png)
 
@@ -22,6 +22,40 @@ category; it is a continuum with a stable set of extremes. Its demonstrated valu
 stratification + continuous functional forecasting**, co-informative with DSM-5 — not an individual yes/no
 calculator. The reworks **reproduce the native-map conclusions**, which is itself a robustness result (the
 findings do not depend on the Gaussian-vs-copula likelihood).
+
+## The program arc, restated under the continuum
+
+The reframe changes the *object* the program delivers, not its questions. The original four-layer arc read
+**diagnostic cohorts → transdiagnostic dimensions → validated strata → prognosis / treatment** — a pipeline whose
+third layer was *K discrete patient types you assign and then treat*. The continuum verdict retires that layer as
+stated (there are no biotypes), so the arc is now
+
+> diagnostic cohorts → transdiagnostic dimensions → **continuous map + A=4 archetype simplex (no privileged K)** →
+> prognosis / treatment.
+
+The deliverable shape changed with it — from *a typology you assign* to **a continuous coordinate system + a
+stable archetype simplex you forecast and group-stratify on**. Every milestone's *question* survives intact; only
+its noun changes (from "the strata" to "the coordinates / archetypes"):
+
+| milestone | originally asked | restated under the continuum | status |
+|---|---|---|---|
+| **M2** | do *validated strata* exist? | is the space types or a continuum? | continuum; load-bearing = coordinates + A=4 simplex |
+| **M3** | do the *strata* persist? | do the coordinates + archetype identity persist? | yes (biology trait, symptoms state); **G5 retired** |
+| **M4** | do the *strata* predict, at which *K*? | does the continuous/archetype encoding predict; does any hard partition add value? | yes (functioning); **operative K = none** |
+| **M5** | do the *strata* moderate treatment? | does a patient's position on the map moderate response? | earned boundary — not on observational TAU |
+
+Two sub-goals are *dissolved* rather than answered, and that is itself a finding. **M3's G5** (a
+stratum-label-switching test vs DSM-5) is ill-posed without discrete labels — its intent (the map is a more
+durable phenotype than diagnosis) is already carried by the trait/state result. **M4's "which K"** is answered
+*none* — and the K-family comparison is the falsification that *earns* that answer, not redundant work.
+
+The reframe also disciplines the *ambition*. The demonstrated value is **group-level functional forecasting +
+continuous stratification, co-informative with DSM-5** — not an individual biotype-prescribing engine; the
+ΔELPD +59 / ΔAUC +0.011 split is the signature of that gap (developed in *Honest tensions* and *Calibrated claim
+& what's left* below). What the reframe does **not** change is where genuine new evidence must come from: an
+**external cohort** (the map is internally validated only), and **randomized / trial-arm data for a true M5b**
+treatment-*selection* test (with the FondaMental prescription data the first place to look). Neither is an
+internal re-run — the copula vertical engines already embody the continuum object end to end.
 
 ## M2 — the structure: a continuum with stable extremes (no privileged K)
 

@@ -74,12 +74,52 @@ from severity. One diffuse mass with crossing gradients, not a constellation of 
 \label{fig:embedding}
 \end{figure}
 
+\subsection{The archetype simplex: every patient a blend of extremes}
+\label{sub:simplex}
+A continuum has no clusters, but it still has a \emph{shape}, and the shape has \textbf{corners} --- extreme
+phenotypes the cloud stretches toward. \emph{Archetypal analysis} recovers them: it writes every patient
+$\mathbf{x}_i$ as a convex blend of $A$ extreme profiles $\mathbf{z}_a$,
+\begin{equation}
+\min_{\mathbf{W},\mathbf{B}}\ \sum_i\Bigl\lVert\mathbf{x}_i-\sum_{a=1}^{A}w_{ia}\mathbf{z}_a\Bigr\rVert^2
+\quad\text{s.t.}\quad \mathbf{z}_a=\sum_j b_{ja}\mathbf{x}_j,\quad
+w_{ia},b_{ja}\ge0,\quad \textstyle\sum_a w_{ia}=\sum_j b_{ja}=1 .
+\label{eq:aa}
+\end{equation}
+Two constraints carry the meaning. Each corner $\mathbf{z}_a$ is itself a convex combination of \emph{real
+patients} ($b_{\cdot a}$ on the simplex), so the corners sit on the \textbf{convex hull} of the cloud --- they
+are genuine extremes anchored in data, not abstract directions. And each patient's weights $w_i$ live on the
+\textbf{simplex} ($w_{ia}\ge0$, summing to one): with $A{=}4$ corners every patient is a point inside a
+tetrahedron and $w_i$ are its barycentric coordinates --- literally how much of each corner the patient is.
+This is the opposite of PCA, which threads its axes through the \emph{centre} of the cloud; archetypal analysis
+reaches for the \emph{poles} (Figure~\ref{fig:simplex}). Four corners are the stable resolution
+(\S\ref{sub:archrobust} confirms it: cross-seed Tucker $0.997$ at $A{=}4$, while $A{=}5$ fails to reproduce),
+and because the fit runs over the M1 posterior \emph{draws}, each $w_i$ carries its own uncertainty --- the
+blend has error bars too.
+
+\begin{figure}[h]\centering
+\archetypesimplexblend
+\caption{The archetype simplex. The four extreme phenotypes --- \textbf{A0} biological (cardiometabolic $+$
+inflammatory $+$ substance), \textbf{A1} low-burden, \textbf{A2} severe-but-low-biology, \textbf{A3}
+symptom-driven --- are the corners; every patient sits \emph{inside} as a convex blend whose weights sum to one
+(a worked example at the foot). The load-bearing dissociation: \textbf{A0} and \textbf{A2} are \emph{separate}
+corners at essentially the \emph{same} severity but opposite biology --- biology$\perp$severity, rendered as a
+direction you can point to.}
+\label{fig:simplex}
+\end{figure}
+
+\begin{keyresult}[What the simplex buys you that a partition cannot]
+The corners make the transdiagnostic dissociation \emph{pointable} (A0 vs.\ A2, \S\ref{sub:reading}); they
+recover \textbf{biology} --- which has no density gap and so survives no hard split --- as a first-class
+\emph{extreme} (\S\ref{sub:tessellation}); they compress a nine-vector into a handful of weights a clinician can
+say out loud; they are the representation the prognosis chapter finds \emph{predictive} of two-year functioning
+beyond DSM-5 and severity (\emph{operative $K=$ none}, \S\ref{sec:prognosis}); and they are a \emph{fixed frame}
+any new patient or follow-up visit projects onto by simplex least-squares, with no refitting.
+\end{keyresult}
+
 \subsection{Reading the map (I): four corners and their representative patients}
 \label{sub:reading}
-A continuum has no clusters, but it still has a \emph{shape}, and the shape has \textbf{corners} --- extreme
-phenotypes that the cloud stretches toward. Archetypal analysis recovers them: it finds a small set of extreme
-profiles such that every patient is a convex \emph{blend} of them. Four corners are the stable resolution
-(a robustness battery, below, confirms it: cross-seed Tucker $0.997$, while $A{=}5$ fails to reproduce). Because a pure corner is an extreme almost
+Having established the corners as the vertices of the simplex (\S\ref{sub:simplex}), we now \emph{name} them.
+Because a pure corner is an extreme almost
 nobody sits exactly at, we report each corner three ways: its \textbf{pole} (the defining extreme), its
 \textbf{typical representative} (the centroid of patients who lean toward it --- what a representative patient
 looks like), and a real \textbf{exemplar} patient (the medoid). Plain clinical labels make them legible
@@ -195,9 +235,9 @@ distance so that an axis a patient is poorly measured on does not drive who coun
 (Figure~\ref{fig:similarity}).
 
 \begin{methodsbox}[An uncertainty-aware notion of ``similar'']
-Each patient is a Gaussian on the map, $\Normal(\mu_i,\,\sigma_i^2)$. We score similarity by
-$d^2(i,j)=\sum_d (\mu_{i,d}-\mu_{j,d})^2 / (\sigma_{i,d}^2+\sigma_{j,d}^2)$ --- a per-dimension standardized
-distance under the combined measurement uncertainty. A dimension either patient is uncertain about contributes
+Each patient is a Gaussian on the map, $\Normal(\mu_i,\,\sigma_i^2)$. We score similarity by the
+uncertainty-weighted distance introduced with the coordinate object (Eq.~\eqref{eq:uwdist}) --- a per-dimension
+standardized distance under the combined measurement uncertainty. A dimension either patient is uncertain about contributes
 little, so an ill-measured patient gets a \emph{fuzzy} (less distinct) neighbourhood, exactly as it should. We
 compute it two ways: \emph{similar overall} (all nine axes, severity included) and \emph{similar in kind} (the
 eight specifics with severity removed --- ``same presentation, regardless of how ill'').
@@ -285,6 +325,13 @@ percent of patients sit on a hard boundary; the archetype simplex is softer stil
 corner). The softness of the continuum is a reported quantity, never hidden behind a hard label.}
 \label{fig:confidence}
 \end{figure}
+
+Step back from the battery and one sentence holds the chapter together. The continuous coordinates say
+precisely \emph{where} each patient is, with honest error bars (\S\ref{sub:coords}); the simplex says \emph{what
+blend} of four clinically meaningful extremes that position is (\S\ref{sub:simplex}) --- and because biology is
+a density-gapless extreme, the simplex is the only view that keeps biology a \textbf{first-class, forecastable
+axis} rather than dissolving it into a symptom-driven partition. That dissociation is what a clinician's global
+impression cannot see, and it is precisely why M2 ships a coordinate system with a reading guide, not a typology.
 
 \begin{openbox}[What M2 establishes --- and what it defers]
 M2 converts the map into a usable, continuum-honest object: a \textbf{validated transdiagnostic coordinate

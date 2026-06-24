@@ -162,8 +162,9 @@ mixed-model PPC (§8) → mania/substance invariance (§8).
 
 **What the map is for.** M1 deliberately stops at *measurement*: it converts three diagnostic cohorts into a
 shared, validated coordinate system without ever using diagnosis as a modelling feature (diagnosis is
-covariate/validation only). The product is the substrate the later milestones act on — **M2 will discover
-validated strata in this 9-dimensional space**, then M3–M5 add temporal coherence, prognosis, and treatment.
+covariate/validation only). The product is the substrate the later milestones act on — **M2 validates the continuum
+(continuous coordinates + a stable A=4 archetype simplex) in this 9-dimensional space**, then M3–M5 add
+temporal coherence, prognosis, and treatment.
 
 **Why biology⊥G is the most consequential finding.** If biological burden tracked overall severity, it would
 add little beyond a clinician's global impression. The data say the opposite: metabolic and inflammatory load
@@ -206,8 +207,9 @@ what survived adversarial checking, not what was assumed.
 
 ## 7. Future work
 
-- **M2 — validated strata** on these 9-dimensional coordinates (with uncertainty propagated from §7).
+- **M2 — the validated continuum** (continuous coordinates + a stable A=4 archetype simplex; no privileged K)
+  on these 9-dimensional coordinates (with uncertainty propagated from §7).
 - Fold the small follow-ons as M2-prep: full-N non-Gaussian scoring; mania/substance bootstrap + correlated-G;
   a hurdle likelihood for `isf09a` if needed.
-- **M3 — temporal coherence** (V1–V4): do the dimensions and strata persist longitudinally?
-- **M4 / M5 — prognosis and treatment** decision models on the validated strata.
+- **M3 — temporal coherence** (V1–V4): do the coordinates and archetypes persist longitudinally?
+- **M4 / M5 — prognosis and treatment** decision models on the continuous map + archetypes.
