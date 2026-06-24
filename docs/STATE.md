@@ -231,7 +231,14 @@ IPW + reliability + permutation (p=0.001), weakens dropping BP. The **archetype 
 2-year functional remission **14%→60%** across the 8 archetypes, transdiagnostic. The map's value is
 **group-level stratification + continuous functional forecasting**, not a large individual-binary boost
 (+0.017 AUC). Honest limits: scale trajectories not events; internal validity; 2-year horizon.
-Hand-off `results/face/m4/{prognosis_summary.csv, prognosis_patient_risk.parquet}`. **PI sign-off pending.**
+Hand-off `results/face/m4/{prognosis_summary.csv, prognosis_patient_risk.parquet}`.
+**Representation benchmark** (raw-vs-map; [`M4_REPRESENTATION_BENCHMARK.md`](M4_REPRESENTATION_BENCHMARK.md),
+engine `src/face/prognosis/repbench/`): against the 143 raw indicators under a matched XGBoost, the 9-dim copula
+map is **sufficient for deterioration** (AUC tie) and **near-sufficient for recovery** (raw +0.04 AUC) — the
+residual is **within-factor compression** (97% of raw's recovery signal lives inside the 9 factors), not a
+missing axis; honest uncertainty (EIV-GLM) adds a little, no small-N efficiency edge, the map transports as
+well/better than raw where it is sufficient. *Structurally faithful summary, parsimony for a sliver of
+resolution.* **PI sign-off pending.**
 
 ## M5 — treatment (COMPLETE 2026-06-11, pending PI sign-off)
 

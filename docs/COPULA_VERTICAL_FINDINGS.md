@@ -91,6 +91,12 @@ internal re-run — the copula vertical engines already embody the continuum obj
   *(Figure panel C.)*
 - **Robust**: archetype signal survives IPW (+59), dropping DR or SZ (+56/+59); permutation null vanishes;
   weakens dropping BP — **course-dependent** (BP/DR-driven).
+- **A sufficient representation** (raw-vs-map benchmark, [`M4_REPRESENTATION_BENCHMARK.md`](M4_REPRESENTATION_BENCHMARK.md)):
+  against the 143 raw indicators under a matched XGBoost, the 9-dim map is **sufficient for deterioration** (AUC
+  tie) and **near-sufficient for recovery** (raw +0.04 AUC) — and that residual is **within-factor compression**
+  (97% of raw's recovery signal lives inside the 9 factors), not a missing axis; honest uncertainty adds a little,
+  the map transports as well/better than raw where it is sufficient. *Structurally faithful, parsimony for a
+  sliver of resolution.*
 
 ## The chain — the load-bearing achievement
 
