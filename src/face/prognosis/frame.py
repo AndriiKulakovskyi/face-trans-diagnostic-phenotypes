@@ -1,11 +1,10 @@
-"""The M4 analysis frame — join the fixed M3 panel (baseline coordinates + measurement error) to the
-outcomes re-administered at follow-up, plus the reference covariates and the M3 attrition weights.
-
-Stage 40 (inventory) uses only the outcome registry (`load_outcome_config`); the full frame
-assembler (`build_analysis_frame`, `predictor_draw_tensor`) is added at stage 41. Outcomes are read
-on the **native clinical scale** (`data/processed/baseline_v{0,1,2}.parquet`, NaN = missing) — never
-standardized, never imputed; a cohort that does not collect an outcome stays NaN. Methods:
-docs/PROGNOSIS_MODEL.md.
+"""M4 outcome registry + endpoints — the outcome config (`load_outcome_config`), native-scale outcome
+extraction (`extract_outcomes`), and the derived remission / recovery / deterioration endpoints
+(`derive_endpoints`). Consumed by the copula OOP M4 (`prognosis_model_oop.py`), which assembles its own
+analysis frame from the `strata_oop` hand-off. Outcomes are read on the **native clinical scale**
+(`data/processed/baseline_v{0,1,2}.parquet`, NaN = missing) — never standardized, never imputed; a cohort
+that does not collect an outcome stays NaN. (The native-panel assembler `build_analysis_frame` /
+`predictor_draw_tensor` was removed with the native M4 pipeline, 2026-06-24.) Methods: docs/PROGNOSIS_MODEL.md.
 """
 from __future__ import annotations
 
@@ -17,12 +16,8 @@ import numpy as np
 import pandas as pd
 import yaml
 
-from face.temporal import CANON
-
 _REPO = Path(__file__).resolve().parents[3]
-_RESULTS = _REPO / "results" / "face"
 _PROC = _REPO / "data" / "processed"
-_COORD_METRICS = ("mean", "sd", "hdi_lo", "hdi_hi", "n_obs", "reliability")
 
 # Outcome-modeling likelihoods M4 supports (the GLM head, not the M1 indicator family). CGI-S is a
 # 1-7 scale modeled gaussian (as M1 treats it) with an ordinal robustness variant at stage 43.
@@ -183,78 +178,4 @@ def extract_outcomes(specs, *, visits=("V0", "V1", "V2"), proc_dir: str | Path =
     res = pd.concat(cols, axis=1)
     res.index = res.index.set_names(["cohort", "patient_id"])
     return res
-
-
-def _align_draws(draws, uid_arr, vis_arr, dims, frame_uids, axes, *, visit: str):
-    """Align a [S, M, D] panel-draw tensor to `frame_uids` order at one visit, selecting `axes`.
-    Returns ([S, N, len(axes)] float32, list-of-unaligned-uids). Pure — no file IO."""
-    uid_arr = np.asarray(uid_arr).astype(str)
-    vis_arr = np.asarray(vis_arr).astype(str)
-    dims = list(np.asarray(dims).astype(str))
-    sel = np.where(vis_arr == visit)[0]
-    pos = {uid_arr[i]: i for i in sel}                      # patient_uid -> row in the draw tensor
-    cols = [dims.index(a) for a in axes]
-    S = draws.shape[0]
-    fuids = [str(u) for u in frame_uids]
-    out = np.full((S, len(fuids), len(cols)), np.nan, dtype=np.float32)
-    missing = []
-    for j, u in enumerate(fuids):
-        r = pos.get(u)
-        if r is None:
-            missing.append(u)
-        else:
-            out[:, j, :] = draws[:, r][:, cols]
-    return out, missing
-
-
-def predictor_draw_tensor(frame: pd.DataFrame, axes=CANON, *, visit: str = "V0",
-                          results_dir: str | Path = _RESULTS):
-    """Slice `m3/panel_draws.npz` to the frame's patients at `visit`, in frame row-order, for `axes`.
-    Returns ([S, N, len(axes)] float32, missing_uids). The errors-in-variables carrier for stage 43."""
-    z = np.load(Path(results_dir) / "m3" / "panel_draws.npz", allow_pickle=True)
-    return _align_draws(z["draws"], z["patient_uid"], z["visit"], z["dims"],
-                        frame["patient_uid"].to_numpy(), list(axes), visit=visit)
-
-
-def build_analysis_frame(specs, *, predictor_visit: str = "V0", outcome_visits=("V0", "V1", "V2"),
-                         horizon: str = "V2", results_dir: str | Path = _RESULTS,
-                         proc_dir: str | Path = _PROC) -> pd.DataFrame:
-    """Assemble the one-row-per-patient M4 analysis frame on the V0 roster: baseline coordinates +
-    per-patient SD (the EIV predictors), the three map representations (archetypes + tessellation),
-    reference covariates (age/sex/education/site/arm/cohort), the native baseline & horizon outcomes
-    (+ derived remission/response), and the M3 IPW weights. Nothing is imputed."""
-    results_dir = Path(results_dir)
-    panel = pd.read_parquet(results_dir / "patient_panel.parquet")
-    base = panel[panel.visit == predictor_visit].set_index(["cohort", "patient_id"])
-    coord_cols = [f"{ax}__{m}" for ax in CANON for m in _COORD_METRICS if f"{ax}__{m}" in base.columns]
-    keep = ["patient_uid", "arm", "n_visits", "last_visit"] + coord_cols
-    frame = base[[c for c in keep if c in base.columns]].copy()
-
-    # three map representations (archetypes + tessellation), reused as-is from M2
-    strata = pd.read_parquet(results_dir / "patient_strata.parquet")
-    if not isinstance(strata.index, pd.MultiIndex):
-        strata = strata.set_index(["cohort", "patient_id"])
-    rep_cols = [c for c in strata.columns if c.startswith(("arch_", "tess_"))]
-    frame = frame.join(strata[rep_cols], how="left")
-
-    # reference covariates + arm from the M2 validation table (single source)
-    vt = pd.read_parquet(results_dir / "m2" / "validation_table.parquet").set_index(["cohort", "patient_id"])
-    for c in ("age", "sex", "education_years", "siteid_city"):
-        if c in vt.columns:
-            frame[c] = vt[c].reindex(frame.index)
-    if "arm" in vt.columns:
-        frame["arm"] = frame["arm"].where(frame["arm"].notna(), vt["arm"].reindex(frame.index))
-
-    # native-scale outcomes (reindexed to the V0 roster) + derived binary endpoints
-    outc = extract_outcomes(specs, visits=outcome_visits, proc_dir=proc_dir)
-    frame = frame.join(outc.reindex(frame.index), how="left")
-    frame = derive_endpoints(frame, specs, horizon=horizon)
-
-    # M3 attrition weights
-    ipw = pd.read_parquet(results_dir / "m3" / "ipw_weights.parquet").set_index(["cohort", "patient_id"])
-    for c in ("p_retained_V1", "w_retained_V1", "p_retained_V2", "w_retained_V2"):
-        if c in ipw.columns:
-            frame[c] = ipw[c].reindex(frame.index)
-
-    return frame.reset_index()
 
