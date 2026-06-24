@@ -33,7 +33,7 @@ from face.prognosis.glm import fit_glm
 from face.prognosis.reference import arm_block, coord_eiv_block, foundation_design, site_index
 from face.treatment.endpoints import build_endpoints
 from face.treatment.medications import CLASSES, build_treatment_exposures
-from face.treatment.moderation import e_value
+from face.treatment.moderation import e_value, mde, sd_from_eti
 from face.treatment.propensity import (
     QUESTIONS,
     confounder_matrix,
@@ -49,7 +49,7 @@ PROGNOSIS_OOP = REPO / "results" / "face" / "prognosis_oop"     # the copula "M4
 RESULTS = REPO / "results" / "face" / "treatment_oop"
 FIGURES = REPO / "docs" / "figures" / "treatment_oop"
 DATA = REPO / "data"
-MODEL_VERSION = "treatment_oop_2026_06_22_v1"
+MODEL_VERSION = "treatment_oop_2026_06_24_v2"   # bounds-and-defends re-scope: MDE + IPW confounder + AUC heterogeneity
 SEV = "overall_severity__mean"
 CGI_BASELINE = "cgi_s__V0"
 MODES = ("active_comparator", "on_off")
@@ -127,6 +127,17 @@ def _safe_delta_elpd(fit0, fit1) -> tuple[float, float]:
         return float("nan"), float("nan")
 
 
+def _wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """Wilson score interval for a binomial rate k/n (the atlas CIs; stable at the cell extremes)."""
+    if n == 0:
+        return (float("nan"), float("nan"))
+    p = k / n
+    d = 1 + z**2 / n
+    c = (p + z**2 / (2 * n)) / d
+    h = z * np.sqrt(p * (1 - p) / n + z**2 / (4 * n**2)) / d
+    return (c - h, c + h)
+
+
 def _verdict(diag: dict, smd_after: float) -> str:
     """The 55 overlap gate: estimable / channeled / non-estimable."""
     if min(diag["n_treated"], diag["n_control"]) < 30:
@@ -174,6 +185,7 @@ class TreatmentConfig:
         return [TreatmentStage("exposures", "exposures"), TreatmentStage("frame", "frame"),
                 TreatmentStage("propensity", "propensity"), TreatmentStage("moderation", "moderation"),
                 TreatmentStage("confounder", "confounder"), TreatmentStage("tolerability", "tolerability"),
+                TreatmentStage("heterogeneity", "heterogeneity"), TreatmentStage("atlas", "atlas"),
                 TreatmentStage("consolidate", "consolidate")]
 
 
@@ -315,20 +327,23 @@ class ModerationModel:
         c0 = fit0["coef"].set_index("term")
         ate = float(c0.loc[f"beta[{treat_idx}]", "mean"])
         ate_lo, ate_hi = float(c0.loc[f"beta[{treat_idx}]", "eti_lo"]), float(c0.loc[f"beta[{treat_idx}]", "eti_hi"])
+        ate_se = float(c0.loc[f"beta[{treat_idx}]", "sd"])                     # for the MDE / power guard
         d = ate if family == "gaussian" else ate * LOGIT_TO_D
         c1 = fit1["coef"].set_index("term")
-        inter = {ax: (float(c1.loc[t, "mean"]), float(c1.loc[t, "eti_lo"]), float(c1.loc[t, "eti_hi"]))
-                 for ax, t in zip(axes, int_terms, strict=False)}
-        any_mod = any((lo > 0 or hi < 0) for _, lo, hi in inter.values())
+        inter = {ax: (float(c1.loc[t, "mean"]), float(c1.loc[t, "eti_lo"]), float(c1.loc[t, "eti_hi"]),
+                      float(c1.loc[t, "sd"])) for ax, t in zip(axes, int_terms, strict=False)}
+        any_mod = any((lo > 0 or hi < 0) for _, lo, hi, _ in inter.values())
         return {"question": q, "mode": mode, "outcome": oname, "representation": rep, "n": int(n),
                 "ate": round(ate, 3), "ate_lo": round(ate_lo, 3), "ate_hi": round(ate_hi, 3),
-                "ate_excludes0": bool(ate_lo > 0 or ate_hi < 0), "e_value": round(e_value(d), 2),
+                "ate_se": round(ate_se, 4), "ate_excludes0": bool(ate_lo > 0 or ate_hi < 0),
+                "e_value": round(e_value(d), 2),
                 "moderation_d_elpd": round(d_elpd, 2) if np.isfinite(d_elpd) else np.nan,
                 "moderation_se": round(se_elpd, 2) if np.isfinite(se_elpd) else np.nan,
                 "moderation_any_axis": bool(any_mod),
                 "axes": ";".join(axes),
                 "int_means": ";".join(f"{inter[a][0]:+.3f}" for a in axes),
-                "int_his": ";".join(f"[{inter[a][1]:+.3f},{inter[a][2]:+.3f}]" for a in axes)}
+                "int_his": ";".join(f"[{inter[a][1]:+.3f},{inter[a][2]:+.3f}]" for a in axes),
+                "int_ses": ";".join(f"{inter[a][3]:.4f}" for a in axes)}
 
     def run(self, frame: pd.DataFrame, estimable: list[tuple[str, str]], prop_dir: Path) -> pd.DataFrame:
         fit_kw = self.config.fit_kw()
@@ -362,7 +377,51 @@ class ConfounderSensitivity:
     def __init__(self, config: TreatmentConfig | None = None):
         self.config = config or TreatmentConfig()
 
+    def _fit_rows(self, sub: pd.DataFrame, rep: str, weighting: str, w, fit_kw) -> list[dict]:
+        """One confounder-survival pass on `sub` (a rep × weighting cell): re-fit the copula-M4 functioning
+        prognosis with vs without the harmonized drug-class exposures and read each carrier's β / HDI /
+        attenuation. `w` is None (unweighted) or the renormalized M3 attrition IPW (weighted-likelihood fit;
+        only the coefficient HDIs are read, never a weighted LOO)."""
+        y = sub["egf__V2"].to_numpy(float); y = (y - y.mean()) / (y.std() or 1.0)
+        found, _ = foundation_design(sub, SPEC_EGF, severity_col=SEV, horizon=self.config.horizon)
+        arm, _ = arm_block(sub)
+        grp, ng = site_index(sub)
+        treat = sub[TREAT_COLS].to_numpy(float)
+        block = _map_block(sub, rep)
+        gbase = dict(family="gaussian", group=grp, n_groups=ng, weights=w, **fit_kw)
+        if block[0] == "eiv":                                                # durable: the carrier is beta_eiv
+            _, ob, sd, axes = block
+            eb = dict(eiv_obs=ob, eiv_sd=sd)
+            fit_no = fit_glm(y, np.column_stack([found, arm]), **eb, **gbase)
+            fit_tx = fit_glm(y, np.column_stack([found, arm, treat]), **eb, **gbase)
+            terms = {a: f"beta_eiv[{i}]" for i, a in enumerate(axes)}
+        else:                                                                # archetypes: carrier is fixed beta
+            _, mat, axes = block
+            base_no, base_tx = np.column_stack([found, arm, mat]), np.column_stack([found, arm, mat, treat])
+            fit_no = fit_glm(y, base_no, **gbase)
+            fit_tx = fit_glm(y, base_tx, **gbase)
+            start = found.shape[1] + arm.shape[1]
+            terms = {a: f"beta[{start + i}]" for i, a in enumerate(axes)}
+
+        def betas(fit, terms=terms):
+            c = fit["coef"].set_index("term")
+            return {a: (float(c.loc[t, "mean"]), float(c.loc[t, "eti_lo"]), float(c.loc[t, "eti_hi"]))
+                    for a, t in terms.items()}
+        b_no, b_tx = betas(fit_no), betas(fit_tx)
+        return [{"representation": rep, "weighting": weighting, "axis": a, "n": int(len(sub)),
+                 "beta_no_treat": round(b_no[a][0], 3),
+                 "hdi_no": f"[{b_no[a][1]:+.3f},{b_no[a][2]:+.3f}]",
+                 "beta_with_treat": round(b_tx[a][0], 3),
+                 "hdi_with": f"[{b_tx[a][1]:+.3f},{b_tx[a][2]:+.3f}]",
+                 "survives": bool(b_tx[a][1] > 0 or b_tx[a][2] < 0),
+                 "attenuation_pct": round(100 * (1 - abs(b_tx[a][0]) / (abs(b_no[a][0]) or 1e-9)), 1)}
+                for a in axes]
+
     def run(self, merged: pd.DataFrame) -> pd.DataFrame:
+        """Confounder-survival, reported both **unweighted** and under the M3 strata-independent attrition
+        IPW (`w_retained_V2`, the V0→V2 completer weight already on the frame). Exposures are baseline/
+        lifetime (BP) or current (SZ/DR), V0 only — this adjusts for baseline drug-class exposure, not a
+        marginal structural model over time-varying treatment (stated as an honest caveat)."""
         fit_kw = self.config.fit_kw()
         sub0 = merged[merged["on_antipsychotic"].notna()].copy()             # treatment-data subset
         for c in TREAT_COLS:
@@ -372,43 +431,17 @@ class ConfounderSensitivity:
             axes_cols = ([f"{a}__mean" for a in DURABLE] + [f"{a}__sd" for a in DURABLE] if rep == "durable"
                          else arch_cols(sub0))
             need = ["egf__V2", "egf__V0", SEV, "age", "sex", "siteid_city", "arm", *axes_cols]
-            sub = sub0.dropna(subset=[c for c in need if c in sub0.columns]).copy()
-            if len(sub) < 60:
+            base = sub0.dropna(subset=[c for c in need if c in sub0.columns]).copy()
+            if len(base) < 60:
                 continue
-            y = sub["egf__V2"].to_numpy(float); y = (y - y.mean()) / (y.std() or 1.0)
-            found, _ = foundation_design(sub, SPEC_EGF, severity_col=SEV, horizon=self.config.horizon)
-            arm, _ = arm_block(sub)
-            grp, ng = site_index(sub)
-            treat = sub[TREAT_COLS].to_numpy(float)
-            block = _map_block(sub, rep)
-            gbase = dict(family="gaussian", group=grp, n_groups=ng, **fit_kw)
-            if block[0] == "eiv":                                            # durable: the carrier is beta_eiv
-                _, ob, sd, axes = block
-                eb = dict(eiv_obs=ob, eiv_sd=sd)
-                fit_no = fit_glm(y, np.column_stack([found, arm]), **eb, **gbase)
-                fit_tx = fit_glm(y, np.column_stack([found, arm, treat]), **eb, **gbase)
-                terms = {a: f"beta_eiv[{i}]" for i, a in enumerate(axes)}
-            else:                                                            # archetypes: carrier is fixed beta
-                _, mat, axes = block
-                base_no, base_tx = np.column_stack([found, arm, mat]), np.column_stack([found, arm, mat, treat])
-                fit_no = fit_glm(y, base_no, **gbase)
-                fit_tx = fit_glm(y, base_tx, **gbase)
-                start = found.shape[1] + arm.shape[1]
-                terms = {a: f"beta[{start + i}]" for i, a in enumerate(axes)}
-
-            def betas(fit, terms=terms):
-                c = fit["coef"].set_index("term")
-                return {a: (float(c.loc[t, "mean"]), float(c.loc[t, "eti_lo"]), float(c.loc[t, "eti_hi"]))
-                        for a, t in terms.items()}
-            b_no, b_tx = betas(fit_no), betas(fit_tx)
-            for a in axes:
-                rows.append({"representation": rep, "axis": a, "n": int(len(sub)),
-                             "beta_no_treat": round(b_no[a][0], 3),
-                             "hdi_no": f"[{b_no[a][1]:+.3f},{b_no[a][2]:+.3f}]",
-                             "beta_with_treat": round(b_tx[a][0], 3),
-                             "hdi_with": f"[{b_tx[a][1]:+.3f},{b_tx[a][2]:+.3f}]",
-                             "survives": bool(b_tx[a][1] > 0 or b_tx[a][2] < 0),
-                             "attenuation_pct": round(100 * (1 - abs(b_tx[a][0]) / (abs(b_no[a][0]) or 1e-9)), 1)})
+            rows += self._fit_rows(base, rep, "none", None, fit_kw)          # native parity (unweighted)
+            if "w_retained_V2" in base.columns:                             # + M3 attrition IPW
+                ww = base["w_retained_V2"].fillna(0.0).to_numpy(float)
+                keep = ww > 0                                                # M3 convention: w=0 → not retained
+                sub_ipw = base.loc[keep].copy()
+                if len(sub_ipw) >= 60:
+                    w = ww[keep]; w = w / w.mean()
+                    rows += self._fit_rows(sub_ipw, rep, "ipw_v2", w, fit_kw)
         return pd.DataFrame(rows)
 
 
@@ -454,6 +487,160 @@ class Tolerability:
                              "d_elpd_vs_foundation": round(d_elpd, 2) if np.isfinite(d_elpd) else np.nan,
                              "se_d_elpd": round(se_elpd, 2) if np.isfinite(se_elpd) else np.nan})
         return pd.DataFrame(rows)
+
+
+# ----------------------------------------------------------------------------------------------------------
+# Heterogeneity — degeneracy-free held-out ΔAUC for the treatment-response endpoints (the descriptive pillar)
+# ----------------------------------------------------------------------------------------------------------
+class Heterogeneity:
+    """The clinical-currency, **degeneracy-free** complement to `Tolerability`'s ΔELPD: does +map improve
+    held-out *discrimination* (5-fold CV AUC) of the treatment-response endpoints beyond age + sex +
+    baseline CGI-S + DSM-5 arm? Frequentist logistic CV (`prognosis.clinical_value`) — no MCMC, no
+    IPTW-LOO degeneracy — so it answers "is the descriptive signal real, in AUC?" without the weighted-LOO
+    caveat. Reports both representations (archetypes carry it; the durable trio is flat)."""
+
+    ENDPOINTS = ["ep_resistance", "ep_response", "ep_side_effects"]
+
+    def __init__(self, config: TreatmentConfig | None = None):
+        self.config = config or TreatmentConfig()
+
+    def run(self, frame: pd.DataFrame) -> pd.DataFrame:
+        from face.prognosis.clinical_value import auc, cv_predict, paired_auc_delta
+        rows = []
+        for ep in self.ENDPOINTS:
+            if ep not in frame.columns:
+                continue
+            for rep in self.config.moderation_reps:
+                axes_cols = ([f"{a}__mean" for a in DURABLE] if rep == "durable" else arch_cols(frame))
+                need = [ep, CGI_BASELINE, "age", "sex", "arm", *axes_cols]
+                sub = frame.dropna(subset=[c for c in need if c in frame.columns]).copy()
+                if len(sub) < 80 or sub[ep].nunique() < 2:
+                    continue
+                y = sub[ep].to_numpy("int64")
+                found = np.column_stack([
+                    (sub["age"] - sub["age"].mean()).to_numpy() / (sub["age"].std() or 1),
+                    sub["sex"].to_numpy("float64"),
+                    (sub[CGI_BASELINE] - sub[CGI_BASELINE].mean()).to_numpy() / (sub[CGI_BASELINE].std() or 1)])
+                arm, _ = arm_block(sub)
+                if rep == "durable":                                         # durable means, z-scored fixed
+                    mp = np.column_stack([(sub[f"{a}__mean"] - sub[f"{a}__mean"].mean()).to_numpy()
+                                          / (sub[f"{a}__mean"].std() or 1) for a in DURABLE])
+                else:                                                        # archetype simplex (drop-one)
+                    mp, _ = _arch_fixed_block(sub)
+                Xf = np.column_stack([found, arm])
+                Xm = np.column_stack([Xf, mp])
+                pf = cv_predict(Xf, y, seed=self.config.seed)
+                pm = cv_predict(Xm, y, seed=self.config.seed)
+                d_auc, lo, hi, pgt = paired_auc_delta(y, pf, pm, seed=self.config.seed)
+                rows.append({"endpoint": ep, "representation": rep, "n": int(len(sub)),
+                             "prevalence": round(float(y.mean()), 3),
+                             "auc_foundation": round(auc(y, pf), 3), "auc_plus_map": round(auc(y, pm), 3),
+                             "delta_auc": round(d_auc, 3), "delta_auc_lo": round(lo, 3),
+                             "delta_auc_hi": round(hi, 3), "delta_auc_p_gt0": round(pgt, 3)})
+        return pd.DataFrame(rows)
+
+
+# ----------------------------------------------------------------------------------------------------------
+# Treatment-course atlas — the clinician-legible monitoring artifact + the proof gates (the M5 co-headline)
+# ----------------------------------------------------------------------------------------------------------
+class TreatmentAtlas:
+    """Per A=4 archetype corner, the 2-year rate (Wilson CI) of each treatment-response endpoint
+    (resistance / response / side-effects), pooled and within cohort — the monitoring artifact (the M4-atlas
+    analogue). Plus the gates that make it *proven* rather than chance: **specificity** (the corner adds beyond
+    baseline severity + substance comorbidity + demographics; and how much substance alone carries),
+    **de-confounding** (composition share of the A0–A1 gradient + the corner×cohort interaction), and a
+    held-out **ΔAUC permutation null**. Descriptive (monitoring), never prescriptive."""
+
+    ENDPOINTS = ["ep_resistance", "ep_response", "ep_side_effects"]
+    CORNER = {0: "A0 biological", 1: "A1 low-burden", 2: "A2 severe·low-bio", 3: "A3 symptom"}
+
+    def __init__(self, config: TreatmentConfig | None = None):
+        self.config = config or TreatmentConfig()
+
+    def _delta_auc_perm(self, d: pd.DataFrame, n_perm: int = 200) -> tuple[float, float]:
+        """Real held-out ΔAUC (foundation = age+sex+baseline-CGI-S+arm vs +archetypes) and its permutation-null
+        p-value (fraction of label-shuffled ΔAUCs ≥ real). The honest discrimination gate."""
+        from face.prognosis.clinical_value import auc, cv_predict
+        cols = arch_cols(d)
+        sub = d.dropna(subset=["cgi_s__V0", "age", "sex", "arm", *cols]).copy()
+        if len(sub) < 80 or sub["y"].nunique() < 2:
+            return float("nan"), float("nan")
+        y = sub["y"].to_numpy("int64")
+        found = np.column_stack([
+            (sub["age"] - sub["age"].mean()).to_numpy() / (sub["age"].std() or 1),
+            sub["sex"].to_numpy("float64"),
+            (sub["cgi_s__V0"] - sub["cgi_s__V0"].mean()).to_numpy() / (sub["cgi_s__V0"].std() or 1)])
+        arm, _ = arm_block(sub)
+        mp, _ = _arch_fixed_block(sub)
+        Xf, Xm = np.column_stack([found, arm]), np.column_stack([found, arm, mp])
+        real = auc(y, cv_predict(Xm, y, seed=self.config.seed)) - auc(y, cv_predict(Xf, y, seed=self.config.seed))
+        rng = np.random.default_rng(self.config.seed)
+        nd = np.empty(n_perm)
+        for i in range(n_perm):
+            yp = rng.permutation(y)
+            nd[i] = (auc(yp, cv_predict(Xm, yp, seed=self.config.seed))
+                     - auc(yp, cv_predict(Xf, yp, seed=self.config.seed)))
+        return float(real), float((nd >= real).mean())
+
+    def run(self, frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+        import statsmodels.formula.api as smf
+        from scipy.stats import chi2
+
+        fr = frame.copy()
+        fr["corner_id"] = fr["arch_dominant"].astype("int64")
+        atlas_rows, gate_rows = [], []
+        for ep in self.ENDPOINTS:
+            if ep not in fr.columns:
+                continue
+            d = fr.dropna(subset=[ep]).copy(); d["y"] = d[ep].astype("int64")
+            present = [c for c in ("bp", "sz", "dr") if (d["cohort"] == c).sum() >= 30]
+            for a in range(4):                                               # per-corner rates + Wilson CIs
+                for coh in ["pooled", *present]:
+                    sub = d[d.corner_id == a] if coh == "pooled" else d[(d.corner_id == a) & (d["cohort"] == coh)]
+                    n, k = len(sub), int(sub["y"].sum())
+                    lo, hi = _wilson(k, n)
+                    atlas_rows.append({"endpoint": ep, "archetype": a, "corner": self.CORNER[a], "cohort": coh,
+                                       "n": n, "n_pos": k, "rate": round(k / n, 3) if n else np.nan,
+                                       "lo": round(lo, 3) if n else np.nan, "hi": round(hi, 3) if n else np.nan})
+            # specificity gate — corner beyond baseline severity + substance + demographics (and substance alone)
+            spec_p = subst_p = float("nan")
+            dg = d.dropna(subset=["cgi_s__V0", "substance__mean", "age", "sex"]).copy()
+            for raw, z in (("cgi_s__V0", "cgi_z"), ("substance__mean", "sub_z"), ("age", "age_z")):
+                dg[z] = (dg[raw] - dg[raw].mean()) / (dg[raw].std() or 1)
+            try:
+                b = smf.logit("y ~ cgi_z + sub_z + age_z + sex", dg).fit(disp=0)
+                f_ = smf.logit("y ~ cgi_z + sub_z + age_z + sex + C(corner_id)", dg).fit(disp=0)
+                spec_p = float(chi2.sf(2 * (f_.llf - b.llf), f_.df_model - b.df_model))
+                s0 = smf.logit("y ~ cgi_z + age_z + sex", dg).fit(disp=0)
+                s1 = smf.logit("y ~ cgi_z + age_z + sex + sub_z", dg).fit(disp=0)
+                subst_p = float(chi2.sf(2 * (s1.llf - s0.llf), 1))
+            except Exception:                                                # noqa: BLE001 (degenerate cell)
+                pass
+            # de-confounding — composition share of the A0–A1 gradient + corner×cohort interaction
+            comp_share = inter_p = float("nan")
+            if len(present) >= 2:
+                dc = d[d["cohort"].isin(present)]
+                mix = dc["cohort"].value_counts(normalize=True)
+                cell = dc.groupby(["corner_id", "cohort"])["y"].mean().unstack().reindex(columns=mix.index)
+                pooled = dc.groupby("corner_id")["y"].mean()
+                std = (cell * mix).sum(1)
+                if 0 in pooled.index and 1 in pooled.index:
+                    raw = float(pooled[0] - pooled[1])
+                    comp_share = round(1 - float(std.get(0, np.nan) - std.get(1, np.nan)) / raw, 3) if raw else np.nan
+                try:
+                    ma = smf.logit("y ~ C(corner_id) + C(cohort)", dc).fit(disp=0)
+                    mi = smf.logit("y ~ C(corner_id) * C(cohort)", dc).fit(disp=0)
+                    inter_p = round(float(chi2.sf(2 * (mi.llf - ma.llf), mi.df_model - ma.df_model)), 3)
+                except Exception:                                            # noqa: BLE001
+                    pass
+            d_auc, perm_p = self._delta_auc_perm(d)                          # held-out ΔAUC permutation null
+            gate_rows.append({"endpoint": ep, "n": int(len(d)), "prevalence": round(float(d["y"].mean()), 3),
+                              "corner_beyond_sev_subst_demo_p": round(spec_p, 4) if np.isfinite(spec_p) else np.nan,
+                              "substance_alone_p": round(subst_p, 4) if np.isfinite(subst_p) else np.nan,
+                              "composition_share": comp_share, "cohort_interaction_p": inter_p,
+                              "delta_auc": round(d_auc, 3) if np.isfinite(d_auc) else np.nan,
+                              "delta_auc_perm_p": round(perm_p, 3) if np.isfinite(perm_p) else np.nan})
+        return pd.DataFrame(atlas_rows), pd.DataFrame(gate_rows)
 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -545,6 +732,30 @@ class TreatmentRunner:
                 self._manifest(out, stage, {"rows": int(len(tol))})
             return state
 
+        if stage.kind == "heterogeneity":
+            if cached:
+                state["heterogeneity"] = pd.read_csv(out / "heterogeneity.csv")
+            else:
+                het = Heterogeneity(self.config).run(self.data.load_frame())
+                het.to_csv(out / "heterogeneity.csv", index=False)
+                state["heterogeneity"] = het
+                self._manifest(out, stage, {"rows": int(len(het))})
+            return state
+
+        if stage.kind == "atlas":
+            if cached:
+                state["atlas"] = pd.read_csv(out / "treatment_course_atlas.csv")
+                state["atlas_gates"] = pd.read_csv(out / "atlas_gates.csv")
+            else:
+                atlas, gates = TreatmentAtlas(self.config).run(self.data.load_frame())
+                atlas.to_csv(out / "treatment_course_atlas.csv", index=False)
+                gates.to_csv(out / "atlas_gates.csv", index=False)
+                state["atlas"], state["atlas_gates"] = atlas, gates
+                if not self.config.smoke:
+                    TreatmentVisualizer(self.config).atlas_bars(atlas, gates)
+                self._manifest(out, stage, {"rows": int(len(atlas)), "gates": int(len(gates))})
+            return state
+
         if stage.kind == "consolidate":
             summ = TreatmentProjector(self.config).summary(state)
             summ.to_csv(out / "treatment_summary.csv", index=False)
@@ -566,6 +777,7 @@ class TreatmentRunner:
         out, state = self.config.output_dir, {}
         for stage, fn in [("propensity", "propensity_summary.csv"), ("moderation", "moderation.csv"),
                           ("confounder", "confounder.csv"), ("tolerability", "tolerability.csv"),
+                          ("heterogeneity", "heterogeneity.csv"), ("atlas", "treatment_course_atlas.csv"),
                           ("consolidate", "treatment_summary.csv")]:
             p = out / stage / fn
             if p.exists():
@@ -580,12 +792,33 @@ class TreatmentProjector:
     def __init__(self, config: TreatmentConfig | None = None):
         self.config = config or TreatmentConfig()
 
+    @staticmethod
+    def _parse_eti(token: str) -> tuple[float, float]:
+        lo, hi = token.strip().lstrip("[").rstrip("]").split(",")
+        return float(lo), float(hi)
+
+    def _mde(self, r) -> dict:
+        """MDE/power columns for a moderation row — the smallest ATE / per-axis interaction the design
+        resolves at 80% power. Exact from the posterior SD (`ate_se`/`int_ses`) when present, else from the
+        serialized 94% ETI (no refit). A small MDE ⇒ a **bounded** null; a large one ⇒ underpowered."""
+        ate_se = (float(r["ate_se"]) if "ate_se" in r and pd.notna(r.get("ate_se"))
+                  else sd_from_eti(float(r["ate_lo"]), float(r["ate_hi"])))
+        if isinstance(r.get("int_ses"), str) and r["int_ses"]:
+            ses = [float(x) for x in r["int_ses"].split(";")]
+        else:
+            ses = [sd_from_eti(*self._parse_eti(b)) for b in str(r["int_his"]).split(";")]
+        int_mdes = [mde(s) for s in ses]
+        return {"ate_mde": round(mde(ate_se), 3), "int_mde_min": round(min(int_mdes), 3),
+                "int_mde_max": round(max(int_mdes), 3)}
+
     def summary(self, state: dict) -> pd.DataFrame:
         mod = state.get("moderation")
         if mod is None or mod.empty:
             return pd.DataFrame([{"note": "no estimable moderation cells"}])
-        s = mod[["question", "mode", "outcome", "representation", "n", "ate", "e_value",
-                 "moderation_d_elpd", "moderation_se", "moderation_any_axis"]].copy()
+        keep = ["question", "mode", "outcome", "representation", "n", "ate", "e_value",
+                "moderation_d_elpd", "moderation_se", "moderation_any_axis"]
+        s = mod[keep].copy()
+        s = pd.concat([s, mod.apply(lambda r: pd.Series(self._mde(r)), axis=1)], axis=1)
 
         def _v(r):
             elpd_ok = np.isfinite(r["moderation_d_elpd"]) and np.isfinite(r["moderation_se"])
@@ -594,7 +827,10 @@ class TreatmentProjector:
                 return "moderates (held-out + HDI)"
             if r["moderation_any_axis"]:                       # interaction HDI excludes 0 but ΔELPD weak/NA
                 return "suggestive (HDI only)" if not elpd_ok else "suggestive (HDI, ΔELPD weak)"
-            return "no reliable moderation"
+            # no credible interaction — the MDE distinguishes a bounded null from an underpowered one
+            # (≤0.30 SD ⇒ the design could have resolved a small–moderate interaction and didn't)
+            bounded = np.isfinite(r.get("int_mde_max", np.nan)) and r["int_mde_max"] <= 0.30
+            return "no moderation (bounded null)" if bounded else "no moderation (underpowered)"
         s["moderation_verdict"] = s.apply(_v, axis=1)
         return s
 
@@ -622,3 +858,41 @@ class TreatmentVisualizer:
         path = self.config.figure_dir / filename
         fig.savefig(path, dpi=130, bbox_inches="tight"); plt.close(fig)
         return path
+
+    def atlas_bars(self, atlas: pd.DataFrame, gates: pd.DataFrame, filename: str = "treatment_course_atlas.png") -> Path:
+        """The treatment-course atlas figure: per-corner 2-year rate (pooled, Wilson CIs) for each endpoint —
+        the monitoring artifact. Written to the docs figure dir and (for the report) to report/figures/."""
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        eps = [("ep_resistance", "treatment resistance"), ("ep_response", "CGI response"),
+               ("ep_side_effects", "significant side-effects")]
+        corners = ["A0 biological", "A1 low-burden", "A2 severe·low-bio", "A3 symptom"]
+        colors = ["#B42318", "#1a9850", "#B7791F", "#6B4FA1"]
+        g = atlas[atlas.cohort == "pooled"]
+        gate = gates.set_index("endpoint") if gates is not None and len(gates) else None
+        fig, axes = plt.subplots(1, 3, figsize=(12.6, 4.2))
+        for ax, (ep, label) in zip(axes, eps, strict=False):
+            sub = g[g.endpoint == ep].set_index("archetype").reindex(range(4))
+            rates = sub["rate"].to_numpy()
+            yerr = np.vstack([rates - sub["lo"].to_numpy(), sub["hi"].to_numpy() - rates])
+            ax.bar(range(4), rates, color=colors, yerr=yerr, capsize=3, error_kw={"lw": 0.8})
+            ax.set_xticks(range(4)); ax.set_xticklabels([c.split()[0] for c in corners], fontsize=9)
+            ax.set_ylim(0, min(1.0, np.nanmax(sub["hi"].to_numpy()) + 0.12))
+            ax.set_title(label, fontsize=10.5, fontweight="bold")
+            if ax is axes[0]:
+                ax.set_ylabel("2-year rate")
+            if gate is not None and ep in gate.index:
+                pp = gate.loc[ep, "delta_auc_perm_p"]; sp = gate.loc[ep, "corner_beyond_sev_subst_demo_p"]
+                ax.annotate(f"beyond sev+subst p={sp:.0e}\nΔAUC perm p={pp:.2f}", (0.5, 0.97),
+                            xycoords="axes fraction", ha="center", va="top", fontsize=7.5, color="#5B6573")
+        fig.suptitle("Treatment-course atlas — the biological corner (A0) carries the difficult course "
+                     "(monitoring, not prescribing)", y=1.02, fontsize=11.5, fontweight="bold", color="#1E366B")
+        fig.tight_layout()
+        out = self.config.figure_dir / filename
+        fig.savefig(out, dpi=140, bbox_inches="tight", facecolor="white")
+        report_fig = REPO / "report" / "figures" / "m5_treatment_atlas.png"
+        if report_fig.parent.exists():
+            fig.savefig(report_fig, dpi=150, bbox_inches="tight", facecolor="white")
+        plt.close(fig)
+        return out

@@ -139,15 +139,21 @@ treatment-as-usual, it does not reliably:* **lithium-in-BP** (cleanest, 100% ove
 null**; **antipsychotic-BP** a **suggestive-but-unconfirmed** metabolic/inflammatory × functioning
 hypothesis (ATE E-value 1.79); **clozapine-SZ** is **channeled** (non-estimable). ATEs confounding-fragile
 (E 1.1–1.8). **M5 strengthens M4** — the metabolic→functioning forecast **survives** treatment adjustment
-(4.4% attenuation). The boundary is **earned, not assumed**; genuine treatment **selection** needs
-randomized/trial-arm data (a future **M5b**). Engine `src/face/treatment/` (shared kernels); native pipeline `scripts/50–57` **retired 2026-06-24**;
+(4.4% attenuation; *native — the copula-canonical carrier is the archetype A1, 4.7%, IPW-robust, see below*).
+The boundary is **earned, not assumed**; genuine treatment **selection** needs randomized/trial-arm data
+(a future **M5b**). Engine `src/face/treatment/` (shared kernels); native pipeline `scripts/50–57` **retired 2026-06-24**;
 hand-off `results/face/m5/{treatment_exposures, propensity_*, moderation, confounder}.{parquet,csv}`.
 **M5 reworked on the copula objects** (parallel OOP engine `src/face/treatment/treatment_model_oop.py`, wraps
 the kernels; driver `notebooks/run_treatment_model_oop.py`; canonical **[docs/TREATMENT_OOP_FINDINGS.md](docs/TREATMENT_OOP_FINDINGS.md)**;
 hand-off `results/face/treatment_oop/`). Moderation interacts treatment with **both** the durable trio (EIV)
-and the A=4 archetypes (fixed interaction). Earned boundary **replays**: lithium-BP null (E 1.06),
-antipsychotic-BP suggestive-unconfirmed (E 1.77≈native 1.79), clozapine non-decisive; **archetype carrier
-survives treatment adjustment** (4.7%, strengthens M4); **archetypes predict response heterogeneity**
-(resistance/response ΔELPD +20/+16). The native M5 pipeline (`scripts/50–57`) was **retired 2026-06-24** (canonical M5 = the OOP treatment engine; shared kernels in `src/face/treatment/` retained). **The full Gaussian-copula
+and the A=4 archetypes (fixed interaction). **Re-scoped 2026-06-24 as bounds-and-defends** (no randomization →
+selection is M5b): **(1) ceiling** — on observational TAU the map does not reliably moderate/select treatment:
+lithium-BP a **well-identified, MDE-bounded null** (E 1.06, interaction MDE ≈ 0.19 → could have seen an effect,
+didn't), antipsychotic-BP a confounded *average* effect (E 1.77≈native 1.79) with **no reliable moderation**
+(the two map encodings disagree on the driving axis — false-positive), clozapine-SZ non-decisive (underpowered,
+MDE ≈ 0.4–0.7); the map is *prognostic + descriptive, not prescriptive*. **(2) defends M4** — the **archetype
+carrier survives treatment adjustment** (4.7%, **IPW-robust** 3.9%; not a treatment proxy). **(3) describes**
+response heterogeneity (archetypes ΔELPD +20/+16/+10 **and** degeneracy-free ΔAUC +0.015/+0.028/+0.041,
+within-cohort de-confounded, BP/SZ). The native M5 pipeline (`scripts/50–57`) was **retired 2026-06-24** (canonical M5 = the OOP treatment engine; shared kernels in `src/face/treatment/` retained). **The full Gaussian-copula
 vertical M1→M2→M3→M4→M5 is reworked — synthesis [docs/COPULA_VERTICAL_FINDINGS.md](docs/COPULA_VERTICAL_FINDINGS.md).**
 **Open follow-ups:** FondaMental treatment-data (RCT/prescription) check for M5b; a DR-MARS harmonization fix.

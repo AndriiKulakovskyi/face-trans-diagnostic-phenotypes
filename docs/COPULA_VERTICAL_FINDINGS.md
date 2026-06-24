@@ -42,7 +42,7 @@ its noun changes (from "the strata" to "the coordinates / archetypes"):
 | **M2** | do *validated strata* exist? | is the space types or a continuum? | continuum; load-bearing = coordinates + A=4 simplex |
 | **M3** | do the *strata* persist? | do the coordinates + archetype identity persist? | yes (biology trait, symptoms state); **G5 retired** |
 | **M4** | do the *strata* predict, at which *K*? | does the continuous/archetype encoding predict; does any hard partition add value? | yes (functioning); **operative K = none** |
-| **M5** | do the *strata* moderate treatment? | does a patient's position on the map moderate response? | earned boundary — not on observational TAU |
+| **M5** | do the *strata* moderate treatment? | what does the map license — describe, predict, or prescribe? | **bounds & defends**: MDE-bounded moderation null (not prescriptive); defends M4 (carrier survives, IPW-robust); describes response heterogeneity. Selection = M5b |
 
 Two sub-goals are *dissolved* rather than answered, and that is itself a finding. **M3's G5** (a
 stratum-label-switching test vs DSM-5) is ill-posed without discrete labels — its intent (the map is a more
@@ -110,17 +110,26 @@ with uncertainty propagated and no imputation at any step. A stratification that
 would be a re-dressed CGI-S; this one separates patients who look equally ill but are biologically opposite,
 and that separation is durable and prognostically meaningful.
 
-## M5 — treatment: the earned boundary holds (full record: [TREATMENT_OOP_FINDINGS.md](TREATMENT_OOP_FINDINGS.md))
+## M5 — treatment: bounds and defends the clinical claim (full record: [TREATMENT_OOP_FINDINGS.md](TREATMENT_OOP_FINDINGS.md))
 
-Does the map *moderate* treatment response? On observational treatment-as-usual, **no — reliably not**, the
-honest boundary reproduced on the copula object: lithium-BP a **well-identified null** (overlap 0.997, E-value
-1.06); antipsychotic-BP **suggestive-but-unconfirmed** (ATE −0.23 excludes 0, **E-value 1.77 ≈ native's 1.79**,
-moderation ΔELPD weak); clozapine-SZ non-decisive. But two positive reads: the **archetype carrier survives
-treatment adjustment** (low-burden archetype, 4.7% attenuation — the functional forecast is not a treatment
-proxy; *M5 strengthens M4*), and the **archetypes predict response heterogeneity** (resistance ΔELPD +20, CGI
-response +16, side-effects +10, all archetype-driven). So the map *describes* who responds/resists, even though
-it does not *causally select* a drug — true selection needs randomized data (M5b). Figure:
-`docs/figures/treatment_oop/moderation.png`.
+This baseline cohort has **no randomization** (`arm` is a DSM-5 subtype), so treatment *selection* is out of
+reach — it is M5b. M5's standalone contribution is to **bound and defend** the vertical's clinical claim. (1)
+**The ceiling:** on observational TAU the map does **not** reliably moderate/select treatment — lithium-BP a
+**well-identified, MDE-bounded null** (overlap 0.997, E-value 1.06, interaction MDE ≈ 0.19 SD → the design
+could have seen an effect and didn't); antipsychotic-BP a confounded *average* effect (E-value 1.77) but **no
+reliable moderation** (the two map encodings disagree on the driving axis — false-positive behavior);
+clozapine-SZ non-decisive (underpowered, MDE ≈ 0.4–0.7). The map is *prognostic + descriptive, not
+prescriptive*. (2) **Defends M4:** the **archetype carrier survives treatment adjustment** (low-burden
+archetype, 4.7% attenuation, and **robust to M3 attrition IPW** — 3.9%) — the functional forecast is not a
+treatment proxy; *M5 strengthens M4*. (3) **The treatment-course atlas** (the forward-looking co-headline): the
+biological corner (A0) carries ~2× the resistance / side-effect risk of the low-burden corner (A1) — resistant
+43%→20%, side-effects 23%→11% — beyond baseline severity + substance comorbidity + demographics (LR p ≤ 3e-3),
+within-cohort (composition ≤ 6%, corner×cohort interaction NS), held-out ΔELPD +20/+16/+10. Honest currency:
+proven as **stratification for monitoring**, but individual discrimination is modest — response (ΔAUC perm
+p=0.015) and side-effects (p=0.005) clear, **resistance is the steepest gradient yet AUC-marginal (p=0.185)**,
+the same continuous→group collapse as M4. The map *describes who faces a difficult course* without *selecting* a
+drug — selection needs randomized data (**M5b**). Figures:
+`docs/figures/treatment_oop/{moderation.png, treatment_course_atlas.png}`.
 
 ## Honest tensions (the calibration)
 

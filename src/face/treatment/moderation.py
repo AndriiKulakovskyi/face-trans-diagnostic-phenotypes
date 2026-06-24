@@ -22,6 +22,27 @@ def e_value(standardized_effect: float) -> float:
     return float(rr + np.sqrt(rr * (rr - 1.0)))
 
 
+def _z(p: float) -> float:
+    from scipy.stats import norm
+    return float(norm.ppf(p))
+
+
+def mde(se: float, *, alpha: float = 0.05, power: float = 0.8) -> float:
+    """Minimum detectable effect (two-sided) for a coefficient with posterior SD / standard error `se`,
+    at significance `alpha` and `power`:  ``MDE = (z_{1-alpha/2} + z_power)·se`` — the smallest true effect
+    the design resolves at the stated power. The yardstick that distinguishes a **bounded** null (small
+    MDE, the design could have seen a meaningful effect and didn't) from an **underpowered** one (large
+    MDE). `se` is the interaction/ATE posterior SD already produced by `fit_glm` (`_summarize`'s `sd`)."""
+    return (_z(1.0 - alpha / 2.0) + _z(power)) * abs(float(se))
+
+
+def sd_from_eti(lo: float, hi: float, *, mass: float = 0.94) -> float:
+    """Recover an (approximately Gaussian) posterior SD from an equal-tailed credible interval of total
+    `mass`:  ``SD ≈ (hi − lo) / (2·z_{(1+mass)/2})``. Lets the MDE be computed from already-serialized
+    ETIs with no model refit (the project's 94% intervals → z_{0.97} ≈ 1.881)."""
+    return (float(hi) - float(lo)) / (2.0 * _z((1.0 + mass) / 2.0))
+
+
 def load_moderation_sample(question: str, mode: str, m5_dir: str | Path) -> pd.DataFrame:
     """The M5 frame joined to the 55 propensity output (treat, IPTW), restricted to common support."""
     m5_dir = Path(m5_dir)
