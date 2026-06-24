@@ -559,6 +559,10 @@ class RobustnessSweep:
         self.config = config or PrognosisConfig()
 
     def _encoding_delta(self, sub, spec, name, *, sev, horizon, fit_kw, weights=None, permute=False, seed=0):
+        if weights is not None:                         # IPW: keep only positively-weighted (retained) rows —
+            w = np.asarray(weights, dtype="float64")    # the stabilized attrition weight is 0 for non-retained
+            keep = w > 0                                # (a row with V0&V2 outcome but <3 visits gets w=0)
+            sub, weights = sub[keep], w[keep]
         blk = encoding_block(sub, name, sub, profiles_path=self.config.profiles_path)
         if blk is None:
             return None
