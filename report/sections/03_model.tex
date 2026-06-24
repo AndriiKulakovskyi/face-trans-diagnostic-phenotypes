@@ -1,21 +1,20 @@
 \section{The measurement model}
 \label{sec:model}
 
-This chapter is written as a tutorial rather than as a compressed methods note. The central object is still the
-same: a Bayesian sparse bifactor/ESEM measurement model for the FACE transdiagnostic space. The practical aim is
-that the reader can move from a single clinical measurement, such as BMI or CRP, to the full observed-data
-likelihood used by the sampler, without treating any step as a black box.
+This section details the Bayesian sparse bifactor exploratory structural equation modeling (ESEM) framework 
+developed for the FACE transdiagnostic space. The mathematical formulation maps heterogeneous clinical \& biological
+indicators to the joint observed-data likelihood to establish a complete generative model.
 
-The chapter follows the operational order used in the implementation. We first discuss the optional
-\emph{Gaussian-copula} data layer, because it explains what numerical object is actually sent into the Gaussian
-engine in the acceleration variant (\S\ref{sub:copula}). We then write the bifactor/ESEM measurement equation
-and interpret the patient coordinates, loadings, and measurement slopes (\S\ref{sub:generative}). After that we
-separate the native mixed likelihood from the Gaussian-copula acceleration path (\S\ref{sub:mixed}), derive the
-marginal Gaussian likelihood and the role of the factor-correlation matrix $\Phi$ (\S\ref{sub:marginal}), write
-the dense observed-data log-likelihood with and without missing cells (\S\ref{sub:dense_likelihood}), and only
-then introduce Woodbury and Cholesky as computational devices, not as new statistical assumptions
-(\S\ref{sub:woodbury}). The chapter ends with the interpretation of the general factor $G$, the identification
-problem, the priors, and the Bayesian learning procedure used to estimate the model parameters.
+The exposition is structured systematically. First, the optional Gaussian-copula data transformation layer designed 
+to normalize continuous and ordinal indicators is introduced (\S\ref{sub:copula}). Next, the general bifactor/ESEM 
+measurement equations are defined, specifying the mapping of latent individual coordinates and factor loadings 
+onto the indicator space (\S\ref{sub:generative}). Section \S\ref{sub:mixed} distinguishes between the native mixed-type 
+likelihood formulation and the accelerated Gaussian-copula representation. This is followed by the derivation of 
+the marginal likelihood and the parameterization of the factor covariance structure, denoted by $\Phi$ (\S\ref{sub:marginal}). 
+The joint log-likelihood under complete and incomplete data matrices is subsequently formulated (\S\ref{sub:dense_likelihood}), 
+before introducing computational optimizations leveraging the Woodbury matrix identity and Cholesky 
+factorization (\S\ref{sub:woodbury}). The section concludes with the structural identification of the general 
+factor $G$, the assignment of prior distributions, and the Markov chain Monte Carlo (MCMC) sampling procedure.
 
 \subsection{The candidate ontology and the eligibility map}
 \label{sub:ontology}
@@ -27,7 +26,7 @@ candidate is judged only \emph{testable} (it has indicators) or \emph{not-testab
 
 \begin{table}[h]\centering\small\sffamily
 \caption{The candidate ontology and eligibility. Three constructs (impulsivity, negative symptoms, sensory) have
-no FACE common indicator and are reported \code{not_testable}; the rest enter the fit. \emph{Mania} and
+no FACE common indicator and are reported not testable; the rest enter the fit. \emph{Mania} and
 \emph{substance} were added to the original ten once their indicators were ingested. The hypothesised
 \emph{split} of biology and \emph{proxy} reading of neurodevelopment are tested, not assumed; the empirical
 verdicts are adjudicated in Chapter~\ref{sec:results}.}
@@ -45,9 +44,9 @@ Neurodevelopment & developmental-risk (proxy?) & perinatal, CTQ, age-of-onset, f
 \rowcolor{facebg} Mania / activation & mania & YMRS, Altman self-report & 3-cohort YMRS\\
 Substance use & substance (mixed) & alcohol/cannabis lifetime SUD, nicotine & BP/SZ\\
 \rowcolor{facebg} Anhedonia & anhedonia (thin; rejected) & QIDS anhedonia item & BP/DR\\
-Impulsivity & \code{not_testable} & no common scale & ---\\
-\rowcolor{facebg} Negative symptoms & \code{not_testable} & no PANSS / SANS & ---\\
-Sensory abnormalities & \code{not_testable} & none & ---\\
+Impulsivity & not testable & no common scale & ---\\
+\rowcolor{facebg} Negative symptoms & not testable & no PANSS / SANS & ---\\
+Sensory abnormalities & not testable & none & ---\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -59,13 +58,13 @@ separate affective factor and no extra ``depression'' dimension unless one emerg
 anchored by functioning and global severity \emph{only} --- so symptom severity informs the axes it belongs to
 rather than contaminating the general factor.
 
-\subsection{The Gaussian-copula data layer: when the item scale is not the modelling scale}
+\subsection{The Gaussian-copula data layer}
 \label{sub:copula}
 Before writing the measurement equation, it is important to be explicit about the scale of the variables entering
-that equation. In the native model, continuous indicators are oriented, transformed if needed (for example a log
+that equation. In the native model, continuous indicators must be oriented, transformed if needed (for example a log
 transform for strongly skewed positive laboratories), residualized for covariates when that mode is enabled, and
-then standardized. Binary, ordinal, and count variables keep their native likelihoods. In the optional
-\code{gaussian_copula} mode, however, a broader set of indicators is first mapped to a standard-normal rank
+then standardized. Binary, ordinal, and count variables keep their native likelihoods. However, the
+Gaussian Copula allows mapping of a broader set of indicators to a standard-normal rank
 scale, and the same Gaussian factor machinery is applied to those rank-normalized values.
 
 A copula separates two questions that are otherwise entangled. The first is the \emph{marginal} question: what
@@ -91,7 +90,7 @@ with average ranks for ties. The transformation is monotone: a patient with a hi
 patient keeps a higher Gaussianized CRP score. What changes is the unit of measurement. A loading in copula mode
 is a slope on the Gaussian rank-score scale, not on the raw biochemical or clinical scale.
 
-\begin{methodsbox}[The common language analogy]
+\begin{methodsbox}[The Gaussian copula analogy]
 The original indicators speak different measurement languages. CRP speaks a skewed biochemical language, BMI a
 continuous anthropometric language, and a high-cardinality count variable an integer language. The Gaussian
 copula translates each variable into the same question: ``where is this patient in the population ranking for

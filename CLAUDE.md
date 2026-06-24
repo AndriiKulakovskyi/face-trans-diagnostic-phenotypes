@@ -11,8 +11,8 @@ A project that turns the harmonized 3-cohort FACE **baseline (V0)** data (BP · 
 prognosis/treatment decision models. Four layers that must not be collapsed:
 
 ```text
-diagnostic cohorts → transdiagnostic dimensions → validated strata → prognosis / treatment
-  (entry metadata)     (M1 — complete, 9-dim)       (M2 — next)        (later)
+diagnostic cohorts → transdiagnostic dimensions → continuous map + A=4 archetypes → prognosis / treatment
+  (entry metadata)     (M1 — complete, 9-dim)       (M2 — continuum, no privileged K)  (M4 / M5)
 ```
 
 The discovery engine is **one global, missingness-aware Bayesian sparse bifactor / ESEM model** with mixed

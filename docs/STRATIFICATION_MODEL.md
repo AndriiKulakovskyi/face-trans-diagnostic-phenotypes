@@ -20,8 +20,8 @@
 The project has four layers that must stay distinct (per [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md) §1.1):
 
 ```
-diagnostic cohorts → transdiagnostic dimensions → validated strata → prognosis / treatment
-   (entry metadata)     (M1 — complete, 9-dim)        (M2 — this)        (M4 / M5)
+diagnostic cohorts → transdiagnostic dimensions → continuous map + A=4 archetypes → prognosis / treatment
+   (entry metadata)     (M1 — complete, 9-dim)        (M2 — this; continuum)          (M4 / M5)
 ```
 
 M1 delivered the **measurement model**: a 9-dimension map and **per-patient coordinates with
