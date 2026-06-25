@@ -17,8 +17,10 @@ distinct from `report/` (the long-form technical report, kept as the canonical b
   (the nine dimensions + adjudication + invariance).
 - **`references.bib`** — 54 PubMed-verified entries (per `docs/LITERATURE_EVIDENCE.md`) + 15 canonical
   methodological references.
-- **`main.pdf`** — compiled output (~20 pp). Build: `latexmk -pdf main.tex` (or
-  `pdflatex → bibtex → pdflatex ×2`).
+- **`main.pdf`** — compiled output (~20 pp). Build (pick one):
+  - **Tectonic** (no MacTeX install): `tectonic -X compile main.tex` from `article/`
+  - **latexmk** (requires MacTeX/BasicTeX): `latexmk -pdf main.tex`
+  - **Wrapper** (tries latexmk → tectonic → Docker): `./compile.sh`
 
 ## Figures (publication-spec, regenerated)
 

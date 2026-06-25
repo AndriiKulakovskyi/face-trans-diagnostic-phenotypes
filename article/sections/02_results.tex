@@ -1,16 +1,19 @@
 \section{Results}
 
-\subsection{Sample and analytic strategy}
+\subsection{Sample and observed-data modelling population}
 
 The analysis sample was the harmonized baseline (visit V0) of the three FACE
 cohorts: $N=9{,}013$ patients (bipolar disorder [BP] $6{,}252$; schizophrenia [SZ]
 $2{,}209$; major depression [DR] $552$) recruited across $21$ expert-centre sites
 (Table~\ref{tab:characteristics}). The cohorts differ in age, sex distribution and
 chronicity, as expected for these disorders. We deliberately fit the measurement
-model on the \emph{full} sample without completeness selection: $143$ indicators were
-modelled, with a mean cell missingness of $39.8\%$ preserved as missing and never
-imputed. Diagnosis (cohort and DSM-5 subtype) was held out of the model and used only
-as a validation or metadata label. The reported map is one global,
+model on the \emph{full} sample without completeness selection. Of the $201$ usable
+harmonized common variables, $143$ entered the model as indicators (mean cell
+missingness $39.8\%$, preserved as missing and never imputed); the remaining $58$ are
+identifiers, covariates and validation labels (ambiguous-direction laboratory values,
+treatment-efficacy ratings, ECG intervals, reproductive/hormonal and smoking-history
+confounders) and were never modelled as indicators. Diagnosis (cohort and DSM-5 subtype) was held out of the model and used only
+as a validation or metadata label. The reported FACE-ATLAS map is one global,
 cohort-reweighted, full-sample fit estimated with a Gaussian-copula
 (rank-based) marginal model; because the same structure is recovered under a plain
 Gaussian likelihood, the central findings do not depend on that modelling choice---a
@@ -52,7 +55,42 @@ glance; the study design and the three load-bearing invariants are detailed in
   \label{fig:glance}
 \end{figure}
 
-\subsection{A nine-dimension transdiagnostic map (the map exists)}
+\subsection{The fitted object: a posterior coordinate for each patient}
+
+The primary output of FACE-ATLAS is not a cluster label but a \emph{posterior coordinate
+distribution}. For patient $i$ the model returns a nine-dimensional coordinate
+\begin{equation}
+  f_i=\bigl(G_i,\ D_{i,\mathrm{cog}},\ D_{i,\mathrm{met}},\ D_{i,\mathrm{inf}},\
+  D_{i,\mathrm{sleep}},\ D_{i,\mathrm{dev}},\ D_{i,\mathrm{suic}},\
+  D_{i,\mathrm{mania}},\ D_{i,\mathrm{subst}}\bigr)\in\mathbb{R}^{9},
+  \label{eq:res-coord}
+\end{equation}
+one general functional-burden coordinate $G_i$ and eight specific coordinates
+(cognition, metabolic, inflammatory, sleep, developmental risk, suicidality, mania,
+substance use)---the eight specific axes are established as distinct, data-earned
+dimensions in \S\ref{subsec:ninedim} (Table~\ref{tab:dimensions}). What the model
+actually delivers is the posterior of this coordinate
+given the patient's \emph{observed} indicators $x_{i,O_i}$ alone---no imputation, no
+completed data matrix (Methods):
+\begin{equation}
+  p\!\left(f_i\mid x_{i,O_i}\right)\ \approx\ \mathcal{N}\!\left(\hat f_i,\ S_i\right),
+  \label{eq:res-post}
+\end{equation}
+whose mean $\hat f_i$ is the patient's \emph{position} and whose covariance $S_i$ is the
+\emph{uncertainty} of that position. A patient is therefore represented by a location
+with error bars, not by a category. Two patients can share the same estimated metabolic
+score yet differ in its reliability---one with a complete laboratory panel, the other
+with a single observed marker---and the model records that difference: each coordinate
+carries a posterior mean, a standard deviation, a highest-density interval, the number of
+contributing indicators and a reliability tier. Every downstream analysis in this paper
+(structure tests, archetype weights, temporal decomposition, prognosis and treatment)
+consumes the full $(\hat f_i,S_i)$ rather than treating coordinates as exact, so a
+sparsely measured patient is never mistaken for a precisely located one. \emph{Clinically,}
+this fixes the unit of analysis: the question is not ``which biotype is this patient?''
+but ``where does this patient sit on nine continuous axes, and how precisely do we know
+it?''
+
+\subsection{The nine dimensions of the transdiagnostic atlas}\label{subsec:ninedim}
 
 From ten candidate constructs, one global model returned a stable nine-dimension
 structure: a general functional-burden factor (\Gfac) plus eight weakly correlated
@@ -79,7 +117,9 @@ flat-prior refit reproduced the loadings and factor correlations essentially exa
 bifactor over unidimensional and correlated-factor alternatives. Absolute fit was
 acceptable across both likelihood blocks (continuous Bayesian standardized
 root-mean-square residual $\approx 0.07$; $21/22$ non-Gaussian indicators reproduced
-within the $90\%$ posterior-predictive interval).
+within the $90\%$ posterior-predictive interval). \emph{Clinically,} the axes answer two
+different questions: \Gfac{} answers \emph{how impaired} the patient is, while the eight
+specific axes answer \emph{what kind} of burden the patient carries.
 
 \begin{figure}[t]
   \centering
@@ -96,28 +136,40 @@ within the $90\%$ posterior-predictive interval).
   \label{fig:atlas}
 \end{figure}
 
-\subsection{Biology is the least severity-entangled domain (the central finding)}
+\subsection{Biology is separable from symptoms and severity (the central result)}
 
 Because the bifactor identification fixes \Gfac{}~\orth{}~specifics by construction,
 we re-estimated the model allowing \Gfac{} to correlate freely with the specific axes.
-Under this correlated-\Gfac{} model, metabolic and inflammatory load were the
-\emph{least} entangled with functional burden: correlations with \Gfac{} of $0.12$
+The resulting vector of general--specific correlations,
+$\phi_{Gd}=\operatorname{Corr}(\Gfac,D)$ (Methods, Eq.~\ref{eq:corrg}), is the
+\emph{primary estimand} of FACE-ATLAS: it converts ``biology is separable from
+severity'' from a modelling constraint into a measured quantity. Under this
+correlated-\Gfac{} model, metabolic and inflammatory load were the \emph{least}
+entangled with functional burden: correlations with \Gfac{} of $0.12$
 (metabolic) and $0.07$ (inflammatory), against $0.39$ for cognition and $0.42$ for
-sleep (Figure~\ref{fig:biologyg}). Two patients with the same overall impairment can
-therefore carry very different metabolic and immune loads: a patient's biological
-burden rides largely on axes that the global clinical-severity picture does not
-capture. This dissociation was robust to the obvious confounders. Adjusting each
-indicator for age, sex, education and recruitment site, and then additionally for
-antipsychotic exposure, did \emph{not} raise the biological correlations---if anything
-it lowered them (metabolic $0.12\!\to\!0.07$, inflammatory $0.07\!\to\!0.06$), and the
-biological axes remained the least entangled at every step
+sleep (Figure~\ref{fig:biologyg}). In shared-variance terms the gap is stark---metabolic
+and inflammatory load share only $\approx 1.4\%$ and $\approx 0.5\%$ of their variance
+with general burden, against $\approx 15\%$ (cognition) and $\approx 18\%$ (sleep). And
+because the specific axes are themselves only weakly inter-correlated (mean absolute
+off-diagonal $\approx 0.10$), biological load is separable not just from severity but
+from the symptom axes too: biology~\orth{}~symptoms~\orth{}~severity. Two patients with
+the same overall impairment can therefore carry very different metabolic and immune
+loads---a patient's biological burden rides largely on axes that the global
+clinical-severity picture does not capture. This dissociation was robust to the obvious
+confounders. Adjusting each indicator for age, sex, education and recruitment site, and
+then additionally for antipsychotic exposure, did \emph{not} raise the biological
+correlations---if anything it lowered them (metabolic $0.12\!\to\!0.07$, inflammatory
+$0.07\!\to\!0.06$), and the biological axes remained the least entangled at every step
 (Figure~\ref{fig:biologyg}; Annex~\ref{ann:measurement}). Consistent with a large
 independent literature (Discussion), we state this as relative, not absolute,
 independence: metabolic and inflammatory load are \emph{largely independent of a
 general functional-burden axis}, with the $0.07$--$0.12$ values quantifying---at the
 low end of what that literature would predict---a pattern previously described only
-qualitatively. This is the property a biology-aware stratification can exploit, and it
-is the load-bearing premise of everything that follows.
+qualitatively. \emph{Clinically,} this means two patients with comparable functional
+burden can have sharply different cardiometabolic or inflammatory profiles: severity
+cannot be used as a proxy for biological load. This is the property a biology-aware
+stratification can exploit, and it is the load-bearing premise of everything that
+follows.
 
 \begin{figure}[t]
   \centering
@@ -132,51 +184,36 @@ is the load-bearing premise of everything that follows.
   \label{fig:biologyg}
 \end{figure}
 
-\subsection{The patient space is a continuum, not biotypes (the map organizes)}
+\subsection{The coordinate cloud is continuous, not discretely clustered}
 
-On these nine coordinates, with each patient's measurement uncertainty propagated, the
-patient space is a graded continuum rather than a set of discrete biological kinds. A
-structure-discovery battery run over the posterior draws---cluster tendency, modality,
-silhouette, the gap statistic, a Gaussian-mixture information criterion, density-based
-clustering and a topological summary---returned a continuum verdict: the silhouette
-peaked at only $0.14$ (below the $0.15$ separation floor), the first principal
-component was unimodal (Hartigan dip $p\approx 1.0$), density-based clustering assigned
-$100\%$ of points to noise, and the topological summary was a single connected
-component. A single-Gaussian \emph{falsification null} made the verdict decisive: the
-best partition of the real cloud separated patients no better than slicing a
-structureless Gaussian blob of identical covariance (best silhouette $0.140$ for the
-real data versus $0.141\pm0.002$ for the null, $z=-0.36$; the Gaussian-mixture-optimal
-number of components collapsed to one in all $20$ posterior draws;
-Figure~\ref{fig:continuum}a). There are, in this clinical--biological space, no
+We next asked whether these nine coordinates fall into separable kinds. They do not---a
+\emph{negative structural result}. On the cloud $\{(\hat f_i,S_i)\}$, a
+structure-discovery battery run over the posterior
+draws---cluster tendency, modality, silhouette, the gap statistic, a Gaussian-mixture
+information criterion, density-based clustering and a topological summary---returned a
+continuum verdict: the silhouette peaked at only $0.14$ (below the $0.15$ separation
+floor), the first principal component was unimodal (Hartigan dip $p\approx 1.0$),
+density-based clustering assigned $100\%$ of points to noise, and the topological summary
+was a single connected component. A single-Gaussian \emph{falsification null} made the
+verdict decisive: the best partition of the real cloud separated patients no better than
+slicing a structureless Gaussian blob of identical covariance (best silhouette $0.140$
+for the real data versus $0.141\pm0.002$ for the null, $z=-0.36$; the
+Gaussian-mixture-optimal number of components collapsed to one in all $20$ posterior
+draws; Figure~\ref{fig:continuum}a). There are, in this clinical--biological space, no
 well-separated, reproducible discrete clusters.
 
-We therefore represent the space by its geometry rather than by a partition. Diagnosis
-is intermixed throughout the cloud (Figure~\ref{fig:continuum}b); overall burden forms
-a smooth gradient along the principal axis (Figure~\ref{fig:continuum}c); and
-inflammatory load varies along a \emph{different} direction
-(Figure~\ref{fig:continuum}d)---the biology\,\orth\,\Gfac{} dissociation, made visible.
-Four archetypal extremes, selected by cross-seed stability rather than by a
-parsimony rule (the only stable resolutions were two and four corners; cross-seed
-Tucker congruence $0.98$), give the continuum a clinically legible reading
-(Figure~\ref{fig:continuum}e). They separate biology from symptoms from severity: a
-\emph{biological} corner (high metabolic, inflammatory and substance load), a
-\emph{low-burden} pole, a \emph{severe, non-biological} corner (high overall severity
-but low biological load), and a \emph{symptom} corner (high sleep, developmental,
-suicidality and mania). Each patient is a soft convex blend of all four (mean
-assignment entropy $0.78$); only $39\%$ sit near a single pole. The reading is
-transdiagnostic (adjusted Rand index $\approx 0$ against both cohort and the seven
-DSM-5 subtypes), driven by the specific and biological axes rather than by severity
-(variance explained by the coarsest tessellation: specific axes $\eta^2=0.12$ versus
-$\Gfac{}$ $0.008$), not a missingness artefact (a classifier predicting region
-membership from each patient's coverage pattern performed below baseline, lift
-$-0.05$), and a tighter description of the coordinate cloud than diagnosis
-(mixture information criterion $197{,}900$ versus $201{,}300$ for a DSM-5-constrained
-model). Critically, because biological load varies continuously without a density
-\emph{gap}, it never forms a clean partition boundary at any granularity; it surfaces
-instead as an archetypal \emph{corner}. The biological phenotype is thus a direction
-in a continuum, not a category---which is exactly why the continuous coordinates and
-the archetype simplex, not any hard tessellation, are the load-bearing objects
-downstream.
+The continuum is genuine and transdiagnostic, not an artefact. Diagnosis is intermixed
+throughout the cloud (adjusted Rand index $\approx 0$ against both cohort and the seven
+DSM-5 subtypes; Figure~\ref{fig:continuum}b); overall burden forms a smooth gradient
+along the principal axis (Figure~\ref{fig:continuum}c); and inflammatory load varies along
+a \emph{different} direction (Figure~\ref{fig:continuum}d)---the
+biology\,\orth\,\Gfac{} dissociation, made visible. The verdict is not a missingness
+artefact (a classifier predicting position from each patient's coverage pattern performed
+below baseline, lift $-0.05$, permutation $p=0.23$) and is a tighter description of the
+coordinate cloud than diagnosis (free-mixture information criterion $197{,}900$ versus
+$201{,}300$ for a DSM-5-constrained model). \emph{Clinically,} the appropriate object is
+therefore a coordinate with uncertainty (Eq.~\ref{eq:res-post}), not a categorical
+biotype.
 
 \begin{figure}[t]
   \centering
@@ -188,10 +225,59 @@ downstream.
   posterior draws. (\textbf{b--d}) Principal-component embedding of the coordinates
   ($N=9{,}013$), coloured by diagnosis (fully intermixed), by general burden \Gfac{}
   (a smooth gradient), and by inflammatory load (a gradient in a \emph{different}
-  direction). (\textbf{e}) Standardized profiles of the four archetypal extremes
-  across the nine axes; the biological corner (A0) and the severe, non-biological
-  corner (A2) carry comparable general burden but opposite biological profiles.}
+  direction).}
   \label{fig:continuum}
+\end{figure}
+
+\subsection{Four archetypal extremes define the shape of the continuum}
+
+A continuum has no clusters, but it still has a \emph{shape}. Archetypal analysis recovers
+that shape as a small set of reproducible extreme corners---a \emph{positive geometric
+result} that coexists with the negative clustering result above. Each patient is written
+as a convex blend of $A=4$ extreme phenotypes,
+\begin{equation}
+  \hat f_i\ \approx\ \sum_{a=0}^{3} w_{ia}\,z_a,\qquad
+  w_{ia}\ge 0,\qquad \sum_{a=0}^{3} w_{ia}=1 .
+  \label{eq:res-archetype}
+\end{equation}
+The four $z_a$ are extreme points on the convex hull of the patient cloud, and the
+weights $w_{ia}$ are \emph{barycentric coordinates}: they quantify how strongly each
+patient is pulled toward each extreme. Dominant-archetype labels are used only for
+summaries; the inferential object is the continuous weight vector $w_i$, not a class
+assignment. The number of corners ($A=4$) was set by cross-seed stability rather than by
+a parsimony rule---only two- and four-corner solutions reproduced across seeds
+(cross-seed Tucker congruence $0.98$)---and uncertainty was propagated by refitting
+Eq.~\eqref{eq:res-archetype} across posterior draws (Annex~\ref{ann:stratification}).
+
+The four extremes separate biology from symptoms from severity (Figure~\ref{fig:archetypes}):
+a \emph{biological} corner (A0; high metabolic, inflammatory and substance load), a
+\emph{low-burden} pole (A1), a \emph{severe, non-biological} corner (A2; high overall
+severity but low biological load), and a \emph{symptom} corner (A3; high sleep,
+developmental, suicidality and mania). The biological corner A0 and the severe corner A2
+carry comparable general burden but opposite biological profiles---A0 versus A2 is
+precisely why \emph{severity is not biology}, the central dissociation now rendered as
+geometry. Patients sit \emph{between} the corners far more than at
+them: the weight vectors are diffuse (mean entropy $0.78$ across the four corners), and
+only $39\%$ of patients have a single dominant corner. Critically, because biological
+load varies continuously without a density \emph{gap}, it never forms a clean partition
+boundary at any granularity; it surfaces instead as a \emph{direction of maximal
+phenotype}---an archetypal corner---which is exactly why the continuous coordinates and
+the weight vectors $w_i$, not any hard tessellation, are the load-bearing objects
+downstream. \emph{Clinically,} the archetypes provide a vocabulary for reading the
+continuum, not a replacement for it.
+
+\begin{figure}[t]
+  \centering
+  \archetypesimplexblend
+  \caption{\textbf{The archetype simplex: every patient a convex blend of four extremes.}
+  The four archetypal extremes are the corners---\textbf{A0} biological (cardiometabolic
+  $+$ inflammatory $+$ substance), \textbf{A1} low-burden, \textbf{A2}
+  severe-but-low-biology, and \textbf{A3} symptom-driven---and every patient sits
+  \emph{inside} the simplex as a convex blend whose barycentric weights $w_i$ sum to one
+  (worked example, foot). The load-bearing dissociation is geometric: \textbf{A0} and
+  \textbf{A2} are distinct corners at essentially the \emph{same} general burden but
+  opposite biology---biology\,\orth\,severity, rendered as a direction one can point to.}
+  \label{fig:archetypes}
 \end{figure}
 
 \subsection{The geometry persists over two years (the map persists)}
@@ -211,9 +297,9 @@ symptom ones (sleep $0.47$, suicidality $0.42$, developmental risk $0.39$). Gene
 burden was trait \emph{by rank} (intraclass correlation $0.62$): patients largely kept
 their relative position even as the cohort as a whole improved on severity and symptoms
 (population shift $-0.46$ on \Gfac{} and $-0.84$ on suicidality, while biology stayed
-static). Archetype identity persisted---the archetype weight vector moved little over
-two years (median cosine similarity $0.90$). The clinical reading is compact:
-\emph{stratify on the durable biology; monitor the moving symptoms}.
+static). The archetype geometry persisted---each patient's weight vector $w_i$ moved
+little over two years (median cosine similarity $0.90$). \emph{Clinically,} the reading is
+compact: \emph{stratify on the durable biology; monitor the moving symptoms}.
 
 \begin{figure}[t]
   \centering
@@ -228,7 +314,7 @@ two years (median cosine similarity $0.90$). The clinical reading is compact:
   \label{fig:traitstate}
 \end{figure}
 
-\subsection{It predicts future functioning, modestly and at the group level (the map predicts)}
+\subsection{Archetype position predicts group-level two-year functioning (the map predicts)}
 
 We then asked whether a baseline coordinate or phenotype predicts a two-year outcome
 \emph{incrementally beyond} diagnosis, current severity and the baseline value of the
@@ -236,8 +322,8 @@ outcome, using an errors-in-variables Bayesian model that propagated each coordi
 measurement uncertainty. The map added predictive signal for \emph{functioning} but
 not for severity (which was saturated by its own baseline autoregression). The signal
 was carried by the \emph{phenotype}, not by any single laboratory axis: the four
-archetypes added the most held-out predictive value (expected log predictive density
-gain $+59$ over the diagnosis-plus-severity-plus-baseline reference), the eight
+archetypal extremes added the most held-out predictive value (expected log predictive
+density gain $+59$ over the diagnosis-plus-severity-plus-baseline reference), the eight
 specific axes added $+37$, and---an honest, map-specific shift from our earlier
 analyses---the isolated ``durable biology'' axes \emph{alone} no longer cleared the
 bar ($+2$, ambiguous; Figure~\ref{fig:prognosis}b). Biology still predicts functioning,
@@ -251,33 +337,34 @@ Figure~\ref{fig:prognosis}c), and \emph{course-dependent}, with the signal conce
 in the episodic, open-course cohorts (bipolar disorder and depression) and weak when
 bipolar disorder was removed.
 
-Translated to the clinic, the four archetypes sorted patients into groups whose
-two-year functional-remission rate ranged from $27\%$ to $60\%$, transdiagnostically
-(Figure~\ref{fig:prognosis}a); the \emph{biological} corner carried the worst
-functional prognosis ($27\%$), worse than the equally severe non-biological corner
-($32\%$)---the dissociation translating into prognosis. This gradient was a genuine
+Translated to the clinic, ranking patients by their dominant archetypal extreme yielded
+two-year functional-remission rates from $27\%$ to $60\%$, transdiagnostically
+(Figure~\ref{fig:prognosis}a). The \emph{biological} corner A0 carried the worst
+functional prognosis ($27\%$) and the low-burden pole A1 the best ($60\%$): A0 versus A1
+is why the biological corner \emph{matters prognostically}. A0 also remained worse than
+the equally severe non-biological corner A2 ($27\%$ vs $32\%$)---the
+severity-is-not-biology dissociation, now translated into outcome. This gradient was a genuine
 within-diagnosis effect, not a cohort-composition artefact: the rank held inside every
 cohort (a biological-vs-low-burden odds ratio $\approx 4$ in each), standardizing to a
 common cohort mix moved it by only $\approx 6\%$, and the corner-by-cohort interaction
 was non-significant. The individual-level discrimination gain was nonetheless small
-(functional-remission AUC $+0.011$ over a strong diagnosis-plus-severity reference):
-the map's value is group-level prognostic stratification and continuous functional
-forecasting, not a large boost to individual binary prediction. The functioning signal
-survived inverse-probability weighting for attrition ($+53$), restriction to either
-two of the three cohorts ($+56$, $+59$), and a permutation null (which correctly
-vanished). Finally, against the full set of $143$ raw indicators under a matched
-gradient-boosting classifier, the nine-dimension map was a \emph{sufficient}
+(functional-remission AUC $+0.011$ over a strong diagnosis-plus-severity reference). The
+functioning signal survived inverse-probability weighting for attrition ($+53$),
+restriction to either two of the three cohorts ($+56$, $+59$), and a permutation null
+(which correctly vanished). Finally, against the full set of $143$ raw indicators under a
+matched gradient-boosting classifier, the nine-dimension map was a \emph{sufficient}
 representation for predicting deterioration (equal AUC) and \emph{near-sufficient} for
 recovery (raw indicators $+0.04$ AUC), with $97\%$ of the raw recovery signal already
 contained within the nine factors (\edfig{fig:repbench})---the compression is faithful,
-not lossy in any axis the map omits.
+not lossy in any axis the map omits. \emph{Clinically,} the atlas is useful for
+group-level enrichment and monitoring, not as an individual remission calculator.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.99\linewidth]{fig6_prognosis.png}
   \caption{\textbf{Prognostic reach for functioning.} (\textbf{a}) Archetype
-  prognostic atlas: two-year functional-remission rate by baseline archetype; the
-  biological corner is worst ($27\%$) and the low-burden pole best ($60\%$), a
+  prognostic atlas: two-year functional-remission rate by baseline dominant archetype;
+  the biological corner is worst ($27\%$) and the low-burden pole best ($60\%$), a
   transdiagnostic $27\%$--$60\%$ gradient. (\textbf{b}) Held-out incremental value for
   functioning: the continuous archetype encoding dominates the eight specific axes, any
   hard tessellation, and the isolated biology axes (operative number of clusters
@@ -287,14 +374,14 @@ not lossy in any axis the map omits.
   \label{fig:prognosis}
 \end{figure}
 
-\subsection{It does not yet guide treatment---a boundary drawn by the evidence}
+\subsection{Treatment moderation was not detected in observational treatment-as-usual}
 
 Treatment exposures, recovered from the per-cohort source dictionaries and harmonized
 to drug-class indicators, were run through an identification-first causal pipeline
 (common-support overlap gate $\rightarrow$ propensity weighting $\rightarrow$
 doubly-robust errors-in-variables moderation with an E-value sensitivity analysis and a
 minimum-detectable-effect calculation) to ask whether the durable axes or the
-archetypes \emph{moderate} treatment response. On observational, expert-centre
+archetypal extremes \emph{moderate} treatment response. On observational, expert-centre
 treatment-as-usual they did not reliably do so (\edfig{fig:treatment}a). Where
 identification was cleanest---lithium in bipolar disorder, near-complete overlap---the
 result was a \emph{well-identified, bounded null}: the average effect was
@@ -313,14 +400,14 @@ the paper. First, the prognostic finding was \emph{not} merely unmodelled treatm
 the archetype carrier of the functioning forecast survived adjustment for the drug
 classes patients were actually receiving (attenuation $4.7\%$; $3.9\%$ under attrition
 weighting), so the biological phenotype is not a treatment proxy. Second, even without
-\emph{selecting} a drug, the map \emph{describes} who faces a difficult course: the
-baseline archetype stratified two-year treatment course, with the biological corner
-carrying roughly twice the treatment-resistance and side-effect burden of the
-low-burden corner (resistance $43\%$ vs $20\%$; significant side-effects $23\%$ vs
-$11\%$), beyond baseline severity, substance comorbidity and demographics, and within
-cohort (\edfig{fig:treatment}b). As in the prognostic analysis, this is a group-level
-monitoring signal, not an individual classifier (the steepest gradient,
-treatment-resistance, was AUC-marginal under a permutation null). Demonstrating
-treatment \emph{selection} from this map would require randomized or trial-arm data,
-which this baseline observational cohort---patients receiving usual care in French
-expert centres---does not contain.
+\emph{selecting} a drug, the map \emph{describes} who faces a difficult course: a
+patient's baseline pull toward the biological corner stratified two-year treatment
+course, with that corner carrying roughly twice the treatment-resistance and
+side-effect burden of the low-burden corner (resistance $43\%$ vs $20\%$; significant
+side-effects $23\%$ vs $11\%$), beyond baseline severity, substance comorbidity and
+demographics, and within cohort (\edfig{fig:treatment}b). As in the prognostic analysis,
+this is a group-level monitoring signal, not an individual classifier (the steepest
+gradient, treatment-resistance, was AUC-marginal under a permutation null).
+\emph{Clinically,} demonstrating treatment \emph{selection} from this map would require
+randomized or trial-arm data, which this baseline observational cohort---patients
+receiving usual care in French expert centres---does not contain.

@@ -63,6 +63,7 @@ output/
 Thumbs.db
 
 # Editors / IDEs
+.cursor/
 .idea/
 .vscode/
 *.swp

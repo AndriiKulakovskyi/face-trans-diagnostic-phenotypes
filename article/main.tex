@@ -1,13 +1,3 @@
-%==============================================================================
-%  FACE-ATLAS — A latent atlas of severe mental illness
-%  One comprehensive, discovery-framed manuscript (Gaussian-copula vertical).
-%
-%  Build:  pdflatex main -> bibtex main -> pdflatex main -> pdflatex main
-%
-%  Journal-agnostic (Nature-family / Lancet Psychiatry convertible). Results-first
-%  discovery framing; high-level model in the main text, full derivation in the
-%  Annexes (\appendix). Author list / ethics / funding are PI placeholders.
-%==============================================================================
 \documentclass[11pt]{article}
 
 \usepackage[utf8]{inputenc}
@@ -21,6 +11,7 @@
 \usepackage{multirow}
 \usepackage{rotating}
 \usepackage{xcolor}
+\usepackage{tikz}
 \usepackage{microtype}
 \usepackage[hidelinks]{hyperref}
 \usepackage[numbers,sort&compress]{natbib}
@@ -39,16 +30,63 @@
 % Extended Data figure numbering helper
 \newcommand{\edfig}[1]{Extended Data Fig.~\ref{#1}}
 
-\title{\bfseries A latent atlas of severe mental illness separates biological
+% --- Archetype-simplex figure (Fig.~\ref{fig:archetypes}): colours + TikZ macro
+%     ported from the technical report (report/faceatlas.sty, Figure 19). Renders
+%     natively (no external data dependency). ---
+\definecolor{faceink}{HTML}{14181F}
+\definecolor{facemute}{HTML}{5B6573}
+\definecolor{facerule}{HTML}{C7CED9}
+\definecolor{facekr}{HTML}{0F766E}
+\definecolor{faceinv}{HTML}{6D28D9}
+\definecolor{facemeth}{HTML}{47556A}
+\definecolor{facecav}{HTML}{B45309}
+\definecolor{faceopen}{HTML}{B42318}
+\newcommand{\archetypesimplexblend}{%
+\begin{center}\resizebox{0.95\linewidth}{!}{%
+\begin{tikzpicture}[font=\sffamily\scriptsize,
+   cnr/.style={fill=white,rounded corners=2pt,line width=0.9pt,inner sep=3.5pt,align=center}]
+  \coordinate (a1) at (-4.4,2.2);
+  \coordinate (a0) at ( 4.4,2.2);
+  \coordinate (a2) at ( 4.4,-2.2);
+  \coordinate (a3) at (-4.4,-2.2);
+  \coordinate (p)  at (1.7,0.85);
+  % the simplex --- the convex region every patient lives inside
+  \draw[facerule,line width=0.7pt,dashed] (a1)--(a0)--(a2)--(a3)--cycle;
+  % the blend: this patient = a convex combination of the four corners
+  \draw[facemute,line width=0.5pt] (p)--(a1); \draw[facemute,line width=0.5pt] (p)--(a0);
+  \draw[facemute,line width=0.5pt] (p)--(a2); \draw[facemute,line width=0.5pt] (p)--(a3);
+  % A0 <-> A2 contrast: same severity, opposite biology
+  \draw[facecav,line width=1pt,dash pattern=on 3pt off 2pt] (6.15,1.5)--(6.15,-1.5);
+  \node[rotate=-90,font=\sffamily\scriptsize\itshape,text=facecav] at (6.6,0) {same severity, opposite biology};
+  % corner phenotypes (the convex-hull extremes)
+  \node[cnr,draw=facemeth,text=facemeth] at (a1) {\textbf{A1} low-burden\\\scriptsize relatively well};
+  \node[cnr,draw=facekr,text=facekr]     at (a0) {\textbf{A0} biological\\\scriptsize metabolic\,$+$\,inflam.};
+  \node[cnr,draw=faceinv,text=faceinv]   at (a2) {\textbf{A2} severe\\\scriptsize biology \emph{low}};
+  \node[cnr,draw=faceopen,text=faceopen] at (a3) {\textbf{A3} symptom\\\scriptsize sleep, mood, adversity};
+  % the patient itself
+  \fill[faceink] (p) circle (2.6pt);
+  \node[font=\sffamily\scriptsize,text=faceink,align=center,anchor=north] at (1.7,0.5)
+       {one patient\\[-1pt]\scriptsize a convex blend, $\textstyle\sum_a w_a=1$};
+  % this patient's archetype weights, as a stacked bar
+  \fill[facekr]   (-2.4,-3.45) rectangle (0.24,-3.03);
+  \fill[faceinv]  ( 0.24,-3.45) rectangle (1.44,-3.03);
+  \fill[faceopen] ( 1.44,-3.45) rectangle (2.16,-3.03);
+  \fill[facemeth] ( 2.16,-3.45) rectangle (2.40,-3.03);
+  \draw[white,line width=0.6pt] (0.24,-3.45)--(0.24,-3.03) (1.44,-3.45)--(1.44,-3.03) (2.16,-3.45)--(2.16,-3.03);
+  \node[font=\sffamily\scriptsize,text=faceink,anchor=north] at (0,-3.58)
+       {this patient $=0.55\,$A0 $+\,0.25\,$A2 $+\,0.15\,$A3 $+\,0.05\,$A1};
+\end{tikzpicture}}\end{center}}
+
+\title{\bfseries FACE ATLAS: A latent atlas of severe mental illness separates biological
 burden from clinical severity and forecasts functional outcome}
 
 \author{%
-  Andrii Kulakovskyi$^{1,2}$\ \and \emph{[co-authors / FACE--FondaMental investigators TBD]}%
-  \thanks{Correspondence: andrii.kulakovskyi@gmail.com}%
+  Andrii Kulakovskyi$^{1}$\ \and \emph{[co-authors / FondaMental, INSERM]}%
+  \thanks{Correspondence: andrii.kulakovskyi@fondationfondamental.org}%
 }
 \date{%
-  $^{1}$Precision Psychiatry \& Artificial Intelligence \quad
-  $^{2}$[Institution TBD]\\[4pt]
+  $^{1}$Fondation FondaMental \quad
+  $^{2}$[INSERM]\\[4pt]
   \today
 }
 
@@ -61,20 +99,18 @@ burden from clinical severity and forecasts functional outcome}
 Psychiatric diagnoses aggregate biologically heterogeneous patients, which limits
 mechanistic stratification and prognosis. We analysed the harmonized baseline
 assessment of $N=9{,}013$ patients with bipolar disorder, schizophrenia or major
-depression from the three FACE expert-centre cohorts using one global,
+depression from the three FACE cohorts using one global,
 missingness-aware Bayesian bifactor / exploratory structural-equation model,
-\emph{derived and fit to each patient's observed cells only} (no imputation), with
+derived and fit to each patient's observed cells only (no imputation), with
 diagnosis withheld from model fitting. The model resolved a transdiagnostic
 coordinate system: a general functional-burden factor (\Gfac) and eight specific
 dimensions---cognition, metabolic load, inflammation, sleep, developmental risk,
 suicidality, mania and substance use. The central finding is a \textbf{dissociation
 between biology, symptoms and functional burden}: metabolic and inflammatory load
-were the \emph{least} burden-entangled domains (correlation with \Gfac{} of $0.12$
-and $0.07$, versus $0.39$ for cognition and $0.42$ for sleep), and they remained so
+were the \emph{least} burden-entangled domains, and they remained so
 after adjustment for medication, adiposity and site. The coordinate space was a
 graded \textbf{continuum, not discrete biotypes}---apparent clustering was
-reproduced by a single-Gaussian null (best silhouette $0.140$ vs $0.141\pm0.002$,
-$z=-0.36$)---yet four archetypal extremes gave a clinically legible reading,
+reproduced by a single-Gaussian null --- yet four archetypal extremes gave a clinically legible reading,
 including a \emph{biological} corner and a \emph{severe, non-biological} corner with
 comparable functional burden but opposite biological profiles. Scored forward onto
 follow-up without re-estimation, biological coordinates were stable (test--retest
@@ -82,9 +118,7 @@ intraclass correlation $0.91$ for metabolic load) whereas symptom axes were
 state-like. The archetype phenotype predicted two-year functioning beyond diagnosis,
 baseline severity and baseline functioning (held-out expected log predictive density
 $+59$; two-year functional-remission $27\%$--$60\%$ across corners), but the
-individual-level discrimination gain was small (remission AUC $+0.011$) and treatment
-moderation was not demonstrated on observational, expert-centre treatment-as-usual
-(lithium in bipolar disorder a well-identified null). These results define a
+individual-level discrimination gain was small (remission AUC $+0.011$). These results define a
 transdiagnostic biological atlas of severe mental illness that supports mechanistic
 stratification and group-level functional forecasting, and they delineate the
 requirements for clinical utility: external validation, incident-event outcomes and

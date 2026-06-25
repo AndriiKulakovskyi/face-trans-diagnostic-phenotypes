@@ -20,7 +20,9 @@ attempt count $=0$ when ever-attempted $=0$); this is decoding, not imputation. 
 variable carries a likelihood family and a missingness type. Identifiers (patient,
 cohort, DSM-5 subtype, visit, site) are never modelled as indicators; cohort and
 subtype enter only as covariates, invariance-grouping variables or validation labels.
-Of the usable common variables, $143$ entered as modelled indicators.
+Of the $201$ usable harmonized common variables, $143$ entered as modelled indicators;
+the remaining $58$ are identifiers, covariates or validation labels and are never factor
+indicators.
 
 \subsection{Candidate ontology and soft priors}
 
@@ -34,36 +36,95 @@ forbidden---whose default is shrinkage rather than exclusion, so the model can c
 split, merge, downgrade, reject or declare not-testable any candidate. The formal prior
 is given in Annex~\ref{ann:measurement}.
 
-\subsection{The measurement model (high level)}
+\subsection{The measurement model}
 
-We posit that a few latent factors generate the many measured quantities. Each patient
-carries a factor vector---one general factor (\Gfac) and eight specific factors---and
-each indicator is a reflection of those factors through a single linear predictor plus
-item-specific noise, with the factors conditionally independent of one another given
-the latent scores (local independence). This is a Bayesian \emph{bifactor exploratory
-structural-equation model}: bifactor because every indicator may load on \Gfac{} and on
-its home specific factor; exploratory because small cross-loadings are \emph{allowed}
-but shrunk toward zero by the soft priors. Rather than coerce variables onto a common
-scale---which would manufacture covariance---each indicator keeps an observation
-density appropriate to its type (Gaussian or log-Gaussian for continuous and laboratory
-measures, ordered-logit for ordinal, Bernoulli for binary, negative-binomial for
-counts), and continuous variables additionally enter through a rank-based
-\emph{Gaussian-copula} marginal, all sharing the same linear predictor. Crucially, the
-likelihood is summed over each patient's \emph{observed cells only}, so a missing cell
-contributes no term and no completed data matrix is ever formed; for the multivariate
-normal this observed-cell sum is exactly the full-information maximum-likelihood
-objective for incomplete data (Annex~\ref{ann:measurement}). The factor model is not
-identified from the likelihood alone (it is invariant to rotation); identification is
-supplied by the soft loading priors, so that a prior-free refit recovering the same
-structure demonstrates the map is earned from the data rather than imposed. Two factor
-covariances are estimated: a \emph{bifactor} model in which \Gfac{} is orthogonal to the
-specifics (the primary fit and the natural null for the biology question), and a
-\emph{correlated-\Gfac{}} model that frees the general--specific correlations and so
-turns ``biology\,\orth\,severity'' from a constraint into a measurable estimand
-(Figure~\ref{fig:biologyg}; Annex~\ref{ann:measurement}). The biology--\Gfac{} result is
-reported unadjusted and under a covariate-adjustment ladder (age, sex, education, site,
-antipsychotic exposure, adiposity) implemented by residualizing each indicator before
-the factor model.
+The measurement model rests on five core equations; their full derivation, with proofs,
+is in Annex~\ref{ann:measurement}. We posit that a few latent factors generate the many
+measured quantities, so each patient is summarized by a low-dimensional coordinate.
+Patient $i$ carries a factor vector of one general functional-burden axis \Gfac{} and
+$K=8$ specific axes, given a standardized multivariate-normal prior,
+\begin{equation}
+  f_i=(G_i,D_{i1},\dots,D_{iK})^{\top}\ \sim\ \mathcal{N}_{K+1}\!\left(\mathbf 0,\,\Phi\right),
+  \qquad \operatorname{diag}(\Phi)=\mathbf 1 .
+  \label{eq:factors}
+\end{equation}
+The unit diagonal of the factor correlation matrix $\Phi$ fixes the latent scale;
+\Gfac{} is the burden axis every indicator may share, while $D_{i1},\dots,D_{iK}$ are the
+domain-specific axes (cognition, metabolic load, inflammation, sleep, developmental
+risk, suicidality, mania and substance use). Equation~\eqref{eq:factors} is the formal
+content of the idea that a patient is \emph{one general burden axis plus specific axes}.
+
+Each indicator $j$ is a linear reflection of those factors through a single predictor,
+\begin{equation}
+  \eta_{ij}=\alpha_j+\lambda_{jG}\,G_i+\sum_{k=1}^{K}\lambda_{jk}\,D_{ik}+\beta_j^{\top}c_i ,
+  \label{eq:measure}
+\end{equation}
+with item intercept $\alpha_j$, a general loading $\lambda_{jG}$ onto \Gfac{}, specific
+loadings $\lambda_{jk}$, and item-level covariates $c_i$ that shift an indicator's mean
+but are never themselves factor indicators. Equation~\eqref{eq:measure} \emph{is} the
+bifactor exploratory structural-equation model: bifactor because every indicator may
+load on \Gfac{} \emph{and} on its home specific factor; exploratory because small
+cross-loadings $\lambda_{jk}$ are allowed but shrunk toward zero by soft priors rather
+than forbidden outright. The predictor feeds a per-type observation density---Gaussian
+or log-Gaussian for continuous and laboratory measures, ordered-logit for ordinal,
+Bernoulli for binary, negative-binomial for counts---and continuous indicators
+additionally enter through a rank-based \emph{Gaussian-copula} marginal, so that forcing
+heterogeneous variables onto a shared scale never manufactures covariance. The
+likelihood is invariant to rotation of the factors; identification comes from the soft
+loading priors, so a prior-free refit that recovers the same structure shows the map is
+earned from the data, not imposed (Annex~\ref{ann:measurement}).
+
+Given the latent scores the indicators are conditionally independent (local
+independence: once the factors are fixed, only item-specific noise remains, a diagonal
+residual covariance $\Psi$). Equations~\eqref{eq:factors}--\eqref{eq:measure} then
+generate a structured covariance among the indicators,
+\begin{equation}
+  \Sigma=\Lambda\,\Phi\,\Lambda^{\top}+\Psi
+        =\underbrace{\lambda_G\lambda_G^{\top}}_{\text{general: rank one}}
+         +\underbrace{\Lambda_D\Phi_D\Lambda_D^{\top}}_{\text{specific factors}}
+         +\underbrace{\Psi}_{\text{private noise}},
+  \label{eq:sigma}
+\end{equation}
+where $\Lambda=[\,\lambda_G\mid\Lambda_D\,]$ collects the loadings and $\Phi_D$ is the
+specific-factor correlation block. Equation~\eqref{eq:sigma} is the generative claim in
+one line---\Gfac{} leaves a rank-one footprint that touches every item, the specific
+factors contribute a block, and $\Psi$ absorbs what no factor explains---and it is also
+why imputation is forbidden: a filled-in cell would inject covariance that
+\eqref{eq:sigma} would misread as a factor.
+
+Accordingly the model is fit to each patient's \emph{observed cells only}. With $O_i$
+the set of indicators observed for patient $i$ and $F_j$ the density of indicator $j$,
+the observed-data log-likelihood is
+\begin{equation}
+  \log p\!\left(X_{\mathrm{obs}}\mid\Theta\right)=\sum_{i=1}^{N}\ \sum_{j\in O_i}\ \log F_j\!\left(X_{ij}\mid\eta_{ij},\theta_j\right) .
+  \label{eq:obslik}
+\end{equation}
+A missing cell contributes no term and no completed $N\times J$ matrix is ever formed;
+deterministic skip-logic decodes structural zeros as \emph{observed} values, not imputed
+ones. For the multivariate-normal block this observed-cell sum is exactly the
+full-information maximum-likelihood objective for incomplete data, obtained by
+\emph{marginalizing} the missing coordinates rather than filling them
+(Annex~\ref{ann:measurement}). Equation~\eqref{eq:obslik} is the no-imputation invariant
+on which every downstream analysis rests.
+
+Two factor covariances are estimated. The primary \emph{bifactor} fit holds \Gfac{}
+orthogonal to the specific axes ($\Phi$ block-diagonal); this is the natural null for the
+biology question. A \emph{correlated-\Gfac{}} arm then unzips that zero block,
+\begin{equation}
+  \Phi=\begin{pmatrix}1 & \phi_{Gd}^{\top}\\[2pt] \phi_{Gd} & \Phi_D\end{pmatrix},
+  \qquad \phi_{Gd}=\operatorname{Corr}(G,D)\in[-1,1]^{K},
+  \label{eq:corrg}
+\end{equation}
+turning ``biology is separable from severity'' from a built-in constraint into the
+\emph{measured} vector $\phi_{Gd}$: a domain is severity-entangled when its entry is
+large and separable when it is near zero (metabolic $0.12$ and inflammatory $0.07$,
+versus cognition $0.39$ and sleep $0.42$). Reporting the bifactor general loadings
+$|\lambda_{jG}|$ and the correlated-\Gfac{} correlations $\phi_{Gd}$ together---they
+agree on the ordering---is what makes the separation a measurable estimand rather than an
+artefact of the orthogonality constraint (Figure~\ref{fig:biologyg};
+Annex~\ref{ann:measurement}). The biology--\Gfac{} result is reported unadjusted and
+under a covariate-adjustment ladder (age, sex, education, site, antipsychotic exposure,
+adiposity) implemented by residualizing each indicator before the factor model.
 
 \subsection{Estimation, confirmation, invariance and scoring}
 
@@ -97,17 +158,32 @@ treating coordinates as equally measured.
 
 \subsection{Stratification, temporal coherence, prognosis and treatment}
 
-On the fitted coordinates, structure was tested before any clustering by a
-multi-statistic battery computed over the posterior draws, anchored by a single-Gaussian
-falsification null that asks whether the best partition of the cloud separates patients
-better than slicing a structureless Gaussian of identical covariance
-(Annex~\ref{ann:stratification}). Because the verdict was a continuum, the load-bearing
-representations are the continuous coordinates and a soft archetype simplex (archetypal
-analysis~\citep{cutler1994archetypal}, the number of corners set by cross-seed stability);
-a measurement-error Gaussian mixture (extreme deconvolution~\citep{bovy2011xd}, each
-patient carrying its own posterior covariance) provides a nested family of soft
-tessellations, with no privileged number of regions (Annex~\ref{ann:stratification}).
-Temporal coherence scored the follow-up visits on the \emph{fixed} measurement model
+On the fitted coordinates $\{x_i,S_i\}$---each patient's posterior-mean position
+$x_i=\hat f_i\in\mathbb{R}^{9}$ together with its posterior covariance $S_i$---structure
+was tested \emph{before} any clustering by a multi-statistic battery computed over the
+posterior draws, anchored by a \emph{single-Gaussian falsification null}: synthetic data
+are drawn from one Gaussian with the empirical mean and covariance of the coordinates
+(structureless by construction), the identical pipeline is run on real and null data, and
+we ask whether the real cloud's best partition separates patients any better than the
+null's. It does not (best-silhouette $z=-0.36$; Annex~\ref{ann:stratification}), so the
+verdict is a graded \emph{continuum}, not discrete biotypes. The load-bearing
+representations are therefore the continuous coordinates themselves and a soft archetype
+simplex, not any hard partition. Archetypal analysis~\citep{cutler1994archetypal} writes
+each patient as a convex blend of $A=4$ extreme phenotypes pinned to the convex hull of
+the cloud (the barycentric representation reported in Eq.~\ref{eq:res-archetype}), each
+archetype itself a convex combination of patients; the simplex weights
+$w_i\in\Delta^{A-1}$ are a patient's soft archetype weighting, so the continuum is
+\emph{read} through extremes rather than \emph{cut} into kinds. The number of corners
+($A=4$) was set by cross-seed stability rather than parsimony, with the full optimization
+$z_a=\sum_j b_{ja}\hat f_j$ and the draw-wise uncertainty propagation given in
+Annex~\ref{ann:stratification}. A measurement-error Gaussian mixture (extreme
+deconvolution~\citep{bovy2011xd}, each patient carrying its own $S_i$) supplies a nested
+family of soft tessellations with no privileged number of regions, the operative
+granularity deferred to incremental predictive validity downstream
+(Annex~\ref{ann:stratification}). Each downstream analysis then treats the measurement
+model as \emph{fixed}---reusing or re-scoring coordinates without re-discovering the
+map---and propagates each coordinate's posterior uncertainty $S_i$ rather than treating
+the scores as exact. Temporal coherence scored the follow-up visits on the \emph{fixed} measurement model
 (observed cells, uncertainty propagated), tested longitudinal invariance, and decomposed
 trait from state with a measurement-error random-intercept model that plugs the known
 baseline measurement variance and includes visit fixed effects, yielding an individual

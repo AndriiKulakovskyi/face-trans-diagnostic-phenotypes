@@ -223,15 +223,14 @@ def fig3_biology_g():
 # ============================================================================ FIG 4
 def fig4_continuum():
     struct = json.load(open(R("strata_oop", "structure", "data.json")))
-    prof = pd.read_csv(R("strata_oop", "consolidate", "archetype_profiles.csv"))
     dr = np.load(R("strata_oop", "coordinates", "coordinates_draws.npz"))
     X = dr["draws"].mean(axis=0)  # (9013, 9) posterior-mean coords, dim order = dims
     dims = list(dr["dims"])
     coords = pd.read_parquet(R("strata_oop", "coordinates", "coordinates_full.parquet"))
     cohort = coords["cohort"].str.lower().values
 
-    fig = plt.figure(figsize=(12.2, 8.0))
-    gs = fig.add_gridspec(2, 3, height_ratios=[1.0, 1.18], hspace=0.42, wspace=0.34)
+    fig = plt.figure(figsize=(10.6, 8.2))
+    gs = fig.add_gridspec(2, 2, hspace=0.42, wspace=0.30)
 
     # (a) single-Gaussian falsification null --------------------------------------
     axA = fig.add_subplot(gs[0, 0])
@@ -276,31 +275,37 @@ def fig4_continuum():
         ax.set_xticks([]); ax.set_yticks([])
     axB = fig.add_subplot(gs[0, 1]); emb(axB, None, "by diagnosis\n(fully intermixed)", disc=COH)
     panel(axB, "b")
-    axC = fig.add_subplot(gs[0, 2]); emb(axC, X[:, gi["overall_severity"]], "by general burden\n(smooth gradient →)",
+    axC = fig.add_subplot(gs[1, 0]); emb(axC, X[:, gi["overall_severity"]], "by general burden\n(smooth gradient →)",
                                          cmap="viridis", cbar_lbl="G")
     panel(axC, "c")
-    axD = fig.add_subplot(gs[1, 0]); emb(axD, X[:, gi["inflammatory"]], "by inflammatory load\n(a different direction)",
+    axD = fig.add_subplot(gs[1, 1]); emb(axD, X[:, gi["inflammatory"]], "by inflammatory load\n(a different direction)",
                                          cmap="rocket" if "rocket" in plt.colormaps() else "magma", cbar_lbl="inflammatory")
     panel(axD, "d")
 
-    # (e) A=4 archetype profiles --------------------------------------------------
-    axE = fig.add_subplot(gs[1, 1:])
+    save(fig, "fig4_continuum")
+
+
+def fig4b_archetypes():
+    """Archetype profiles, split out of the former fig4 panel (e) so the continuum
+    (a negative structural result) and the four archetypal extremes (a positive
+    geometric result) are separate display items, matching Results sections 2.5/2.6."""
+    prof = pd.read_csv(R("strata_oop", "consolidate", "archetype_profiles.csv"))
+    fig, axE = plt.subplots(figsize=(8.6, 4.8))
     A = prof[prof["arm"] == "A_all9"].set_index("archetype")
     order = AXES9; xx = np.arange(len(order)); w = 0.2
     for a in range(4):
         vals = [A.loc[a, c] for c in order]
         axE.bar(xx + (a-1.5)*w, vals, w, color=ARCH_C[a], label=f"A{a} {ARCH_N1[a]}")
     axE.axhline(0, color="#444444", lw=0.8)
-    axE.set_xticks(xx); axE.set_xticklabels([AXLAB1[a] for a in order], rotation=35, ha="right", fontsize=7.4)
+    axE.set_xticks(xx); axE.set_xticklabels([AXLAB1[c] for c in order], rotation=35, ha="right", fontsize=7.4)
     axE.set_ylabel("archetype coordinate (z)")
     axE.set_title("Four archetypal extremes read the continuum (biology ⊥ symptoms ⊥ severity)", fontsize=9.4)
-    axE.legend(ncol=4, fontsize=7.2, loc="upper center", bbox_to_anchor=(0.5, 1.22), columnspacing=1.0)
+    axE.legend(ncol=4, fontsize=7.2, loc="upper center", bbox_to_anchor=(0.5, 1.16), columnspacing=1.0)
     axE.set_ylim(-3.4, 3.2)
-    axE.text(0.5, -0.40, "A0 peaks on metabolic / inflammatory / substance with high severity; "
+    axE.text(0.5, -0.30, "A0 peaks on metabolic / inflammatory / substance with high severity; "
              "A2 is equally severe but biology-low — the dissociation made visible.",
              transform=axE.transAxes, ha="center", va="top", fontsize=7.0, color="#555555")
-    panel(axE, "e", x=-0.075)
-    save(fig, "fig4_continuum")
+    save(fig, "fig4b_archetypes")
 
 # ============================================================================ FIG 5
 def fig5_persistence():
@@ -571,7 +576,7 @@ def edfig_consort():
 
 if __name__ == "__main__":
     print("Building FACE-ATLAS copula figures ->", OUT)
-    for fn in [fig1_overview, fig2_map, fig3_biology_g, fig4_continuum, fig5_persistence,
+    for fn in [fig1_overview, fig2_map, fig3_biology_g, fig4_continuum, fig4b_archetypes, fig5_persistence,
                fig6_prognosis, edfig_treatment, edfig_repbench, edfig_invariance,
                edfig_robustness, edfig_consort]:
         try:
