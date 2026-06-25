@@ -167,50 +167,53 @@ def _load_loadings():
 
 
 def fig2_map(max_per_block=8):
+    """Figure 2: the standalone posterior loading dot-atlas (the centrepiece)."""
     L = _load_loadings()
     rows = LA.atlas_rows(L, AXES9, max_per_block)
     n_rows = len(rows)
-    fig = plt.figure(figsize=(13.0, max(9.0, 2.6 + 0.135 * n_rows)))
-    outer = fig.add_gridspec(1, 2, width_ratios=[1.32, 1.0], wspace=0.32)
-    axA = fig.add_subplot(outer[0, 0])
-    gsR = outer[0, 1].subgridspec(2, 1, height_ratios=[1.7, 1.0], hspace=0.32)
-    gsL = gsR[0].subgridspec(3, 3, hspace=0.62, wspace=0.55)
-    axLol = [fig.add_subplot(gsL[i // 3, i % 3]) for i in range(9)]
-    axC = fig.add_subplot(gsR[1])
-
-    # (a) dot-atlas
+    fig, axA = plt.subplots(figsize=(9.6, max(8.5, 2.4 + 0.135 * n_rows)))
     sc = LA.draw_dot_atlas(axA, L, AXES9, rows, **ASTYLE)
-    axA.set_title("Posterior loading atlas  (indicator × factor)", loc="left", fontsize=10.5)
+    axA.set_title("Posterior loading atlas  (indicator × factor)", loc="left", fontsize=11.5)
     LA.atlas_legends(fig, axA, sc, window_color=OI["yellow"])
-    panel(axA, "a", x=-0.05, y=1.02)
+    save(fig, "fig2_map")
 
-    # (b) factor-wise lollipops
+
+def fig_factors():
+    """Figure 3: factor-wise interpretability lollipops (a) + inter-factor correlations Φ (b)."""
+    L = _load_loadings()
+    fig = plt.figure(figsize=(12.6, 6.2))
+    outer = fig.add_gridspec(1, 2, width_ratios=[1.55, 1.0], wspace=0.30)
+    gsL = outer[0, 0].subgridspec(3, 3, hspace=0.65, wspace=0.55)
+    axLol = [fig.add_subplot(gsL[i // 3, i % 3]) for i in range(9)]
+    axC = fig.add_subplot(outer[0, 1])
+
+    # (a) factor-wise lollipops
     for k, f in enumerate(AXES9):
         LA.draw_lollipop(axLol[k], L, f, color=BLOCK_C[f], axlab=AXLAB1, axtag=AXTAG)
-    fig.text(0.745, 0.985, "What defines each axis  (top home indicators, 95% CI)",
-             ha="center", fontsize=9.5, fontweight="bold")
-    panel(axLol[0], "b", x=-0.5, y=1.55)
+    fig.text(0.40, 0.99, "What defines each axis  (top home indicators, 95% CI)",
+             ha="center", fontsize=10, fontweight="bold")
+    panel(axLol[0], "a", x=-0.5, y=1.5)
 
-    # (c) inter-factor correlations Φ (copula 9×9)
+    # (b) inter-factor correlations Φ (copula 9×9)
     P = pd.read_csv(REP("copula_s5_9dim_phi.csv"), index_col=0).reindex(index=AXES9, columns=AXES9)
     Pv = P.values
     lab = [AXLAB1[c] for c in AXES9]
-    im2 = axC.imshow(Pv, cmap="RdBu_r", vmin=-0.5, vmax=0.5, aspect="equal")
-    axC.set_xticks(range(9)); axC.set_xticklabels(lab, rotation=45, ha="right", fontsize=6.6)
-    axC.set_yticks(range(9)); axC.set_yticklabels(lab, fontsize=6.6)
+    axC.imshow(Pv, cmap="RdBu_r", vmin=-0.5, vmax=0.5, aspect="equal")
+    axC.set_xticks(range(9)); axC.set_xticklabels(lab, rotation=45, ha="right", fontsize=6.8)
+    axC.set_yticks(range(9)); axC.set_yticklabels(lab, fontsize=6.8)
     for i in range(9):
         for j in range(9):
             if i == j:
                 continue
             axC.text(j, i, f"{Pv[i, j]:.2f}", ha="center", va="center", fontsize=5.8,
                      color="white" if abs(Pv[i, j]) > 0.32 else "#222222")
-    axC.set_title("Inter-factor correlations  Φ", loc="center", fontsize=9.5)
+    axC.set_title("Inter-factor correlations  Φ", loc="center", fontsize=10)
     spec_off = Pv[1:, 1:][~np.eye(8, dtype=bool)]            # specific–specific block (G zeros excluded)
-    axC.text(0.5, -0.42, f"G orthogonal by construction (row/col 0); specific–specific mean |Φ| ≈ "
+    axC.text(0.5, -0.32, f"G orthogonal by construction (row/col 0); specific–specific mean |Φ| ≈ "
              f"{np.abs(spec_off).mean():.2f}; metabolic–inflammatory = {P.loc['metabolic','inflammatory']:.2f}",
-             transform=axC.transAxes, ha="center", va="top", fontsize=6.6, color="#555555")
-    panel(axC, "c", x=-0.18, y=1.10)
-    save(fig, "fig2_map")
+             transform=axC.transAxes, ha="center", va="top", fontsize=6.8, color="#555555")
+    panel(axC, "b", x=-0.16, y=1.08)
+    save(fig, "fig_factors")
 
 
 def edfig_full_atlas():
@@ -612,9 +615,9 @@ if __name__ == "__main__":
     import sys
     only = sys.argv[1] if len(sys.argv) > 1 else None     # e.g. `python make_figures_copula.py fig2`
     print("Building FACE-ATLAS copula figures ->", OUT)
-    for fn in [fig1_overview, fig2_map, edfig_full_atlas, fig3_biology_g, fig4_continuum, fig4b_archetypes,
-               fig5_persistence, fig6_prognosis, edfig_treatment, edfig_repbench, edfig_invariance,
-               edfig_robustness, edfig_consort]:
+    for fn in [fig1_overview, fig2_map, fig_factors, edfig_full_atlas, fig3_biology_g, fig4_continuum,
+               fig4b_archetypes, fig5_persistence, fig6_prognosis, edfig_treatment, edfig_repbench,
+               edfig_invariance, edfig_robustness, edfig_consort]:
         if only and only not in fn.__name__:
             continue
         try:
