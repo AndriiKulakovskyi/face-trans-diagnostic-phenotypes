@@ -1,7 +1,8 @@
 # M1 cross-loading arm (sensitivity → candidate primary)
 
-> Status: **fit running** (launched 2026-06-26). Results section is filled once the detached fit finishes.
-> Canonical M1 is unchanged and untouched while this arm is evaluated.
+> Status: **COMPLETE — arm rejected, certified map retained** (fit 2026-06-26, ~50 min, exit 0).
+> The cross-loading parameterization is **non-identified** for the immunometabolic block; it stays a
+> documented sensitivity arm and does **not** become primary. The canonical M1 was never touched.
 
 ## Why
 
@@ -91,8 +92,50 @@ guardrails (over-dispersed-init check, thin-factor non-collapse, R̂/ESS, Φ sta
 Freeing all 980 at once re-hits the dilution wall regardless of the warm start (it is an identification
 problem, not a starting-point one).
 
-## Results
+## Results (2026-06-26, `s5_xcross`, warm-started from `s5_9dim_mixed`)
 
-_Pending the detached fit. Will record: R̂/ESS/divergences, surviving cross cells (CI≠0) with signs,
-the metabolic↔inflammatory Φ shift, thin-factor home-loading stability, and the over-dispersed-init
-congruence check._
+**Verdict: REJECTED — the cross-loading parameterization is non-identified.** Freeing the 37
+immunometabolic cells does not converge, inflates the very correlation it was meant to absorb, and
+rotates the CRP anchor out of its home factor. The certified hard-zero + Φ-correlation map is retained
+and, in fact, vindicated.
+
+### Acceptance scorecard
+
+| criterion | result | evidence |
+|---|---|---|
+| 1. Convergence real | **FAIL** | R̂ **1.53**, ESS **7**, 0 div — and the bad mixing is *localised*: `Phi[metabolic,inflammatory]` is the single worst cell (R̂ 1.53); 35/121 `lam_cross` cells R̂>1.2. |
+| 2. Thin factors don't dilute | **PASS** | substance/mania/suicidality home loadings unchanged (0.52/0.48/1.92); explicit `lh_*` R̂ 1.00, `sigma` R̂ 1.02. The warm-start protected them exactly as intended. |
+| 3. Φ[met,inf] drops | **FAIL** | it went the **wrong way**: 0.18 → **0.34**, and is the worst-mixing parameter. The shared variance is double-counted across the ridge, not absorbed by the cross-loadings. |
+| 4. Cross-loadings earned | **FAIL** | only **2/37** credible, and they are rotation artifacts: `crp→metabolic` (+0.36) appears *because* CRP's home loading collapsed **0.226 → 0.012**; metabolic anchors inflated **>1** (bmi 0.94→1.23, weight 0.86→1.13). |
+
+### Mechanism
+
+The metabolic↔inflammatory shared variance is non-identified between two equivalent parameterizations —
+a **Φ-correlation** vs **direct cross-loadings** (the classic ESEM cross-loading ⟷ factor-correlation
+trade-off). The chains oscillate between them, so R̂ blows up on exactly `Phi[met,inf]` + the cross cells
+while everything else (thin factors, residual SDs, the non-biology backbone) converges fine. The warm
+start started the backbone in the hard-zero basin and held the thin factors, but **could not remove the
+ridge** — initialization speeds an identified fit, it cannot identify a ridged one (the a-priori caution,
+borne out exactly).
+
+### Scientific takeaway
+
+The immunometabolic coupling is **better modelled as a Φ-correlation** (identified, stable, 0.18) than as
+direct cross-loadings (non-identified rotation). This is an *earned* boundary: we tested the one
+theory-plausible specific cross-loading family the ontology encodes, and the data say to keep the
+factor-correlation form. The hard-zero default is retained.
+
+### Consequence for "grow by evidence"
+
+The growth path is, for now, **closed at this rung**: the only theory-plausible specific cells fail to
+identify, so there is nothing to carry forward to a wider set. A future attempt would need a *different
+identification strategy* (e.g. pin `Phi[met,inf]=0` and let cross-loadings carry the coupling — a
+substantively different model, not this one), or simply accept the Φ-correlation form. Freeing the
+`unlikely_cross` cells is not on the table — they would only add more ridges.
+
+### Artifacts (non-converged — do not use as a map)
+
+`results/face/oop_measurement/copula/s5_xcross/` and `reports/xcross_{loadings,phi}.csv` are kept as the
+evidence behind this verdict; they are **a rejected, non-converged fit**, not a usable measurement map.
+The over-dispersed-init congruence check (criterion-1 confirmation) was made moot by the outright R̂ 1.53
+failure — there is no converged result to cross-validate.
