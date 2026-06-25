@@ -140,8 +140,17 @@ def main() -> None:
     assert idata.posterior["Lam"].sizes[list(idata.posterior["Lam"].dims)[-2]] == base.M.shape[1], \
         "Lam item-axis != rebuilt J"
 
-    loadings = export_loadings_summary(idata, mixed, config, hdi_prob=args.hdi_prob)
+    # Cross-loading arm: the manifest records specific_cross when the fit freed the plausible_cross
+    # cells, so the export must build its kind-map the same way to surface those cross cells.
+    xcross = bool(stage.get("specific_cross"))
+    cross_sd_scale = float(stage.get("cross_sd_scale", 0.25))
+    loadings = export_loadings_summary(idata, mixed, config, hdi_prob=args.hdi_prob,
+                                       specific_cross=xcross, cross_sd_scale=cross_sd_scale)
     phi = export_phi(idata, base.factor_cols)
+    if xcross:
+        n_cross = int((loadings["kind"] == "cross").sum())
+        n_cross_cred = int(((loadings["kind"] == "cross") & loadings["excludes_zero"]).sum())
+        print(f"[arm] cross cells: {n_cross} emitted, {n_cross_cred} with 95% CI excluding zero")
 
     # --- spot-checks (verified expectations) ---
     def cell(item: str, factor: str):
@@ -160,11 +169,13 @@ def main() -> None:
     out_dir = idata_path.parent
     reports = args.reports_dir
     reports.mkdir(parents=True, exist_ok=True)
+    # Arm-specific article-facing names so the cross-loading run never overwrites the canonical CSVs.
+    prefix = "xcross" if xcross else "copula_s5_9dim"
     targets = {
         out_dir / "loadings_summary.csv": (loadings, False),
         out_dir / "phi.csv": (phi, True),
-        reports / "copula_s5_9dim_loadings.csv": (loadings, False),
-        reports / "copula_s5_9dim_phi.csv": (phi, True),
+        reports / f"{prefix}_loadings.csv": (loadings, False),
+        reports / f"{prefix}_phi.csv": (phi, True),
     }
     for path, (frame, index) in targets.items():
         frame.to_csv(path, index=index)

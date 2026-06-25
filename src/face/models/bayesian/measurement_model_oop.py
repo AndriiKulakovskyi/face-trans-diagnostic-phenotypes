@@ -153,6 +153,12 @@ class StageDefinition:
     chains: int = 4
     target_accept: float = 0.9
     seed: int = 20260605
+    # Cross-loading arm: free the theory-motivated ``plausible_cross`` specific<->specific cells
+    # (the immunometabolic metabolic<->inflammatory bridge in matrix v3) instead of hard-zeroing them.
+    # ``cross_sd_scale`` multiplies their prior_sd (0.25 in the matrix), so 1.0 -> Normal(0, 0.25).
+    # Default False/0.25 reproduces the certified hard-zero map exactly.
+    specific_cross: bool = False
+    cross_sd_scale: float = 0.25
 
 
 @dataclass(frozen=True)
@@ -337,6 +343,15 @@ class MeasurementConfig:
                 target_accept=0.95,
             ),
         ]
+
+    def cross_loading_stage_plan(self) -> list[StageDefinition]:
+        """Cross-loading arm (sensitivity): the certified S5 map PLUS the theory-motivated
+        ``plausible_cross`` specific cells (the immunometabolic metabolic<->inflammatory bridge),
+        freed at Normal(0, 0.25).  Warm-started from the certified ``s5_9dim_mixed`` so it starts
+        in the hard-zero basin; otherwise identical to it (same N, draws/tune, target_accept, seed).
+        A separate stage name (own output dir) keeps the canonical fit untouched."""
+        s5 = self.stage_plan[-1]   # the certified s5_9dim_mixed mixed rung
+        return [replace(s5, name="s5_xcross", specific_cross=True, cross_sd_scale=1.0)]
 
     @property
     def smoke_stage_plan(self) -> list[StageDefinition]:
@@ -863,6 +878,7 @@ class MeasurementDataset:
         windows: bool,
         flat: bool = False,
         specific_cross: bool = False,
+        cross_sd_scale: float = 0.25,
         bifactor_g_sd: dict[str, float] | None = None,
     ) -> LoadingSpec:
         """Resolve a theory-faithful loading spec for an encoded core block."""
@@ -873,6 +889,7 @@ class MeasurementDataset:
             soft_unlikely=self.config.soft_unlikely,
             soft_g_anchor_specific=self.config.soft_g_anchor_specific,
             specific_cross=specific_cross,
+            cross_sd_scale=cross_sd_scale,
             bifactor_g_sd=bifactor_g_sd,
             flat=flat,
         )
@@ -1433,6 +1450,8 @@ class StageRunner:
             spec = self.dataset.loading_spec(
                 data.base,
                 windows=stage.windows,
+                specific_cross=stage.specific_cross,
+                cross_sd_scale=stage.cross_sd_scale,
                 bifactor_g_sd={f: 0.05 for f in stage.explicit_factors if f != G_KEY},
             )
             weights = _cohort_weights(data.base.cohort) if self.config.cohort_weighted else None
@@ -1449,7 +1468,12 @@ class StageRunner:
                 n_subsample=stage.n_subsample,
                 seed=stage.seed,
             )
-            spec = self.dataset.loading_spec(payload_data, windows=stage.windows)
+            spec = self.dataset.loading_spec(
+                payload_data,
+                windows=stage.windows,
+                specific_cross=stage.specific_cross,
+                cross_sd_scale=stage.cross_sd_scale,
+            )
             weights = _cohort_weights(payload_data.cohort) if self.config.cohort_weighted else None
             model = self.builder.build_marginalized(payload_data, spec, correlated=stage.correlated, weights=weights)
 
@@ -1894,7 +1918,7 @@ def _config_sig(config: MeasurementConfig) -> dict[str, Any]:
 
 def _stage_spec(stage: StageDefinition) -> dict[str, Any]:
     """Stable cache-reuse signature for a stage definition."""
-    return {
+    spec = {
         "name": stage.name,
         "factors": list(stage.factors),
         "correlated": stage.correlated,
@@ -1910,6 +1934,12 @@ def _stage_spec(stage: StageDefinition) -> dict[str, Any]:
         "target_accept": stage.target_accept,
         "seed": stage.seed,
     }
+    if stage.specific_cross:
+        # Only emitted for the cross-loading arm, so existing hard-zero stage caches
+        # (whose manifests predate these keys) stay valid and are not silently re-run.
+        spec["specific_cross"] = True
+        spec["cross_sd_scale"] = stage.cross_sd_scale
+    return spec
 
 
 def _hurdle_nb_logp(y, psi, mu, alpha):
