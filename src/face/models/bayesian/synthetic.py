@@ -23,7 +23,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .measurement_model_oop import G_KEY, copula_invert
+from .measurement_model_oop import (
+    DEFAULT_EXPLICIT_FACTORS,
+    G_KEY,
+    MeasurementDataset,
+    copula_invert,
+)
 
 N_COPULA_KNOTS = 2000  # quantile knots stored per continuous item for the inverse map (dense tails -> faithful heavy-tailed marginals)
 
@@ -72,6 +77,18 @@ def _pm(idata, name):
     return np.asarray(idata.posterior[name].mean(("chain", "draw")).values)
 
 
+def _draws(idata, name) -> np.ndarray:
+    """Posterior draws of ``name`` flattened over (chain, draw): shape ``(n_draws, *param_dims)``.
+
+    Unlike ``_pm`` (posterior mean) this keeps the full draw axis so equal-tailed
+    credible intervals can be read off with ``np.quantile``.  Used by the
+    CI-aware loading export; ``_pm`` stays the mean-only path for Phi and the
+    portable ``FittedMeasurementModel``.
+    """
+    da = idata.posterior[name]
+    return da.stack(__s=("chain", "draw")).transpose("__s", ...).values
+
+
 def export_fitted_model(idata, mixed, config, *, meta: dict | None = None) -> FittedMeasurementModel:
     """Extract posterior-mean parameters from a fitted (copula) mixed model into a portable object."""
     base = mixed.base
@@ -116,6 +133,96 @@ def export_fitted_model(idata, mixed, config, *, meta: dict | None = None) -> Fi
                              "cohort_weighted": bool(config.cohort_weighted), "J": int(Lam.shape[0]),
                              "F": int(Lam.shape[1]), "n_explicit": len(explicit)},
     )
+
+
+def export_loadings_summary(idata, mixed, config, *, hdi_prob: float = 0.95) -> pd.DataFrame:
+    """Tidy long table of posterior factor loadings WITH equal-tailed credible intervals.
+
+    One row per *meaningful* (item, factor) cell, combining the two places the copula mixed
+    model stores loadings:
+
+    * the **continuous block** ``Lam`` (J x F): home loadings (``primary`` / ``g_anchor``),
+      specific-item bifactor-G loadings (``bifactor_G``), and depression/anxiety ``window``
+      loadings on G.  Hard-zero ``unlikely`` cells are never sampled (Lam draws are exactly 0)
+      and are dropped — only interpretable cells are emitted.
+    * the **explicit block** — for each Bernoulli / negative-binomial / ordered-logistic item,
+      two scalar loadings: ``lh_<item>`` on its home explicit factor and ``lg_<item>`` on G.
+
+    The home factor of an explicit item is ``factor_cols[e_cols[ng_home[item]]]`` — ``ng_home``
+    indexes INTO ``e_cols``, not into ``factor_cols`` directly.
+
+    Columns: ``item, factor, home, block, likelihood_family, kind, loading`` (signed posterior
+    median), ``abs_loading, ci_low, ci_high, excludes_zero``.  ``hdi_prob`` parameterizes the
+    equal-tailed interval (default 95% -> 2.5 / 97.5 quantiles); column names stay ``ci_*`` to
+    signal equal-tailed (not HDI).
+    """
+    base = mixed.base
+    factor_cols = list(base.factor_cols)
+    items = list(base.items)
+    home = list(base.home)
+    lo_q, hi_q = (1.0 - hdi_prob) / 2.0, 1.0 - (1.0 - hdi_prob) / 2.0
+
+    ds = MeasurementDataset(config)
+    spec = ds.loading_spec(
+        base,
+        windows=True,
+        bifactor_g_sd={f: 0.05 for f in DEFAULT_EXPLICIT_FACTORS if f != G_KEY},
+    )
+    kind = spec.kind  # {(j, c): kind_str}
+    meta = ds.meta
+
+    def _family(item: str, fallback: str = "") -> str:
+        return str(meta.loc[item, "likelihood_family"]) if item in meta.index else fallback
+
+    rows: list[dict] = []
+
+    # --- continuous block: Lam (n_draws, J, F) ---
+    Lam = _draws(idata, "Lam")
+    q = np.quantile(Lam, [lo_q, 0.5, hi_q], axis=0)  # (3, J, F)
+    for j, item in enumerate(items):
+        h = home[j]
+        fam = _family(item)
+        for c, factor in enumerate(factor_cols):
+            k = kind.get((j, c))
+            if k is None and factor != h and factor != G_KEY:
+                continue  # hard-zero unlikely cell -> not interpretable
+            lo, med, hi = float(q[0, j, c]), float(q[1, j, c]), float(q[2, j, c])
+            if k is None and abs(med) < 1e-9 and abs(lo) < 1e-9 and abs(hi) < 1e-9:
+                continue  # G/home safety-net cell that is in fact a structural zero
+            kk = k or ("primary" if factor == h else "bifactor_G" if factor == G_KEY else "cross")
+            rows.append(
+                dict(item=item, factor=factor, home=h or "", block="continuous",
+                     likelihood_family=fam, kind=kk, loading=med, abs_loading=abs(med),
+                     ci_low=lo, ci_high=hi, excludes_zero=bool(lo > 0.0 or hi < 0.0))
+            )
+
+    # --- explicit block: lh_<item> (home) + lg_<item> (G) ---
+    fam_by = {**{it: "bernoulli" for it in mixed.bin_items},
+              **{it: "neg_binomial" for it in mixed.cnt_items},
+              **{it: "ordered_logistic" for it in mixed.ord_items}}
+    for item in list(mixed.bin_items) + list(mixed.cnt_items) + list(mixed.ord_items):
+        home_factor = factor_cols[mixed.e_cols[mixed.ng_home[item]]]
+        for var, factor, kk in ((f"lh_{item}", home_factor, "primary"),
+                                (f"lg_{item}", G_KEY, "bifactor_G")):
+            d = _draws(idata, var)
+            lo, med, hi = (float(v) for v in np.quantile(d, [lo_q, 0.5, hi_q]))
+            rows.append(
+                dict(item=item, factor=factor, home=home_factor, block="explicit",
+                     likelihood_family=fam_by[item], kind=kk, loading=med, abs_loading=abs(med),
+                     ci_low=lo, ci_high=hi, excludes_zero=bool(lo > 0.0 or hi < 0.0))
+            )
+
+    df = pd.DataFrame(rows)
+    fidx = {f: i for i, f in enumerate(factor_cols)}
+    df["__f"] = df["factor"].map(fidx)
+    df = df.sort_values(["item", "__f"]).drop(columns="__f").reset_index(drop=True)
+    return df
+
+
+def export_phi(idata, factor_cols: list[str]) -> pd.DataFrame:
+    """Posterior-mean 9x9 inter-factor correlation matrix Phi, factor-labeled index/columns."""
+    Phi = _pm(idata, "Phi")
+    return pd.DataFrame(Phi, index=list(factor_cols), columns=list(factor_cols))
 
 
 def save_fitted_model(model: FittedMeasurementModel, path: str | Path) -> Path:

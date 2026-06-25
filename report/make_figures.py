@@ -54,6 +54,20 @@ PRETTY = {"overall_severity": "G (severity)", "cognition": "cognition", "metabol
           "inflammatory": "inflammatory", "sleep": "sleep", "developmental_risk": "developmental",
           "suicidality": "suicidality", "mania_activation": "mania", "substance": "substance"}
 
+# Shared dot-atlas engine (same implementation as the article; report house style passed in below).
+import sys  # noqa: E402
+
+sys.path.insert(0, str(REPO / "src"))
+from face.reporting import loading_atlas as LA  # noqa: E402
+
+LOADINGS_CSV = REPORTS / "copula_s5_9dim_loadings.csv"   # CI-aware copula loadings (run_export_loadings.py)
+# per-home-factor strip colours (categorical, report palette) + short axis tags G / D1..D8.
+R_BLOCK_C = {"overall_severity": ACCENTDK, "cognition": ACCENT, "metabolic": CAV,
+             "inflammatory": OPEN, "sleep": VIOLET, "developmental_risk": KR,
+             "suicidality": "#9D174D", "mania_activation": "#A16207", "substance": MUTE}
+R_AXTAG = {a: ("G" if a == "overall_severity" else f"D{i}") for i, a in enumerate(FACTORS9)}
+R_WINDOW = "#E6B800"
+
 
 def _save(fig, name):
     p = OUT / name
@@ -146,11 +160,19 @@ def _draw_atlas(ax, M, homes, title, vmax):
 
 
 def fig_empirical_atlas():
-    post, _, homes = _atlas_matrix()
-    fig, ax = plt.subplots(figsize=(6.4, max(7.5, len(post) * 0.105)))
-    im = _draw_atlas(ax, post, homes, "Empirical atlas — posterior loadings (the data)", 0.95)
-    cb = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.02); cb.set_label("|posterior loading|", fontsize=8)
-    cb.ax.tick_params(labelsize=7)
+    """Dot-atlas of the copula posterior loadings (the shared engine, report house style).
+
+    Dot size + colour = |posterior median loading|; an outline marks loadings whose 95% credible
+    interval excludes zero (heavier ring = home-factor anchor); the G column carries the shaded
+    depression/anxiety windows.  Every modelled indicator is shown (no per-block cap)."""
+    L = LA.load_loadings(LOADINGS_CSV)
+    rows = LA.atlas_rows(L, FACTORS9, None)
+    fig, ax = plt.subplots(figsize=(8.2, max(9.0, 2.55 + 0.135 * len(rows))))
+    sc = LA.draw_dot_atlas(ax, L, FACTORS9, rows, cmap=SEQ, block_colors=R_BLOCK_C,
+                           axlab=PRETTY, axtag=R_AXTAG, window_color=R_WINDOW, label_fs=5.4)
+    LA.atlas_legends(fig, ax, sc, window_color=R_WINDOW, face="#2171b5")
+    ax.set_title("Empirical atlas — posterior loading dot-map (Gaussian-copula fit)",
+                 loc="left", fontsize=11)
     _save(fig, "fig_empirical_atlas.png")
 
 

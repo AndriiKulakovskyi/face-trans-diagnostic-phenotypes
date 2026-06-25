@@ -29,7 +29,7 @@ correlated-$G$ identification).}
 \toprule
 \hdr{dimension} & \hdr{anchored by} & \hdr{primary $\lambda$} & \hdr{$|\lambda_G|$}\\
 \midrule
-\rowcolor{facebg} $G$ --- functional burden & FAST 0.90, EGF 0.73, EQ-5D, CGI-S (functioning + severity only; no symptom content) & --- (general) & ---\\
+\rowcolor{facebg} $G$ --- functional burden & FAST 0.91, EGF 0.64, EQ-5D, CGI-S (functioning + severity only; no symptom content) & --- (general) & ---\\
 cognition & CVLT, WAIS coding/digit-span, fluency, TMT-B & 0.57 & 0.26\\
 \rowcolor{facebg} metabolic & BMI, waist, BP, glucose, HbA1c, lipids & 0.32 & 0.08\\
 inflammatory & CRP, WBC, neutrophils, platelets, eosinophils & 0.39 & 0.07\\
@@ -91,11 +91,15 @@ split). This side-by-side is the hybrid model adjusting theory with evidence.}
 \label{fig:priorposterior}
 \end{figure}
 
-\begin{figure}[h]\centering
-\includegraphics[width=0.64\linewidth]{figures/fig_empirical_atlas.png}
-\caption{The empirical atlas --- posterior loading magnitudes, rows grouped by home factor. Each dimension is
-anchored by its own block; the leftmost ($G$) column is faint for the specific items (biology faintest of all)
-and dark only for the functioning anchors at the top.}
+\begin{figure}[p]\centering
+\includegraphics[height=0.92\textheight]{figures/fig_empirical_atlas.png}
+\caption{The empirical atlas as a posterior loading \emph{dot-map} (Gaussian-copula fit, every modelled
+indicator). Rows are indicators grouped by their home factor (coloured left strip); columns are $G$ and the
+eight specific axes (D1--D8). Dot size and colour encode the absolute posterior \emph{median} loading; an
+outlined dot marks a loading whose $95\%$ credible interval excludes zero, and a heavier ring marks the
+home-factor anchor. Each dimension is anchored by its own block; the leftmost ($G$) column is faint for the
+specific items (biology faintest of all) and dark only for the functioning anchors at the top, where the
+depression/anxiety instruments (MADRS, QIDS, STAI) appear as shaded cross-loading \emph{windows} on $G$.}
 \label{fig:empatlas}
 \end{figure}
 
@@ -138,7 +142,7 @@ functional burden? --- and the answer remains a small $+0.12$. The separability 
 geometry, not of any one instrument's units.
 
 The conservative reading of $G$ itself supports this. $G$ is anchored \emph{only} by functioning and
-global-severity items (FAST $0.90$, EGF $0.73$) and carries \emph{no} symptom content --- a patient's
+global-severity items (FAST $0.91$, EGF $0.64$) and carries \emph{no} symptom content --- a patient's
 subjective-illness rating loads $\approx 0$. $G$ is therefore a transdiagnostic \emph{impairment} axis, not a
 latent ``p-factor'' liability to psychopathology --- a deliberately modest interpretation that avoids the
 bifactor over-claim.
@@ -165,7 +169,7 @@ integrate under the same $\Phi$ with low couplings (cross-seed Tucker $\varphi$ 
 \end{figure}
 
 The composite depression/anxiety instruments are \emph{not} a separate dimension: MADRS, QIDS, and STAI load
-$0.80$, $0.77$, and $0.66$ on $G$ (with minor sleep side-loadings), behaving as cross-loading \emph{windows}
+$0.82$, $0.72$, and $0.61$ on $G$ (with minor sleep side-loadings), behaving as cross-loading \emph{windows}
 onto overall burden. Depression and anxiety severity are expressions of functional burden here, not a separable
 affective latent --- the model was free to grow an eleventh factor and declined.
 
