@@ -29,7 +29,7 @@ correlated-$G$ identification).}
 \toprule
 \hdr{dimension} & \hdr{anchored by} & \hdr{primary $\lambda$} & \hdr{$|\lambda_G|$}\\
 \midrule
-\rowcolor{facebg} $G$ --- functional burden & FAST 0.90, EGF 0.73, EQ-5D, CGI-S (functioning + severity only; no symptom content) & --- (general) & ---\\
+\rowcolor{facebg} $G$ --- functional burden & FAST 0.91, EGF 0.64, EQ-5D, CGI-S (functioning + severity only; no symptom content) & --- (general) & ---\\
 cognition & CVLT, WAIS coding/digit-span, fluency, TMT-B & 0.57 & 0.26\\
 \rowcolor{facebg} metabolic & BMI, waist, BP, glucose, HbA1c, lipids & 0.32 & 0.08\\
 inflammatory & CRP, WBC, neutrophils, platelets, eosinophils & 0.39 & 0.07\\
@@ -91,11 +91,15 @@ split). This side-by-side is the hybrid model adjusting theory with evidence.}
 \label{fig:priorposterior}
 \end{figure}
 
-\begin{figure}[h]\centering
-\includegraphics[width=0.64\linewidth]{figures/fig_empirical_atlas.png}
-\caption{The empirical atlas --- posterior loading magnitudes, rows grouped by home factor. Each dimension is
-anchored by its own block; the leftmost ($G$) column is faint for the specific items (biology faintest of all)
-and dark only for the functioning anchors at the top.}
+\begin{figure}[p]\centering
+\includegraphics[height=0.92\textheight]{figures/fig_empirical_atlas.png}
+\caption{The empirical atlas as a posterior loading \emph{dot-map} (Gaussian-copula fit, every modelled
+indicator). Rows are indicators grouped by their home factor (coloured left strip); columns are $G$ and the
+eight specific axes (D1--D8). Dot size and colour encode the absolute posterior \emph{median} loading; an
+outlined dot marks a loading whose $95\%$ credible interval excludes zero, and a heavier ring marks the
+home-factor anchor. Each dimension is anchored by its own block; the leftmost ($G$) column is faint for the
+specific items (biology faintest of all) and dark only for the functioning anchors at the top, where the
+depression/anxiety instruments (MADRS, QIDS, STAI) appear as shaded cross-loading \emph{windows} on $G$.}
 \label{fig:empatlas}
 \end{figure}
 
@@ -120,7 +124,7 @@ Freeing $G$ to correlate with the specifics, it correlates $+0.07$ with inflamma
 metabolic, versus $+0.39$ with cognition and $+0.42$ with sleep --- so metabolic and inflammatory load carry
 $98.5$--$99.5\%$ of their variance \emph{independent of how impaired a patient is overall}. Biology is just as
 weakly tied to the \emph{symptom} axes: the metabolic and inflammatory couplings to suicidality, sleep, and
-mania sit near the $\approx 0.10$ off-diagonal floor of $\Phi$ (Figure~\ref{fig:phi}), not among its few
+mania sit near the $\approx 0.08$ off-diagonal floor of $\Phi$ (Figure~\ref{fig:phi}), not among its few
 non-trivial cells. The load-bearing finding is therefore a \emph{three-way} dissociation ---
 \textbf{biology $\perp$ symptoms $\perp$ severity}: a patient's metabolic/immune load is nearly independent of
 both their global severity \emph{and} their symptom profile. Two patients who look equally ill, and present
@@ -138,34 +142,42 @@ functional burden? --- and the answer remains a small $+0.12$. The separability 
 geometry, not of any one instrument's units.
 
 The conservative reading of $G$ itself supports this. $G$ is anchored \emph{only} by functioning and
-global-severity items (FAST $0.90$, EGF $0.73$) and carries \emph{no} symptom content --- a patient's
+global-severity items (FAST $0.91$, EGF $0.64$) and carries \emph{no} symptom content --- a patient's
 subjective-illness rating loads $\approx 0$. $G$ is therefore a transdiagnostic \emph{impairment} axis, not a
 latent ``p-factor'' liability to psychopathology --- a deliberately modest interpretation that avoids the
 bifactor over-claim.
 
 \subsection{Distinct axes, and depression as a window}
-\documented\ The dimensions are \emph{weakly} correlated --- mean $|\Phi_{\text{off-diagonal}}|\approx 0.10$
+\documented\ The dimensions are \emph{weakly} correlated --- mean $|\Phi_{\text{off-diagonal}}|\approx 0.08$
 (Figure~\ref{fig:phi}). The map carries genuine multidimensional information, not one severity factor in
-disguise. The only non-trivial couplings are clinically coherent: metabolic$\leftrightarrow$inflammatory
-$0.19$ (an immunometabolic link --- the two are related but \emph{not} collinear, vindicating the split),
-suicidality$\leftrightarrow$developmental $0.23$ (childhood adversity $\to$ suicidality), and
-sleep$\leftrightarrow$developmental $0.19$. Crucially, \emph{no} biology$\leftrightarrow$symptom cell rises
-above that floor: metabolic and inflammatory load do not co-vary appreciably with suicidality, sleep, mania, or
-suicidal-developmental burden. Together with the weak biology$\sim$$G$ coupling (\S\ref{sub:bioperpG}), this is
-the second leg of the \textbf{biology $\perp$ symptoms $\perp$ severity} dissociation --- biological load is a
-genuinely separate axis, neither a re-description of how severe a patient is nor of which symptoms they report.
+disguise. The non-trivial couplings are clinically coherent: sleep$\leftrightarrow$mania $0.24$ (reduced
+sleep need in activation), sleep$\leftrightarrow$developmental $0.20$ and
+suicidality$\leftrightarrow$developmental $0.17$ (childhood adversity $\to$ suicidality / disturbed sleep),
+and metabolic$\leftrightarrow$inflammatory $0.18$ (an immunometabolic link --- the two are related but
+\emph{not} collinear, vindicating the split). The single larger cell, inflammatory$\leftrightarrow$substance
+$0.33$, mirrors the biological archetype corner that groups substance with metabolic/immune load
+(A0, \S\ref{sec:strata}); but substance's $\Phi$-row is the least stable in the model --- its SUD indicators
+are cohort-restricted and rare, so the exact value is non-identifiable (it swings across seeds and cohort
+weightings) and is read with caution rather than as a headline. Crucially, \emph{no} biology$\leftrightarrow$
+\emph{symptom} cell rises above the floor: the metabolic and inflammatory couplings to suicidality, sleep,
+mania and developmental burden are all $|\Phi|\le 0.04$. Together with the weak biology$\sim$$G$ coupling
+(\S\ref{sub:bioperpG}), this is the second leg of the \textbf{biology $\perp$ symptoms $\perp$ severity}
+dissociation --- biological load is a genuinely separate axis, neither a re-description of how severe a patient
+is nor of which symptoms they report.
 
 \begin{figure}[h]\centering
 \includegraphics[width=0.56\linewidth]{figures/fig_phi_heatmap.png}
 \caption{Inter-dimension correlations $\Phi$ (specific block; $G$ orthogonal by construction). The off-diagonal
-is weak (mean $0.10$); the strongest links --- metabolic$\leftrightarrow$inflammatory and
-suicidality$\leftrightarrow$developmental --- are exactly the clinically expected ones. mania and substance
-integrate under the same $\Phi$ with low couplings (cross-seed Tucker $\varphi$ $0.993$).}
+is weak (mean $0.08$); the strongest stable links --- sleep$\leftrightarrow$mania, sleep$\leftrightarrow$
+developmental and metabolic$\leftrightarrow$inflammatory --- are exactly the clinically expected ones. The one
+larger cell, inflammatory$\leftrightarrow$substance ($0.33$), reflects substance's non-identifiable $\Phi$-row
+(modelled as an independent axis downstream); mania otherwise integrates with low couplings (cross-seed Tucker
+$\varphi$ $0.993$).}
 \label{fig:phi}
 \end{figure}
 
 The composite depression/anxiety instruments are \emph{not} a separate dimension: MADRS, QIDS, and STAI load
-$0.80$, $0.77$, and $0.66$ on $G$ (with minor sleep side-loadings), behaving as cross-loading \emph{windows}
+$0.82$, $0.72$, and $0.61$ on $G$ (with minor sleep side-loadings), behaving as cross-loading \emph{windows}
 onto overall burden. Depression and anxiety severity are expressions of functional burden here, not a separable
 affective latent --- the model was free to grow an eleventh factor and declined.
 
@@ -226,7 +238,7 @@ disposed.}
 \midrule
 \rowcolor{facebg} Overall severity & confirmed ($\to G$) & clean functioning anchor; no symptom content\\
 Cognitive flexibility & confirmed & mean primary $0.57$; invariant across cohorts\\
-\rowcolor{facebg} Metabolism / immuno & confirmed (\textbf{split}) & metabolic $+$ inflammatory, $\Phi\approx 0.19$\\
+\rowcolor{facebg} Metabolism / immuno & confirmed (\textbf{split}) & metabolic $+$ inflammatory, $\Phi\approx 0.18$\\
 Sleep / circadian & confirmed & $0.48$; most invariant axis\\
 \rowcolor{facebg} Neurodevelopment & confirmed (\textbf{proxy}) & own axis $0.42$; early-adversity/liability\\
 Suicidality & confirmed (mixed) & binary ISF $+2.2$ to $+2.7$ logit\\

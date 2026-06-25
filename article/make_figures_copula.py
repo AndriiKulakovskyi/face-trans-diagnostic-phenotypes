@@ -47,6 +47,29 @@ AXLAB = {"overall_severity": "General\nburden (G)", "cognition": "Cognition",
          "mania_activation": "Mania", "suicidality": "Suicidality",
          "developmental_risk": "Developmental", "substance": "Substance"}
 AXLAB1 = {k: v.replace("\n", " ") for k, v in AXLAB.items()}
+# Short axis tag: G for the burden backbone, D1..D8 for the specific axes (in AXES9 order).
+AXTAG = {a: ("G" if a == "overall_severity" else f"D{i}") for i, a in enumerate(AXES9)}
+
+# Per-block (home-factor) colour for the dot-atlas left strip + lollipops.
+# metabolic = vermillion to match the biology highlight (BIO) used in fig3/fig5.
+BLOCK_C = {"overall_severity": OI["black"], "cognition": OI["sky"], "metabolic": OI["verm"],
+           "inflammatory": OI["orange"], "sleep": OI["purple"], "mania_activation": OI["yellow"],
+           "suicidality": OI["green"], "developmental_risk": OI["blue"], "substance": OI["grey"]}
+
+# Shared dot-atlas engine (article + technical report use one implementation; style is passed in).
+import sys
+sys.path.insert(0, os.path.join(ROOT, "src"))
+from face.reporting import loading_atlas as LA  # noqa: E402
+DISP = LA.DISP
+
+
+def _seq_cmap():
+    """A calm, colorblind-safe sequential colormap. Prefer seaborn's mako; fall back to viridis."""
+    try:
+        import seaborn  # noqa: F401  (registers mako/rocket/crest)
+    except Exception:
+        pass
+    return "mako" if "mako" in plt.colormaps() else "viridis"
 
 mpl.rcParams.update({
     "figure.dpi": 120, "savefig.dpi": 300, "savefig.bbox": "tight",
@@ -128,67 +151,81 @@ def fig1_overview():
     save(fig, "fig1_overview")
 
 # ============================================================================ FIG 2
-def fig2_map():
-    L = pd.read_csv(REP("11_s5_9dim_loadings.csv"))
-    # build |loading| matrix: rows = indicators grouped by home factor; cols = 9 axes
-    prim = L[L["factor"] == L["home"]].copy()  # primary rows for ordering
-    order_axes = AXES9
-    # group indicators by home factor in axis order, keep those with a decent primary loading
-    rows = []
-    for ax_ in order_axes:
-        sub = prim[prim["home"] == ax_].copy()
-        sub["abs"] = sub["loading"].abs()
-        sub = sub.sort_values("abs", ascending=False).head(7)  # cap per block for legibility
-        for _, r in sub.iterrows():
-            rows.append((r["item"], ax_))
-    items = [r[0] for r in rows]
-    M = np.zeros((len(items), len(order_axes)))
-    Lkey = {(r["item"], r["factor"]): r["loading"] for _, r in L.iterrows()}
-    for i, (it, _) in enumerate(rows):
-        for j, ax_ in enumerate(order_axes):
-            M[i, j] = abs(Lkey.get((it, ax_), 0.0))
+# The dot-atlas engine lives in face.reporting.loading_atlas (shared with the technical report);
+# here we only bind the article house style (mako + Okabe-Ito block colours, AXES9 column order).
+ASTYLE = dict(cmap=_seq_cmap(), block_colors=BLOCK_C, axlab=AXLAB1, axtag=AXTAG, window_color=OI["yellow"])
 
-    fig = plt.figure(figsize=(12.0, 6.8))
-    gs = fig.add_gridspec(1, 2, width_ratios=[1.15, 1.0], wspace=0.62)
 
-    axA = fig.add_subplot(gs[0])
-    im = axA.imshow(M, aspect="auto", cmap="viridis", vmin=0, vmax=1.0)
-    axA.set_xticks(range(len(order_axes)))
-    axA.set_xticklabels([AXLAB1[a] for a in order_axes], fontsize=7.2, rotation=35, ha="right")
-    # block separators + home-factor row labels
-    boundaries, c0 = [], 0
-    for ax_ in order_axes:
-        n = sum(1 for _, h in rows if h == ax_)
-        if n:
-            axA.text(-0.9, c0 + n/2 - 0.5, AXLAB1[ax_], ha="right", va="center",
-                     fontsize=7.4, fontweight="bold", color="#333333")
-            c0 += n; boundaries.append(c0 - 0.5)
-    for b in boundaries[:-1]:
-        axA.axhline(b, color="white", lw=1.4)
-    axA.set_yticks([]); axA.set_ylabel("indicators (grouped by home dimension)", fontsize=8.5)
-    axA.set_title("Posterior loading atlas", loc="center")
-    cb = fig.colorbar(im, ax=axA, fraction=0.045, pad=0.02); cb.set_label("|posterior loading|", fontsize=8)
-    panel(axA, "a", x=-0.28)
+def _load_loadings():
+    """Tidy long copula loadings (CI-aware). Fail loudly rather than fall back to stale native CSVs."""
+    path = REP("copula_s5_9dim_loadings.csv")
+    if not os.path.exists(path):
+        raise FileNotFoundError(
+            f"{path} missing — run `python notebooks/run_export_loadings.py` first "
+            "(exports CI-aware loadings from the canonical copula s5_9dim_mixed fit).")
+    return LA.load_loadings(path)
 
-    # --- Phi heatmap (continuous backbone + explicit, 7-dim certified) -----------
-    P = pd.read_csv(REP("04_stage5_phi.csv"), index_col=0)
-    axB = fig.add_subplot(gs[1])
-    Pv = P.values.copy()
-    lab = [AXLAB1.get(c, c) for c in P.columns]
-    im2 = axB.imshow(Pv, cmap="RdBu_r", vmin=-0.5, vmax=0.5, aspect="auto")
-    axB.set_xticks(range(len(lab))); axB.set_xticklabels(lab, rotation=45, ha="right", fontsize=8)
-    axB.set_yticks(range(len(lab))); axB.set_yticklabels(lab, fontsize=8)
-    for i in range(len(lab)):
-        for j in range(len(lab)):
-            axB.text(j, i, f"{Pv[i,j]:.2f}", ha="center", va="center", fontsize=7.4,
-                     color="white" if abs(Pv[i, j]) > 0.32 else "#222222")
-    axB.set_title("Inter-factor correlations  Φ", loc="center")
-    fig.colorbar(im2, ax=axB, fraction=0.045, pad=0.02)
-    axB.text(0.5, -0.34, "G is orthogonal by construction (top row/col = 0);\nspecific–specific |Φ| ≈ 0.10, "
-             "metabolic–inflammatory = 0.19", transform=axB.transAxes, ha="center", va="top", fontsize=7.3,
-             color="#555555")
-    panel(axB, "b", x=-0.30)
+
+def fig2_map(max_per_block=8):
+    """Figure 2: the standalone posterior loading dot-atlas (the centrepiece)."""
+    L = _load_loadings()
+    rows = LA.atlas_rows(L, AXES9, max_per_block)
+    n_rows = len(rows)
+    fig, axA = plt.subplots(figsize=(9.6, max(8.5, 2.4 + 0.135 * n_rows)))
+    sc = LA.draw_dot_atlas(axA, L, AXES9, rows, **ASTYLE)
+    axA.set_title("Posterior loading atlas  (indicator × factor)", loc="left", fontsize=11.5)
+    LA.atlas_legends(fig, axA, sc, window_color=OI["yellow"])
     save(fig, "fig2_map")
+
+
+def fig_factors():
+    """Figure 3: factor-wise interpretability lollipops (a) + inter-factor correlations Φ (b)."""
+    L = _load_loadings()
+    fig = plt.figure(figsize=(12.6, 6.2))
+    outer = fig.add_gridspec(1, 2, width_ratios=[1.55, 1.0], wspace=0.30)
+    gsL = outer[0, 0].subgridspec(3, 3, hspace=0.65, wspace=0.55)
+    axLol = [fig.add_subplot(gsL[i // 3, i % 3]) for i in range(9)]
+    axC = fig.add_subplot(outer[0, 1])
+
+    # (a) factor-wise lollipops
+    for k, f in enumerate(AXES9):
+        LA.draw_lollipop(axLol[k], L, f, color=BLOCK_C[f], axlab=AXLAB1, axtag=AXTAG)
+    fig.text(0.40, 0.99, "What defines each axis  (top home indicators, 95% CI)",
+             ha="center", fontsize=10, fontweight="bold")
+    panel(axLol[0], "a", x=-0.5, y=1.5)
+
+    # (b) inter-factor correlations Φ (copula 9×9)
+    P = pd.read_csv(REP("copula_s5_9dim_phi.csv"), index_col=0).reindex(index=AXES9, columns=AXES9)
+    Pv = P.values
+    lab = [AXLAB1[c] for c in AXES9]
+    axC.imshow(Pv, cmap="RdBu_r", vmin=-0.5, vmax=0.5, aspect="equal")
+    axC.set_xticks(range(9)); axC.set_xticklabels(lab, rotation=45, ha="right", fontsize=6.8)
+    axC.set_yticks(range(9)); axC.set_yticklabels(lab, fontsize=6.8)
+    for i in range(9):
+        for j in range(9):
+            if i == j:
+                continue
+            axC.text(j, i, f"{Pv[i, j]:.2f}", ha="center", va="center", fontsize=5.8,
+                     color="white" if abs(Pv[i, j]) > 0.32 else "#222222")
+    axC.set_title("Inter-factor correlations  Φ", loc="center", fontsize=10)
+    spec_off = Pv[1:, 1:][~np.eye(8, dtype=bool)]            # specific–specific block (G zeros excluded)
+    axC.text(0.5, -0.32, f"G orthogonal by construction (row/col 0); specific–specific mean |Φ| ≈ "
+             f"{np.abs(spec_off).mean():.2f}; metabolic–inflammatory = {P.loc['metabolic','inflammatory']:.2f}",
+             transform=axC.transAxes, ha="center", va="top", fontsize=6.8, color="#555555")
+    panel(axC, "b", x=-0.16, y=1.08)
+    save(fig, "fig_factors")
+
+
+def edfig_full_atlas():
+    """Extended Data: the FULL dot-atlas — every modelled indicator (no per-block cap)."""
+    L = _load_loadings()
+    rows = LA.atlas_rows(L, AXES9, None)
+    n_rows = len(rows)
+    fig, axA = plt.subplots(figsize=(9.5, max(10.0, 2.6 + 0.135 * n_rows)))
+    sc = LA.draw_dot_atlas(axA, L, AXES9, rows, label_fs=5.4, **ASTYLE)
+    axA.set_title("Posterior loading atlas — all modelled indicators", loc="left", fontsize=11)
+    LA.atlas_legends(fig, axA, sc, window_color=OI["yellow"])
+    save(fig, "edfig_full_atlas")
 
 # ============================================================================ FIG 3
 def fig3_biology_g():
@@ -575,10 +612,14 @@ def edfig_consort():
     save(fig, "edfig_consort")
 
 if __name__ == "__main__":
+    import sys
+    only = sys.argv[1] if len(sys.argv) > 1 else None     # e.g. `python make_figures_copula.py fig2`
     print("Building FACE-ATLAS copula figures ->", OUT)
-    for fn in [fig1_overview, fig2_map, fig3_biology_g, fig4_continuum, fig4b_archetypes, fig5_persistence,
-               fig6_prognosis, edfig_treatment, edfig_repbench, edfig_invariance,
-               edfig_robustness, edfig_consort]:
+    for fn in [fig1_overview, fig2_map, fig_factors, edfig_full_atlas, fig3_biology_g, fig4_continuum,
+               fig4b_archetypes, fig5_persistence, fig6_prognosis, edfig_treatment, edfig_repbench,
+               edfig_invariance, edfig_robustness, edfig_consort]:
+        if only and only not in fn.__name__:
+            continue
         try:
             fn()
         except Exception as e:
