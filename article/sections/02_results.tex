@@ -20,9 +20,9 @@ Gaussian likelihood, the central findings do not depend on that modelling choice
 robustness result, not an assumption (Annex~\ref{ann:measurement}). Follow-up visits
 at $12$ and $24$ months (retained: $47.4\%$ and $32.8\%$ of V0; \edfig{fig:consort})
 were used only to test temporal coherence and prognosis, never to define the map. The
-high-level model is summarized below and in Methods; its complete derivation,
-including the observed-data likelihood, the rotation argument, the
-covariance identity and the equivalence with full-information maximum likelihood, is
+high-level model is summarized below and in Methods; the full derivation of its observed-data
+likelihood---the rotation and identification argument, the covariance identity and the
+equivalence with full-information maximum likelihood---is
 given in Annex~\ref{ann:measurement}. Figure~\ref{fig:glance} presents the atlas at a
 glance; the study design and the three load-bearing invariants are detailed in
 \edfig{fig:design}.
@@ -36,7 +36,7 @@ glance; the study design and the three load-bearing invariants are detailed in
       Figure~1 (graphical abstract) renders here once the overview infographic is
       saved to \texttt{article/figures/fig1\_glance.png}.}}%
   }
-  \caption{\textbf{A latent atlas of severe mental illness, at a glance.} The global,
+  \caption{\textbf{Illustration of the FACE ATLAS: a latent dimensions of severe mental illness and corresponding archetypes.} The global,
   missingness-aware Bayesian bifactor / exploratory structural-equation model, fit to
   the FACE baseline ($N=9{,}013$) with diagnosis held out, yields a nine-dimension
   transdiagnostic latent space---a general functional-burden factor (\Gfac) and eight
@@ -45,10 +45,8 @@ glance; the study design and the three load-bearing invariants are detailed in
   archetypal extremes whose convex blends describe every patient: a \emph{biological}
   corner (A0; high metabolic, inflammatory and substance load), a \emph{low-burden} pole
   (A1), a \emph{severe, non-biological} corner (A2), and a \emph{symptom-driven} corner
-  (A3). Metabolic and inflammatory load are largely dissociated from general burden
-  (correlation $0.12$ and $0.07$, versus $0.39$ for cognition and $0.42$ for sleep, and
-  robust to medication, adiposity and site); biology is durable (metabolic test--retest
-  intraclass correlation $0.91$); the archetype phenotype improves held-out two-year
+  (A3). Metabolic and inflammatory load are largely dissociated from general burden; 
+  biology is durable; the archetype phenotype improves held-out two-year
   functional prediction ($\Delta$ELPD $+59.4\pm11.1$); and two-year functional remission
   ranges $27\%$--$60\%$ across corners, the biological corner worst. A0 and A2 carry
   comparable severity but opposite biology.}
@@ -94,7 +92,7 @@ it?''
 
 From ten candidate constructs, one global model returned a stable nine-dimension
 structure: a general functional-burden factor (\Gfac) plus eight weakly correlated
-specific axes---cognition, metabolic load, inflammation, sleep, developmental risk,
+specific axes---cognition, metabolic, inflammatory, sleep, developmental risk,
 suicidality, mania and substance use (Figure~\ref{fig:atlas};
 Table~\ref{tab:dimensions}). Inter-factor correlations among the specific axes were
 weak throughout (mean absolute off-diagonal $\approx 0.10$), confirming genuinely
@@ -103,14 +101,14 @@ functioning and global-severity indicators (FAST loading $0.90$, EGF $0.73$) and
 carried no symptom content, supporting its conservative reading as transdiagnostic
 \emph{functional burden} rather than a symptom-liability ``\textit{p}'' factor.
 Depression and anxiety instruments (MADRS, QIDS, STAI) did not form a separate factor;
-they loaded $0.66$--$0.80$ on \Gfac{} as cross-loading ``windows'' onto burden. The
-single prior ``biology'' candidate \emph{split} into distinct metabolic and
-inflammatory factors (inter-factor correlation $\approx 0.19$), and two constructs not
-in the original ten---mania and substance use---were added once their indicators were
-ingested and were confirmed in the joint fit. Of the candidates, nine were confirmed
-(one as a split), anhedonia was rejected, and impulsivity, negative symptoms and
-sensory abnormality were declared \emph{not testable} for lack of common
-indicators---each verdict an outcome of the analysis rather than an assumption
+they loaded $0.66$--$0.80$ on \Gfac{} as cross-loading ``windows'' onto burden. Of
+the ten prior candidate factors, nine were confirmed and one---anhedonia---was rejected
+(absorbed into \Gfac{} and the depression/anxiety windows); the metabolic and
+inflammatory axes, entered a priori as a hypothesised split of cardiometabolic and
+immune load, were confirmed as two distinct factors (inter-factor correlation
+$\approx 0.19$) rather than one. A further three constructs with no common
+indicator---impulsivity, negative symptoms and sensory abnormality---were declared
+\emph{not testable}, each verdict an outcome of the analysis rather than an assumption
 (Table~\ref{tab:dimensions}). The structure was not an artefact of the priors: a
 flat-prior refit reproduced the loadings and factor correlations essentially exactly
 (Tucker congruence $\varphi = 1.00$), and model comparison decisively preferred the
@@ -211,7 +209,19 @@ biology\,\orth\,\Gfac{} dissociation, made visible. The verdict is not a missing
 artefact (a classifier predicting position from each patient's coverage pattern performed
 below baseline, lift $-0.05$, permutation $p=0.23$) and is a tighter description of the
 coordinate cloud than diagnosis (free-mixture information criterion $197{,}900$ versus
-$201{,}300$ for a DSM-5-constrained model). \emph{Clinically,} the appropriate object is
+$201{,}300$ for a DSM-5-constrained model). These same properties explain why clustering
+the \emph{raw} indicators can appear to yield biotypes where the latent space does
+not~\citep{pan2026}: a partition of routine clinical data is driven largely by
+measurement-side structure rather than patient biology---the structured missingness and
+measurement coverage just shown to be uninformative here (which panels each cohort and
+site actually ran), a handful of high-variance, heavy-tailed laboratory variables, blocks
+of redundant correlated indicators, and cohort- and site-specific instruments and units
+that re-encode diagnosis. The measurement model neutralizes each of these---an
+observed-cell likelihood instead of imputation, per-indicator and Gaussian-copula
+likelihoods instead of raw scales, a few shared factors instead of redundant indicators,
+and diagnosis held out under measurement invariance---so the structure that remains is
+genuinely transdiagnostic and, unlike a raw partition, is tested against a structureless
+null rather than assumed. \emph{Clinically,} the appropriate object is
 therefore a coordinate with uncertainty (Eq.~\ref{eq:res-post}), not a categorical
 biotype.
 

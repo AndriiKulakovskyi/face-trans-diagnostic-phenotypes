@@ -75,23 +75,27 @@ burden from clinical severity and forecasts functional course at the group level
 an overstated one; that calibration is itself the antidote to a literature of biotype
 and biomarker claims that have repeatedly failed to replicate.
 
-Methodologically, FACE-ATLAS's contribution is not a new estimator but the integration of
-established latent-variable tools~\citep{reise2012bifactor,asparouhov2009esem,muthen2012bayesian}
-into a single diagnosis-held-out, uncertainty-propagating atlas of severe mental illness.
-The model combines Bayesian bifactor / exploratory structural-equation measurement, mixed
-and Gaussian-copula observation layers, an observed-cell likelihood for structured
-missingness, a correlated-\Gfac{} sensitivity arm for the biology--severity estimand, an
-archetypal representation of a continuous patient space, and downstream
-errors-in-variables prognosis and treatment-moderation analyses---each an established
-method used here off the shelf. The novelty lies in the estimand and the validation chain
-rather than in any single component: routine biological load is placed \emph{inside} a transdiagnostic
-psychiatric factor space, its separation from functional burden is quantified rather
-than assumed, and its temporal and prognostic implications are tested without converting
-a continuum into false biotypes. The mathematical development we give is included to make
-the estimand and the missing-data treatment auditable, not to claim a new likelihood
-family: standard factor-analysis identities, observed-data marginalization and the
-Woodbury evaluation are assembled here because together they define the inferential
-contract of the atlas---diagnosis is not an input, missing cells are not imputed,
-\Gfac{}--specific correlations are measured in a separate correlated-\Gfac{} arm, and
-patient-score uncertainty is propagated into stratification, prognosis and treatment
-analysis.
+Methodologically, FACE-ATLAS specifies a domain-tailored Bayesian bifactor /
+exploratory structural-equation model for severe mental illness, rather than simply
+applying a generic factor-analysis template. It builds on established
+latent-variable tools~\citep{reise2012bifactor,asparouhov2009esem,muthen2012bayesian}
+but advances their use by binding them into a single diagnosis-held-out,
+uncertainty-propagating atlas: mixed and Gaussian-copula observation layers, an
+observed-cell likelihood for structured missingness, a correlated-\Gfac{} sensitivity
+arm for the biology--severity estimand, an archetypal representation of a continuous
+patient space, and downstream errors-in-variables prognosis and treatment-moderation
+analyses. The novelty lies in the specification, estimand and validation chain:
+routine biological load is placed \emph{inside} a transdiagnostic psychiatric factor
+space, its separation from functional burden is quantified rather than assumed, and
+its temporal and prognostic implications are tested without converting a continuum
+into false biotypes. At the model level, this specification combines a psychiatric
+construct-ontology prior with per-indicator likelihoods for mixed clinical and
+biological data, and we derive the model's observed-data likelihood and
+full-information evaluation under structured missingness. The derivation is for this
+configured FACE-ATLAS model, not for a new generic estimator or likelihood family.
+It makes the inferential contract auditable: standard factor-analysis identities,
+observed-data marginalization and the Woodbury evaluation are assembled because
+together they define the atlas---diagnosis is not an input, missing cells are not
+imputed, \Gfac{}--specific correlations are measured in a separate correlated-\Gfac{}
+arm, and patient-score uncertainty is propagated into stratification, prognosis and
+treatment analysis.
