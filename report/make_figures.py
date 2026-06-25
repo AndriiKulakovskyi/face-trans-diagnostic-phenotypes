@@ -100,12 +100,12 @@ def fig_biology_g():
 
 # ============================================================ 2. inter-dimension Phi
 def fig_phi():
-    P = pd.read_csv(REPORTS / "04_stage5_phi.csv", index_col=0)
+    P = pd.read_csv(REPORTS / "copula_s5_9dim_phi.csv", index_col=0)
     spec = [f for f in P.columns if f != "overall_severity"]
     M = P.loc[spec, spec].astype(float)
     labels = [PRETTY.get(f, f) for f in spec]
     fig, ax = plt.subplots(figsize=(5.6, 5.0))
-    im = ax.imshow(M.values, cmap=DIV, norm=TwoSlopeNorm(vmin=-0.25, vcenter=0.0, vmax=0.25))
+    im = ax.imshow(M.values, cmap=DIV, norm=TwoSlopeNorm(vmin=-0.35, vcenter=0.0, vmax=0.35))
     ax.set_xticks(range(len(spec))); ax.set_xticklabels(labels, rotation=40, ha="right", fontsize=8.5)
     ax.set_yticks(range(len(spec))); ax.set_yticklabels(labels, fontsize=8.5)
     for i in range(len(spec)):
@@ -127,9 +127,14 @@ def fig_phi():
 
 # ============================================================ 3/4. atlas builder + prior->posterior
 def _atlas_matrix():
-    """Return (posterior, prior) item x 9-factor matrices on a shared home-grouped row order."""
-    post = pd.read_csv(DFIG / "empirical_atlas.csv", index_col=0)
-    post = post.reindex(columns=FACTORS9).fillna(0.0)
+    """Return (posterior, prior) item x 9-factor matrices on a shared home-grouped row order.
+
+    Posterior loadings come from the canonical Gaussian-copula fit (CI-aware long table); the
+    prior-permitted matrix comes from the soft-prior matrix.  Used by the prior->posterior heatmap.
+    """
+    Ll = LA.load_loadings(LOADINGS_CSV)
+    post = (Ll.pivot_table(index="item", columns="factor", values="loading", aggfunc="first")
+            .reindex(columns=FACTORS9).fillna(0.0))
     home = post.abs().values.argmax(1)
     order = sorted(range(len(post)), key=lambda i: (home[i], -abs(post.values[i, home[i]])))
     post = post.iloc[order]
