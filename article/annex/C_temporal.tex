@@ -1,0 +1,59 @@
+\section{Temporal coherence: forward scoring, invariance and trait/state}
+\label{ann:temporal}
+
+\subsection{Forward scoring under the fixed measurement model}
+
+Follow-up visits were scored on the \emph{fixed} measurement model: the baseline
+($V0$) parameters $(\hat\Lambda,\hat\Phi,\hat\Psi)$, the frozen rank-copula maps
+$\hat F_j$ from \eqref{eqA:copula}, and the frozen $V0$ covariate residualization are
+held constant, and a follow-up record is projected, never re-discovered. Concretely, a
+$V_t$ score is obtained by (i) orienting and copula-transforming each gaussianized cell
+onto the $V0$ $z$-scale via $\hat F_j$; (ii) applying the frozen-$V0$ covariate
+residualization (age-spline, sex, education, site) with the visit's covariates; and
+(iii) projecting onto the fixed $\hat\Lambda,\hat\Phi,\hat\sigma$ using the EAP map
+\eqref{eqA:scores} for the continuous block and the corresponding full-$N$ projection
+for the explicit block. As a validity check, scoring $V0$ through this path reproduces
+the baseline coordinates at Pearson $r=0.99$--$1.00$ across the continuous axes, so
+$V0$, $V1$ and $V2$ live on a common scale (panel of $16{,}241$ visit-records:
+$V0$ $9{,}013$, $V1$ $4{,}270$, $V2$ $2{,}958$).
+
+\subsection{Longitudinal measurement invariance}
+
+Re-fitting the simple-structure backbone per visit (scale-invariant by design) and
+computing the Tucker congruence of the primary loadings against $V0$, every backbone
+axis was invariant at both follow-ups (minimum congruence $\varphi$: sleep $0.996$,
+cognition $0.995$, overall severity $0.991$, metabolic $0.988$, inflammatory $0.974$;
+\edfig{fig:invariance}). Inflammatory load, only partially invariant on a plain
+Gaussian map, was invariant here. Coordinate change can therefore be read as patient
+change rather than instrument drift.
+
+\subsection{Trait/state decomposition}
+
+For each axis we fit a measurement-error random-intercept model across visits. Writing
+$x_{it}$ for patient $i$'s coordinate at visit $t$, with known baseline measurement
+variance $s_i^2$ (the relevant diagonal entry of $S_i$),
+\begin{equation}
+  x_{it}=\underbrace{\gamma_t}_{\text{visit fixed effect}}+\underbrace{u_i}_{\text{trait}}+\underbrace{e_{it}}_{\text{state}}+\underbrace{m_{it}}_{\text{measurement}},\quad
+  u_i\sim\mathcal N(0,\tau^2),\ e_{it}\sim\mathcal N(0,\omega^2),\ m_{it}\sim\mathcal N(0,s_i^2),
+  \label{eqC:traitstate}
+\end{equation}
+so that plugging the known $s_i^2$ prevents a low-reliability axis from masquerading as
+state, and the visit fixed effects $\gamma_t$ prevent a shared population trajectory
+from being miscounted as individual instability. The trait fraction is the
+intraclass correlation
+\begin{equation}
+  \mathrm{ICC}=\frac{\tau^2}{\tau^2+\omega^2},
+\end{equation}
+estimated as a posterior with $94\%$ credible interval. The biological and cognitive
+axes were trait (metabolic $0.91$, substance $0.88$, cognition $0.70$, inflammatory
+$0.62$); the symptom axes were state (sleep $0.47$, suicidality $0.42$, developmental
+risk $0.39$); general burden was trait by rank ($0.62$). The population shift
+$\gamma_{V2}-\gamma_{V0}$ was strongly negative on severity ($-0.46$) and suicidality
+($-0.84$) and near zero on biology, the formal statement of ``the cohort improves on
+symptoms while individual biological rank is held.'' A complementary geometric route
+confirmed that the archetype weight vector moved little (median cosine similarity
+$0.90$ over $V0\!\to\!V2$ completers); the two routes agree (Spearman of per-axis
+reliable-change rate against ICC $\rho=-0.27$, the correct sign). Developmental risk
+scores as state partly because childhood-adversity reports carry recall noise rather
+than true change; mania is data-limited (two indicators) and its trait/state verdict is
+not load-bearing.

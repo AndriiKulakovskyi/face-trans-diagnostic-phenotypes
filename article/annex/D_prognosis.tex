@@ -1,0 +1,72 @@
+\section{Prognosis: errors-in-variables incremental validity}
+\label{ann:prognosis}
+
+\subsection{Errors-in-variables Bayesian GLM and the nested ladder}
+
+The map coordinates are estimated, not observed, so a naive regression on $\hat f_i$
+would suffer attenuation. We use an errors-in-variables (EIV) Bayesian generalized
+linear model that treats the latent coordinate as a parameter with a measurement model
+attached. For outcome $y_i$ (functioning EGF or severity CGI-S at two years, on its
+native scale) and design $W_i$,
+\begin{equation}
+  \theta_{id}\sim\mathcal N(\hat f_{id},\,s_{id}^2),\qquad
+  g\big(\mathbb E[y_i]\big)=\beta_0+\beta_W^{\top}W_i+\beta_\theta^{\top}\theta_i ,
+  \label{eqD:eiv}
+\end{equation}
+where $s_{id}$ is the per-patient posterior standard deviation from \eqref{eqA:scores},
+so the regression ``knows'' how precisely each coordinate is measured. We compare a
+fixed ladder of designs $W$: a reference $\mathrm R_{3y}=\{$age, sex, baseline outcome,
+baseline severity$\}$; then $+$DSM-5 subtype, $+$map (continuous coordinates,
+the eight specific axes, the four archetypes, or a tessellation), or $+$both. The
+estimand is incremental: does the map add \emph{beyond} diagnosis, current severity and
+the baseline value of the outcome.
+
+\subsection{Incremental value, operative \texorpdfstring{$K$}{K}, and discrimination}
+
+Incremental value is the held-out expected log predictive density, estimated by
+Pareto-smoothed importance-sampling leave-one-out~\citep{vehtari2017loo}:
+\begin{equation}
+  \Delta\mathrm{ELPD}=\widehat{\mathrm{elpd}}_{\text{loo}}(\text{model})-\widehat{\mathrm{elpd}}_{\text{loo}}(\mathrm R_{3y}),
+\end{equation}
+declared \emph{predictive} when it exceeds twice its standard error. For functioning
+($N=2{,}114$): archetypes $+59$, eight specific axes $+37$, every tessellation
+$\approx+20$, the isolated durable-biology axes $+2$ (ambiguous). The continuous and
+archetype encodings strictly dominate any hard partition, so the operative-$K$ selector
+returns \emph{none}---the actionable object is a continuous position. For severity the
+increments are small and ambiguous (autoregression-saturated). Head-to-head, map and
+DSM-5 are co-informative (functioning: $+$map $22$, $+$DSM-5 $29$, $+$both $67$). For
+binary endpoints we also report the change in AUC under five-fold cross-validation;
+functional-remission AUC rose only $0.745\!\to\!0.756$ ($+0.011$), the signature of a
+strong group-level signal that does not translate into a large individual gain. The
+two-year functional-remission gradient across archetypes ($27\%$ biological corner to
+$60\%$ low-burden) was a within-diagnosis effect: the rank held inside each cohort
+(biological-vs-low-burden odds ratio $\approx4$), direct standardization to a common
+cohort mix moved it $\approx6\%$, and the corner-by-cohort interaction was
+non-significant.
+
+\subsection{Robustness}
+
+Stressing the predictive winner (the archetypes) on functioning: the signal survived
+inverse-probability-of-attrition weighting ($+53$), dropping DR or SZ ($+56$, $+59$),
+and vanished under a permutation null ($-2$, correctly); it weakened when bipolar
+disorder was removed ($+6$), so the increment is carried by the episodic, open-course
+cohorts. The isolated durable-axis block, which cleared the bar on an earlier
+plain-Gaussian map, did \emph{not} survive here; the robust predictive object is the
+fuller archetype phenotype (the biological corner), reported as an honest,
+map-specific shift.
+
+\subsection{Representation sufficiency benchmark}
+
+Because the nine-dimension map is a $\approx15$-fold compression of the $143$ raw
+indicators, the honest question is sufficiency, not supremacy. Under one fixed
+regularized gradient-boosting classifier with identical cross-validation folds, we
+compared three feature sets---reference (DSM-5 $+$ severity $+$ baseline GAF),
+reference $+$ map (coordinates, uncertainty and archetypes), and reference $+$ the $143$
+raw indicators---predicting recovery and deterioration. The map was \emph{sufficient}
+for deterioration (AUC tie) and \emph{near-sufficient} for recovery (raw $+0.04$ AUC);
+a TreeSHAP attribution showed that $97\%$ of the raw recovery signal already lives
+\emph{within} the nine modelled factors (top drivers: CRP, BMI/HbA1c/lipids, verbal
+memory and processing speed, nicotine dependence, childhood adversity), so the residual
+is within-factor compression, not a missing axis (\edfig{fig:repbench}). The map also
+transported across held-out cohorts at least as well as the raw indicators for
+deterioration.

@@ -1,0 +1,329 @@
+\section{The measurement model: full derivation}
+\label{ann:measurement}
+
+This annex develops the global measurement model from first principles: the generative
+factor model and its defining local-independence assumption (\ref{annA:gen}); the
+mixed-likelihood observation model and the Gaussian-copula marginal
+(\ref{annA:mixed}); the observed-data likelihood and why missingness is handled by
+marginalization rather than imputation (\ref{annA:obs}); the soft-prior loadings and
+the rotation problem they resolve (\ref{annA:rotation}); the closed-form covariance
+identity that carries the headline estimand (\ref{annA:sigma}); the Woodbury
+evaluation and its exact equivalence with full-information maximum likelihood
+(\ref{annA:woodbury}); and the staged estimation and in-engine confirmation
+(\ref{annA:staged}). Propositions are proved; everything reported in the main text is
+an evaluation of the objects defined here.
+
+\subsection{Generative model and local independence}
+\label{annA:gen}
+
+Index patients $i=1,\dots,N$, indicators $j=1,\dots,J$, specific factors $k=1,\dots,K$
+and one general factor \Gfac. A few latent causes generate the many measured
+quantities: each patient carries a factor vector
+$f_i=(G_i,D_{i1},\dots,D_{iK})^{\top}\in\mathbb{R}^{K+1}$ with
+\begin{equation}
+  f_i \;\sim\; \mathcal{N}_{K+1}\!\left(\mathbf{0},\,\Phi\right),
+  \qquad \operatorname{diag}(\Phi)=\mathbf{1},
+  \label{eqA:factors}
+\end{equation}
+the factor \emph{correlation} matrix $\Phi$ carrying a unit diagonal to fix the latent
+scale. Each indicator is a linear reflection of the factors plus item-specific noise,
+through a single linear predictor
+\begin{equation}
+  \eta_{ij} \;=\; \alpha_j \;+\; \lambda_{jG}\,G_i \;+\; \sum_{k=1}^{K}\lambda_{jk}\,D_{ik}
+  \;+\; \beta_j^{\top} c_i ,
+  \label{eqA:linpred}
+\end{equation}
+with item intercept $\alpha_j$, general loading $\lambda_{jG}$, specific loadings
+$\lambda_{jk}$ (row $j$ of the loading matrix
+$\Lambda=[\,\lambda_G\mid\Lambda_D\,]\in\mathbb{R}^{J\times(K+1)}$), and item-level
+covariates $c_i$ that adjust an indicator's \emph{mean} but are never factor
+indicators. Stacking one patient's items, with the general column separated from the
+specific block,
+\begin{equation}
+  x_i=\mu_i+\underbrace{\lambda_G G_i}_{\text{general}}+\underbrace{\Lambda_D D_i}_{\text{specifics}}+\varepsilon_i,
+  \qquad \mu_i=\alpha+B c_i,\qquad \varepsilon_i\sim\mathcal{N}(\mathbf 0,\Psi),
+  \label{eqA:xstack}
+\end{equation}
+with diagonal residual covariance $\Psi=\operatorname{diag}(\sigma_1^2,\dots,\sigma_J^2)$.
+
+\paragraph{Local independence (the defining assumption).} Given a patient's latent
+scores, the items are conditionally independent,
+\begin{equation}
+  p(x_i\mid f_i,\Theta)=\prod_{j\in O_i} p(x_{ij}\mid f_i,\Theta),
+  \label{eqA:localindep}
+\end{equation}
+i.e.\ the factors are the only reason items covary. In the Gaussian linear model this
+is \emph{identical} to ``$\Psi$ is diagonal'': local independence and diagonal residual
+covariance are two faces of one assumption---that the factors explain away all shared
+covariance. (It is also why filling missing cells is forbidden: an invented value
+injects covariance the model would mistake for a factor.) Because $f_i$ is unobserved
+and the likelihood must depend on $\Theta$ alone, we integrate it out and multiply
+across independent patients,
+\begin{equation}
+  L(\Theta)=\prod_{i=1}^{N} p(x_i\mid\Theta)
+  =\prod_{i=1}^{N}\int\Bigl[\prod_{j\in O_i} p(x_{ij}\mid f_i,\Theta)\Bigr]\,
+  \mathcal{N}(f_i;\mathbf 0,\Phi)\,\mathrm{d}f_i .
+  \label{eqA:fulllik}
+\end{equation}
+This is the complete first-principles likelihood: a product over patients (independent
+units), a product over items (local independence), and an integral that removes the
+latent (the sum rule). Equation~\eqref{eqA:linpred} is a bifactor exploratory
+structural-equation model~\citep{reise2012bifactor,asparouhov2009esem}---bifactor
+because every indicator may load on \Gfac{} \emph{and} on its home specific factor;
+exploratory because an indicator is \emph{allowed} small cross-loadings on plausibly
+related factors, shrunk toward zero by the soft priors (\ref{annA:rotation}), rather
+than forbidden outright as in confirmatory factor analysis.
+
+\subsection{Mixed-likelihood observation model and the Gaussian copula}
+\label{annA:mixed}
+
+Coercing variables onto a common scale would manufacture covariance and bias the very
+factors being estimated. Each indicator instead keeps the observation density
+appropriate to its type, all sharing the linear predictor \eqref{eqA:linpred}:
+\begin{align}
+  \text{continuous / $z$-score:}\quad & X_{ij}\sim \mathcal{N}(\eta_{ij},\ \sigma_j^2), \\
+  \text{skewed laboratory:}\quad & \log X_{ij}\sim \mathcal{N}(\eta_{ij},\ \sigma_j^2), \\
+  \text{ordinal ($C_j$ levels):}\quad & \Pr(X_{ij}\le c)=\operatorname{logit}^{-1}(\tau_{jc}-\eta_{ij}),\ \ \tau_{j1}<\dots<\tau_{j,C_j-1}, \\
+  \text{binary:}\quad & X_{ij}\sim \mathrm{Bernoulli}\!\left(\operatorname{logit}^{-1}(\eta_{ij})\right), \\
+  \text{count:}\quad & X_{ij}\sim \mathrm{NegBinom}\!\left(\mu_{ij}=e^{\eta_{ij}},\ \phi_j\right).
+\end{align}
+
+\paragraph{The Gaussian-copula marginal (reported map).} The reported map replaces the
+raw Gaussian likelihood on the continuous block with a semiparametric
+\emph{Gaussian-copula} model: each continuous indicator $j$ is mapped to a latent
+Gaussian score by its frozen empirical distribution function,
+\begin{equation}
+  z_{ij}=\Phi_{\mathcal N}^{-1}\!\big(\hat F_j(X_{ij})\big),
+  \label{eqA:copula}
+\end{equation}
+and the factor model of \ref{annA:gen} is fit on $z_{ij}$. This makes the continuous
+block invariant to monotone re-scaling and robust to non-normal margins (heavy tails,
+skew, bounded scales) while leaving the latent dependence structure---the loadings and
+factor correlations that the scientific claims live in---unchanged. Because the
+rank transform \eqref{eqA:copula} is monotone, it alters none of the
+identification arguments below. Fitting the same structure under the plain Gaussian
+likelihood recovers the same loadings and correlations to within seed variability;
+that the central findings hold under both is reported in the main text as a
+robustness result. Writing $F_j(\cdot)$ for indicator $j$'s density and
+$O_i\subseteq\{1,\dots,J\}$ for its \emph{observed} indicators, the observed-data
+log-likelihood sums over observed cells only,
+\begin{equation}
+  \log p(X_{\mathrm{obs}}\mid\Theta)=\sum_{i=1}^{N}\sum_{j\in O_i}\log F_j\!\left(X_{ij}\mid\eta_{ij},\theta_j\right),
+  \label{eqA:obslik}
+\end{equation}
+so a missing cell contributes no term and no completed $N\times J$ matrix is ever
+formed; deterministic skip-logic decodes structural zeros as \emph{observed} values.
+
+\subsection{Missing data is the marginal property, not imputation}
+\label{annA:obs}
+
+\begin{proposition}[Marginalization]\label{propA:marg}
+For patient $i$ with observed continuous set $C_i\subseteq O_i$, the model-implied
+distribution of the observed sub-vector is obtained by \emph{deleting} the unobserved
+coordinates from $(\mu,\Sigma)$:
+\begin{equation}
+  X_{i,C_i}\sim\mathcal{N}\!\left(\mu_{i,C_i},\ \Sigma_{C_i}\right),\qquad
+  \Sigma_{C_i}=\Lambda_{C_i}\Phi\Lambda_{C_i}^{\top}+\Psi_{C_i},
+  \label{eqA:margdist}
+\end{equation}
+with $\Lambda_{C_i}$ the observed-row loadings and
+$\Psi_{C_i}=\operatorname{diag}(\sigma_j^2)_{j\in C_i}$.
+\end{proposition}
+\begin{proof}
+A foundational property of the multivariate normal is that marginals are read off by
+deleting coordinates: if $x\sim\mathcal N(\mu,\Sigma)$ then any sub-vector $x_{C}$ is
+$\mathcal N(\mu_C,\Sigma_{CC})$. Apply this to $x_i\sim\mathcal N(\mu_i,\Sigma)$ with
+$\Sigma=\Lambda\Phi\Lambda^\top+\Psi$ (Proposition~\ref{propA:sigma}); the submatrix
+$\Sigma_{CC}$ retains exactly the observed rows/columns of $\Lambda$ and the observed
+diagonal of $\Psi$, giving \eqref{eqA:margdist}.
+\end{proof}
+Hence ``integrating out'' the missing cells is not an extra step but the marginal
+property itself; summing $\log\mathcal N(\cdot)$ over each patient's observed
+sub-vector is precisely the full-information maximum-likelihood (FIML) objective for
+incomplete multivariate-normal data. This is the formal justification of the
+no-imputation invariant: any completed matrix would inject between-cell covariance that
+\eqref{eqA:localindep} would misattribute to a latent factor.
+
+\subsection{Soft-prior loadings, identification and the rotation problem}
+\label{annA:rotation}
+
+Theory enters through the prior on each loading. Each (indicator, factor) cell is
+assigned a role $\rho(j,k)$---one of \textsc{primary}, plausible \textsc{cross},
+\textsc{unlikely}, or \textsc{forbidden}---and the prior on that loading is
+\begin{equation}
+  \lambda_{jk}\mid\rho(j,k)\ \sim\
+  \begin{cases}
+    \mathcal{N}_{+}(0.70,\,0.25^2) & \textsc{primary (home cell)},\\[2pt]
+    \mathcal{N}(0,\,0.25^2)        & \textsc{plausible cross},\\[2pt]
+    \mathcal{N}(0,\,0.05^2)        & \textsc{unlikely},\\[2pt]
+    \delta_{0}                     & \textsc{forbidden},
+  \end{cases}
+  \label{eqA:softprior}
+\end{equation}
+where $\mathcal{N}_{+}$ truncates to $(0,\infty)$ and $\delta_0$ fixes the loading at
+zero. Remaining priors are weakly informative: $\alpha_j\sim\mathcal{N}(0,1.5^2)$;
+$\sigma_j=0.05+\mathrm{HalfNormal}(1)$ (the floor guards against a Heywood case);
+ordered-logit cutpoints $\tau_{j\cdot}$ ordered; the negative-binomial concentration
+half-normal; and $\Phi\sim\mathrm{LKJ}(\eta{=}2)$, whose density
+$\propto\det(\Phi)^{\eta-1}$ gently favours weakly correlated
+factors~\citep{lewandowski2009lkj}. Latent scores use a non-centred parameterization to
+defuse the hierarchical funnel.
+
+\begin{proposition}[Rotation invariance of the likelihood]\label{propA:rotation}
+For any invertible $M\in\mathbb{R}^{(K+1)\times(K+1)}$, the reparameterization
+$\Lambda^{\star}=\Lambda M$, $\Phi^{\star}=M^{-1}\Phi M^{-\top}$, $f^{\star}=M^{-1}f$
+leaves the implied covariance, and hence the Gaussian likelihood, unchanged:
+\begin{equation}
+  \Lambda^{\star}\Phi^{\star}\Lambda^{\star\top}+\Psi
+  =\Lambda M\,(M^{-1}\Phi M^{-\top})\,M^{\top}\Lambda^{\top}+\Psi
+  =\Lambda\Phi\Lambda^{\top}+\Psi=\Sigma .
+  \label{eqA:rotation}
+\end{equation}
+\end{proposition}
+\begin{proof}
+Immediate from $M M^{-1}=I$: the inner $M(M^{-1}\Phi M^{-\top})M^\top$ telescopes to
+$\Phi$. Since $x_i$ is determined in distribution by $(\mu_i,\Sigma)$ and $\Sigma$ is
+invariant, so is the likelihood.
+\end{proof}
+A factor model is therefore not identified from the likelihood alone; confirmatory
+factor analysis breaks this by fixing loadings to exactly zero, whereas the soft-prior
+model breaks it with the prior. The likelihood is rotation-invariant but the prior is
+\emph{not}: a rotation moves a loading the prior wanted near zero away from zero,
+lowering $p(\Lambda)$, so the posterior
+$p(\Lambda\mid X)\propto p(X\mid\Lambda)\,p(\Lambda)$ concentrates at the orientation
+where small loadings align with the soft-zero priors and home loadings are positive and
+substantial; the positive truncation removes the residual sign-flip.
+
+\begin{corollary}[Flat-prior confirmation]\label{corA:flat}
+Under a flat loading prior (identification constraints only) the posterior mode equals
+the maximum-likelihood (FIML) solution. Hence a prior-free refit landing on the same
+loadings demonstrates that the structure is earned from the data, not manufactured by
+the priors. Empirically this refit reproduced the map to Tucker congruence
+$\varphi=1.00$.
+\end{corollary}
+
+\subsection{The covariance identity and the headline estimand}
+\label{annA:sigma}
+
+\begin{proposition}[Bifactor covariance]\label{propA:sigma}
+Under \eqref{eqA:xstack} with $\operatorname{Var}(G_i)=1$,
+$\operatorname{Cov}(D_i)=\Phi_D$, $\mathbb E[\varepsilon_i\varepsilon_i^\top]=\Psi$
+diagonal, and the bifactor orthogonality $\mathbb E[G_iD_i^\top]=\mathbf 0$ together
+with $(G_i,D_i)\perp\varepsilon_i$,
+\begin{equation}
+  \Sigma=\operatorname{Cov}(x_i)
+  =\underbrace{\lambda_G\lambda_G^{\top}}_{\text{general: rank one}}
+  +\underbrace{\Lambda_D\Phi_D\Lambda_D^{\top}}_{\text{specific factors}}
+  +\underbrace{\Psi}_{\text{private noise}}
+  =\Lambda\,\Phi\,\Lambda^{\top}+\Psi,\qquad
+  \Phi=\begin{pmatrix}1&\mathbf 0^{\top}\\[1pt] \mathbf 0&\Phi_D\end{pmatrix}.
+  \label{eqA:sigma}
+\end{equation}
+\end{proposition}
+\begin{proof}
+Expand $\Sigma=\mathbb E[(x_i-\mu_i)(x_i-\mu_i)^\top]$ with
+$x_i-\mu_i=\lambda_G G_i+\Lambda_D D_i+\varepsilon_i$. The nine resulting terms include
+cross-terms $\lambda_G\,\mathbb E[G_iD_i^\top]\,\Lambda_D^\top$ and
+$\mathbb E[(\lambda_GG_i+\Lambda_DD_i)\varepsilon_i^\top]$; the first vanishes by
+$\mathbb E[G_iD_i^\top]=\mathbf 0$ and the second by independence of the factors and the
+noise. The survivors are $\lambda_G\lambda_G^\top\operatorname{Var}(G_i)$,
+$\Lambda_D\Phi_D\Lambda_D^\top$ and $\Psi$, giving \eqref{eqA:sigma}; the zero
+off-diagonal block of $\Phi$ encodes $G\perp\text{specifics}$.
+\end{proof}
+The general factor leaves a \emph{rank-one} footprint: every pair of items covaries
+through \Gfac{} by exactly $\lambda_{jG}\lambda_{j'G}$---one shared source touching all
+items.
+
+\paragraph{The headline lives in the off-diagonal block.} The correlated-\Gfac{} model
+\emph{unzips} the zero block, freeing $\phi_{Gd}=\operatorname{Corr}(G,D)$:
+\begin{equation}
+  \Phi=\begin{pmatrix}1&\phi_{Gd}^{\top}\\[1pt] \phi_{Gd}&\Phi_D\end{pmatrix},\qquad
+  \Sigma=\lambda_G\lambda_G^{\top}
+  +\underbrace{\lambda_G\phi_{Gd}^{\top}\Lambda_D^{\top}+\Lambda_D\phi_{Gd}\lambda_G^{\top}}_{\text{the terms orthogonality removed}}
+  +\Lambda_D\Phi_D\Lambda_D^{\top}+\Psi .
+  \label{eqA:corrG}
+\end{equation}
+The vector $\phi_{Gd}$---the correlation of each specific factor with general
+burden---is the headline estimand of the enterprise: ``biology is the least
+severity-entangled domain'' is the statement that its metabolic and inflammatory
+entries are near zero ($0.12$ and $0.07$) while cognition and sleep are far larger
+($0.39$ and $0.42$). The bifactor orthogonality is the \emph{null}; the
+correlated-\Gfac{} arm measures the departure from it; and the bifactor direct loading
+$|\lambda_{jG}|$ and the correlation $\phi_{Gd}$ agree on the ordering---reporting both
+is what turns ``biology is separable'' from a constraint artefact into a finding.
+
+\subsection{Woodbury evaluation and equivalence with FIML}
+\label{annA:woodbury}
+
+Evaluating \eqref{eqA:margdist} naively costs $\mathcal{O}(|C_i|^3)$ per patient. The
+Woodbury identity and matrix-determinant lemma reduce it to the $(K{+}1)$-dimensional
+factor space.
+\begin{lemma}[Woodbury reduction]\label{lemA:woodbury}
+With $\Psi_{C_i}$ diagonal and $\Lambda_{C_i}$ the observed-row loadings,
+\begin{align}
+  \Sigma_{C_i}^{-1} &= \Psi_{C_i}^{-1}-\Psi_{C_i}^{-1}\Lambda_{C_i}
+      \bigl(\Phi^{-1}+\Lambda_{C_i}^{\top}\Psi_{C_i}^{-1}\Lambda_{C_i}\bigr)^{-1}
+      \Lambda_{C_i}^{\top}\Psi_{C_i}^{-1}, \label{eqA:woodbury}\\[2pt]
+  \log\!\left|\Sigma_{C_i}\right| &= \log\!\left|\Phi^{-1}+\Lambda_{C_i}^{\top}\Psi_{C_i}^{-1}\Lambda_{C_i}\right|
+      +\log|\Phi|+\!\!\sum_{j\in C_i}\!\log\sigma_j^2 .
+\end{align}
+\end{lemma}
+The inner solve is $\mathcal{O}\!\left((K{+}1)^3\right)$, independent of $|C_i|$;
+patients sharing a missingness pattern share the inner $(K{+}1)\times(K{+}1)$
+factorization, computed once per pattern. This removes the per-patient latent funnel
+for the continuous block and makes full-sample ($N=9{,}013$) estimation tractable on a
+workstation; the non-Gaussian block retains explicit per-patient latents.
+
+\begin{proposition}[Bayes/FIML equivalence]\label{propA:fiml}
+The marginalized Bayesian observed-data model and FIML optimize the \emph{same}
+observed-data likelihood and differ only by the priors \eqref{eqA:softprior}. In
+particular (Corollary~\ref{corA:flat}) the flat-prior MAP equals the FIML estimate, so
+a standalone FIML estimator adds no independent evidence and confirmation is done
+in-engine.
+\end{proposition}
+\begin{proof}
+By Proposition~\ref{propA:marg} the per-patient marginal density is the
+incomplete-data multivariate-normal density on $C_i$, whose log summed over patients is
+the FIML objective. The posterior is this likelihood times the prior; with a flat prior
+the log-posterior equals the log-likelihood up to a constant, so its mode is the FIML
+maximizer.
+\end{proof}
+
+\paragraph{Factor scores.} Each patient's coordinates are the expected a posteriori
+(EAP) factor scores from their observed cells; for an all-continuous pattern,
+\begin{equation}
+  \hat f_i=\mathbb{E}[f_i\mid X_{i,C_i}]=\Phi\Lambda_{C_i}^{\top}\Sigma_{C_i}^{-1}\!\left(X_{i,C_i}-\mu_{i,C_i}\right),
+  \quad
+  S_i=\Phi-\Phi\Lambda_{C_i}^{\top}\Sigma_{C_i}^{-1}\Lambda_{C_i}\Phi ,
+  \label{eqA:scores}
+\end{equation}
+obtained by MCMC when non-Gaussian cells are present. The per-patient posterior
+covariance $S_i$ is exported and propagated downstream (it is the noise term in the
+stratification mixture, Annex~\ref{ann:stratification}): a patient with one observed
+indicator for a factor is \emph{not} treated as equally characterized as one with six.
+
+\subsection{Staged estimation and in-engine confirmation}
+\label{annA:staged}
+
+The global posterior was reached by continuation (homotopy): a well-conditioned
+sub-model was fit and then deformed toward the full target one source of difficulty at
+a time (continuous core at full $N$; exploratory cross-loadings; mixed-likelihood
+suicidality and developmental risk; thin cohort-specific factors; all factors jointly
+plus the correlated-\Gfac{} variant), each converged posterior warm-starting the next.
+\emph{Only the global fit is interpreted}; the earlier stages are
+convergence/identification checkpoints. Sampling used the No-U-Turn
+sampler~\citep{hoffman2014nuts} via PyMC~\citep{abrilpla2023pymc} with the NumPyro/JAX
+backend~\citep{phan2019numpyro}; a stage advanced only on $\hat R\le1.01$, effective
+sample size $\ge400$, zero divergences, no Heywood cases and acceptable
+posterior-predictive behaviour. The full-$N$ continuous backbone met this strict gate;
+the joint nine-dimension (mixed) map is reported at the largest sample that mixes
+($\hat R\le1.04$) with a cross-seed stability guard (Tucker congruence
+$\varphi=0.99$). Confirmation used (i) the flat-prior refit
+(Corollary~\ref{corA:flat}); (ii) posterior-predictive checks (continuous Bayesian
+standardized root-mean-square residual $\approx0.07$; $21/22$ non-Gaussian indicators
+within the $90\%$ predictive interval, the lone exception a $90.8\%$-zero
+suicide-attempt count item---an item-level, not factor-level, misfit); and (iii) model
+comparison by WAIC and PSIS-LOO~\citep{watanabe2010waic,vehtari2017loo}, which
+decisively preferred the bifactor over unidimensional and correlated-factor
+alternatives. Classical fit indices (CFI/TLI, RMSEA) are not reported---they are weak
+under heavy missingness and non-normal indicators and add no independent evidence here.

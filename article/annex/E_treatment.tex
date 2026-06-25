@@ -1,0 +1,81 @@
+\section{Treatment: an identification-first causal pipeline}
+\label{ann:treatment}
+
+This baseline cohort has no randomization (the trial-arm field is a DSM-5 subtype), so
+treatment \emph{selection}---who should get which drug---is a counterfactual question
+observational treatment-as-usual cannot answer. The pipeline therefore \emph{bounds}
+what the map licenses and \emph{defends} the prognostic finding, rather than claiming a
+treatment effect.
+
+\subsection{Exposures, overlap and weighting}
+
+Treatment exposures, recovered from the per-cohort source dictionaries, were harmonized
+to common drug-class indicators. For each treatment contrast we estimate a propensity
+$e(v_i)=P(\text{treat}\mid v_i)$ on a design $v_i$ that includes severity, diagnosis,
+demographics \emph{and} the nine coordinates~\citep{rosenbaum1983propensity}, gate on
+common support (retain the region where both arms have mass), and reweight by stabilized
+inverse-probability-of-treatment weights~\citep{austin2011iptw}
+\begin{equation}
+  w_i=\frac{P(\text{treat})}{e(v_i)}\ \text{(treated)},\qquad
+  w_i=\frac{1-P(\text{treat})}{1-e(v_i)}\ \text{(control)} ,
+\end{equation}
+checking covariate balance by the post-weighting maximum standardized mean difference.
+Lithium-in-BP balanced to a maximum SMD of $0.008$ (near-complete overlap $0.997$);
+antipsychotic-in-BP balanced to $0.079$; clozapine-in-SZ retained residual imbalance
+(SMD $0.335$), the signature of channelling.
+
+\subsection{Doubly-robust moderation, the E-value and the minimum detectable effect}
+
+The estimand of interest is \emph{moderation}: does a durable axis or archetype change
+\emph{who} benefits. We fit a doubly-robust errors-in-variables outcome model with a
+treatment-by-coordinate interaction (the EIV term as in \eqref{eqD:eiv}), reporting the
+per-axis interaction credible interval and the held-out $\Delta\mathrm{ELPD}$ of adding
+the interaction. Each average treatment effect carries an E-value for unmeasured
+confounding~\citep{vanderweele2017evalue}---the minimum strength of association an
+unmeasured confounder would need, with both treatment and outcome, to explain away the
+estimate---and, crucially, a \emph{minimum detectable effect} (MDE): the smallest
+interaction the design resolves at $80\%$ power. The MDE is what makes a null
+\emph{bounded} rather than blind.
+\begin{itemize}
+  \item \textbf{Lithium-BP} (cleanest): average effect on functioning $-0.003$ (E-value
+  $1.06$), with per-axis interactions well inside an MDE of $0.19$--$0.22$ SD---a
+  \emph{well-identified, bounded null}. The design could have resolved a meaningful
+  interaction and did not.
+  \item \textbf{Antipsychotic-BP}: a confounded \emph{average} effect ($-0.231$, E-value
+  $1.77$) but \emph{no reliable moderation}---the interaction $\Delta\mathrm{ELPD}$ band
+  spans zero and the two map encodings disagree on which axis carries it (the durable
+  representation points at metabolic, the archetype representation at the biological
+  corner), textbook false-positive behaviour.
+  \item \textbf{Clozapine-SZ}: channelled and underpowered (MDE $0.37$--$0.67$ SD), a
+  non-decisive null rather than a clean one.
+\end{itemize}
+Average treatment effects were uniformly confounding-fragile (E-values $1.1$--$1.8$).
+
+\subsection{The map is not a treatment proxy (defending the prognosis)}
+
+The most damaging alternative to the prognostic finding is that the biological corner
+simply received different drugs that drove the outcome. We refit the functioning
+prognosis with and without the harmonized drug-class exposures, both unweighted and
+under attrition weighting. The archetype carrier of the forecast survived
+($\beta$ $0.164\!\to\!0.156$ unweighted, attenuation $4.7\%$;
+$0.147\!\to\!0.141$ under attrition weighting, $3.9\%$; both credible intervals
+excluding zero), so the functional forecast is not merely unmodelled treatment. (The
+isolated durable trio did not survive unweighted, consistent with the prognosis annex;
+its metabolic axis sharpened to exclude zero only under weighting.) The adjustment is
+for baseline/lifetime (BP) or current (SZ/DR) drug-class exposure, not a marginal
+structural model over time-varying treatment.
+
+\subsection{Treatment-course atlas}
+
+Even without selecting a drug, the baseline archetype \emph{describes} two-year
+treatment course. Per corner (pooled BP$+$SZ, Wilson intervals): treatment-resistance
+$43\%$ (biological) to $20\%$ (low-burden); CGI response $46\%$ to $59\%$; significant
+side-effects $23\%$ to $11\%$. The corner added beyond baseline severity, substance
+comorbidity and demographics (likelihood-ratio $p\le3\times10^{-3}$ for all three
+endpoints), the gradient was within-cohort (composition share $\le6\%$,
+corner-by-cohort interaction non-significant), and held-out $\Delta\mathrm{ELPD}$ was
+$+20/+16/+10$. Individual discrimination was modest: under a permutation null on the
+held-out $\Delta$AUC, response ($p=0.015$) and side-effects ($p=0.005$) cleared, while
+treatment-resistance---the steepest gradient---was AUC-marginal ($p=0.185$), the same
+group-versus-individual collapse seen for prognosis. The atlas is therefore a
+monitoring signal (which phenotype to watch more closely), never a prescription.

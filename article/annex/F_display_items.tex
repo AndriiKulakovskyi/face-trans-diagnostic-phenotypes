@@ -1,0 +1,116 @@
+\section{Extended Data figures and the claims ledger}
+\label{ann:display}
+
+\subsection{Extended Data figures}
+
+\begin{figure}[hbtp]
+  \centering
+  \includegraphics[width=0.95\linewidth]{fig1_overview.png}
+  \caption{\textbf{Study design, invariants and the five questions.} The harmonized
+  three-cohort FACE baseline (bipolar disorder, schizophrenia, depression;
+  $N=9{,}013$) is reorganized around diagnosis-agnostic axes by one global,
+  missingness-aware Bayesian bifactor / exploratory structural-equation model fit to
+  each patient's observed cells only, under three load-bearing invariants (no
+  imputation; diagnosis as metadata; baseline defines the map and follow-up validates
+  it). The fitted map is then interrogated through five dependent, increasingly
+  demanding questions---exists, organizes, persists, predicts, guides treatment---with
+  positive and null results reported alike.}
+  \label{fig:design}
+\end{figure}
+
+\begin{figure}[hbtp]
+  \centering
+  \includegraphics[width=0.72\linewidth]{edfig_consort.png}
+  \caption{\textbf{Longitudinal retention.} Patients assessed at baseline and retained
+  at the $12$- and $24$-month follow-up visits, overall and by cohort. Attrition is
+  informative (retention depends on baseline coordinates) and is addressed throughout by
+  inverse-probability weighting.}
+  \label{fig:consort}
+\end{figure}
+
+\begin{figure}[hbtp]
+  \centering
+  \includegraphics[width=0.72\linewidth]{edfig_invariance.png}
+  \caption{\textbf{Longitudinal measurement invariance.} Tucker congruence of each
+  backbone axis against baseline at $12$ and $24$ months. All five axes remain invariant
+  ($\varphi\ge0.95$); inflammatory load (only partially invariant on a plain Gaussian
+  map) is invariant here.}
+  \label{fig:invariance}
+\end{figure}
+
+\begin{figure}[hbtp]
+  \centering
+  \includegraphics[width=0.85\linewidth]{edfig_repbench.png}
+  \caption{\textbf{The nine-dimension map is a sufficient representation of the $143$
+  raw indicators.} Held-out AUC for a matched gradient-boosting classifier predicting
+  two-year deterioration and recovery, using the reference (DSM-5 $+$ severity $+$
+  baseline), the reference $+$ the nine-dimension map, or the reference $+$ all $143$ raw
+  indicators. The map equals the raw indicators for deterioration (sufficient) and
+  trails by $\approx0.04$ AUC for recovery (near-sufficient); $97\%$ of the raw recovery
+  signal lies within the nine factors.}
+  \label{fig:repbench}
+\end{figure}
+
+\begin{figure}[hbtp]
+  \centering
+  \includegraphics[width=0.95\linewidth]{edfig_treatment.png}
+  \caption{\textbf{Treatment moderation is not identified on observational treatment-as-usual.}
+  (\textbf{a}) Average treatment effect on functioning with E-value and the interaction
+  minimum-detectable-effect band (grey). Lithium in bipolar disorder is a well-identified,
+  bounded null; antipsychotic is a confounded average effect with no reliable moderation;
+  clozapine is channelled and underpowered. (\textbf{b}) Treatment-course atlas: the
+  biological corner carries roughly twice the resistance and side-effect burden of the
+  low-burden corner; stratification clears beyond confounders but individual
+  discrimination is modest (resistance AUC-marginal under permutation).}
+  \label{fig:treatment}
+\end{figure}
+
+\begin{figure}[hbtp]
+  \centering
+  \includegraphics[width=0.72\linewidth]{edfig_robustness.png}
+  \caption{\textbf{The functional forecast is robust and course-dependent.} Held-out
+  incremental value of the archetype phenotype for two-year functioning under attrition
+  reweighting, cohort hold-outs and a permutation null. The signal survives attrition and
+  dropping either DR or SZ, vanishes under permutation, and weakens when bipolar disorder
+  is removed---it is carried by the episodic, open-course cohorts.}
+  \label{fig:robustness}
+\end{figure}
+
+\clearpage
+\subsection{The claims ledger}
+
+Table~\ref{tab:claims} states, side by side, what the study claims and what it
+deliberately does not---the spine of the Limitations and of any response to reviewers.
+
+\begin{table}[hbtp]
+\centering
+\caption{\textbf{What we claim, and what we do not.}}
+\label{tab:claims}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{0.46\linewidth} p{0.46\linewidth}}
+\toprule
+\textbf{We claim} & \textbf{We do not claim} \\
+\midrule
+A certified nine-dimension transdiagnostic measurement map (internal validity). &
+Natural biotypes or subtypes; that no biotype exists in any measurement space. \\
+Metabolic/inflammatory load \emph{largely independent} of a general functional-burden
+axis (quantified, with boundary conditions). &
+Strict statistical orthogonality, or independence from \emph{being ill}
+(case--control elevations). \\
+A graded continuum that is, descriptively, tighter than DSM-5. &
+That the regions are clinically superior to DSM-5 beyond the modest prognostic
+increment shown. \\
+Temporal coherence: durable biology, moving symptoms. &
+That developmental risk is genuinely ``state'' (it partly reflects recall noise). \\
+A modest, \emph{group-level} incremental prognosis for \emph{functioning}, carried by
+the biological phenotype, course-dependent. &
+A large individual-risk gain; prediction of \emph{recorded} relapse/hospitalization
+events; a deployable individual rule. \\
+A well-identified null for lithium moderation; a testable antipsychotic hypothesis. &
+That the map guides treatment selection, or any causal treatment effect on
+treatment-as-usual. \\
+Convergent validity with the immuno-metabolic literature. &
+External or out-of-sample validation (none yet). \\
+\bottomrule
+\end{tabular}
+\end{table}

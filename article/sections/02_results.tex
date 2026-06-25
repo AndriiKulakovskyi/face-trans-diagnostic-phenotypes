@@ -4,246 +4,323 @@
 
 The analysis sample was the harmonized baseline (visit V0) of the three FACE
 cohorts: $N=9{,}013$ patients (bipolar disorder [BP] $6{,}252$; schizophrenia [SZ]
-$2{,}209$; major depression [DR] $552$) recruited across 21 expert-centre sites
+$2{,}209$; major depression [DR] $552$) recruited across $21$ expert-centre sites
 (Table~\ref{tab:characteristics}). The cohorts differ in age, sex distribution and
 chronicity, as expected for these disorders. We deliberately fit the measurement
-model on the \emph{full} sample without completeness selection; $143$ indicators
-were modelled, with a mean cell missingness of $39.8\%$ preserved as missing and
-never imputed. Diagnosis (cohort and DSM-5 subtype) was held out of the model and
-used only as a validation/metadata label. Follow-up visits at 12 and 24 months
-(retained: $47.4\%$ and $32.8\%$ of V0) were used only to test temporal coherence
-and prognosis, never to define the map. The full statistical specification is in
-Methods; Figure~\ref{fig:overview} summarizes the design.
+model on the \emph{full} sample without completeness selection: $143$ indicators were
+modelled, with a mean cell missingness of $39.8\%$ preserved as missing and never
+imputed. Diagnosis (cohort and DSM-5 subtype) was held out of the model and used only
+as a validation or metadata label. The reported map is one global,
+cohort-reweighted, full-sample fit estimated with a Gaussian-copula
+(rank-based) marginal model; because the same structure is recovered under a plain
+Gaussian likelihood, the central findings do not depend on that modelling choice---a
+robustness result, not an assumption (Annex~\ref{ann:measurement}). Follow-up visits
+at $12$ and $24$ months (retained: $47.4\%$ and $32.8\%$ of V0; \edfig{fig:consort})
+were used only to test temporal coherence and prognosis, never to define the map. The
+high-level model is summarized below and in Methods; its complete derivation,
+including the observed-data likelihood, the rotation argument, the
+covariance identity and the equivalence with full-information maximum likelihood, is
+given in Annex~\ref{ann:measurement}. Figure~\ref{fig:glance} presents the atlas at a
+glance; the study design and the three load-bearing invariants are detailed in
+\edfig{fig:design}.
 
-\begin{figure}[htbp]
+\begin{figure}[t]
   \centering
-  \includegraphics[width=0.95\linewidth]{fig1_overview.png}
-  \caption{\textbf{Study design and the five questions.} The harmonized
-  three-cohort FACE baseline (bipolar disorder, schizophrenia, depression;
-  $N=9{,}013$) is reorganized around diagnosis-agnostic axes by one global,
-  missingness-aware Bayesian bifactor/ESEM model fit to each patient's observed
-  cells only, with three load-bearing invariants (no imputation, diagnosis as
-  metadata, baseline defines/follow-up validates). The fitted map is then
-  interrogated through five dependent questions---exists, organizes, persists,
-  predicts, guides treatment---with positive and null results reported alike.}
-  \label{fig:overview}
+  \IfFileExists{figures/fig1_glance.png}{%
+    \includegraphics[width=\linewidth]{fig1_glance.png}%
+  }{%
+    \fbox{\parbox[c][6.6cm][c]{0.96\linewidth}{\centering\itshape
+      Figure~1 (graphical abstract) renders here once the overview infographic is
+      saved to \texttt{article/figures/fig1\_glance.png}.}}%
+  }
+  \caption{\textbf{A latent atlas of severe mental illness, at a glance.} The global,
+  missingness-aware Bayesian bifactor / exploratory structural-equation model, fit to
+  the FACE baseline ($N=9{,}013$) with diagnosis held out, yields a nine-dimension
+  transdiagnostic latent space---a general functional-burden factor (\Gfac) and eight
+  specific dimensions. The patient cloud is a graded continuum (best silhouette $0.140$,
+  indistinguishable from a single-Gaussian null $0.141\pm0.002$), read through four
+  archetypal extremes whose convex blends describe every patient: a \emph{biological}
+  corner (A0; high metabolic, inflammatory and substance load), a \emph{low-burden} pole
+  (A1), a \emph{severe, non-biological} corner (A2), and a \emph{symptom-driven} corner
+  (A3). Metabolic and inflammatory load are largely dissociated from general burden
+  (correlation $0.12$ and $0.07$, versus $0.39$ for cognition and $0.42$ for sleep, and
+  robust to medication, adiposity and site); biology is durable (metabolic test--retest
+  intraclass correlation $0.91$); the archetype phenotype improves held-out two-year
+  functional prediction ($\Delta$ELPD $+59.4\pm11.1$); and two-year functional remission
+  ranges $27\%$--$60\%$ across corners, the biological corner worst. A0 and A2 carry
+  comparable severity but opposite biology.}
+  \label{fig:glance}
 \end{figure}
 
 \subsection{A nine-dimension transdiagnostic map (the map exists)}
 
 From ten candidate constructs, one global model returned a stable nine-dimension
 structure: a general functional-burden factor (\Gfac) plus eight weakly correlated
-specific axes---cognition, metabolic, inflammatory, sleep, developmental-risk,
-suicidality, mania and substance (Figure~\ref{fig:atlas};
-Table~\ref{tab:dimensions}). Inter-factor correlations were weak (mean absolute
-off-diagonal $\approx 0.10$), confirming genuinely distinct axes rather than one
-collapsed dimension. \Gfac{} was anchored only by functioning and global-severity
-indicators (FAST loading $0.90$, EGF $0.73$) and carried no symptom content,
-supporting its conservative reading as transdiagnostic functional burden rather
-than a symptom-liability ``\textit{p}''. Depression and anxiety instruments
-(MADRS, QIDS, STAI) did not form a separate factor; they loaded $0.66$--$0.80$ on
-\Gfac{} as cross-loading ``windows''. The single prior ``biology'' candidate
-\emph{split} into distinct metabolic and inflammatory factors (inter-factor
-$\Phi \approx 0.19$). Of the ten candidates, nine were confirmed (one as a split),
-anhedonia was rejected, and impulsivity, negative symptoms and sensory abnormality
-were \emph{not testable} for lack of common indicators---each verdict an outcome of
-the analysis rather than an assumption (Table~\ref{tab:dimensions}). The structure
-was not an artefact of the priors: a flat-prior refit reproduced the loadings and
-$\Phi$ essentially exactly (Tucker congruence $\varphi = 1.00$), and model
-comparison decisively preferred the bifactor over unidimensional and
-correlated-factor alternatives. Absolute fit was acceptable across both likelihood
-blocks (continuous Bayesian SRMR $\approx 0.07$; $21/22$ non-Gaussian indicators
-reproduced within the $90\%$ posterior-predictive interval).
+specific axes---cognition, metabolic load, inflammation, sleep, developmental risk,
+suicidality, mania and substance use (Figure~\ref{fig:atlas};
+Table~\ref{tab:dimensions}). Inter-factor correlations among the specific axes were
+weak throughout (mean absolute off-diagonal $\approx 0.10$), confirming genuinely
+distinct axes rather than one collapsed dimension. \Gfac{} was anchored only by
+functioning and global-severity indicators (FAST loading $0.90$, EGF $0.73$) and
+carried no symptom content, supporting its conservative reading as transdiagnostic
+\emph{functional burden} rather than a symptom-liability ``\textit{p}'' factor.
+Depression and anxiety instruments (MADRS, QIDS, STAI) did not form a separate factor;
+they loaded $0.66$--$0.80$ on \Gfac{} as cross-loading ``windows'' onto burden. The
+single prior ``biology'' candidate \emph{split} into distinct metabolic and
+inflammatory factors (inter-factor correlation $\approx 0.19$), and two constructs not
+in the original ten---mania and substance use---were added once their indicators were
+ingested and were confirmed in the joint fit. Of the candidates, nine were confirmed
+(one as a split), anhedonia was rejected, and impulsivity, negative symptoms and
+sensory abnormality were declared \emph{not testable} for lack of common
+indicators---each verdict an outcome of the analysis rather than an assumption
+(Table~\ref{tab:dimensions}). The structure was not an artefact of the priors: a
+flat-prior refit reproduced the loadings and factor correlations essentially exactly
+(Tucker congruence $\varphi = 1.00$), and model comparison decisively preferred the
+bifactor over unidimensional and correlated-factor alternatives. Absolute fit was
+acceptable across both likelihood blocks (continuous Bayesian standardized
+root-mean-square residual $\approx 0.07$; $21/22$ non-Gaussian indicators reproduced
+within the $90\%$ posterior-predictive interval).
 
-\begin{figure}[htbp]
+\begin{figure}[t]
   \centering
   \includegraphics[width=0.98\linewidth]{fig2_map.png}
-  \caption{\textbf{The nine-dimension map.} (\textbf{a}) Posterior
-  loading atlas (indicators $\times$ factors); colour encodes the absolute
-  posterior loading, with rows grouped by home factor. Each specific axis is
-  anchored by a clinically coherent indicator block, while \Gfac{} (functional
-  burden) carries the cross-loading depression/anxiety windows. (\textbf{b}) The
-  inter-factor correlation matrix $\Phi$ among the specific axes is weak
-  throughout (mean $|\text{off-diagonal}|\approx 0.10$), confirming distinct axes;
-  metabolic and inflammatory correlate only $\approx 0.19$.}
+  \caption{\textbf{The nine-dimension map.} (\textbf{a}) Posterior loading atlas
+  (indicators $\times$ factors); colour encodes the absolute posterior loading, with
+  rows grouped by home factor. Each specific axis is anchored by a clinically coherent
+  indicator block, while \Gfac{} (functional burden) carries the cross-loading
+  depression/anxiety windows. (\textbf{b}) The inter-factor correlation matrix is weak
+  throughout (mean $|\text{off-diagonal}|\approx 0.10$); the general factor is
+  orthogonal to the specific axes by construction (top row and column), and metabolic
+  and inflammatory load correlate only $\approx 0.19$. Continuous backbone shown;
+  mania and substance enter the joint mixed fit (Table~\ref{tab:dimensions}).}
   \label{fig:atlas}
 \end{figure}
 
-\subsection{Biology is the least severity-entangled domain (the headline)}
+\subsection{Biology is the least severity-entangled domain (the central finding)}
 
 Because the bifactor identification fixes \Gfac{}~\orth{}~specifics by construction,
-we re-estimated the model allowing \Gfac{} to correlate freely with the specific
-axes. Under this correlated-\Gfac{} model, metabolic and inflammatory load were the
-\emph{least} entangled with functional burden: correlations with \Gfac{} of
-$0.12$ (metabolic) and $0.07$ (inflammatory), against $0.39$ for cognition and
-$0.42$ for sleep (Figure~\ref{fig:biologyg}). In other words, two patients with the
-same overall impairment can carry very different metabolic and immune loads---a
-patient's biological burden rides largely on axes that the global clinical-severity
-picture does not capture. Consistent with a large independent literature
-(see Discussion), we state this as relative, not absolute, independence: biology is
-\emph{largely independent of a general functional-burden axis}, with the
-$0.07$--$0.12$ values quantifying---at the low end of what that literature would
-predict---a pattern previously described only qualitatively.
+we re-estimated the model allowing \Gfac{} to correlate freely with the specific axes.
+Under this correlated-\Gfac{} model, metabolic and inflammatory load were the
+\emph{least} entangled with functional burden: correlations with \Gfac{} of $0.12$
+(metabolic) and $0.07$ (inflammatory), against $0.39$ for cognition and $0.42$ for
+sleep (Figure~\ref{fig:biologyg}). Two patients with the same overall impairment can
+therefore carry very different metabolic and immune loads: a patient's biological
+burden rides largely on axes that the global clinical-severity picture does not
+capture. This dissociation was robust to the obvious confounders. Adjusting each
+indicator for age, sex, education and recruitment site, and then additionally for
+antipsychotic exposure, did \emph{not} raise the biological correlations---if anything
+it lowered them (metabolic $0.12\!\to\!0.07$, inflammatory $0.07\!\to\!0.06$), and the
+biological axes remained the least entangled at every step
+(Figure~\ref{fig:biologyg}; Annex~\ref{ann:measurement}). Consistent with a large
+independent literature (Discussion), we state this as relative, not absolute,
+independence: metabolic and inflammatory load are \emph{largely independent of a
+general functional-burden axis}, with the $0.07$--$0.12$ values quantifying---at the
+low end of what that literature would predict---a pattern previously described only
+qualitatively. This is the property a biology-aware stratification can exploit, and it
+is the load-bearing premise of everything that follows.
 
-\begin{figure}[htbp]
+\begin{figure}[t]
   \centering
-  \includegraphics[width=0.82\linewidth]{fig3_biology_g.png}
-  \caption{\textbf{Biology is the least severity-entangled domain.} Correlation of
-  each specific axis with the general functional-burden factor \Gfac{} under the
-  correlated-\Gfac{} model (bars), with the bifactor general loading
-  $|\lambda_G|$ (points) shown for comparison. Metabolic and inflammatory load are
-  the least severity-entangled domains, whereas cognition and sleep partly track \Gfac{}.}
+  \includegraphics[width=0.80\linewidth]{fig3_biology_g.png}
+  \caption{\textbf{Metabolic and inflammatory load are the least burden-entangled
+  domains.} Correlation of each continuous specific axis with the general
+  functional-burden factor \Gfac{} (bars), unadjusted and after adjustment for
+  medication, adiposity and site; the bifactor general loading $|\lambda_G|$
+  (diamonds) is shown for comparison. Metabolic and inflammatory load fall in the
+  ``biology zone'' ($\Phi<0.15$) and stay there under adjustment, whereas cognition
+  and sleep partly track \Gfac{}.}
   \label{fig:biologyg}
 \end{figure}
 
 \subsection{The patient space is a continuum, not biotypes (the map organizes)}
 
-Before clustering, a pre-registered structure-discovery gate---run over the model's
-posterior draws and combining cluster tendency, modality, density, model selection
-and topology---returned a unanimous verdict of \emph{no discrete clusters}:
-gap-statistic $K=1$; HDBSCAN assigned $100\%$ of points to noise; the first
-principal component was unimodal (Hartigan dip $p\approx 0.99$); the archetype
-scree showed no elbow; and the mixture BIC formed a flat basin. The
-nine-dimensional space is therefore a graded continuum. We represented it two
-complementary ways: eight extreme phenotypes (archetypes; cross-seed congruence
-$0.999$), each the high pole of one axis plus a low-burden pole, with every patient
-a soft convex blend (Figure~\ref{fig:continuum}); and a coarser four-region soft
-tessellation. Three properties make the continuum decision-relevant. First, it is
-\emph{transdiagnostic}: the adjusted Rand index between the data-driven structure
-and diagnosis was $\approx 0$ (tessellation $0.02$ vs the seven DSM-5 subtypes;
-archetypes $0.05$), every phenotype mixing all cohorts. Second, it is
-\emph{driven by the specific/biological axes, not severity}: partition variance
-explained peaked on specific axes (maximum $\eta^2 = 0.45$) above \Gfac{}
-($0.31$), and---crucially---distinct metabolic \emph{and} inflammatory corners
-emerged, so the biology\,\orth\,\Gfac{} signal survives into the phenotypes, while
-overall severity formed no corner of its own (it is the continuum's spine). Third,
-it is \emph{not a missingness artefact}: a classifier predicting membership from
-the per-axis coverage pattern performed below baseline (lift $-0.08$), and the
-partition was seed-stable. The data-driven regions also described the coordinate
-cloud more tightly than diagnosis (mixture BIC $199{,}325$ vs $206{,}016$ for a
-DSM-5-constrained model; coordinate variance explained $\approx 21\%$ vs
-$\approx 5\%$)---a descriptive, not yet clinical, superiority.
+On these nine coordinates, with each patient's measurement uncertainty propagated, the
+patient space is a graded continuum rather than a set of discrete biological kinds. A
+structure-discovery battery run over the posterior draws---cluster tendency, modality,
+silhouette, the gap statistic, a Gaussian-mixture information criterion, density-based
+clustering and a topological summary---returned a continuum verdict: the silhouette
+peaked at only $0.14$ (below the $0.15$ separation floor), the first principal
+component was unimodal (Hartigan dip $p\approx 1.0$), density-based clustering assigned
+$100\%$ of points to noise, and the topological summary was a single connected
+component. A single-Gaussian \emph{falsification null} made the verdict decisive: the
+best partition of the real cloud separated patients no better than slicing a
+structureless Gaussian blob of identical covariance (best silhouette $0.140$ for the
+real data versus $0.141\pm0.002$ for the null, $z=-0.36$; the Gaussian-mixture-optimal
+number of components collapsed to one in all $20$ posterior draws;
+Figure~\ref{fig:continuum}a). There are, in this clinical--biological space, no
+well-separated, reproducible discrete clusters.
 
-\begin{figure}[htbp]
+We therefore represent the space by its geometry rather than by a partition. Diagnosis
+is intermixed throughout the cloud (Figure~\ref{fig:continuum}b); overall burden forms
+a smooth gradient along the principal axis (Figure~\ref{fig:continuum}c); and
+inflammatory load varies along a \emph{different} direction
+(Figure~\ref{fig:continuum}d)---the biology\,\orth\,\Gfac{} dissociation, made visible.
+Four archetypal extremes, selected by cross-seed stability rather than by a
+parsimony rule (the only stable resolutions were two and four corners; cross-seed
+Tucker congruence $0.98$), give the continuum a clinically legible reading
+(Figure~\ref{fig:continuum}e). They separate biology from symptoms from severity: a
+\emph{biological} corner (high metabolic, inflammatory and substance load), a
+\emph{low-burden} pole, a \emph{severe, non-biological} corner (high overall severity
+but low biological load), and a \emph{symptom} corner (high sleep, developmental,
+suicidality and mania). Each patient is a soft convex blend of all four (mean
+assignment entropy $0.78$); only $39\%$ sit near a single pole. The reading is
+transdiagnostic (adjusted Rand index $\approx 0$ against both cohort and the seven
+DSM-5 subtypes), driven by the specific and biological axes rather than by severity
+(variance explained by the coarsest tessellation: specific axes $\eta^2=0.12$ versus
+$\Gfac{}$ $0.008$), not a missingness artefact (a classifier predicting region
+membership from each patient's coverage pattern performed below baseline, lift
+$-0.05$), and a tighter description of the coordinate cloud than diagnosis
+(mixture information criterion $197{,}900$ versus $201{,}300$ for a DSM-5-constrained
+model). Critically, because biological load varies continuously without a density
+\emph{gap}, it never forms a clean partition boundary at any granularity; it surfaces
+instead as an archetypal \emph{corner}. The biological phenotype is thus a direction
+in a continuum, not a category---which is exactly why the continuous coordinates and
+the archetype simplex, not any hard tessellation, are the load-bearing objects
+downstream.
+
+\begin{figure}[t]
   \centering
   \includegraphics[width=0.99\linewidth]{fig4_continuum.png}
-  \caption{\textbf{The patient space is a continuum, not biotypes.} (\textbf{a})
-  Principal-component embedding of the nine-dimensional coordinates ($N=9{,}013$),
-  coloured by diagnosis (fully intermixed), by overall severity \Gfac{} (a smooth
-  gradient along PC1), and by inflammatory load (a gradient in a different
-  direction---biology\,\orth\,\Gfac{}). (\textbf{b}) Five structure-discovery
-  methods agree on no discrete clusters. (\textbf{c}) Standardized profile of the
-  eight extreme phenotypes (archetypes) across the nine axes; each is the high pole
-  of one axis (note distinct metabolic and inflammatory corners), with most
-  patients soft blends of several.}
+  \caption{\textbf{The patient space is a continuum, not biotypes.} (\textbf{a}) A
+  single-Gaussian falsification null: the best silhouette achievable on the real
+  nine-dimensional cloud is no better than on a structureless Gaussian of matched
+  covariance ($z=-0.36$); the mixture-optimal number of clusters is one in all
+  posterior draws. (\textbf{b--d}) Principal-component embedding of the coordinates
+  ($N=9{,}013$), coloured by diagnosis (fully intermixed), by general burden \Gfac{}
+  (a smooth gradient), and by inflammatory load (a gradient in a \emph{different}
+  direction). (\textbf{e}) Standardized profiles of the four archetypal extremes
+  across the nine axes; the biological corner (A0) and the severe, non-biological
+  corner (A2) carry comparable general burden but opposite biological profiles.}
   \label{fig:continuum}
 \end{figure}
 
 \subsection{The geometry persists over two years (the map persists)}
 
-Scored forward onto the 12- and 24-month visits on the \emph{fixed} model
-(observed cells, uncertainty propagated, never re-estimated), the measurement
-remained invariant for five of six testable backbone axes (Tucker
-$\varphi = 0.96$--$1.00$; inflammatory partial at $0.90$), licensing the reading of
-coordinate change as patient change rather than instrument drift. A
+Scored forward onto the $12$- and $24$-month visits on the \emph{fixed} model
+(observed cells, uncertainty propagated, never re-estimated; baseline coordinates
+reproduced at Pearson $r\approx0.99$ through this path), the measurement remained
+invariant for all five testable backbone axes (longitudinal Tucker congruence
+$\varphi = 0.97$--$1.00$; inflammatory load, only partially invariant on a plain
+Gaussian map, was invariant here at $\varphi=0.97$; \edfig{fig:invariance}). Coordinate
+change can therefore be read as patient change rather than instrument drift. A
 measurement-error decomposition then separated trait from state
-(Figure~\ref{fig:traitstate}). The durable, trait-like axes were the biological
-and cognitive ones (rank-stability intraclass correlation: metabolic $0.93$,
-inflammatory $0.85$, cognition $0.78$); the moving, state-like axes were the
-symptom ones (sleep $0.49$, suicidality $0.46$). At the population level the cohort
-slid \emph{down} the severity and symptom axes while remaining static on biology.
-A per-patient geometric analysis agreed: severity moved (cleared measurement error)
-in $34.5\%$ of patients versus only $20.2\%$ for the biology corner; the
-``spine slides while biology holds'' pattern ($25.8\%$) outnumbered its converse
-($11.5\%$) by $2.2\times$. Archetype identity persisted in $52\%$ of patients
-($\kappa = 0.27$ vs a $12.5\%$ chance rate). The
-clinical reading is compact: \emph{stratify on the durable biology, monitor the
-moving symptoms}.
+(Figure~\ref{fig:traitstate}). The durable, trait-like axes were the biological and
+cognitive ones (test--retest intraclass correlation: metabolic $0.91$, substance
+$0.88$, cognition $0.70$, inflammatory $0.62$); the moving, state-like axes were the
+symptom ones (sleep $0.47$, suicidality $0.42$, developmental risk $0.39$). General
+burden was trait \emph{by rank} (intraclass correlation $0.62$): patients largely kept
+their relative position even as the cohort as a whole improved on severity and symptoms
+(population shift $-0.46$ on \Gfac{} and $-0.84$ on suicidality, while biology stayed
+static). Archetype identity persisted---the archetype weight vector moved little over
+two years (median cosine similarity $0.90$). The clinical reading is compact:
+\emph{stratify on the durable biology; monitor the moving symptoms}.
 
-\begin{figure}[htbp]
+\begin{figure}[t]
   \centering
   \includegraphics[width=0.98\linewidth]{fig5_persistence.png}
-  \caption{\textbf{Durable biology, moving symptoms.} (\textbf{a}) Individual
-  rank-stability (intraclass correlation) over follow-up: the biological and
-  cognitive axes are trait-like (high), the symptom axes state-like (low).
-  (\textbf{b}) Proportion of patients whose position changes beyond measurement
-  error from baseline to 24 months: the severity spine moves far more than the
-  biology corner.}
+  \caption{\textbf{Durable biology, moving symptoms.} (\textbf{a}) Trait fraction
+  (test--retest intraclass correlation, with $94\%$ credible intervals) over
+  follow-up: the biological and cognitive axes are trait-like, the symptom axes
+  state-like; mania is data-limited (hatched). (\textbf{b}) Individual rank stability
+  versus population-level change: patients keep their biological rank (high intraclass
+  correlation, near-zero population shift) while the cohort slides down the severity
+  and symptom axes.}
   \label{fig:traitstate}
 \end{figure}
 
 \subsection{It predicts future functioning, modestly and at the group level (the map predicts)}
 
-We then asked whether a baseline coordinate or phenotype predicts a two-year
-outcome \emph{incrementally beyond} diagnosis, current severity and the baseline
-value of the outcome, using an errors-in-variables Bayesian model that propagated
-each coordinate's measurement uncertainty. The map added predictive signal for
-\emph{functioning} but not for severity (which was autoregression-saturated). The
-eight archetypes added held-out predictive value for functioning (expected
-log-predictive-density gain $+46$), and the durable biological axes were
-individually informative: higher metabolic ($\beta = -0.062$, $95\%$ credible
-interval $[-0.103,-0.022]$) and inflammatory ($\beta = -0.060$ $[-0.112,-0.011]$)
-load predicted worse future functioning, with the metabolic effect surviving
-adjustment for the error-corrected severity coordinate---it is not baseline severity
-measured noisily. The signal was \emph{co-informative} with DSM-5 (each added beyond
-the other) and \emph{course-dependent}, concentrated in the episodic courses
-(bipolar disorder, depression) and null in the more baseline-saturated schizophrenia
-presentations. Translated to the clinic, the eight archetypes sorted patients into
-groups whose two-year functional-remission rate ranged from $14\%$ to $60\%$,
-transdiagnostically (Figure~\ref{fig:prognosis}). The individual-level
-discrimination gain was nonetheless small (functional-remission AUC $+0.017$
-$[+0.009,+0.026]$ over a strong diagnosis-plus-severity reference): the map's value
-is group-level prognostic stratification and continuous functional forecasting, not
-a large boost to individual binary prediction. These results survived inverse-
-probability weighting for attrition, restriction to reliably measured axes, and a
-permutation null.
+We then asked whether a baseline coordinate or phenotype predicts a two-year outcome
+\emph{incrementally beyond} diagnosis, current severity and the baseline value of the
+outcome, using an errors-in-variables Bayesian model that propagated each coordinate's
+measurement uncertainty. The map added predictive signal for \emph{functioning} but
+not for severity (which was saturated by its own baseline autoregression). The signal
+was carried by the \emph{phenotype}, not by any single laboratory axis: the four
+archetypes added the most held-out predictive value (expected log predictive density
+gain $+59$ over the diagnosis-plus-severity-plus-baseline reference), the eight
+specific axes added $+37$, and---an honest, map-specific shift from our earlier
+analyses---the isolated ``durable biology'' axes \emph{alone} no longer cleared the
+bar ($+2$, ambiguous; Figure~\ref{fig:prognosis}b). Biology still predicts functioning,
+but as a \emph{corner of the phenotype} (the biological archetype) rather than as a
+standalone three-axis block. No hard partition improved on the continuous and
+archetype encodings (every tessellation added $\approx+20$, strictly dominated by the
+archetypes); the operative number of clusters is therefore \emph{none}---the actionable
+object is a continuous position, not a category. The map was \emph{co-informative} with
+DSM-5 rather than redundant with it (functioning: map $+22$, DSM-5 $+29$, both $+67$;
+Figure~\ref{fig:prognosis}c), and \emph{course-dependent}, with the signal concentrated
+in the episodic, open-course cohorts (bipolar disorder and depression) and weak when
+bipolar disorder was removed.
 
-\begin{figure}[htbp]
+Translated to the clinic, the four archetypes sorted patients into groups whose
+two-year functional-remission rate ranged from $27\%$ to $60\%$, transdiagnostically
+(Figure~\ref{fig:prognosis}a); the \emph{biological} corner carried the worst
+functional prognosis ($27\%$), worse than the equally severe non-biological corner
+($32\%$)---the dissociation translating into prognosis. This gradient was a genuine
+within-diagnosis effect, not a cohort-composition artefact: the rank held inside every
+cohort (a biological-vs-low-burden odds ratio $\approx 4$ in each), standardizing to a
+common cohort mix moved it by only $\approx 6\%$, and the corner-by-cohort interaction
+was non-significant. The individual-level discrimination gain was nonetheless small
+(functional-remission AUC $+0.011$ over a strong diagnosis-plus-severity reference):
+the map's value is group-level prognostic stratification and continuous functional
+forecasting, not a large boost to individual binary prediction. The functioning signal
+survived inverse-probability weighting for attrition ($+53$), restriction to either
+two of the three cohorts ($+56$, $+59$), and a permutation null (which correctly
+vanished). Finally, against the full set of $143$ raw indicators under a matched
+gradient-boosting classifier, the nine-dimension map was a \emph{sufficient}
+representation for predicting deterioration (equal AUC) and \emph{near-sufficient} for
+recovery (raw indicators $+0.04$ AUC), with $97\%$ of the raw recovery signal already
+contained within the nine factors (\edfig{fig:repbench})---the compression is faithful,
+not lossy in any axis the map omits.
+
+\begin{figure}[t]
   \centering
   \includegraphics[width=0.99\linewidth]{fig6_prognosis.png}
   \caption{\textbf{Prognostic reach for functioning.} (\textbf{a}) Archetype
-  prognostic atlas: two-year clinical-endpoint rates by baseline archetype (blue
-  favourable, red adverse); functional-remission rates span $14\%$--$60\%$, every
-  archetype transdiagnostic. (\textbf{b}) Held-out incremental value for functioning
-  (EGF): the map adds beyond a diagnosis-plus-severity foundation \emph{and} DSM-5
-  adds beyond the map---the two are co-informative (mean $\pm$2 SE).}
+  prognostic atlas: two-year functional-remission rate by baseline archetype; the
+  biological corner is worst ($27\%$) and the low-burden pole best ($60\%$), a
+  transdiagnostic $27\%$--$60\%$ gradient. (\textbf{b}) Held-out incremental value for
+  functioning: the continuous archetype encoding dominates the eight specific axes, any
+  hard tessellation, and the isolated biology axes (operative number of clusters
+  $=$ none). (\textbf{c}) The map and DSM-5 are co-informative---each adds beyond the
+  other, and both together add most---but the individual-level remission AUC gain is
+  only $+0.011$.}
   \label{fig:prognosis}
 \end{figure}
 
 \subsection{It does not yet guide treatment---a boundary drawn by the evidence}
 
-Finally, treatment data recovered from the per-cohort source dictionaries and
-harmonized to drug-class exposures were run through a causal pipeline (common-support
-overlap gate $\rightarrow$ propensity weighting $\rightarrow$ doubly-robust
-errors-in-variables moderation with E-value sensitivity analysis) to ask whether
-the durable axes \emph{moderate} treatment response. On observational
-treatment-as-usual they did not reliably do so. Where identification was cleanest
-(lithium in bipolar disorder, near-complete overlap) the result was a well-identified
-null; an antipsychotic $\times$ metabolic/inflammatory signal for functioning in
-bipolar disorder was suggestive but unconfirmed (average-effect E-value $1.79$); and
+Treatment exposures, recovered from the per-cohort source dictionaries and harmonized
+to drug-class indicators, were run through an identification-first causal pipeline
+(common-support overlap gate $\rightarrow$ propensity weighting $\rightarrow$
+doubly-robust errors-in-variables moderation with an E-value sensitivity analysis and a
+minimum-detectable-effect calculation) to ask whether the durable axes or the
+archetypes \emph{moderate} treatment response. On observational, expert-centre
+treatment-as-usual they did not reliably do so (\edfig{fig:treatment}a). Where
+identification was cleanest---lithium in bipolar disorder, near-complete overlap---the
+result was a \emph{well-identified, bounded null}: the average effect was
+indistinguishable from zero (E-value $1.06$) and the design could have resolved an
+interaction as small as $\approx 0.2$ standard deviations but did not. An
+antipsychotic-by-biology signal for functioning in bipolar disorder was a confounded
+\emph{average} effect (E-value $1.77$) with \emph{no} reliable moderation (the two map
+encodings disagreed on which axis carried it---the signature of a false positive); and
 clozapine in schizophrenia was channelled to treatment-resistant patients and hence
-non-estimable. Average treatment effects were uniformly confounding-fragile
-(E-values $1.1$--$1.8$), the expected signature of confounding by indication
-(Extended Data Fig.~\ref{fig:m5}). Importantly, the prognostic finding above was not merely
-unmodelled treatment: the metabolic$\rightarrow$functioning forecast survived
-adjustment for the drug classes patients were actually receiving (attenuation
-$4.4\%$, credible interval still excluding zero). The boundary is therefore earned,
-not assumed: demonstrating treatment \emph{selection} from this map would require
-randomized or trial-arm data, which this baseline observational cohort lacks.
+underpowered rather than cleanly null. Average treatment effects were uniformly
+confounding-fragile (E-values $1.1$--$1.8$), the expected signature of confounding by
+indication.
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.99\linewidth]{edfig_m5_treatment.png}
-  \caption{\textbf{Extended Data Fig.~1\,$\vert$\ Treatment moderation is not
-  reliably identified on observational treatment-as-usual.} (\textbf{a})
-  Identification gate: maximum covariate imbalance (standardized mean difference)
-  before and after stabilized inverse-probability-of-treatment weighting. Lithium
-  in bipolar disorder balances to $\approx 0$ (near-complete overlap) and
-  antipsychotic balances, but clozapine in schizophrenia cannot be balanced---the
-  signature of channelling. (\textbf{b}) Doubly-robust durable-axis $\times$
-  treatment moderation (94\% highest-density intervals) for functioning and CGI
-  response; red intervals exclude zero. Lithium is a well-identified null; the
-  antipsychotic metabolic/inflammatory $\times$ functioning signal is suggestive but
-  unconfirmed; clozapine is channelled and uninterpretable.}
-  \label{fig:m5}
-\end{figure}
+This boundary is earned, not assumed, and it cuts two ways that strengthen the rest of
+the paper. First, the prognostic finding was \emph{not} merely unmodelled treatment:
+the archetype carrier of the functioning forecast survived adjustment for the drug
+classes patients were actually receiving (attenuation $4.7\%$; $3.9\%$ under attrition
+weighting), so the biological phenotype is not a treatment proxy. Second, even without
+\emph{selecting} a drug, the map \emph{describes} who faces a difficult course: the
+baseline archetype stratified two-year treatment course, with the biological corner
+carrying roughly twice the treatment-resistance and side-effect burden of the
+low-burden corner (resistance $43\%$ vs $20\%$; significant side-effects $23\%$ vs
+$11\%$), beyond baseline severity, substance comorbidity and demographics, and within
+cohort (\edfig{fig:treatment}b). As in the prognostic analysis, this is a group-level
+monitoring signal, not an individual classifier (the steepest gradient,
+treatment-resistance, was AUC-marginal under a permutation null). Demonstrating
+treatment \emph{selection} from this map would require randomized or trial-arm data,
+which this baseline observational cohort---patients receiving usual care in French
+expert centres---does not contain.

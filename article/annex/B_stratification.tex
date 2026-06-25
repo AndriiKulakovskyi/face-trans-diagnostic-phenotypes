@@ -1,0 +1,100 @@
+\section{Stratification: structure testing, archetypes and soft regions}
+\label{ann:stratification}
+
+The stratification operates on the fitted coordinates $\{x_i,S_i\}_{i=1}^{N}$ with
+$x_i=\hat f_i\in\mathbb{R}^{D}$ ($D=9$) and known posterior covariance $S_i$ from
+\eqref{eqA:scores}; uncertainty is carried throughout rather than discarded.
+
+\subsection{Structure-discovery gate and the single-Gaussian falsification null}
+
+Before any clustering we test the cloud's shape with complementary statistics, each
+computed over posterior draws so measurement noise cannot manufacture structure.
+\emph{Cluster tendency} uses the Hopkins statistic
+$H=\sum_i u_i^{D}/(\sum_i u_i^{D}+\sum_i w_i^{D})$, where $w_i$ is the
+nearest-neighbour distance of a sampled real point and $u_i$ that of a uniform point
+over the data support ($H\approx\tfrac12$ indicates no clustering); \emph{modality}
+uses Hartigan's dip statistic~\citep{hartigan1985dip} on PC1 and each axis;
+\emph{model selection} uses the gap statistic~\citep{tibshirani2001gap} and the
+Gaussian-mixture BIC profile; \emph{density} uses HDBSCAN~\citep{campello2013hdbscan}
+(fraction of points assigned to noise); \emph{topology} a Mapper
+graph~\citep{singh2007mapper}; and \emph{separation} the best silhouette over $K$.
+A continuum verdict requires $H\!\to\!\tfrac12$, a unimodal dip, the gap and BIC failing
+to prefer $K>1$, HDBSCAN near-all-noise, and a single Mapper component. Empirically:
+$H=0.80$, PC1 dip $p\approx1.0$, silhouette peak $0.14$, HDBSCAN $0$ clusters
+($100\%$ noise), Mapper a single connected component.
+
+Because all of these are absolute statistics, we anchor them with a
+\emph{falsification null}. We draw synthetic data from a single multivariate Gaussian
+with the empirical mean and covariance of the real coordinates---a structureless cloud
+by construction---and run the identical pipeline. If the real cloud were truly
+clustered, its best partition would separate points \emph{better} than the null's.
+\begin{equation}
+  z_{\text{sil}}=\frac{s^{\star}_{\text{real}}-\mathbb E[s^{\star}_{\text{null}}]}{\operatorname{sd}[s^{\star}_{\text{null}}]}
+  =\frac{0.140-0.141}{0.002}=-0.36 ,
+\end{equation}
+i.e.\ the real data are \emph{not} better separated than a Gaussian blob; the
+mixture-optimal number of components collapsed to one in all $20$ posterior draws. This
+turns ``no elbow'' into a calibrated negative result.
+
+\subsection{Archetypal analysis (the load-bearing continuum view)}
+
+Each patient is represented as a convex combination of $A$ extreme phenotypes, each
+itself a convex combination of patients~\citep{cutler1994archetypal}:
+\begin{equation}
+  \min_{W,B}\ \sum_{i=1}^{N}\Bigl\lVert x_i-\sum_{a=1}^{A} w_{ia}\,z_a\Bigr\rVert^2
+  \quad\text{s.t.}\quad z_a=\sum_{j=1}^{N} b_{ja}\,x_j,\ \
+  w_{ia},b_{ja}\ge 0,\ \ \textstyle\sum_a w_{ia}=1,\ \sum_j b_{ja}=1 ,
+  \label{eqB:aa}
+\end{equation}
+i.e.\ $X\approx WZ$ with $Z=BX$ and both $W$ and $B$ row-stochastic, which forces the
+archetypes $z_a$ onto the convex hull of the cloud. The simplex weights
+$w_i\in\Delta^{A-1}$ are the soft archetype membership. Uncertainty is propagated by
+refitting \eqref{eqB:aa} across posterior draws and projecting each draw onto the fixed
+archetypes (simplex-constrained least squares). The number of corners $A$ is set by
+\emph{cross-seed stability} (largest $A$ whose minimum cross-seed Tucker congruence
+$\ge0.8$), not by parsimony: only $A=2$ ($0.999$) and $A=4$ ($0.98$, minimum congruence
+$0.997$ over three seeds at full $N$) were stable, while $A=3,5,\dots,8$ collapsed
+($0.05$--$0.51$). The operational rule selected $A=4$ (explained variance $0.52$). This
+is copula-specific: the higher-$A$ corners of a plain-Gaussian map do not reproduce
+once the honest, wider explicit-axis uncertainty is carried. Because biological load
+varies continuously without a density gap, it is a \emph{direction of maximal
+phenotype}---an archetypal corner---rather than a partition boundary, which is why the
+archetypes (and the continuous coordinates), not any tessellation, are the load-bearing
+object for biology.
+
+\subsection{Measurement-error mixture and the nested \texorpdfstring{$K$}{K}-family}
+
+Treating $x_i$ as a noisy reading of a latent position,
+$x_i\mid\theta_i\sim\mathcal N(\theta_i,S_i)$, with $\theta_i$ from a $K$-component
+mixture yields the extreme-deconvolution likelihood~\citep{bovy2011xd}
+\begin{equation}
+  x_i\ \sim\ \sum_{k=1}^{K}\pi_k\,\mathcal{N}\!\left(m_k,\ \Sigma_k+S_i\right),
+  \qquad \pi\sim\mathrm{Dirichlet}\!\left(\tfrac{\alpha}{K}\mathbf 1\right),
+  \label{eqB:xd}
+\end{equation}
+in which \emph{every} observation carries its own additive, known covariance $S_i$, so
+imprecise coordinates spread their mass over components and prior-dominated axes
+self-down-weight. The soft regions are the posterior responsibilities
+$r_{ik}=\pi_k\,\mathcal N(x_i\mid m_k,\Sigma_k+S_i)/\sum_l\pi_l\,\mathcal N(x_i\mid m_l,\Sigma_l+S_i)$.
+On a continuum the mixture BIC is essentially flat ($197{,}900$--$198{,}100$ across
+$K=2$--$8$), so no $K$ is privileged; we export a nested family ($K=2,3,4$) as labelling
+conventions and \emph{defer the operative granularity to incremental predictive validity}
+(Annex~\ref{ann:prognosis}), which returns ``no hard $K$''. A coarsest-$K$ default
+($K=2$) is carried only as a hand-off contract.
+
+\subsection{Validation gates}
+
+The representation is tested on four gates. \emph{Not-just-severity}: variance explained
+per axis
+$\eta^2_d=1-\sum_k\sum_{i\in\mathcal C_k}(x_{id}-\bar x_{kd})^2/\sum_i(x_{id}-\bar x_d)^2$
+peaks on the specific axes (mean $\eta^2_{\text{spec}}=0.12$) far above \Gfac{}
+($0.008$). \emph{Transdiagnosticity}: the adjusted Rand index
+$\mathrm{ARI}=(\mathrm{RI}-\mathbb E[\mathrm{RI}])/(\max\mathrm{RI}-\mathbb E[\mathrm{RI}])$
+against cohort and the seven DSM-5 subtypes is $\approx0$ ($0.00$ and $0.01$).
+\emph{Stability and not-a-missingness-artefact}: cross-seed ARI $0.998$, and a
+classifier predicting region membership from each patient's per-axis coverage pattern
+underperforms the majority baseline (lift $-0.05$, permutation $p=0.23$).
+\emph{Tighter than DSM-5}: a free mixture beats one constrained to the DSM-5 partition
+by information criterion ($197{,}900$ vs $201{,}300$). Embeddings (PCA,
+Figure~\ref{fig:continuum}; UMAP~\citep{mcinnes2018umap}) are used for visualization
+only, never as clustering inputs.
