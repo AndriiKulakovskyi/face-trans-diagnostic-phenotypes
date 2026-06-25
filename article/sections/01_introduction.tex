@@ -1,6 +1,6 @@
 \section{Introduction}
 
-Psychiatric diagnoses are clinically indispensable but biologically porous. The
+Psychiatric diagnoses are clinically indispensable but biologically nonspecific. The
 categories of the DSM aggregate patients who differ widely in their biology, course
 and treatment response, and they are undercut by pervasive comorbidity,
 within-category heterogeneity and diagnostic instability over
@@ -23,7 +23,7 @@ slice of the patient. The routinely collected \emph{biology} that dominates the
 physical-health burden of severe mental illness---the metabolic and inflammatory
 markers that drive its excess mortality---has not been placed \emph{inside} the
 transdiagnostic factor space across disorders, even though an independent literature
-suggests it forms a partly separable axis. Metabolic and inflammatory abnormality
+suggests it forms a partly separable axis~\citep{penninx2024imd,milaneschi2017}. Metabolic and inflammatory abnormality
 co-occur in a sizeable minority of mood-disorder patients and track atypical,
 energy-related symptoms rather than overall
 severity~\citep{penninx2024imd,milaneschi2020,lamers2013,lamers2020}, and metabolic
@@ -44,7 +44,14 @@ continuum-versus-biotype question is therefore genuinely open, and its answer ma
 depend on which measurement space is interrogated~\citep{pan2026}.
 
 Here we address both questions in a single analysis, and then ask how far the
-resulting map can be pushed. Using the harmonized baseline of the three FACE
+resulting map can be pushed. Why represent patients by latent dimensions rather than the
+raw measurements? Routine clinical and biological data are high-dimensional, redundant
+and pervasively incomplete; a latent model pools many noisy, overlapping indicators into
+a few reliable axes, places heterogeneous data types (laboratory values, ordinal scales,
+counts) on one comparable scale, and---fit to observed cells only---gives every patient a
+position with quantified uncertainty rather than discarding incomplete records, a
+compression we later show to be a near-sufficient representation of the raw indicators
+for prognosis. Using the harmonized baseline of the three FACE
 cohorts---bipolar disorder, schizophrenia and major depression, $N=9{,}013$---we
 build \emph{FACE-ATLAS}: one global, missingness-aware Bayesian sparse bifactor /
 exploratory structural-equation model with mixed likelihoods, fit to each patient's
@@ -53,28 +60,31 @@ measurements in one coordinate system while holding diagnosis out as metadata. W
 the fitted map through five dependent, increasingly demanding questions: does it
 \emph{exist} as a stable structure; does it \emph{organize} patients into biotypes
 or a continuum; does it \emph{persist} over two years of follow-up; does it
-\emph{predict} outcomes beyond diagnosis and severity; and does it \emph{guide
-treatment}? The answers are, respectively: a nine-dimension map on which metabolic
+\emph{predict} outcomes beyond diagnosis and severity; and---this being an observational,
+treatment-as-usual cohort---how far it can \emph{inform treatment} before randomized data
+would be required? The answers are, respectively: a nine-dimension map on which metabolic
 and inflammatory load are the domains least entangled with functional severity; a
 graded continuum rather than discrete biotypes, legible through four archetypal
 extremes; a geometry that persists, with durable biology and moving symptoms; a real
 but modest, group-level prognostic signal for functioning carried by the biological
-phenotype; and---on observational, expert-centre treatment-as-usual---no reliable
-treatment moderation. We report the modest and the null results as deliberately as
+phenotype; and a treatment analysis that is deliberately bounded---marking where
+observational, expert-centre data reach their limit and specifying the randomized
+evidence that establishing treatment selection would require. We report the modest and the null results as deliberately as
 the positive ones. The contribution is a calibrated atlas that separates biological
 burden from clinical severity and forecasts functional course at the group level, not
 an overstated one; that calibration is itself the antidote to a literature of biotype
 and biomarker claims that have repeatedly failed to replicate.
 
-Methodologically, FACE-ATLAS's contribution is the integration of established
-latent-variable tools into a single diagnosis-held-out, uncertainty-propagating atlas of
-severe mental illness. The model combines Bayesian bifactor / exploratory
-structural-equation measurement, mixed and Gaussian-copula observation layers, an
-observed-cell likelihood for structured missingness, a correlated-\Gfac{} sensitivity
-arm for the biology--severity estimand, an archetypal representation of a continuous
-patient space, and downstream errors-in-variables prognosis and treatment-moderation
-analyses. The novelty lies in the estimand and the validation chain rather than in any
-single component: routine biological load is placed \emph{inside} a transdiagnostic
+Methodologically, FACE-ATLAS's contribution is not a new estimator but the integration of
+established latent-variable tools~\citep{reise2012bifactor,asparouhov2009esem,muthen2012bayesian}
+into a single diagnosis-held-out, uncertainty-propagating atlas of severe mental illness.
+The model combines Bayesian bifactor / exploratory structural-equation measurement, mixed
+and Gaussian-copula observation layers, an observed-cell likelihood for structured
+missingness, a correlated-\Gfac{} sensitivity arm for the biology--severity estimand, an
+archetypal representation of a continuous patient space, and downstream
+errors-in-variables prognosis and treatment-moderation analyses---each an established
+method used here off the shelf. The novelty lies in the estimand and the validation chain
+rather than in any single component: routine biological load is placed \emph{inside} a transdiagnostic
 psychiatric factor space, its separation from functional burden is quantified rather
 than assumed, and its temporal and prognostic implications are tested without converting
 a continuum into false biotypes. The mathematical development we give is included to make
