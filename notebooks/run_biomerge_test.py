@@ -2,15 +2,18 @@
 """One-vs-two biology factors: does the data prefer metabolic + inflammatory as TWO factors (the
 certified map) or as ONE 'immunometabolic' factor (the prior ontology / FACE soft-prior candidate #5)?
 
-Fits both structures on the SAME cohort-balanced subsample (default N=1000, cold-started so good R-hat is
-honest, not init-stuck), then compares them by WAIC/LOO on the CONTINUOUS block — computed offline from the
-posterior Λ/Φ/σ, because that block's likelihood is a pm.Potential (Woodbury) that pymc's log_likelihood
-does not capture. Same patients, same items, same z data; only the factor structure differs, so the ELPD
-difference is a clean fit-vs-parsimony verdict for the biology block.
+The metabolic + inflammatory indicators are 100% continuous, so this question lives entirely in the
+CONTINUOUS BACKBONE (the certified continuous core, S1: G + cognition + biology + sleep) — which is the
+marginalized Woodbury fit that converges cleanly cold (R-hat ~1.01), unlike the full mixed model (which
+needs the staged warm-start and otherwise mixes at R-hat ~1.7 and would make the comparison untrustworthy).
+
+We fit both structures on the SAME cohort-balanced subsample, then compare by WAIC on the continuous block,
+computed OFFLINE from the posterior Λ/Φ/σ (the block's likelihood is a pm.Potential pymc's log_likelihood
+does not capture). Same patients, same items, same z data; only the biology factor structure differs.
 
     HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_biomerge_test.py --smoke   # wiring (tiny draws)
     python3 scripts/run_job.py biomerge -- env HDF5_USE_FILE_LOCKING=FALSE \
-        python notebooks/run_biomerge_test.py --n 1000
+        python notebooks/run_biomerge_test.py --n 2000
 """
 from __future__ import annotations
 
@@ -44,12 +47,13 @@ for m in [n for n in sys.modules if n == "face" or n.startswith("face.")]:
 
 import arviz as az  # noqa: E402
 from face.models.bayesian.measurement_model_oop import (  # noqa: E402
-    DEFAULT_EXPLICIT_FACTORS, S5_FACTORS, MeasurementConfig, MeasurementDataset, StageDefinition, StageRunner,
+    S1_FACTORS, MeasurementConfig, MeasurementDataset, StageDefinition, StageRunner,
 )
 
 MERGED_MATRIX = REPO / "configs" / "prior_loading_matrix_v3_biomerge.csv"
-MERGED_FACTORS = ["overall_severity", "cognition", "immunometabolic", "sleep",
-                  "suicidality", "developmental_risk", "mania_activation", "substance"]
+# Continuous core (S1) with the biology block as TWO factors (split) vs ONE (merge).
+SPLIT_FACTORS = list(S1_FACTORS)                                              # G, cognition, metabolic, inflammatory, sleep
+MERGE_FACTORS = ["overall_severity", "cognition", "immunometabolic", "sleep"]  # biology collapsed to one
 
 
 def continuous_block_elpd(idata, M, *, psi_floor: float, n_draws: int, seed: int = 0):
@@ -86,12 +90,12 @@ def continuous_block_elpd(idata, M, *, psi_floor: float, n_draws: int, seed: int
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--n", type=int, default=1000, help="balanced subsample size (default 1000)")
-    p.add_argument("--draws", type=int, default=800)
+    p.add_argument("--n", type=int, default=2000, help="balanced subsample size (default 2000)")
+    p.add_argument("--draws", type=int, default=1000)
     p.add_argument("--tune", type=int, default=1000)
     p.add_argument("--chains", type=int, default=4)
     p.add_argument("--elpd-draws", type=int, default=400, help="posterior draws used for the WAIC ELPD")
-    p.add_argument("--smoke", action="store_true", help="tiny wiring check (40 draws, 2 chains)")
+    p.add_argument("--smoke", action="store_true", help="tiny wiring check (60 draws, 2 chains)")
     p.add_argument("--overwrite", action="store_true")
     return p.parse_args()
 
@@ -99,7 +103,7 @@ def parse_args():
 def main():
     a = parse_args()
     if a.smoke:
-        a.n, a.draws, a.tune, a.chains, a.elpd_draws = 400, 40, 40, 2, 40
+        a.n, a.draws, a.tune, a.chains, a.elpd_draws = 800, 60, 60, 2, 60
 
     base_cfg = MeasurementConfig().with_gaussian_copula()
     base_cfg = replace(base_cfg, output_dir=base_cfg.output_dir / "copula" / "biomerge",
@@ -107,16 +111,17 @@ def main():
     split_cfg = base_cfg
     merge_cfg = replace(base_cfg, prior_matrix=MERGED_MATRIX)
 
-    common = dict(correlated=True, windows=True, mixed=True, explicit_factors=list(DEFAULT_EXPLICIT_FACTORS),
-                  min_cohorts=2, n_subsample=a.n, balanced=True, draws=a.draws, tune=a.tune,
-                  chains=a.chains, target_accept=0.95, seed=20260605)
+    # Continuous backbone (mixed=False = marginalized Woodbury; converges cleanly cold).
+    common = dict(correlated=True, windows=True, mixed=False, min_cohorts=2, n_subsample=a.n,
+                  balanced=True, draws=a.draws, tune=a.tune, chains=a.chains, target_accept=0.95, seed=20260605)
     tag = f"n{a.n}"
-    split_stage = StageDefinition(f"split_2factor_{tag}", S5_FACTORS, **common)
-    merge_stage = StageDefinition(f"merge_1factor_{tag}", MERGED_FACTORS, **common)
+    split_stage = StageDefinition(f"split_2factor_{tag}", SPLIT_FACTORS, **common)
+    merge_stage = StageDefinition(f"merge_1factor_{tag}", MERGE_FACTORS, **common)
 
-    print(f"[biomerge] split = {len(S5_FACTORS)} factors (metabolic + inflammatory)", flush=True)
-    print(f"[biomerge] merge = {len(MERGED_FACTORS)} factors (immunometabolic)", flush=True)
-    print(f"[biomerge] N={a.n} draws={a.draws} tune={a.tune} chains={a.chains} (cold-start, same subsample)", flush=True)
+    print(f"[biomerge] split = {len(SPLIT_FACTORS)} factors {SPLIT_FACTORS}", flush=True)
+    print(f"[biomerge] merge = {len(MERGE_FACTORS)} factors {MERGE_FACTORS}", flush=True)
+    print(f"[biomerge] continuous backbone (copula, marginalized); N={a.n} draws={a.draws} "
+          f"tune={a.tune} chains={a.chains}", flush=True)
 
     results = {}
     for cfg, stage, label in [(split_cfg, split_stage, "split_2factor"), (merge_cfg, merge_stage, "merge_1factor")]:
@@ -127,11 +132,17 @@ def main():
         print(f"[{label}] diagnostics={diag}  elapsed={round(time.time()-t0)}s", flush=True)
         results[label] = {"cfg": cfg, "stage": stage, "idata": idata, "diag": diag}
 
-    # same continuous z-data for both (matrix-independent); compute once
-    M = MeasurementDataset(split_cfg).mixed(
-        S5_FACTORS, explicit_factors=list(DEFAULT_EXPLICIT_FACTORS), min_cohorts=2,
-        balanced=True, n_subsample=a.n, seed=20260605).base.M
+    # same continuous z-data for both; verify the two cores hold identical items in identical order
+    # (only the biology factor *labels* differ), so the shared M aligns with both models' Lam rows.
+    split_core = MeasurementDataset(split_cfg).core(
+        SPLIT_FACTORS, correlated=True, windows=True, balanced=True, n_subsample=a.n, seed=20260605)
+    merge_core = MeasurementDataset(merge_cfg).core(
+        MERGE_FACTORS, correlated=True, windows=True, balanced=True, n_subsample=a.n, seed=20260605)
+    assert list(split_core.items) == list(merge_core.items), "split/merge cores differ in items — comparison invalid"
+    assert np.allclose(np.nan_to_num(split_core.M), np.nan_to_num(merge_core.M)), "split/merge M differ"
+    M = split_core.M
     psi = float(split_cfg.psi_floor)
+    print(f"[biomerge] continuous block: {M.shape[0]} patients x {M.shape[1]} items (identical in both fits)", flush=True)
 
     print("\n=== WAIC on the continuous block (offline; higher ELPD = better fit) ===", flush=True)
     elpd = {}
