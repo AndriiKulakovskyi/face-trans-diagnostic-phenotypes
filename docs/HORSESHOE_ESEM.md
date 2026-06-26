@@ -93,8 +93,32 @@ A tiny continuous fit on the merged backbone (6 factors, 294 freed cross cells) 
 **0 divergences**, **92% of cross-loadings shrunk to |median| < 0.05** (median 0.002), yet the heavy tails
 let a genuine cell reach |λ| ≈ 0.59. Sparse *and* permissive, sampling cleanly.
 
-## Results (full 8-factor map)
+## Results — the decoupled outcome (2026-06-26)
 
-_Pending the full fit (`hs_s5_merged`). Will record: convergence (R̂/ESS/divergences); that the thin factors
-(substance, mania) keep their home loadings (no dilution); how many cross-loadings are credible (CI ≠ 0) and
-whether they are small and clinically sensible; and the inter-factor Φ. Then M2–M5 are rebuilt on this map._
+The **full mixed horseshoe did not converge** (R̂ 3.0 on the loadings). The diagnostic isolated why: the
+horseshoe scales mix fine in the continuous model (`hs_tau`/`hs_eta` R̂ 1.00) — it is the **mixed embedding**
+(≈1,900 per-patient explicit latents coupling to the cross-loadings through Φ) that breaks it, not the prior.
+So we **decoupled** (the architecture is sound and stronger this way):
+
+**1. Operational map = hard-zero 8-factor mixed** (`hs_s5_merged_hz`): converges cleanly (R̂ 1.03, 0 div) —
+the coordinates M2–M5 consume.
+
+**2. Sparse-ESEM = continuous validator + selector** (`sparse_esem_6f`; stable variant: fixed τ + Student-t
+local). Freeing all 294 off-home cross-loadings, **~83% shrink to ≈0** — the hard-zero zeros are *earned,
+not imposed* — and a handful of small, well-converged, clinically-sensible cross-loadings are selected. (The
+0.73 cell from the loose-prior diagnostic was a prior-artifact: it vanished under proper shrinkage.)
+
+**3. Final map = hard-zero + the data-earned cross-loadings** (`hs_s5_merged_xc`, R̂ 1.06, 0 div). The full
+mixed model is the arbiter: of the 6 sparse-ESEM candidates it kept **3 credible**, all *sleep / childhood-
+trauma items → cognition*; the 3 mania candidates widened to non-credible and were dropped (the mania↔sleep
+link belongs in Φ ≈ 0.24, not an item cross-loading on a 2-item factor — the same lesson as immunometabolic).
+
+| earned cross-loading | median | 95% CI | R̂ | reading |
+|---|---|---|---|---|
+| CTQ-37 → cognition | −0.094 | [−0.134, −0.053] | 1.00 | childhood adversity ⟷ cognition |
+| PSQI latency → cognition | +0.057 | [+0.011, +0.102] | 1.00 | sleep ⟷ cognition |
+| PSQI daytime dysfunction → cognition | −0.070 | [−0.122, −0.020] | 1.00 | sleepiness ⟷ cognition |
+
+Thin factors are intact (substance home |λ| 0.585, mania 0.484). **The validation is the headline:** given
+total freedom, the model reproduces known clinical cross-talk and nothing spurious — strong evidence the
+8-factor map is well-specified. The final map is `hs_s5_merged_xc`; M2–M5 are rebuilt on it.
