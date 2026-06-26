@@ -11,6 +11,18 @@
 > *Status: PLAN — locked at the M3.0 discussion gate, pending PI sign-off. M3.0 (inventory) implemented;
 > stages 31–37 held at the gate. Updated 2026-06-10 (the geometric-prediction framing §1.4, Arm-B
 > persistence, and the no-completeness-selection rule folded in at the gate).*
+>
+> **8-factor rebuild note (2026-06-27; pending PI sign-off).** The M3 method below is unchanged, but it is now
+> run on the **8-factor** M1/M2 objects (`copula/weighted_8d/hs_s5_merged_xc`; immunometabolic merge + 3 cross-
+> loadings + substance pinned orthogonal) with the **A = 5** archetype simplex. Engine changes were mechanical
+> repoints (`CANON` 8-factor; `DURABLE = {cognition, immunometabolic}`; `A = 5`; the G1 invariance backbone uses
+> `{severity, cognition, immunometabolic, sleep}` under the folded matrix). Result **replays** with one
+> improvement and one honest difference: **G1** all 4 backbone axes invariant — *immunometabolic now fully
+> invariant where native inflammatory was only partial*; **G3** biology durable (immunometabolic ICC 0.91,
+> cognition 0.70) / symptoms state, severity trait-by-rank with population improvement; **G4** archetype weights
+> persist (cosine 0.81) and the spine moves while biology holds — but the G3⟷G4 *cross-route* synthesis weakens
+> to ρ ≈ 0.07 (A = 5 argmax churn; orthogonal substance ICC drops to 0.49). Findings:
+> [TEMPORAL_OOP_FINDINGS.md](TEMPORAL_OOP_FINDINGS.md).
 
 ---
 
