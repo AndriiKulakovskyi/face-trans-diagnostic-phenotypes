@@ -67,15 +67,20 @@ def parse_args():
                    help="final operational map = hard-zero + the 6 sparse-ESEM-SELECTED cross-loadings "
                         "(configs/prior_loading_matrix_v3_biomerge_xc.csv, freed via specific_cross). "
                         "A small identified refinement between well-separated factors.")
+    p.add_argument("--weighted", action="store_true",
+                   help="fit at FULL N with cohort-weighting (the operational map M2-M5 consume, analogue of "
+                        "copula/weighted/s5_9dim_mixed). Output -> copula/weighted_8d/. ~4h for the mixed stage.")
     p.add_argument("--overwrite", action="store_true")
     return p.parse_args()
 
 
 def main():
     a = parse_args()
-    cont = dict(correlated=True, windows=True, mixed=False, balanced=True, n_subsample=a.n, seed=20260605)
+    # --weighted => full-N cohort-weighted (the operational estimand M2-M5 consume); else balanced subsample.
+    samp = dict(balanced=False, n_subsample=None) if a.weighted else dict(balanced=True, n_subsample=a.n)
+    cont = dict(correlated=True, windows=True, mixed=False, seed=20260605, **samp)
     mixed = dict(correlated=True, windows=True, mixed=True, explicit_factors=list(DEFAULT_EXPLICIT_FACTORS),
-                 min_cohorts=2, balanced=True, n_subsample=a.n, seed=20260605)
+                 min_cohorts=2, seed=20260605, **samp)
     dc, dt, mc_, mt = (1000, 1000, 1500, 2000) if not a.smoke else (40, 40, 40, 40)
     ch = 4 if not a.smoke else 2
     s5name = {"horseshoe": "hs_s5_merged", "hardzero": "hs_s5_merged_hz"}[a.final]
@@ -86,10 +91,11 @@ def main():
     s5 = StageDefinition(s5name, F8, draws=mc_, tune=mt, chains=ch, target_accept=0.95,
                          specific_cross=a.fold, cross_sd_scale=1.0, **mixed)
 
+    sub = "weighted_8d" if a.weighted else "horseshoe_8d"
     base = MeasurementConfig().with_gaussian_copula()
-    base = replace(base, prior_matrix=MERGED_MATRIX,
-                   output_dir=base.output_dir / "copula" / "horseshoe_8d",
-                   figure_dir=base.figure_dir / "copula" / "horseshoe_8d")
+    base = replace(base, prior_matrix=MERGED_MATRIX, cohort_weighted=a.weighted,
+                   output_dir=base.output_dir / "copula" / sub,
+                   figure_dir=base.figure_dir / "copula" / sub)
     hs = base.with_horseshoe(tau0=a.tau0, slab_c=a.slab_c)
 
     if a.fold:
