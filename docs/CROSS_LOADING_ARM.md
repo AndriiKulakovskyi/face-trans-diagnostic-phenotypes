@@ -1,8 +1,9 @@
 # M1 cross-loading arm (sensitivity → candidate primary)
 
-> Status: **COMPLETE — arm rejected, certified map retained** (fit 2026-06-26, ~50 min, exit 0).
-> The cross-loading parameterization is **non-identified** for the immunometabolic block; it stays a
-> documented sensitivity arm and does **not** become primary. The canonical M1 was never touched.
+> Status: **COMPLETE** (2026-06-26). Two findings on the metabolic–inflammatory block, both retaining the
+> certified map: (1) the cross-loading arm is **rejected** — freeing the immunometabolic cross-loadings is
+> non-identified; (2) the formal **one-vs-two WAIC comparison** decisively prefers **two factors** (10.2 SE),
+> so the v3 split is earned. Net: two distinct, weakly-correlated biology factors. Canonical M1 untouched.
 
 ## Why
 
@@ -125,7 +126,43 @@ direct cross-loadings (non-identified rotation). This is an *earned* boundary: w
 theory-plausible specific cross-loading family the ontology encodes, and the data say to keep the
 factor-correlation form. The hard-zero default is retained.
 
-### Consequence for "grow by evidence"
+## Follow-up: is the biology block one factor or two? (formal WAIC comparison)
+
+The prior ontology — and the official FACE dimension-readiness workbook
+(`data/face_dimension_soft priors.xlsx`) — treat **"Metabolism / Immunometabolism" as a single
+construct** (candidate #5); v3 hypothesised a split into metabolic + inflammatory. The cross-loading arm
+showed the instability is confined *entirely* to this block (R̂ 1.00 on all 7 other factors), so the
+natural question is whether the data prefer one factor or two. The certified analysis reported the split
+as "confirmed" but only via the low Φ (0.18) + clean anchoring — never a formal one-vs-two test.
+
+**Method** (`notebooks/run_biomerge_test.py`, N=2000, 2026-06-26). The metabolic + inflammatory indicators
+are 100% continuous, so the question lives in the continuous core (S1: \Gfac{} + cognition + biology + sleep)
+— the marginalized Woodbury fit that converges cleanly cold. Fit it two ways on the **identical
+1884-patient × 71-item continuous block** (same data, same copula, cold-start): biology as **two** factors
+(certified) vs **one** immunometabolic factor (`configs/prior_loading_matrix_v3_biomerge.csv`). Compare by
+WAIC on the continuous block, computed offline from the posterior Λ/Φ/σ (that block is a `pm.Potential`).
+*(An initial attempt on the full mixed model was discarded: cold-starting it left both structures at
+R̂ ~1.7 — it needs the staged warm-start — which would have made the comparison untrustworthy.)*
+
+**Result: TWO factors, decisively.** Both fits converged (R̂ 1.01, ESS ~2300, 0 div).
+
+| structure | elpd_waic (continuous block) | p_waic |
+|---|---|---|
+| split — two factors (certified) | −96,886 | 246 |
+| merge — one immunometabolic factor | −97,799 | 229 |
+
+Δelpd (split − merge) = **+914 ± 89 SE = 10.2 SE** in favour of two factors — far past the ~2–3 SE bar,
+and *after* the complexity penalty docks the two-factor model more (p_waic 246 vs 229). So the v3 split is
+**earned**, now with the formal model comparison the certified analysis lacked.
+
+**Combined verdict on the metabolic–inflammatory block.** The two findings fit together: the factors are
+**genuinely distinct** (one-vs-two: two wins by 10.2 SE) *and* their real but modest coupling is best left
+as a **Φ-correlation** (0.18), because freeing it as cross-loadings is non-identified (the arm above). So
+the block is **two distinct, weakly-correlated biology factors** — confirmed and strengthened, not merged.
+(Caveat: the comparison is on the continuous backbone at N=2000, where biology is canonically assessed;
+full-N would only sharpen a 10-SE result.)
+
+## Consequence for "grow by evidence"
 
 The growth path is, for now, **closed at this rung**: the only theory-plausible specific cells fail to
 identify, so there is nothing to carry forward to a wider set. A future attempt would need a *different
