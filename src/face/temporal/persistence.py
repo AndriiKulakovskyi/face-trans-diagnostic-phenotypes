@@ -7,8 +7,8 @@ measurement error, the G0 reliable-change rule):
   * `reliable_change_rate` — per axis, the fraction of patients whose V0→Vk coordinate change is reliable
     (|Δ|/SE ≥ 1.96, SE² = σ²_s+σ²_t). The geometric analogue of G3's state — and the G3⟷G4 synthesis lever.
   * `spine_corner` — decompose Δx into the spine (severity, 1-dof χ² reliable-change) vs the corner
-    subspace (multi-dof χ²): does the spine move while the corner holds?  Reports the full 8-specific corner
-    and the cleaner **biology corner** (metabolic/inflammatory/cognition, the licensed trait axes).
+    subspace (multi-dof χ²): does the spine move while the corner holds?  Reports the full 7-specific corner
+    and the cleaner **biology corner** (immunometabolic/cognition, the licensed trait axes).
   * `membership_persistence` — soft transition matrix + dominant-archetype agreement + weight cosine on the
     **Arm-B (G-residualized)** archetypes: does corner *identity* persist independent of severity?
 
@@ -20,9 +20,9 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-SPECIFICS = ["cognition", "metabolic", "inflammatory", "sleep", "mania_activation",
+SPECIFICS = ["cognition", "immunometabolic", "sleep", "mania_activation",
              "suicidality", "developmental_risk", "substance"]
-BIOLOGY_CORNER = ["metabolic", "inflammatory", "cognition"]      # the licensed trait axes (cleanest §1.4 corner)
+BIOLOGY_CORNER = ["immunometabolic", "cognition"]               # the licensed trait axes (cleanest §1.4 corner)
 SPINE = "overall_severity"
 Z = 1.96                                                          # 94%/95% reliable-change threshold
 

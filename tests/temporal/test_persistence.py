@@ -27,7 +27,7 @@ def test_reliable_change_rate_picks_the_mover():
     rcr = reliable_change_rate(_panel(), CANON, s="V0", t="V2").set_index("axis")
     assert rcr.loc["overall_severity", "frac_reliable"] == 0.5     # p1 moves, p2 doesn't
     assert rcr.loc["overall_severity", "frac_increase"] == 0.5
-    assert rcr.loc["metabolic", "frac_reliable"] == 0.0            # biology flat
+    assert rcr.loc["immunometabolic", "frac_reliable"] == 0.0      # biology flat
 
 
 def test_spine_corner_spine_moves_biology_holds():

@@ -1,6 +1,6 @@
 """M3 temporal-coherence engine — score follow-up visits onto the FIXED M1/M2 model.
 
-V0 defines, follow-up validates: M3 never re-discovers the 9-dim map or the M2 strata on
+V0 defines, follow-up validates: M3 never re-discovers the 8-dim map or the M2 strata on
 later visits. It scores each patient's **observed** V1/V2 cells onto the certified M1 loadings
 (on the frozen V0 scale), propagates M1/M2 per-patient uncertainty, and asks whether the
 measurement and the memberships *cohere and persist* over time. Methods of record:
@@ -22,10 +22,11 @@ from __future__ import annotations
 # cohorts are well-represented. V3+ and interim `_mois` visits are out of scope for M3.
 VISITS: tuple[str, ...] = ("V0", "V1", "V2")
 
-# Canonical M1 dimension order (matches scripts/20_prep_coordinates.CANON and the certified fit).
+# Canonical M1 dimension order — must match the strata engine's CANON (the order written into
+# coordinates_full.parquet + archetype_profiles.csv). 8-factor: immunometabolic merge.
 CANON: tuple[str, ...] = (
-    "overall_severity", "cognition", "metabolic", "inflammatory", "sleep",
-    "mania_activation", "suicidality", "developmental_risk", "substance",
+    "overall_severity", "cognition", "immunometabolic", "sleep", "mania_activation",
+    "suicidality", "developmental_risk", "substance",
 )
 
 __all__ = ["VISITS", "CANON"]
