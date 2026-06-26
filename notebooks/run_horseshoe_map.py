@@ -60,6 +60,9 @@ def parse_args():
     p.add_argument("--tau0", type=float, default=0.05, help="horseshoe global-shrinkage scale")
     p.add_argument("--slab-c", type=float, default=0.30, help="horseshoe slab width (caps escaped |λ|)")
     p.add_argument("--smoke", action="store_true", help="tiny wiring check")
+    p.add_argument("--final", choices=["horseshoe", "hardzero"], default="horseshoe",
+                   help="cross-loading treatment for the final 8-factor MIXED map: horseshoe (sparse ESEM) "
+                        "or hardzero (the operational map for M2-M5, converges like the certified fit).")
     p.add_argument("--overwrite", action="store_true")
     return p.parse_args()
 
@@ -71,9 +74,10 @@ def main():
                  min_cohorts=2, balanced=True, n_subsample=a.n, seed=20260605)
     dc, dt, mc_, mt = (1000, 1000, 1500, 2000) if not a.smoke else (40, 40, 40, 40)
     ch = 4 if not a.smoke else 2
+    s5name = "hs_s5_merged" if a.final == "horseshoe" else "hs_s5_merged_hz"
     s1 = StageDefinition("hs_s1_merged", F1, draws=dc, tune=dt, chains=ch, target_accept=0.95, **cont)
     s3 = StageDefinition("hs_s3_merged", F3, draws=dc, tune=dt, chains=ch, target_accept=0.95, **cont)
-    s5 = StageDefinition("hs_s5_merged", F8, draws=mc_, tune=mt, chains=ch, target_accept=0.95, **mixed)
+    s5 = StageDefinition(s5name, F8, draws=mc_, tune=mt, chains=ch, target_accept=0.95, **mixed)
 
     base = MeasurementConfig().with_gaussian_copula()
     base = replace(base, prior_matrix=MERGED_MATRIX,
@@ -81,13 +85,15 @@ def main():
                    figure_dir=base.figure_dir / "copula" / "horseshoe_8d")
     hs = base.with_horseshoe(tau0=a.tau0, slab_c=a.slab_c)
 
-    print(f"[hs-map] 8-factor merged map; horseshoe tau0={a.tau0} slab_c={a.slab_c}; N={a.n}", flush=True)
+    final_cfg, final_mode = (hs, "HORSESHOE") if a.final == "horseshoe" else (base, "hard-zero")
+    print(f"[hs-map] 8-factor merged map; final={a.final} (tau0={a.tau0} slab_c={a.slab_c}); N={a.n}", flush=True)
     print(f"[hs-map] factors: {F8}", flush=True)
 
-    # backbone in hard-zero (clean, fast), final mixed in horseshoe, all same output_dir for warm-start
-    runner_hz, runner_hs = StageRunner(base), StageRunner(hs)
+    # backbone always hard-zero (clean, fast); final stage per --final, all same output_dir for warm-start
+    runner_hz = StageRunner(base)
     prev = None
-    for st, runner, mode in [(s1, runner_hz, "hard-zero"), (s3, runner_hz, "hard-zero"), (s5, runner_hs, "HORSESHOE")]:
+    for st, runner, mode in [(s1, runner_hz, "hard-zero"), (s3, runner_hz, "hard-zero"),
+                             (s5, StageRunner(final_cfg), final_mode)]:
         print(f"\n=== {st.name} ({mode}, {len(st.factors)} factors{' MIXED' if st.mixed else ''}) ===", flush=True)
         t0 = time.time()
         _idata, man = runner.run_stage(st, overwrite=a.overwrite, prev_stage=prev)
