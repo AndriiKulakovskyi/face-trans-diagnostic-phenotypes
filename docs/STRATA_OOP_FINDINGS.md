@@ -1,152 +1,151 @@
 # Soft operational regions on the Gaussian-copula map (M2) — findings
 
-> **Reframe note (2026-06-23).** M2 is now framed as a *coordinate system + reading guide*, not a typology. The
-> 9-dim copula space is a **continuum**; the **continuous coordinates** are the load-bearing object, and the
-> archetype corners / K-tessellation are **interpretation lenses**, not discovered decision-regions or natural
-> kinds (M4 confirms: *operative K = none*). Canonical now: docs/STRATA_READING_GUIDE.md + report §sec:strata.
-> Read the stratification/archetype/tessellation framing below as the *derivation* of those lenses, not a claim
-> that patients fall into discrete strata.
+> **Reframe note.** M2 is a *coordinate system + reading guide*, not a typology. The 8-dim copula space is a
+> **continuum**; the **continuous coordinates** are the load-bearing object, and the archetype corners /
+> K-tessellation are **interpretation lenses**, not discovered decision-regions or natural kinds (M4 confirms:
+> *operative K = none*). Canonical companions: [STRATA_OOP_ATLAS.md](STRATA_OOP_ATLAS.md),
+> docs/STRATA_READING_GUIDE.md. Read the framing below as the *derivation* of those lenses, not a claim that
+> patients fall into discrete strata.
 
-> **Canonical M2 findings record.** Built on the certified cohort-weighted full-N Gaussian-copula 9-dim map.
-> **Detailed
-> analysis of what the K-family and A mean: [STRATA_OOP_ATLAS.md](STRATA_OOP_ATLAS.md).** Engine:
-> [`src/face/strata/strata_model_oop.py`](../src/face/strata/strata_model_oop.py);
-> driver: [`notebooks/run_strata_model_oop.py`](../notebooks/run_strata_model_oop.py); figures:
-> `docs/figures/strata_oop/`. **Internal/baseline scope** — temporal persistence (M3) and prognosis (M4)
-> are deferred to the later reruns on this object. Pending PI sign-off. Updated 2026-06-22.
+> **Canonical M2 findings record (8-factor map, 2026-06-26; pending PI sign-off).** Rebuilt on the
+> **8-dimension** cohort-weighted full-N Gaussian-copula map — the immunometabolic merge (metabolic +
+> inflammatory → one axis) + the 3 earned cross-loadings (CTQ/PSQI → cognition) + **substance pinned
+> orthogonal** (its cross-factor correlations are non-identifiable). Map: `copula/weighted_8d/hs_s5_merged_xc`
+> (R̂ 1.03, 0 div). Engine [`src/face/strata/strata_model_oop.py`](../src/face/strata/strata_model_oop.py);
+> driver [`notebooks/run_strata_model_oop.py`](../notebooks/run_strata_model_oop.py). Detailed atlas of what
+> the K-family and A mean: [STRATA_OOP_ATLAS.md](STRATA_OOP_ATLAS.md).
 
 ## What this is
 
-The published M2 strata were built on the older **native** map. The Gaussian-copula vertical now gives the
-best map we have (full-N, cohort-weighted, sub-1.05), so M2 is reworked on it — and reframed as the question
-actually is: **the 9-dim space is a continuum, not a clustering problem.**
-
-Because it is a continuum, **the load-bearing objects are granularity-free**: (i) the **continuous 9-dim
-coordinates** (with per-patient posterior uncertainty + draws), and (ii) the **soft archetype simplex** —
-each patient a convex blend of A=4 stable extreme phenotypes. A hard tessellation is, on a continuum, only a
-**coarse labelling convention** with no privileged number of regions, so we do **not** feature a single K:
-we export a **nested K-family** (K = 2, 3, 4) as conventions and **defer the *operative* granularity — which
-K, if any, adds clinical value — to M4/M5 incremental predictive/treatment validity.** The engine *wraps* the
-proven kernels (`mixture`/`structure`/`archetypes`/`validation`) — no math is reimplemented.
-
-Three complementary views, all no-hard-edge:
-* **Continuous coordinates (load-bearing)** — position on the 9 axes + uncertainty; M3/M4 consume these directly.
-* **Archetypes (load-bearing continuum view)** — each patient a convex blend of A=4 extreme phenotypes.
-* **Soft tessellation (coarse convention, nested K-family)** — a measurement-error (Extreme-Deconvolution)
-  mixture; responsibilities *are* the soft boundaries. Exported at K = 2, 3, 4; no K is privileged.
+On the fixed 8-factor M1 map, M2 asks whether the transdiagnostic space carves into useful strata. The answer
+replays the 9-factor result with one substantive change — **A = 5 stable archetypes (was 4)** — and is, if
+anything, cleaner: a continuum (not biotypes), a nested K-family with no privileged K, an archetype simplex
+that separates biology ⊥ symptoms ⊥ severity, transdiagnostic and not-just-severity. The eight axes are
+overall_severity (G), cognition, **immunometabolic**, sleep, mania_activation, suicidality, developmental_risk,
+substance.
 
 ## Coordinate prep (the copula simplification)
 
-Because the cohort-weighted copula fit was run at full N, its posterior already contains the per-patient
-explicit latents `f_e` for [G, suicidality, developmental_risk, substance] — so the old M2.0's expensive
-full-N projection is **unnecessary**. We read `f_e` from the posterior and condition the marginalized
-specifics `f_m | f_e` under the shared Φ (`scoring.coherent_joint_coords`), giving one coherent 9-dim
-posterior draw per sample. All 9,013 patients are scored on all 9 axes (mean ≈ 0, latent z-scale, 100%
-finite). Uncertainty propagates honestly: metabolic/inflammatory/developmental are tight (posterior SD
-0.24–0.26), mania/substance/suicidality wide (0.48–0.68); substance is never "well" (only 2 SUD binaries) and
-552 DR patients are prior-dominated — **no imputation**.
+The cohort-weighted full-N copula fit carries the per-patient explicit latents `f_e` for
+[G, suicidality, developmental_risk, substance] in its posterior, so no extra full-N projection is needed. We
+read `f_e` and condition the marginalized continuous specifics `f_m | f_e` under the shared Φ
+(`scoring.coherent_joint_coords`), giving one coherent 8-dim posterior draw per sample. All **9,013 patients**
+are scored on all **8 axes** (latent z-scale, 100% finite). Uncertainty propagates honestly: immunometabolic /
+cognition / developmental tight, mania / substance / suicidality wide; substance is never "well" (only 2 SUD
+binaries) and DR patients are prior-dominated — **no imputation**.
 
 ## Result 1 — it is a continuum
 
-The structure-discovery gate (Hopkins / dip / silhouette / gap / GMM-BIC / HDBSCAN / Mapper, uncertainty-aware
-over draws) returns **continuum** on the copula map: 3/6 clustered signals, silhouette peak **0.14**
-(< 0.15 = no separation), PC1 dip p = **1.0** (unimodal), HDBSCAN **0 clusters**, Mapper a **single connected
-component** (one chain). A single-Gaussian falsification null is decisive: the best partition separates
-patients **no better than slicing a structureless Gaussian blob** (silhouette real 0.140 vs null 0.141±0.002,
-z = -0.36; over draws the GMM-optimal K collapses to 1 in all 20). So there are **no well-separated,
-reproducible discrete clusters** — K is a granularity convention, not a discovered kind-count.
-Figure: `structure_panel.png`. Full analysis + limits: [STRATA_OOP_ATLAS.md §0b](STRATA_OOP_ATLAS.md).
+The structure gate (Hopkins / dip / silhouette / gap / GMM-BIC / HDBSCAN / Mapper, uncertainty-aware) returns
+**continuum**: silhouette peak **0.146** (< 0.15 = no separation), gap k_opt = **1**, HDBSCAN **0 clusters**
+(100% noise), Mapper a **single connected component**. Per-axis dip is unimodal for 6/8 axes (p > 0.99); only
+**mania_activation** and **suicidality** are multimodal (dip p = 0) — the symptom axes have internal structure,
+but the joint space does not separate. The single-Gaussian **falsification null** is decisive: the best
+partition separates patients **no better than slicing a structureless Gaussian** — silhouette real **0.140** vs
+null **0.137 ± 0.002 (z = 1.13, n.s.)**. So there are **no well-separated, reproducible clusters**; K is a
+granularity convention, not a kind-count. Figure: `structure_panel.png`.
 
 ## Result 2 — the soft tessellation is a nested K-family (no privileged K)
 
-The XD-BIC is essentially **flat** across K = 2–8 (197.9k–199.5k, < 1%; the minimum is at **K = 3**), the
-continuum signature of no natural K. Rather than break that flat tie with an internal parsimony rule, we
-export the family and let downstream validity decide. The decision menu
+XD-BIC is essentially flat across K (185.0k–185.6k, < 0.4%; the minimum is at **K = 4** but its stability
+drops). We export the family and let downstream validity decide
 (`results/face/strata_oop/consolidate/k_family_menu.csv`):
 
-| K | XD-BIC | confident-dominant | seed-ARI | η² specifics | η² G | η² suicidality | η² metabolic | η² inflammatory |
+| K | XD-BIC | confident-dominant | seed-ARI | η² spec | η² G | η² mania | η² suicidality | η² immunometabolic |
 |---|---|---|---|---|---|---|---|---|
-| 2 | 197,963 | 1.00 | 0.998 | 0.122 | 0.008 | 0.543 | 0.003 | 0.004 |
-| **3** (BIC-best) | **197,918** | 0.92 | 0.968 | 0.141 | 0.165 | 0.436 | 0.064 | 0.011 |
-| 4 | 198,108 | 0.87 | 0.996 | 0.154 | 0.332 | 0.557 | 0.102 | 0.031 |
+| **2** (contract default) | 185,557 | 1.00 | 0.991 | 0.077 | 0.050 | 0.224 | 0.225 | 0.027 |
+| **3** (BIC-near-best, stable) | 185,019 | 0.94 | 0.998 | 0.115 | 0.108 | 0.163 | 0.476 | 0.028 |
+| 4 (BIC-min, less stable) | 185,006 | 0.88 | 0.663 | 0.136 | 0.203 | 0.229 | 0.523 | 0.057 |
 
-**The headline nuance:** all Ks split *first* on **psychiatric symptom burden** (suicidality-anchored), but
-**finer K progressively captures severity (G) and biology that K = 2 discards** — metabolic η² 0.003 → 0.064 →
-0.102, inflammatory 0.004 → 0.011 → 0.031, G 0.008 → 0.165 → 0.332. Biology has no density *gap* (so it never
-forms a clean region boundary at any K — see Result 3), but a finer tiling does pick up more of its continuous
-gradient. K = 2 is the coarsest, sharpest-assigning convention; K = 3 is BIC-best and still confident + stable;
-K = 4 is the richest on severity/biology. **No K is "the answer"** — the operative choice is M4/M5's.
+**The headline nuance (unchanged from 9-factor):** every K splits *first* on **psychiatric symptom burden** —
+mania (η² 0.224) and suicidality (η² 0.225 → 0.476 → 0.523) — and **finer K progressively picks up severity (G:
+0.050 → 0.108 → 0.203) and the immunometabolic gradient (0.027 → 0.057)** that K = 2 discards. Biology has no
+density *gap*, so it never forms a region boundary at any K (it is an archetype/continuous feature — Result 3),
+but finer tiling captures more of its continuous gradient. K = 3 is the sweet spot (BIC-near-best, seed-ARI
+0.998, suicidality-dominant); K = 4 is richest on severity/biology but less stable (seed-ARI 0.663). **No K is
+"the answer"** — the operative choice is M4/M5's. The `tess_*` columns carry **K = 2** as the M3 contract
+default (smallest confidently-assignable, stable convention); the family ships as `tessfam_k{2,3,4}_*`.
 
-For the M3 hand-off contract a concrete default is still required, so the `tess_*` columns carry **K = 2** (the
-smallest confidently-assignable, stable convention) — a **contract default, not a privileged scientific
-choice**. The full family ships alongside it as `tessfam_k{2,3,4}_*`.
+## Result 3 — archetypes carry biology ⊥ symptom ⊥ severity (A = 5, stable) — **changed from A = 4**
 
-## Result 3 — archetypes carry the biology⊥symptom structure (A = 4, stable)
+Archetype granularity is chosen by **cross-seed stability** (largest A with min Tucker congruence ≥ 0.8). The
+8-factor map shifts the answer: there is a clean **stability cliff at A = 6**.
 
-Archetype granularity is chosen by **cross-seed stability** (largest A with min Tucker congruence ≥ 0.8), not
-parsimony: only **A = 2 (0.999)** and **A = 4 (0.979)** are stable; A = 3/5/6/7/8 collapse (0.05–0.50). The
-operational rule selects **A = 4** (EV 0.52). This is copula-specific: the native map's A = 8 does **not**
-reproduce here (the copula's honest, wider explicit-axis uncertainty will not support 8 stable corners). The
-4 stable archetypes separate biology from symptoms from severity:
+| A | explained variance | stability (Tucker) |
+|---|---|---|
+| 2 | 0.237 | 0.999 |
+| 3 | 0.386 | 0.813 |
+| 4 | 0.504 | 0.997 |
+| **5 (selected)** | **0.601** | **0.979** |
+| 6 | 0.665 | **0.436** ← collapse |
+| 7 | 0.720 | 0.197 |
+| 8 | 0.763 | 0.545 |
 
-| archetype | profile |
-|---|---|
-| A0 | ↑inflammatory ↑metabolic ↑substance — the **biological corner** |
-| A1 | ↓overall_severity ↓developmental ↓sleep — the **low-burden pole** |
-| A2 | ↑overall_severity ↓inflammatory ↓substance — **high severity, low biology** |
-| A3 | ↑sleep ↑developmental ↑suicidality ↑mania ↓metabolic — the **symptom corner** |
+**A = 5 is the last stable archetype count** (EV 0.60), one more than the 9-factor map's A = 4. The five
+archetypes (z-scale corners; sizes from dominant membership, N = 9,013):
 
-Biology (A0) is a *direction of maximal phenotype* even though it has no density gap, so it shows up as an
-archetype corner the tessellation cannot cleanly split on. **This is why the archetypes (and continuous
-coords), not the tessellation, are the load-bearing object for biology.** Figure: `archetype_profiles.png`.
+| archetype | profile | size | reading |
+|---|---|---|---|
+| A0 | ↑sleep (+2.8) ↑mania (+1.7) ↓severity | 1,448 | **activation / sleep-disturbed** (BP-enriched) |
+| A1 | ↑severity (+1.9) ↓immunometabolic (−1.9) ↓developmental | 1,584 | **severe, clean-biology** |
+| A2 | ↑immunometabolic (+3.5) ↑severity (+2.4) ↑suicidality | 1,426 | **immunometabolic burden** — the biology corner |
+| A3 | ↑developmental (+2.8) ↑suicidality (+1.4) ↓immunometabolic | 2,004 | **trauma / suicidality** |
+| A4 | ↓sleep (−2.7) ↓severity (−2.0) ↓mania | 2,551 | **low-burden / well** pole |
+
+**What the 5th archetype buys (vs the 9-factor A = 4):** the symptom space now resolves into **two distinct
+corners — activation/sleep (A0) and trauma/suicidality (A3) — instead of one combined symptom corner**, and the
+biology corner (A2) is now *immunometabolic* (the merged axis) rather than separate inflammatory/metabolic. This
+is the finer, stable structure the merged 8-factor coordinates support. Biology (A2) is a *direction of maximal
+phenotype* with no density gap, so it is an archetype corner the tessellation cannot cleanly split on — **which
+is why the archetypes + continuous coordinates, not the tessellation, are load-bearing for biology.** Figure:
+`archetype_profiles.png`.
 
 ## Result 4 — the regions are useful (internal battery, all PASS)
 
-Run on the K = 2 contract default (the gates hold across the confident-stable family):
+Run on the K = 2 contract default (gates hold across the confident-stable family):
 
 | criterion | gate | evidence |
 |---|---|---|
-| assignment (assignable, not 50/50) | **PASS** | confident-dominant 1.00, median entropy 0.51 |
-| not-just-severity (Q2) | **PASS** | η²(specifics) 0.122 ≫ η²(G) 0.008 |
-| transdiagnostic (Q3) | **PASS** | ARI 0.00 vs cohort, 0.01 vs DSM-5 |
-| stable / not-a-missingness-artefact (Q4) | **PASS** | seed-ARI 1.0; coverage perm-p 0.23, lift −0.052 |
-| tighter than DSM-5 | **PASS** | XD-BIC 197.9k vs 201.3k; mean η² 0.108 vs 0.025 |
+| assignment (assignable, not 50/50) | **PASS** (conditional) | confident-dominant 1.00; median norm-entropy 0.65 (a soft split) |
+| not-just-severity (Q2) | **PASS** | η²(specifics) 0.077 > η²(G) 0.050 — driven by mania 0.224 + suicidality 0.225 |
+| transdiagnostic (Q3) | **PASS** | ARI **0.011** vs cohort, **0.006** vs DSM-5 (≈ 0); Cramér's V 0.063 / 0.099 |
+| stable / not-a-missingness-artefact (Q4) | **PASS** | seed-ARI **0.991**; coverage classifier acc 0.611 < baseline 0.683 (lift −0.072) |
+| tighter than DSM-5 | **PASS** | XD-BIC 185.6k (free, K = 2) vs 188.2k (DSM-5, K = 7); mean η² 0.074 vs 0.026 |
 
-So the soft regions are operationally assignable, driven by specific biology/symptoms beyond severity,
-independent of diagnosis, stable, not a coverage artefact, and a tighter description than the DSM-5 subtypes.
-Embedding (PCA, **visualization-only**): `embedding.png`.
+So the soft regions are operationally assignable, driven by specific symptoms/biology beyond severity,
+independent of diagnosis, stable, not a coverage artefact, and a tighter description than the DSM-5 subtypes —
+**3× the explained variance of DSM-5 at lower BIC**.
 
 ## Honest caveats
 
-* **Internal/baseline only.** Whether the regions/archetypes *predict* (2-year course, treatment response) is
-  the M3/M4 rerun on this object — not claimed here. The biology corner (A0) and the K = 3/4 biology gradient
-  are the natural candidates to carry durable/prognostic signal (A0 did on the native map), but that is the
-  hypothesis M4/M5 test — and is exactly *how* the operative K should be chosen (by incremental validity, not
-  internal parsimony).
-* **No privileged K.** The tessellation is a coarse convention; the load-bearing objects are the continuous
-  coordinates and the A = 4 archetype simplex. K = 2 is only the M3-contract default.
-* **Archetype granularity is copula-sensitive.** Only A = 2 and A = 4 are stable; native A = 8 does not
-  reproduce (the copula's wider explicit-axis uncertainty destabilizes high-A corners).
-* **Substance is thin** (2 SUD binaries, DR = 0): its coordinate is weakly identified (wide SD), carried with
-  a prior-dominated reliability tier.
+* **Internal/baseline only.** Whether the regions/archetypes *predict* (2-year course, treatment) is the M3/M4
+  rerun on this object. A2 (immunometabolic biology) and the K = 3/4 biology gradient are the natural carriers
+  of durable/prognostic signal — the hypothesis M4/M5 test, and exactly *how* the operative K is chosen
+  (incremental validity, not internal parsimony).
+* **The K = 2 split is symptom-led and soft.** At K = 2 the tessellation separates on mania + suicidality (η²
+  0.22 each); biology (immunometabolic η² 0.027) is a finer-K / archetype feature, not a K = 2 boundary. Median
+  norm-entropy 0.65 → the two-region split is genuinely soft (the assignment gate passes *conditionally*).
+* **No privileged K.** The tessellation is a convention; the load-bearing objects are the continuous
+  coordinates and the **A = 5** archetype simplex. K = 2 is only the M3-contract default.
+* **Substance is thin and now orthogonal.** 2 SUD binaries, DR = 0; in the 8-factor map substance is pinned
+  ⊥ the correlated block (its cross-factor correlations were non-identifiable), so it no longer anchors an
+  archetype corner — its coordinate is carried with a prior-dominated reliability tier.
 
 ## Hand-off
 
-`results/face/strata_oop/consolidate/patient_strata.parquet` (**9,013 × 41**) carries, in the M3-compatible
+`results/face/strata_oop/consolidate/patient_strata.parquet` (**9,013 × 50**) carries, in the M3-compatible
 contract (keyed `cohort` / `patient_id`; `arm` = validation-only):
-* **archetypes (load-bearing):** `arch_w0…w3` (+ `_sd`), `arch_dominant(_name)`, `arch_entropy`,
-  `arch_confidence_tier`, `arch_boundary`;
+* **archetypes (load-bearing):** `arch_w0…w4` (+ `_sd`), `arch_dominant(_name)`, `arch_entropy`,
+  `arch_confidence_tier`, `arch_boundary`; the G-residualized arm-B mirror `archB_*`;
 * **tessellation contract default (K = 2):** `tess_r0,r1`, `tess_MAP(_name)`, `tess_entropy`,
   `tess_confidence_tier`, `tess_boundary`;
-* **nested K-family (conventions; operative K deferred to M4/M5):** `tessfam_k{2,3,4}_r*`,
-  `tessfam_k{K}_MAP`, `tessfam_k{K}_entropy`, `tessfam_k{K}_tier` — the `tessfam_` prefix deliberately does
-  **not** match the `tess_` selector, so the family never pollutes the operational contract.
+* **nested K-family (conventions; operative K deferred to M4/M5):** `tessfam_k{2,3,4}_*` — the `tessfam_`
+  prefix deliberately does **not** match the `tess_` selector, so the family never pollutes the contract.
 
 The **continuous load-bearing coordinates** ship in `results/face/strata_oop/coordinates/`:
-`coordinates_full.parquet` (per-axis mean/sd/HDI/n_obs/reliability), `coordinates_draws.npz` (joint posterior
-draws), `coordinates_cov.npz` (per-patient covariance S_i). The per-K decision menu is
-`consolidate/k_family_menu.csv`. The next step is the **M3 temporal-persistence rerun**, then M4 — which
-**selects the operative K from the family by incremental validity.**
+`coordinates_full.parquet` (per-axis mean/sd/HDI/n_obs/reliability), `coordinates_draws.npz` (joint draws),
+`coordinates_cov.npz` (per-patient covariance S_i). Per-K decision menu: `consolidate/k_family_menu.csv`. Next:
+the **M3 temporal-persistence rerun** on this object, then M4 (which selects the operative K by incremental
+validity).
 
-Reproduce: `PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_strata_model_oop.py --mode full`
-→ `python notebooks/strata_oop_make_figures.py`.
+Reproduce: `PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_strata_model_oop.py --mode full`.

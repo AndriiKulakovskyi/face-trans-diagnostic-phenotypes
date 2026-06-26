@@ -10,6 +10,18 @@
 >
 > *Math is plain-text/unicode so it renders in any markdown viewer and transcribes directly to LaTeX.*
 > *Status: PLAN — pending PI sign-off at the discussion gate. No engine code written yet. Updated 2026-06-09.*
+>
+> **8-factor rebuild note (2026-06-26; pending PI sign-off).** The M2 method below is unchanged, but it is now
+> run on the **8-dimension** M1 map (`copula/weighted_8d/hs_s5_merged_xc`): the immunometabolic merge (metabolic
+> + inflammatory → one axis), the 3 earned cross-loadings (CTQ/PSQI → cognition), and **substance pinned
+> orthogonal** to the correlated block (its cross-factor correlations are non-identifiable — `with_substance_
+> orthogonal()`; this was required for the full-N weighted fit to converge, R̂ 1.03). Two consequences for the
+> coordinate frame: (i) the reliability split is `CONT_AXES = {G, cognition, immunometabolic, sleep, mania}`,
+> `EXPL_AXES = {suicidality, developmental_risk, substance}` (Ke = 4, unchanged); (ii) substance carries **no**
+> off-diagonal Φ, so its coordinate is informed by its own SUD items only (DR = prior-dominated, not imputed).
+> Headline result change: the cross-seed-stable archetype count is now **A = 5** (was 4) — see
+> [STRATA_OOP_FINDINGS.md](STRATA_OOP_FINDINGS.md). Everything else (continuum, K-family, transdiagnostic,
+> not-just-severity) replays.
 
 ---
 
