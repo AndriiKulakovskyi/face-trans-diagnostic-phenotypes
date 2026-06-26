@@ -37,11 +37,11 @@ alt_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continu
 alt_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
 altman,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 altman,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
-altman,developmental_risk,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected cross-loading (folded)
+altman,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 altman,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
 altman,mania_activation,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor mania_activation
 altman,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
-altman,sleep,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected cross-loading (folded)
+altman,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 altman,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 altman,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 apgr0106_1min,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
@@ -333,7 +333,7 @@ ctq35,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zer
 ctq35,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 ctq35,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 ctq37,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
-ctq37,cognition,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected cross-loading (folded)
+ctq37,cognition,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected + full-model credible (folded)
 ctq37,developmental_risk,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor developmental_risk
 ctq37,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
 ctq37,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
@@ -954,7 +954,7 @@ psqi,sleep,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home facto
 psqi,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 psqi,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 psqi11,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
-psqi11,cognition,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected cross-loading (folded)
+psqi11,cognition,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected + full-model credible (folded)
 psqi11,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 psqi11,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
 psqi11,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
@@ -999,7 +999,7 @@ psqi15,sleep,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home fac
 psqi15,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 psqi15,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 psqi17,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
-psqi17,cognition,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected cross-loading (folded)
+psqi17,cognition,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected + full-model credible (folded)
 psqi17,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 psqi17,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
 psqi17,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
@@ -1283,6 +1283,6 @@ ymrs,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continu
 ymrs,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
 ymrs,mania_activation,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor mania_activation
 ymrs,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
-ymrs,sleep,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected cross-loading (folded)
+ymrs,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 ymrs,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
 ymrs,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
