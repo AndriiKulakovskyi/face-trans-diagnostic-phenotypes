@@ -137,7 +137,7 @@ class TemporalConfig:
     output_dir: Path = RESULTS
     figure_dir: Path = FIGURES
     proc_dir: Path = PROC
-    A: int = 4                                   # copula archetype granularity (stability-gated in M2)
+    A: int = 5                                   # copula archetype granularity (stability-gated in M2: A=5 on the 8-factor map)
     hdi_prob: float = 0.94
     seed: int = 20260622
     n_keep_draws: int = 200
@@ -492,19 +492,28 @@ class InvarianceGate:
         self.config = config or TemporalConfig()
 
     def run(self, *, seeds=(20260605, 20260606)) -> dict:
-        from face.models.bayesian.continuous_core import S1_FACTORS
+        import face.models.bayesian.continuous_core as cc
         from face.temporal.invariance import axis_license, congruence_over_visits, fit_visit_backbone
+        # 8-factor invariance backbone: the S1 continuous backbone with the two biology factors merged
+        # (G + cognition + immunometabolic + sleep). Point prepare() at the folded matrix so it builds the
+        # immunometabolic axis (the module-global MATRIX is the only knob; restored in finally).
+        INV_FACTORS = ["overall_severity", "cognition", "immunometabolic", "sleep"]
         d = dict(draws=self.config.proj_draws, tune=self.config.proj_tune, chains=self.config.proj_chains)
         fits, converged = {}, set()
-        for v in VISITS:
-            for s in seeds:
-                rec, diag = fit_visit_backbone(v, seed=s, label=f"inv-{v}", step="G1", **d)
-                fits[(v, s)] = rec
-                if diag["converged"]:
-                    converged.add((v, s))
+        saved_matrix = cc.MATRIX
+        cc.MATRIX = FOLDED_MATRIX
+        try:
+            for v in VISITS:
+                for s in seeds:
+                    rec, diag = fit_visit_backbone(v, seed=s, factors=INV_FACTORS, label=f"inv-{v}", step="G1", **d)
+                    fits[(v, s)] = rec
+                    if diag["converged"]:
+                        converged.add((v, s))
+        finally:
+            cc.MATRIX = saved_matrix
         # converged-only φ; if NONE converged (e.g. a smoke run with tiny draws) fall back to all fits so the
         # pipeline still produces a (caveated) license rather than crashing on an empty congruence table.
-        cong = congruence_over_visits(fits, list(S1_FACTORS), list(VISITS), list(seeds),
+        cong = congruence_over_visits(fits, list(INV_FACTORS), list(VISITS), list(seeds),
                                       converged=(converged or None))
         lic = (axis_license(cong) if not cong.empty
                else pd.DataFrame(columns=["axis", "min_phi", "license"]))
