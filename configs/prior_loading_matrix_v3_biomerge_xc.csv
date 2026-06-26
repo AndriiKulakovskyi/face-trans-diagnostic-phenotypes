@@ -1,0 +1,1288 @@
+item,factor,prior_type,prior_mean,prior_sd,dist,sign_constraint,item_sign,likelihood_family,modeling_block,rationale
+acne_mhoccur,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+acne_mhoccur,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+acne_mhoccur,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+acne_mhoccur,immunometabolic,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor immunometabolic (merged metabolic+inflammatory)
+acne_mhoccur,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+acne_mhoccur,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+acne_mhoccur,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+acne_mhoccur,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+acne_mhoccur,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+agepere,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+agepere,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+agepere,developmental_risk,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor developmental_risk
+agepere,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+agepere,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+agepere,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+agepere,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+agepere,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+agepere,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+alp_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+alp_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+alp_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+alp_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+alp_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+alp_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+alp_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+alp_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+alp_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+alt_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+alt_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+alt_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+alt_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+alt_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+alt_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+alt_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+alt_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+alt_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+altman,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+altman,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+altman,developmental_risk,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected cross-loading (folded)
+altman,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+altman,mania_activation,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor mania_activation
+altman,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+altman,sleep,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected cross-loading (folded)
+altman,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+altman,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+apgr0106_1min,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+apgr0106_1min,cognition,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+apgr0106_1min,developmental_risk,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor developmental_risk
+apgr0106_1min,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+apgr0106_1min,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+apgr0106_1min,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+apgr0106_1min,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+apgr0106_1min,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+apgr0106_1min,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+apgr0106_5min,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,ordered_logistic,explicit,soft-zero complement
+apgr0106_5min,cognition,unlikely_cross,0.0,0.05,normal,signed,-1,ordered_logistic,explicit,soft-zero complement
+apgr0106_5min,developmental_risk,primary,0.6,0.3,half_normal,positive,-1,ordered_logistic,explicit,home factor developmental_risk
+apgr0106_5min,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+apgr0106_5min,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,ordered_logistic,explicit,soft-zero complement
+apgr0106_5min,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,ordered_logistic,explicit,specific item may load on G
+apgr0106_5min,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,ordered_logistic,explicit,soft-zero complement
+apgr0106_5min,substance,unlikely_cross,0.0,0.05,normal,signed,-1,ordered_logistic,explicit,soft-zero complement
+apgr0106_5min,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,ordered_logistic,explicit,soft-zero complement
+ast_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+ast_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+ast_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+ast_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+ast_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+ast_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+ast_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+ast_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+ast_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+autcardv_mhoccur,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autcardv_mhoccur,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autcardv_mhoccur,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autcardv_mhoccur,immunometabolic,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor immunometabolic (merged metabolic+inflammatory)
+autcardv_mhoccur,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autcardv_mhoccur,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+autcardv_mhoccur,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autcardv_mhoccur,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autcardv_mhoccur,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autendoc_mhoccur,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autendoc_mhoccur,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autendoc_mhoccur,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autendoc_mhoccur,immunometabolic,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor immunometabolic (merged metabolic+inflammatory)
+autendoc_mhoccur,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autendoc_mhoccur,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+autendoc_mhoccur,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autendoc_mhoccur,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autendoc_mhoccur,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autneuro_mhoccur,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autneuro_mhoccur,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autneuro_mhoccur,developmental_risk,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor developmental_risk
+autneuro_mhoccur,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+autneuro_mhoccur,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autneuro_mhoccur,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+autneuro_mhoccur,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autneuro_mhoccur,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+autneuro_mhoccur,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+baso_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+baso_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+baso_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+baso_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+baso_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+baso_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+baso_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+baso_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+baso_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+bili_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+bili_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+bili_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+bili_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+bili_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+bili_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+bili_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+bili_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+bili_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+bmi,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+bmi,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+bmi,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+bmi,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+bmi,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+bmi,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+bmi,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+bmi,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+bmi,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+brthcirc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+brthcirc,cognition,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+brthcirc,developmental_risk,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor developmental_risk
+brthcirc,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+brthcirc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+brthcirc,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+brthcirc,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+brthcirc,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+brthcirc,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+brthht,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+brthht,cognition,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+brthht,developmental_risk,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor developmental_risk
+brthht,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+brthht,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+brthht,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+brthht,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+brthht,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+brthht,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cgi01,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+cgi01,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+cgi01,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+cgi01,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+chol,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+chol,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+chol,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+chol,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+chol,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+chol,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+chol,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+chol,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+chol,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+cholhdl_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+cholhdl_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+cholhdl_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+cholhdl_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+cholhdl_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+cholhdl_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+cholhdl_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+cholhdl_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+cholhdl_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+creat_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+creat_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+creat_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+creat_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+creat_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+creat_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+creat_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+creat_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+creat_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+crp,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+crp,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+crp,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+crp,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+crp,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+crp,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+crp,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+crp,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+crp,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+csm,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+csm,cognition,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+csm,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+csm,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+csm,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+csm,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+csm,sleep,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor sleep
+csm,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+csm,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cssrs01,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs01,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs01,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs01,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+cssrs01,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs01,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+cssrs01,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs01,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs01,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+cssrs02,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs02,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs02,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs02,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+cssrs02,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs02,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+cssrs02,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs02,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs02,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+cssrs03,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs03,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs03,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs03,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+cssrs03,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs03,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+cssrs03,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs03,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs03,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+cssrs04,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs04,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs04,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs04,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+cssrs04,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs04,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+cssrs04,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs04,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs04,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+cssrs05,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs05,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs05,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs05,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+cssrs05,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs05,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+cssrs05,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs05,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cssrs05,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+cssrs06,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs06,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs06,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs06,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+cssrs06,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs06,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+cssrs06,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs06,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs06,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+cssrs08,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs08,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs08,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs08,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+cssrs08,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs08,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+cssrs08,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs08,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs08,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+cssrs09,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs09,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs09,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs09,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+cssrs09,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs09,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+cssrs09,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs09,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs09,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+cssrs10,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs10,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs10,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs10,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+cssrs10,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs10,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+cssrs10,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs10,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs10,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+cssrs11,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs11,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs11,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs11,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+cssrs11,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs11,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+cssrs11,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs11,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs11,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+cssrs12,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs12,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs12,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs12,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+cssrs12,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs12,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+cssrs12,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs12,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+cssrs12,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+ctq29,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq29,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq29,developmental_risk,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor developmental_risk
+ctq29,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+ctq29,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq29,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+ctq29,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq29,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq29,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq31,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq31,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq31,developmental_risk,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor developmental_risk
+ctq31,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+ctq31,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq31,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+ctq31,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq31,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq31,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq33,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq33,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq33,developmental_risk,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor developmental_risk
+ctq33,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+ctq33,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq33,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+ctq33,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq33,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq33,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq35,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq35,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq35,developmental_risk,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor developmental_risk
+ctq35,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+ctq35,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq35,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+ctq35,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq35,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq35,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq37,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq37,cognition,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected cross-loading (folded)
+ctq37,developmental_risk,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor developmental_risk
+ctq37,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+ctq37,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq37,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+ctq37,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq37,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq37,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq39,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq39,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq39,developmental_risk,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor developmental_risk
+ctq39,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+ctq39,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq39,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+ctq39,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq39,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq39,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ctq40,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ctq40,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ctq40,developmental_risk,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor developmental_risk
+ctq40,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+ctq40,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ctq40,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+ctq40,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ctq40,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ctq40,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ctq41,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ctq41,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ctq41,developmental_risk,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor developmental_risk
+ctq41,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+ctq41,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ctq41,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+ctq41,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ctq41,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ctq41,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+cvlt_long_delay_free_recall,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_long_delay_free_recall,cognition,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor cognition
+cvlt_long_delay_free_recall,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_long_delay_free_recall,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+cvlt_long_delay_free_recall,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_long_delay_free_recall,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+cvlt_long_delay_free_recall,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_long_delay_free_recall,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_long_delay_free_recall,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_short_delay_free_recall,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_short_delay_free_recall,cognition,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor cognition
+cvlt_short_delay_free_recall,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_short_delay_free_recall,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+cvlt_short_delay_free_recall,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_short_delay_free_recall,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+cvlt_short_delay_free_recall,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_short_delay_free_recall,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_short_delay_free_recall,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_total_recall,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_total_recall,cognition,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor cognition
+cvlt_total_recall,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_total_recall,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+cvlt_total_recall,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_total_recall,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+cvlt_total_recall,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_total_recall,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+cvlt_total_recall,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+diabpstanding,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+diabpstanding,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+diabpstanding,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+diabpstanding,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+diabpstanding,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+diabpstanding,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+diabpstanding,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+diabpstanding,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+diabpstanding,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+diabpsupine,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+diabpsupine,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+diabpsupine,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+diabpsupine,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+diabpsupine,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+diabpsupine,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+diabpsupine,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+diabpsupine,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+diabpsupine,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+eczema_mhoccur,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+eczema_mhoccur,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+eczema_mhoccur,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+eczema_mhoccur,immunometabolic,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor immunometabolic (merged metabolic+inflammatory)
+eczema_mhoccur,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+eczema_mhoccur,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+eczema_mhoccur,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+eczema_mhoccur,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+eczema_mhoccur,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+egf,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+egf,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+egf,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+egf,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+egf,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+egf,overall_severity,g_anchor,0.6,0.3,half_normal,positive,-1,gaussian,continuous,G dedicated anchor
+egf,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+egf,substance,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+egf,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eghrmn,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+eghrmn,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+eghrmn,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+eghrmn,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+eghrmn,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+eghrmn,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+eghrmn,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+eghrmn,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+eghrmn,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+eos,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+eos,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+eos,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+eos,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+eos,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+eos,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+eos,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+eos,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+eos,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+epilepsie_mhoccur,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+epilepsie_mhoccur,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+epilepsie_mhoccur,developmental_risk,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor developmental_risk
+epilepsie_mhoccur,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+epilepsie_mhoccur,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+epilepsie_mhoccur,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+epilepsie_mhoccur,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+epilepsie_mhoccur,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+epilepsie_mhoccur,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+eq5d,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eq5d,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eq5d,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eq5d,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+eq5d,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eq5d,overall_severity,g_anchor,0.6,0.3,half_normal,positive,-1,gaussian,continuous,G dedicated anchor
+eq5d,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eq5d,substance,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eq5d,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eq5d0206,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eq5d0206,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eq5d0206,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eq5d0206,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+eq5d0206,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eq5d0206,overall_severity,g_anchor,0.6,0.3,half_normal,positive,-1,gaussian,continuous,G dedicated anchor
+eq5d0206,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eq5d0206,substance,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+eq5d0206,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,-1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+ess0109,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ess0109,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ess0109,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ess0109,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+ess0109,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ess0109,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+ess0109,sleep,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor sleep
+ess0109,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ess0109,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+fagers,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+fagers,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+fagers,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+fagers,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+fagers,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+fagers,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+fagers,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+fagers,substance,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor substance
+fagers,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+fast,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+fast,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+fast,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast25,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast25,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast25,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast25,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+fast25,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast25,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+fast25,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast25,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast25,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast26,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast26,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast26,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast26,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+fast26,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast26,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+fast26,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast26,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast26,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast27,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast27,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast27,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast27,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+fast27,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast27,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+fast27,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast27,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast27,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+fast28,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+fast28,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast28,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+fast30,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+fast30,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+fast30,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+ggt_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+ggt_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+ggt_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+ggt_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+ggt_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+ggt_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+ggt_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+ggt_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+ggt_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+gluc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+gluc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+gluc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+gluc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+gluc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+gluc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+gluc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+gluc,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+gluc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+gstabrth,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+gstabrth,cognition,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+gstabrth,developmental_risk,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor developmental_risk
+gstabrth,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+gstabrth,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+gstabrth,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+gstabrth,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+gstabrth,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+gstabrth,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+hba1c,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+hba1c,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+hba1c,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+hba1c,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+hba1c,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+hba1c,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+hba1c,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+hba1c,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+hba1c,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+hdl,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+hdl,cognition,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+hdl,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+hdl,immunometabolic,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+hdl,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+hdl,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+hdl,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+hdl,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+hdl,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+hodur_arret_travail_actuel,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+hodur_arret_travail_actuel,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+hodur_arret_travail_actuel,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+hodur_arret_travail_actuel,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+hodur_arret_travail_actuel,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+hodur_arret_travail_actuel,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,bernoulli,explicit,G dedicated anchor
+hodur_arret_travail_actuel,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+hodur_arret_travail_actuel,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+hodur_arret_travail_actuel,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+honeonat,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+honeonat,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+honeonat,developmental_risk,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor developmental_risk
+honeonat,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+honeonat,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+honeonat,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+honeonat,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+honeonat,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+honeonat,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+hooccur_arret_travail_actuel,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+hooccur_arret_travail_actuel,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+hooccur_arret_travail_actuel,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+hooccur_arret_travail_actuel,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+hooccur_arret_travail_actuel,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+hooccur_arret_travail_actuel,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,bernoulli,explicit,G dedicated anchor
+hooccur_arret_travail_actuel,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+hooccur_arret_travail_actuel,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+hooccur_arret_travail_actuel,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+hrstanding,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hrstanding,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hrstanding,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hrstanding,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+hrstanding,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hrstanding,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+hrstanding,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hrstanding,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hrstanding,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hrsupine,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hrsupine,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hrsupine,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hrsupine,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+hrsupine,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hrsupine,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+hrsupine,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hrsupine,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hrsupine,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+hta_mhoccur,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+hta_mhoccur,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+hta_mhoccur,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+hta_mhoccur,immunometabolic,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor immunometabolic (merged metabolic+inflammatory)
+hta_mhoccur,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+hta_mhoccur,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+hta_mhoccur,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+hta_mhoccur,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+hta_mhoccur,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf01,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf01,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf01,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf01,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+isf01,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf01,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+isf01,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf01,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf01,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+isf02,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf02,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf02,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf02,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+isf02,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf02,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+isf02,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf02,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf02,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+isf03,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf03,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf03,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf03,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+isf03,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf03,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+isf03,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf03,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf03,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+isf04,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf04,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf04,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf04,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+isf04,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf04,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+isf04,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf04,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf04,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+isf05,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf05,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf05,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf05,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+isf05,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf05,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+isf05,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf05,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf05,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+isf07,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+isf07,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+isf07,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+isf07,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+isf07,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+isf07,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+isf07,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+isf07,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+isf07,suicidality,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor suicidality
+isf08,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf08,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf08,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf08,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+isf08,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf08,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+isf08,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf08,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf08,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+isf08a,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+isf08a,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+isf08a,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+isf08a,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+isf08a,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+isf08a,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+isf08a,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+isf08a,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+isf08a,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+isf09,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf09,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf09,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf09,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+isf09,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf09,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+isf09,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf09,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+isf09,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+isf09a,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,soft-zero complement
+isf09a,cognition,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,soft-zero complement
+isf09a,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,soft-zero complement
+isf09a,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,merged metabolic+inflammatory -> immunometabolic
+isf09a,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,soft-zero complement
+isf09a,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,neg_binomial,explicit,specific item may load on G
+isf09a,sleep,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,soft-zero complement
+isf09a,substance,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,soft-zero complement
+isf09a,suicidality,primary,0.6,0.3,half_normal,positive,1,neg_binomial,explicit,home factor suicidality
+jobclas,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,-1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+jobclas,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,-1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+jobclas,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,-1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+jobclas,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,-1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+jobclas,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,-1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+jobclas,overall_severity,g_anchor,0.6,0.3,half_normal,positive,-1,bernoulli,explicit,G dedicated anchor
+jobclas,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,-1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+jobclas,substance,g_anchor_on_specific,0.0,0.001,normal,signed,-1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+jobclas,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,-1,bernoulli,explicit,severity anchor ~0 on specific (bifactor id)
+ldl,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ldl,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ldl,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ldl,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+ldl,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ldl,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+ldl,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ldl,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ldl,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ltsg01,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg01,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg01,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg01,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+ltsg01,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg01,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+ltsg01,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg01,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg01,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+ltsg05,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg05,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg05,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg05,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+ltsg05,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg05,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+ltsg05,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg05,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg05,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+ltsg06,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg06,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg06,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg06,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+ltsg06,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg06,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+ltsg06,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg06,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsg06,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+ltsv02,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv02,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv02,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv02,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+ltsv02,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv02,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+ltsv02,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv02,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv02,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+ltsv04,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv04,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv04,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv04,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+ltsv04,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv04,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+ltsv04,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv04,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv04,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+ltsv05,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv05,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv05,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv05,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+ltsv05,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv05,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+ltsv05,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv05,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv05,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+ltsv06,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv06,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv06,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv06,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+ltsv06,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv06,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+ltsv06,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv06,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+ltsv06,suicidality,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor suicidality
+ltsv07,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ltsv07,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ltsv07,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ltsv07,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+ltsv07,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ltsv07,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+ltsv07,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ltsv07,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ltsv07,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+ltsv09,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ltsv09,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ltsv09,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ltsv09,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+ltsv09,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ltsv09,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+ltsv09,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ltsv09,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+ltsv09,suicidality,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor suicidality
+lvsbjind,anhedonia,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,cognition,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,developmental_risk,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,immunometabolic,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+lvsbjind,mania_activation,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,overall_severity,g_anchor,0.6,0.3,half_normal,positive,1,gaussian,continuous,G dedicated anchor
+lvsbjind,sleep,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,substance,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lvsbjind,suicidality,g_anchor_on_specific,0.0,0.001,normal,signed,1,gaussian,continuous,severity anchor ~0 on specific (bifactor id)
+lym_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,lognormal,continuous,soft-zero complement
+lym_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,-1,lognormal,continuous,soft-zero complement
+lym_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,-1,lognormal,continuous,soft-zero complement
+lym_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,-1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+lym_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,lognormal,continuous,soft-zero complement
+lym_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,lognormal,continuous,specific item may load on G
+lym_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,lognormal,continuous,soft-zero complement
+lym_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,-1,lognormal,continuous,soft-zero complement
+lym_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,lognormal,continuous,soft-zero complement
+madrs,anhedonia,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,cross-loading window
+madrs,cognition,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,cross-loading window
+madrs,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+madrs,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+madrs,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+madrs,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,cross-loading window
+madrs,sleep,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,cross-loading window
+madrs,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+madrs,suicidality,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,cross-loading window
+mere_structure,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+mere_structure,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+mere_structure,developmental_risk,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor developmental_risk
+mere_structure,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+mere_structure,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+mere_structure,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+mere_structure,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+mere_structure,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+mere_structure,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+migraine_mhoccur,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+migraine_mhoccur,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+migraine_mhoccur,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+migraine_mhoccur,immunometabolic,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor immunometabolic (merged metabolic+inflammatory)
+migraine_mhoccur,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+migraine_mhoccur,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+migraine_mhoccur,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+migraine_mhoccur,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+migraine_mhoccur,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+mono_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+mono_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+mono_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+mono_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+mono_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+mono_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+mono_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+mono_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+mono_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+naisstyp,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+naisstyp,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+naisstyp,developmental_risk,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor developmental_risk
+naisstyp,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+naisstyp,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+naisstyp,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+naisstyp,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+naisstyp,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+naisstyp,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+neut,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+neut,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+neut,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+neut,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+neut,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+neut,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+neut,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+neut,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+neut,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+pere_structure,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+pere_structure,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+pere_structure,developmental_risk,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor developmental_risk
+pere_structure,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+pere_structure,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+pere_structure,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+pere_structure,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+pere_structure,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+pere_structure,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+plat,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+plat,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+plat,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+plat,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+plat,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+plat,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+plat,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+plat,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+plat,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+prembrth,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+prembrth,cognition,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+prembrth,developmental_risk,primary,0.6,0.3,half_normal,positive,1,ordered_logistic,explicit,home factor developmental_risk
+prembrth,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,merged metabolic+inflammatory -> immunometabolic
+prembrth,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+prembrth,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,ordered_logistic,explicit,specific item may load on G
+prembrth,sleep,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+prembrth,substance,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+prembrth,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,ordered_logistic,explicit,soft-zero complement
+psoriasis_mhoccur,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+psoriasis_mhoccur,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+psoriasis_mhoccur,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+psoriasis_mhoccur,immunometabolic,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor immunometabolic (merged metabolic+inflammatory)
+psoriasis_mhoccur,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+psoriasis_mhoccur,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+psoriasis_mhoccur,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+psoriasis_mhoccur,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+psoriasis_mhoccur,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+psqi,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+psqi,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+psqi,sleep,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor sleep
+psqi,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi11,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi11,cognition,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected cross-loading (folded)
+psqi11,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi11,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+psqi11,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi11,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+psqi11,sleep,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor sleep
+psqi11,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi11,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi12,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi12,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi12,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi12,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+psqi12,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi12,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+psqi12,sleep,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor sleep
+psqi12,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi12,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi13,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi13,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi13,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi13,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+psqi13,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi13,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+psqi13,sleep,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor sleep
+psqi13,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi13,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi14,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi14,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi14,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi14,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+psqi14,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi14,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+psqi14,sleep,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor sleep
+psqi14,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi14,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi15,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi15,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi15,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi15,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+psqi15,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi15,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+psqi15,sleep,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor sleep
+psqi15,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi15,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi17,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi17,cognition,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected cross-loading (folded)
+psqi17,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi17,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+psqi17,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi17,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+psqi17,sleep,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor sleep
+psqi17,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+psqi17,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+qids_anhedonia_interest,anhedonia,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor anhedonia
+qids_anhedonia_interest,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+qids_anhedonia_interest,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+qids_anhedonia_interest,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+qids_anhedonia_interest,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+qids_anhedonia_interest,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+qids_anhedonia_interest,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+qids_anhedonia_interest,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+qids_anhedonia_interest,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+qidsr120,anhedonia,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,cross-loading window
+qidsr120,cognition,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,cross-loading window
+qidsr120,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+qidsr120,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+qidsr120,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+qidsr120,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,cross-loading window
+qidsr120,sleep,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,cross-loading window
+qidsr120,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+qidsr120,suicidality,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,cross-loading window
+somat_all,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+somat_all,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+somat_all,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+somat_all,immunometabolic,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor immunometabolic (merged metabolic+inflammatory)
+somat_all,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+somat_all,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+somat_all,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+somat_all,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+somat_all,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+staya,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+staya,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+staya,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+staya,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+staya,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+staya,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,cross-loading window
+staya,sleep,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,cross-loading window
+staya,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+staya,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sudose_cigarettes_lt,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,soft-zero complement
+sudose_cigarettes_lt,cognition,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,soft-zero complement
+sudose_cigarettes_lt,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,soft-zero complement
+sudose_cigarettes_lt,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,merged metabolic+inflammatory -> immunometabolic
+sudose_cigarettes_lt,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,soft-zero complement
+sudose_cigarettes_lt,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,neg_binomial,explicit,specific item may load on G
+sudose_cigarettes_lt,sleep,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,soft-zero complement
+sudose_cigarettes_lt,substance,primary,0.6,0.3,half_normal,positive,1,neg_binomial,explicit,home factor substance
+sudose_cigarettes_lt,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,neg_binomial,explicit,soft-zero complement
+suoccur_alcool,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+suoccur_alcool,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+suoccur_alcool,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+suoccur_alcool,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+suoccur_alcool,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+suoccur_alcool,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+suoccur_alcool,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+suoccur_alcool,substance,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor substance
+suoccur_alcool,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+suoccur_cannabis,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+suoccur_cannabis,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+suoccur_cannabis,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+suoccur_cannabis,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+suoccur_cannabis,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+suoccur_cannabis,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+suoccur_cannabis,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+suoccur_cannabis,substance,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor substance
+suoccur_cannabis,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+sysbpstanding,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sysbpstanding,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sysbpstanding,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sysbpstanding,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+sysbpstanding,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sysbpstanding,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+sysbpstanding,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sysbpstanding,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sysbpstanding,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sysbpsupine,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sysbpsupine,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sysbpsupine,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sysbpsupine,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+sysbpsupine,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sysbpsupine,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+sysbpsupine,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sysbpsupine,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+sysbpsupine,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t3fr_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t3fr_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t3fr_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t3fr_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+t3fr_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t3fr_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+t3fr_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t3fr_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t3fr_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t4fr_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t4fr_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t4fr_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t4fr_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+t4fr_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t4fr_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+t4fr_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t4fr_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+t4fr_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tmt_a_time_sec,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tmt_a_time_sec,cognition,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor cognition
+tmt_a_time_sec,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tmt_a_time_sec,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+tmt_a_time_sec,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tmt_a_time_sec,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+tmt_a_time_sec,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tmt_a_time_sec,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tmt_a_time_sec,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tmt_b_time_sec,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tmt_b_time_sec,cognition,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor cognition
+tmt_b_time_sec,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tmt_b_time_sec,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+tmt_b_time_sec,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tmt_b_time_sec,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+tmt_b_time_sec,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tmt_b_time_sec,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tmt_b_time_sec,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+toxidermi_mhoccur,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+toxidermi_mhoccur,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+toxidermi_mhoccur,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+toxidermi_mhoccur,immunometabolic,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor immunometabolic (merged metabolic+inflammatory)
+toxidermi_mhoccur,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+toxidermi_mhoccur,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+toxidermi_mhoccur,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+toxidermi_mhoccur,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+toxidermi_mhoccur,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+traumacra_mhoccur,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+traumacra_mhoccur,cognition,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+traumacra_mhoccur,developmental_risk,primary,0.6,0.3,half_normal,positive,1,bernoulli,explicit,home factor developmental_risk
+traumacra_mhoccur,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,merged metabolic+inflammatory -> immunometabolic
+traumacra_mhoccur,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+traumacra_mhoccur,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,bernoulli,explicit,specific item may load on G
+traumacra_mhoccur,sleep,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+traumacra_mhoccur,substance,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+traumacra_mhoccur,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,bernoulli,explicit,soft-zero complement
+trig,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+trig,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+trig,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+trig,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+trig,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+trig,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+trig,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+trig,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+trig,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+tsh_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tsh_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tsh_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tsh_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+tsh_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tsh_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+tsh_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tsh_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+tsh_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+urate,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+urate,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+urate,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+urate,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+urate,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+urate,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+urate,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+urate,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+urate,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+urea_lbstresc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+urea_lbstresc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+urea_lbstresc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+urea_lbstresc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+urea_lbstresc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+urea_lbstresc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+urea_lbstresc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+urea_lbstresc,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+urea_lbstresc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+verbal_fluency_phonemic,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+verbal_fluency_phonemic,cognition,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor cognition
+verbal_fluency_phonemic,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+verbal_fluency_phonemic,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+verbal_fluency_phonemic,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+verbal_fluency_phonemic,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+verbal_fluency_phonemic,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+verbal_fluency_phonemic,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+verbal_fluency_phonemic,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+verbal_fluency_semantic,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+verbal_fluency_semantic,cognition,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor cognition
+verbal_fluency_semantic,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+verbal_fluency_semantic,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+verbal_fluency_semantic,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+verbal_fluency_semantic,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+verbal_fluency_semantic,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+verbal_fluency_semantic,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+verbal_fluency_semantic,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+vitd,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+vitd,cognition,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+vitd,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+vitd,immunometabolic,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+vitd,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+vitd,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+vitd,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+vitd,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+vitd,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_code_std,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_code_std,cognition,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor cognition
+wais_code_std,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_code_std,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+wais_code_std,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_code_std,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+wais_code_std,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_code_std,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_code_std,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_digitspan_std,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_digitspan_std,cognition,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor cognition
+wais_digitspan_std,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_digitspan_std,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+wais_digitspan_std,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_digitspan_std,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+wais_digitspan_std,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_digitspan_std,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_digitspan_std,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_ivt_index,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_ivt_index,cognition,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor cognition
+wais_ivt_index,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_ivt_index,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+wais_ivt_index,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_ivt_index,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+wais_ivt_index,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_ivt_index,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_ivt_index,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_similitudes_std,anhedonia,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_similitudes_std,cognition,primary,0.6,0.3,half_normal,positive,-1,gaussian,continuous,home factor cognition
+wais_similitudes_std,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_similitudes_std,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+wais_similitudes_std,mania_activation,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_similitudes_std,overall_severity,plausible_cross,0.0,0.25,normal,signed,-1,gaussian,continuous,specific item may load on G
+wais_similitudes_std,sleep,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_similitudes_std,substance,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wais_similitudes_std,suicidality,unlikely_cross,0.0,0.05,normal,signed,-1,gaussian,continuous,soft-zero complement
+wbc,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+wbc,cognition,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+wbc,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+wbc,immunometabolic,primary,0.6,0.3,half_normal,positive,1,lognormal,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+wbc,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+wbc,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,lognormal,continuous,specific item may load on G
+wbc,sleep,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+wbc,substance,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+wbc,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,lognormal,continuous,soft-zero complement
+weight,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+weight,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+weight,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+weight,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+weight,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+weight,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+weight,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+weight,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+weight,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+wstcir,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+wstcir,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+wstcir,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+wstcir,immunometabolic,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor immunometabolic (merged metabolic+inflammatory)
+wstcir,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+wstcir,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+wstcir,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+wstcir,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+wstcir,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+wurs,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+wurs,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+wurs,developmental_risk,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor developmental_risk
+wurs,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+wurs,mania_activation,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+wurs,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+wurs,sleep,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+wurs,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+wurs,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ymrs,anhedonia,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ymrs,cognition,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ymrs,developmental_risk,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ymrs,immunometabolic,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,merged metabolic+inflammatory -> immunometabolic
+ymrs,mania_activation,primary,0.6,0.3,half_normal,positive,1,gaussian,continuous,home factor mania_activation
+ymrs,overall_severity,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,specific item may load on G
+ymrs,sleep,plausible_cross,0.0,0.25,normal,signed,1,gaussian,continuous,sparse-ESEM selected cross-loading (folded)
+ymrs,substance,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement
+ymrs,suicidality,unlikely_cross,0.0,0.05,normal,signed,1,gaussian,continuous,soft-zero complement

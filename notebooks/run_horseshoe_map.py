@@ -63,6 +63,10 @@ def parse_args():
     p.add_argument("--final", choices=["horseshoe", "hardzero"], default="horseshoe",
                    help="cross-loading treatment for the final 8-factor MIXED map: horseshoe (sparse ESEM) "
                         "or hardzero (the operational map for M2-M5, converges like the certified fit).")
+    p.add_argument("--fold", action="store_true",
+                   help="final operational map = hard-zero + the 6 sparse-ESEM-SELECTED cross-loadings "
+                        "(configs/prior_loading_matrix_v3_biomerge_xc.csv, freed via specific_cross). "
+                        "A small identified refinement between well-separated factors.")
     p.add_argument("--overwrite", action="store_true")
     return p.parse_args()
 
@@ -74,10 +78,13 @@ def main():
                  min_cohorts=2, balanced=True, n_subsample=a.n, seed=20260605)
     dc, dt, mc_, mt = (1000, 1000, 1500, 2000) if not a.smoke else (40, 40, 40, 40)
     ch = 4 if not a.smoke else 2
-    s5name = "hs_s5_merged" if a.final == "horseshoe" else "hs_s5_merged_hz"
+    s5name = {"horseshoe": "hs_s5_merged", "hardzero": "hs_s5_merged_hz"}[a.final]
+    if a.fold:
+        s5name = "hs_s5_merged_xc"
     s1 = StageDefinition("hs_s1_merged", F1, draws=dc, tune=dt, chains=ch, target_accept=0.95, **cont)
     s3 = StageDefinition("hs_s3_merged", F3, draws=dc, tune=dt, chains=ch, target_accept=0.95, **cont)
-    s5 = StageDefinition(s5name, F8, draws=mc_, tune=mt, chains=ch, target_accept=0.95, **mixed)
+    s5 = StageDefinition(s5name, F8, draws=mc_, tune=mt, chains=ch, target_accept=0.95,
+                         specific_cross=a.fold, cross_sd_scale=1.0, **mixed)
 
     base = MeasurementConfig().with_gaussian_copula()
     base = replace(base, prior_matrix=MERGED_MATRIX,
@@ -85,7 +92,12 @@ def main():
                    figure_dir=base.figure_dir / "copula" / "horseshoe_8d")
     hs = base.with_horseshoe(tau0=a.tau0, slab_c=a.slab_c)
 
-    final_cfg, final_mode = (hs, "HORSESHOE") if a.final == "horseshoe" else (base, "hard-zero")
+    if a.fold:
+        # operational map + the 6 data-selected cross-loadings (specific_cross frees exactly those cells)
+        final_cfg = replace(base, prior_matrix=REPO / "configs" / "prior_loading_matrix_v3_biomerge_xc.csv")
+        final_mode = "FOLDED (hard-zero + 6 selected cross-loadings)"
+    else:
+        final_cfg, final_mode = (hs, "HORSESHOE") if a.final == "horseshoe" else (base, "hard-zero")
     print(f"[hs-map] 8-factor merged map; final={a.final} (tau0={a.tau0} slab_c={a.slab_c}); N={a.n}", flush=True)
     print(f"[hs-map] factors: {F8}", flush=True)
 
