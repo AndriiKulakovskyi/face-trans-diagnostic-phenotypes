@@ -70,12 +70,20 @@ def parse_args():
     p.add_argument("--weighted", action="store_true",
                    help="fit at FULL N with cohort-weighting (the operational map M2-M5 consume, analogue of "
                         "copula/weighted/s5_9dim_mixed). Output -> copula/weighted_8d/. ~4h for the mixed stage.")
+    p.add_argument("--salvage", action="store_true",
+                   help="re-fit ONLY the weighted mixed stage with substance pinned ORTHOGONAL (kills the "
+                        "immunometabolic<->substance rotation that broke the full-N fit) + warm-started from the "
+                        "converged balanced map (anchors substance loadings at 0.585). Implies --weighted --fold.")
     p.add_argument("--overwrite", action="store_true")
     return p.parse_args()
 
 
 def main():
     a = parse_args()
+    if a.salvage:
+        a.weighted = True
+        a.fold = True
+        a.final = "hardzero"
     # --weighted => full-N cohort-weighted (the operational estimand M2-M5 consume); else balanced subsample.
     samp = dict(balanced=False, n_subsample=None) if a.weighted else dict(balanced=True, n_subsample=a.n)
     cont = dict(correlated=True, windows=True, mixed=False, seed=20260605, **samp)
@@ -107,8 +115,29 @@ def main():
         final_mode = f"FOLDED (hard-zero + {n_xc} selected cross-loadings)"
     else:
         final_cfg, final_mode = (hs, "HORSESHOE") if a.final == "horseshoe" else (base, "hard-zero")
-    print(f"[hs-map] 8-factor merged map; final={a.final} (tau0={a.tau0} slab_c={a.slab_c}); N={a.n}", flush=True)
+    print(f"[hs-map] 8-factor merged map; final={a.final} (tau0={a.tau0} slab_c={a.slab_c}); "
+          f"N={'full' if a.weighted else a.n}", flush=True)
     print(f"[hs-map] factors: {F8}", flush=True)
+
+    if a.salvage:
+        # Re-fit ONLY the weighted mixed stage: substance pinned orthogonal (kills the immunometabolic<->
+        # substance rotation) + warm-started from the converged BALANCED map (anchors loadings, incl substance).
+        import shutil
+        bal_src = REPO / "results" / "face" / "oop_measurement" / "copula" / "horseshoe_8d" / "hs_s5_merged_xc" / "idata.nc"
+        bal_dir = base.output_dir / "bal_seed"
+        bal_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy(bal_src, bal_dir / "idata.nc")
+        bal_seed = StageDefinition("bal_seed", F8, draws=mc_, tune=mt, chains=ch, target_accept=0.95,
+                                   specific_cross=True, cross_sd_scale=1.0, **mixed)
+        final_cfg = final_cfg.with_substance_orthogonal()
+        print(f"[hs-map] SALVAGE: substance pinned orthogonal {final_cfg.orthogonal_factors}; "
+              f"warm-start s5 from the converged balanced map", flush=True)
+        t0 = time.time()
+        _idata, man = StageRunner(final_cfg).run_stage(s5, overwrite=True, prev_stage=bal_seed)
+        print(f"[{s5.name}] diagnostics={man.get('diagnostics', {})}  elapsed={round(time.time()-t0)}s", flush=True)
+        out = final_cfg.output_dir / s5.name
+        print(f"[hs-map] SALVAGE DONE -> {out}/idata.nc", flush=True)
+        return
 
     # backbone always hard-zero (clean, fast); final stage per --final, all same output_dir for warm-start
     runner_hz = StageRunner(base)
