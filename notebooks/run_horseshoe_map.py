@@ -94,8 +94,11 @@ def main():
 
     if a.fold:
         # operational map + the 6 data-selected cross-loadings (specific_cross frees exactly those cells)
-        final_cfg = replace(base, prior_matrix=REPO / "configs" / "prior_loading_matrix_v3_biomerge_xc.csv")
-        final_mode = "FOLDED (hard-zero + 6 selected cross-loadings)"
+        xc = REPO / "configs" / "prior_loading_matrix_v3_biomerge_xc.csv"
+        final_cfg = replace(base, prior_matrix=xc)
+        import pandas as _pd
+        n_xc = int((_pd.read_csv(xc)["rationale"].astype(str).str.contains("folded")).sum())
+        final_mode = f"FOLDED (hard-zero + {n_xc} selected cross-loadings)"
     else:
         final_cfg, final_mode = (hs, "HORSESHOE") if a.final == "horseshoe" else (base, "hard-zero")
     print(f"[hs-map] 8-factor merged map; final={a.final} (tau0={a.tau0} slab_c={a.slab_c}); N={a.n}", flush=True)
