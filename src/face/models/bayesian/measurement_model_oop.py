@@ -250,10 +250,22 @@ class MeasurementConfig:
     cross_loading_prior: str = "hard_zero"
     hs_tau0: float = 0.05
     hs_slab_c: float = 0.30
+    # ``hs_fixed_tau``: fix the global shrinkage to ``hs_tau0`` instead of sampling it. This deletes the
+    # global funnel (the worst mixing pathology), at the cost of choosing the sparsity level a priori.
+    # ``hs_local_df``: degrees of freedom of the local shrinkage's HalfStudentT (nu=1 -> HalfCauchy, the
+    # canonical horseshoe; nu~3 keeps heavy-but-finite tails that still let a genuine cross-loading escape
+    # while mixing far better).  Defaults reproduce the canonical sampled-tau Cauchy horseshoe.
+    hs_fixed_tau: bool = False
+    hs_local_df: float = 1.0
 
-    def with_horseshoe(self, *, tau0: float = 0.05, slab_c: float = 0.30) -> MeasurementConfig:
-        """Free the off-home specific cross-loadings under a regularized horseshoe (sparse ESEM)."""
-        return replace(self, cross_loading_prior="horseshoe", hs_tau0=tau0, hs_slab_c=slab_c)
+    def with_horseshoe(self, *, tau0: float = 0.05, slab_c: float = 0.30,
+                       fixed_tau: bool = False, local_df: float = 1.0) -> MeasurementConfig:
+        """Free the off-home specific cross-loadings under a regularized horseshoe (sparse ESEM).
+
+        ``fixed_tau=True`` + ``local_df~3`` is the stable variant (no global funnel, lighter local tails)
+        for the validation fit; the canonical sampled-tau Cauchy horseshoe is the default."""
+        return replace(self, cross_loading_prior="horseshoe", hs_tau0=tau0, hs_slab_c=slab_c,
+                       hs_fixed_tau=fixed_tau, hs_local_df=local_df)
 
     def with_soft_unlikely(self) -> MeasurementConfig:
         """Return the soft-prior sensitivity variant: free the ``unlikely_cross`` and
@@ -1304,8 +1316,13 @@ class BayesianBifactorESEM:
             hr = np.array([j for j, _c in spec.hs_cells], dtype="int64")
             hc = np.array([_c for _j, _c in spec.hs_cells], dtype="int64")
             n_hs = len(hr)
-            tau = pm.HalfNormal("hs_tau", sigma=float(self.config.hs_tau0))            # global shrinkage
-            eta = pm.HalfCauchy("hs_eta", beta=1.0, shape=n_hs)                          # local (heavy tail)
+            tau0 = float(self.config.hs_tau0)
+            if self.config.hs_fixed_tau:
+                tau = pt.constant(tau0)                                                  # no global funnel
+            else:
+                tau = pm.HalfNormal("hs_tau", sigma=tau0)                                # global shrinkage
+            nu = float(self.config.hs_local_df)                                          # nu=1 -> HalfCauchy
+            eta = pm.HalfStudentT("hs_eta", nu=nu, sigma=1.0, shape=n_hs)                 # local (heavy tail)
             z = pm.Normal("hs_z", 0.0, 1.0, shape=n_hs)
             c2 = float(self.config.hs_slab_c) ** 2
             eta_reg = pt.sqrt(c2 * eta**2 / (c2 + (tau**2) * (eta**2)))                  # regularized scale
@@ -1965,6 +1982,8 @@ def _config_sig(config: MeasurementConfig) -> dict[str, Any]:
         sig["cross_loading_prior"] = str(config.cross_loading_prior)
         sig["hs_tau0"] = float(config.hs_tau0)
         sig["hs_slab_c"] = float(config.hs_slab_c)
+        sig["hs_fixed_tau"] = bool(config.hs_fixed_tau)
+        sig["hs_local_df"] = float(config.hs_local_df)
     if config.likelihood_mode == "gaussian_copula":
         sig["copula_min_distinct"] = int(config.copula_min_distinct)
         sig["copula_max_modal_frac"] = float(config.copula_max_modal_frac)
