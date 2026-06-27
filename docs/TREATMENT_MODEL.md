@@ -4,6 +4,18 @@
 > the causal design for observational treatment moderation, the acceptance gates, and the staged
 > pipeline. Read before any M5 modelling work. Sibling of [`PROGNOSIS_MODEL.md`](PROGNOSIS_MODEL.md).
 > *Status: methods of record; copula re-scope 2026-06-24 (M5.0 audit 2026-06-11).*
+>
+> **8-factor rebuild note (2026-06-27; pending PI sign-off).** The M5 method is unchanged, but it now runs on the
+> **8-factor** M1–M4 objects (immunometabolic merge + substance orthogonal; **A=5** archetypes). `DURABLE =
+> (cognition, immunometabolic)` (via prognosis) + dynamic `arch_cols` carry the change; the only edits were
+> dynamic archetype-count fixes in the course atlas. Result **replays the bounds-and-defends in full**:
+> **ceiling** — lithium-BP a well-identified **bounded null** (E 1.20–1.28, interaction MDE ≈ 0.20),
+> antipsychotic-BP a confounded average effect (E **1.80** ≈ native 1.79) with **suggestive-but-unconfirmed**
+> moderation, clozapine-SZ underpowered; **defends M4** — the carrier survives treatment adjustment, now in
+> *both* representations (the **A2 immunometabolic archetype corner** 7.7%/6.4% IPW *and* the immunometabolic
+> durable axis 6.4%/4.1% — stronger than the 9-factor map); **describes** course heterogeneity (archetype ΔAUC
+> +0.012/+0.034/+0.042; the immunometabolic corner carries ~2× resistance/side-effect risk; resistance
+> AUC-marginal p 0.205). Findings: [`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md).
 
 > **Re-scope (2026-06-24) — what M5 credibly delivers.** This baseline cohort has **no randomization**
 > (`arm` is a DSM-5 subtype, not a randomized assignment) and only coarse, late-found drug-class

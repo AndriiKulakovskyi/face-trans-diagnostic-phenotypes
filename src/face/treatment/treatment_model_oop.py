@@ -548,11 +548,13 @@ class TreatmentAtlas:
     (resistance / response / side-effects), pooled and within cohort — the monitoring artifact (the M4-atlas
     analogue). Plus the gates that make it *proven* rather than chance: **specificity** (the corner adds beyond
     baseline severity + substance comorbidity + demographics; and how much substance alone carries),
-    **de-confounding** (composition share of the A0–A1 gradient + the corner×cohort interaction), and a
+    **de-confounding** (composition share of the worst→best corner gradient + the corner×cohort interaction), and a
     held-out **ΔAUC permutation null**. Descriptive (monitoring), never prescriptive."""
 
     ENDPOINTS = ["ep_resistance", "ep_response", "ep_side_effects"]
-    CORNER = {0: "A0 biological", 1: "A1 low-burden", 2: "A2 severe·low-bio", 3: "A3 symptom"}
+    # A=5 archetype corners on the 8-factor map (the biology corner is A2 immunometabolic — see M2 atlas)
+    CORNER = {0: "A0 activation", 1: "A1 severe·clean-bio", 2: "A2 immunometabolic",
+              3: "A3 trauma", 4: "A4 well"}
 
     def __init__(self, config: TreatmentConfig | None = None):
         self.config = config or TreatmentConfig()
@@ -617,7 +619,7 @@ class TreatmentAtlas:
                 subst_p = float(chi2.sf(2 * (s1.llf - s0.llf), 1))
             except Exception:                                                # noqa: BLE001 (degenerate cell)
                 pass
-            # de-confounding — composition share of the A0–A1 gradient + corner×cohort interaction
+            # de-confounding — composition share of the worst→best corner gradient + corner×cohort interaction
             comp_share = inter_p = float("nan")
             if len(present) >= 2:
                 dc = d[d["cohort"].isin(present)]
@@ -625,9 +627,11 @@ class TreatmentAtlas:
                 cell = dc.groupby(["corner_id", "cohort"])["y"].mean().unstack().reindex(columns=mix.index)
                 pooled = dc.groupby("corner_id")["y"].mean()
                 std = (cell * mix).sum(1)
-                if 0 in pooled.index and 1 in pooled.index:
-                    raw = float(pooled[0] - pooled[1])
-                    comp_share = round(1 - float(std.get(0, np.nan) - std.get(1, np.nan)) / raw, 3) if raw else np.nan
+                if len(pooled) >= 2:                            # data-driven worst→best corner spread (A-agnostic)
+                    WORST, BEST = int(pooled.idxmin()), int(pooled.idxmax())
+                    raw = float(pooled[BEST] - pooled[WORST])
+                    comp_share = (round(1 - float(std.get(BEST, np.nan) - std.get(WORST, np.nan)) / raw, 3)
+                                  if raw else np.nan)
                 try:
                     ma = smf.logit("y ~ C(corner_id) + C(cohort)", dc).fit(disp=0)
                     mi = smf.logit("y ~ C(corner_id) * C(cohort)", dc).fit(disp=0)
