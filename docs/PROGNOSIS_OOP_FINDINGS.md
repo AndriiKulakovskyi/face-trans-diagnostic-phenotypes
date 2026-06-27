@@ -1,6 +1,6 @@
 # M4 prognosis on the M2 object — findings
 
-> **Canonical M4 findings record (8-factor map, 2026-06-27; pending PI sign-off).** Built on the **8-factor**
+> **Canonical M4 findings record (8-factor map, 2026-06-27; PI sign-off 2026-06-27).** Built on the **8-factor**
 > M1/M2/M3 objects (continuum: continuous coordinates + **A = 5** archetype simplex + nested K-family;
 > immunometabolic biology axis + substance orthogonal). Engine
 > [`src/face/prognosis/prognosis_model_oop.py`](../src/face/prognosis/prognosis_model_oop.py) (wraps the

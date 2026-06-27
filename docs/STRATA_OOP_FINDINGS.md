@@ -7,7 +7,7 @@
 > docs/STRATA_READING_GUIDE.md. Read the framing below as the *derivation* of those lenses, not a claim that
 > patients fall into discrete strata.
 
-> **Canonical M2 findings record (8-factor map, 2026-06-26; pending PI sign-off).** Built on the
+> **Canonical M2 findings record (8-factor map, 2026-06-26; PI sign-off 2026-06-27).** Built on the
 > **8-dimension** cohort-weighted full-N Gaussian-copula map — an immunometabolic biology axis (cardiometabolic
 > + inflammatory markers on one factor) + the 3 earned cross-loadings (CTQ/PSQI → cognition) + **substance pinned
 > orthogonal** (its cross-factor correlations are non-identifiable). Map: `copula/weighted_8d/hs_s5_merged_xc`

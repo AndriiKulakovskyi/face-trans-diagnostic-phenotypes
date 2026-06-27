@@ -60,7 +60,7 @@ The package is **`src/face/…`**; the canonical engine is the Gaussian-copula O
 **data/config layer** (`scripts/01_build_data` → `data/processed/`, `scripts/02_build_covariates`). Only the
 data/config layer + utilities remain as scripts; all milestone modeling lives in the OOP engines below.
 
-**M1 — the 8-factor map (complete, pending PI sign-off).** One global, missingness-aware Bayesian
+**M1 — the 8-factor map (complete, PI sign-off 2026-06-27).** One global, missingness-aware Bayesian
 sparse-bifactor / ESEM model, mixed likelihoods, Gaussian-copula (rank-INT) continuous block, marginalized
 (Woodbury); fit at full N = 9,013, cohort-weighted (R-hat 1.03, 0 divergences; 88 indicators). **8 latent
 dimensions:** G (overall burden) ⊥ 7 specifics — cognition, **immunometabolic** (one biology factor:

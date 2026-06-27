@@ -8,7 +8,7 @@
 > discovery on yearly visits V0 → V1 → V2 only**; prognosis (M4) and treatment (M5) are later milestones.
 >
 > *Math is plain-text/unicode so it renders anywhere and transcribes to LaTeX.*
-> *Status: PLAN — locked at the M3.0 discussion gate, pending PI sign-off. M3.0 (inventory) implemented;
+> *Status: PLAN — locked at the M3.0 discussion gate, PI sign-off 2026-06-27. M3.0 (inventory) implemented;
 > stages 31–37 held at the gate. Updated 2026-06-10 (the geometric-prediction framing §1.4, Arm-B
 > persistence, and the no-completeness-selection rule folded in at the gate).*
 >

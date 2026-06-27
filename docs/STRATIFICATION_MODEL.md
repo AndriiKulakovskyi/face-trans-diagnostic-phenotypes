@@ -9,7 +9,7 @@
 > named in §10 but not specified here.
 >
 > *Math is plain-text/unicode so it renders in any markdown viewer and transcribes directly to LaTeX.*
-> *Status: PLAN — pending PI sign-off at the discussion gate.*
+> *Status: PLAN — PI sign-off 2026-06-27 at the discussion gate.*
 >
 > **Coordinate frame (the M1 map M2 acts on).** M2 is run on the **8-dimension** M1 map: **G (overall burden)**
 > ⊥ **7 specific axes** {cognition, **immunometabolic** (cardiometabolic + inflammatory markers on one axis),

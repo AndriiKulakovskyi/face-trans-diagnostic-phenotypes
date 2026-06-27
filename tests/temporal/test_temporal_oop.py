@@ -22,7 +22,7 @@ def test_config_sig_and_smoke_factory():
     sm = base.with_smoke_defaults()
     assert sm.smoke and not base.smoke and sm.proj_draws < base.proj_draws
     assert _config_sig(sm) != _config_sig(base)
-    assert base.A == 4
+    assert base.A == 5   # A=5 archetypes on the 8-factor map
 
 
 def test_copula_forward_monotone_and_inverts():

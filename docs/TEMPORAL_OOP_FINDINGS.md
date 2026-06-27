@@ -1,6 +1,6 @@
 # M3 temporal coherence on the Gaussian-copula objects — findings
 
-> **Canonical M3 findings record (8-factor map, 2026-06-27; pending PI sign-off).** The FACE M3
+> **Canonical M3 findings record (8-factor map, 2026-06-27; PI sign-off 2026-06-27).** The FACE M3
 > temporal-coherence layer on the **8-factor** copula M1/M2 objects (continuum: continuous coordinates +
 > **A = 5** archetype simplex; immunometabolic biology axis + substance pinned orthogonal). Engine
 > [`src/face/temporal/temporal_model_oop.py`](../src/face/temporal/temporal_model_oop.py) (wraps the

@@ -1,6 +1,6 @@
 # M5 treatment — findings (bounds-and-defends)
 
-> **Canonical M5 findings record (8-factor map, 2026-06-27; pending PI sign-off).** The FACE M5
+> **Canonical M5 findings record (8-factor map, 2026-06-27; PI sign-off 2026-06-27).** The FACE M5
 > treatment causal pipeline runs on the **8-factor** copula map + the **A=5** copula archetypes (immunometabolic
 > biology factor + substance orthogonal). Engine
 > [`src/face/treatment/treatment_model_oop.py`](../src/face/treatment/treatment_model_oop.py) (wraps the

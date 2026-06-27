@@ -4,9 +4,9 @@
 > errors-in-variables engine, the clinical-endpoint layer, the acceptance gates, and the staged
 > pipeline. Findings: [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md); clinician atlas:
 > [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
-> Read before any M4 modelling work. *Status: COMPLETE, pending PI sign-off. 2026-06-11.*
+> Read before any M4 modelling work. *Status: COMPLETE, PI sign-off 2026-06-27. 2026-06-11.*
 >
-> **Model of record (2026-06-27; pending PI sign-off).** M4 runs on the **8-factor** M1/M2/M3 objects (G +
+> **Model of record (2026-06-27; PI sign-off 2026-06-27).** M4 runs on the **8-factor** M1/M2/M3 objects (G +
 > 7 specifics, the immunometabolic biology factor, substance orthogonal; **A = 5** archetypes). The engine
 > discovers the archetype/K-family encodings dynamically; the durable biology is `DURABLE = (cognition,
 > immunometabolic)` (M3 ICC 0.91). Result: the **A = 5 archetypes predict 2-year functioning** (ΔELPD

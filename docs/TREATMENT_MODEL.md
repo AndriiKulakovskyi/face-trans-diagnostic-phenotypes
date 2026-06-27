@@ -5,7 +5,7 @@
 > pipeline. Read before any M5 modelling work. Sibling of [`PROGNOSIS_MODEL.md`](PROGNOSIS_MODEL.md).
 > *Status: methods of record; copula re-scope 2026-06-24 (M5.0 audit 2026-06-11).*
 >
-> **8-factor rebuild note (2026-06-27; pending PI sign-off).** The M5 method is unchanged, but it now runs on the
+> **8-factor rebuild note (2026-06-27; PI sign-off 2026-06-27).** The M5 method is unchanged, but it now runs on the
 > **8-factor** M1–M4 objects (immunometabolic merge + substance orthogonal; **A=5** archetypes). `DURABLE =
 > (cognition, immunometabolic)` (via prognosis) + dynamic `arch_cols` carry the change; the only edits were
 > dynamic archetype-count fixes in the course atlas. The result is **bounds-and-defends**:

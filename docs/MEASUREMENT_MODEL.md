@@ -560,7 +560,7 @@ M1 (this document) → **M2 strata** (probabilistic decision regions on the M1 c
 diagnosis + severity) → **M5 treatment** (target-trial emulation, only if the data support it). Each is a
 separate milestone with its own gate; none is started before M1 is locked.
 
-> **All five are now complete** (pending PI sign-off) — see [STATE.md](STATE.md) and the per-milestone
+> **All five are now complete** (PI sign-off 2026-06-27) — see [STATE.md](STATE.md) and the per-milestone
 > findings. The calibrated outcome: scientific validity demonstrated (a stable continuum map that forecasts
 > functioning beyond severity), strong-sense clinical utility (individual prediction, treatment guidance)
 > not — M5's target-trial emulation found the data support a moderation *test* but no reliable moderation

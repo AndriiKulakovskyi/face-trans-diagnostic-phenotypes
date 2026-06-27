@@ -4,7 +4,7 @@
 
 ## TL;DR
 
-**Milestone 1 (M1) — the transdiagnostic dimensional map — is COMPLETE** (pending PI sign-off), on the FACE
+**Milestone 1 (M1) — the transdiagnostic dimensional map — is COMPLETE** (PI sign-off 2026-06-27), on the FACE
 **V0** baseline (N = 9,013). **Findings + discussion: [`M1_FINDINGS.md`](M1_FINDINGS.md)** (paper-facing
 synthesis). Methods of record: [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md); verdict:
 [`ADJUDICATION.md`](ADJUDICATION.md). The map is **8 transdiagnostic dimensions** — a general factor **G
@@ -25,7 +25,7 @@ notable coupling mania–sleep ≈ 0.24). Anhedonia **rejected**; impulsivity/ne
 **not_testable**; depression/anxiety are cross-loading **windows**. Engine
 `src/face/models/bayesian/measurement_model_oop.py`; data layer `scripts/01_build_data` kept; loadings/Φ in
 `reports/copula_8factor_{loadings,phi}.csv`; figures `fig2_map` (dot-atlas), `fig_factors` (lollipops + 8×8 Φ),
-`edfig_full_atlas`. **M2 stratification COMPLETE** (pending PI sign-off) —
+`edfig_full_atlas`. **M2 stratification COMPLETE** (PI sign-off 2026-06-27) —
 canonical findings [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md), atlas
 [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md), methods [`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md). The transdiagnostic space is a **continuum** (not biotypes): best-partition
 silhouette **0.140** is indistinguishable from a structureless-Gaussian null **0.137 ± 0.002 (z = 1.13,
@@ -36,7 +36,7 @@ biology corner), **A3** trauma/suicidality, **A4** low-burden/well. The split is
 η² 0.224 + suicidality η² 0.225 ≫ G η² 0.050) and **transdiagnostic** (ARI 0.006 vs DSM-5; tighter than DSM-5,
 η² 0.074 vs 0.026 at lower BIC). The soft tessellation is a coarse convention exported as a **nested K-family
 (2/3/4) with no privileged K** — the operative K is deferred to M4/M5 incremental validity (answer: none).
-**M3 temporal coherence is COMPLETE** (pending PI sign-off) — the map
+**M3 temporal coherence is COMPLETE** (PI sign-off 2026-06-27) — the map
 and strata are **temporally coherent** (V0→V1→V2, n=2,958 completers): scored onto the fixed M1/M2 model
 (observed cells, uncertainty propagated, never re-discovered), the measurement holds (G1: all **4/4** backbone
 axes invariant — G, cognition, immunometabolic φ 0.987, sleep), and the M2 geometry replays — biology/cognition
@@ -44,7 +44,7 @@ are durable (trait) while severity + symptoms slide (state), and archetype ident
 **immunometabolic ICC 0.91 — the single most durable axis**; cognition 0.70 trait; severity 0.62 trait-by-rank
 (population improves, suicidality slides hardest −0.84); developmental 0.39 state. G4: archetype weights
 persist (Arm-B cosine median **0.81**). Findings: [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md).
-**M4 prognosis is COMPLETE** (pending PI sign-off) — on the fixed M1/M2/M3 objects, a baseline transdiagnostic
+**M4 prognosis is COMPLETE** (PI sign-off 2026-06-27) — on the fixed M1/M2/M3 objects, a baseline transdiagnostic
 profile **predicts 2-year functioning incrementally beyond DSM-5 + severity + baseline functioning**: the
 **A=5 archetypes** add **ΔELPD +62.8** (held-out), IPW-robust (+54.4), permutation-null (−2.4),
 **course-dependent / BP-led**, and **co-informative with DSM-5** (+both 62.6 > +DSM-5 29 > +map 17 — the map
@@ -57,7 +57,7 @@ predicts **functioning, not severity** (autoregression-saturated), and the answe
 +0.010 — the value is group-level stratification + continuous forecasting); a representation benchmark shows
 the map is **sufficient for deterioration** (AUC tie vs raw) and **near-sufficient for recovery** (raw +0.04
 AUC; 92–97% within-factor compression — the residual is item-level, not a missing axis). **M5 treatment is
-COMPLETE** (pending PI sign-off), scoped as **bounds-and-defends** (this baseline cohort has no randomization —
+COMPLETE** (PI sign-off 2026-06-27), scoped as **bounds-and-defends** (this baseline cohort has no randomization —
 `arm` is a DSM-5 subtype — so treatment *selection* is genuinely **M5b**). Treatment
 data, found late in the per-cohort thesaurus `TRAITEMENTS` tabs and harmonized to common drug-class exposures,
 runs through a proper causal pipeline — **overlap → propensity → doubly-robust EIV moderation → E-value →
@@ -106,7 +106,7 @@ NUTS is the authority is now *earned*, not assumed. Also: a
 NUTS stays the authority for Φ, loading uncertainty, and paper claims; the VI arm is for fast reruns /
 sensitivity sweeps / synthetic cohorts / an independent-estimator robustness check. NOT committed; pending PI review.
 
-## M2 — stratification (COMPLETE, pending PI sign-off)
+## M2 — stratification (COMPLETE, PI sign-off 2026-06-27)
 
 > **Canonical record: [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md) +
 > [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md).** On the 8-dim coordinates the transdiagnostic space is a
@@ -181,14 +181,14 @@ driven by missingness (coverage→membership classifier below majority). **Head-
 DSM-5 — coordinate η² **0.074 vs 0.026 at lower BIC** (DSM-5 barely structures the coordinates). Descriptive
 win only — predictive/treatment is M4/M5. Engine `src/face/strata/strata_model_oop.py` (validation module).
 
-**M2.5 consolidation DONE — M2 COMPLETE (pending PI sign-off).** Unified hand-off
+**M2.5 consolidation DONE — M2 COMPLETE (PI sign-off 2026-06-27).** Unified hand-off
 `results/face/strata_oop/consolidate/patient_strata.parquet` (9,013 × 50: archetype weights + sd, tessellation
 responsibilities, dominant labels, entropy, arm — diagnosis for validation only); paper-facing
 [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md) + [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md). Figures
 `fig4_continuum`, `fig4b_archetypes`. **PI sign-off on the findings + atlas locks M2; then M3 temporal
 coherence (do the coordinates + phenotype memberships persist V1–V4?).**
 
-## M3 — temporal coherence (COMPLETE, pending PI sign-off)
+## M3 — temporal coherence (COMPLETE, PI sign-off 2026-06-27)
 
 **Findings: [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md); methods: [`TEMPORAL_MODEL.md`](TEMPORAL_MODEL.md).** Does the V0 map + strata cohere and persist over
 follow-up (V0→V1→V2, yearly; n=2,958 completers)? Scored onto the **FIXED** M1/M2 model — observed cells only,
@@ -224,7 +224,7 @@ Caveats carried forward: developmental's "state" = CTQ recall noise (trait by de
 (signal ≪ noise); mania data-limited; 3-visit window. Figures `fig5_persistence`, `edfig_invariance`.
 **PI sign-off locks M3; then M4 prognosis — persists ≠ predicts.**
 
-## M4 — prognosis (COMPLETE, pending PI sign-off)
+## M4 — prognosis (COMPLETE, PI sign-off 2026-06-27)
 
 Findings [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md) · methods [`PROGNOSIS_MODEL.md`](PROGNOSIS_MODEL.md) ·
 clinician atlas [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
@@ -256,7 +256,7 @@ missing axis; honest uncertainty (EIV-GLM) adds a little, the map transports as 
 is sufficient. *Structurally faithful summary, parsimony for a sliver of resolution.* Figures `fig6_prognosis`,
 `edfig_repbench`, `edfig_robustness`. **PI sign-off pending.**
 
-## M5 — treatment (COMPLETE, pending PI sign-off)
+## M5 — treatment (COMPLETE, PI sign-off 2026-06-27)
 
 Findings [`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md) · methods [`TREATMENT_MODEL.md`](TREATMENT_MODEL.md).
 Engine `src/face/treatment/treatment_model_oop.py` (endpoints · frame · medications · propensity · moderation).
@@ -360,7 +360,7 @@ treatment) is feasible now without new data (DR excluded — no follow-up Rx).
 - **M1 complete** — the measurement layer is built, hardened (confirmation/invariance/robustness/PPC),
   scored, and adjudicated on the **8-factor map**. PI sign-off on the adjudication + atlas locks it.
 - **Later milestones:** M2 strata · M3 temporal coherence · M4 prognosis · M5 treatment — all COMPLETE on the
-  8-factor map (pending PI sign-off); see the sections above.
+  8-factor map (PI sign-off 2026-06-27); see the sections above.
 
 ## M1 measurement — per-stage development record (retired)
 
