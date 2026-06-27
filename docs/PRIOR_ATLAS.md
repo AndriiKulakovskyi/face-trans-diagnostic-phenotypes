@@ -1,5 +1,12 @@
 # Prior loading atlas — the theory (soft-prior map)
 
+> **Map of record (read first).** This atlas is the **prior (theory) ontology** — the candidate factors *before*
+> the data adjudicate them, not the fitted map. The fitted map of record is the **8-factor immunometabolic map**:
+> G (overall burden) + 7 specific axes — cognition, **immunometabolic** (the cardiometabolic and inflammatory
+> candidate pools below resolve into one biology factor), sleep, mania/activation, suicidality,
+> developmental-risk, and **substance** (orthogonal); the anhedonia candidate is rejected (absorbed by G). The
+> strata reading lens is **A = 5 archetypes**. Canonical map findings: [`HORSESHOE_ESEM.md`](HORSESHOE_ESEM.md).
+
 > The **prior** half of the dimensional map: where each FACE common-variable instrument is *expected* to
 > load on the candidate dimensions, before any model is fit. It is generated purely from `configs/`
 > (no patient data) and is the "before" of the **prior → posterior comparison** that demonstrates the

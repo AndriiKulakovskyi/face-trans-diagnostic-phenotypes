@@ -1,5 +1,15 @@
 # M1 — Findings & Discussion
 
+> **Map of record (read first).** The measurement map is the **8-factor immunometabolic map**: a general
+> factor **G (overall burden)** + 7 specific axes — cognition, **immunometabolic** (one biology factor:
+> cardiometabolic + inflammatory markers together), sleep, mania/activation, suicidality, developmental-risk,
+> and **substance** (pinned orthogonal). The map is otherwise simple-structure with **3 earned cross-loadings**
+> (CTQ-37 → cognition, PSQI-latency → cognition, PSQI-daytime → cognition). On this map the strata reading lens
+> is **A = 5 archetypes (A0–A4)**. Canonical findings: [`HORSESHOE_ESEM.md`](HORSESHOE_ESEM.md) (map),
+> [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md) (archetypes). diagnosis is validation-only. The historical
+> development narrative below is retained for traceability; where it reads in finer biological detail, the
+> biology axis is the single **immunometabolic** factor.
+
 > **The paper-facing synthesis of Milestone 1**: what we did, what we observed, what we found, and what it
 > means. This is the canonical *findings + discussion* record for traceability, PI review, and the manuscript.
 > Companions: methods of record → [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md); per-candidate verdict →
@@ -13,14 +23,14 @@
 
 On the harmonized 3-cohort FACE **V0 baseline** (N = 9,013 = BP 6,252 · SZ 2,209 · DR 552), one global,
 missingness-aware Bayesian sparse **bifactor/ESEM** model — estimated from each patient's *observed cells
-only* (no imputation) — yields a **9-dimension transdiagnostic map**: a general factor **G
-(functional burden)** plus eight specific axes — **cognition, metabolic, inflammatory, sleep,
-developmental-risk, suicidality, mania, substance**. The map is hardened end-to-end (estimator/prior
-robustness, measurement invariance, resample robustness, absolute-fit PPC across both likelihood blocks),
-documented at the largest N that mixes (cross-seed Tucker φ 0.993), and projected to per-patient coordinates
-with uncertainty and reliability flags. The headline scientific finding is that **biology is the least
-severity-entangled domain** — metabolic and inflammatory burden are largely independent of the general
-functional-impairment factor, whereas cognition and sleep partly track it.
+only* (no imputation) — yields an **8-factor transdiagnostic map**: a general factor **G
+(overall burden)** plus 7 specific axes — **cognition, immunometabolic, sleep, mania/activation,
+suicidality, developmental-risk, substance**. The map is hardened end-to-end (estimator/prior
+robustness, measurement invariance, resample robustness, absolute-fit PPC across both likelihood blocks)
+and projected to per-patient coordinates with uncertainty and reliability flags. The headline scientific
+finding is that **biology is the least severity-entangled domain** — the **immunometabolic** axis
+(cardiometabolic + inflammatory load together) is largely independent of the general functional-impairment
+factor, whereas cognition and sleep partly track it.
 
 ---
 
@@ -163,12 +173,12 @@ mixed-model PPC (§8) → mania/substance invariance (§8).
 **What the map is for.** M1 deliberately stops at *measurement*: it converts three diagnostic cohorts into a
 shared, validated coordinate system without ever using diagnosis as a modelling feature (diagnosis is
 covariate/validation only). The product is the substrate the later milestones act on — **M2 validates the continuum
-(continuous coordinates + a stable A=4 archetype simplex) in this 9-dimensional space**, then M3–M5 add
+(continuous coordinates + a stable A = 5 archetype simplex) in this 8-factor space**, then M3–M5 add
 temporal coherence, prognosis, and treatment.
 
 **Why biology⊥G is the most consequential finding.** If biological burden tracked overall severity, it would
-add little beyond a clinician's global impression. The data say the opposite: metabolic and inflammatory load
-are **carried on axes severity does not see**. A stratification that uses these axes can therefore separate
+add little beyond a clinician's global impression. The data say the opposite: **immunometabolic load**
+is **carried on an axis severity does not see**. A stratification that uses these axes can therefore separate
 patients who look equally ill clinically but differ biologically — the precise value proposition of a
 transdiagnostic, biology-aware map.
 
@@ -207,8 +217,8 @@ what survived adversarial checking, not what was assumed.
 
 ## 7. Future work
 
-- **M2 — the validated continuum** (continuous coordinates + a stable A=4 archetype simplex; no privileged K)
-  on these 9-dimensional coordinates (with uncertainty propagated from §7).
+- **M2 — the validated continuum** (continuous coordinates + a stable A = 5 archetype simplex; no privileged K)
+  on these 8-factor coordinates (with uncertainty propagated from §7).
 - Fold the small follow-ons as M2-prep: full-N non-Gaussian scoring; mania/substance bootstrap + correlated-G;
   a hurdle likelihood for `isf09a` if needed.
 - **M3 — temporal coherence** (V1–V4): do the coordinates and archetypes persist longitudinally?

@@ -1,5 +1,16 @@
 # M1 — The transdiagnostic measurement model: logic and mathematical specification
 
+> **Map of record (read first).** The measurement model yields the **8-factor immunometabolic map**: a general
+> factor **G (overall burden)** + 7 specific axes — cognition, **immunometabolic** (a single biology factor
+> carrying cardiometabolic *and* inflammatory markers together), sleep, mania/activation, suicidality,
+> developmental-risk, and **substance** (pinned orthogonal). The map is simple-structure apart from **3 earned
+> cross-loadings** into cognition (CTQ-37, PSQI-latency, PSQI-daytime), each derived from a regularized
+> ("Finnish") horseshoe prior on off-home loadings that keeps the map default-off and lets only
+> evidence-backed cross-talk emerge. The strata reading lens on this map is **A = 5 archetypes**. Canonical
+> map findings: [`HORSESHOE_ESEM.md`](HORSESHOE_ESEM.md). The candidate-by-candidate logic below records how
+> the prior ontology was adjudicated against the data; where it describes the biology candidate as a
+> cardiometabolic/inflammatory "split," that variance is carried by the single **immunometabolic** factor.
+
 > This is methods-of-record for **Milestone 1 (M1): the transdiagnostic dimensional map on the FACE
 > V0 baseline.** This document fixes the *scientific logic* and the *mathematics* of the measurement
 > model and its estimation; it is written to feed the manuscript's Methods section directly. It is the
@@ -28,7 +39,7 @@ Psychiatric heterogeneity has two levels that must not be conflated:
 The architecture is strictly ordered:
 
 ```
-diagnostic cohorts → transdiagnostic dimensions → continuous map + A=4 archetypes → prognosis / treatment
+diagnostic cohorts → transdiagnostic dimensions → continuous map + A=5 archetypes → prognosis / treatment
    (entry metadata)      (M1 — this document)        (M2 — continuum)                 (M4 / M5)
 ```
 

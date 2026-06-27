@@ -1,6 +1,14 @@
-# M4 rework — representation benchmark (latent map vs raw indicators)
+# M4 — representation benchmark (latent map vs raw indicators)
 
-> **STATUS: PLAN — pending approval before any implementation.** This doc is the methods record for an M4
+> **Map of record (read first).** The latent map under test is the **8-factor immunometabolic map** (G + 7
+> specifics; immunometabolic a single biology factor; substance orthogonal; 3 earned cross-loadings) with
+> **A = 5 archetypes**. The benchmark headline: against the raw indicators under a matched XGBoost, the
+> 8-factor map is **sufficient for deterioration** (AUC tie) and **near-sufficient for recovery** (raw +0.04
+> AUC), with **92–97% within-factor compression** — the residual is item-level, not a missing axis. Canonical
+> map findings: [`HORSESHOE_ESEM.md`](HORSESHOE_ESEM.md).
+
+> **STATUS** — methods record for the representation benchmark that tests whether the latent map is a
+> *sufficient, data-efficient, uncertainty-aware, transportable, interpretable* summary of the raw indicators. This doc is the methods record for an M4
 > rework that tests whether the M1/M2 latent map is a *sufficient, data-efficient, uncertainty-aware,
 > transportable, interpretable* summary of the raw indicators for outcome prediction — not whether it
 > "beats" raw (it can't, asymptotically; the coordinates are a compression of the raw cells). Author: planning
@@ -12,11 +20,11 @@ The naive hypothesis "coordinates predict better than raw" is wrong: σ(coordina
 model on raw weakly dominates in-distribution asymptotically, and a masked NN on raw is *itself* a learned
 bottleneck. We therefore test **representation quality**, where a tie is a success:
 
-- **H1 — Sufficiency.** Raw indicators add ~nothing over the 9-dim map: `(ref+raw+latent) ≈ (ref+latent)`.
-  The 143→9 compression preserves the outcome signal. *(A near-equivalence claim → report the gap with a CI
-  against a pre-specified margin, not p>0.05.)*
-- **H2 — Data efficiency.** At realistic / small N (and small cohorts), the 9-dim bottleneck generalizes
-  better than raw (which overfits 143 sparse features). Tested by learning curves.
+- **H1 — Sufficiency.** Raw indicators add ~nothing over the 8-factor map: `(ref+raw+latent) ≈ (ref+latent)`.
+  The compression to 8 factors preserves the outcome signal. *(A near-equivalence claim → report the gap with
+  a CI against a pre-specified margin, not p>0.05.)*
+- **H2 — Data efficiency.** At realistic / small N (and small cohorts), the 8-factor bottleneck generalizes
+  better than raw (which overfits sparse features). Tested by learning curves.
 - **H3 — Uncertainty value.** Feeding per-patient uncertainty (mean+sd / draws) beats mean-only and the raw
   model that has no reliability channel.
 - **H4 — Transportability.** The low-dim, meaningful representation transfers across cohorts (LOCO) and time
@@ -57,9 +65,9 @@ better powered.
 
 - **REF** — DSM-5 arm + baseline severity + **baseline GAF** (the clinician bar, = R3y). The common base.
 - **RAW** — 143 indicators + mask.
-- **LAT-μ** — 9 coordinate means.
-- **LAT-σ** — 9 means + 9 sds (+ draws where the model supports it).
-- **LAT-A** — LAT-σ + A=4 archetype weights.
+- **LAT-μ** — 8 coordinate means.
+- **LAT-σ** — 8 means + 8 sds (+ draws where the model supports it).
+- **LAT-A** — LAT-σ + A = 5 archetype weights.
 - **RAW+LAT** — raw + latent (the H1 sufficiency test).
 
 Each evaluated standalone and as an increment on REF. **Key sufficiency contrast:** `REF+RAW+LAT` vs `REF+LAT`.
@@ -226,7 +234,7 @@ Out-of-fold (5×2 stratified CV, 2000 bootstraps). Eligible N: recovery 1,087 (p
    LAT-A 0.707), consistent with H3 — but this is XGBoost using sd as a feature; the faithful test is the
    EIV-GLM (P2).
 
-**Honest headline:** the copula 9-dim map is a **sufficient** summary for the baseline-saturated deterioration
+**Honest headline:** the 8-factor map is a **sufficient** summary for the baseline-saturated deterioration
 outcome and a **near-sufficient (≈0.04-AUC lossy)** summary for recovery — not an autoregression artefact. Raw
 carries a little recovery-specific signal the transdiagnostic compression drops. **Caveat:** XGBoost-only; the
 EIV-GLM uncertainty arm, the recovery-gap diagnostic (which raw features?), efficiency learning-curves, and LOCO
@@ -234,8 +242,8 @@ transport are P2.
 
 ## P2 findings — diagnostics, uncertainty, efficiency, transport
 
-1. **Recovery-gap (SHAP, `diagnostic.py`).** Of raw's recovery-predictive SHAP mass, **97% sits *within* the 9
-   modelled factors** — the top drivers are the factor anchors (CRP/platelets/eosinophils, BMI/HbA1c/lipids/urate,
+1. **Recovery-gap (SHAP, `diagnostic.py`).** Of raw's recovery-predictive SHAP mass, **92–97% sits *within* the
+   8 modelled factors** — the top drivers are the factor anchors (CRP/platelets/eosinophils, BMI/HbA1c/lipids/urate,
    CVLT/WAIS/TMT, Fagerström, CTQ, FAST/EQ-5D); only **3% is off-map** (the depression/anxiety *window* items
    QIDS/STAI/MADRS that M1 folds into G). So the ~0.04-AUC recovery gap is **within-factor compression loss** —
    item-level resolution the factor scores blend away — **not a missing dimension**.
@@ -250,7 +258,7 @@ transport are P2.
    the well-powered held-out cohorts (BP, SZ); raw transports better for recovery. The map's transport advantage
    holds **where it is sufficient**.
 
-**Calibrated representation claim.** The copula 9-dim map is a **sufficient, uncertainty-honest, transportable**
+**Calibrated representation claim.** The 8-factor map is a **sufficient, uncertainty-honest, transportable**
 summary for the deterioration outcome, and a **near-sufficient, structurally-faithful** summary for recovery
 whose small residual gap is **item-level compression** (not a missing axis, only marginally noise). It **trades a
 sliver of task-specific resolution for parsimony, interpretability, transportability, and honest uncertainty** —

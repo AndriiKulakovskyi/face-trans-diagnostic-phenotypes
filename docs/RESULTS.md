@@ -14,14 +14,16 @@
 
 *Read this first; the per-stage sections below carry the detail and the numbers.*
 
-> **UPDATE (M1 complete, 9-dim):** the staged-fit sections below develop and report the **7-dimension**
-> map; **mania** and **substance** were then **added** (their indicators ingested) and confirmed, so the final reported
-> map is the **largest-N-documented 9-dimension joint S5** (+ mania marginalized, + substance explicit with proper
-> Bernoulli SUD likelihood; R-hat ≤ 1.04 · ESS ≥ 112 · 0 div · cross-seed φ 0.993). The current verdict on
-> every candidate is in [`ADJUDICATION.md`](ADJUDICATION.md); the **paper-facing findings + discussion**
-> synthesis is [`M1_FINDINGS.md`](M1_FINDINGS.md); current status in [`STATE.md`](STATE.md); per-patient
-> 9-dim scores in `results/face/patient_scores.parquet`. *(The sections below are the 7-dim development
-> record — see the banner.)*
+> **Map of record (read first).** The reported map is the **8-factor immunometabolic map**: G (overall burden)
+> + 7 specifics — cognition, **immunometabolic** (one biology factor: cardiometabolic + inflammatory markers
+> together), sleep, mania/activation, suicidality, developmental-risk, **substance** (orthogonal) — simple-
+> structure apart from **3 earned cross-loadings** into cognition; the strata reading lens is **A = 5
+> archetypes**. Canonical map findings: [`HORSESHOE_ESEM.md`](HORSESHOE_ESEM.md). The per-candidate verdict is
+> in [`ADJUDICATION.md`](ADJUDICATION.md); the paper-facing findings synthesis is
+> [`M1_FINDINGS.md`](M1_FINDINGS.md); current status in [`STATE.md`](STATE.md). The staged-fit sections below
+> are the **development record** (S1 continuous backbone → S5 joint fit); read them for provenance, and note
+> that where they record the biology block as a cardiometabolic/inflammatory "split," that variance is carried
+> by the single **immunometabolic** factor.
 > **The 7-dim narrative below is the development record** — its forward-looking notes ("FIML confirmation
 > ahead", "→ GPU", "provisional", "still ahead") are all **superseded**: FIML was reframed to an in-engine
 > bundle and done (§5), nothing needed a GPU, and the map is certified. Read it for provenance, not status.

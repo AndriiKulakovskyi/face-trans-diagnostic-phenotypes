@@ -1,4 +1,13 @@
-# Archetype-robustness battery — is A=4 the right, reproducible reading lens?
+# Archetype-robustness battery — is the archetype simplex the right, reproducible reading lens?
+
+> **Map of record (read first).** The strata reading lens is **A = 5 archetypes (A0–A4)** on the **8-factor
+> immunometabolic map** — the largest A whose corners reproduce across seeds (cross-seed Tucker ≥ 0.8), with a
+> clean stability cliff at **A = 6** (0.979 → 0.436; EV 0.60). Canonical archetype findings:
+> [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md), atlas [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md). The
+> battery below is the robustness *protocol* (cross-seed reproducibility, n_init sensitivity, anchor recovery,
+> degeneracy, membership health, split-half) that establishes the simplex is earned and not a fitting artefact;
+> read it for the method. Its tabulated A-count figures pertain to an earlier exploratory solution and are not
+> the model of record — the A = 5 selection and stability cliff are in the canonical findings above.
 
 > **Why this exists.** The A=4 archetype simplex is load-bearing twice: it is the M2 *reading lens* (the four
 > corners + their representative patients) **and** M4's predictive carrier (on the copula objects the

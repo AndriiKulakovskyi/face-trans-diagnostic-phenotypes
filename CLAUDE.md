@@ -11,8 +11,8 @@ A project that turns the harmonized 3-cohort FACE **baseline (V0)** data (BP · 
 prognosis/treatment decision models. Four layers that must not be collapsed:
 
 ```text
-diagnostic cohorts → transdiagnostic dimensions → continuous map + A=4 archetypes → prognosis / treatment
-  (entry metadata)     (M1 — complete, 9-dim)       (M2 — continuum, no privileged K)  (M4 / M5)
+diagnostic cohorts → transdiagnostic dimensions → continuous map + A=5 archetypes → prognosis / treatment
+  (entry metadata)     (M1 — complete, 8-factor)     (M2 — continuum, no privileged K)  (M4 / M5)
 ```
 
 The discovery engine is **one global, missingness-aware Bayesian sparse bifactor / ESEM model** with mixed
@@ -55,105 +55,81 @@ covariates / validation labels.
 
 ## Current state — M1 + M2 + M3 + M4 + M5 complete (next: PI sign-off; a true M5b needs randomized data)
 
-The package is **`src/face/…`**; the engine (`src/face/models/bayesian/continuous_core` + `confirm`,
-`runner`, `scoring`) consumes `configs/prior_loading_matrix_v3.csv` and the kept **data/config layer**
-(`scripts/01_build_data` → `data/processed/`, `scripts/02_build_covariates`). The native M1 *modeling* scripts
-(`04_fit … 09_atlas`, `10*`, `12`, `13`, `s5_*`) were **retired 2026-06-24** — the canonical M1 is the
-Gaussian-copula OOP fit (`src/face/models/bayesian/measurement_model_oop.py`). **M1 is complete (pending PI sign-off):** a **certified 9-dimension**
-transdiagnostic map — G + cognition/metabolic/inflammatory/sleep/developmental-risk/suicidality **+ mania +
-substance** — built, hardened (confirmation §5 / invariance §8 / robustness §8), certified (§4), scored (§7),
-and adjudicated (§6). **Findings + discussion (paper-facing, read first): [docs/M1_FINDINGS.md](docs/M1_FINDINGS.md).**
-Current status: **[docs/STATE.md](docs/STATE.md)**; per-candidate verdict:
-**[docs/ADJUDICATION.md](docs/ADJUDICATION.md)**; per-stage detail: [docs/RESULTS.md](docs/RESULTS.md).
-**M2 strata COMPLETE** (pending PI sign-off), **reworked on the Gaussian-copula map** — methods
-**[docs/STRATIFICATION_MODEL.md](docs/STRATIFICATION_MODEL.md)**, canonical findings
-**[docs/STRATA_OOP_FINDINGS.md](docs/STRATA_OOP_FINDINGS.md)**, atlas **[docs/STRATA_OOP_ATLAS.md](docs/STRATA_OOP_ATLAS.md)**.
-On the 9-dim copula coordinates (uncertainty-propagated, diagnosis = validation-only) the transdiagnostic space
-is a **continuum, not biotypes** (confirmed by a single-Gaussian falsification null). The **load-bearing
-objects are the continuous coordinates + a stable A=4 archetype simplex** (biology⊥symptoms⊥severity; native
-A=8 doesn't reproduce on the copula); the soft **tessellation** is a coarse convention exported as a **nested
-K-family (2/3/4) with no privileged K** — the operative K is **deferred to M4/M5 incremental validity** (K=2 is
-only the M3-contract default; finer K captures the severity/biology gradient K=2 drops). Transdiagnostic
-(ARI≈0 vs DSM-5), stable, not a missingness artefact, tighter *description* than DSM-5. New OOP engine
-`src/face/strata/strata_model_oop.py` (wraps the proven kernels); driver `notebooks/run_strata_model_oop.py`;
-hand-off `results/face/strata_oop/consolidate/{patient_strata.parquet, k_family_menu.csv}` + continuous coords
-in `results/face/strata_oop/coordinates/`. (Native M2 pipeline `scripts/20–26` **retired 2026-06-24**; the
-copula OOP engine `strata_model_oop.py` is canonical.)
-**M3 temporal coherence COMPLETE** (pending PI sign-off) — methods **[docs/TEMPORAL_MODEL.md](docs/TEMPORAL_MODEL.md)**,
-findings (paper-facing, read first) **[docs/TEMPORAL_OOP_FINDINGS.md](docs/TEMPORAL_OOP_FINDINGS.md)**. Scoring follow-up (V0→V1→V2) onto the **fixed** M1/M2
-model (observed cells, uncertainty propagated, never re-discovered), the map + strata are **temporally
-coherent**: the measurement holds (G1 invariance: 5/6 backbone axes invariant, inflammatory partial), and the
-M2 geometry replays — **biology/cognition are durable (trait) while severity + symptoms slide (state)**, and
-archetype identity persists (G3 variance ⟷ G4 geometry agree). Honest caveats: developmental's apparent state
-is CTQ recall-noise (trait by design); G5-vs-DSM5 deferred to M4 (`arm` time-invariant). Clinical logic:
-*stratify on the durable biology, monitor the moving symptoms.* Engine `src/face/temporal/` (shared kernels);
-native pipeline `scripts/30–37` **retired 2026-06-24**; native hand-off `results/face/patient_panel.parquet`.
-**M3 reworked on the copula M1/M2 objects** (parallel OOP engine `src/face/temporal/temporal_model_oop.py`,
-wraps the kernels; driver `notebooks/run_temporal_model_oop.py`; canonical **[docs/TEMPORAL_OOP_FINDINGS.md](docs/TEMPORAL_OOP_FINDINGS.md)**;
-hand-off `results/face/temporal_oop/`). The one new piece is scoring V1/V2 under the **fixed copula M1**
-(`copula_forward` + frozen-V0 covariate-FWL residualization → `conditional_gaussian_draws`/
-`project_explicit_full_n`; V0 reproduced at r≈0.99). Result **replays**: G1 all 5 backbone axes invariant
-(inflammatory now invariant vs partial native), G3 biology trait (metabolic ICC 0.91, cognition 0.70) / symptoms
-state / severity trait-by-rank with population improvement, G4 archetype weights persist (cosine 0.90).
-The native M3 pipeline (`scripts/30–37`) was **retired 2026-06-24**; the copula OOP M3 (`temporal_model_oop.py`)
-is canonical, and its strata-independent IPW (`results/face/temporal_oop/attrition/ipw_weights.parquet`) now
-feeds the copula M4 + repbench (previously the native `results/face/m3/`). **All native M1–M5 pipeline scripts
-are now retired; only the data/config layer (`scripts/01_build_data`, `02_build_covariates`) + utilities remain.**
-**M4 prognosis COMPLETE** (pending PI sign-off) — methods **[docs/PROGNOSIS_MODEL.md](docs/PROGNOSIS_MODEL.md)**,
-findings (paper-facing, read first) **[docs/PROGNOSIS_OOP_FINDINGS.md](docs/PROGNOSIS_OOP_FINDINGS.md)**, clinician-facing
-prognostic atlas **[docs/PROGNOSIS_OOP_FINDINGS.md](docs/PROGNOSIS_OOP_FINDINGS.md)**.
-On the fixed M1/M2/M3 objects (panel + draws + strata + IPW; never re-scored), an errors-in-variables
-Bayesian GLM tests whether a baseline coordinate/stratum predicts a 2-year outcome **incrementally beyond
-DSM-5 + severity + the baseline outcome**. *Persists became predicts — for functioning, in the open-course
-patients:* the durable **metabolic/inflammatory** ⊥G axes and the **8 archetypes** predict future
-**functioning** (archetypes ΔELPD +46; remission AUC +0.017; metabolic survives the error-corrected-G
-severity), robust to attrition/reliability/permutation — but **not severity** (autoregression-saturated).
-**Co-informative with DSM-5** (complements, not replaces) and **course-dependent** (large in episodic
-BP/DR, null in baseline-saturated SZ). The archetype prognostic atlas: 2-year functional remission
-**14%→60%**, transdiagnostic. The map's value is **group-level stratification + continuous functional
-forecasting**, not a large individual-binary boost — honest limits: scale trajectories not events,
-internal validity, 2-year horizon. Engine `src/face/prognosis/` (shared kernels); the native pipeline
-`scripts/40–48` was **retired 2026-06-24**; native hand-off `results/face/m4/` (provenance).
-**M4 reworked on the copula M2 object** (parallel OOP engine `src/face/prognosis/prognosis_model_oop.py`,
-wraps the kernels; driver `notebooks/run_prognosis_model_oop.py`; canonical **[docs/PROGNOSIS_OOP_FINDINGS.md](docs/PROGNOSIS_OOP_FINDINGS.md)**;
-hand-off `results/face/prognosis_oop/`). Result replays: predicts 2-yr **functioning** (archetypes ΔELPD +59 on
-egf, co-informative with DSM-5), functional remission **27%→60%** across A=4 archetypes (biology corner worst);
-**the answer to the M2 K-question — operative K = none**: the continuous/archetype encoding dominates any hard
-tessellation (all K=2/3/4 predictive of functioning but add less). Honest copula shift: durable-trio-alone EIV
-no longer robust → the predictive object is the fuller archetype representation.
-**Representation benchmark** (`src/face/prognosis/repbench/`, [docs/M4_REPRESENTATION_BENCHMARK.md](docs/M4_REPRESENTATION_BENCHMARK.md)):
-vs the 143 raw indicators under a matched XGBoost, the 9-dim copula map is **sufficient for deterioration**
-(AUC tie) and **near-sufficient for recovery** (raw +0.04 AUC), and that residual is **within-factor
-compression** (97% of raw's recovery signal lives inside the 9 factors), not a missing axis — structurally
-faithful, parsimony for a sliver of resolution.
-**The native M4 pipeline (`scripts/40–48`) was retired 2026-06-24**; the shared kernels in
-`src/face/prognosis/` remain (consumed by the OOP M4 and the benchmark).
-**M5 treatment COMPLETE** (pending PI sign-off) — methods **[docs/TREATMENT_MODEL.md](docs/TREATMENT_MODEL.md)**,
-findings (paper-facing, read first) **[docs/TREATMENT_OOP_FINDINGS.md](docs/TREATMENT_OOP_FINDINGS.md)**. Treatment
-data was found **late** in the per-cohort thesaurus `TRAITEMENTS` tabs (never in the harmonized common set)
-and harmonized to common drug-class exposures (ATC[SZ] / class-string[DR] / lifetime-flag[BP]) — this
-**superseded an earlier wrong "data-blocked → tolerability coda"** conclusion. A proper causal pipeline
-(**overlap gate → propensity[severity+diagnosis+demographics+map] → doubly-robust EIV moderation
-[treat×durable-axis] + E-value**) asks whether the map *moderates* treatment response. *On observational
-treatment-as-usual, it does not reliably:* **lithium-in-BP** (cleanest, 100% overlap) is a **well-identified
-null**; **antipsychotic-BP** a **suggestive-but-unconfirmed** metabolic/inflammatory × functioning
-hypothesis (ATE E-value 1.79); **clozapine-SZ** is **channeled** (non-estimable). ATEs confounding-fragile
-(E 1.1–1.8). **M5 strengthens M4** — the metabolic→functioning forecast **survives** treatment adjustment
-(4.4% attenuation; *native — the copula-canonical carrier is the archetype A1, 4.7%, IPW-robust, see below*).
-The boundary is **earned, not assumed**; genuine treatment **selection** needs randomized/trial-arm data
-(a future **M5b**). Engine `src/face/treatment/` (shared kernels); native pipeline `scripts/50–57` **retired 2026-06-24**;
-hand-off `results/face/m5/{treatment_exposures, propensity_*, moderation, confounder}.{parquet,csv}`.
-**M5 reworked on the copula objects** (parallel OOP engine `src/face/treatment/treatment_model_oop.py`, wraps
-the kernels; driver `notebooks/run_treatment_model_oop.py`; canonical **[docs/TREATMENT_OOP_FINDINGS.md](docs/TREATMENT_OOP_FINDINGS.md)**;
-hand-off `results/face/treatment_oop/`). Moderation interacts treatment with **both** the durable trio (EIV)
-and the A=4 archetypes (fixed interaction). **Re-scoped 2026-06-24 as bounds-and-defends** (no randomization →
-selection is M5b): **(1) ceiling** — on observational TAU the map does not reliably moderate/select treatment:
-lithium-BP a **well-identified, MDE-bounded null** (E 1.06, interaction MDE ≈ 0.19 → could have seen an effect,
-didn't), antipsychotic-BP a confounded *average* effect (E 1.77≈native 1.79) with **no reliable moderation**
-(the two map encodings disagree on the driving axis — false-positive), clozapine-SZ non-decisive (underpowered,
-MDE ≈ 0.4–0.7); the map is *prognostic + descriptive, not prescriptive*. **(2) defends M4** — the **archetype
-carrier survives treatment adjustment** (4.7%, **IPW-robust** 3.9%; not a treatment proxy). **(3) describes**
-response heterogeneity (archetypes ΔELPD +20/+16/+10 **and** degeneracy-free ΔAUC +0.015/+0.028/+0.041,
-within-cohort de-confounded, BP/SZ). The native M5 pipeline (`scripts/50–57`) was **retired 2026-06-24** (canonical M5 = the OOP treatment engine; shared kernels in `src/face/treatment/` retained). **The full Gaussian-copula
-vertical M1→M2→M3→M4→M5 is reworked — synthesis [docs/COPULA_VERTICAL_FINDINGS.md](docs/COPULA_VERTICAL_FINDINGS.md).**
+The package is **`src/face/…`**; the canonical engine is the Gaussian-copula OOP fit
+(`src/face/models/bayesian/measurement_model_oop.py`), consuming `configs/prior_loading_matrix_v3.csv` and the
+**data/config layer** (`scripts/01_build_data` → `data/processed/`, `scripts/02_build_covariates`). Only the
+data/config layer + utilities remain as scripts; all milestone modeling lives in the OOP engines below.
+
+**M1 — the 8-factor map (complete, pending PI sign-off).** One global, missingness-aware Bayesian
+sparse-bifactor / ESEM model, mixed likelihoods, Gaussian-copula (rank-INT) continuous block, marginalized
+(Woodbury); fit at full N = 9,013, cohort-weighted (R-hat 1.03, 0 divergences; 88 indicators). **8 latent
+dimensions:** G (overall burden) ⊥ 7 specifics — cognition, **immunometabolic** (one biology factor:
+cardiometabolic + inflammatory markers), sleep, mania/activation, suicidality, developmental-risk, **substance**
+(pinned orthogonal — its cross-factor correlations are non-identifiable). The map is mostly simple-structure
+with **3 earned cross-loadings** (CTQ-37 → cognition, PSQI-latency → cognition, PSQI-daytime → cognition; all
+95% CI exclude 0): a **regularized ("Finnish") horseshoe** prior on every off-home specific↔specific loading is
+default-off (global shrinkage) / evidence-on (heavy-tailed local shrinkage) / magnitude-capped (slab), which
+protects the thin factors while letting small, clinically real cross-talk emerge — a continuous sparse-ESEM
+validation freed all off-home cells and ~83% shrank to ≈0, so the simple structure is *earned*. Findings (read
+first): **[docs/HORSESHOE_ESEM.md](docs/HORSESHOE_ESEM.md)** / **[docs/M1_FINDINGS.md](docs/M1_FINDINGS.md)**;
+loadings/Φ at `reports/copula_8factor_{loadings,phi}.csv`. Map location:
+`results/face/.../copula/weighted_8d/hs_s5_merged_xc`.
+
+**M2 — stratification (complete).** Methods **[docs/STRATIFICATION_MODEL.md](docs/STRATIFICATION_MODEL.md)**,
+findings **[docs/STRATA_OOP_FINDINGS.md](docs/STRATA_OOP_FINDINGS.md)**, atlas
+**[docs/STRATA_OOP_ATLAS.md](docs/STRATA_OOP_ATLAS.md)**. On the 8-dim coordinates (uncertainty-propagated,
+diagnosis = validation-only) the space is a **continuum, not biotypes** (silhouette 0.140 ≈ structureless null
+0.137 ± 0.002, z = 1.13 n.s.; HDBSCAN 0 clusters). Load-bearing objects = the continuous coordinates + a stable
+**A = 5 archetype simplex** (clean stability cliff at A = 6): **A0** activation/sleep, **A1** severe clean-biology,
+**A2** immunometabolic (the biology corner), **A3** trauma/suicidality, **A4** low-burden/well. Transdiagnostic
+(ARI 0.006 vs DSM-5), not-just-severity (driven by mania + suicidality ≫ G), tighter than DSM-5 at lower BIC.
+The soft tessellation is exported as a **nested K-family (2/3/4) with no privileged K** — the operative K is
+decided by M4/M5 incremental validity (answer: none). Engine `src/face/strata/strata_model_oop.py`; driver
+`notebooks/run_strata_model_oop.py`; hand-off
+`results/face/strata_oop/consolidate/{patient_strata.parquet, k_family_menu.csv}` (9,013 × 50) + coords in
+`results/face/strata_oop/coordinates/`.
+
+**M3 — temporal coherence (complete).** Methods **[docs/TEMPORAL_MODEL.md](docs/TEMPORAL_MODEL.md)**, findings
+**[docs/TEMPORAL_OOP_FINDINGS.md](docs/TEMPORAL_OOP_FINDINGS.md)**. Scoring V1/V2 under the **fixed** M1/M2 model
+(observed cells, uncertainty propagated, never re-discovered; V0 reproduced at r ≈ 0.99) shows the map + strata
+are temporally coherent: **G1 invariance** all 4/4 backbone axes invariant (G, cognition, immunometabolic φ
+0.987, sleep); **G3 trait/state** immunometabolic ICC 0.91 the single most durable axis, cognition 0.70 trait,
+severity trait-by-rank with population improvement, symptoms slide; **G4 persistence** archetype weights persist
+(Arm-B cosine median 0.81). Clinical logic: **stratify on the durable biology, monitor the moving symptoms.**
+Engine `src/face/temporal/temporal_model_oop.py`; driver `notebooks/run_temporal_model_oop.py`; hand-off
+`results/face/temporal_oop/` (its strata-independent IPW at `.../attrition/ipw_weights.parquet` feeds M4 +
+repbench).
+
+**M4 — prognosis (complete).** Methods **[docs/PROGNOSIS_MODEL.md](docs/PROGNOSIS_MODEL.md)**, findings + atlas
+**[docs/PROGNOSIS_OOP_FINDINGS.md](docs/PROGNOSIS_OOP_FINDINGS.md)**. On the fixed M1/M2/M3 objects, an
+errors-in-variables Bayesian GLM tests whether a baseline coordinate/stratum predicts a 2-year outcome
+incrementally beyond DSM-5 + severity + baseline outcome. The **A = 5 archetypes predict 2-year functioning**
+(ΔELPD +62.8 held-out; IPW-robust +54.4; permutation-null; **co-informative with DSM-5**; course-dependent,
+BP-led) but **not severity** (autoregression-saturated). **Operative K = none** (archetypes dominate every
+tessellation). Prognostic atlas: 2-yr functional remission **17% → 52%**, the immunometabolic corner (A2) the
+worst-prognosis pole, within-diagnosis (composition explains ~4%). Honest: small individual-binary lift (AUC
++0.010 — the value is group-level stratification + continuous forecasting). **Representation benchmark**
+(`src/face/prognosis/repbench/`, [docs/M4_REPRESENTATION_BENCHMARK.md](docs/M4_REPRESENTATION_BENCHMARK.md)): vs
+raw indicators under a matched XGBoost the map is **sufficient for deterioration** (AUC tie) and
+**near-sufficient for recovery** (raw +0.04 AUC; 92–97% within-factor compression — residual is item-level, not
+a missing axis). Engine `src/face/prognosis/prognosis_model_oop.py`; driver
+`notebooks/run_prognosis_model_oop.py`; hand-off `results/face/prognosis_oop/`.
+
+**M5 — treatment (complete, bounds-and-defends).** Methods **[docs/TREATMENT_MODEL.md](docs/TREATMENT_MODEL.md)**,
+findings **[docs/TREATMENT_OOP_FINDINGS.md](docs/TREATMENT_OOP_FINDINGS.md)**. Treatment data live in the
+per-cohort thesaurus `TRAITEMENTS` tabs, harmonized to common drug-class exposures (ATC[SZ] / class-string[DR] /
+lifetime-flag[BP]). A causal pipeline (**overlap gate → propensity[severity+diagnosis+demographics+map] →
+doubly-robust EIV moderation [treat×durable-axis] + A=5 archetype interaction + E-value**) asks whether the map
+*moderates / selects* treatment. **(1) Ceiling** — on observational TAU it does not reliably: lithium-BP a
+well-identified MDE-bounded null (E 1.20–1.28, interaction MDE ≈ 0.20), antipsychotic-BP a confounded average
+effect (E 1.80) with suggestive-but-unconfirmed moderation, clozapine-SZ underpowered; the map is **prognostic +
+descriptive, not prescriptive**. **(2) Defends M4** — the prognostic carrier **survives treatment adjustment**:
+the **A2 immunometabolic archetype corner** (attenuation 7.7% / 6.4% IPW) and the immunometabolic durable axis
+(6.4% / 4.1%); not a treatment proxy. **(3) Describes course** — the immunometabolic corner faces the hardest
+2-year course (resistance 44%, side-effects 25% vs the well pole's 20% / 11%), discrimination clears for
+response/side-effects (archetype ΔAUC +0.012 / +0.034 / +0.042). Genuine treatment **selection** needs
+randomized/trial-arm data (a future **M5b**). Engine `src/face/treatment/treatment_model_oop.py`; driver
+`notebooks/run_treatment_model_oop.py`; hand-off `results/face/treatment_oop/`. **Full vertical synthesis:
+[docs/COPULA_VERTICAL_FINDINGS.md](docs/COPULA_VERTICAL_FINDINGS.md).**
+
 **Open follow-ups:** FondaMental treatment-data (RCT/prescription) check for M5b; a DR-MARS harmonization fix.

@@ -1,7 +1,13 @@
 # Certification tiers (resolves P0-01)
 
+> **Map of record (read first).** The measurement map is the **8-factor immunometabolic map** (G + 7 specifics;
+> immunometabolic a single biology factor; substance orthogonal; 3 earned cross-loadings) with **A = 5
+> archetypes** — converged at full N = 9,013 (R-hat 1.03, 0 divergences); canonical
+> [`HORSESHOE_ESEM.md`](HORSESHOE_ESEM.md). The tiers below are a *wording convention* for how strictly the
+> word "certified" may be used; they were drawn up on the staged mixed fit and still govern usage.
+
 The word **"certified"** was overloaded — applied both to the full-N continuous backbone (which passes the
-strict gate) and to the 9-dim mixed block (which does not). Use these tiers consistently across the
+strict gate) and to the joint mixed block (which does not). Use these tiers consistently across the
 manuscript, README, docs, and generated reports.
 
 | Tier | What | Gate met | Approved wording |

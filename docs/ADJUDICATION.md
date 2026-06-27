@@ -1,5 +1,13 @@
 # ADJUDICATION — the M1 empirical dimension atlas (§6)
 
+> **Map of record (read first).** The measurement map is the **8-factor immunometabolic map**: G (overall
+> burden) + 7 specific axes — cognition, **immunometabolic** (a single biology factor: cardiometabolic +
+> inflammatory markers together), sleep, mania/activation, suicidality, developmental-risk, and **substance**
+> (orthogonal). Otherwise simple-structure with **3 earned cross-loadings** into cognition. The strata reading
+> lens is **A = 5 archetypes**. Canonical: [`HORSESHOE_ESEM.md`](HORSESHOE_ESEM.md). The per-candidate
+> adjudication below stands as written; where it records the biology candidate as a "split," that
+> cardiometabolic + inflammatory variance is carried by the single **immunometabolic** factor.
+
 > The formal verdict on each candidate construct, synthesizing the whole M1 evidence chain
 > (confirmation §5 · invariance §8 · S5 certification §4 · correlated-G §3.1 · robustness §8 ·
 > scoring §7). Methods of record: [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md); **findings + discussion:
@@ -9,10 +17,11 @@
 ## The empirical map
 
 On the harmonized 3-cohort FACE **V0** baseline (N = 9,013), the hybrid Bayesian sparse bifactor/ESEM
-yields a **9-dimension transdiagnostic map**: a general factor **G (functional burden)** + eight specific
-axes — **cognition, metabolic, inflammatory, sleep, developmental-risk, suicidality, mania, substance** —
-weakly correlated, each estimated from observed cells only (no imputation). Five are continuous-anchored
-(marginalized: cognition/metabolic/inflammatory/sleep/mania); three carry non-Gaussian indicators
+yields an **8-factor transdiagnostic map**: a general factor **G (overall burden)** + 7 specific
+axes — **cognition, immunometabolic, sleep, mania/activation, suicidality, developmental-risk, substance** —
+weakly correlated, each estimated from observed cells only (no imputation). The biology block
+(cardiometabolic + inflammatory markers) is the single **immunometabolic** axis; continuous-anchored axes are
+marginalized (cognition/immunometabolic/sleep/mania), and three carry non-Gaussian indicators
 (explicit latents: suicidality, developmental, substance) alongside G.
 
 ## Per-candidate verdict
