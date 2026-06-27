@@ -66,15 +66,17 @@ def test_propensity_overlap_iptw_smoke():
 def test_projector_verdict_logic():
     mod = pd.DataFrame([
         {"question": "lithium_bp", "mode": "active_comparator", "outcome": "functioning",
-         "representation": "durable", "n": 1000, "ate": 0.1, "e_value": 1.3,
+         "representation": "durable", "n": 1000, "ate": 0.1, "ate_lo": -0.05, "ate_hi": 0.25,
+         "ate_se": 0.08, "int_ses": "0.1;0.1", "e_value": 1.3,
          "moderation_d_elpd": 1.0, "moderation_se": 3.0, "moderation_any_axis": False},   # null
         {"question": "antipsychotic_bp", "mode": "active_comparator", "outcome": "functioning",
-         "representation": "archetypes", "n": 900, "ate": 0.2, "e_value": 1.8,
+         "representation": "archetypes", "n": 900, "ate": 0.2, "ate_lo": 0.02, "ate_hi": 0.38,
+         "ate_se": 0.09, "int_ses": "0.1;0.1;0.1;0.1", "e_value": 1.8,
          "moderation_d_elpd": 12.0, "moderation_se": 3.0, "moderation_any_axis": True},   # moderates
     ])
     s = TreatmentProjector().summary({"moderation": mod})
     v = dict(zip(s["question"], s["moderation_verdict"], strict=False))
-    assert v["lithium_bp"] == "no reliable moderation"
+    assert "null" in v["lithium_bp"]                       # bounded null (MDE re-scope verdict string)
     assert v["antipsychotic_bp"].startswith("moderates")
     # NaN ΔELPD but a credible interaction HDI -> suggestive (HDI only)
     mod_na = mod.copy(); mod_na["moderation_d_elpd"] = np.nan; mod_na["moderation_se"] = np.nan

@@ -588,13 +588,14 @@ class TreatmentAtlas:
 
         fr = frame.copy()
         fr["corner_id"] = fr["arch_dominant"].astype("int64")
+        nA = int(fr["corner_id"].max()) + 1                                  # A=5 on the 8-factor map (dynamic)
         atlas_rows, gate_rows = [], []
         for ep in self.ENDPOINTS:
             if ep not in fr.columns:
                 continue
             d = fr.dropna(subset=[ep]).copy(); d["y"] = d[ep].astype("int64")
             present = [c for c in ("bp", "sz", "dr") if (d["cohort"] == c).sum() >= 30]
-            for a in range(4):                                               # per-corner rates + Wilson CIs
+            for a in range(nA):                                              # per-corner rates + Wilson CIs
                 for coh in ["pooled", *present]:
                     sub = d[d.corner_id == a] if coh == "pooled" else d[(d.corner_id == a) & (d["cohort"] == coh)]
                     n, k = len(sub), int(sub["y"].sum())
@@ -867,17 +868,19 @@ class TreatmentVisualizer:
         import matplotlib.pyplot as plt
         eps = [("ep_resistance", "treatment resistance"), ("ep_response", "CGI response"),
                ("ep_side_effects", "significant side-effects")]
-        corners = ["A0 biological", "A1 low-burden", "A2 severe·low-bio", "A3 symptom"]
-        colors = ["#B42318", "#1a9850", "#B7791F", "#6B4FA1"]
+        # A=5 archetype corners on the 8-factor map (the biology corner is A2 immunometabolic — see M2 atlas)
+        corners = ["A0 activation", "A1 severe·clean-bio", "A2 immunometabolic", "A3 trauma", "A4 well"]
+        colors = ["#6B4FA1", "#B7791F", "#B42318", "#0F766E", "#1a9850"]
+        nA = len(corners)
         g = atlas[atlas.cohort == "pooled"]
         gate = gates.set_index("endpoint") if gates is not None and len(gates) else None
         fig, axes = plt.subplots(1, 3, figsize=(12.6, 4.2))
         for ax, (ep, label) in zip(axes, eps, strict=False):
-            sub = g[g.endpoint == ep].set_index("archetype").reindex(range(4))
+            sub = g[g.endpoint == ep].set_index("archetype").reindex(range(nA))
             rates = sub["rate"].to_numpy()
             yerr = np.vstack([rates - sub["lo"].to_numpy(), sub["hi"].to_numpy() - rates])
-            ax.bar(range(4), rates, color=colors, yerr=yerr, capsize=3, error_kw={"lw": 0.8})
-            ax.set_xticks(range(4)); ax.set_xticklabels([c.split()[0] for c in corners], fontsize=9)
+            ax.bar(range(nA), rates, color=colors, yerr=yerr, capsize=3, error_kw={"lw": 0.8})
+            ax.set_xticks(range(nA)); ax.set_xticklabels([c.split()[0] for c in corners], fontsize=9)
             ax.set_ylim(0, min(1.0, np.nanmax(sub["hi"].to_numpy()) + 0.12))
             ax.set_title(label, fontsize=10.5, fontweight="bold")
             if ax is axes[0]:
@@ -886,7 +889,7 @@ class TreatmentVisualizer:
                 pp = gate.loc[ep, "delta_auc_perm_p"]; sp = gate.loc[ep, "corner_beyond_sev_subst_demo_p"]
                 ax.annotate(f"beyond sev+subst p={sp:.0e}\nΔAUC perm p={pp:.2f}", (0.5, 0.97),
                             xycoords="axes fraction", ha="center", va="top", fontsize=7.5, color="#5B6573")
-        fig.suptitle("Treatment-course atlas — the biological corner (A0) carries the difficult course "
+        fig.suptitle("Treatment-course atlas — the immunometabolic corner (A2) carries the difficult course "
                      "(monitoring, not prescribing)", y=1.02, fontsize=11.5, fontweight="bold", color="#1E366B")
         fig.tight_layout()
         out = self.config.figure_dir / filename
