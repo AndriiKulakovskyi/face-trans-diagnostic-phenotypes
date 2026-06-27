@@ -23,7 +23,7 @@ is proven.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import numpy as np
@@ -147,7 +147,7 @@ class TemporalConfig:
     proj_chains: int = 2
     smoke: bool = False
 
-    def with_smoke_defaults(self) -> "TemporalConfig":
+    def with_smoke_defaults(self) -> TemporalConfig:
         return replace(self, proj_draws=80, proj_tune=80, proj_chains=2, n_keep_draws=40, smoke=True)
 
     @property
@@ -200,6 +200,7 @@ class TemporalData:
         if self._mp is not None:
             return self._mp, self._idata
         import arviz as az
+
         from face.models.bayesian.measurement_model_oop import (
             DEFAULT_EXPLICIT_FACTORS,
             MeasurementConfig,
@@ -382,6 +383,7 @@ class CopulaPanelScorer:
         """Assemble the full 8-dim coordinates (+ [n_keep, N, 8] draws) for a follow-up visit: continuous 5
         axes (conditional-Gaussian) + explicit 3 axes (projection), on the copula scale."""
         from scipy.stats import norm
+
         from face.strata.scoring import explicit_nobs
         mp, _ = self.data.copula_mixed()
         cont = self.score_continuous(visit)
@@ -493,7 +495,11 @@ class InvarianceGate:
 
     def run(self, *, seeds=(20260605, 20260606)) -> dict:
         import face.models.bayesian.continuous_core as cc
-        from face.temporal.invariance import axis_license, congruence_over_visits, fit_visit_backbone
+        from face.temporal.invariance import (
+            axis_license,
+            congruence_over_visits,
+            fit_visit_backbone,
+        )
         # 8-factor invariance backbone: the S1 continuous backbone with the two biology factors merged
         # (G + cognition + immunometabolic + sleep). Point prepare() at the folded matrix so it builds the
         # immunometabolic axis (the module-global MATRIX is the only knob; restored in finally).
@@ -541,6 +547,7 @@ class PersistenceModel:
 
     def run(self, panel: pd.DataFrame, trait_state: pd.DataFrame | None = None) -> dict:
         from scipy.stats import spearmanr
+
         from face.temporal.persistence import (
             membership_persistence,
             reliable_change_rate,

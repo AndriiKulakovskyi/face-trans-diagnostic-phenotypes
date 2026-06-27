@@ -45,9 +45,12 @@ for m in [n for n in sys.modules if n == "face" or n.startswith("face.")]:
     if f and SRC not in Path(f).resolve().parents:
         del sys.modules[m]
 
-import arviz as az  # noqa: E402
 from face.models.bayesian.measurement_model_oop import (  # noqa: E402
-    S1_FACTORS, MeasurementConfig, MeasurementDataset, StageDefinition, StageRunner,
+    S1_FACTORS,
+    MeasurementConfig,
+    MeasurementDataset,
+    StageDefinition,
+    StageRunner,
 )
 
 MERGED_MATRIX = REPO / "configs" / "prior_loading_matrix_v3_biomerge.csv"
@@ -157,7 +160,7 @@ def main():
     winner = "split (TWO factors)" if d_sum > 0 else "merge (ONE factor)"
     print(f"\n[verdict] Δelpd (split - merge) = {d_sum:.1f} ± {d_se:.1f} (SE)", flush=True)
     print(f"[verdict] {abs(d_sum):.1f} / {d_se:.1f} = {abs(d_sum)/d_se:.1f} SE favouring {winner}", flush=True)
-    print(f"[verdict] decisive if |Δ|/SE > ~2-3; otherwise the simpler ONE-factor model is preferred (parsimony)",
+    print("[verdict] decisive if |Δ|/SE > ~2-3; otherwise the simpler ONE-factor model is preferred (parsimony)",
           flush=True)
 
     out = base_cfg.output_dir / f"biomerge_verdict_{tag}.json"

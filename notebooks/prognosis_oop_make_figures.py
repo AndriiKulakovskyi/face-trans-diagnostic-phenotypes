@@ -23,7 +23,11 @@ SRC = REPO / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from face.prognosis.prognosis_model_oop import PrognosisConfig, PrognosisRunner, PrognosisVisualizer  # noqa: E402
+from face.prognosis.prognosis_model_oop import (  # noqa: E402
+    PrognosisConfig,
+    PrognosisRunner,
+    PrognosisVisualizer,
+)
 
 
 def main() -> None:

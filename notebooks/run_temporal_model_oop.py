@@ -38,7 +38,11 @@ if loaded is not None and (loaded_file is None or SRC not in Path(loaded_file).r
     for name in [n for n in list(sys.modules) if n == "face" or n.startswith("face.")]:
         del sys.modules[name]
 
-from face.temporal.temporal_model_oop import TemporalConfig, TemporalRunner, TemporalVisualizer  # noqa: E402
+from face.temporal.temporal_model_oop import (  # noqa: E402
+    TemporalConfig,
+    TemporalRunner,
+    TemporalVisualizer,
+)
 
 
 def parse_args() -> argparse.Namespace:

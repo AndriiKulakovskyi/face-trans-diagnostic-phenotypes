@@ -112,11 +112,11 @@ class StrataConfig:
     smoke: bool = False
 
     # ---- convenience factories (mirroring MeasurementConfig.with_*) ----
-    def with_full_si(self) -> "StrataConfig":
+    def with_full_si(self) -> StrataConfig:
         """Use the full per-patient covariance S_i [N,9,9] (the faithfulness arm) instead of diagonal."""
         return replace(self, use_full_Si=True)
 
-    def with_smoke_defaults(self) -> "StrataConfig":
+    def with_smoke_defaults(self) -> StrataConfig:
         """Fast wiring config: tiny sweeps and few draws (validates the path, not the science)."""
         return replace(self, smoke=True)
 

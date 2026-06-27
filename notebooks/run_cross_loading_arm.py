@@ -22,8 +22,6 @@ import time
 from dataclasses import replace
 from pathlib import Path
 
-import numpy as np
-
 
 def _find_repo_root(start: Path) -> Path:
     for candidate in (start, *start.parents):

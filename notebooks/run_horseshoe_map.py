@@ -20,7 +20,6 @@ Ladder (each rung warm-starts the next):
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 import time
 from dataclasses import replace
@@ -44,7 +43,10 @@ for m in [n for n in sys.modules if n == "face" or n.startswith("face.")]:
         del sys.modules[m]
 
 from face.models.bayesian.measurement_model_oop import (  # noqa: E402
-    DEFAULT_EXPLICIT_FACTORS, MeasurementConfig, StageDefinition, StageRunner,
+    DEFAULT_EXPLICIT_FACTORS,
+    MeasurementConfig,
+    StageDefinition,
+    StageRunner,
 )
 
 MERGED_MATRIX = REPO / "configs" / "prior_loading_matrix_v3_biomerge.csv"

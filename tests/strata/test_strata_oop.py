@@ -5,7 +5,6 @@ from dataclasses import replace
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from face.strata.strata_model_oop import (
     CANON,
@@ -16,9 +15,8 @@ from face.strata.strata_model_oop import (
     StrataProjector,
     StrataRunner,
     StructureGate,
-    UsefulnessValidator,
-    _config_sig,
     _confidence_tier,
+    _config_sig,
     _normalized_entropy,
 )
 from face.strata.validation import assignment_usefulness, choose_K_operational

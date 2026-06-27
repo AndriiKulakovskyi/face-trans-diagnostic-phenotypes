@@ -44,7 +44,7 @@ from __future__ import annotations
 
 import json
 import warnings
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import numpy as np
@@ -182,7 +182,7 @@ class PrognosisConfig:
     target_accept: float = 0.95
     smoke: bool = False
 
-    def with_smoke_defaults(self) -> "PrognosisConfig":
+    def with_smoke_defaults(self) -> PrognosisConfig:
         """Fast wiring config: tiny draws / 2 chains — validates the path, not the science."""
         return replace(self, draws=120, tune=120, chains=2, target_accept=0.9, smoke=True)
 
@@ -203,7 +203,7 @@ class PrognosisConfig:
                     target_accept=self.target_accept)
 
     @property
-    def stage_plan(self) -> list["PrognosisStage"]:
+    def stage_plan(self) -> list[PrognosisStage]:
         return [
             PrognosisStage("frame", "frame"),
             PrognosisStage("reference", "reference"),
@@ -506,9 +506,6 @@ class ClinicalValue:
         self.config = config or PrognosisConfig()
 
     def build(self, frame, specs, *, horizon):
-        from sklearn.linear_model import LogisticRegression
-        from sklearn.metrics import roc_auc_score
-        from sklearn.model_selection import StratifiedKFold
 
         rows = []
         a_cols = arch_cols(frame)

@@ -23,7 +23,11 @@ SRC = REPO / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from face.treatment.treatment_model_oop import TreatmentConfig, TreatmentRunner, TreatmentVisualizer  # noqa: E402
+from face.treatment.treatment_model_oop import (  # noqa: E402
+    TreatmentConfig,
+    TreatmentRunner,
+    TreatmentVisualizer,
+)
 
 
 def main() -> None:

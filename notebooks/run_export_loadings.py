@@ -24,8 +24,6 @@ import sys
 from dataclasses import replace
 from pathlib import Path
 
-import numpy as np
-import pandas as pd  # type: ignore[reportMissingImports]
 import xarray as xr
 
 

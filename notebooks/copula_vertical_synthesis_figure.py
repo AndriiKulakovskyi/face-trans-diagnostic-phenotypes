@@ -9,10 +9,8 @@ findings doc can cite them verbatim.
 """
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 REPO = next(p for p in Path(__file__).resolve().parents if (p / "pyproject.toml").exists())
