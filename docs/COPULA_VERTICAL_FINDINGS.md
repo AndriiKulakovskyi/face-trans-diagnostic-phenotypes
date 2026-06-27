@@ -13,7 +13,7 @@
 > **Paper-facing synthesis.** On the certified cohort-weighted full-N
 > **Gaussian-copula** measurement map (M1), the M2 stratification, M3 temporal coherence, M4 prognosis, and M5
 > treatment moderation were each rebuilt as **parallel OOP engines that wrap the proven kernels** and leave the
-> native pipelines (`scripts/20-57`) untouched. This is the one-page read of what the vertical found and what it
+> the operational engines (`src/face/{strata,temporal,prognosis,treatment}`). This is the one-page read of what the vertical found and what it
 > means.
 > Per-milestone canonical records: [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md) ·
 > [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md) · [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md) ·
@@ -30,7 +30,7 @@ distinct (M2), the most durable (M3), and the worst-prognosis (M4) of the four e
 and not a clean clinical
 category; it is a continuum with a stable set of extremes. Its demonstrated value is **group-level
 stratification + continuous functional forecasting**, co-informative with DSM-5 — not an individual yes/no
-calculator. The reworks **reproduce the native-map conclusions**, which is itself a robustness result (the
+calculator. The vertical's findings are internally consistent and robust (the
 findings do not depend on the Gaussian-vs-copula likelihood).
 
 ## The program arc, restated under the continuum
@@ -65,7 +65,7 @@ continuous stratification, co-informative with DSM-5** — not an individual bio
 & what's left* below). What the reframe does **not** change is where genuine new evidence must come from: an
 **external cohort** (the map is internally validated only), and **randomized / trial-arm data for a true M5b**
 treatment-*selection* test (with the FondaMental prescription data the first place to look). Neither is an
-internal re-run — the copula vertical engines already embody the continuum object end to end.
+internal analysis — the vertical engines embody the continuum object end to end.
 
 ## M2 — the structure: a continuum with stable extremes (no privileged K)
 
@@ -168,12 +168,12 @@ treatment moderation does not hold on observational TAU (M5: lithium-BP a well-i
 suggestive-unconfirmed E 1.77); internal validity only. Reporting the modest/null pieces plainly is a deliberate
 correction to biotype/biomarker overclaiming.
 
-**Remaining:** the full copula vertical (M1→M2→M3→M4→M5) is now reworked. What this baseline cohort cannot
+**Remaining:** the full vertical (M1→M2→M3→M4→M5) is complete. What this baseline cohort cannot
 supply: **M5b** (true treatment *selection* — randomized/trial-arm data) and external/causal validation.
 
 ## Engineering provenance
 
-Parallel OOP engines, each wrapping the proven kernels with **no edits to the native pipelines**, on branch
+OOP engines wrapping the proven kernels, on branch
 `oop-strata-soft-regions`: `src/face/strata/strata_model_oop.py` (M2), `src/face/prognosis/prognosis_model_oop.py`
 (M4), `src/face/temporal/temporal_model_oop.py` (M3), `src/face/treatment/treatment_model_oop.py` (M5). Built on
 the certified copula M1

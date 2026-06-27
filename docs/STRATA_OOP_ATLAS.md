@@ -264,7 +264,7 @@ but continuous, density-gapless, orthogonal dimension.
 * **Transdiagnostic:** no view re-encodes diagnosis (ARI ≈ 0); the structure cuts across BP/SZ/DR and the
   DSM-5 subtypes.
 * **Internal/baseline only — and this is *how* the operative K should be chosen.** Whether the regions /
-  archetypes *predict* 2-year course or treatment response is the **M3/M4 rerun** on this object, not claimed
+  archetypes *predict* 2-year course or treatment response is the **M3/M4 analysis** on this object, not claimed
   here. The biology corner (A2) and the K = 3/4 biology gradient are the natural candidates to carry
   durable/prognostic signal; M4 selects the operative K from the family by **incremental validity over DSM-5 +
   severity**, which is the non-circular way to honour "choose K for actionability" (an internal parsimony

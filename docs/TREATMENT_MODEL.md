@@ -8,12 +8,12 @@
 > **8-factor rebuild note (2026-06-27; pending PI sign-off).** The M5 method is unchanged, but it now runs on the
 > **8-factor** M1–M4 objects (immunometabolic merge + substance orthogonal; **A=5** archetypes). `DURABLE =
 > (cognition, immunometabolic)` (via prognosis) + dynamic `arch_cols` carry the change; the only edits were
-> dynamic archetype-count fixes in the course atlas. Result **replays the bounds-and-defends in full**:
+> dynamic archetype-count fixes in the course atlas. The result is **bounds-and-defends**:
 > **ceiling** — lithium-BP a well-identified **bounded null** (E 1.20–1.28, interaction MDE ≈ 0.20),
-> antipsychotic-BP a confounded average effect (E **1.80** ≈ native 1.79) with **suggestive-but-unconfirmed**
+> antipsychotic-BP a confounded average effect (E **1.80**) with **suggestive-but-unconfirmed**
 > moderation, clozapine-SZ underpowered; **defends M4** — the carrier survives treatment adjustment, now in
 > *both* representations (the **A2 immunometabolic archetype corner** 7.7%/6.4% IPW *and* the immunometabolic
-> durable axis 6.4%/4.1% — stronger than the 9-factor map); **describes** course heterogeneity (archetype ΔAUC
+> durable axis 6.4%/4.1%); **describes** course heterogeneity (archetype ΔAUC
 > +0.012/+0.034/+0.042; the immunometabolic corner carries ~2× resistance/side-effect risk; resistance
 > AUC-marginal p 0.205). Findings: [`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md).
 
@@ -97,7 +97,7 @@ The crux. A naive `outcome ~ treatment × stratum` interaction is confounded by 
 Reuses the M4 stack — the EIV Bayesian GLM (`face.prognosis.glm`), nested ΔELPD (`compare`), clinical
 metrics (`clinical_value`), IPW — adding `face.treatment.medications` (the harmonization layer) and a
 propensity model. The interaction model: `g(E[Y]) = confounders + βT·treat + stratum + βTS·(treat×stratum)`,
-with the map coordinates entering EIV. Per-cohort fits (the questions are within-cohort). The copula rework
+with the map coordinates entering EIV. Per-cohort fits (the questions are within-cohort). The OOP engine
 (`src/face/treatment/treatment_model_oop.py`) adds the re-scope machinery: `moderation.mde` /
 `moderation.sd_from_eti` (the MDE/power guard, off the already-fitted posteriors — no refit), an
 IPW-weighted variant of the confounder-survival stage, and a degeneracy-free **held-out ΔAUC** heterogeneity
