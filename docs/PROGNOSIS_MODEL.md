@@ -14,9 +14,10 @@
 > **+62.8** beyond DSM-5+severity+baseline, was +59; IPW-robust +54.4, permutation-null, co-informative with
 > DSM-5, course-dependent/BP-led), **operative K = none**, **not** severity, and the archetype atlas is a
 > **17→52%** functional-remission gradient with the **immunometabolic biology corner (A2) worst**. The
-> durable-*pair*-alone EIV stays ambiguous (the archetype representation is the carrier). Two sub-analyses are
-> **pending the 8-factor re-run**: the raw-vs-map representation benchmark (xgboost env segfault) and the formal
-> within-cohort de-confounding notebook. Findings: [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
+> durable-*pair*-alone EIV stays ambiguous (the archetype representation is the carrier). Both follow-up
+> sub-analyses also re-ran on the 8-factor map: the within-cohort de-confounding (composition only ~4%, OR 6.3,
+> BP-carried) and the raw-vs-map representation benchmark (sufficient for deterioration, ≥92% within-factor for
+> recovery; xgboost under `OMP_NUM_THREADS=1`). Findings: [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
 
 ## 1. Estimand and invariants
 

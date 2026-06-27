@@ -73,13 +73,24 @@ the merged-biology corner is now an even sharper low-prognosis pole.)
 ## Result 4b — the gradient is *within-diagnosis*, not a cohort-composition artefact
 
 The corners have different cohort mixes and the cohorts have very different remission floors (BP/DR open-course,
-SZ low-floor), so a pooled gradient must be checked within cohort. **Within every cohort the rank holds** (well
-pole → immunometabolic corner): **BP 73% → 27%, DR 72% → 31%, SZ 25% → 9%.** The rigorous evidence is the
-incremental ΔELPD itself — it conditions on DSM-5 (cohort), so the **+62.8** is already a within-diagnosis
-predictive value; and the leave-one-cohort-out (Result 6) shows the *increment* concentrates in the open-course
-cohorts (drop-BP collapses it). *(The formal direct-standardization + logistic-decomposition de-confounding
-notebook `notebooks/within_cohort/` is pending re-run on the 8-factor map; the per-cohort atlas above and the
-LOCO already establish the within-diagnosis claim.)*
+SZ low-floor), so a pooled gradient must be checked within cohort. De-confounding it three ways
+(`notebooks/within_cohort/within_cohort_breakdown.py` → `results/face/prognosis_oop/within_cohort/`):
+
+1. **Within every cohort the rank holds** (immunometabolic corner → well pole): **BP 27% → 73%, DR 31% → 72%,
+   SZ 9% → 25%.**
+2. **Direct standardization** to a common cohort mix barely moves the gradient (0.23 → 0.62 vs raw 0.17 → 0.52):
+   **composition explains only ~4%** of the pooled spread — a genuine within-diagnosis effect (stronger than the
+   9-factor map's 6%).
+3. **Logistic decomposition** `remission ~ corner + cohort (+interaction)`: the cohort-adjusted best-vs-worst
+   corner effect is large (**OR ≈ 6.3**), cohort is the dominant axis (SZ-vs-BP **OR 0.15**), and the
+   **corner×cohort interaction is NS** (p = 0.79) — the relative corner effect is cohort-homogeneous; the
+   absolute spread is wider in BP only because SZ sits on a low floor.
+
+**Within-cohort incremental validity** (does the corner add beyond baseline functioning + severity, inside each
+cohort?): **BP yes** (LR χ² = 59.7, p = 3e-12), **SZ no** (p = 0.25), **DR no** (p = 0.22, underpowered). This
+is *why* the LOCO ΔELPD is BP-carried — the predictive increment concentrates in the open-course cohorts that
+have room above the floor, even though the relative gradient is present everywhere. Figure
+`docs/figures/prognosis_oop/within_cohort_gradient.png`.
 
 ## Result 5 — group-level forecasting, not a large individual-binary boost (honest)
 
@@ -104,14 +115,27 @@ The clean ⊥G `+archetypesB` behaves identically (base +33.5 / IPW +27.7 predic
 the archetype functioning forecast is **real (permutation), IPW-robust, and BP-driven** (the episodic,
 open-course cohort) — the copula M4 robustness story, replayed.
 
-## Result 7 — the map as a *sufficient representation* (raw-vs-map benchmark) — PENDING 8-factor re-run
+## Result 7 — the map is a *sufficient representation* (raw-vs-map benchmark) — re-run on the 8-factor map
 
-The representation benchmark (one fixed XGBoost; 9-dim map vs 143 raw indicators) found the 9-factor copula map
-**sufficient for deterioration** (AUC tie) and **near-sufficient for recovery** (raw +0.04 AUC, 97% within-factor
-compression). The harness is repointed to the **8-factor** schema (`repbench/__init__.py` CANON + ARCH = A5;
-phase-0 schema tests pass), but the XGBoost benchmark **has not been re-run on the 8-factor map** (an xgboost
-segfault on this Mac environment is being worked around). **The 9-factor benchmark stands as prior evidence; the
-8-factor re-run is the one open M4 sub-analysis.** Methods: [`M4_REPRESENTATION_BENCHMARK.md`](M4_REPRESENTATION_BENCHMARK.md).
+One fixed regularised XGBoost, identical CV folds, three representations (REF = DSM-5+severity+baseline GAF;
+REF+map = 8 coords + uncertainty + A=5 archetypes; REF+raw = raw indicators), predicting recovery
+(impaired→GAF≥71) and deterioration (GAF drop ≥10), V1+V2 pooled. The 8-factor map **replays the 9-factor
+sufficiency verdict** (`results/face/m4_repbench/`; xgboost run under `OMP_NUM_THREADS=1` to dodge the macOS
+libomp segfault):
+
+- **Deterioration: map = raw** (AUC raw−map +0.009 V1 / +0.005 V2 — **tie → sufficient**).
+- **Recovery: raw edges the map by ΔAUC ≈ +0.04** (V1 +0.040, V2 +0.039 — "raw-adds", replicated across
+  horizons), **but the gap is within-factor compression, not a missing axis**: TreeSHAP puts **92% (V1) / 97%
+  (V2)** of raw's recovery-predictive mass *inside* the 8 modelled factors (top drivers CRP/BMI →
+  immunometabolic, CVLT/WAIS → cognition, Fagerström → substance, CSM → sleep); the only off-map residual is the
+  depression/anxiety window items (STAI/MADRS/QIDS).
+
+**Calibrated claim (unchanged from the 9-factor map):** the 8-factor copula map is a **sufficient** summary for
+deterioration and a **near-sufficient, structurally faithful** summary for recovery whose ≈0.04-AUC residual is
+item-level compression (≥92% inside its own factors) — parsimony + interpretability for a sliver of resolution.
+Methods: [`M4_REPRESENTATION_BENCHMARK.md`](M4_REPRESENTATION_BENCHMARK.md). *(NB the SHAP `home_factor` labels
+still carry the pre-merge metabolic/inflammatory names — cosmetic; both fold into immunometabolic and the
+within-factor share is unaffected.)*
 
 ## Honest caveats
 
@@ -123,8 +147,6 @@ segfault on this Mac environment is being worked around). **The 9-factor benchma
 * **Internal incremental-association only** — not causal, not external; outcomes are re-administered scales, not
   incident events; 2-year horizon; complete-case (IPW is a sensitivity, not the headline).
 * **Severity is autoregression-saturated** — by design.
-* **Result 7 (raw-vs-map) and the formal within-cohort de-confounding (4b) are not yet re-run on the 8-factor
-  map** — flagged above.
 
 ## Hand-off
 
@@ -137,6 +159,7 @@ segfault on this Mac environment is being worked around). **The 9-factor benchma
 
 **Verdict: the 8-factor map predicts 2-year functioning** — the A = 5 archetypes add ΔELPD +62.8 beyond
 DSM-5 + severity + baseline (IPW-robust, permutation-null, co-informative with DSM-5, course-dependent /
-BP-led), with a 17→52% transdiagnostic functional-remission gradient whose worst pole is the immunometabolic
-biology corner. Operative K = none. Not severity. Replays the copula M4 on the better map (+ the repbench /
-within-cohort re-runs pending).
+BP-led), with a 17→52% transdiagnostic functional-remission gradient (within-diagnosis: composition only ~4%)
+whose worst pole is the immunometabolic biology corner. Operative K = none. Not severity. The map is a
+sufficient representation for deterioration and near-sufficient (≥92% within-factor) for recovery. Replays the
+copula M4 on the better map, in full.
