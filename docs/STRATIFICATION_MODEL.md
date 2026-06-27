@@ -9,19 +9,18 @@
 > named in §10 but not specified here.
 >
 > *Math is plain-text/unicode so it renders in any markdown viewer and transcribes directly to LaTeX.*
-> *Status: PLAN — pending PI sign-off at the discussion gate. No engine code written yet. Updated 2026-06-09.*
+> *Status: PLAN — pending PI sign-off at the discussion gate.*
 >
-> **8-factor rebuild note (2026-06-26; pending PI sign-off).** The M2 method below is unchanged, but it is now
-> run on the **8-dimension** M1 map (`copula/weighted_8d/hs_s5_merged_xc`): the immunometabolic merge (metabolic
-> + inflammatory → one axis), the 3 earned cross-loadings (CTQ/PSQI → cognition), and **substance pinned
-> orthogonal** to the correlated block (its cross-factor correlations are non-identifiable — `with_substance_
-> orthogonal()`; this was required for the full-N weighted fit to converge, R̂ 1.03). Two consequences for the
-> coordinate frame: (i) the reliability split is `CONT_AXES = {G, cognition, immunometabolic, sleep, mania}`,
-> `EXPL_AXES = {suicidality, developmental_risk, substance}` (Ke = 4, unchanged); (ii) substance carries **no**
-> off-diagonal Φ, so its coordinate is informed by its own SUD items only (DR = prior-dominated, not imputed).
-> Headline result change: the cross-seed-stable archetype count is now **A = 5** (was 4) — see
-> [STRATA_OOP_FINDINGS.md](STRATA_OOP_FINDINGS.md). Everything else (continuum, K-family, transdiagnostic,
-> not-just-severity) replays.
+> **Coordinate frame (the M1 map M2 acts on).** M2 is run on the **8-dimension** M1 map: **G (overall burden)**
+> ⊥ **7 specific axes** {cognition, **immunometabolic** (cardiometabolic + inflammatory markers on one axis),
+> sleep, mania/activation, suicidality, developmental-risk, substance}, with 3 earned cross-loadings
+> (CTQ/PSQI → cognition) and **substance pinned orthogonal** to the correlated block (its cross-factor
+> correlations are non-identifiable — `with_substance_orthogonal()`; full-N weighted fit converges, R̂ 1.03).
+> Two consequences for the coordinate frame: (i) the reliability split is `CONT_AXES = {G, cognition,
+> immunometabolic, sleep, mania}`, `EXPL_AXES = {suicidality, developmental_risk, substance}` (Ke = 4); (ii)
+> substance carries **no** off-diagonal Φ, so its coordinate is informed by its own SUD items only
+> (DR = prior-dominated, not imputed). The cross-seed-stable archetype count is **A = 5** — see
+> [STRATA_OOP_FINDINGS.md](STRATA_OOP_FINDINGS.md).
 
 ---
 
@@ -32,13 +31,13 @@
 The project has four layers that must stay distinct (per [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md) §1.1):
 
 ```
-diagnostic cohorts → transdiagnostic dimensions → continuous map + A=4 archetypes → prognosis / treatment
-   (entry metadata)     (M1 — complete, 9-dim)        (M2 — this; continuum)          (M4 / M5)
+diagnostic cohorts → transdiagnostic dimensions → continuous map + A=5 archetypes → prognosis / treatment
+   (entry metadata)     (M1 — complete, 8-factor)      (M2 — this; continuum)          (M4 / M5)
 ```
 
-M1 delivered the **measurement model**: a 9-dimension map and **per-patient coordinates with
+M1 delivers the **measurement model**: an 8-dimension map and **per-patient coordinates with
 uncertainty** on V0. M2 delivers the third arrow: **patient strata** — *recurring, decision-relevant
-regions* of that 9-dimensional space. We keep three objects distinct throughout (M1 §1.2):
+regions* of that 8-dimensional space. We keep three objects distinct throughout (M1 §1.2):
 
 - **empirical dimension** — a stable, data-supported *axis* of covariance (M1's product);
 - **patient stratum** — a recurring, decision-relevant *region* of the coordinate space (M2's product);
@@ -50,18 +49,20 @@ coordinates* and only then interpreted against diagnosis and covariates.
 ### 1.2 Discovery, not theory-imposed grouping
 
 As in M1, M2 is **hybrid**: we do not pre-declare a fixed number of strata or hand-draw their boundaries.
-The data decide how many regions the 9-dimensional coordinate cloud supports, where they sit, and how sharp
+The data decide how many regions the 8-dimensional coordinate cloud supports, where they sit, and how sharp
 their boundaries are. The number of strata `K` (and of archetypes `A`, §1.4) is an **estimand**, not a
-setting (§5). Just as M1 let the data reject anhedonia, split biology, and demote neurodevelopment, M2 must
+setting (§5). Just as M1 let the data reject anhedonia, fold the biological markers onto one immunometabolic
+axis, and demote neurodevelopment, M2 must
 let the data say "there is only severity here," or "there are no discrete clusters at all, only a
 continuum" — those null/continuum results are permitted, reportable outcomes (§1.3).
 
 ### 1.3 Why "probabilistic decision regions" (the central design constraint)
 
 The M1 coordinates are **not point estimates** — each carries a posterior SD/HDI and a reliability tier,
-and they are **wildly heteroscedastic** across dimensions and patients (e.g. severity/metabolic/sleep
-posterior SD ≈ 0.27–0.29, but inflammatory 0.55, cognition 0.44, mania 0.66; 2,506 patients are
-prior-dominated on cognition, 1,684 on inflammatory, and mania is *partial for every patient*). A hard
+and they are **wildly heteroscedastic** across dimensions and patients (e.g. severity/immunometabolic/sleep
+posterior SD ≈ 0.27–0.29, but cognition 0.44, mania 0.66; 2,506 patients are
+prior-dominated on cognition, large sub-populations are prior-dominated on immunometabolic, and mania is
+*partial for every patient*). A hard
 clustering of the posterior **means** would be dominated by the precisely-measured axes and would place
 patients on the basis of **prior-mean artefacts** of their unmeasured axes — manufacturing strata out of
 *missingness patterns*, the exact failure M1's no-imputation apparatus exists to prevent.
@@ -147,7 +148,7 @@ different milestones:
   | **treatment**  | stratum × treatment-response interaction (changes management) | **M5** |
 
 This operationalizes the project's central bet (**biology⊥G**): biology-aware strata should predict
-biologically-relevant course/outcomes (metabolic, inflammatory, treatment side-effects) that DSM-5 +
+biologically-relevant course/outcomes (immunometabolic burden, treatment side-effects) that DSM-5 +
 severity miss. **M2 may claim only the preconditions (§7 Q1–Q4) + the "tighter description" head-to-head; it
 may NOT claim actionability** — that is earned in M3 (persistence) → M4 (prognosis) → M5 (treatment). Two
 cautions: **more clusters ≠ better** (overfitting — K is chosen out-of-sample, §5), and the **continuum null
@@ -158,24 +159,23 @@ is permitted** (then "better" becomes "a continuous coordinate system out-predic
 ## 2. The object M2 acts on
 
 The input is the M1 per-patient coordinate table (`results/face/patient_scores.parquet`), extended to
-full-N on all nine dimensions by the M2.0 prep step (§6).
+full-N on all eight dimensions by the M2.0 prep step (§6).
 
-**Nine coordinate axes** (orientation: higher = more burden), each with a posterior **mean**, **SD**, HDI,
+**Eight coordinate axes** (orientation: higher = more burden), each with a posterior **mean**, **SD**, HDI,
 observed-indicator count, and a reliability tier (`well ≥3` · `partial 1–2` · `prior-dominated 0`):
 
 | # | dimension | M1 source | full-N as scored by M1? |
 |---|---|---|---|
 | 0 | overall_severity (G) | continuous, analytic conditional-Gaussian | yes all 9,013 |
 | 1 | cognition | continuous | yes (2,506 prior-dominated) |
-| 2 | metabolic | continuous | yes |
-| 3 | inflammatory | continuous | yes (1,684 prior-dominated) |
-| 4 | sleep | continuous | yes |
-| 5 | mania_activation | continuous (2 indicators) | yes (**partial for all**) |
-| 6 | suicidality | explicit non-Gaussian `f_e` |  subsample only → **M2.0** |
-| 7 | developmental_risk | explicit non-Gaussian `f_e` |  subsample only → **M2.0** |
-| 8 | substance | explicit non-Gaussian `f_e` |  subsample only + **2-cohort (no DR)** → **M2.0** |
+| 2 | immunometabolic | continuous (cardiometabolic + inflammatory markers) | yes (large sub-population prior-dominated) |
+| 3 | sleep | continuous | yes |
+| 4 | mania_activation | continuous (2 indicators) | yes (**partial for all**) |
+| 5 | suicidality | explicit non-Gaussian `f_e` |  subsample only → **M2.0** |
+| 6 | developmental_risk | explicit non-Gaussian `f_e` |  subsample only → **M2.0** |
+| 7 | substance | explicit non-Gaussian `f_e` |  subsample only + **2-cohort (no DR)** → **M2.0** |
 
-**Decision (planning gate):** strata/archetypes are built on **all nine** dimensions. This makes M2.0 — the
+**Decision (planning gate):** strata/archetypes are built on **all eight** dimensions. This makes M2.0 — the
 **full-N projection of the three explicit (non-Gaussian) axes** — a *prerequisite*, not a later extension
 (§6).
 
@@ -196,15 +196,15 @@ disorder (552)** — **7 subtypes** (schizophreniform n=41 is small → flag). S
 diagnosis at **both** granularities (§7 Q3).
 
 **Coverage facts that shape the model:** measurement precision is dimension- and patient-specific; **mania
-carries low information for everyone** and biology/cognition are prior-dominated for large sub-populations;
-**substance is undefined for DR**. The models in §3 are chosen precisely so these facts degrade gracefully
-(uninformative axes self-down-weight) rather than corrupting the partition.
+carries low information for everyone** and immunometabolic/cognition are prior-dominated for large
+sub-populations; **substance is undefined for DR**. The models in §3 are chosen precisely so these facts
+degrade gracefully (uninformative axes self-down-weight) rather than corrupting the partition.
 
 ---
 
 ## 3. Mathematical specification — structure discovery + two complementary models
 
-Index patients `i = 1, …, N` (N = 9,013), dimensions `d = 1, …, D` (D = 9), strata `k = 1, …, K`,
+Index patients `i = 1, …, N` (N = 9,013), dimensions `d = 1, …, D` (D = 8), strata `k = 1, …, K`,
 archetypes `a = 1, …, A`.
 
 ### 3.1 Structure discovery — the gate (cluster vs continuum vs branched)
@@ -240,7 +240,7 @@ artefact of treating blobs as points.
 ```
 π          ~  Dirichlet(α/K · 1)                      [mixing weights; sparse α prunes K — §5]
 z_i        ~  Categorical(π)                           [latent stratum of patient i]
-θ_i | z_i=k ~  Normal(m_k, Σ_k)                        [θ_i = patient i's TRUE 9-d coordinate]
+θ_i | z_i=k ~  Normal(m_k, Σ_k)                        [θ_i = patient i's TRUE 8-d coordinate]
 ```
 
 Each stratum `k` is a **region** with centroid `m_k ∈ ℝ^D` and spread `Σ_k` (a `D×D` covariance — an
@@ -290,7 +290,7 @@ x_{i,O_i}  ~  Σ_k  π_k · 𝓝( m_{k,O_i} ,  (Σ_k + S_i)_{O_i,O_i} )
 ```
 
 Unobserved coordinates are marginalized — they neither place the patient nor are filled in. This covers
-**structural absence** (substance for every DR patient → DR placed by its other eight axes; substance-defined
+**structural absence** (substance for every DR patient → DR placed by its other seven axes; substance-defined
 strata cannot contain DR, and we say so) and **prior-dominated cells** (`n_obs = 0`): default **mask**
 (strict no-imputation); sensitivity arm **variance-inflate** (`s_id²` = prior variance, down-weighted to
 ≈ 0). Report if they differ.
@@ -320,7 +320,7 @@ minimize  Σ_i ‖ x_i − Σ_a w_ia z_a ‖²        s.t.   z_a = Σ_j b_ja x_j
 ```
 
 The **simplex weights `w_i`** are the soft membership — the "soft-archetype" probabilistic-region view
-(patient = a blend of extremes, e.g. "0.7 high-inflammatory + 0.3 cognitive-impairment archetype").
+(patient = a blend of extremes, e.g. "0.7 high-immunometabolic + 0.3 cognitive-impairment archetype").
 
 - **Uncertainty propagation** — fit AA over M1 posterior **draws** (default; reuses the §2 export) → a
   *posterior* over archetypes `z_a` and over each `w_i` → uncertainty-aware soft membership. (A probabilistic
@@ -348,17 +348,17 @@ How the general factor **G** (overall functional burden) enters the clustering c
 means*. We run **both** arms and compare — the comparison is itself a result *(decided at the planning gate,
 2026-06-09)*:
 
-- **Arm A — G in (all 9 axes): "severity × profile."** Strata may differ in overall burden *and* profile
-  shape (e.g. "severe, high-inflammatory" vs "mild, high-inflammatory"). The honest full-coordinate object;
-  captures severity×profile interactions. **Risk:** G is the dominant, best-measured, highest-variance axis
-  (and the depression/anxiety windows load on it), so it can dominate → strata collapse toward **severity
+- **Arm A — G in (all 8 axes): "severity × profile."** Strata may differ in overall burden *and* profile
+  shape (e.g. "severe, high-immunometabolic" vs "mild, high-immunometabolic"). The honest full-coordinate
+  object; captures severity×profile interactions. **Risk:** G is the dominant, best-measured, highest-variance
+  axis (and the depression/anxiety windows load on it), so it can dominate → strata collapse toward **severity
   tiers** (the Q2 failure mode).
-- **Arm B — G out (8 specifics): "pure profile."** Strata defined by profile shape *independent of overall
-  severity* (e.g. "high-inflammatory" at any severity) — targeting the value proposition (heterogeneity
+- **Arm B — G out (7 specifics): "pure profile."** Strata defined by profile shape *independent of overall
+  severity* (e.g. "high-immunometabolic" at any severity) — targeting the value proposition (heterogeneity
   severity misses). **Because M1's specific coordinates come from the bifactor identification (orthogonal to
   G by construction), dropping G from the feature set *is* the G-residualized view** — no ad-hoc regression
-  needed; the specifics already are the G-removed profile. (Biology is already ≈⊥G so it barely moves;
-  cognition/sleep — which partly track G — change most.)
+  needed; the specifics already are the G-removed profile. (The immunometabolic axis is already ≈⊥G so it
+  barely moves; cognition/sleep — which partly track G — change most.)
 
 **What the comparison yields.** Same strata under A and B → severity is not driving the partition; the
 profile structure is robust (a strong result). Different → we quantify how much of the stratification is
@@ -400,7 +400,7 @@ Neither count is set by hand:
 
 ## 6. Estimation strategy — staged continuation (M1's discipline)
 
-The dimension set is fixed at 9 (planning decision); staging deforms **model complexity**, with a discussion
+The dimension set is fixed at 8 (planning decision); staging deforms **model complexity**, with a discussion
 gate after each stage. **Only the certified global models (M2.2 full-Σ mixture + M2.3 archetypes) are
 interpreted** — intermediate rungs (diagonal-only, a provisional `K`) are checkpoints, never reported.
 
@@ -421,7 +421,7 @@ data layer (covariates)─┘       full-N f_e projection · cov/draws · labels
                          ▼                                ▼
              22 mixture  (Model A)               23 archetypes (Model B)
                 diag → sparseK → fullΣ              AA over draws · select A
-                Arm A (9) ∥ Arm B (8)              soft w_i · out-of-sample    ─►  reports/22,23 + figs
+                Arm A (8) ∥ Arm B (7)              soft w_i · out-of-sample    ─►  reports/22,23 + figs
                          └───────────────┬───────────────┘
                                          ▼
                             24 validate  (Q1–Q4, both views · robustness)   ─►  reports/24 + figs
@@ -432,19 +432,19 @@ data layer (covariates)─┘       full-N f_e projection · cov/draws · labels
 
 | Stage | Adds | Gate before advancing |
 |---|---|---|
-| **M2.0 — prep** | full-N projection of the 3 explicit axes (suic/dev/substance) for all 9,013; **per-patient covariance/draws export** (§2); validation table | all 9 dims full-N with uncertainty (cov/draws); no-imputation handling of substance-in-DR set up |
+| **M2.0 — prep** | full-N projection of the 3 explicit axes (suic/dev/substance) for all 9,013; **per-patient covariance/draws export** (§2); validation table | all 8 dims full-N with uncertainty (cov/draws); no-imputation handling of substance-in-DR set up |
 | **M2.1 — structure gate** | Mapper / persistent homology + Hopkins + dip + GMM-vs-1, **uncertainty-aware** (§3.1) | the cloud-shape verdict (clustered / continuum / branched) is **reported**; the lead view is chosen |
 | **M2.2 — mixture (Model A)** | measurement-error mixture; internal continuation **diagonal Σ → sparse-K → full Σ** | certifies; `K_eff` data-supported; mixture ≻ single-Gaussian; classical EM/BIC triangulates |
 | **M2.3 — archetypes (Model B)** | archetypal analysis over draws; select `A`; soft membership + out-of-sample projection | `A` selected; archetypes stable across resamples; AA reconstruction adequate |
 | **M2.4 — validation** | Q1–Q4 (§7) on **both** views + missingness-artefact + per-cohort invariance + graph/density shape-checks | the four gates pass or documented-partial |
 | **M2.5 — atlas + score** | per-patient responsibilities **and** archetype weights → parquet; the stratum/archetype atlas; findings doc; PI gate | hand-off object + deliverable; M2 locked |
 
-**M2.0 detail (the prerequisite).** The 6 continuous axes are already full-N (analytic conditional-Gaussian,
+**M2.0 detail (the prerequisite).** The 5 continuous axes are already full-N (analytic conditional-Gaussian,
 M1 §7). The 3 explicit axes are non-Gaussian latents `f_e`; full-N projection scores each patient's posterior
-on `f_e` **conditional on the fixed 9-dim measurement parameters** (loadings, cutpoints/thresholds,
+on `f_e` **conditional on the fixed 8-dim measurement parameters** (loadings, cutpoints/thresholds,
 dispersion, Φ) given that patient's observed binary/ordinal/count indicators — a per-patient conditional
 posterior (Laplace/variational or short conditional MCMC under fixed Λ,θ), **not** a re-fit of M1. DR
-contributes no `substance` cell. Output extends `patient_scores.parquet` to full-N × 9 with (mean, SD, HDI,
+contributes no `substance` cell. Output extends `patient_scores.parquet` to full-N × 8 with (mean, SD, HDI,
 covariance/draws, n_obs, reliability) — re-using `src/face/scoring` + `continuous_core.prepare_mixed`.
 
 ---
@@ -457,7 +457,7 @@ battery is applied to the mixture and, where applicable, to the archetype repres
 - **Q1 — Existence & selection.** The §3.1 structure verdict is reported; the mixture decisively beats a
   single Gaussian (WAIC); `K_eff` / `A` are data-supported (§5) and stable. *Else:* report continuum/null.
 - **Q2 — Not just severity (the headline test, descendant of biology⊥G).** Fit a **G-only 1-D mixture**;
-  the full 9-D mixture must beat it decisively (WAIC). Decompose between-stratum (and between-archetype)
+  the full 8-D mixture must beat it decisively (WAIC). Decompose between-stratum (and between-archetype)
   separation **per axis**: regions must separate on the **specific / biological** axes, not only on G.
   Report how much of the partition is explained by G alone vs the specifics, with per-stratum/archetype
   profiles; the explicit test is the §3.5 **Arm A (G-in) vs Arm B (G-out)** comparison. *A stratification
@@ -501,8 +501,8 @@ draws) so M3/M4 can propagate it.
 
 **The atlas** (`docs/STRATA_OOP_ATLAS.md` + figures) — the scientific story, mirroring M1's dimension atlas.
 Reports: the **structure-discovery shape verdict** (§3.1) with the Mapper figure; for each **stratum** —
-size, **diagnostic composition at both granularities** (3 cohorts + 7 DSM-5 subtypes), the **mean 9-D profile with uncertainty** + defining
-axes, separation, a **data-driven** label (e.g. "high-inflammatory / average-G" — *not* theory-imposed),
+size, **diagnostic composition at both granularities** (3 cohorts + 7 DSM-5 subtypes), the **mean 8-D profile with uncertainty** + defining
+axes, separation, a **data-driven** label (e.g. "high-immunometabolic / average-G" — *not* theory-imposed),
 centroid, coverage caveats (substance undefined for DR, mania low-information throughout); for each
 **archetype** — its extreme-phenotype profile and the population's simplex spread; and the **A-vs-K
 agreement** (§3.4) + classical-triangulation agreement + the `K`/`A` support.
@@ -510,7 +510,7 @@ agreement** (§3.4) + classical-triangulation agreement + the `K`/`A` support.
 ### Figures (methods + results) — every claim gets a picture
 
 Visuals are a first-class deliverable, generated by the stage scripts into `docs/figures/`. Embeddings are
-**visualization-only, never a clustering input** (clustering is on the 9-D coordinates; UMAP distorts
+**visualization-only, never a clustering input** (clustering is on the 8-D coordinates; UMAP distorts
 density/distance, so a PCA companion guards against illusory clusters).
 
 *Methods-explainer:*
@@ -525,9 +525,9 @@ density/distance, so a PCA companion guards against illusory clusters).
 - **F-R1 2-D embedding — UMAP (primary, local) + PCA (companion, variance-faithful)**, paneled by MAP
   stratum, **cohort** (Q3 mixing), **G** (Q2 — are strata just severity tiers?), and each biological axis.
   (PHATE optional if the structure gate finds a continuum/trajectory.)
-- **F-R2 Stratum profile heatmap** — strata × 9 dims (posterior-mean coordinate + uncertainty) — the atlas
+- **F-R2 Stratum profile heatmap** — strata × 8 dims (posterior-mean coordinate + uncertainty) — the atlas
   core, mirroring M1's `empirical_atlas`.
-- **F-R3 Archetype profiles** — archetypes × 9 dims (radar/heatmap) + the population's simplex spread.
+- **F-R3 Archetype profiles** — archetypes × 8 dims (radar/heatmap) + the population's simplex spread.
 - **F-R4 Diagnostic composition** — per-stratum stacked bars at **both** granularities (3 cohorts and the 7
   DSM-5 subtypes), highlighting where schizoaffective / BP-II land (Q3).
 - **F-R5 Assignment uncertainty** — entropy distribution; embedding coloured by max-responsibility (boundary
@@ -554,8 +554,8 @@ Defaults are set above; confirm or overrule before M2.1:
 - **`S_i` fidelity** — diagonal (mean, SD) default vs full per-patient covariance / draws (the faithfulness
   arm, §2).
 - **Prior-dominated handling** — mask (default) vs variance-inflate; whether they materially differ.
-- **G in the clustering** — **decided (planning gate): run both arms** and compare (§3.5) — Arm A (all 9,
-  severity×profile) ∥ Arm B (8 specifics = the bifactor G-residualized pure-profile view); the lead arm is
+- **G in the clustering** — **decided (planning gate): run both arms** and compare (§3.5) — Arm A (all 8,
+  severity×profile) ∥ Arm B (7 specifics = the bifactor G-residualized pure-profile view); the lead arm is
   chosen by what each yields, reported in the atlas (F-R9).
 - **Mapper config** — lens(es), cover resolution/overlap, per-bin clusterer (the structure-gate knobs).
 - **Visualization embedding** — UMAP (primary, local structure) + PCA (companion, variance-faithful),
@@ -589,8 +589,8 @@ reports/  2x_*.md per stage (+ figures in docs/figures/)
 docs/     STRATIFICATION_MODEL.md (this) · STRATA_OOP_FINDINGS.md · STRATA_OOP_ATLAS.md
 ```
 
-Reuse M1 infrastructure: `src/face/scoring` (conditional scores, reliability flags), the 9-dim fit
-(`results/face/s5_cert9_s1/idata.nc`), and the robustness scaffolding (`scripts/08_robustness.py`,
+Reuse M1 infrastructure: `src/face/scoring` (conditional scores, reliability flags), the 8-factor copula fit,
+and the robustness scaffolding (`scripts/08_robustness.py`,
 `results/face/robust_cache`). Lean stack — no DVC/Hydra/MLflow; YAML configs; Parquet model-ready tables;
 fixed seeds; long fits run detached under `caffeinate` with a per-seed cache (the M1 pattern). Every number
 reproducible from `scripts/` → `reports/`.

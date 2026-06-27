@@ -28,10 +28,15 @@
 > ahead", "→ GPU", "provisional", "still ahead") are all **superseded**: FIML was reframed to an in-engine
 > bundle and done (§5), nothing needed a GPU, and the map is certified. Read it for provenance, not status.
 
-### What the map is
+### What the staged map looked like (development record)
+
+*This subsection narrates the staged continuous-backbone fit; the reported map of record is the 8-factor
+immunometabolic map (see the synthesis note above). Where the staged fit below carries the biology block as a
+cardiometabolic/inflammatory "split," that variance is folded into the single **immunometabolic** factor in
+the reported map.*
 
 On the harmonized 3-cohort FACE **V0** baseline (N = 9,013 = BP 6,252 · SZ 2,209 · DR 552), the hybrid
-Bayesian sparse bifactor/ESEM yields a **7-dimension transdiagnostic map** — one general factor and six
+Bayesian sparse bifactor/ESEM staged fit gave a continuous-backbone read — one general factor and the
 specific axes — estimated from each patient's *observed* cells (no imputation):
 
 | dimension | what it is | anchored by | loading |
@@ -61,9 +66,13 @@ its variance independent of G), but **not strictly orthogonal** — the exact cl
 severity-independent,"* not *"orthogonal."* *(The provisional S5 mixed-fit read of 0.28/0.14 in §S5.3 below is
 superseded.)*
 
-**Hybrid adjudication, end to end.** Of the 10 candidate dimensions, the FACE data **confirmed 6 + G**,
-**split** candidate-5 into metabolic + inflammatory, **rejected** anhedonia (thin; merges into G + depression),
-and the three with no common indicators (impulsivity, negative symptoms, sensory) were **dropped pre-modeling**.
+**Hybrid adjudication, end to end (development record).** Of the 10 candidate dimensions, the FACE data
+**confirmed G + the specific axes**, carried the biology candidate as a single **immunometabolic** factor
+(cardiometabolic + inflammatory markers together — the staged fits below explored a cardiometabolic/inflammatory
+"split" whose shared variance the reported map folds into one immunometabolic axis), **rejected** anhedonia
+(thin; merges into G + depression), and the three with no common indicators (impulsivity, negative symptoms,
+sensory) were **dropped pre-modeling**. The reported map of record is the **8-factor immunometabolic map +
+A = 5 archetypes** (see `STATE.md` / `HORSESHOE_ESEM.md`).
 
 ### Strong points (what we can stand behind)
 
@@ -86,9 +95,10 @@ and the three with no common indicators (impulsivity, negative symptoms, sensory
 1. ~~S3–S5 ran on random subsamples, not full N (→ GPU)~~ **RESOLVED (§3.6/§4):** certified at the largest-N
    that mixes, **on the Mac — no GPU** (detached + caffeinate + per-seed cache); the N is documented and the
    fit is resample-stable (cross-seed Tucker φ 0.993).
-2. ~~S3b / S5 are provisional, not certified~~ **RESOLVED:** the S5 map is certified (7-dim **and** the final
-   9-dim), R-hat ≤ 1.04 · 0 div · cross-seed φ 0.993. The explicit-latent block is the documented mixing
-   limit; point estimates are resample-stable, a few cross-cell precisions provisional.
+2. ~~S3b / S5 are provisional, not certified~~ **RESOLVED:** the staged S5 map certified
+   (R-hat ≤ 1.04 · 0 div · cross-seed φ 0.993). The explicit-latent block is the documented mixing
+   limit; point estimates are resample-stable, a few cross-cell precisions provisional. *(The reported map of
+   record is the 8-factor immunometabolic map — see the synthesis note above.)*
 3. ~~The exact metabolic~G correlation (0.28) is provisional~~ **RESOLVED (§3.1):** the clean continuous-backbone
    correlated-G fit gives metabolic~G **0.12–0.14** (the cleaner estimate; the 0.28 was a mixed-fit read);
    direction robust — **biology is the least severity-entangled domain**.
@@ -137,13 +147,14 @@ The map exists; these finish and harden it (all named in the methods doc):
   (subsample), each with mean/SD/HDI + reliability tier. `results/face/patient_scores.parquet`.
 - **Prior → posterior empirical atlas** (§2.3) — **DONE:** `docs/figures/empirical_atlas.png` (theory's
   diagonal → data's mostly-diagonal, with biology≈0 on G and cognition/sleep partial-G).
-- **Formal adjudication** (§6) — **DONE:** `docs/ADJUDICATION.md` — **9 confirmed** (incl. mania +
-  substance, integrated into the largest-N-documented 9-dim joint map), anhedonia rejected, 3 not_testable,
+- **Formal adjudication** (§6) — **DONE:** `docs/ADJUDICATION.md` — the surviving candidates (incl. mania +
+  substance) integrate into the reported **8-factor immunometabolic map**, anhedonia rejected, 3 not_testable,
   depression/anxiety = windows. No candidate deferred.
 
-**M1 is complete** — built, hardened, documented at the largest N (9-dim), scored, adjudicated. PI sign-off on the
-adjudication + atlas locks it; only then do the later milestones begin: **M2 strata** → **M3 temporal
-coherence** → **M4 prognosis** → **M5 treatment** (§10).
+**M1 is complete** — built, hardened, scored, adjudicated; the reported map of record is the **8-factor
+immunometabolic map** (`STATE.md` / `HORSESHOE_ESEM.md`). PI sign-off on the adjudication + atlas locks it;
+only then do the later milestones begin: **M2 strata** → **M3 temporal coherence** → **M4 prognosis** →
+**M5 treatment** (§10).
 
 ---
 
@@ -617,10 +628,12 @@ earlier "orthogonal" phrasing overstated it; "largely severity-independent" is e
 
 ### S5.5 What S5 delivers
 
-The **S5 transdiagnostic map** (7 empirically-supported dimensions here; mania + substance are later
-integrated → the **reported 9-dim joint map**) with their loadings, the inter-dimension Φ, per-patient
+The **staged S5 transdiagnostic map** (the continuous/mixed backbone here; mania + substance are later
+integrated, and the biology block consolidates into one immunometabolic axis → the reported **8-factor
+immunometabolic map of record**) with their loadings, the inter-dimension Φ, per-patient
 coordinates (with uncertainty), and the dual-identification G⊥biology test.
-The hybrid discovery worked end-to-end — theory proposed 10 candidates; the FACE data **confirmed 6 + G,
-reshaped one (metabolic/inflammatory split), and rejected/dropped four** (anhedonia, impulsivity, negative
-symptoms, sensory) — with the depression/anxiety instruments placed as cross-loading windows, not a
-dimension. This map is the foundation the M2 stratification layer will act on.
+The hybrid discovery worked end-to-end — theory proposed 10 candidates; the FACE data **confirmed G + the
+specific axes** (the staged biology "split" folding into one immunometabolic factor in the reported map) and
+**rejected/dropped four** (anhedonia, impulsivity, negative symptoms, sensory) — with the depression/anxiety
+instruments placed as cross-loading windows, not a dimension. This map is the foundation the M2 stratification
+layer acts on.

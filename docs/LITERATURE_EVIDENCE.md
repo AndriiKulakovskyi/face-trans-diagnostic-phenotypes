@@ -87,7 +87,8 @@ strong supporting case and a real tension that must be acknowledged.
    melancholic-vs-atypical double dissociation in Lamers et al., 2013, *Mol Psychiatry*;
    [DOI](https://doi.org/10.1038/mp.2012.144), replicated longitudinally in Lamers et al., 2020, *Brain Behav
    Immun*; [DOI](https://doi.org/10.1016/j.bbi.2020.04.002)). This is the closest external analogue to FACE's
-   separable biology axes — arrived at by completely different methods, which is strong convergent validity.
+   single immunometabolic axis (which pools inflammation and metabolic markers exactly as the IMD program does)
+   — arrived at by completely different methods, which is strong convergent validity.
 
 ### 1.2 Why "independent" overstates it (tension — state this in the paper)
 
@@ -242,8 +243,8 @@ following together, which is the defensible novelty claim:
   Marquand, B-SNIP). FACE puts **metabolic and inflammatory laboratory markers directly into the
   transdiagnostic factor space** alongside cognition, sleep, suicidality, mania and substance, across **three
   diagnostic cohorts (BP/SZ/MDD)** simultaneously.
-- It **quantifies the entanglement** between each biological axis and a general functional-burden factor (the
-  ≈ 0.07–0.12 correlations) — the immuno-metabolic literature asserts a *separable* dimension but, to our
+- It **quantifies the entanglement** between the immunometabolic biology axis and a general functional-burden
+  factor (the ≈ 0.07–0.12 correlations) — the immuno-metabolic literature asserts a *separable* dimension but, to our
   reading of the retrieved papers, does not report its correlation with a bifactor general factor.
 - It does so with a **full-sample, no-imputation, mixed-likelihood Bayesian bifactor/ESEM** — a methods
   combination not seen in the retrieved transdiagnostic-biology papers, most of which subsample or use

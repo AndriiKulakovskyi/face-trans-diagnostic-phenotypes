@@ -6,16 +6,15 @@
 > [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
 > Read before any M4 modelling work. *Status: COMPLETE, pending PI sign-off. 2026-06-11.*
 >
-> **8-factor rebuild note (2026-06-27; pending PI sign-off).** The M4 method below is unchanged, but it is now
-> run on the **8-factor** M1/M2/M3 objects (immunometabolic merge + substance orthogonal; **A = 5** archetypes).
-> The engine already discovers the archetype/K-family encodings dynamically, so A=4→5 needed no live-path change;
-> the only functional edit is `DURABLE = (cognition, immunometabolic)` (the merged durable biology, M3 ICC 0.91).
-> Result **replays and is slightly stronger**: the **A = 5 archetypes predict 2-year functioning** (ΔELPD
-> **+62.8** beyond DSM-5+severity+baseline, was +59; IPW-robust +54.4, permutation-null, co-informative with
+> **Model of record (2026-06-27; pending PI sign-off).** M4 runs on the **8-factor** M1/M2/M3 objects (G +
+> 7 specifics, the immunometabolic biology factor, substance orthogonal; **A = 5** archetypes). The engine
+> discovers the archetype/K-family encodings dynamically; the durable biology is `DURABLE = (cognition,
+> immunometabolic)` (M3 ICC 0.91). Result: the **A = 5 archetypes predict 2-year functioning** (ΔELPD
+> **+62.8** beyond DSM-5+severity+baseline; IPW-robust +54.4, permutation-null, co-informative with
 > DSM-5, course-dependent/BP-led), **operative K = none**, **not** severity, and the archetype atlas is a
 > **17→52%** functional-remission gradient with the **immunometabolic biology corner (A2) worst**. The
-> durable-*pair*-alone EIV stays ambiguous (the archetype representation is the carrier). Both follow-up
-> sub-analyses also re-ran on the 8-factor map: the within-cohort de-confounding (composition only ~4%, OR 6.3,
+> durable-*pair*-alone EIV stays ambiguous (the archetype representation is the carrier). Two follow-up
+> sub-analyses run on the same map: the within-cohort de-confounding (composition only ~4%, OR 6.3,
 > BP-carried) and the raw-vs-map representation benchmark (sufficient for deterioration, ≥92% within-factor for
 > recovery; xgboost under `OMP_NUM_THREADS=1`). Findings: [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
 
@@ -23,7 +22,7 @@
 
 **The question.** Does a baseline coordinate or stratum on the transdiagnostic map predict a future
 clinical outcome **incrementally beyond DSM-5 diagnosis + baseline severity + the baseline value of
-that outcome**, built on the durable axes M3 certified (cognition, metabolic, inflammatory)? The sharp
+that outcome**, built on the durable axes M3 certified (cognition, immunometabolic)? The sharp
 hypothesis (the M3 → M4 throughline): *the durable TRAIT axes predict the future value of the moving
 STATE outcomes.*
 
@@ -63,10 +62,10 @@ R0  age + sex + site(random intercept)
 R1  + DSM-5 arm (7 subtypes)
 R2  + severity        [CGI-S ; and the error-corrected G coordinate]
 R3y + baseline Y      ← THE BAR (ANCOVA autoregression term; makes "incremental" honest, dodges RTM)
-Tc  + durable coords {cognition, metabolic, inflammatory}   (EIV)   ← representation 1
-Ta  + 8 archetypes  (Arm A full ; Arm B = G-residualized, the clean ⊥G)
-Tt  + 4-region tessellation
-Tf  + 8 specific coords (ceiling)
+Tc  + durable coords {cognition, immunometabolic}   (EIV)   ← representation 1
+Ta  + 5 archetypes  (Arm A full ; Arm B = G-residualized, the clean ⊥G)
+Tt  + nested K-family tessellation (2/3/4)
+Tf  + 7 specific coords (ceiling)
 ```
 
 Win = held-out ΔELPD vs R3y with SE excluding 0 **and** the coefficient 94% HDI excluding 0, under

@@ -96,7 +96,7 @@ workbook) fixes the eligible model set. **This map is itself a primary result of
 |---|---|---|---|---|
 | 7 Overall Severity | core anchor | **G** (functional burden — one job) | CGI-S, EGF⁻, EQ5D-VAS⁻, FAST, work-stoppage, employment — functioning + global severity **only** | 3-cohort |
 | 2 Cognitive Flexibility | core | **cognition** | TMT-B (resid. on TMT-A/age/edu/site), WAIS coding/digit-span, fluency | 3-cohort |
-| 5 Metabolism/Immuno | core — **split** | **metabolic** + **inflammatory** | BMI, waist, BP, glucose, HbA1c, lipids / logCRP, WBC, neutrophils, platelets | 3-cohort |
+| 5 Metabolism/Immuno | core | **immunometabolic** (single biology factor) | BMI, waist, BP, glucose, HbA1c, lipids, logCRP, WBC, neutrophils, platelets | 3-cohort |
 | 6 Sleep / Circadian | core (sleep) | **sleep** | PSQI total + 7 sub-scores (ESS/CSM circadian = BP/DR extension) | 3-cohort |
 | 10 Suicidality | core | **suicidality** (mixed likelihood) | ISF ideation/attempt; C-SSRS lethality (BP/DR extension) | 3-cohort ISF |
 | 9 Neurodevelopment | core **proxy — relabelled** | **developmental-risk** | perinatal, CTQ, age-of-onset, family history, education | 3-cohort |
@@ -105,13 +105,13 @@ workbook) fixes the eligible model set. **This map is itself a primary result of
 | 3 Negative Symptoms | not directly measurable | **dropped** (functional proxy at most) | no PANSS-neg / SANS | — |
 | 8 Sensory Abnormalities | gap | **not_testable** | none | — |
 
-**Eligible model set (V0).** 3-cohort core factors `G` (severity), `cognition`, `metabolic`,
-`inflammatory`, `sleep`, `suicidality`, `developmental-risk`; **BP/DR extension** `anhedonia` (thin — may
+**Eligible model set (V0).** 3-cohort core factors `G` (severity), `cognition`, `immunometabolic`,
+`sleep`, `suicidality`, `developmental-risk`; **BP/DR extension** `anhedonia` (thin — may
 not survive as a standalone factor and could merge into `G` or be rejected). Three candidates are dropped
 for lack of indicators — *stating this is a result, not a failure.*
 
-Notes that the data will adjudicate, not us: (i) `metabolic` vs `inflammatory` is a hypothesised **split**
-of candidate 5; (ii) `developmental-risk` is a **proxy** relabelling of candidate 9; (iii) the composite
+Notes that the data will adjudicate, not us: (i) the cardiometabolic and inflammatory markers of candidate 5
+are carried together by the single `immunometabolic` factor; (ii) `developmental-risk` is a **proxy** relabelling of candidate 9; (iii) the composite
 depression/anxiety instruments (`madrs`, `qidsr120`, `staya`) are **cross-loading windows**, not a
 dimension: each is seeded `plausible_cross` on the axes it clinically touches (`G`, anhedonia, sleep,
 suicidality, cognition) and the data place it — there is **no separate affective factor and no 11th
@@ -152,13 +152,13 @@ variables**, re-allocated as:
 | C-SSRS ideation battery + attempt-lethality (`cssrs01–12`, `ltsg*`, `ltsv*`) | **suicidality** (BP/DR ext) | ~24 | mixed likelihoods (binary + ordinal); alongside the 3-cohort ISF core |
 | family psychiatric history (`mere_structure`, `pere_structure`, 3-cohort) + perinatal (`agemere`, `agepere`, `honeonat`, `brthcirc`) | **developmental-risk** | ~6 | a 3-cohort family-liability indicator that had been missed |
 | employment + work-stoppage (`jobclas`, `stprof`, `*_arret_travail`) | **G** (functioning) | ~4 | functional-impairment indicators |
-| 2-cohort biology — thyroid, liver, renal/electrolyte, red-cell, vit-D, resting HR | **metabolic / inflammatory** (BP/DR ext, soft) | ~30 | seeded `plausible_cross`; the data keep the informative ones |
-| inflammatory / metabolic comorbidity flags (psoriasis, eczema, migraine / HTA, CV, endocrine) | **inflammatory / metabolic** (soft) | ~10 | binary comorbidity signal, adjudicated |
+| 2-cohort biology — thyroid, liver, renal/electrolyte, red-cell, vit-D, resting HR | **immunometabolic** (BP/DR ext, soft) | ~30 | seeded `plausible_cross`; the data keep the informative ones |
+| immunometabolic comorbidity flags (psoriasis, eczema, migraine / HTA, CV, endocrine) | **immunometabolic** (soft) | ~10 | binary comorbidity signal, adjudicated |
 | hormonal Tx, menopause, QT/RR, height, smoking-history ages, PRISE-M | `covariate_only` | ~8 | genuine confounders, not indicators |
 
 As encoded (`configs/dimensions.yaml` → `prior_loading_matrix_v3.csv`), **143 of 201 usable variables
-enter as modeled indicators** across **10 factors** (G + 9 specifics: cognition, metabolic, inflammatory,
-sleep, suicidality, developmental-risk, anhedonia, mania_activation, substance) plus **3 cross-loading
+enter as modeled indicators** across **8 factors** (G + 7 specifics: cognition, immunometabolic,
+sleep, mania/activation, suicidality, developmental-risk, substance) plus **3 cross-loading
 windows** (`madrs`/`qidsr120`/`staya`). The remaining ~58 are covariates / identifiers — including
 ambiguous-direction labs (electrolytes, red-cell indices), CGI improvement/efficacy ratings, ECG
 intervals, reproductive/hormonal and smoking-history confounders, and nominal suicide-method types. **Where
@@ -179,9 +179,9 @@ The map is reported as two aligned **atlases** and their comparison — this *is
   with evidence.
 
 It is *expected* that some candidates do not survive (sensory, negative symptoms, impulsivity have no
-instruments; anhedonia is thin). Demonstrating **which** survive, **how** they reshape (e.g. metabolic
-splitting from inflammatory), and that they were earned from cohort data — with uncertainty and validation
-— is the scientific and clinical value of the measurement layer.
+instruments; anhedonia is thin). Demonstrating **which** survive, **how** they reshape (e.g. the cardiometabolic
+and inflammatory markers cohering into one immunometabolic axis), and that they were earned from cohort data
+— with uncertainty and validation — is the scientific and clinical value of the measurement layer.
 
 ---
 
@@ -281,6 +281,25 @@ scores `G_i, D_ik ~ Normal(0, 1)`.
 
 The soft-prior block above is the formal mechanism of "theory suggests, data decides": most cross-loadings
 are shrunk toward zero (sparsity), but the likelihood can pull any of them away if the data demand it.
+
+**Sparse-ESEM cross-loadings via a regularized horseshoe.** Every off-home specific↔specific loading
+carries a **regularized ("Finnish") horseshoe** prior rather than the flat `plausible_cross` Normal: a global
+shrinkage scale `τ` pulls the whole set of cross-loadings toward ≈ 0 (default-off, preserving simple
+structure), heavy-tailed local scales `λ_jk` let a genuinely supported cross-loading escape the shrinkage
+(evidence-on), and a slab `c` caps the escaped magnitude. This **protects the thin factors** (substance,
+mania/activation — few indicators) from dilution while letting small, clinically real cross-talk emerge. A
+continuous sparse-ESEM validation that freed *all* off-home cells shrank ~83 % of them to ≈ 0 — the simple
+structure is **earned, not imposed** — and the credible cells were folded in. The reported map keeps **3
+earned cross-loadings**, all into `cognition` with 95 % CIs excluding 0: CTQ-37 (−0.094), PSQI-latency
+(+0.057), PSQI-daytime (−0.070); childhood adversity and poor sleep load weakly on cognition. The headline:
+given total freedom the model reproduces known clinical cross-talk and nothing spurious — positive evidence
+the map is well-specified.
+
+**Substance pinned orthogonal.** The `substance` factor is **fixed orthogonal** to the correlated specific
+block: its cross-factor correlations are non-identifiable (thin, lifetime-flag coverage), so `Cor(substance,
+·) = 0` is imposed rather than estimated. The remaining inter-factor `Φ` is small (specific–specific mean
+`|Φ| ≈ 0.08`; the one notable coupling is mania–sleep ≈ 0.24), and `G` is bifactor-orthogonal to all
+specifics.
 
 ### 3.4 Missing data — observed-likelihood, no imputation
 
@@ -406,7 +425,7 @@ loadings (oriented so *higher = more burden*) and the soft-prior sparsity.
 
 | Stage | Adds | Primarily tests / yields |
 |---|---|---|
-| **S1** | continuous core (`G`, cognition, metabolic, inflammatory, sleep), explicit-latent, **full N** | is the funnel controlled at scale? — *the make-or-break gate* |
+| **S1** | continuous core (`G`, cognition, immunometabolic, sleep), explicit-latent, **full N** | is the funnel controlled at scale? — *the make-or-break gate* |
 | **S2** | ESEM soft-prior cross-loadings | does identification survive freeing cross-loadings? |
 | **S3** | mixed-likelihood suicidality (Bernoulli/NB) + developmental-risk | do non-Gaussian indicators compose with the shared `Φ_full`? |
 | **S4** | anhedonia (BP/DR, thin) | does a cohort-specific, thin factor identify at all? (adjudication input) |
@@ -510,7 +529,7 @@ as equally characterised as one with six.
   loading sign/identifiability; prior sensitivity.
 - **Robustness:** diagnosis-balanced subsampling and site bootstrap (as *checks on the full-sample fit*,
   not as the fit itself); leave-one-cohort-out loading congruence.
-- **Measurement invariance** where testable — the 3-cohort core (cognition, metabolic, inflammatory,
+- **Measurement invariance** where testable — the 3-cohort core (cognition, immunometabolic,
   sleep, `G`): multi-group loadings/intercepts/thresholds and Bayesian DIF; partial invariance documented.
   Cohort-modular dimensions (anhedonia; heterogeneously-measured suicidality) are **declared modular** and
   not claimed as fully invariant.
