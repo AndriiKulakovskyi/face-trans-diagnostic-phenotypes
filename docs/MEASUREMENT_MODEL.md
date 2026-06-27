@@ -157,9 +157,11 @@ variables**, re-allocated as:
 | hormonal Tx, menopause, QT/RR, height, smoking-history ages, PRISE-M | `covariate_only` | ~8 | genuine confounders, not indicators |
 
 As encoded (`configs/dimensions.yaml` → `prior_loading_matrix_v3.csv`), **143 of 201 usable variables
-enter as modeled indicators** across **8 factors** (G + 7 specifics: cognition, immunometabolic,
+form the candidate-indicator pool** across **8 factors** (G + 7 specifics: cognition, immunometabolic,
 sleep, mania/activation, suicidality, developmental-risk, substance) plus **3 cross-loading
-windows** (`madrs`/`qidsr120`/`staya`). The remaining ~58 are covariates / identifiers — including
+windows** (`madrs`/`qidsr120`/`staya`); the fitted `hs_s5_merged_xc` map **carries 109 of them as
+indicators** (88 in the Gaussian-copula continuous block + 21 in the explicit non-Gaussian block).
+The remaining ~58 are covariates / identifiers — including
 ambiguous-direction labs (electrolytes, red-cell indices), CGI improvement/efficacy ratings, ECG
 intervals, reproductive/hormonal and smoking-history confounders, and nominal suicide-method types. **Where
 an instrument is unobserved for a cohort, its cells are simply missing** (observed likelihood; no cohort

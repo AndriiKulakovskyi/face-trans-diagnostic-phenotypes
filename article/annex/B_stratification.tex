@@ -63,20 +63,41 @@ archetypes (simplex-constrained least squares). The number of corners $A$ is set
 $\ge0.8$), not by parsimony: $A=2$ ($0.999$), $A=4$ ($0.997$) and $A=5$ ($0.979$,
 explained variance $0.601$) are stable, with a clean stability cliff at $A=6$
 ($0.979\!\to\!0.436$) and below ($A=7,8$ at $0.20$--$0.55$). The operational rule
-selected $A=5$. The five corners are: $A_0$ \emph{activation/sleep}
-($\uparrow$sleep $+2.8$, $\uparrow$mania $+1.7$; BP-enriched, $N=1{,}448$); $A_1$
-\emph{severe, clean-biology} ($\uparrow$severity $+1.9$, $\downarrow$immunometabolic
-$-1.9$, $\downarrow$developmental; $N=1{,}584$); $A_2$ \emph{immunometabolic burden}
-($\uparrow$immunometabolic $+3.5$, $\uparrow$severity $+2.4$, $\uparrow$suicidality;
-$N=1{,}426$)---the biology corner; $A_3$ \emph{trauma/suicidality} ($\uparrow$developmental
-$+2.8$, $\uparrow$suicidality $+1.4$; $N=2{,}004$); and $A_4$ \emph{low-burden/well}
-($\downarrow$sleep $-2.7$, $\downarrow$severity $-2.0$, $\downarrow$mania; $N=2{,}551$).
-The symptom space resolves into two distinct corners---activation/sleep ($A_0$) and
-trauma/suicidality ($A_3$)---and the biology corner ($A_2$) is the merged immunometabolic
-axis. Because immunometabolic load varies continuously without a density gap, it is a
-\emph{direction of maximal phenotype}---an archetypal corner---rather than a partition
-boundary, which is why the archetypes (and the continuous coordinates), not any
-tessellation, are the load-bearing object for biology.
+selected $A=5$ (Table~\ref{tab:archetypes}). \textbf{A0} \emph{activation/sleep} is
+defined by elevated sleep ($+2.8$) and mania ($+1.7$) over a below-average severity
+floor; it is the manic/sleep-disturbed corner and is bipolar-enriched ($N=1{,}448$).
+\textbf{A1} \emph{severe, clean-biology} pairs high overall severity ($+1.9$) with
+markedly \emph{low} immunometabolic load ($-1.9$) and low developmental risk
+($N=1{,}584$)---patients who are functionally ill but biologically quiet. \textbf{A2}
+\emph{immunometabolic burden} is the biology corner: the highest immunometabolic
+coordinate in the space ($+3.5$) carried alongside high severity ($+2.4$) and elevated
+suicidality ($+1.2$); a secondary developmental-risk elevation ($+1.2$) also loads here,
+but the canonical developmental corner is \textbf{A3} ($N=1{,}426$). \textbf{A3}
+\emph{trauma/suicidality} is anchored on developmental risk ($+2.8$) and suicidality
+($+1.4$) with immunometabolic load running the other way ($-2.1$); it is the
+childhood-adversity corner and the most populous symptom corner ($N=2{,}004$).
+\textbf{A4} \emph{low-burden/well} is the healthy-reference extreme---low sleep ($-2.7$),
+low severity ($-2.0$) and low mania---and the single largest corner ($N=2{,}551$).
+%
+% Provenance: corner magnitudes are the 1-dp signatures in docs/STRATA_OOP_FINDINGS.md;
+% the A3 immunometabolic value (-2.1 = ATLAS -2.07) and the A2 suicidality / developmental
+% secondaries (+1.25 / +1.21) come from the full-precision corner table in STRATA_OOP_ATLAS.md.
+
+\paragraph{The clinically important geometry.} Two features make the simplex
+load-bearing rather than decorative. First, \textbf{A1} and \textbf{A2} carry comparable
+functional burden (both high on \Gfac{}) but \emph{opposite} biology---low versus highest
+immunometabolic load---so the corners render the biology\,\orth\,\Gfac{} dissociation as
+a discrete contrast: two extremes that look comparably ill but are biologically opposite.
+Second, the symptom space resolves into two distinct corners rather than one severity
+gradient---\textbf{A0} (activation/sleep) and \textbf{A3} (trauma/suicidality)---while
+\textbf{A4} marks the low-burden pole that closes the hull. Crucially, the biology corner
+\textbf{A2} is a \emph{direction of maximal phenotype}, not a partition boundary:
+immunometabolic load varies continuously across the cloud with no density gap (Hopkins
+$\to\tfrac12$, no preferred mixture $K$), so \textbf{A2} is an archetypal corner of the
+continuum rather than a cluster carved out of it. This is why the archetypes and the
+continuous coordinates, not any tessellation, are the load-bearing object for biology,
+and why the dominant-archetype labels enter only as summaries while the continuous
+simplex weight vector remains the inferential object.
 
 \subsection{Measurement-error mixture and the nested \texorpdfstring{$K$}{K}-family}
 

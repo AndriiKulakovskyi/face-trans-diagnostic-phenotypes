@@ -191,8 +191,8 @@ def fig2_map(max_per_block=8):
 def fig_factors():
     """Figure 3: factor-wise interpretability lollipops (a) + inter-factor correlations Φ (b)."""
     L = _load_loadings()
-    fig = plt.figure(figsize=(12.6, 6.2))
-    outer = fig.add_gridspec(1, 2, width_ratios=[1.55, 1.0], wspace=0.30)
+    fig = plt.figure(figsize=(12.6, 7.2))
+    outer = fig.add_gridspec(1, 2, width_ratios=[1.15, 1.0], wspace=0.26)
     gsL = outer[0, 0].subgridspec(3, 3, hspace=0.65, wspace=0.55)
     axLol = [fig.add_subplot(gsL[i // 3, i % 3]) for i in range(9)]
     axC = fig.add_subplot(outer[0, 1])
@@ -200,6 +200,8 @@ def fig_factors():
     # (a) factor-wise lollipops
     for k, f in enumerate(AXES):
         LA.draw_lollipop(axLol[k], L, f, color=BLOCK_C[f], axlab=AXLAB1, axtag=AXTAG)
+    for ax in axLol[len(AXES):]:           # hide unused 9th cell (8 axes in a 3x3 grid)
+        ax.axis("off")
     fig.text(0.40, 0.99, "What defines each axis  (top home indicators, 95% CI)",
              ha="center", fontsize=10, fontweight="bold")
     panel(axLol[0], "a", x=-0.5, y=1.5)

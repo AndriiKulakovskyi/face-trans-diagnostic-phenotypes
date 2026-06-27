@@ -12,7 +12,7 @@ synthesis). Methods of record: [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md); v
 suicidality, developmental-risk, substance} — estimated from observed cells only (no imputation), via one
 global, missingness-aware Bayesian sparse-bifactor / ESEM model with mixed likelihoods and a Gaussian-copula
 (rank-INT) continuous block, marginalized (Woodbury). It is fit at **full N = 9,013, cohort-weighted**, and
-**converged** (R-hat 1.03, 0 divergences; 88 indicators). The **immunometabolic** factor is a single biology
+**converged** (R-hat 1.03, 0 divergences; 109 indicators = 88 continuous + 21 explicit). The **immunometabolic** factor is a single biology
 axis carrying both cardiometabolic and inflammatory markers (BMI, HbA1c, lipids, CRP, etc.; bmi→0.95,
 crp→0.37). The map is otherwise **simple-structure with 3 earned cross-loadings** — CTQ-37 → cognition
 (−0.094), PSQI-latency → cognition (+0.057), PSQI-daytime → cognition (−0.070), each with 95% CI excluding 0
@@ -315,7 +315,7 @@ treatment) is feasible now without new data (DR excluded — no follow-up Rx).
   persistence) + the canonical measurement engine `src/face/models/bayesian/measurement_model_oop.py`; tests.
 - **The map (FINAL):** **8 dimensions** — G (overall burden) ⊥ the 7 specifics {cognition, **immunometabolic**,
   sleep, mania/activation, suicidality, developmental-risk, substance} — fit jointly at full N = 9,013,
-  cohort-weighted (R-hat 1.03, 0 divergences; 88 indicators). The immunometabolic factor carries both
+  cohort-weighted (R-hat 1.03, 0 divergences; 109 indicators = 88 continuous + 21 explicit). The immunometabolic factor carries both
   cardiometabolic and inflammatory markers as one biology axis. anhedonia **rejected**;
   impulsivity/negative-symptoms/sensory dropped pre-modeling; depression/anxiety = cross-loading
   windows. Biology is *least severity-entangled* (not strictly ⊥) via the correlated-G test. *(Paper-facing

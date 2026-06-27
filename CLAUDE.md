@@ -62,7 +62,7 @@ data/config layer + utilities remain as scripts; all milestone modeling lives in
 
 **M1 — the 8-factor map (complete, PI sign-off 2026-06-27).** One global, missingness-aware Bayesian
 sparse-bifactor / ESEM model, mixed likelihoods, Gaussian-copula (rank-INT) continuous block, marginalized
-(Woodbury); fit at full N = 9,013, cohort-weighted (R-hat 1.03, 0 divergences; 88 indicators). **8 latent
+(Woodbury); fit at full N = 9,013, cohort-weighted (R-hat 1.03, 0 divergences; 109 indicators = 88 continuous + 21 explicit). **8 latent
 dimensions:** G (overall burden) ⊥ 7 specifics — cognition, **immunometabolic** (one biology factor:
 cardiometabolic + inflammatory markers), sleep, mania/activation, suicidality, developmental-risk, **substance**
 (pinned orthogonal — its cross-factor correlations are non-identifiable). The map is mostly simple-structure

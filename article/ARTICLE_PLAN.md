@@ -144,7 +144,7 @@ rewrite if we go to Lancet Psychiatry; keep both in the LaTeX as commented alter
 ## 3. Cohort, scope, and what the article will and will not claim
 
 - **Sample.** FACE cohorts (Fondation FondaMental), V0 baseline *N* = 9,013 (BP 6,252 · SZ 2,209 · DR 552);
-  21 recruitment sites; 143 modeled indicators (88 continuous, 55 explicit); mean cell missingness 39.8%,
+  21 recruitment sites; 143-item raw-indicator pool, of which the fitted map carries 109 (88 continuous, 21 explicit); mean cell missingness 39.8% over the pool,
   preserved, never imputed (`reports/01_build_data.md`). Longitudinal follow-up V1 47.4% (4,270), V2 32.8%
   (2,958) (`reports/30_retention.csv`, `31_attrition.md`).
 - **Internal validity only.** V0 discovery; follow-up validates; **no external cohort, no incident-event
