@@ -29,6 +29,9 @@ dev = ["pytest>=7.0", "pytest-cov>=4.0", "ruff==0.12.0", "pip-tools>=7.0"]  # ru
 # numpyro+jax enable the NumPyro/JAX NUTS backend (scripts/04_fit.py --gpu); on a CUDA box also
 # `pip install -U "jax[cuda12]"` to use the GPU (e.g. RTX 4090).
 bayesian = ["pymc>=5.10", "arviz>=0.17", "h5netcdf>=1.0", "numpyro>=0.13", "jax>=0.4"]
+# M2 stratification engine: archetypal analysis (PCHA), Hartigan dip test, density clustering +
+# mapper-graph topology for the structure gate. Pinned exactly in requirements.lock.
+strata = ["archetypes>=0.12", "diptest>=0.11", "hdbscan>=0.8.40", "umap-learn>=0.5.7", "networkx>=3.0"]
 # Convenience alias for "everything needed to export static figures".
 full = ["kaleido>=0.2"]
 

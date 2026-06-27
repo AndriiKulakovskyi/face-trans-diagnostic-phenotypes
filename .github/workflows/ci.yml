@@ -18,12 +18,13 @@ jobs:
           # so the pinned bayesian stack is not installable on 3.11.
           python-version: "3.13"
           cache: pip
-      - name: Install (core + bayesian + dev)
-        # Install the Bayesian backend (pymc/pytensor/numpyro/jax/arviz) so the measurement engine and
-        # its golden tests are actually exercised in CI. requirements.lock pins the EXACT tested versions
-        # (regenerate with scripts/gen_lockfile.py) and is applied as a constraint so CI runs the same
-        # versions as local; ranges live in pyproject [bayesian].
-        run: pip install -e ".[bayesian,dev]" -c requirements.lock
+      - name: Install (core + bayesian + strata + dev)
+        # Install the Bayesian backend (pymc/pytensor/numpyro/jax/arviz) AND the M2 strata engine
+        # (archetypes/diptest/hdbscan/umap/networkx) so the measurement + stratification golden tests are
+        # actually exercised in CI. requirements.lock pins the EXACT tested versions (regenerate with
+        # scripts/gen_lockfile.py) and is applied as a constraint so CI runs the same versions as local;
+        # ranges live in pyproject [bayesian]/[strata].
+        run: pip install -e ".[bayesian,strata,dev]" -c requirements.lock
       - name: Lint (ruff)
         run: ruff check .
       - name: Unit tests + golden numerical-kernel regression

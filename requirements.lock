@@ -79,3 +79,10 @@ typing-extensions==4.15.0
 typing-inspection==0.4.2
 tzdata==2025.2
 xarray==2025.10.1
+# M2 stratification engine (the `strata` extra) — pinned to the tested versions.
+archetypes==0.12.2
+diptest==0.11.0
+hdbscan==0.8.42
+umap-learn==0.5.12
+networkx==3.5
+pynndescent==0.6.0
