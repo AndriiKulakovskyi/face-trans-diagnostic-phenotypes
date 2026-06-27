@@ -1,0 +1,29 @@
+% Table 3 — the five archetypes (corners of the continuum). Source:
+% docs/STRATA_OOP_FINDINGS.md, docs/STRATA_OOP_ATLAS.md, article/annex/B_stratification.tex.
+% Corner profiles use the 1-dp signature table in docs/STRATA_OOP_FINDINGS.md (A0..A4);
+% A3's immunometabolic value (-2.1) is the 1-dp rounding of ATLAS -2.07
+% (docs/STRATA_OOP_ATLAS.md), which the FINDINGS abbreviation omits.
+\begin{table}[t]
+\centering
+\caption{\textbf{The five archetypes.} Corners of the clinical--biological
+continuum---directions of maximal phenotype on the convex hull of the cloud, not
+discrete biotypes (the space carries no density gap; single-Gaussian falsification null
+$z=1.13$, n.s.). $A=5$ is the largest cross-seed-stable corner count (minimum Tucker
+congruence $0.979$, explained variance $0.601$, clean stability cliff to $0.436$ at
+$A=6$). Sizes are dominant ($\arg\max$) memberships over $N=9{,}013$ patients; the
+inferential object is the continuous simplex weight vector, not the hard label.}
+\label{tab:archetypes}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}l >{\raggedright\arraybackslash}p{5.0cm} l c@{}}
+\toprule
+Archetype & Defining profile (latent $z$-scale) & Clinical reading & $N$ (dominant) \\
+\midrule
+\textbf{A0} & $\uparrow$sleep $+2.8$, $\uparrow$mania $+1.7$, $\downarrow$severity & \emph{activation/sleep} (BP-enriched) & $1{,}448$ \\
+\textbf{A1} & $\uparrow$severity $+1.9$, $\downarrow$immunometabolic $-1.9$, $\downarrow$developmental & \emph{severe, clean-biology} & $1{,}584$ \\
+\textbf{A2} & $\uparrow$immunometabolic $+3.5$, $\uparrow$severity $+2.4$, $\uparrow$suicidality & \emph{immunometabolic burden} (the biology corner) & $1{,}426$ \\
+\textbf{A3} & $\uparrow$developmental $+2.8$, $\uparrow$suicidality $+1.4$, $\downarrow$immunometabolic $-2.1$ & \emph{trauma/suicidality} & $2{,}004$ \\
+\textbf{A4} & $\downarrow$sleep $-2.7$, $\downarrow$severity $-2.0$, $\downarrow$mania & \emph{low-burden/well} & $2{,}551$ \\
+\bottomrule
+\end{tabular}
+\end{table}
