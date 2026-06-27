@@ -5,6 +5,18 @@
 > pipeline. Findings: [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md); clinician atlas:
 > [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
 > Read before any M4 modelling work. *Status: COMPLETE, pending PI sign-off. 2026-06-11.*
+>
+> **8-factor rebuild note (2026-06-27; pending PI sign-off).** The M4 method below is unchanged, but it is now
+> run on the **8-factor** M1/M2/M3 objects (immunometabolic merge + substance orthogonal; **A = 5** archetypes).
+> The engine already discovers the archetype/K-family encodings dynamically, so A=4→5 needed no live-path change;
+> the only functional edit is `DURABLE = (cognition, immunometabolic)` (the merged durable biology, M3 ICC 0.91).
+> Result **replays and is slightly stronger**: the **A = 5 archetypes predict 2-year functioning** (ΔELPD
+> **+62.8** beyond DSM-5+severity+baseline, was +59; IPW-robust +54.4, permutation-null, co-informative with
+> DSM-5, course-dependent/BP-led), **operative K = none**, **not** severity, and the archetype atlas is a
+> **17→52%** functional-remission gradient with the **immunometabolic biology corner (A2) worst**. The
+> durable-*pair*-alone EIV stays ambiguous (the archetype representation is the carrier). Two sub-analyses are
+> **pending the 8-factor re-run**: the raw-vs-map representation benchmark (xgboost env segfault) and the formal
+> within-cohort de-confounding notebook. Findings: [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
 
 ## 1. Estimand and invariants
 
