@@ -20,19 +20,19 @@ archetype-moderation view + the copula-carrier survival check. Output under `res
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, replace
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from face.prognosis import CANON, DURABLE
+from face.prognosis import DURABLE
 from face.prognosis.compare import delta_elpd
 from face.prognosis.frame import OutcomeSpec
 from face.prognosis.glm import fit_glm
 from face.prognosis.reference import arm_block, coord_eiv_block, foundation_design, site_index
 from face.treatment.endpoints import build_endpoints
-from face.treatment.medications import CLASSES, build_treatment_exposures
+from face.treatment.medications import build_treatment_exposures
 from face.treatment.moderation import e_value, mde, sd_from_eti
 from face.treatment.propensity import (
     QUESTIONS,
@@ -166,7 +166,7 @@ class TreatmentConfig:
     chains: int = 4
     smoke: bool = False
 
-    def with_smoke_defaults(self) -> "TreatmentConfig":
+    def with_smoke_defaults(self) -> TreatmentConfig:
         return replace(self, draws=120, tune=120, chains=2, smoke=True)
 
     def fit_kw(self) -> dict:
@@ -181,7 +181,7 @@ class TreatmentConfig:
         return self.output_dir / "exposures" / "treatment_exposures.parquet"
 
     @property
-    def stage_plan(self) -> list["TreatmentStage"]:
+    def stage_plan(self) -> list[TreatmentStage]:
         return [TreatmentStage("exposures", "exposures"), TreatmentStage("frame", "frame"),
                 TreatmentStage("propensity", "propensity"), TreatmentStage("moderation", "moderation"),
                 TreatmentStage("confounder", "confounder"), TreatmentStage("tolerability", "tolerability"),
@@ -222,7 +222,7 @@ class TreatmentData:
         return exp
 
     def build_frame(self) -> pd.DataFrame:
-        from face.treatment.frame import _response_signals                    # reuse the raw-signal extractor
+        from face.treatment.frame import _response_signals  # reuse the raw-signal extractor
         pred = pd.read_parquet(self.config.prognosis_dir / "frame" / "analysis_frame.parquet")
         pred["patient_id"] = pred["patient_id"].astype(str)
         sig = _response_signals(self.config.horizon)                          # (cohort, patient_id)-indexed

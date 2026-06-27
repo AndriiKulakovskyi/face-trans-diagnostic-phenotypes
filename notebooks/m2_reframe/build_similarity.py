@@ -25,11 +25,12 @@ from __future__ import annotations
 import pathlib
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
-from matplotlib.lines import Line2D  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
+from matplotlib.lines import Line2D  # noqa: E402
 
 REPO = pathlib.Path(__file__).resolve().parents[2]
 R = REPO / "results" / "face" / "strata_oop"

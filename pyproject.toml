@@ -46,9 +46,11 @@ target-version = "py311"
 [tool.ruff.lint]
 # Pyflakes (real bugs / unused imports) + import order + modernization + bugbear.
 select = ["E", "F", "W", "I", "UP", "B"]
-# Ignored on purpose: E501 long lines (inline CSS / dense docstrings), E702 compact
-# one-liners, E741 single-letter math names (L, l), F601 harmless dup-coercion keys in
-# rules.py (1/1.0/True all map to the same value), F841 throwaway locals in scripts,
-# B008 (call-in-default used deliberately). E402: scripts insert src/ on sys.path
-# before importing `face`, so their imports are intentionally not at module top.
-ignore = ["E501", "E702", "E741", "F601", "F841", "B006", "B007", "B008", "B023", "E402"]
+# Ignored on purpose: E501 long lines (inline CSS / dense docstrings), E701/E702 compact
+# one-liners, E731 small lambdas (path/colour helpers), E741 single-letter math names (L, l),
+# F601 harmless dup-coercion keys in rules.py (1/1.0/True all map to the same value), F841
+# throwaway locals in scripts, B006/7/8/23 call-in-default + B905 zip-without-strict (used
+# deliberately). UP031/UP038 keep the existing %-format + isinstance-tuple style. E402:
+# scripts insert src/ on sys.path before importing `face`, so their imports are not at top.
+ignore = ["E501", "E701", "E702", "E731", "E741", "F601", "F841",
+          "B006", "B007", "B008", "B023", "B905", "UP031", "UP038", "E402"]

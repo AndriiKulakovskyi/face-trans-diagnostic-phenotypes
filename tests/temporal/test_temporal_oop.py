@@ -7,7 +7,6 @@ import pandas as pd
 from face.models.bayesian.measurement_model_oop import copula_invert
 from face.temporal.persistence import membership_persistence
 from face.temporal.temporal_model_oop import (
-    CANON,
     FrozenCovariateDesign,
     TemporalConfig,
     _config_sig,

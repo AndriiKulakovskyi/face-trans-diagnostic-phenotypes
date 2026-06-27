@@ -17,7 +17,6 @@ loadings *out of zero* only where they genuinely support them. It then:
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from dataclasses import replace
 from pathlib import Path
@@ -43,8 +42,12 @@ for m in [n for n in sys.modules if n == "face" or n.startswith("face.")]:
         del sys.modules[m]
 
 import arviz as az  # noqa: E402
+
 from face.models.bayesian.measurement_model_oop import (  # noqa: E402
-    MeasurementConfig, MeasurementDataset, StageDefinition, StageRunner,
+    MeasurementConfig,
+    MeasurementDataset,
+    StageDefinition,
+    StageRunner,
 )
 from face.reporting.loading_atlas import DISP  # noqa: E402
 
@@ -107,7 +110,7 @@ def main():
     absmed = np.abs(med)
     print(f"\n[esem] SPARSITY: {(absmed < 0.05).mean():.0%} of {len(med)} cross-loadings shrunk to |median|<0.05; "
           f"{int(cred.sum())} are credible (95% CI excludes 0)", flush=True)
-    print(f"[esem] SELECTED cross-loadings (credible), sorted by |median|:", flush=True)
+    print("[esem] SELECTED cross-loadings (credible), sorted by |median|:", flush=True)
     order = np.argsort(-absmed)
     rows = []
     for k in order:

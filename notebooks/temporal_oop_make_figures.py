@@ -23,7 +23,11 @@ SRC = REPO / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from face.temporal.temporal_model_oop import TemporalConfig, TemporalRunner, TemporalVisualizer  # noqa: E402
+from face.temporal.temporal_model_oop import (  # noqa: E402
+    TemporalConfig,
+    TemporalRunner,
+    TemporalVisualizer,
+)
 
 
 def main() -> None:

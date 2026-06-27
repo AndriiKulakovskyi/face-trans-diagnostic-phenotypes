@@ -9,14 +9,19 @@ treatment_oop,m4_repbench} and reports/. Uniform style, colorblind-safe
 
 Run:  cd <repo root>;  python article/make_figures_copula.py
 """
-import json, os, warnings
+import json
+import os
+import warnings
+
+import matplotlib as mpl
 import numpy as np
 import pandas as pd
-import matplotlib as mpl
+
 mpl.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Rectangle
 from matplotlib.lines import Line2D
+from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+
 warnings.filterwarnings("ignore")
 
 # ----------------------------------------------------------------------------- paths
@@ -61,8 +66,10 @@ BLOCK_C = {"overall_severity": OI["black"], "cognition": OI["sky"], "immunometab
 
 # Shared dot-atlas engine (article + technical report use one implementation; style is passed in).
 import sys
+
 sys.path.insert(0, os.path.join(ROOT, "src"))
 from face.reporting import loading_atlas as LA  # noqa: E402
+
 DISP = LA.DISP
 
 
@@ -640,5 +647,7 @@ if __name__ == "__main__":
         try:
             fn()
         except Exception as e:
-            import traceback; print("  FAILED", fn.__name__, "->", e); traceback.print_exc()
+            import traceback
+            print("  FAILED", fn.__name__, "->", e)
+            traceback.print_exc()
     print("done.")
