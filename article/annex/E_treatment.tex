@@ -12,17 +12,18 @@ treatment effect.
 Treatment exposures, recovered from the per-cohort source dictionaries, were harmonized
 to common drug-class indicators. For each treatment contrast we estimate a propensity
 $e(v_i)=P(\text{treat}\mid v_i)$ on a design $v_i$ that includes severity, diagnosis,
-demographics \emph{and} the nine coordinates~\citep{rosenbaum1983propensity}, gate on
+demographics \emph{and} the eight coordinates~\citep{rosenbaum1983propensity}, gate on
 common support (retain the region where both arms have mass), and reweight by stabilized
 inverse-probability-of-treatment weights~\citep{austin2011iptw}
 \begin{equation}
   w_i=\frac{P(\text{treat})}{e(v_i)}\ \text{(treated)},\qquad
   w_i=\frac{1-P(\text{treat})}{1-e(v_i)}\ \text{(control)} ,
 \end{equation}
-checking covariate balance by the post-weighting maximum standardized mean difference.
-Lithium-in-BP balanced to a maximum SMD of $0.008$ (near-complete overlap $0.997$);
-antipsychotic-in-BP balanced to $0.079$; clozapine-in-SZ retained residual imbalance
-(SMD $0.335$), the signature of channelling.
+checking covariate balance by common support (fraction in the joint support of both
+arms). Lithium-in-BP overlapped near-completely (fraction in support $0.998$), giving the
+cleanest, well-identified contrast; antipsychotic-in-BP was estimable ($0.996$); and
+clozapine-in-SZ was channelled in the active-comparator framing ($0.980$), so it was
+estimated on/off ($0.988$) rather than against a maintenance comparator.
 
 \subsection{Doubly-robust moderation, the E-value and the minimum detectable effect}
 
@@ -37,45 +38,55 @@ estimate---and, crucially, a \emph{minimum detectable effect} (MDE): the smalles
 interaction the design resolves at $80\%$ power. The MDE is what makes a null
 \emph{bounded} rather than blind.
 \begin{itemize}
-  \item \textbf{Lithium-BP} (cleanest): average effect on functioning $-0.003$ (E-value
-  $1.06$), with per-axis interactions well inside an MDE of $0.19$--$0.22$ SD---a
-  \emph{well-identified, bounded null}. The design could have resolved a meaningful
-  interaction and did not.
-  \item \textbf{Antipsychotic-BP}: a confounded \emph{average} effect ($-0.231$, E-value
-  $1.77$) but \emph{no reliable moderation}---the interaction $\Delta\mathrm{ELPD}$ band
-  spans zero and the two map encodings disagree on which axis carries it (the durable
-  representation points at metabolic, the archetype representation at the biological
-  corner), textbook false-positive behaviour.
-  \item \textbf{Clozapine-SZ}: channelled and underpowered (MDE $0.37$--$0.67$ SD), a
-  non-decisive null rather than a clean one.
+  \item \textbf{Lithium-BP} (cleanest): average effect on functioning $-0.030$ (durable)
+  / $-0.055$ (archetype), E-value $1.20$--$1.28$, with per-axis interactions well inside
+  an MDE of $0.20$--$0.21$ SD and \texttt{moderation\_any\_axis}$=$\texttt{False} in both
+  representations---a \emph{well-identified, bounded null}. The design could have resolved
+  a meaningful interaction and did not; the map does not pick lithium responders.
+  \item \textbf{Antipsychotic-BP}: a confounded \emph{average} effect ($-0.242$ durable /
+  $-0.238$ archetype, E-value $1.80$/$1.79$) whose moderation is \emph{suggestive but
+  unconfirmed}---\texttt{any\_axis} flags on functioning, but the held-out
+  $\Delta\mathrm{ELPD}$ of adding the interaction is weak (durable $+3.4\pm3.4$, archetype
+  $+1.8\pm4.3$; both bands span zero), so the verdict is ``suggestive (HDI,
+  $\Delta\mathrm{ELPD}$ weak)'' in both encodings---a hypothesis, not a moderation signal.
+  \item \textbf{Clozapine-SZ}: channelled and underpowered (MDE $0.38$--$0.45$ SD on
+  functioning, larger on CGI), a non-decisive null rather than a clean one.
 \end{itemize}
-Average treatment effects were uniformly confounding-fragile (E-values $1.1$--$1.8$).
+Average treatment effects were uniformly confounding-fragile (E-values $1.16$--$1.80$).
 
 \subsection{The map is not a treatment proxy (defending the prognosis)}
 
-The most damaging alternative to the prognostic finding is that the biological corner
-simply received different drugs that drove the outcome. We refit the functioning
-prognosis with and without the harmonized drug-class exposures, both unweighted and
-under attrition weighting. The archetype carrier of the forecast survived
-($\beta$ $0.164\!\to\!0.156$ unweighted, attenuation $4.7\%$;
-$0.147\!\to\!0.141$ under attrition weighting, $3.9\%$; both credible intervals
-excluding zero), so the functional forecast is not merely unmodelled treatment. (The
-isolated durable trio did not survive unweighted, consistent with the prognosis annex;
-its metabolic axis sharpened to exclude zero only under weighting.) The adjustment is
-for baseline/lifetime (BP) or current (SZ/DR) drug-class exposure, not a marginal
-structural model over time-varying treatment.
+The most damaging alternative to the prognostic finding is that the immunometabolic
+corner simply received different drugs that drove the outcome. We refit the functioning
+prognosis with and without the harmonized drug-class exposures, on the treatment-data
+subset, both unweighted and under attrition weighting. The carrier survives in
+\emph{both} representations. The archetype corner~A2---the immunometabolic biology corner,
+the worst-prognosis pole of the prognosis annex---attenuates from $\beta=-0.210$ to
+$-0.194$ ($7.7\%$; $6.4\%$ under attrition weighting); the durable immunometabolic axis
+itself attenuates $-0.049\!\to\!-0.046$ ($6.4\%$; $4.1\%$ weighted); the adjacent
+archetype corners A0/A3 attenuate $5.3\%/6.6\%$ ($4.3\%/5.7\%$ weighted), all credible
+intervals excluding zero. So the functional forecast is not merely unmodelled treatment:
+with only $\sim4$--$8\%$ attenuation, robust to attrition weighting, it survives whether
+encoded as the immunometabolic archetype corner or as the durable immunometabolic axis.
+(Cognition and the severe-clean-biology corner~A1 do not survive, reported honestly.) The
+adjustment is for baseline/lifetime (BP) or current (SZ/DR) drug-class exposure, not a
+marginal structural model over time-varying treatment.
 
 \subsection{Treatment-course atlas}
 
 Even without selecting a drug, the baseline archetype \emph{describes} two-year
 treatment course. Per corner (pooled BP$+$SZ, Wilson intervals): treatment-resistance
-$43\%$ (biological) to $20\%$ (low-burden); CGI response $46\%$ to $59\%$; significant
-side-effects $23\%$ to $11\%$. The corner added beyond baseline severity, substance
-comorbidity and demographics (likelihood-ratio $p\le3\times10^{-3}$ for all three
-endpoints), the gradient was within-cohort (composition share $\le6\%$,
-corner-by-cohort interaction non-significant), and held-out $\Delta\mathrm{ELPD}$ was
-$+20/+16/+10$. Individual discrimination was modest: under a permutation null on the
-held-out $\Delta$AUC, response ($p=0.015$) and side-effects ($p=0.005$) cleared, while
-treatment-resistance---the steepest gradient---was AUC-marginal ($p=0.185$), the same
-group-versus-individual collapse seen for prognosis. The atlas is therefore a
-monitoring signal (which phenotype to watch more closely), never a prescription.
+$44\%$ (the immunometabolic corner~A2) to $20\%$ (the low-burden well pole~A4); CGI
+response $48\%$ to $61\%$; significant side-effects $25\%$ to $11\%$. The corner added
+beyond baseline severity, substance comorbidity and demographics (likelihood-ratio
+$p=2\times10^{-4}/{<}10^{-4}/1.3\times10^{-3}$ for resistance/response/side-effects), the
+gradient was within-cohort (composition share $\le5\%$, corner-by-cohort interaction
+non-significant, $p$ $0.31$--$0.48$). Individual discrimination was modest: under a
+permutation null on the held-out $\Delta$AUC, response ($+0.034$, $p=0.010$) and
+side-effects ($+0.042$, $p=0.015$) cleared, while treatment-resistance---the steepest
+gradient---was AUC-marginal ($+0.012$, $p=0.205$), the same group-versus-individual
+collapse seen for prognosis. The durable axes alone describe almost no response
+heterogeneity ($\Delta$AUC $\approx0$); it is the archetype configuration that carries it.
+The atlas is therefore a monitoring signal---which phenotype (the immunometabolic corner)
+to watch more closely for a $\sim2\times$ resistance / side-effect risk band---never a
+prescription.

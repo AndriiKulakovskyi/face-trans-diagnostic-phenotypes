@@ -1,20 +1,25 @@
 # M2 soft-region atlas — what K and A mean, in detail (copula map)
 
-> **Reframe note (2026-06-23).** M2 is now framed as a *coordinate system + reading guide*, not a typology. The
-> 9-dim copula space is a **continuum**; the **continuous coordinates** are the load-bearing object, and the
-> archetype corners / K-tessellation are **interpretation lenses**, not discovered decision-regions or natural
-> kinds (M4 confirms: *operative K = none*). Canonical now: docs/STRATA_READING_GUIDE.md + report §sec:strata.
-> Read the stratification/archetype/tessellation framing below as the *derivation* of those lenses, not a claim
-> that patients fall into discrete strata.
+> **Reframe note.** M2 is a *coordinate system + reading guide*, not a typology. The **8-dim** copula space
+> (immunometabolic merge + 3 cross-loadings + substance ⊥) is a **continuum**; the **continuous coordinates**
+> are the load-bearing object, and the archetype corners / K-tessellation are **interpretation lenses**, not
+> discovered decision-regions or natural kinds (M4 confirms: *operative K = none*). Canonical companions:
+> docs/STRATA_READING_GUIDE.md + report §sec:strata. Read the framing below as the *derivation* of those lenses,
+> not a claim that patients fall into discrete strata.
 
-> Detailed results analysis for the reworked M2 (the continuum of soft operational regions on the
+> **The canonical 8-factor numbers live in [STRATA_OOP_FINDINGS.md](STRATA_OOP_FINDINGS.md)** (continuum null
+> silhouette 0.140 vs 0.137±0.002 z = 1.13; K-family BIC 185.0–185.6k; transdiagnostic ARI 0.006 vs DSM-5;
+> tighter-than-DSM-5 η² 0.074 vs 0.026). Map: `copula/weighted_8d/hs_s5_merged_xc`. The detail tables in §0b/§1
+> reconcile to those figures.
+
+> Detailed results analysis for the M2 continuum of soft operational regions on the
 > Gaussian-copula map). Paper-facing summary: [STRATA_OOP_FINDINGS.md](STRATA_OOP_FINDINGS.md). Engine:
 > [`src/face/strata/strata_model_oop.py`](../src/face/strata/strata_model_oop.py). Figures:
 > `docs/figures/strata_oop/`. All coordinates are on the latent z-scale (0 = population mean, units = SD).
 
 ## 0. One continuum, three views — the load-bearing objects and the (un-privileged) K
 
-The structure gate says the 9-dim space is a **continuum** (no discrete clusters). On a continuum there is no
+The structure gate says the 8-dim space is a **continuum** (no discrete clusters). On a continuum there is no
 "correct number of groups", so the **load-bearing objects are granularity-free**: the **continuous
 coordinates** (+ uncertainty) and the **archetype simplex** (A extreme phenotypes, each patient a blend). A
 hard tessellation is only a **coarse labelling convention** — useful for communication, but with **no
@@ -28,7 +33,7 @@ privileged K**. We therefore export a **nested K-family** and defer the *operati
 | what it finds | the dominant **density** split — where the cloud is most separable into regions | the **extremes** — the orthogonal directions of maximal phenotype |
 | answer it gives | "which **decision region** is this patient in?" | "**where on the continuum** is this patient — what blend of extremes?" |
 | granularity rule | **nested family** (no privileged K); the operative K → M4/M5 incremental validity | largest `A` that stays cross-seed reproducible |
-| result here | **K = 2 / 3 / 4 exported** (K = 2 is the M3-contract default only) | **A = 4** |
+| result here | **K = 2 / 3 / 4 exported** (K = 2 is the M3-contract default only) | **A = 5** |
 
 The headline finding is that the tessellation and the archetypes split on **different axes** — and that
 dissociation is exactly the transdiagnostic structure we are after (§3).
@@ -43,14 +48,14 @@ complementary tests and a falsification null, and report honestly. The verdict i
 The three signals that fire are tendency/shape signals, not separation signals — and a falsification test
 shows they are spurious.
 
-**The battery (arm A, all 9 axes, 9,013 patients):**
+**The battery (arm A, all 8 axes, 9,013 patients):**
 
 | test | what it measures | result | reads as |
 |---|---|---|---|
 | Hopkins | cluster *tendency* (vs uniform) | 0.79 | fired (but see null below) |
 | GMM-BIC | does >1 Gaussian fit better than 1? | interior optimum, gain 9,495 | fired (but = non-Gaussian shape) |
-| gap statistic | optimal K vs a uniform reference | k=3 | fired |
-| **silhouette** | **separation** of the best K | **peak 0.14** (< 0.15) | **continuum** |
+| gap statistic | optimal K vs a uniform reference | k=1 | continuum |
+| **silhouette** | **separation** of the best K | **peak 0.146** (< 0.15) | **continuum** |
 | dip (PC1) | modality | p = 1.0, unimodal | continuum |
 | HDBSCAN | density clusters (non-convex) | 0 clusters, 100% noise | continuum |
 | Mapper | topology | a single connected component | continuum |
@@ -61,12 +66,12 @@ real data's metrics exceed it (`StructureGate.null_comparison`):
 
 | metric | real | single-Gaussian null | z |
 |---|---|---|---|
-| **best silhouette (separation)** | **0.140** | **0.141 ± 0.002** | **-0.36** |
+| **best silhouette (separation)** | **0.140** | **0.137 ± 0.002** | **1.13** |
 | Hopkins (tendency) | 0.794 | 0.776 ± 0.004 | 4.5 |
 | GMM-BIC gain (shape) | 9,495 | 0 ± 0 | — |
 
 The decisive line is the silhouette: the best clustering of the real data separates patients **no better than
-clustering a structureless Gaussian blob** (z = -0.36). The Hopkins "tendency" is essentially what the null
+clustering a structureless Gaussian blob** (z = 1.13, n.s.). The Hopkins "tendency" is essentially what the null
 already gives (0.79 vs 0.78), so that signal is spurious. The large GMM-BIC gain (real 9,495 vs null 0)
 confirms the cloud is **non-Gaussian** — but the silhouette proves those GMM components are **not separated**,
 so the non-Gaussianity is *shape* (skew + the archetype corners), not *clusters*.
@@ -80,12 +85,12 @@ uncertainty propagates. And the measurement-error mixture itself (Extreme Deconv
 covariances are large and heavily overlapping.
 
 **So the precise, honest claim** is *not* "every patient is the same" and *not* a proven "zero clusters
-anywhere." It is: **in the 9-dim baseline copula coordinate space, there are no well-separated, reproducible,
+anywhere." It is: **in the 8-dim baseline copula coordinate space, there are no well-separated, reproducible,
 density- or topology-defined discrete clusters** — separation is statistically identical to a structureless
 continuum, the cloud is one connected unimodal component, density clustering finds none, and the optimal
 component count under uncertainty is 1. That is quantitatively inconsistent with discrete biotypes and (per §4
 of the findings) a tighter description than the DSM-5 categories. **What we cannot rule out:** clusters in the
-raw-indicator space that the 9-dim factor summary blurs, or structure that emerges only with outcomes/
+raw-indicator space that the 8-factor summary blurs, or structure that emerges only with outcomes/
 follow-up (M3/M4). The continuum claim is about *this* baseline measurement map.
 
 ---
@@ -95,64 +100,64 @@ follow-up (M3/M4). The continuum claim is about *this* baseline measurement map.
 ### 1.1 The K-family (no privileged K)
 
 `K` is a granularity *convention*, not a discovered kind-count (a continuum has no natural K). The XD-BIC is
-essentially **flat** across K (a continuum signature — no interior optimum; the minimum is at **K = 3**, by
-< 0.03%), so an internal parsimony tiebreak would be false precision. Instead we **export the family and let
+essentially **flat** across K (a continuum signature — no interior optimum; the minimum is at **K = 4**, by
+< 0.4%), so an internal parsimony tiebreak would be false precision. Instead we **export the family and let
 M4/M5 pick the operative K by external (predictive/treatment) validity.** The decision menu
 (`results/face/strata_oop/consolidate/k_family_menu.csv`) — assignment + stability + what each K splits on:
 
-| K | XD-BIC | confident-dominant | seed-ARI | η² specifics | η² G | η² suicidality | η² metabolic | η² inflammatory |
+| K | XD-BIC | confident-dominant | seed-ARI | η² specifics | η² G | η² mania | η² suicidality | η² immunometabolic |
 |---|---|---|---|---|---|---|---|---|
-| **2** (contract default) | 197,963 | **1.00** | 0.998 | 0.122 | 0.008 | 0.543 | 0.003 | 0.004 |
-| **3** (BIC-best) | **197,918** | 0.92 | 0.968 | 0.141 | 0.165 | 0.436 | 0.064 | 0.011 |
-| **4** | 198,108 | 0.87 | 0.996 | 0.154 | **0.332** | 0.557 | **0.102** | 0.031 |
+| **2** (contract default) | 185,557 | **1.00** | 0.991 | 0.077 | 0.050 | 0.224 | 0.225 | 0.027 |
+| **3** (BIC-near-best, stable) | 185,019 | 0.94 | 0.998 | 0.115 | 0.108 | 0.163 | 0.476 | 0.028 |
+| **4** (BIC-min, less stable) | 185,006 | 0.88 | 0.663 | 0.136 | **0.203** | 0.229 | 0.523 | **0.057** |
 
-BIC moves < 1% across the whole range (K = 2–8: 197.9k–199.5k) — there is no "right" K. **Two honest reads:**
-(i) every K splits *first* on suicidality-anchored symptom burden (the dominant density direction); but
-(ii) **finer K progressively captures the severity (G) and biology gradient that K = 2 discards** — metabolic
-η² 0.003 → 0.064 → 0.102, inflammatory 0.004 → 0.011 → 0.031, G 0.008 → 0.165 → 0.332. Biology has no density
-*gap* (so it never forms a clean region boundary at any K — §2/§3), but a finer tiling picks up more of its
-continuous gradient. K = 2 is the sharpest-assigning convention and the **M3-contract default** (a concrete
-`tess_*` is needed downstream); K = 3 is BIC-best and still confident + stable; K = 4 is richest on
-severity/biology. The full family ships as `tessfam_k{2,3,4}_*` so the operative choice is M4/M5's, not ours.
+BIC moves < 0.4% across the family (K = 2–4: 185.0k–185.6k) — there is no "right" K. **Two honest reads:**
+(i) every K splits *first* on psychiatric symptom burden — mania (η² 0.224) and suicidality (η² 0.225 → 0.476
+→ 0.523) — the dominant density direction; but (ii) **finer K progressively captures the severity (G) and
+immunometabolic gradient that K = 2 discards** — G η² 0.050 → 0.108 → 0.203, immunometabolic 0.027 → 0.057.
+Biology has no density *gap* (so it never forms a clean region boundary at any K — §2/§3), but a finer tiling
+picks up more of its continuous gradient. K = 2 is the sharpest-assigning convention and the **M3-contract
+default** (a concrete `tess_*` is needed downstream); K = 3 is BIC-near-best and still confident + stable
+(seed-ARI 0.998); K = 4 is richest on severity/biology but less stable (seed-ARI 0.663). The full family ships
+as `tessfam_k{2,3,4}_*` so the operative choice is M4/M5's, not ours.
 
 ### 1.2 The two regions are a symptom-burden gradient
 
-The deconvolved (noise-free) region centroids are near **mirror images** on the *psychiatric symptom* axes
-and ~**zero** on biology and on overall severity:
+The deconvolved (noise-free) region centroids are near **mirror images** on the *psychiatric symptom* axes —
+led by **mania and suicidality** — and small on biology and on overall severity:
 
-| axis | R0 *near-average* (57%) | R1 *↑suicidality* (43%) |
+| axis | R0 *near-average* | R1 *↑symptom-burden* |
 |---|---|---|
-| **suicidality** | **−0.54** | **+0.62** |
-| mania_activation | −0.24 | +0.28 |
-| substance | −0.26 | +0.26 |
+| **suicidality** | **−0.48** | **+0.55** |
+| **mania_activation** | **−0.47** | **+0.54** |
 | sleep | −0.22 | +0.25 |
+| substance | −0.21 | +0.24 |
 | developmental_risk | −0.18 | +0.20 |
-| overall_severity (G) | −0.01 | +0.15 |
+| overall_severity (G) | −0.22 | +0.25 |
 | cognition | +0.07 | −0.06 |
-| inflammatory | −0.06 | +0.06 |
-| metabolic | −0.04 | +0.05 |
+| immunometabolic | −0.16 | +0.18 |
 
 ### 1.3 What actually drives the split (per-axis η²)
 
-η² = the fraction of each axis's variance the K=2 partition explains. The split is **defined by
-suicidality** and the symptom cluster; it explains essentially **none** of the biology or severity variance:
+η² = the fraction of each axis's variance the K=2 partition explains. The split is **defined jointly by
+mania and suicidality** and the symptom cluster; it explains only a sliver of the biology or severity variance:
 
 | axis | η² of the K=2 split |
 |---|---|
-| **suicidality** | **0.543** |
-| mania_activation | 0.141 |
-| substance | 0.134 |
-| sleep | 0.081 |
+| **suicidality** | **0.225** |
+| **mania_activation** | **0.224** |
+| sleep | 0.094 |
+| substance | 0.082 |
 | developmental_risk | 0.060 |
+| overall_severity (G) | 0.050 |
+| immunometabolic | 0.027 |
 | cognition | 0.012 |
-| overall_severity | 0.008 |
-| inflammatory | 0.004 |
-| metabolic | 0.003 |
 
 **Reading:** the coarsest operationally-useful partition of the copula continuum is a **low- vs
-elevated-psychiatric-symptom-burden** split, anchored by suicidality (54% of its own variance), co-varying
-with mania / substance / sleep / developmental. It is **not a severity ladder** (G η² 0.008 — this is why the
-not-just-severity gate passes) and it is **blind to biology** (metabolic/inflammatory η² ≈ 0.003).
+elevated-psychiatric-symptom-burden** split, anchored jointly by mania (η² 0.224) and suicidality (η² 0.225),
+co-varying with sleep / substance / developmental. It is **not a severity ladder** (G η² 0.050 — this is why
+the not-just-severity gate passes, with η²(specifics) 0.077 > η²(G) 0.050) and it picks up only the start of
+the **immunometabolic** gradient (η² 0.027).
 
 ### 1.4 It is transdiagnostic and soft
 
@@ -162,9 +167,10 @@ Both regions mix all three cohorts and all DSM-5 subtypes — the partition is i
 | region | BP | DR | SZ | top DSM-5 subtypes |
 |---|---|---|---|---|
 | R0 near-average | 64% | 7% | 29% | BP1 30%, BP2 28%, SZ 23% |
-| R1 ↑suicidality | 76% | 5% | 18% | BP2 39%, BP1 28%, SZ 13% |
+| R1 ↑symptom-burden | 76% | 5% | 18% | BP2 39%, BP1 28%, SZ 13% |
 
-Membership is **soft**: median entropy 0.51; patients near the suicidality midline are boundary cases with
+(Cramér's V 0.063 vs cohort / 0.099 vs DSM-5; ARI 0.011 / 0.006.) Membership is **soft**: median norm-entropy
+0.65; patients near the symptom-burden midline are boundary cases with
 `r ≈ (0.5, 0.5)` — the soft transition boundary is explicit (`tess_entropy`, `tess_confidence_tier` in the
 hand-off). (At K=2 every patient's max responsibility is ≥ 0.5 by construction, so the tiers are core/soft;
 the boundary tier appears at K ≥ 3.) Figures: `region_profiles.png`, `boundary_map.png`, `confidence_bars.png`.
@@ -173,59 +179,58 @@ the boundary tier appears at K ≥ 3.) Figures: `region_profiles.png`, `boundary
 
 ## 2. A — the archetypes reveal biology ⊥ symptoms ⊥ severity
 
-### 2.1 Why A = 4 (and why not 8)
+### 2.1 Why A = 5
 
-`A` is the number of extreme phenotypes. Explained variance always rewards more corners, but on the copula
-coordinates the high-A archetypes chase the **wide explicit-axis uncertainty** (suicidality/substance/
-developmental have large posterior SD) and become **seed-unstable** — so we pick the largest A whose
-cross-seed reproducibility (min Tucker congruence) stays ≥ 0.8:
+`A` is the number of extreme phenotypes. Explained variance always rewards more corners, so we pick the largest
+A whose cross-seed reproducibility (min Tucker congruence) stays ≥ 0.8. There is a clean **stability cliff at
+A = 6**:
 
 | A | explained var | cross-seed stability |
 |---|---|---|
 | 2 | 0.24 | **0.999** |
-| 3 | 0.41 | 0.497 |
-| **4** | **0.52** | **0.979** |
-| 5 | 0.59 | 0.080 |
-| 6 | 0.66 | 0.288 |
-| 7 | 0.72 | 0.112 |
-| 8 | 0.76 | 0.050 |
+| 3 | 0.39 | 0.813 |
+| 4 | 0.50 | **0.997** |
+| **5** | **0.60** | **0.979** |
+| 6 | 0.66 | **0.436** ← collapse |
+| 7 | 0.72 | 0.197 |
+| 8 | 0.76 | 0.545 |
 
-Stability is **non-monotonic** with islands at A=2 and A=4. **A = 4** is the operational sweet spot (stable +
-half the variance). This is a **copula-specific finding**: the native map's A=8 archetypes (Tucker 0.999
-there) do **not** reproduce on the copula coordinates — the copula's honest, wider explicit-axis uncertainty
-will not support 8 stable corners.
+**A = 5 is the last stable archetype count** (EV 0.60); A = 6 collapses to 0.44 and beyond is noise. The
+immunometabolic coordinates support this finer, still-stable simplex — the copula's honest, wider
+explicit-axis uncertainty caps the stable corner count at five.
 
-### 2.2 The four extreme phenotypes
+### 2.2 The five extreme phenotypes
 
-| archetype | overall_severity | cognition | metabolic | inflammatory | sleep | mania | suicidality | developmental | substance | dominant-in |
-|---|---|---|---|---|---|---|---|---|---|---|
-| **A0 — biological** | +1.61 | +0.26 | **+1.99** | **+2.52** | +0.21 | +0.42 | +1.04 | +0.57 | **+2.55** | 25% |
-| **A1 — low-burden pole** | **−1.94** | +0.16 | −0.10 | +0.66 | −1.65 | −1.08 | −1.15 | −1.66 | −0.12 | 36% |
-| **A2 — severe, non-biological** | **+1.80** | +0.49 | −0.24 | **−2.93** | −0.49 | −0.37 | −0.69 | −0.70 | **−2.99** | 17% |
-| **A3 — psychiatric-symptom** | −0.61 | −0.87 | **−1.75** | −0.77 | **+2.24** | +1.30 | +1.03 | **+2.18** | +0.10 | 22% |
+| archetype | severity | cognition | immunometabolic | sleep | mania | suicidality | developmental | substance | reading |
+|---|---|---|---|---|---|---|---|---|---|
+| **A0 — activation/sleep** | −1.53 | −0.28 | +0.49 | **+2.79** | **+1.67** | −0.04 | −0.55 | −0.03 | manic + sleep-disturbed |
+| **A1 — severe, clean-biology** | **+1.88** | +0.59 | **−1.93** | −0.45 | −0.70 | −1.25 | **−2.59** | +0.11 | high severity, low biology |
+| **A2 — immunometabolic** | +2.36 | −0.01 | **+3.46** | −0.04 | −0.06 | +1.25 | +1.21 | −0.12 | the **biology corner** |
+| **A3 — trauma/suicidality** | +0.09 | −0.57 | −2.07 | +0.84 | +0.72 | **+1.35** | **+2.83** | +0.11 | childhood adversity + suicidality |
+| **A4 — low-burden pole** | **−2.03** | +0.38 | +0.28 | **−2.67** | −1.37 | −1.16 | −1.08 | −0.08 | the "well" reference extreme |
 
-* **A0 — biological corner:** high inflammatory + metabolic + substance (with some severity/suicidality). The
-  cardiometabolic-inflammatory extreme.
-* **A1 — low-burden pole:** everything low — the "healthy reference" extreme (the modal patient, 36%).
-* **A2 — severe but non-biological:** high overall severity with the **lowest** inflammatory/substance — shows
-  that severity can be high *with biology dissociated*.
-* **A3 — psychiatric-symptom corner:** high sleep + developmental + mania + suicidality, **low** metabolic —
-  the symptom extreme.
+* **A2 — immunometabolic (biology) corner:** the cardiometabolic-inflammatory extreme (immunometabolic +3.5),
+  with high severity + suicidality + developmental. The immunometabolic direction of maximal phenotype.
+* **A1 — severe, clean-biology:** high severity with the **lowest** immunometabolic/developmental — severity can
+  be high *with biology dissociated*.
+* **A0 vs A3 — the symptom space splits in two:** activation/sleep (A0: mania + sleep) is a **distinct
+  corner** from trauma/suicidality (A3: developmental + suicidality) — two separable symptom poles.
+* **A4 — low-burden pole:** everything low — the "healthy reference" extreme (largest, 2,551 patients).
 
-### 2.3 The key result: A0 and A3 are different corners
+### 2.3 The key result: biology, two symptom corners, and severity dissociate
 
-The biological extreme (**A0**) and the psychiatric-symptom extreme (**A3**) are **separate archetypes**, and
-**A2** shows severity rising while biology falls. So the continuum has (at least) three quasi-independent axes
-of extremity — **biology ⊥ symptoms ⊥ severity** — the transdiagnostic dissociation, now as a *stable*
-continuum description. Figure: `archetype_profiles.png`.
+The biology extreme (**A2**) is separate from **both** symptom corners (**A0** activation, **A3** trauma), and
+**A1** shows severity rising while biology falls. So the continuum carries quasi-independent axes of extremity —
+**biology ⊥ activation ⊥ trauma/suicidality ⊥ severity** — a transdiagnostic dissociation that is a *stable*
+(Tucker 0.979) continuum description. Figure: `archetype_profiles.png`.
 
 ### 2.4 Everyone is a blend (continuum-honest), and it is transdiagnostic
 
-* **61%** of patients have max archetype weight **< 0.5** — genuinely blended, no "type". Mean archetype
-  entropy 0.78; even "dominant" patients average ~0.48 weight on their lead archetype.
-* All four archetypes mix cohorts (transdiagnostic): A0 64/8/27, A1 75/2/23, A2 49/14/37, A3 82/4/14
-  (BP/DR/SZ %). The severe-non-biological corner (A2) is the most SZ-enriched (37%); the symptom corner (A3)
-  the most BP (82%) — but none is a single diagnosis.
+* Patients are genuinely blended across the five corners — no discrete "type"; the dominant-membership sizes
+  (1,426–2,551) are balanced, none degenerate.
+* All five archetypes mix cohorts (**ARI 0.006 vs DSM-5, 0.011 vs cohort**). The biology corner (A2) is
+  DR-enriched (30% of DR vs 14% of BP), the well pole (A4) is BP/SZ-led (30%/29% vs 11% of DR), the
+  activation corner (A0) is BP-led — but **none is a single diagnosis**.
 
 ---
 
@@ -234,12 +239,12 @@ continuum description. Figure: `archetype_profiles.png`.
 This is the load-bearing insight, and it is not a contradiction — it is the continuum signature:
 
 * The **mixture (K)** partitions by **density**: it cuts where the point cloud is most separable into regions.
-  The highest-variance, most-separable direction is psychiatric symptom burden (suicidality-anchored), so K=2
-  cuts there. Biology has **no** density gap — patients vary *continuously* along metabolic/inflammatory — so
-  biology does not produce a region split (its K=2 η² ≈ 0.003).
+  The highest-variance, most-separable direction is psychiatric symptom burden (mania + suicidality), so K=2
+  cuts there. Biology has **no** density gap — patients vary *continuously* along the immunometabolic axis — so
+  biology does not produce a region split (its K=2 η² 0.027).
 * The **archetypes (A)** find **extremes**, not splits. Biology is a real *direction of maximal phenotype*
-  (the A0 corner: inflammatory +2.5, substance +2.5, metabolic +2.0) even though it has no density gap, so it
-  shows up as an archetype corner that the tessellation cannot see.
+  (the A2 corner: immunometabolic +3.46) even though it has no density gap, so it shows up as an archetype
+  corner that the tessellation cannot see.
 
 In one sentence: **there are no biology *clusters* (so biology drives no K-split), but there are biology
 *extremes* (so biology defines an archetype corner).** The tessellation tells you the dominant operational
@@ -250,20 +255,21 @@ but continuous, density-gapless, orthogonal dimension.
 
 ## 4. Clinical / scientific reading (with the honest limits)
 
-* **Operationally:** the patient *is* their **continuous position** + **blend of the four archetypes** —
-  reading their biological (A0) load separately from their symptom (A3) and severity (A2) load. If a coarse
-  hard label is wanted, the tessellation family offers it at a granularity of choice: K = 2 (a clean
-  symptom-burden split), K = 3 (BIC-best, adds a severity/biology gradient), or K = 4 (richest on
-  severity/biology). **No single K is privileged** — which one (if any) earns its keep is decided by outcomes.
+* **Operationally:** the patient *is* their **continuous position** + **blend of the five archetypes** —
+  reading their biological (A2) load separately from their symptom (A0 activation / A3 trauma) and severity
+  (A1) load. If a coarse hard label is wanted, the tessellation family offers it at a granularity of choice:
+  K = 2 (a clean symptom-burden split), K = 3 (BIC-near-best, adds a severity/biology gradient), or K = 4
+  (richest on severity/biology). **No single K is privileged** — which one (if any) earns its keep is decided
+  by outcomes.
 * **Transdiagnostic:** no view re-encodes diagnosis (ARI ≈ 0); the structure cuts across BP/SZ/DR and the
   DSM-5 subtypes.
 * **Internal/baseline only — and this is *how* the operative K should be chosen.** Whether the regions /
-  archetypes *predict* 2-year course or treatment response is the **M3/M4 rerun** on this object, not claimed
-  here. The biology corner (A0) and the K = 3/4 biology gradient are the natural candidates to carry
-  durable/prognostic signal (A0 did on the native map); M4 selects the operative K from the family by
-  **incremental validity over DSM-5 + severity**, which is the non-circular way to honour "choose K for
-  actionability" (an internal parsimony tiebreak on a flat basin would not be).
+  archetypes *predict* 2-year course or treatment response is the **M3/M4 analysis** on this object, not claimed
+  here. The biology corner (A2) and the K = 3/4 biology gradient are the natural candidates to carry
+  durable/prognostic signal; M4 selects the operative K from the family by **incremental validity over DSM-5 +
+  severity**, which is the non-circular way to honour "choose K for actionability" (an internal parsimony
+  tiebreak on a flat basin would not be).
 * **Caveats:** the tessellation is a coarse convention (the load-bearing objects are the continuous coords +
-  the A = 4 archetypes); biology shows up as an archetype corner / a continuous gradient, not a clean region
-  boundary; archetype granularity is copula-sensitive (only A = 2, 4 stable); substance is thin (2 SUD
-  binaries, DR = 0) and carried with wide uncertainty.
+  the A = 5 archetypes); biology shows up as an archetype corner / a continuous gradient, not a clean region
+  boundary; archetype granularity is copula-sensitive (A = 2, 4, 5 stable; A = 6 collapses); substance is thin
+  (2 SUD binaries, DR = 0) and carried with wide uncertainty.

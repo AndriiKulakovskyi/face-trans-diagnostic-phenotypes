@@ -3,7 +3,7 @@
 M3 showed the map and the strata cohere and persist over time; M4 tests whether a baseline
 coordinate or stratum **forecasts a future clinical outcome, incrementally beyond DSM-5 diagnosis
 + baseline severity + the baseline value of that same outcome** — the durable *trait* axes
-(cognition, metabolic, inflammatory) predicting the moving *state* outcomes (functioning,
+(cognition, immunometabolic) predicting the moving *state* outcomes (functioning,
 severity). "Persists" != "predicts".
 
 M4 is a **consumer** of the fixed M1/M2/M3 objects: it never re-discovers or re-scores. It joins
@@ -28,8 +28,9 @@ from __future__ import annotations
 from face.temporal import CANON, VISITS  # single source of dim order + the follow-up grid
 
 # The durable trait axes M3 certified (high ICC, licensed invariant) — the stratify-on / predict-on
-# biology corner. M4's headline predictors. See docs/TEMPORAL_OOP_FINDINGS.md §8.
-DURABLE: tuple[str, ...] = ("cognition", "metabolic", "inflammatory")
+# biology corner. M4's headline predictors. 8-factor map: the two biology axes are merged into one
+# (immunometabolic ICC 0.91 — the single most durable axis). See docs/TEMPORAL_OOP_FINDINGS.md.
+DURABLE: tuple[str, ...] = ("cognition", "immunometabolic")
 
 # The general factor (functional-burden / impairment axis). It is the error-aware baseline-severity
 # term in the reference model, and is NEVER a predictor of a functioning/severity outcome — G is

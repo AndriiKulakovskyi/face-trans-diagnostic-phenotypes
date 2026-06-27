@@ -15,8 +15,8 @@ proper-score metrics (CRPS, calibration), and the identical-across-arms CV folds
 from __future__ import annotations
 
 CANON = (
-    "overall_severity", "cognition", "metabolic", "inflammatory", "sleep",
+    "overall_severity", "cognition", "immunometabolic", "sleep",
     "mania_activation", "suicidality", "developmental_risk", "substance",
 )
-ARCH = ("arch_w0", "arch_w1", "arch_w2", "arch_w3")
+ARCH = ("arch_w0", "arch_w1", "arch_w2", "arch_w3", "arch_w4")   # A=5 on the 8-factor map
 SEED = 20260610

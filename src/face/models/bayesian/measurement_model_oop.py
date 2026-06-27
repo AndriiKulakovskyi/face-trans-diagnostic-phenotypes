@@ -153,6 +153,12 @@ class StageDefinition:
     chains: int = 4
     target_accept: float = 0.9
     seed: int = 20260605
+    # Cross-loading arm: free the theory-motivated ``plausible_cross`` specific<->specific cells
+    # (the immunometabolic metabolic<->inflammatory bridge in matrix v3) instead of hard-zeroing them.
+    # ``cross_sd_scale`` multiplies their prior_sd (0.25 in the matrix), so 1.0 -> Normal(0, 0.25).
+    # Default False/0.25 reproduces the certified hard-zero map exactly.
+    specific_cross: bool = False
+    cross_sd_scale: float = 0.25
 
 
 @dataclass(frozen=True)
@@ -232,6 +238,34 @@ class MeasurementConfig:
     # Phi-row swings, e.g. substance↔inflammatory 0.33 vs 0.82).  Pinning models it as an independent
     # axis -- justified by non-identifiability, not asserted as an empirical zero.
     orthogonal_factors: tuple[str, ...] = ()
+    # ``cross_loading_prior``: how the off-home specific<->specific cross-loadings are treated.
+    #   "hard_zero" (default): fixed at exactly 0 (the certified rigid map).
+    #   "horseshoe": freed under a REGULARIZED (Finnish) horseshoe — a sparsity-inducing prior with a
+    #     sharp spike at 0 (shrinks the many noise cross-loadings hard, so a thin factor's column is not
+    #     diluted and its identity is protected) AND heavy tails (so a GENUINE small cross-loading can
+    #     escape the shrinkage and become credible).  This is the principled way to let instruments load
+    #     weakly on several axes without collapsing low-instrument factors (substance n=4, mania n=2) --
+    #     see docs/HORSESHOE_ESEM.md.  ``hs_tau0`` is the global-shrinkage scale (smaller -> sparser);
+    #     ``hs_slab_c`` is the slab width that caps an escaped cross-loading's magnitude (and stabilizes NUTS).
+    cross_loading_prior: str = "hard_zero"
+    hs_tau0: float = 0.05
+    hs_slab_c: float = 0.30
+    # ``hs_fixed_tau``: fix the global shrinkage to ``hs_tau0`` instead of sampling it. This deletes the
+    # global funnel (the worst mixing pathology), at the cost of choosing the sparsity level a priori.
+    # ``hs_local_df``: degrees of freedom of the local shrinkage's HalfStudentT (nu=1 -> HalfCauchy, the
+    # canonical horseshoe; nu~3 keeps heavy-but-finite tails that still let a genuine cross-loading escape
+    # while mixing far better).  Defaults reproduce the canonical sampled-tau Cauchy horseshoe.
+    hs_fixed_tau: bool = False
+    hs_local_df: float = 1.0
+
+    def with_horseshoe(self, *, tau0: float = 0.05, slab_c: float = 0.30,
+                       fixed_tau: bool = False, local_df: float = 1.0) -> MeasurementConfig:
+        """Free the off-home specific cross-loadings under a regularized horseshoe (sparse ESEM).
+
+        ``fixed_tau=True`` + ``local_df~3`` is the stable variant (no global funnel, lighter local tails)
+        for the validation fit; the canonical sampled-tau Cauchy horseshoe is the default."""
+        return replace(self, cross_loading_prior="horseshoe", hs_tau0=tau0, hs_slab_c=slab_c,
+                       hs_fixed_tau=fixed_tau, hs_local_df=local_df)
 
     def with_soft_unlikely(self) -> MeasurementConfig:
         """Return the soft-prior sensitivity variant: free the ``unlikely_cross`` and
@@ -337,6 +371,15 @@ class MeasurementConfig:
                 target_accept=0.95,
             ),
         ]
+
+    def cross_loading_stage_plan(self) -> list[StageDefinition]:
+        """Cross-loading arm (sensitivity): the certified S5 map PLUS the theory-motivated
+        ``plausible_cross`` specific cells (the immunometabolic metabolic<->inflammatory bridge),
+        freed at Normal(0, 0.25).  Warm-started from the certified ``s5_9dim_mixed`` so it starts
+        in the hard-zero basin; otherwise identical to it (same N, draws/tune, target_accept, seed).
+        A separate stage name (own output dir) keeps the canonical fit untouched."""
+        s5 = self.stage_plan[-1]   # the certified s5_9dim_mixed mixed rung
+        return [replace(s5, name="s5_xcross", specific_cross=True, cross_sd_scale=1.0)]
 
     @property
     def smoke_stage_plan(self) -> list[StageDefinition]:
@@ -459,6 +502,9 @@ class LoadingSpec:
     factor_cols: list[str]
     items: list[str]
     home: list[str]
+    # Off-home specific<->specific cells freed under the regularized horseshoe (cross_loading_prior
+    # == "horseshoe"); empty in the hard-zero / soft-unlikely modes.  Just (row, col) — no fixed prior.
+    hs_cells: list[tuple[int, int]] = field(default_factory=list)
 
     @classmethod
     def from_core(
@@ -470,6 +516,7 @@ class LoadingSpec:
         soft_unlikely: bool,
         soft_g_anchor_specific: bool,
         specific_cross: bool = False,
+        horseshoe: bool = False,
         window_sd_scale: float = 1.0,
         cross_sd_scale: float = 0.25,
         bifactor_g_sd: dict[str, float] | None = None,
@@ -482,6 +529,7 @@ class LoadingSpec:
         col = {f: i for i, f in enumerate(core.factor_cols)}
         pos_cells: list[tuple[int, int, float, float]] = []
         signed_cells: list[tuple[int, int, float, float]] = []
+        hs_cells: list[tuple[int, int]] = []
         kind: dict[tuple[int, int], str] = {}
         for j, item in enumerate(core.items):
             h = core.home[j]
@@ -523,6 +571,11 @@ class LoadingSpec:
                         if windows:
                             signed_cells.append((j, c, mu, sd * window_sd_scale))
                             kind[(j, c)] = "window"
+                    elif horseshoe:
+                        # Sparse ESEM: every off-home specific cross-loading is freed under the
+                        # regularized horseshoe (shrunk hard unless the data genuinely support it).
+                        hs_cells.append((j, c))
+                        kind[(j, c)] = "hs_cross"
                     elif specific_cross:
                         # Specific-to-specific cross-loadings are optional.
                         # They can be hard to distinguish from Phi correlations,
@@ -530,12 +583,18 @@ class LoadingSpec:
                         # requested as a sensitivity arm.
                         signed_cells.append((j, c, mu, sd * cross_sd_scale))
                         kind[(j, c)] = "cross"
-                elif soft_unlikely and ptype == "unlikely_cross":
-                    # Theory says this relation is unlikely, not impossible.
-                    # A tight Normal(0, 0.05) prior lets a strong data signal
-                    # escape while shrinking noise back to zero.
-                    signed_cells.append((j, c, mu, sd))
-                    kind[(j, c)] = "unlikely"
+                elif ptype == "unlikely_cross":
+                    if horseshoe:
+                        # The many theory-"unlikely" cells are exactly the noise the horseshoe shrinks
+                        # to ~0 (protecting thin factors), while leaving room for a genuine surprise.
+                        hs_cells.append((j, c))
+                        kind[(j, c)] = "hs_cross"
+                    elif soft_unlikely:
+                        # Theory says this relation is unlikely, not impossible.
+                        # A tight Normal(0, 0.05) prior lets a strong data signal
+                        # escape while shrinking noise back to zero.
+                        signed_cells.append((j, c, mu, sd))
+                        kind[(j, c)] = "unlikely"
         if flat:
             # Prior-free confirmation keeps only the identification constraints:
             # home cells remain positive, but their location/scale no longer
@@ -543,12 +602,12 @@ class LoadingSpec:
             # map is earned by the likelihood rather than manufactured by priors.
             pos_cells = [(j, c, 0.0, 5.0) for j, c, _mu, _sd in pos_cells]
             signed_cells = [(j, c, 0.0, 5.0) for j, c, _mu, _sd in signed_cells]
-        return cls(pos_cells, signed_cells, kind, core.factor_cols, core.items, core.home)
+        return cls(pos_cells, signed_cells, kind, core.factor_cols, core.items, core.home, hs_cells)
 
     @property
     def n_free(self) -> int:
         """Total number of loading parameters."""
-        return len(self.pos_cells) + len(self.signed_cells)
+        return len(self.pos_cells) + len(self.signed_cells) + len(self.hs_cells)
 
 
 class MeasurementDataset:
@@ -863,6 +922,7 @@ class MeasurementDataset:
         windows: bool,
         flat: bool = False,
         specific_cross: bool = False,
+        cross_sd_scale: float = 0.25,
         bifactor_g_sd: dict[str, float] | None = None,
     ) -> LoadingSpec:
         """Resolve a theory-faithful loading spec for an encoded core block."""
@@ -873,6 +933,8 @@ class MeasurementDataset:
             soft_unlikely=self.config.soft_unlikely,
             soft_g_anchor_specific=self.config.soft_g_anchor_specific,
             specific_cross=specific_cross,
+            horseshoe=self.config.cross_loading_prior == "horseshoe",
+            cross_sd_scale=cross_sd_scale,
             bifactor_g_sd=bifactor_g_sd,
             flat=flat,
         )
@@ -1244,6 +1306,28 @@ class BayesianBifactorESEM:
             # another axis in either direction after burden orientation.
             values = pm.Normal("lam_cross", mu=smu, sigma=ssd, shape=len(sr))
             Lam = pt.set_subtensor(Lam[sr, sc], values)
+        if spec.hs_cells:
+            # Regularized ("Finnish") horseshoe on the off-home specific cross-loadings.  A spike at 0
+            # (global tau x local eta, both shrinking) drives the many noise cross-loadings to ~0 -- so a
+            # thin factor's column keeps its identity instead of being diluted -- while the heavy local
+            # tails let a GENUINELY supported small cross-loading escape.  The slab c regularizes that
+            # escape (caps |lambda| ~ c) and tames the funnel so NUTS mixes.  Non-centered (z separate
+            # from the scales).  See docs/HORSESHOE_ESEM.md.
+            hr = np.array([j for j, _c in spec.hs_cells], dtype="int64")
+            hc = np.array([_c for _j, _c in spec.hs_cells], dtype="int64")
+            n_hs = len(hr)
+            tau0 = float(self.config.hs_tau0)
+            if self.config.hs_fixed_tau:
+                tau = pt.constant(tau0)                                                  # no global funnel
+            else:
+                tau = pm.HalfNormal("hs_tau", sigma=tau0)                                # global shrinkage
+            nu = float(self.config.hs_local_df)                                          # nu=1 -> HalfCauchy
+            eta = pm.HalfStudentT("hs_eta", nu=nu, sigma=1.0, shape=n_hs)                 # local (heavy tail)
+            z = pm.Normal("hs_z", 0.0, 1.0, shape=n_hs)
+            c2 = float(self.config.hs_slab_c) ** 2
+            eta_reg = pt.sqrt(c2 * eta**2 / (c2 + (tau**2) * (eta**2)))                  # regularized scale
+            lam_hs = pm.Deterministic("lam_hs", z * tau * eta_reg)
+            Lam = pt.set_subtensor(Lam[hr, hc], lam_hs)
         return Lam
 
     def _build_phi(self, core: CoreData, *, correlated: bool, g_correlated: bool):
@@ -1433,6 +1517,8 @@ class StageRunner:
             spec = self.dataset.loading_spec(
                 data.base,
                 windows=stage.windows,
+                specific_cross=stage.specific_cross,
+                cross_sd_scale=stage.cross_sd_scale,
                 bifactor_g_sd={f: 0.05 for f in stage.explicit_factors if f != G_KEY},
             )
             weights = _cohort_weights(data.base.cohort) if self.config.cohort_weighted else None
@@ -1449,7 +1535,12 @@ class StageRunner:
                 n_subsample=stage.n_subsample,
                 seed=stage.seed,
             )
-            spec = self.dataset.loading_spec(payload_data, windows=stage.windows)
+            spec = self.dataset.loading_spec(
+                payload_data,
+                windows=stage.windows,
+                specific_cross=stage.specific_cross,
+                cross_sd_scale=stage.cross_sd_scale,
+            )
             weights = _cohort_weights(payload_data.cohort) if self.config.cohort_weighted else None
             model = self.builder.build_marginalized(payload_data, spec, correlated=stage.correlated, weights=weights)
 
@@ -1886,6 +1977,13 @@ def _config_sig(config: MeasurementConfig) -> dict[str, Any]:
         "cohort_weighted": bool(config.cohort_weighted),
         "orthogonal_factors": sorted(config.orthogonal_factors),
     }
+    if config.cross_loading_prior != "hard_zero":
+        # Only emitted for the sparse-ESEM variant, so existing hard-zero caches stay valid.
+        sig["cross_loading_prior"] = str(config.cross_loading_prior)
+        sig["hs_tau0"] = float(config.hs_tau0)
+        sig["hs_slab_c"] = float(config.hs_slab_c)
+        sig["hs_fixed_tau"] = bool(config.hs_fixed_tau)
+        sig["hs_local_df"] = float(config.hs_local_df)
     if config.likelihood_mode == "gaussian_copula":
         sig["copula_min_distinct"] = int(config.copula_min_distinct)
         sig["copula_max_modal_frac"] = float(config.copula_max_modal_frac)
@@ -1894,7 +1992,7 @@ def _config_sig(config: MeasurementConfig) -> dict[str, Any]:
 
 def _stage_spec(stage: StageDefinition) -> dict[str, Any]:
     """Stable cache-reuse signature for a stage definition."""
-    return {
+    spec = {
         "name": stage.name,
         "factors": list(stage.factors),
         "correlated": stage.correlated,
@@ -1910,6 +2008,12 @@ def _stage_spec(stage: StageDefinition) -> dict[str, Any]:
         "target_accept": stage.target_accept,
         "seed": stage.seed,
     }
+    if stage.specific_cross:
+        # Only emitted for the cross-loading arm, so existing hard-zero stage caches
+        # (whose manifests predate these keys) stay valid and are not silently re-run.
+        spec["specific_cross"] = True
+        spec["cross_sd_scale"] = stage.cross_sd_scale
+    return spec
 
 
 def _hurdle_nb_logp(y, psi, mu, alpha):

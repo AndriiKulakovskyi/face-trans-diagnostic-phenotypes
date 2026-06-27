@@ -1,5 +1,12 @@
 # Prior loading atlas — the theory (soft-prior map)
 
+> **Map of record (read first).** This atlas is the **prior (theory) ontology** — the candidate factors *before*
+> the data adjudicate them, not the fitted map. The fitted map of record is the **8-factor immunometabolic map**:
+> G (overall burden) + 7 specific axes — cognition, **immunometabolic** (the cardiometabolic and inflammatory
+> candidate pools below resolve into one biology factor), sleep, mania/activation, suicidality,
+> developmental-risk, and **substance** (orthogonal); the anhedonia candidate is rejected (absorbed by G). The
+> strata reading lens is **A = 5 archetypes**. Canonical map findings: [`HORSESHOE_ESEM.md`](HORSESHOE_ESEM.md).
+
 > The **prior** half of the dimensional map: where each FACE common-variable instrument is *expected* to
 > load on the candidate dimensions, before any model is fit. It is generated purely from `configs/`
 > (no patient data) and is the "before" of the **prior → posterior comparison** that demonstrates the
@@ -28,8 +35,9 @@ What the figure shows about the encoded design:
 - **Cross-loading windows** (`madrs`, `qidsr120`, `staya`, bottom rows) have **no dark home** — only
   mid-tone cells across {`G`, anhedonia, sleep, suicidality, cognition}: composite symptom scores that
   inform several axes, not a dimension of their own.
-- **Metabolic ↔ inflammatory** carry a mutual mid-tone cross — the hypothesised split that the data
-  will adjudicate.
+- **Metabolic ↔ inflammatory** carry a mutual mid-tone cross — the hypothesised candidate split. The data
+  adjudicated it: the two candidate pools resolve into the single **immunometabolic** factor of the fitted
+  map (see the map-of-record note above).
 
 ## Per-factor prior pool
 
@@ -37,8 +45,8 @@ What the figure shows about the encoded design:
 |---|---:|---|---|
 | **G** — severity / burden | 14 | gaussian 11 · bernoulli 3 | functioning + global severity **only**; held orthogonal (bifactor) |
 | cognition | 11 | gaussian 11 | full neuropsychology (CVLT/WAIS/fluency/TMT) |
-| metabolic | 32 | gaussian 19 · lognormal 10 · bernoulli 3 | cardiometabolic + thyroid/liver/renal/HR + comorbidity flags |
-| inflammatory | 14 | lognormal 8 · bernoulli 6 | innate-immune load + inflammatory/allergic comorbidity |
+| metabolic | 32 | gaussian 19 · lognormal 10 · bernoulli 3 | cardiometabolic + thyroid/liver/renal/HR + comorbidity flags — *candidate pool; realized as part of the single immunometabolic factor* |
+| inflammatory | 14 | lognormal 8 · bernoulli 6 | innate-immune load + inflammatory/allergic comorbidity — *candidate pool; realized as part of the single immunometabolic factor* |
 | sleep | 9 | gaussian 9 | objective + subjective PSQI + ESS/CSM |
 | suicidality | 30 | bernoulli 14 · ordered-logistic 14 · gaussian 1 · neg-binomial 1 | ISF + C-SSRS + attempt-lethality (**mixed likelihoods**) |
 | developmental-risk | 23 | gaussian 12 · bernoulli 8 · ordered-logistic 3 | WURS + CTQ + neuro/family history + perinatal (proxy) |

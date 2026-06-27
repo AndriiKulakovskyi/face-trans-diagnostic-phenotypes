@@ -32,17 +32,22 @@ import pandas as pd
 from face.temporal import CANON, VISITS
 from face.temporal.standardize import V0StdSpec, capture_v0_spec, load_spec, save_spec
 
-DURABLE: tuple[str, ...] = ("cognition", "metabolic", "inflammatory")   # the trait axes (G3/G4 headline)
+DURABLE: tuple[str, ...] = ("cognition", "immunometabolic")             # the trait axes (G3/G4 headline)
 SPINE: str = "overall_severity"                                          # the general/severity axis
 
 REPO = Path(__file__).resolve().parents[3]
-COPULA_MAP = REPO / "results" / "face" / "oop_measurement" / "copula" / "weighted"
+COPULA_MAP = REPO / "results" / "face" / "oop_measurement" / "copula" / "weighted_8d"
+MAP_STAGE = "hs_s5_merged_xc"                                            # the weighted 8-factor operational fit
+FOLDED_MATRIX = REPO / "configs" / "prior_loading_matrix_v3_biomerge_xc.csv"
 STRATA_OOP = REPO / "results" / "face" / "strata_oop"
 RESULTS = REPO / "results" / "face" / "temporal_oop"
 FIGURES = REPO / "docs" / "figures" / "temporal_oop"
 PROC = REPO / "data" / "processed"
-MODEL_VERSION = "temporal_oop_2026_06_22_v1"
-CONT6 = ["overall_severity", "cognition", "metabolic", "inflammatory", "sleep", "mania_activation"]
+MODEL_VERSION = "temporal_oop_2026_06_26_v2_8factor"
+# Fit order (matches the idata's Lam/Phi/f_e columns); CANON is the presentation order from the package.
+F8_FIT = ["overall_severity", "cognition", "immunometabolic", "sleep", "suicidality",
+          "developmental_risk", "mania_activation", "substance"]
+CONT5 = ["overall_severity", "cognition", "immunometabolic", "sleep", "mania_activation"]
 EXPL3 = ["suicidality", "developmental_risk", "substance"]
 
 
@@ -132,7 +137,7 @@ class TemporalConfig:
     output_dir: Path = RESULTS
     figure_dir: Path = FIGURES
     proc_dir: Path = PROC
-    A: int = 4                                   # copula archetype granularity (stability-gated in M2)
+    A: int = 5                                   # copula archetype granularity (stability-gated in M2: A=5 on the 8-factor map)
     hdi_prob: float = 0.94
     seed: int = 20260622
     n_keep_draws: int = 200
@@ -199,15 +204,17 @@ class TemporalData:
             DEFAULT_EXPLICIT_FACTORS,
             MeasurementConfig,
             MeasurementDataset,
-            S5_FACTORS,
         )
+        # Match the 8-factor operational map's config exactly (folded matrix + substance pinned orthogonal)
+        # so the rebuilt MixedData is row/column-aligned to the frozen idata's Lam/Phi/f_e.
         mcfg = MeasurementConfig(likelihood_mode="gaussian_copula", cohort_weighted=True,
-                                 output_dir=self.config.map_dir)
+                                 prior_matrix=FOLDED_MATRIX,
+                                 output_dir=self.config.map_dir).with_substance_orthogonal()
         dataset = MeasurementDataset(mcfg)
         self._dataset = dataset
-        self._mp = dataset.mixed(S5_FACTORS, explicit_factors=DEFAULT_EXPLICIT_FACTORS, min_cohorts=2,
+        self._mp = dataset.mixed(F8_FIT, explicit_factors=DEFAULT_EXPLICIT_FACTORS, min_cohorts=2,
                                  balanced=False, n_subsample=None)
-        self._idata = az.from_netcdf(str(self.config.map_dir / "s5_9dim_mixed" / "idata.nc"))
+        self._idata = az.from_netcdf(str(self.config.map_dir / MAP_STAGE / "idata.nc"))
         return self._mp, self._idata
 
     def covariate_frame(self, index, visit: str) -> pd.DataFrame:
@@ -372,7 +379,7 @@ class CopulaPanelScorer:
         return {"mean": res["mean"], "sd": res["sd"], "draws": res["draws"], "fcols": res["fcols"]}
 
     def score_visit(self, visit: str) -> tuple[pd.DataFrame, np.ndarray]:
-        """Assemble the full 9-dim coordinates (+ [n_keep, N, 9] draws) for a follow-up visit: continuous 6
+        """Assemble the full 8-dim coordinates (+ [n_keep, N, 8] draws) for a follow-up visit: continuous 5
         axes (conditional-Gaussian) + explicit 3 axes (projection), on the copula scale."""
         from scipy.stats import norm
         from face.strata.scoring import explicit_nobs
@@ -387,7 +394,7 @@ class CopulaPanelScorer:
         df = pd.DataFrame(index=index)
         draws = np.full((nk, len(index), len(CANON)), np.nan, dtype="float32")
         for di, f in enumerate(CANON):
-            if f in CONT6:
+            if f in CONT5:
                 ci = cont["cidx"][f]
                 m, s = cont["mean"][:, ci], cont["sd"][:, ci]
                 draws[:, :, di] = cont["draws"][:nk, :, ci]
@@ -485,19 +492,28 @@ class InvarianceGate:
         self.config = config or TemporalConfig()
 
     def run(self, *, seeds=(20260605, 20260606)) -> dict:
-        from face.models.bayesian.continuous_core import S1_FACTORS
+        import face.models.bayesian.continuous_core as cc
         from face.temporal.invariance import axis_license, congruence_over_visits, fit_visit_backbone
+        # 8-factor invariance backbone: the S1 continuous backbone with the two biology factors merged
+        # (G + cognition + immunometabolic + sleep). Point prepare() at the folded matrix so it builds the
+        # immunometabolic axis (the module-global MATRIX is the only knob; restored in finally).
+        INV_FACTORS = ["overall_severity", "cognition", "immunometabolic", "sleep"]
         d = dict(draws=self.config.proj_draws, tune=self.config.proj_tune, chains=self.config.proj_chains)
         fits, converged = {}, set()
-        for v in VISITS:
-            for s in seeds:
-                rec, diag = fit_visit_backbone(v, seed=s, label=f"inv-{v}", step="G1", **d)
-                fits[(v, s)] = rec
-                if diag["converged"]:
-                    converged.add((v, s))
+        saved_matrix = cc.MATRIX
+        cc.MATRIX = FOLDED_MATRIX
+        try:
+            for v in VISITS:
+                for s in seeds:
+                    rec, diag = fit_visit_backbone(v, seed=s, factors=INV_FACTORS, label=f"inv-{v}", step="G1", **d)
+                    fits[(v, s)] = rec
+                    if diag["converged"]:
+                        converged.add((v, s))
+        finally:
+            cc.MATRIX = saved_matrix
         # converged-only φ; if NONE converged (e.g. a smoke run with tiny draws) fall back to all fits so the
         # pipeline still produces a (caveated) license rather than crashing on an empty congruence table.
-        cong = congruence_over_visits(fits, list(S1_FACTORS), list(VISITS), list(seeds),
+        cong = congruence_over_visits(fits, list(INV_FACTORS), list(VISITS), list(seeds),
                                       converged=(converged or None))
         lic = (axis_license(cong) if not cong.empty
                else pd.DataFrame(columns=["axis", "min_phi", "license"]))

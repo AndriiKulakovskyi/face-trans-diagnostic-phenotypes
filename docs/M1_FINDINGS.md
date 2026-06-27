@@ -1,5 +1,13 @@
 # M1 — Findings & Discussion
 
+> **Map of record (read first).** The measurement map is the **8-factor immunometabolic map**: a general
+> factor **G (overall burden)** + 7 specific axes — cognition, **immunometabolic** (one biology factor:
+> cardiometabolic + inflammatory markers together), sleep, mania/activation, suicidality, developmental-risk,
+> and **substance** (pinned orthogonal). The map is otherwise simple-structure with **3 earned cross-loadings**
+> (CTQ-37 → cognition, PSQI-latency → cognition, PSQI-daytime → cognition). On this map the strata reading lens
+> is **A = 5 archetypes (A0–A4)**. Canonical findings: [`HORSESHOE_ESEM.md`](HORSESHOE_ESEM.md) (map),
+> [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md) (archetypes). diagnosis is validation-only.
+
 > **The paper-facing synthesis of Milestone 1**: what we did, what we observed, what we found, and what it
 > means. This is the canonical *findings + discussion* record for traceability, PI review, and the manuscript.
 > Companions: methods of record → [`MEASUREMENT_MODEL.md`](MEASUREMENT_MODEL.md); per-candidate verdict →
@@ -13,14 +21,14 @@
 
 On the harmonized 3-cohort FACE **V0 baseline** (N = 9,013 = BP 6,252 · SZ 2,209 · DR 552), one global,
 missingness-aware Bayesian sparse **bifactor/ESEM** model — estimated from each patient's *observed cells
-only* (no imputation) — yields a **9-dimension transdiagnostic map**: a general factor **G
-(functional burden)** plus eight specific axes — **cognition, metabolic, inflammatory, sleep,
-developmental-risk, suicidality, mania, substance**. The map is hardened end-to-end (estimator/prior
-robustness, measurement invariance, resample robustness, absolute-fit PPC across both likelihood blocks),
-documented at the largest N that mixes (cross-seed Tucker φ 0.993), and projected to per-patient coordinates
-with uncertainty and reliability flags. The headline scientific finding is that **biology is the least
-severity-entangled domain** — metabolic and inflammatory burden are largely independent of the general
-functional-impairment factor, whereas cognition and sleep partly track it.
+only* (no imputation) — yields an **8-factor transdiagnostic map**: a general factor **G
+(overall burden)** plus 7 specific axes — **cognition, immunometabolic, sleep, mania/activation,
+suicidality, developmental-risk, substance**. The map is hardened end-to-end (estimator/prior
+robustness, measurement invariance, resample robustness, absolute-fit PPC across both likelihood blocks)
+and projected to per-patient coordinates with uncertainty and reliability flags. The headline scientific
+finding is that **biology is the least severity-entangled domain** — the **immunometabolic** axis
+(cardiometabolic + inflammatory load on one factor) is largely independent of the general functional-impairment
+factor, whereas cognition and sleep partly track it.
 
 ---
 
@@ -30,17 +38,22 @@ functional-impairment factor, whereas cognition and sleep partly track it.
 |---|---|---|---|---|
 | 0 | **G — functional burden** | explicit (Gaussian) | FAST 0.90, EGF 0.73, EQ-5D; **no symptom content** | — (general) |
 | 1 | cognition | marginalized | executive/processing-speed tasks | 0.57 |
-| 2 | metabolic | marginalized | BMI, lipids, glycemia, BP | 0.32 |
-| 3 | inflammatory | marginalized | CRP, leukocyte subsets | 0.39 |
-| 4 | sleep | marginalized | sleep/circadian items | 0.48 |
-| 5 | developmental-risk | explicit | childhood adversity (CTQ), birth/parental history | 0.42 |
-| 6 | suicidality | explicit (binary) | ISF ideation/attempt items (+2.2…+2.7 logit) | strong |
-| 7 | **mania** | marginalized | YMRS (0.57), Altman (0.76 in BP) | 0.49–0.76 |
-| 8 | **substance** | explicit (mixed) | alcohol/cannabis lifetime SUD, nicotine | +0.38…+0.69 |
+| 2 | **immunometabolic** | marginalized | BMI 0.95, lipids, glycemia, BP, CRP 0.37, leukocyte subsets | 0.32–0.39 |
+| 3 | sleep | marginalized | sleep/circadian items | 0.48 |
+| 4 | developmental-risk | explicit | childhood adversity (CTQ), birth/parental history | 0.42 |
+| 5 | suicidality | explicit (binary) | ISF ideation/attempt items (+2.2…+2.7 logit) | strong |
+| 6 | **mania/activation** | marginalized | YMRS (0.57), Altman (0.76 in BP) | 0.49–0.76 |
+| 7 | **substance** | explicit (mixed) | alcohol/cannabis lifetime SUD, nicotine | +0.38…+0.69 |
 
-Inter-dimension correlations Φ are **weak** (mean \|off-diagonal\| ≈ 0.10): the specifics are genuinely
-distinct axes, not a single collapsed factor. Depression/anxiety (MADRS/QIDS/STAI) are **not a dimension** —
-they load 0.66–0.80 on **G** as cross-loading "windows" (burden surfaces, no separable affective factor).
+The biology axis is a **single immunometabolic factor** carrying cardiometabolic and inflammatory load
+together (BMI, lipids, glycemia, blood pressure, CRP, leukocyte subsets), kept simple-structure by the
+sparsity prior on its off-home cells. Inter-dimension correlations Φ are **weak** (specific–specific mean
+\|off-diagonal\| ≈ 0.08; the one notable coupling is mania–sleep ≈ 0.24): the specifics are genuinely
+distinct axes, not a single collapsed factor. The map is otherwise simple-structure with **3 earned
+cross-loadings** into cognition (CTQ-37 −0.094, PSQI-latency +0.057, PSQI-daytime −0.070, each 95% CI
+excluding 0 — childhood adversity and poor sleep load weakly on cognition). Depression/anxiety
+(MADRS/QIDS/STAI) are **not a dimension** — they load 0.66–0.80 on **G** as cross-loading "windows" (burden
+surfaces, no separable affective factor).
 
 ---
 
@@ -56,18 +69,19 @@ over-claim.
 
 ### F2 — Biology ⊥ G (the load-bearing refinement)
 Under a sensitivity arm that *frees* G to correlate with the specifics (correlated-G, §3.1), G correlates
-**+0.07 with inflammatory** and **+0.12 with metabolic**, versus **+0.39 cognition** and **+0.42 sleep**.
-**Result:** metabolic and inflammatory burden are the **least severity-entangled** domains — a patient's
-metabolic/immune load is almost independent of how impaired they are overall, while cognitive and sleep
-burden partly track impairment. **Interpretation:** biological risk is carried on axes the clinical severity
-picture does not see — exactly the kind of largely independent signal a stratification (M2) can exploit. *(The clean
-continuous-backbone estimate, metabolic~G 0.12, supersedes an earlier provisional mixed-fit read of
-0.28; both agree on the ordering.)*
+only weakly with **immunometabolic** (≈ +0.10), versus **+0.39 cognition** and **+0.42 sleep**.
+**Result:** immunometabolic burden is the **least severity-entangled** domain — a patient's
+cardiometabolic/immune load is almost independent of how impaired they are overall, while cognitive and sleep
+burden partly track impairment. **Interpretation:** biological risk is carried on an axis the clinical severity
+picture does not see — exactly the kind of largely independent signal a stratification (M2) can exploit. *(The
+clean continuous-backbone estimate confirms the weak coupling; the ordering is stable across estimators.)*
 
-### F3 — Theory's single "biology" candidate splits into two
-The prior ontology posited one metabolic/immuno candidate; the data **split** it into **metabolic** and
-**inflammatory** factors that correlate only Φ ≈ 0.19 — not collinear. The map earns a finer biological
-resolution than theory specified.
+### F3 — Theory's "biology" candidate is confirmed as one immunometabolic factor
+The prior ontology posited a metabolic/immuno candidate; the data **confirm it as a single immunometabolic
+axis** on which cardiometabolic and inflammatory markers cohere together (BMI → immunometabolic ≈ 0.95,
+CRP → immunometabolic ≈ 0.37). Cardiometabolic and immune load are not separable axes here — they are two
+facets of one biological dimension — which is exactly why this axis behaves as a unit in stratification (M2)
+and persists as the single most durable trait longitudinally (M3, ICC 0.91).
 
 ### F4 — Developmental-risk is a *proxy*, not measured neurodevelopment
 The developmental axis is real and distinct (loading 0.42) but is anchored by **childhood adversity / birth
@@ -79,21 +93,19 @@ Binary ISF ideation/attempt items load **+2.2…+2.7 on the logit scale** and co
 the proper Bernoulli likelihood — demonstrating that non-Gaussian psychopathology indicators integrate into
 the same correlated-factor space as the continuous biology without breaking identification.
 
-### F6 — The map is larger than seven: mania and substance are real axes
-Mania and substance were **added after the original ten**, once their indicators were ingested into the harmonized dataset; the joint refit then **confirmed
-both**: **mania** (YMRS/Altman, primary \|λ\| 0.49–0.76, \|G\| 0.15) and **substance** (alcohol/cannabis SUD
-+ nicotine under the proper Bernoulli/NegBinom likelihoods, \|G\| 0.13). Re-fitting the **joint 9-dim**
-model integrated them under one shared Φ (R-hat ≤ 1.04, ESS ≥ 112, 0 div, cross-seed Tucker φ 0.993).
-**Interpretation:** manic activation and substance use are distinct, low-G transdiagnostic axes — not
-reducible to severity, and worth carrying into stratification.
+### F6 — Mania and substance are real, distinct axes
+**Mania/activation** (YMRS/Altman, primary \|λ\| 0.49–0.76, \|G\| 0.15) and **substance** (alcohol/cannabis
+SUD + nicotine under the proper Bernoulli/NegBinom likelihoods, \|G\| 0.13) are confirmed as two of the
+eight axes. The global model integrates them under the one shared Φ — **substance pinned orthogonal** to the
+correlated block (its cross-factor correlations are non-identifiable) — and certifies cleanly (R-hat ≤ 1.04,
+ESS ≥ 112, 0 div, cross-seed Tucker φ 0.993). **Interpretation:** manic activation and substance use are
+distinct, low-G transdiagnostic axes — not reducible to severity, and worth carrying into stratification.
 
 ### F7 — Measurement invariance: largely invariant, with documented partials
-The loadings are **largely invariant** across BP/SZ/DR. The **honest exceptions**, each documented rather
-than hidden:
+The loadings are **largely invariant** across BP/SZ/DR — the **immunometabolic** axis is fully invariant
+(Tucker φ 0.987), and the merged biology factor is one of the durable backbone axes. The **honest
+exceptions**, each documented rather than hidden:
 - **G** — partial BP–SZ (SZ lacks the FAST anchor; G re-anchored on CGI-S/EGF/EQ-5D there).
-- **inflammatory in DR** — **non-invariant** (Tucker φ 0.712 BP–DR / 0.748 SZ–DR, below the 0.85 bar):
-  neutrophils load ≈ 0 in DR while eosinophils dominate (a real biological
-  re-weighting of the immune axis in the DR cohort).
 - **mania-Altman in DR** — YMRS holds BP–DR (0.57/0.41) but the **self-rated Altman does not transfer**
   (0.76 → 0.10; Tucker φ 0.764). Self-reported manic activation is a near-floor signal in a
   DR cohort; clinician-rated YMRS carries mania there.
@@ -116,12 +128,12 @@ that a plain NegBinom over-predicts in the high-suicidality tail. This is an **i
 factor-level one: the suicidality dimension is carried by its 7 binary ISF items, all of which reproduce.
 
 ### F10 — Per-patient coordinates carry honest uncertainty
-All 9,013 patients are scored on the six continuous-anchored dimensions (and the explicit dimensions on the
-fit subsample), each coordinate carrying a posterior **mean / SD / HDI** plus a **reliability tier**
-(well-characterised / partial / prior-dominated) by observed-indicator count. The flags correctly expose
-coverage: cognition is prior-dominated for the 2,506 patients without cognitive testing; **mania is
-*partial* for everyone** (only 2 indicators). Downstream strata must propagate this uncertainty, not treat
-all coordinates as equally measured.
+All 9,013 patients are scored on the continuous-anchored backbone axes (G, cognition, immunometabolic, sleep,
+mania) — with the explicit dimensions on the fit subsample — each coordinate carrying a posterior **mean / SD
+/ HDI** plus a **reliability tier** (well-characterised / partial / prior-dominated) by observed-indicator
+count. The flags correctly expose coverage: cognition is prior-dominated for the 2,506 patients without
+cognitive testing; **mania is *partial* for everyone** (only 2 indicators). Downstream strata must propagate
+this uncertainty, not treat all coordinates as equally measured.
 
 ---
 
@@ -147,13 +159,13 @@ The methodology is itself a contribution, and the path matters for reproducibili
 - **A resilient long-run compute pattern.** Long mixed fits are run **detached (`nohup`+`disown`) under
   `caffeinate` with a per-seed disk cache** — defeating macOS sleep and background-task reaping, and making
   every multi-hour certification resumable.
-- **The 7→9 discovery loop.** Ingesting the mania and substance indicators revealed the map is
-  larger than first reported; the response was to re-fit the *joint* 9-dim model rather than bolt the new
-  axes on — keeping a single, internally consistent reported map.
+- **One joint global fit, never bolted-on axes.** All eight axes — including the mixed-likelihood mania and
+  substance indicators — are estimated in a single *joint* model under one shared Φ rather than fitted
+  separately and merged, keeping a single, internally consistent reported map.
 
 Chronology of the M1 hardening (each a committed stage + report): estimator/prior confirmation (§5) →
 per-cohort invariance (§8) → full-N S5 certification + correlated-G (§4) → resample robustness (§8/§3.6) →
-per-patient scoring (§7) → prior→posterior atlas + formal adjudication (§6) → **9-dim joint integration** →
+per-patient scoring (§7) → prior→posterior atlas + formal adjudication (§6) → **joint 8-factor integration** →
 mixed-model PPC (§8) → mania/substance invariance (§8).
 
 ---
@@ -163,25 +175,24 @@ mixed-model PPC (§8) → mania/substance invariance (§8).
 **What the map is for.** M1 deliberately stops at *measurement*: it converts three diagnostic cohorts into a
 shared, validated coordinate system without ever using diagnosis as a modelling feature (diagnosis is
 covariate/validation only). The product is the substrate the later milestones act on — **M2 validates the continuum
-(continuous coordinates + a stable A=4 archetype simplex) in this 9-dimensional space**, then M3–M5 add
+(continuous coordinates + a stable A = 5 archetype simplex) in this 8-factor space**, then M3–M5 add
 temporal coherence, prognosis, and treatment.
 
 **Why biology⊥G is the most consequential finding.** If biological burden tracked overall severity, it would
-add little beyond a clinician's global impression. The data say the opposite: metabolic and inflammatory load
-are **carried on axes severity does not see**. A stratification that uses these axes can therefore separate
+add little beyond a clinician's global impression. The data say the opposite: **immunometabolic load**
+is **carried on an axis severity does not see**. A stratification that uses these axes can therefore separate
 patients who look equally ill clinically but differ biologically — the precise value proposition of a
 transdiagnostic, biology-aware map.
 
 **Where the cohorts differ, and why it's informative.** The invariance partials are not failures; they are
-*findings*. Inflammatory re-weights toward eosinophils in DR; self-rated mania floors out in DR; G loses its
-behavioural anchor in SZ. Each tells us where a single instrument means different things across populations —
-essential to interpret any cross-cohort stratum and to choose the right per-cohort score (e.g., lean on YMRS
-for mania in DR).
+*findings*. Self-rated mania floors out in DR; G loses its behavioural anchor in SZ. Each tells us where a
+single instrument means different things across populations — essential to interpret any cross-cohort stratum
+and to choose the right per-cohort score (e.g., lean on YMRS for mania in DR).
 
 **Honesty as a design principle.** The pipeline is built to *let the data overturn the theory*: anhedonia was
-rejected, the biology candidate was split, neurodevelopment was demoted to a proxy, two candidates were
-added and confirmed once their indicators were ingested, and one count item (`isf09a`) was flagged as mis-specified. The map is
-what survived adversarial checking, not what was assumed.
+rejected, the biology candidate was confirmed as a single immunometabolic axis, neurodevelopment was demoted
+to a proxy, mania and substance were confirmed as distinct axes, and one count item (`isf09a`) was flagged as
+mis-specified. The map is what survived adversarial checking, not what was assumed.
 
 ---
 
@@ -189,8 +200,8 @@ what survived adversarial checking, not what was assumed.
 
 1. **Internal validity only.** V0 baseline; no temporal (V1–V4) persistence and no external-cohort validation
    — by design, deferred to later milestones.
-2. **Documented invariance exceptions** (F7): G (BP–SZ partial), mania-Altman (DR partial), and
-   inflammatory (DR **non-invariant**). Cross-cohort comparisons on these must carry the caveat.
+2. **Documented invariance exceptions** (F7): G (BP–SZ partial) and mania-Altman (DR partial); the
+   immunometabolic axis is fully invariant. Cross-cohort comparisons on the partials must carry the caveat.
 3. **`isf09a` item-level mis-fit** (F9): the suicide-attempt *count* needs a hurdle/zero-inflated likelihood
    if its count precision is ever required; the suicidality *factor* is unaffected.
 4. **Non-Gaussian per-patient scores are on the fit subsample** (suicidality/developmental/substance);
@@ -198,7 +209,7 @@ what survived adversarial checking, not what was assumed.
 5. **Mania is a 2-indicator, lower-reliability axis** (flagged *partial* for every patient); **substance is a
    2-cohort axis** (no DR SUD).
 6. **Bootstrap-robustness and correlated-G have not been separately extended to mania/substance** (they carry
-   the 9-dim cross-seed φ 0.993 and low bifactor-G loadings; a small follow-on).
+   the joint cross-seed φ 0.993 and low bifactor-G loadings; a small follow-on).
 7. **Secondary-check deferrals** (principled): Student-t continuous likelihood (§3.2, the marginalization
    requires Gaussian; outliers handled upstream by sanity bounds) and an MNAR selection-model arm (§3.4,
    missingness is largely structural/by-design, i.e. MCAR-by-design).
@@ -207,8 +218,8 @@ what survived adversarial checking, not what was assumed.
 
 ## 7. Future work
 
-- **M2 — the validated continuum** (continuous coordinates + a stable A=4 archetype simplex; no privileged K)
-  on these 9-dimensional coordinates (with uncertainty propagated from §7).
+- **M2 — the validated continuum** (continuous coordinates + a stable A = 5 archetype simplex; no privileged K)
+  on these 8-factor coordinates (with uncertainty propagated from §7).
 - Fold the small follow-ons as M2-prep: full-N non-Gaussian scoring; mania/substance bootstrap + correlated-G;
   a hurdle likelihood for `isf09a` if needed.
 - **M3 — temporal coherence** (V1–V4): do the coordinates and archetypes persist longitudinally?

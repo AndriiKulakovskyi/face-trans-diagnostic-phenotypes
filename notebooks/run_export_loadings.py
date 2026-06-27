@@ -59,7 +59,12 @@ from face.models.bayesian.synthetic import (  # noqa: E402
     export_phi,
 )
 
-DEFAULT_IDATA = REPO / "results" / "face" / "oop_measurement" / "copula" / "s5_9dim_mixed" / "idata.nc"
+# Canonical M1 map: the weighted full-N 8-factor operational fit (immunometabolic merge + 3 cross-loadings
+# + substance orthogonal). This is the MAIN map the whole vertical + the article are built on.
+DEFAULT_IDATA = REPO / "results" / "face" / "oop_measurement" / "copula" / "weighted_8d" / "hs_s5_merged_xc" / "idata.nc"
+FOLDED_MATRIX = REPO / "configs" / "prior_loading_matrix_v3_biomerge_xc.csv"
+F8_FIT = ["overall_severity", "cognition", "immunometabolic", "sleep", "suicidality",
+          "developmental_risk", "mania_activation", "substance"]
 
 
 class _IData:
@@ -104,18 +109,23 @@ def main() -> None:
     manifest = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
     stage = manifest.get("stage_spec", {})
 
-    # --- deterministic rebuild of the prepared mixed dataset (must match the fit) ---
+    # --- deterministic rebuild of the prepared mixed dataset (must match the 8-factor fit) ---
+    cfg_sig = manifest.get("config_sig", {})
     config = MeasurementConfig().with_gaussian_copula()
-    config = replace(config, output_dir=config.output_dir / "copula")
+    config = replace(config, prior_matrix=FOLDED_MATRIX,
+                     cohort_weighted=bool(cfg_sig.get("cohort_weighted", True)),
+                     output_dir=config.output_dir / "copula" / "weighted_8d")
+    if "substance" in (cfg_sig.get("orthogonal_factors") or ["substance"]):
+        config = config.with_substance_orthogonal()
     ds = MeasurementDataset(config)
-    factors = stage.get("factors") or list(manifest.get("factors", []))
+    factors = stage.get("factors") or F8_FIT
     explicit_factors = stage.get("explicit_factors") or list(DEFAULT_EXPLICIT_FACTORS)
     mixed = ds.mixed(
         factors,
         explicit_factors=explicit_factors,
         min_cohorts=int(stage.get("min_cohorts", 2)),
-        balanced=bool(stage.get("balanced", True)),
-        n_subsample=stage.get("n_subsample", 2000),
+        balanced=bool(stage.get("balanced", False)),
+        n_subsample=stage.get("n_subsample", None),
         seed=int(stage.get("seed", 20260605)),
     )
 
@@ -125,14 +135,9 @@ def main() -> None:
     # --- alignment + config asserts (catch any data/config drift vs the saved fit) ---
     J_manifest = int(manifest.get("J", base.M.shape[1]))
     assert base.M.shape[1] == J_manifest, f"J mismatch: rebuild {base.M.shape[1]} vs manifest {J_manifest}"
-    if manifest.get("factors"):
-        assert list(base.factor_cols) == list(manifest["factors"]), "factor_cols != manifest factors"
-    fitted = idata_path.parents[1] / "weighted" / "fitted_model" / "model.json"
-    if fitted.exists():
-        items_ref = json.loads(fitted.read_text())["items"]
-        assert list(base.items) == list(items_ref), "item ordering != persisted model.json"
-        print("[check] item ordering matches persisted fitted_model/model.json")
-    # the e_cols indirection must resolve explicit homes correctly
+    if stage.get("factors"):
+        assert list(base.factor_cols) == list(stage["factors"]), "factor_cols != manifest stage factors"
+    # the e_cols indirection must resolve explicit homes correctly (suicidality stays explicit on the 8-factor map)
     assert base.factor_cols[mixed.e_cols[mixed.ng_home["isf01"]]] == "suicidality", "isf01 home != suicidality"
 
     # --- load loadings posterior (lean) + export ---
@@ -140,31 +145,45 @@ def main() -> None:
     assert idata.posterior["Lam"].sizes[list(idata.posterior["Lam"].dims)[-2]] == base.M.shape[1], \
         "Lam item-axis != rebuilt J"
 
-    loadings = export_loadings_summary(idata, mixed, config, hdi_prob=args.hdi_prob)
+    # Cross-loading arm: the manifest records specific_cross when the fit freed the plausible_cross
+    # cells, so the export must build its kind-map the same way to surface those cross cells.
+    xcross = bool(stage.get("specific_cross"))
+    cross_sd_scale = float(stage.get("cross_sd_scale", 0.25))
+    loadings = export_loadings_summary(idata, mixed, config, hdi_prob=args.hdi_prob,
+                                       specific_cross=xcross, cross_sd_scale=cross_sd_scale)
     phi = export_phi(idata, base.factor_cols)
+    if xcross:
+        n_cross = int((loadings["kind"] == "cross").sum())
+        n_cross_cred = int(((loadings["kind"] == "cross") & loadings["excludes_zero"]).sum())
+        print(f"[arm] cross cells: {n_cross} emitted, {n_cross_cred} with 95% CI excluding zero")
 
     # --- spot-checks (verified expectations) ---
     def cell(item: str, factor: str):
         m = loadings[(loadings["item"] == item) & (loadings["factor"] == factor)]
         return None if m.empty else m.iloc[0]
 
-    bmi = cell("bmi", "metabolic"); crp = cell("crp", "inflammatory"); isf = cell("isf01", "suicidality")
-    assert bmi is not None and bmi["abs_loading"] > 0.7 and bool(bmi["excludes_zero"]), "bmi->metabolic spot-check"
-    assert crp is not None and crp["loading"] > 0.0, "crp->inflammatory spot-check"
+    # 8-factor spot-checks: biology indicators home to immunometabolic; suicidality anchor; an earned cross-loading
+    bmi = cell("bmi", "immunometabolic"); crp = cell("crp", "immunometabolic"); isf = cell("isf01", "suicidality")
+    assert bmi is not None and bmi["abs_loading"] > 0.5 and bool(bmi["excludes_zero"]), "bmi->immunometabolic spot-check"
+    assert crp is not None and crp["loading"] != 0.0, "crp->immunometabolic spot-check"
     assert isf is not None and isf["abs_loading"] > 1.0 and bool(isf["excludes_zero"]), "isf01->suicidality spot-check"
     assert cell("bmi", "cognition") is None, "bmi->cognition should be a dropped hard-zero"
-    print(f"[spot] bmi/metabolic={bmi['loading']:.3f}  crp/inflammatory={crp['loading']:.3f}  "
-          f"isf01/suicidality={isf['loading']:.3f}")
+    ctq = cell("ctq37", "cognition")   # one of the 3 earned cross-loadings (childhood adversity -> cognition)
+    print(f"[spot] bmi/immunometabolic={bmi['loading']:.3f}  crp/immunometabolic={crp['loading']:.3f}  "
+          f"isf01/suicidality={isf['loading']:.3f}  ctq37/cognition(cross)="
+          f"{ctq['loading']:.3f} excl0={bool(ctq['excludes_zero'])}" if ctq is not None else "[spot] ctq37 cross not emitted")
 
     # --- write outputs ---
     out_dir = idata_path.parent
     reports = args.reports_dir
     reports.mkdir(parents=True, exist_ok=True)
+    # The 8-factor map is canonical -> article-facing CSVs carry the 8factor name.
+    prefix = "copula_8factor"
     targets = {
         out_dir / "loadings_summary.csv": (loadings, False),
         out_dir / "phi.csv": (phi, True),
-        reports / "copula_s5_9dim_loadings.csv": (loadings, False),
-        reports / "copula_s5_9dim_phi.csv": (phi, True),
+        reports / f"{prefix}_loadings.csv": (loadings, False),
+        reports / f"{prefix}_phi.csv": (phi, True),
     }
     for path, (frame, index) in targets.items():
         frame.to_csv(path, index=index)

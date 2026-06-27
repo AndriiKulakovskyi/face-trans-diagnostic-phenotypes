@@ -14,9 +14,10 @@ no-imputation invariant carries over: an unobserved cell contributes no term, so
 only by what they actually have (e.g. DR patients have no substance items → their substance score is
 prior-dominated, not imputed).
 
-The continuous-anchored axes (overall_severity / cognition / metabolic / inflammatory / sleep /
-mania) are scored full-N analytically by ``face.scoring.conditional_gaussian_scores`` already; this
-module adds the explicit block and a draw-wise uncertainty export.
+The continuous-anchored axes (overall_severity / cognition / immunometabolic / sleep / mania) are
+scored full-N analytically by ``face.scoring.conditional_gaussian_scores`` already; this module adds
+the explicit block and a draw-wise uncertainty export. (The kernels are factor-count agnostic — they
+operate on ``mp.base.factor_cols`` — so the 9→8 immunometabolic merge needs no kernel change.)
 """
 from __future__ import annotations
 

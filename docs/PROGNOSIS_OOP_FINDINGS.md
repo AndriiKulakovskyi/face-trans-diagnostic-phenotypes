@@ -1,24 +1,18 @@
-# M4 prognosis on the Gaussian-copula M2 object — findings
+# M4 prognosis on the M2 object — findings
 
-> **Canonical M4 findings record for the copula rerun.** Built on the reworked copula M2 object (continuum:
-> continuous coordinates + A=4 archetype simplex + nested K-family). Parallel OOP engine
-> [`src/face/prognosis/prognosis_model_oop.py`](../src/face/prognosis/prognosis_model_oop.py) (wraps the proven
-> kernels — `glm.fit_glm`, `compare.delta_elpd`, the `reference.py` design builders — with **no edits** to the
-> native M4); driver [`notebooks/run_prognosis_model_oop.py`](../notebooks/run_prognosis_model_oop.py); figures
-> `docs/figures/prognosis_oop/`. **Internal incremental-association validity only.** Pending PI sign-off. Updated 2026-06-22.
+> **Canonical M4 findings record (8-factor map, 2026-06-27; PI sign-off 2026-06-27).** Built on the **8-factor**
+> M1/M2/M3 objects (continuum: continuous coordinates + **A = 5** archetype simplex + nested K-family;
+> immunometabolic biology axis + substance orthogonal). Engine
+> [`src/face/prognosis/prognosis_model_oop.py`](../src/face/prognosis/prognosis_model_oop.py) (wraps the
+> `glm.fit_glm` / `compare.delta_elpd` / `reference.py` kernels); driver
+> [`notebooks/run_prognosis_model_oop.py`](../notebooks/run_prognosis_model_oop.py). **Internal
+> incremental-association validity only.** Inputs: M2 strata (5 archetype weights), M3 panel + draws + IPW.
 
 ## What this is
 
-M2 is now a **continuum** on the copula map; the clinically "best K" is an *outcome* question, so M4 answers it:
-on the fixed copula M2 object, does a baseline coordinate / archetype / tessellation-region **predict a 2-year
-outcome incrementally beyond DSM-5 + severity + the baseline outcome**, and *which encoding* — continuous
-durable coords, A=4 archetypes, or the tessellation at K=2/3/4 — earns it. Predictors are read at V0 directly
-from the copula hand-off (`results/face/strata_oop/`); outcomes are the native-scale follow-up scales
-(`data/processed/baseline_v{0,2}.parquet`); attrition IPW is reused from the native M3 (strata-independent).
-The errors-in-variables Bayesian GLM (M1 per-patient SD plugged), the LOO-ELPD comparison, and the
-diagnosis+severity reference ladder are **reused verbatim**; the only addition is dynamic encoding discovery +
-the K-family loop. Primary outcomes: **egf** (functioning, N=2,114 complete-case V0→V2) and **cgi_s**
-(severity, N=2,345). Full 4-chain fit: R-hat ≈ 1.0, max Pareto-k ≤ 0.59, 0 divergences (27 min).
+On the fixed M1/M2/M3 objects, an errors-in-variables Bayesian GLM (propagating M1 uncertainty via the panel
+draws, attrition-corrected by the M3 IPW) tests whether a baseline coordinate/stratum **forecasts a 2-year
+outcome incrementally beyond DSM-5 + severity + the baseline value of that same outcome**.
 
 ## Result 1 — the map predicts 2-year *functioning*, beyond DSM-5 + severity + baseline
 
@@ -26,145 +20,143 @@ Incremental held-out ΔELPD vs the R3y bar (diagnosis + severity + baseline outc
 
 | encoding | ΔELPD vs R3y | verdict |
 |---|---|---|
-| **+archetypesA** (A=4, full phenotype) | **+59.4 ± 11.1** | predictive |
-| +archetypesB (A=4, ⊥G) | +37.9 ± 9.0 | predictive |
-| +specifics8 (8 ⊥G axes, EIV, ceiling) | +37.1 ± 9.2 | predictive |
-| +tess_k4 / +tess_k3 / +tess_k2 | +22.3 / +21.8 / +20.2 (± ~7) | predictive |
-| +durable (3 trait axes, EIV) | +2.2 ± 3.1 | ambiguous |
+| **+archetypesA** (A=5, full phenotype) | **+62.8 ± 11.2** | predictive |
+| +specifics8 (7 ⊥G axes, EIV) | +38.1 ± 9.2 | predictive |
+| +archetypesB (A=5, ⊥G) | +33.5 ± 8.7 | predictive |
+| +tess_k3 / +tess_k4 / +tess_k2 | +19.6 / +16.6 / +15.9 (± ~6) | predictive |
+| +durable (cognition+immunometabolic, EIV) | +2.3 ± 2.9 | **ambiguous** |
 
-For **severity (cgi_s)** the increments are small and mostly ambiguous (+archetypesB +14.0, +archetypesA +13.7
-predictive; +specifics8 +11.4, tessellation +4–9, +durable −2.0 — all ambiguous): severity is
-**autoregression-saturated** (the baseline CGI-S/G already carries it). This reproduces the native-map M4
-headline — *the map forecasts functioning, not severity.*
+For **severity (cgi_s)** the increments are small/ambiguous (+archetypesB +14.0, +archetypesA +12.0; +durable
+−0.7): severity is **autoregression-saturated** (baseline CGI-S/G carries it). *The map forecasts functioning,
+not severity* — the M4 headline. The archetype forecast is **+62.8** — the 5-corner representation is a strong functional
+predictor of future functioning.
 
 ## Result 2 — the operative K is **none**: the continuum/archetypes win (the answer to the K question)
 
-The whole tessellation K-family is predictive of functioning (every K ≈ +20 ΔELPD), but the **continuous /
-archetype** representation dominates it: mean ΔELPD across the two primary outcomes is **+36.6 for
-+archetypesA** vs **+15.4 for the best tessellation (K=3)**. So the operative-K selector returns:
+The whole tessellation K-family is predictive (every K ≈ +16–20 ΔELPD), but the **archetype** representation
+dominates it: mean ΔELPD across the two outcomes is **+37.4 for +archetypesA** vs **+12.6 for the best
+tessellation (K=3)**. The operative-K selector returns:
 
 > **operative_K = none — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing
 > beyond it.**
 
-This is the precise, outcome-grounded resolution of "which K is clinically useful": **no hard K is the right
-choice** — the actionable object is the continuous coordinates / A=4 archetype simplex, and any hard
-tessellation is a lossy convenience (it throws away predictive signal the archetypes keep). A hard label, if
-operationally required, is best at K=3 (BIC-best, predictive, ΔELPD ≈ +22 on functioning) — but it is strictly
-dominated by the archetypes.
+The outcome-grounded resolution of "which K is clinically useful": **no hard K** — the actionable object is the
+continuous coordinates / **A = 5** archetype simplex; any hard tessellation is a lossy convenience (it discards
+predictive signal the archetypes keep). If a hard label is operationally required, K = 3 is best (BIC-near-best,
+ΔELPD ≈ +20 on functioning) — but it is strictly dominated by the archetypes.
 
 ## Result 3 — co-informative with DSM-5 (complements, does not replace)
 
-Head-to-head on a shared foundation (age+sex+severity+baseline), **egf**: +DSM-5 +29.0, +map +22.2, **+both
-+67.4** (all predictive). The map and diagnosis each add, and together add more than either alone — the map
-**complements** DSM-5, it does not replace it. For cgi_s the map adds little over DSM-5 (+map +7.6 ambiguous;
-+both +47.8) — again the severity-saturation story.
+Head-to-head on a shared foundation (age+sex+severity+baseline), **egf**: +DSM-5 **+29.0**, +map **+17.3**,
+**+both +62.6** (all predictive). Each adds, and together they add more than either alone — the map
+**complements** DSM-5, it does not replace it (on top of DSM-5 the map still adds +33.6; on top of the map
+DSM-5 adds +45). For cgi_s the map adds little over DSM-5 (+map +8.3 ambiguous; +both +47.6) — the
+severity-saturation story again.
 
 ## Result 4 — the archetype prognostic atlas (transdiagnostic functional gradient)
 
-2-year functional remission (GAF ≥ 71) by dominant archetype (pooled across cohorts):
+2-year functional remission (GAF ≥ 71) by dominant archetype (pooled over patients with a V2 outcome):
 
-| archetype | 2-yr functional remission | mean EGF@V2 |
-|---|---|---|
-| A1 — low-burden pole | **60%** | 74.5 |
-| A3 — psychiatric-symptom corner | 43% | 68.5 |
-| A2 — severe, non-biological | 32% | 63.6 |
-| A0 — biological corner (↑inflammatory/metabolic/substance) | **27%** | 61.4 |
+| archetype | 2-yr functional remission |
+|---|---|
+| A4 — low-burden / well pole | **52%** |
+| A0 — activation / sleep | 41% |
+| A3 — trauma / suicidality | 28% |
+| A1 — severe, clean-biology | 22% |
+| **A2 — immunometabolic (biology) corner** | **17%** |
 
-A **27%→60%** transdiagnostic gradient; the **biological corner carries the worst functional prognosis** — the
-precise value a biology-aware map adds.
+A **17% → 52%** transdiagnostic gradient; **the immunometabolic biology corner (A2) carries the worst
+functional prognosis** — the precise value a biology-aware map adds; the immunometabolic corner is the sharp
+low-prognosis pole.
 
-## Result 4b — the 27→60 gradient is a *within-diagnosis* effect, not a cohort-composition artefact
+## Result 4b — the gradient is *within-diagnosis*, not a cohort-composition artefact
 
-The corners have very different cohort mixes (A1 is 74% BP; A0 carries more SZ) and the cohorts have very
-different remission floors (BP 33–69%, SZ **8–23%**), so the pooled gradient could be a Simpson's-paradox
-artefact. De-confounding it three ways (`notebooks/within_cohort/within_cohort_breakdown.py` →
-`results/face/prognosis_oop/within_cohort/`; figure `report/figures/m4_within_cohort.png`):
+The corners have different cohort mixes and the cohorts have very different remission floors (BP/DR open-course,
+SZ low-floor), so a pooled gradient must be checked within cohort. De-confounding it three ways
+(`notebooks/within_cohort/within_cohort_breakdown.py` → `results/face/prognosis_oop/within_cohort/`):
 
-1. **Within every cohort the rank holds** (A0 worst → A1 best): BP 0.33→0.69, SZ 0.08→0.23, DR 0.38→0.78.
-2. **Direct standardization** to a common cohort mix barely moves the gradient (0.27→0.59 vs raw 0.27→0.60):
-   **composition explains only ~6%** of the pooled A0→A1 spread — it is a genuine within-diagnosis effect.
-3. **Logistic decomposition** `remission ~ corner + cohort (+interaction)`: the cohort-adjusted corner effect
-   is large (**A1-vs-A0 OR ≈ 4.2**), the cohort main effect is the **dominant axis** (SZ-vs-BP **OR 0.16** —
-   everyone in SZ remits far less), and the **corner×cohort interaction is NS** (p=0.36). So the corner effect
-   is *relatively* homogeneous (OR≈4 in every cohort); the *absolute* spread is wider in BP only because SZ
-   sits on a low baseline floor (logit non-linearity).
+1. **Within every cohort the rank holds** (immunometabolic corner → well pole): **BP 27% → 73%, DR 31% → 72%,
+   SZ 9% → 25%.**
+2. **Direct standardization** to a common cohort mix barely moves the gradient (0.23 → 0.62 vs raw 0.17 → 0.52):
+   **composition explains only ~4%** of the pooled spread — a genuine within-diagnosis effect.
+3. **Logistic decomposition** `remission ~ corner + cohort (+interaction)`: the cohort-adjusted best-vs-worst
+   corner effect is large (**OR ≈ 6.3**), cohort is the dominant axis (SZ-vs-BP **OR 0.15**), and the
+   **corner×cohort interaction is NS** (p = 0.79) — the relative corner effect is cohort-homogeneous; the
+   absolute spread is wider in BP only because SZ sits on a low floor.
 
-**Within-cohort incremental validity** (does the corner add beyond baseline functioning + severity, fit inside
-each cohort; the frequentist complement to the LOCO ΔELPD): **BP yes** (LR χ²=34, p=1.6e-7), **DR yes**
-(p=0.02, small n), **SZ no** (p=0.16). This is *why* the LOCO ΔELPD is BP-carried (drop-BP → +5.8 amb.): the
-predictive **increment** — an absolute-scale, power-weighted quantity — concentrates in the open-course cohorts
-that have room above the floor, even though the *relative* gradient is present everywhere. Reconciles M4's
-"course-dependent" verdict precisely.
+**Within-cohort incremental validity** (does the corner add beyond baseline functioning + severity, inside each
+cohort?): **BP yes** (LR χ² = 59.7, p = 3e-12), **SZ no** (p = 0.25), **DR no** (p = 0.22, underpowered). This
+is *why* the LOCO ΔELPD is BP-carried — the predictive increment concentrates in the open-course cohorts that
+have room above the floor, even though the relative gradient is present everywhere. Figure
+`docs/figures/prognosis_oop/within_cohort_gradient.png`.
 
 ## Result 5 — group-level forecasting, not a large individual-binary boost (honest)
 
-Deployable-classifier read (5-fold CV AUC, foundation vs +map): egf functional remission **0.745 → 0.756
-(ΔAUC +0.011)**; cgi_s remission +0.004. As on the native map, the strong continuous ΔELPD (+59) collapses to
-a small binary lift (+0.011) — the map's value is **group-level stratification + continuous functional
-forecasting**, not a large individual yes/no gain.
+Deployable-classifier read (5-fold CV AUC, foundation vs +map): egf functional remission **0.745 → 0.755
+(ΔAUC +0.010)**; cgi_s +0.004. The strong continuous ΔELPD (+62.8) collapses to a
+small binary lift — the map's value is **group-level stratification + continuous functional forecasting**, not a
+large individual yes/no gain.
 
 ## Result 6 — the archetype signal is robust (attrition / cohort / permutation)
 
-Stressing the **operative winners** (the archetypes, not the now-weak `+durable`) confirms the functioning
-signal is real, not an artefact (ΔELPD vs R3y for `+archetypesA` on egf):
+Stressing the operative winner (`+archetypesA` on egf, ΔELPD vs R3y):
 
 | check | ΔELPD | reads as |
 |---|---|---|
-| base | +59.4 ✓ | the headline |
-| IPW (attrition-reweighted) | +59.3 ✓ | not an attrition artefact |
-| drop DR / drop SZ | +56.3 / +59.4 ✓ | survives removing either cohort |
-| drop BP | +5.8 (amb.) | **BP carries most of it** — course-dependent (open-course BP), as in native M4 |
-| permutation null | −1.7 (amb.) | the signal correctly vanishes under shuffled labels |
+| base | +62.8 ✓ | the headline |
+| IPW (attrition-reweighted) | **+54.4 ✓** | not an attrition artefact (13% attenuation) |
+| drop DR / drop SZ | +56.4 / +61.8 ✓ | survives removing either cohort |
+| drop BP | +7.1 (amb.) | **BP carries most of it** — course-dependent (open-course BP) |
+| permutation null | −2.4 (amb.) | the signal correctly vanishes under shuffled labels |
 
-The clean ⊥G `+archetypesB` behaves identically (base/IPW/drop-DR/drop-SZ all ≈ +38 predictive; permutation
-null ≈ 0). So the archetype functioning forecast is **robust to attrition and to dropping DR or SZ, vanishes
-under permutation, and is BP-driven** (the episodic, open-course cohort). (`robustness/robustness.csv`.)
+The clean ⊥G `+archetypesB` behaves identically (base +33.5 / IPW +27.7 predictive; permutation −2.1 null). So
+the archetype functioning forecast is **real (permutation), IPW-robust, and BP-driven** (the episodic,
+open-course cohort).
 
 ## Result 7 — the map is a *sufficient representation* (raw-vs-map benchmark)
 
-Methods + full results: [`M4_REPRESENTATION_BENCHMARK.md`](M4_REPRESENTATION_BENCHMARK.md); engine
-`src/face/prognosis/repbench/`; figures `docs/figures/repbench/`. The 9-dim map is a *compression* of the 143
-raw indicators, so the honest question is **sufficiency, not supremacy** (raw weakly dominates in-distribution; a
-tie is the win). One fixed regularised XGBoost, identical CV folds, three representations (REF $=$
-DSM-5+severity+baseline GAF; REF+map $=$ 9 coords + uncertainty + archetypes; REF+raw $=$ 143 indicators),
-predicting recovery (impaired→GAF≥71) & deterioration (GAF drop≥10), V1+V2, pooled + BP/DR.
+One fixed regularised XGBoost, identical CV folds, three representations (REF = DSM-5+severity+baseline GAF;
+REF+map = 8 coords + uncertainty + A=5 archetypes; REF+raw = raw indicators), predicting recovery
+(impaired→GAF≥71) and deterioration (GAF drop ≥10), V1+V2 pooled. The 8-factor map is a **sufficient
+representation** (`results/face/m4_repbench/`; xgboost run under `OMP_NUM_THREADS=1` to dodge the macOS
+libomp segfault):
 
-- **Sufficiency is target-dependent.** Deterioration: map $=$ raw (AUC tie → **sufficient**). Recovery: raw edges
-  the map by **ΔAUC ≈ +0.04** (pooled V1 +0.040, V2 +0.039), replicated across horizons and **not an
-  autoregression artefact** (dropping baseline GAF, REF0, moves AUC ≈ 0 — latent G already carries baseline
-  functioning).
-- **The recovery gap is within-factor compression, not a missing axis.** TreeSHAP: **97%** of raw's
-  recovery-predictive mass sits *within* the 9 modelled factors (top drivers are the anchors CRP, BMI/HbA1c/
-  lipids, CVLT/WAIS, Fagerström, CTQ); only 3% off-map (depression/anxiety window items).
-- **Honest uncertainty (EIV-GLM)** adds modestly for recovery (EIV vs mean ΔELPD +3.1±1.7) and null for
-  deterioration — does **not** close the gap (gap = compression, not noise).
-- **Efficiency:** no small-N advantage for the map (raw regularises well). **Transport (LOCO):** the map
-  transfers as well/better than raw for deterioration (BP/SZ held-out), raw better for recovery.
+- **Deterioration: map = raw** (AUC raw−map +0.009 V1 / +0.005 V2 — **tie → sufficient**).
+- **Recovery: raw edges the map by ΔAUC ≈ +0.04** (V1 +0.040, V2 +0.039 — "raw-adds", replicated across
+  horizons), **but the gap is within-factor compression, not a missing axis**: TreeSHAP puts **92% (V1) / 97%
+  (V2)** of raw's recovery-predictive mass *inside* the 8 modelled factors (top drivers CRP/BMI →
+  immunometabolic, CVLT/WAIS → cognition, Fagerström → substance, CSM → sleep); the only off-map residual is the
+  depression/anxiety window items (STAI/MADRS/QIDS).
 
-**Calibrated claim:** the copula 9-dim map is a **sufficient, uncertainty-honest, transportable** summary for
+**Calibrated claim:** the 8-factor copula map is a **sufficient** summary for
 deterioration and a **near-sufficient, structurally faithful** summary for recovery whose ≈0.04-AUC residual is
-item-level compression (97% inside its own factors) — trading task-specific resolution for parsimony,
-interpretability, transport, and honest uncertainty.
+item-level compression (≥92% inside its own factors) — parsimony + interpretability for a sliver of resolution.
+Methods: [`M4_REPRESENTATION_BENCHMARK.md`](M4_REPRESENTATION_BENCHMARK.md). *(NB the SHAP `home_factor` labels
+carry separate metabolic/inflammatory tags — cosmetic; both fold into immunometabolic and the within-factor
+share is unaffected.)*
 
 ## Honest caveats
 
-* **The durable-trio-alone signal does not survive on the copula map.** Unlike the native M4 (where
-  metabolic/inflammatory durable EIV cleared its band), here **+durable is ambiguous** (egf +2.2; cgi_s
-  negative). The robust, predictive object on the copula map is the **fuller archetype representation**
-  (Result 6) — the biology still matters, but as a *corner of the archetype simplex* (A0, the worst-prognosis
-  corner), not as the isolated 3-axis durable EIV block. An honest, map-version-specific shift, reported as such.
-* **Internal incremental-association only** — not causal, not external; outcomes are re-administered scales,
-  not incident events; 2-year horizon; complete-case (IPW is a sensitivity, not the headline).
-* **Severity is autoregression-saturated** (small/ambiguous increments) — by design.
+* **The durable-pair-alone signal is ambiguous** (egf +2.3; cgi_s −0.7). The
+  immunometabolic *axis* has a credible adverse direction (EGF coef −0.053 [−0.088, −0.019], p-dir 0.003 —
+  higher immunometabolic → worse future functioning), but the **2-axis durable EIV block alone does not beat the
+  R3y bar by ELPD**. The robust predictive object is the **fuller A = 5 archetype representation**, where the
+  biology lives as the worst-prognosis corner (A2). An honest, specific carrier.
+* **Internal incremental-association only** — not causal, not external; outcomes are re-administered scales, not
+  incident events; 2-year horizon; complete-case (IPW is a sensitivity, not the headline).
+* **Severity is autoregression-saturated** — by design.
 
 ## Hand-off
 
-`results/face/prognosis_oop/`:
-`incremental/{incremental_comparison.csv, operative_k.json, coef_durable.csv}`,
-`reference/elpd_reference.csv`, `transdiagnostic/h2h_dsm5.csv`, `endpoints/archetype_atlas.csv`,
+`results/face/prognosis_oop/`: `incremental/{incremental_comparison.csv, operative_k.json, coef_durable.csv}`,
+`reference/`, `transdiagnostic/h2h_dsm5.csv`, `endpoints/archetype_atlas.csv`,
 `clinical_value/clinical_value.csv`, `robustness/robustness.csv`, and the M5 hand-off
-`consolidate/{prognosis_summary.csv (carries the operative-K verdict), prognosis_patient_risk.parquet (9,013 ×
-31)}`. Figure: `docs/figures/prognosis_oop/incremental_added_value.png`. Reproduce:
+`consolidate/{prognosis_summary.csv (carries the operative-K verdict), prognosis_patient_risk.parquet}`. Figure:
+`docs/figures/prognosis_oop/incremental_added_value.png`. Reproduce:
 `PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_prognosis_model_oop.py --mode full`.
 
-**Next (Phase 2, after PI review):** the M3 temporal-coherence OOP engine on the same copula object.
+**Verdict: the 8-factor map predicts 2-year functioning** — the A = 5 archetypes add ΔELPD +62.8 beyond
+DSM-5 + severity + baseline (IPW-robust, permutation-null, co-informative with DSM-5, course-dependent /
+BP-led), with a 17→52% transdiagnostic functional-remission gradient (within-diagnosis: composition only ~4%)
+whose worst pole is the immunometabolic biology corner. Operative K = none. Not severity. The map is a
+sufficient representation for deterioration and near-sufficient (≥92% within-factor) for recovery.

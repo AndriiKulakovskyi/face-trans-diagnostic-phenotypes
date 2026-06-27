@@ -135,7 +135,8 @@ def export_fitted_model(idata, mixed, config, *, meta: dict | None = None) -> Fi
     )
 
 
-def export_loadings_summary(idata, mixed, config, *, hdi_prob: float = 0.95) -> pd.DataFrame:
+def export_loadings_summary(idata, mixed, config, *, hdi_prob: float = 0.95,
+                            specific_cross: bool = False, cross_sd_scale: float = 0.25) -> pd.DataFrame:
     """Tidy long table of posterior factor loadings WITH equal-tailed credible intervals.
 
     One row per *meaningful* (item, factor) cell, combining the two places the copula mixed
@@ -166,6 +167,8 @@ def export_loadings_summary(idata, mixed, config, *, hdi_prob: float = 0.95) -> 
     spec = ds.loading_spec(
         base,
         windows=True,
+        specific_cross=specific_cross,   # cross-loading arm: also surface the freed plausible_cross cells
+        cross_sd_scale=cross_sd_scale,
         bifactor_g_sd={f: 0.05 for f in DEFAULT_EXPLICIT_FACTORS if f != G_KEY},
     )
     kind = spec.kind  # {(j, c): kind_str}

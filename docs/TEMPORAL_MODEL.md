@@ -8,9 +8,19 @@
 > discovery on yearly visits V0 → V1 → V2 only**; prognosis (M4) and treatment (M5) are later milestones.
 >
 > *Math is plain-text/unicode so it renders anywhere and transcribes to LaTeX.*
-> *Status: PLAN — locked at the M3.0 discussion gate, pending PI sign-off. M3.0 (inventory) implemented;
+> *Status: PLAN — locked at the M3.0 discussion gate, PI sign-off 2026-06-27. M3.0 (inventory) implemented;
 > stages 31–37 held at the gate. Updated 2026-06-10 (the geometric-prediction framing §1.4, Arm-B
 > persistence, and the no-completeness-selection rule folded in at the gate).*
+>
+> **M3 runs on the 8-factor M1/M2 objects** (`copula/weighted_8d/hs_s5_merged_xc`; the immunometabolic biology
+> factor + 3 earned cross-loadings + substance pinned orthogonal) with the **A = 5** archetype simplex.
+> `CANON` is the 8-factor map, the **durable axes are `{cognition, immunometabolic}`**, `A = 5`, and the G1
+> invariance backbone is `{severity, cognition, immunometabolic, sleep}`. The signal coheres: **G1** all 4
+> backbone axes invariant (immunometabolic fully invariant, φ 0.987); **G3** biology durable (immunometabolic
+> ICC 0.91, cognition 0.70) while symptoms are state, severity trait-by-rank with population improvement; **G4**
+> archetype weights persist (cosine 0.81) and the spine moves while biology holds — the one honest limit is the
+> weak G3⟷G4 *cross-route* synthesis (ρ ≈ 0.07; A = 5 argmax churn, orthogonal substance ICC 0.49). Findings:
+> [TEMPORAL_OOP_FINDINGS.md](TEMPORAL_OOP_FINDINGS.md).
 
 ---
 
@@ -21,19 +31,20 @@
 The project's four layers stay distinct (M1 §1.1):
 
 ```
-diagnostic cohorts → transdiagnostic dimensions → continuous map + A=4 archetypes → prognosis / treatment
-   (entry metadata)     (M1 — complete, 9-dim)     (M2 — continuum, no privileged K)  (M4 / M5)
+diagnostic cohorts → transdiagnostic dimensions → continuous map + A=5 archetypes → prognosis / treatment
+   (entry metadata)     (M1 — complete, 8-factor)   (M2 — continuum, no privileged K)  (M4 / M5)
                                   └──────────── M3: do these cohere & persist over time? ───────────┘
 ```
 
-M1 delivered a **9-dimension map** with per-patient uncertainty on V0; M2 delivered a
-**stratification** of those coordinates — 8 soft **archetypes** + a 4-region measurement-error
-**tessellation** — whose headline is that the space is a *continuum* in which **severity (G) is the
-spine** and the **specific biology axes are the corners**. Both were discovered on V0.
+M1 delivers an **8-factor map** with per-patient uncertainty on V0; M2 delivers a
+**stratification** of those coordinates — a stable **A = 5 archetype simplex** + a nested K-family
+(2/3/4) measurement-error tessellation with no privileged K — whose headline is that the space is a
+*continuum* in which **severity (G) is the spine** and the **specific biology axes are the corners**.
+Both are discovered on V0.
 
 **M3 asks one question in six parts:** does that signal **cohere and persist over time**? Does the
 measurement *mean the same thing* at follow-up (G1)? On the resulting longitudinal substrate (G2),
-which of the 9 axes are **trait-like vs state-like** (G3)? Do **archetype/tessellation memberships
+which of the 8 axes are **trait-like vs state-like** (G3)? Do **archetype/tessellation memberships
 persist** — specifically, do patients move along the severity spine while their biology corner stays
 (G4)? And is the retained sample a fair one (G6)? M3 is the **precondition + substrate**; it does **not**
 claim prognostic, treatment, or external validity. **"Persists" ≠ "predicts."**
@@ -42,7 +53,8 @@ claim prognostic, treatment, or external validity. **"Persists" ≠ "predicts."*
 
 1. **V0 defines, follow-up validates.** M3 scores V1/V2 onto the **fixed** M1/M2 objects and **never
    re-discovers** the map or the strata on later visits. The certified Λ, Φ, σ, the non-Gaussian item
-   parameters, the 8 archetype profiles, and the 4-region tessellation are **frozen** at their V0 values.
+   parameters, the A = 5 archetype profiles, and the nested-K tessellation are **frozen** at their V0
+   values.
 2. **No imputation.** Observed-cell likelihood at every visit; attrition is **characterized** (G6), never
    filled.
 3. **Diagnosis is metadata.** `arm` (DSM-5 subtype) is validation/benchmark only, never scored. (It is
@@ -83,7 +95,7 @@ biology ⊥ G). That geometry makes a **specific, falsifiable temporal predictio
   must be the **most trait-like** (durable phenotypes). **G3 (variance decomposition, §5) and G4 (geometry,
   §6) are two independent routes to this one claim — their *agreement* is the headline of M3.**
 - **A spectrum, not a binary.** Expected ordering: G / mania / suicidality most state-like · developmental /
-  cognition most trait-like · metabolic / inflammatory / sleep / substance **intermediate** (a stable trait
+  cognition most trait-like · immunometabolic / sleep / substance **intermediate** (a stable trait
   *position* plus genuine state fluctuation). "Mixed" is a permitted, expected verdict — the model decides
   (§5.2).
 - **The patient-level claim (clinically load-bearing):** phenotype **identity persists while severity
@@ -140,7 +152,7 @@ re-scoring V0 through the spec reproduces M2's V0 coordinates at r ≈ 1.00.
 Every axis is scored at each visit from its **own observed cells** — *no axis is carried forward* (§1
 correction, §5.3):
 
-- **Continuous axes** (severity, cognition, metabolic, inflammatory, sleep, mania): the analytic
+- **Continuous axes** (severity, cognition, immunometabolic, sleep, mania): the analytic
   conditional-Gaussian factor-score posterior on the certified loadings —
   `f_i | x_O ~ N( Φ Λ_Oᵀ Σ_OO⁻¹ x_O , Φ − Φ Λ_Oᵀ Σ_OO⁻¹ Λ_O Φ )`, μ = 0 by the frozen standardization
   (`conditional_gaussian_draws`).
@@ -151,13 +163,13 @@ correction, §5.3):
 - **Memberships per visit:** archetype weights by simplex projection onto the frozen profiles
   (`project_to_Z`, `project_draws` for uncertainty). The **G-residualized Arm B** archetypes (defined in the
   specific-axis subspace, ⊥ G) are the *primary* persistence vehicle — they test corner identity
-  *independent of* severity (§6); Arm A (all-9) is the contextual secondary view. Tessellation
+  *independent of* severity (§6); Arm A (all-8) is the contextual secondary view. Tessellation
   responsibilities under the frozen `(m_k, Σ_k)` with the visit's `S_i` (`mixture._estep_k`) are the coarse
   overlay (needs a 6-line param export from `scripts/22`).
 
 ### 3.3 The panel (the substrate every downstream goal reads)
 
-One tidy **long** table, one row per `(patient_uid, visit)` over `{V0, V1, V2}`: the 9 coordinate
+One tidy **long** table, one row per `(patient_uid, visit)` over `{V0, V1, V2}`: the 8 coordinate
 means/SDs/HDIs/n_obs/reliability, the archetype weights (+SD)/dominant/entropy, the tessellation
 responsibilities/MAP/entropy, the per-axis **G1 invariance license**, and the retention summary. Draws →
 a parallel `.npz`. Consolidated hand-off for M4 → `results/face/patient_panel.parquet`.
@@ -222,7 +234,7 @@ ICC_d = σ²_b / (σ²_b + σ²_w)     trait-like: ICC ≥ 0.6 (CI > 0.5) · sta
 An axis whose total signal `σ²_b + σ²_w` is small vs mean σ²_e (no signal above M1 noise) is flagged
 **uninformative**, not forced into a bin. Triangulate with a draw-wise raw ICC. Report **completers-only
 and all-available** (+ IPW from G6 where dropout is informative). **Expected:** cognition / developmental /
-metabolic trait-like; severity / suicidality / mania state-like — but the model decides.
+immunometabolic trait-like; severity / suicidality / mania state-like — but the model decides.
 
 ### 5.3 Sampling — full retained sample, uncertainty-propagated (no completeness selection)
 
@@ -249,14 +261,14 @@ measurement error, G0?) and is **cleanest and most interpretable at the corners*
 centre.
 
 - **Spine-vs-corner (the headline test).** Decompose each patient's displacement `Δx_i = Δ_G·e_G + Δ_prof`,
-  where `e_G` is the severity axis (spine) and `Δ_prof` is the residual in the 8 specific axes (the corner
+  where `e_G` is the severity axis (spine) and `Δ_prof` is the residual in the 7 specific axes (the corner
   subspace) — the specifics are bifactor-orthogonal to G by construction, so no extra rotation. Test
   **"moves on spine, stable corner"**: `Δ_G` is a reliable change (G0) **and** `‖Δ_prof‖` is *not* reliable
   **and** the dominant corner is unchanged. Population: the paired rate of reliable `Δ_G` vs reliable
   `‖Δ_prof‖` (prediction: the spine moves far more often), as a per-cohort 2×2.
 - **Membership persistence — primary on the G-residualized Arm B archetypes.** Arm B lives in the
   specific-axis subspace (⊥ G), so it measures **corner identity independent of severity** — the direct
-  formalization of the spine/corner claim; Arm A (all-9) is the contextual secondary view. Statistics: soft
+  formalization of the spine/corner claim; Arm A (all-8) is the contextual secondary view. Statistics: soft
   transition matrices `T[k,l] = Σ_i r_{i,k}(s)·r_{i,l}(t)` over the weight posteriors (boundary patients
   contribute fractionally — honours the continuum); draw-wise weight-vector cosine / TV distance; Cohen's κ
   on MAP labels (secondary). **Prediction: Arm-B (corner) membership persists more than the severity
@@ -273,7 +285,7 @@ is not the dominant mover (§1.4).
 ## 7. G6 — Attrition & informative dropout (the honesty gate)
 
 **Estimand:** is retention at V1/V2 related to V0 coordinates/strata/diagnosis — *do the sicker leave, or
-the improved?* **Method:** logistic `retained_{i,Vk} ~ V0 9-dim coords (+reliability) + V0 archetype +
+the improved?* **Method:** logistic `retained_{i,Vk} ~ V0 8-factor coords (+reliability) + V0 archetype +
 cohort + age + sex + site` (effect sizes + 94% CIs; sign of the severity coefficient; whether biology
 corners drop differentially); a stayers-vs-droppers V0-profile test. **"Dropout ≠ improvement" guard:**
 always report completers-only **and** all-available; primary analyses are MAR-given-observed (the G3/G4
@@ -290,8 +302,8 @@ BP and SZ; deaths, sentinel-corrected) is captured here for M4 — descriptive o
 scoring. **Findings (2026-06-09):**
 
 - **Retention:** V0 9,013 → V1 4,270 (47%) → V2 2,958 (33%); BP/SZ/DR all well-represented at V1/V2.
-- **Per-axis coverage at V1/V2 is healthy** — 8 of 9 axes keep multiple re-administered indicators with
-  ≥30 obs (metabolic 32, suicidality 21, developmental 18–19, inflammatory 14, severity 10–12, cognition
+- **Per-axis coverage at V1/V2 is healthy** — 7 of 8 axes keep multiple re-administered indicators with
+  ≥30 obs (immunometabolic 46, suicidality 21, developmental 18–19, severity 10–12, cognition
   11, sleep 9, substance 4). **`mania_activation` has only 2 indicators → thin** (scored, caveated).
   No axis is coverage-limited.
 - **Re-administration ≠ state (the load-bearing nuance).** The within-patient V0→V1 change rate measures
@@ -319,9 +331,9 @@ extractor + informative-dropout), `standardize` (V0 spec — the core new piece)
 `project_explicit_full_n`, `align_ordinals_to_fit`, `project_to_Z`, `project_draws`, `xd_em`/`_estep_k`,
 `tucker_phi` + the `06` harness, `eta_squared`/`ari`/`cramers_v`, `prepare`/`prepare_mixed`.
 
-**Pipeline** `scripts/30–37` (**RETIRED 2026-06-24** — canonical M3 is the copula OOP engine
+**Pipeline** `scripts/30–37` (**RETIRED 2026-06-24** — canonical M3 is the OOP engine
 `temporal_model_oop.py` / [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md); the IPW it produces under
-`results/face/temporal_oop/attrition/` now feeds M4. Script list kept as the native methods record): run order =
+`results/face/temporal_oop/attrition/` feeds M4. Script list kept as the methods record): run order =
 file order; each writes `reports/3N_*.md` + a figure, then a
 discussion gate: 30 inventory **(done)** · 31 attrition (G6) · 32 build-panel + V0 spec · 33 invariance
 (G1) · 34 score-panel (G2) · 35 variance (G3) · 36 persistence (G4) · 37 consolidate. The one M2 change is
@@ -348,7 +360,7 @@ persistence.
 ## 11. What M3 will and will not claim
 
 **Will claim (internal only):** per-axis longitudinal-invariance verdicts; a frozen-scale coordinate +
-membership panel over V0–V2; a measurement-corrected trait/state decomposition of the 9 axes; membership
+membership panel over V0–V2; a measurement-corrected trait/state decomposition of the 8 axes; membership
 persistence + the spine-vs-corner geometry; **whether the trait/state profile aligns with the spine/corner
 geometry — the central prediction (§1.4), tested two independent ways (G3 ⟷ G4)**; an honest attrition
 characterization. **Will not claim:**

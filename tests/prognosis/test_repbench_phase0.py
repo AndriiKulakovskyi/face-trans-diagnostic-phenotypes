@@ -78,7 +78,7 @@ def test_assemble_alignment_and_cohort_filter():
     for col in ("ep_egf_recovery", "ep_egf_deterioration", "egf__V0", "w_retained_V2"):
         assert col in full.columns
     # latent joined and aligned (no row blow-up, means present)
-    assert not full["metabolic__mean"].isna().any()
+    assert not full["immunometabolic__mean"].isna().any()
     # episodic headline scope (cohort lives on the index, exposed via cohort_of)
     full_cohort = data.cohort_of(full)
     bd = data.assemble(cohorts=("bp", "dr"))

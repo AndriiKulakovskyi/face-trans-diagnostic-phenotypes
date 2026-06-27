@@ -1,13 +1,14 @@
 """OOP soft-region stratification engine on the Gaussian-copula measurement map (M2, reworked).
 
 This is a clean, config-first OOP engine that reworks the FACE M2 stratification as a **continuum with
-soft operational regions** built on the certified Gaussian-copula map (the cohort-weighted full-N
-9-dimension map at ``results/face/oop_measurement/copula/weighted``). It is a parallel engine beside the
+soft operational regions** built on the Gaussian-copula map (the cohort-weighted full-N **8-dimension**
+map — the immunometabolic merge + 3 earned cross-loadings — at
+``results/face/oop_measurement/copula/weighted_8d``). It is a parallel engine beside the
 imperative ``scripts/20-26`` + ``src/face/strata/{mixture,structure,archetypes,validation}.py``, exactly as
 ``src/face/models/bayesian/measurement_model_oop.py`` lives beside the certified ``continuous_core``.
 
 Design stance (deliberate):
-  * The 9-dim space is a **continuum, not a clustering problem.** We do not look for natural kinds; we
+  * The 8-dim space is a **continuum, not a clustering problem.** We do not look for natural kinds; we
     define **operational regions with soft transition boundaries** (probabilistic membership, no hard edges)
     and then ask whether those regions are **useful** (here: a baseline/internal question — temporal
     persistence and prognosis are deferred to the later M3/M4 reruns).
@@ -45,21 +46,28 @@ import numpy as np
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[3]
-COPULA_MAP = REPO / "results" / "face" / "oop_measurement" / "copula" / "weighted"
+COPULA_MAP = REPO / "results" / "face" / "oop_measurement" / "copula" / "weighted_8d"
 RESULTS = REPO / "results" / "face" / "strata_oop"
 FIGURES = REPO / "docs" / "figures" / "strata_oop"
 REPORTS = REPO / "reports"
-MODEL_VERSION = "strata_oop_2026_06_21_v1"
+MODEL_VERSION = "strata_oop_2026_06_26_v2_8factor"
 
 G_KEY = "overall_severity"
-# Canonical 9-dim order (matches the certified map's factor_cols / the explicit f_e block ordering).
-CANON = ["overall_severity", "cognition", "metabolic", "inflammatory", "sleep", "mania_activation",
+MAP_STAGE = "hs_s5_merged_xc"          # the weighted full-N 8-factor operational fit (M1 the coordinates read)
+FOLDED_MATRIX = REPO / "configs" / "prior_loading_matrix_v3_biomerge_xc.csv"
+# Fit order: the exact factor list the 8-factor map was fit with — must match the idata's Lam/Phi/f_e columns.
+F8_FIT = ["overall_severity", "cognition", "immunometabolic", "sleep", "suicidality",
+          "developmental_risk", "mania_activation", "substance"]
+# Canonical 8-dim presentation order. The immunometabolic merge folds the two continuous biology factors
+# (metabolic + inflammatory) into one; everything else is unchanged.
+CANON = ["overall_severity", "cognition", "immunometabolic", "sleep", "mania_activation",
          "suicidality", "developmental_risk", "substance"]
 SPECIFICS = [f for f in CANON if f != G_KEY]          # Arm B = the G-residualized "pure profile" view
 # Reliability split: which axes are scored from the continuous block vs the explicit (f_e) block under the
-# copula vertical. mania_activation's items were promoted to the continuous block by the copula tiering, so
-# only suicidality / developmental_risk / substance remain explicit-anchored.
-CONT_AXES = ["overall_severity", "cognition", "metabolic", "inflammatory", "sleep", "mania_activation"]
+# copula vertical. immunometabolic is continuous (merge of the two continuous biology factors); mania_activation
+# stays continuous; only suicidality / developmental_risk / substance remain explicit-anchored (Ke=4 with G,
+# unchanged by the merge).
+CONT_AXES = ["overall_severity", "cognition", "immunometabolic", "sleep", "mania_activation"]
 EXPL_AXES = ["suicidality", "developmental_risk", "substance"]
 
 
@@ -96,8 +104,8 @@ class StrataConfig:
     hdi_prob: float = 0.94
     seed: int = 20260621
     # --- model-affecting (gate cache reuse) ---
-    coord_source: str = "copula_weighted"      # provenance label of the map
-    use_full_Si: bool = False                  # diagonal S (default) vs full [N,9,9] per-patient covariance
+    coord_source: str = "copula_weighted_8d"   # provenance label of the map (8-factor immunometabolic merge)
+    use_full_Si: bool = False                  # diagonal S (default) vs full [N,8,8] per-patient covariance
     region_reg: float = 1e-4                   # XD covariance regularizer
     knee_gain: float = 0.02                    # archetype scree-knee threshold
     confidence_tiers: tuple[float, float] = (0.5, 0.8)   # boundary (<.5) / soft / core (>=.8) on max membership
@@ -183,13 +191,13 @@ def _confidence_tier(resp: np.ndarray, tiers: tuple[float, float]) -> np.ndarray
 @dataclass
 class CoordinateSet:
     """Per-patient coordinates on the copula map + propagated uncertainty (analogue of ``CoreData``)."""
-    X: np.ndarray                              # [N, 9] posterior-mean coords (latent z-scale; NO re-standardize)
-    S: np.ndarray                              # [N, 9] diagonal sd**2  OR  [N, 9, 9] full cov if use_full_Si
-    draws: np.ndarray                          # [n_draw, N, 9] coherent joint posterior draws
+    X: np.ndarray                              # [N, 8] posterior-mean coords (latent z-scale; NO re-standardize)
+    S: np.ndarray                              # [N, 8] diagonal sd**2  OR  [N, 8, 8] full cov if use_full_Si
+    draws: np.ndarray                          # [n_draw, N, 8] coherent joint posterior draws
     dims: list[str]                            # == CANON
     index: pd.MultiIndex                       # (cohort, patient_id)
-    n_obs: np.ndarray                          # [N, 9] observed home-indicator counts (reliability)
-    reliability: np.ndarray                    # [N, 9] tiers {well, partial, prior-dominated}
+    n_obs: np.ndarray                          # [N, 8] observed home-indicator counts (reliability)
+    reliability: np.ndarray                    # [N, 8] tiers {well, partial, prior-dominated}
     validation: pd.DataFrame                   # cohort/arm/age/sex/education/site -- VALIDATION ONLY
 
     def arm(self, which: str = "A") -> tuple[np.ndarray, np.ndarray, list[int]]:
@@ -214,7 +222,7 @@ class StrataData:
     explicit latents ``f_e`` for [overall_severity, suicidality, developmental_risk, substance] — so unlike
     the native M2.0 we do NOT re-run an expensive full-N projection. We read ``f_e`` from the posterior and
     condition the marginalized specifics ``f_m | f_e`` (reusing ``scoring.coherent_joint_coords``), giving one
-    coherent 9-dim posterior draw per sample (the no-imputation, uncertainty-propagating contract).
+    coherent 8-dim posterior draw per sample (the no-imputation, uncertainty-propagating contract).
     """
 
     def __init__(self, config: StrataConfig | None = None):
@@ -238,12 +246,13 @@ class StrataData:
         return self.config.coords_dir / "validation_table.parquet"
 
     def prepare(self, *, n_coord_draws: int = 200, overwrite: bool = False) -> CoordinateSet:
-        """Score all 9,013 patients on all 9 axes from the copula fit; cache the coordinate artifacts.
+        """Score all 9,013 patients on all 8 axes from the copula fit; cache the coordinate artifacts.
 
         Reads the explicit latents ``f_e`` directly from the copula posterior (already full-N), conditions
         the marginalized specifics ``f_m | f_e`` under the shared Phi (``coherent_joint_coords``), and assigns
         reliability tiers (continuous axes from observed home-indicator counts; explicit axes from
-        ``explicit_nobs``). No re-fit, no imputation.
+        ``explicit_nobs``). No re-fit, no imputation. Reads the 8-factor operational map (immunometabolic
+        merge + the 3 earned cross-loadings) at ``MAP_STAGE`` under the folded prior matrix.
         """
         if self._full.exists() and not overwrite:
             return self.load()
@@ -256,19 +265,18 @@ class StrataData:
             MeasurementConfig,
             MeasurementDataset,
             PatientProjector,
-            S5_FACTORS,
         )
         from face.strata.scoring import coherent_joint_coords, explicit_nobs  # noqa: PLC0415
 
         self.config.coords_dir.mkdir(parents=True, exist_ok=True)
-        # 1) rebuild the copula full-N MixedData (same call the weighted fit used -> row-aligned to f_e)
+        # 1) rebuild the copula full-N MixedData (same call the weighted 8-factor fit used -> row-aligned to f_e)
         mcfg = MeasurementConfig(likelihood_mode="gaussian_copula", cohort_weighted=True,
-                                 output_dir=self.config.map_dir)
+                                 prior_matrix=FOLDED_MATRIX, output_dir=self.config.map_dir)
         dataset = MeasurementDataset(mcfg)
-        mp = dataset.mixed(S5_FACTORS, explicit_factors=DEFAULT_EXPLICIT_FACTORS, min_cohorts=2,
+        mp = dataset.mixed(F8_FIT, explicit_factors=DEFAULT_EXPLICIT_FACTORS, min_cohorts=2,
                            balanced=False, n_subsample=None)
-        idata = az.from_netcdf(str(self.config.map_dir / "s5_9dim_mixed" / "idata.nc"))
-        manifest = json.loads((self.config.map_dir / "s5_9dim_mixed" / "manifest.json").read_text())
+        idata = az.from_netcdf(str(self.config.map_dir / MAP_STAGE / "idata.nc"))
+        manifest = json.loads((self.config.map_dir / MAP_STAGE / "manifest.json").read_text())
         base_index = mp.base.index
 
         # 2) explicit latents f_e straight from the posterior (already full-N) -> coherent_joint_coords only
@@ -281,7 +289,7 @@ class StrataData:
         ch = coherent_joint_coords(mp, idata, projection={"draws": fe, "diag": diag}, n_draws=n_coord_draws)
 
         # 3) reliability: continuous axes from the continuous home-indicator counts; explicit axes from f_e
-        nobs_c, tier_c = PatientProjector.reliability_flags(mp.base)   # [N, 9] over mp.base.factor_cols
+        nobs_c, tier_c = PatientProjector.reliability_flags(mp.base)   # [N, 8] over mp.base.factor_cols
         cidx = {f: i for i, f in enumerate(mp.base.factor_cols)}
         en = explicit_nobs(mp)                                    # n_obs over [G, suic, dev, substance]
         en_df = pd.DataFrame(en["n_obs"], index=base_index, columns=en["fcols"])
@@ -963,8 +971,9 @@ class StrataProjector:
         """The frozen archetype profile anchors, in the native M2 ``archetype_profiles.csv`` schema so the
         downstream M4 ``reference.armB_block`` (Arm-B projection) and the M3 V1/V2 projection can consume them
         without re-fitting: one row per archetype per arm, columns = ``arm``/``archetype``/``name`` + one per
-        CANON axis. Arm ``A_all9`` carries all 9 axes; arm ``B_specifics`` carries the 8 ⊥G specifics (its
-        ``overall_severity`` is left NaN — armB_block only reads the specifics)."""
+        CANON axis. Arm ``A_all9`` carries all 8 axes; arm ``B_specifics`` carries the 7 ⊥G specifics (its
+        ``overall_severity`` is left NaN — armB_block only reads the specifics). NB: the ``A_all9`` arm label
+        is a historical schema key kept stable across M2→M3→M4 (the map is now 8-dim, not 9)."""
         rows = []
         for arm_label, af in (("A_all9", arch_fit_A), ("B_specifics", arch_fit_B)):
             if af is None:

@@ -1,5 +1,13 @@
 # FACE-ATLAS — External evidence base: how the findings sit in the literature
 
+> **Map of record (read first).** The FACE map carries a **single immunometabolic biology factor** — one axis
+> pooling cardiometabolic *and* inflammatory markers (BMI, HbA1c, lipids, CRP, leukocyte subsets) — within the
+> **8-factor immunometabolic map** (G + 7 specifics; A = 5 archetypes). The external literature below uses
+> "metabolic" and "inflammatory" in their own (separable) clinical senses; that is correct for the cited work.
+> The FACE-side claim is that these markers load on **one** immunometabolic axis that is **largely independent
+> of the general functional-burden factor** (the load-bearing biology⊥G finding). Canonical map findings:
+> [`HORSESHOE_ESEM.md`](HORSESHOE_ESEM.md).
+
 > An honest map of where the published literature **supports**, **qualifies**, or is **in tension with** the
 > FACE-ATLAS claims, assembled to show the results are neither accidental nor isolated. Every cited paper was
 > retrieved and verified in PubMed (title, authors, year, journal, PMID, DOI, abstract) before inclusion; papers
@@ -19,8 +27,8 @@
 | Psychopathology is better described by **transdiagnostic dimensions** than DSM categories | **Well-established** | RDoC (Insel 2010); HiTOP (Kotov 2017) | none material |
 | A **general factor** spanning disorders, read as **impairment/burden** (not a symptom-liability "p") | **Strongly precedented** | Caspi 2014 "p factor" reads it as *life impairment*; Lahey 2017 | p-factor's *meaning* is contested (Heinrich, Levin-Aspenson, Watts) |
 | The patient space is a **graded continuum, not discrete biotypes** | **Supported, but actively contested** | Wolfers 2018 & Marquand 2016 normative models | **B-SNIP biotypes (Clementz 2016) is the live counter-program** |
-| **Biological (metabolic + inflammatory) load is nearly independent of clinical severity** | **Directionally supported; "independent" overstates — use "largely independent of *general* severity"** | Vancampfort 2015/16; Pillinger 2017; immuno-metabolic-depression program (Penninx, Milaneschi, Lamers) | case-control inflammation elevations are real (Howren, Osimo 2020); some severity dose-response (Penninx 2018) |
-| Metabolic and inflammatory are **two distinct axes** (the "split") | **Supported** | metabolic vs. inflammatory have different drivers and symptom maps | they co-cluster in the immuno-metabolic subgroup, so not orthogonal |
+| **Immunometabolic (cardiometabolic + inflammatory) load is nearly independent of clinical severity** | **Directionally supported; "independent" overstates — use "largely independent of *general* severity"** | Vancampfort 2015/16; Pillinger 2017; immuno-metabolic-depression program (Penninx, Milaneschi, Lamers) | case-control inflammation elevations are real (Howren, Osimo 2020); some severity dose-response (Penninx 2018) |
+| Cardiometabolic and inflammatory markers cohere on a **single immunometabolic axis** | **Supported** | the immuno-metabolic-depression program: inflammation + metabolic abnormality cluster together (Penninx 2024; Lamers 2013) | metabolic and inflammatory markers have partly distinct drivers, so the pooling is an empirical co-clustering, not an identity |
 | Method: **bifactor/ESEM**, individual-level mapping with uncertainty | **Established lineage** | Reise 2012 (bifactor); Marquand 2016 (normative modelling cousin) | — |
 
 **One-line bottom line.** Every structural pillar of FACE-ATLAS has clear precedent; the continuum-vs-biotype
@@ -34,8 +42,9 @@ orthogonality.
 ## 1. The crux — "biological load is nearly independent of clinical severity"
 
 This is the load-bearing, surprising claim, so it gets the most careful treatment. FACE-ATLAS reports the
-metabolic axis correlates ≈ 0.14, and the inflammatory axis ≈ 0.06, with the general **functional-burden**
-factor `G`. The literature does **not** provide a single paper that reports that exact contrast (a direct
+**immunometabolic axis** is nearly uncorrelated with the general **functional-burden** factor `G` (cardiometabolic
+markers ≈ 0.12, inflammatory markers ≈ 0.06 — both far below cognition ≈ 0.39 and sleep ≈ 0.42). The literature
+does **not** provide a single paper that reports that exact contrast (a direct
 within-sample correlation between a continuous biological-load factor and a continuous functional-burden
 factor). What it provides is a large body of convergent indirect evidence. The honest reading splits into a
 strong supporting case and a real tension that must be acknowledged.
@@ -78,7 +87,8 @@ strong supporting case and a real tension that must be acknowledged.
    melancholic-vs-atypical double dissociation in Lamers et al., 2013, *Mol Psychiatry*;
    [DOI](https://doi.org/10.1038/mp.2012.144), replicated longitudinally in Lamers et al., 2020, *Brain Behav
    Immun*; [DOI](https://doi.org/10.1016/j.bbi.2020.04.002)). This is the closest external analogue to FACE's
-   separable biology axes — arrived at by completely different methods, which is strong convergent validity.
+   single immunometabolic axis (which pools inflammation and metabolic markers exactly as the IMD program does)
+   — arrived at by completely different methods, which is strong convergent validity.
 
 ### 1.2 Why "independent" overstates it (tension — state this in the paper)
 
@@ -168,7 +178,7 @@ strongest opposing evidence as such.
 - **Pan et al. (2026)** — *JAMA Psychiatry*. PMID 41739459; [DOI](https://doi.org/10.1001/jamapsychiatry.2026.0001). Normative-modelling **plus clustering** still surfaced replicated ADHD "biotypes" — a methodological caution that a continuum conclusion is partly a function of analytic choices. *[TENSION]*
 
 **How FACE should position itself:** not as proving "no biotypes exist," but as showing that *on its
-9-dimensional clinical-biological coordinates across BP/SZ/MDD, a five-method structure gate finds no discrete
+8-factor clinical-biological coordinates across BP/SZ/MDD, a five-method structure gate finds no discrete
 biotypes (ARI ≈ 0 vs DSM subtypes)* — a finding about *this* feature space, consistent with the normative-model
 heterogeneity literature, while acknowledging that brain-biomarker spaces (B-SNIP) can yield clusters. The two
 are not strictly contradictory: they interrogate different measurement spaces.
@@ -233,8 +243,8 @@ following together, which is the defensible novelty claim:
   Marquand, B-SNIP). FACE puts **metabolic and inflammatory laboratory markers directly into the
   transdiagnostic factor space** alongside cognition, sleep, suicidality, mania and substance, across **three
   diagnostic cohorts (BP/SZ/MDD)** simultaneously.
-- It **quantifies the entanglement** between each biological axis and a general functional-burden factor (the
-  ≈ 0.07–0.12 correlations) — the immuno-metabolic literature asserts a *separable* dimension but, to our
+- It **quantifies the entanglement** between the immunometabolic biology axis and a general functional-burden
+  factor (the ≈ 0.07–0.12 correlations) — the immuno-metabolic literature asserts a *separable* dimension but, to our
   reading of the retrieved papers, does not report its correlation with a bifactor general factor.
 - It does so with a **full-sample, no-imputation, mixed-likelihood Bayesian bifactor/ESEM** — a methods
   combination not seen in the retrieved transdiagnostic-biology papers, most of which subsample or use

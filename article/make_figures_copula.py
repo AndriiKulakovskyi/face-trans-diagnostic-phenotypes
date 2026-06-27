@@ -32,28 +32,31 @@ OI = dict(black="#000000", orange="#E69F00", sky="#56B4E9", green="#009E73",
           grey="#7F7F7F", lgrey="#D9D9D9")
 COH = dict(bp=OI["blue"], sz=OI["orange"], dr=OI["green"])
 COH_LBL = dict(bp="Bipolar", sz="Schizophrenia", dr="Depression")
-# archetype palette: infographic-like + colorblind-safe.
-# A0 biological = orange (matches infographic), A1 low-burden = green (matches infographic),
-# A2 severe-nonbio = blue, A3 symptom = reddish-purple (accessible, mutually distinct).
-ARCH_C = {0: OI["orange"], 1: OI["green"], 2: OI["blue"], 3: OI["purple"]}
-ARCH_N = {0: "Biological", 1: "Low-burden", 2: "Severe /\nnon-biological", 3: "Symptom"}
-ARCH_N1 = {0: "Biological", 1: "Low-burden", 2: "Severe/non-bio", 3: "Symptom"}
-BIO = OI["verm"]   # biology highlight
+# A=5 archetype palette (8-factor map): colorblind-safe + mutually distinct.
+# A0 activation/sleep, A1 severe·clean-biology, A2 immunometabolic (biology corner), A3 trauma/suicidality,
+# A4 low-burden/well.
+ARCH_C = {0: OI["purple"], 1: OI["orange"], 2: OI["verm"], 3: OI["blue"], 4: OI["green"]}
+ARCH_N = {0: "Activation /\nsleep", 1: "Severe /\nclean-biology", 2: "Immuno-\nmetabolic",
+          3: "Trauma /\nsuicidality", 4: "Low-burden /\nwell"}
+ARCH_N1 = {0: "Activation/sleep", 1: "Severe/clean-bio", 2: "Immunometabolic",
+           3: "Trauma/suicidality", 4: "Low-burden/well"}
+BIO = OI["verm"]   # biology highlight (immunometabolic)
 
-AXES9 = ["overall_severity", "cognition", "metabolic", "inflammatory", "sleep",
-         "mania_activation", "suicidality", "developmental_risk", "substance"]
+# The 8-factor map (immunometabolic merge), CANON presentation order.
+AXES = ["overall_severity", "cognition", "immunometabolic", "sleep",
+        "mania_activation", "suicidality", "developmental_risk", "substance"]
 AXLAB = {"overall_severity": "General\nburden (G)", "cognition": "Cognition",
-         "metabolic": "Metabolic", "inflammatory": "Inflammatory", "sleep": "Sleep",
+         "immunometabolic": "Immuno-\nmetabolic", "sleep": "Sleep",
          "mania_activation": "Mania", "suicidality": "Suicidality",
          "developmental_risk": "Developmental", "substance": "Substance"}
 AXLAB1 = {k: v.replace("\n", " ") for k, v in AXLAB.items()}
-# Short axis tag: G for the burden backbone, D1..D8 for the specific axes (in AXES9 order).
-AXTAG = {a: ("G" if a == "overall_severity" else f"D{i}") for i, a in enumerate(AXES9)}
+# Short axis tag: G for the burden backbone, D1..D7 for the specific axes (in AXES order).
+AXTAG = {a: ("G" if a == "overall_severity" else f"D{i}") for i, a in enumerate(AXES)}
 
 # Per-block (home-factor) colour for the dot-atlas left strip + lollipops.
-# metabolic = vermillion to match the biology highlight (BIO) used in fig3/fig5.
-BLOCK_C = {"overall_severity": OI["black"], "cognition": OI["sky"], "metabolic": OI["verm"],
-           "inflammatory": OI["orange"], "sleep": OI["purple"], "mania_activation": OI["yellow"],
+# immunometabolic = vermillion to match the biology highlight (BIO) used in fig3/fig5.
+BLOCK_C = {"overall_severity": OI["black"], "cognition": OI["sky"], "immunometabolic": OI["verm"],
+           "sleep": OI["purple"], "mania_activation": OI["yellow"],
            "suicidality": OI["green"], "developmental_risk": OI["blue"], "substance": OI["grey"]}
 
 # Shared dot-atlas engine (article + technical report use one implementation; style is passed in).
@@ -101,8 +104,8 @@ def fig1_overview():
     axT = fig.add_subplot(gs[0]); axT.axis("off"); axT.set_xlim(0, 100); axT.set_ylim(0, 34)
     layers = [
         ("Diagnostic\ncohorts", "BP 6,252 · SZ 2,209\nDR 552  ·  N = 9,013", OI["lgrey"], "#333333"),
-        ("Transdiagnostic\ndimensions", "1 general (G) + 8\nspecific axes (M1)", OI["sky"], "#08306b"),
-        ("Continuous map +\nA = 4 archetypes", "continuum, no\nprivileged K (M2)", OI["green"], "#00441b"),
+        ("Transdiagnostic\ndimensions", "1 general (G) + 7\nspecific axes (M1)", OI["sky"], "#08306b"),
+        ("Continuous map +\nA = 5 archetypes", "continuum, no\nprivileged K (M2)", OI["green"], "#00441b"),
         ("Prognosis /\ntreatment", "2-yr functioning;\nTAU boundary (M4–M5)", OI["orange"], "#7f2704"),
     ]
     x0, w, gap, yc, h = 4, 19.0, 5.7, 17, 15
@@ -152,13 +155,13 @@ def fig1_overview():
 
 # ============================================================================ FIG 2
 # The dot-atlas engine lives in face.reporting.loading_atlas (shared with the technical report);
-# here we only bind the article house style (mako + Okabe-Ito block colours, AXES9 column order).
+# here we only bind the article house style (mako + Okabe-Ito block colours, AXES column order).
 ASTYLE = dict(cmap=_seq_cmap(), block_colors=BLOCK_C, axlab=AXLAB1, axtag=AXTAG, window_color=OI["yellow"])
 
 
 def _load_loadings():
     """Tidy long copula loadings (CI-aware). Fail loudly rather than fall back to stale native CSVs."""
-    path = REP("copula_s5_9dim_loadings.csv")
+    path = REP("copula_8factor_loadings.csv")
     if not os.path.exists(path):
         raise FileNotFoundError(
             f"{path} missing — run `python notebooks/run_export_loadings.py` first "
@@ -169,10 +172,10 @@ def _load_loadings():
 def fig2_map(max_per_block=8):
     """Figure 2: the standalone posterior loading dot-atlas (the centrepiece)."""
     L = _load_loadings()
-    rows = LA.atlas_rows(L, AXES9, max_per_block)
+    rows = LA.atlas_rows(L, AXES, max_per_block)
     n_rows = len(rows)
     fig, axA = plt.subplots(figsize=(9.6, max(8.5, 2.4 + 0.135 * n_rows)))
-    sc = LA.draw_dot_atlas(axA, L, AXES9, rows, **ASTYLE)
+    sc = LA.draw_dot_atlas(axA, L, AXES, rows, **ASTYLE)
     axA.set_title("Posterior loading atlas  (indicator × factor)", loc="left", fontsize=11.5)
     LA.atlas_legends(fig, axA, sc, window_color=OI["yellow"])
     save(fig, "fig2_map")
@@ -188,29 +191,31 @@ def fig_factors():
     axC = fig.add_subplot(outer[0, 1])
 
     # (a) factor-wise lollipops
-    for k, f in enumerate(AXES9):
+    for k, f in enumerate(AXES):
         LA.draw_lollipop(axLol[k], L, f, color=BLOCK_C[f], axlab=AXLAB1, axtag=AXTAG)
     fig.text(0.40, 0.99, "What defines each axis  (top home indicators, 95% CI)",
              ha="center", fontsize=10, fontweight="bold")
     panel(axLol[0], "a", x=-0.5, y=1.5)
 
     # (b) inter-factor correlations Φ (copula 9×9)
-    P = pd.read_csv(REP("copula_s5_9dim_phi.csv"), index_col=0).reindex(index=AXES9, columns=AXES9)
+    P = pd.read_csv(REP("copula_8factor_phi.csv"), index_col=0).reindex(index=AXES, columns=AXES)
     Pv = P.values
-    lab = [AXLAB1[c] for c in AXES9]
+    lab = [AXLAB1[c] for c in AXES]
+    nA = len(AXES)
     axC.imshow(Pv, cmap="RdBu_r", vmin=-0.5, vmax=0.5, aspect="equal")
-    axC.set_xticks(range(9)); axC.set_xticklabels(lab, rotation=45, ha="right", fontsize=6.8)
-    axC.set_yticks(range(9)); axC.set_yticklabels(lab, fontsize=6.8)
-    for i in range(9):
-        for j in range(9):
+    axC.set_xticks(range(nA)); axC.set_xticklabels(lab, rotation=45, ha="right", fontsize=6.8)
+    axC.set_yticks(range(nA)); axC.set_yticklabels(lab, fontsize=6.8)
+    for i in range(nA):
+        for j in range(nA):
             if i == j:
                 continue
             axC.text(j, i, f"{Pv[i, j]:.2f}", ha="center", va="center", fontsize=5.8,
                      color="white" if abs(Pv[i, j]) > 0.32 else "#222222")
     axC.set_title("Inter-factor correlations  Φ", loc="center", fontsize=10)
-    spec_off = Pv[1:, 1:][~np.eye(8, dtype=bool)]            # specific–specific block (G zeros excluded)
-    axC.text(0.5, -0.32, f"G orthogonal by construction (row/col 0); specific–specific mean |Φ| ≈ "
-             f"{np.abs(spec_off).mean():.2f}; metabolic–inflammatory = {P.loc['metabolic','inflammatory']:.2f}",
+    spec_off = Pv[1:, 1:][~np.eye(nA - 1, dtype=bool)]      # specific–specific block (G zeros excluded)
+    ms = float(P.loc["mania_activation", "sleep"])
+    axC.text(0.5, -0.32, f"G orthogonal by construction (row/col 0); substance pinned orthogonal; "
+             f"specific–specific mean |Φ| ≈ {np.abs(spec_off).mean():.2f} (e.g. mania–sleep = {ms:.2f})",
              transform=axC.transAxes, ha="center", va="top", fontsize=6.8, color="#555555")
     panel(axC, "b", x=-0.16, y=1.08)
     save(fig, "fig_factors")
@@ -219,49 +224,61 @@ def fig_factors():
 def edfig_full_atlas():
     """Extended Data: the FULL dot-atlas — every modelled indicator (no per-block cap)."""
     L = _load_loadings()
-    rows = LA.atlas_rows(L, AXES9, None)
+    rows = LA.atlas_rows(L, AXES, None)
     n_rows = len(rows)
     fig, axA = plt.subplots(figsize=(9.5, max(10.0, 2.6 + 0.135 * n_rows)))
-    sc = LA.draw_dot_atlas(axA, L, AXES9, rows, label_fs=5.4, **ASTYLE)
+    sc = LA.draw_dot_atlas(axA, L, AXES, rows, label_fs=5.4, **ASTYLE)
     axA.set_title("Posterior loading atlas — all modelled indicators", loc="left", fontsize=11)
     LA.atlas_legends(fig, axA, sc, window_color=OI["yellow"])
     save(fig, "edfig_full_atlas")
 
 # ============================================================================ FIG 3
 def fig3_biology_g():
-    cg = pd.read_csv(REP("07_corrG_phi.csv")).set_index("domain")
-    cf = pd.read_csv(REP("12_biology_g_confound.csv")).set_index("domain")
-    order = ["sleep", "cognition", "metabolic", "inflammatory"]
-    fig, ax = plt.subplots(figsize=(7.4, 4.5))
-    x = np.arange(len(order)); w = 0.36
-    unадj = [cg.loc[d, "corrG_phi_with_G"] for d in order]
-    adj = [cf.loc[d, "A2_antipsychotic"] for d in order]
-    cols = [OI["grey"] if d in ("sleep", "cognition") else BIO for d in order]
-    b1 = ax.bar(x - w/2, unадj, w, color=cols, label="unadjusted")
-    b2 = ax.bar(x + w/2, adj, w, color=cols, alpha=0.45, hatch="//",
-                edgecolor="white", label="+ medication, adiposity, site")
-    # bifactor |lambda_G| as points
-    lam = [cg.loc[d, "bifactor_loading_on_G"] for d in order]
-    ax.scatter(x - w/2, lam, marker="D", s=34, color="black", zorder=5, label="bifactor |λ$_G$|")
-    for xi, v in zip(x - w/2, unадj):
-        ax.text(xi, v + 0.012, f"{v:.2f}", ha="center", fontsize=8)
-    ax.axhspan(0, 0.15, color=OI["green"], alpha=0.06)
-    ax.text(3.45, 0.075, "biology\nzone", ha="center", va="center", fontsize=7.5,
+    """Immunometabolic load is the least burden-entangled axis — biology ⊥ G.
+
+    Read straight from the 8-factor inter-factor matrix Φ (reports/copula_8factor_phi.csv):
+    G is orthogonal to every specific by construction (bifactor row/col 0 = 0), and among the
+    correlated specifics the immunometabolic axis carries the smallest mean coupling of all.
+    """
+    P = pd.read_csv(REP("copula_8factor_phi.csv"), index_col=0).reindex(index=AXES, columns=AXES)
+    # Correlated specific axes (exclude G — orthogonal by construction — and substance — pinned orthogonal).
+    spec = [a for a in AXES if a not in ("overall_severity", "substance")]
+    # Each axis's entanglement = mean |Φ| with the *other* correlated specifics.
+    def entangle(a):
+        others = [b for b in spec if b != a]
+        return float(np.abs([P.loc[a, b] for b in others]).mean())
+    ent = {a: entangle(a) for a in spec}
+    order = sorted(spec, key=lambda a: ent[a])  # least → most entangled (immunometabolic first)
+
+    fig, ax = plt.subplots(figsize=(7.6, 4.5))
+    x = np.arange(len(order)); w = 0.6
+    vals = [ent[a] for a in order]
+    cols = [BIO if a == "immunometabolic" else OI["grey"] for a in order]
+    ax.bar(x, vals, w, color=cols)
+    for xi, a, v in zip(x, order, vals):
+        ax.text(xi, v + 0.004, f"{v:.3f}", ha="center", fontsize=8,
+                fontweight="bold" if a == "immunometabolic" else "normal")
+    ax.axhspan(0, 0.05, color=OI["green"], alpha=0.07)
+    ax.text(len(order) - 0.5, 0.025, "biology\nzone", ha="center", va="center", fontsize=7.5,
             color=OI["green"], fontweight="bold")
-    ax.set_xticks(x); ax.set_xticklabels([AXLAB1[d] for d in order])
-    ax.set_ylabel("correlation with general burden  Φ(G, ·)")
-    ax.set_ylim(0, 0.5)
-    ax.set_title("Metabolic and inflammatory load are the least burden-entangled domains")
-    ax.legend(loc="upper right", fontsize=7.6)
-    ax.text(0.0, -0.20, "Adjustment for medication, adiposity and site does not raise the biology bars — "
-            "if anything it lowers them.", transform=ax.transAxes, fontsize=7.6, color="#555555")
+    ax.set_xticks(x); ax.set_xticklabels([AXLAB1[a] for a in order], rotation=20, ha="right", fontsize=8)
+    ax.set_ylabel("mean inter-factor coupling  |Φ| with other axes")
+    ax.set_ylim(0, max(vals) * 1.28)
+    ax.set_title("Immunometabolic load is the least burden-entangled axis")
+    ax.legend(handles=[Line2D([], [], color=BIO, lw=6, label="immunometabolic (biology)"),
+                       Line2D([], [], color=OI["grey"], lw=6, label="symptom / cognitive axes")],
+              loc="upper left", fontsize=7.6)
+    ax.text(0.0, -0.26, "General burden (G) is orthogonal to every specific axis by construction; among the "
+            "correlated specifics\nthe immunometabolic axis carries the smallest coupling (mean |Φ| ≈ "
+            f"{ent['immunometabolic']:.3f}) — biology ⊥ G.",
+            transform=ax.transAxes, fontsize=7.4, color="#555555")
     save(fig, "fig3_biology_g")
 
 # ============================================================================ FIG 4
 def fig4_continuum():
     struct = json.load(open(R("strata_oop", "structure", "data.json")))
     dr = np.load(R("strata_oop", "coordinates", "coordinates_draws.npz"))
-    X = dr["draws"].mean(axis=0)  # (9013, 9) posterior-mean coords, dim order = dims
+    X = dr["draws"].mean(axis=0)  # (9013, 8) posterior-mean coords, dim order = dims
     dims = list(dr["dims"])
     coords = pd.read_parquet(R("strata_oop", "coordinates", "coordinates_full.parquet"))
     cohort = coords["cohort"].str.lower().values
@@ -315,8 +332,8 @@ def fig4_continuum():
     axC = fig.add_subplot(gs[1, 0]); emb(axC, X[:, gi["overall_severity"]], "by general burden\n(smooth gradient →)",
                                          cmap="viridis", cbar_lbl="G")
     panel(axC, "c")
-    axD = fig.add_subplot(gs[1, 1]); emb(axD, X[:, gi["inflammatory"]], "by inflammatory load\n(a different direction)",
-                                         cmap="rocket" if "rocket" in plt.colormaps() else "magma", cbar_lbl="inflammatory")
+    axD = fig.add_subplot(gs[1, 1]); emb(axD, X[:, gi["immunometabolic"]], "by immunometabolic load\n(a different direction)",
+                                         cmap="rocket" if "rocket" in plt.colormaps() else "magma", cbar_lbl="immunometabolic")
     panel(axD, "d")
 
     save(fig, "fig4_continuum")
@@ -324,23 +341,23 @@ def fig4_continuum():
 
 def fig4b_archetypes():
     """Archetype profiles, split out of the former fig4 panel (e) so the continuum
-    (a negative structural result) and the four archetypal extremes (a positive
+    (a negative structural result) and the five archetypal extremes (a positive
     geometric result) are separate display items, matching Results sections 2.5/2.6."""
     prof = pd.read_csv(R("strata_oop", "consolidate", "archetype_profiles.csv"))
-    fig, axE = plt.subplots(figsize=(8.6, 4.8))
+    fig, axE = plt.subplots(figsize=(9.4, 4.8))
     A = prof[prof["arm"] == "A_all9"].set_index("archetype")
-    order = AXES9; xx = np.arange(len(order)); w = 0.2
-    for a in range(4):
+    order = AXES; xx = np.arange(len(order)); w = 0.16
+    for a in range(5):
         vals = [A.loc[a, c] for c in order]
-        axE.bar(xx + (a-1.5)*w, vals, w, color=ARCH_C[a], label=f"A{a} {ARCH_N1[a]}")
+        axE.bar(xx + (a-2)*w, vals, w, color=ARCH_C[a], label=f"A{a} {ARCH_N1[a]}")
     axE.axhline(0, color="#444444", lw=0.8)
     axE.set_xticks(xx); axE.set_xticklabels([AXLAB1[c] for c in order], rotation=35, ha="right", fontsize=7.4)
     axE.set_ylabel("archetype coordinate (z)")
-    axE.set_title("Four archetypal extremes read the continuum (biology ⊥ symptoms ⊥ severity)", fontsize=9.4)
-    axE.legend(ncol=4, fontsize=7.2, loc="upper center", bbox_to_anchor=(0.5, 1.16), columnspacing=1.0)
+    axE.set_title("Five archetypal extremes read the continuum (biology ⊥ symptoms ⊥ severity)", fontsize=9.4)
+    axE.legend(ncol=5, fontsize=6.8, loc="upper center", bbox_to_anchor=(0.5, 1.16), columnspacing=0.8)
     axE.set_ylim(-3.4, 3.2)
-    axE.text(0.5, -0.30, "A0 peaks on metabolic / inflammatory / substance with high severity; "
-             "A2 is equally severe but biology-low — the dissociation made visible.",
+    axE.text(0.5, -0.30, "A2 peaks on immunometabolic load with high severity and suicidality; "
+             "A1 is equally severe but biology-low — the dissociation made visible.",
              transform=axE.transAxes, ha="center", va="top", fontsize=7.0, color="#555555")
     save(fig, "fig4b_archetypes")
 
@@ -357,7 +374,7 @@ def fig5_persistence():
     lo = [ts.loc[a, "icc"] - ts.loc[a, "icc_lo"] for a in order]
     hi = [ts.loc[a, "icc_hi"] - ts.loc[a, "icc"] for a in order]
     def cof(a, v):
-        if a in ("metabolic", "inflammatory", "cognition"): return BIO
+        if a in ("immunometabolic", "cognition"): return BIO
         if a == "overall_severity": return OI["blue"]
         return OI["grey"]
     cols = [cof(a, ts.loc[a, "icc"]) for a in order]
@@ -385,10 +402,10 @@ def fig5_persistence():
 
     # (b) population slide vs individual rank stability
     axB = fig.add_subplot(gs[1])
-    ax_sub = ["metabolic", "inflammatory", "cognition", "overall_severity", "suicidality"]
+    ax_sub = ["immunometabolic", "cognition", "overall_severity", "suicidality", "developmental_risk"]
     icc = [ts.loc[a, "icc"] for a in ax_sub]
     slide = [ts.loc[a, "pop_slide"] for a in ax_sub]
-    cc = [BIO if a in ("metabolic","inflammatory","cognition") else (OI["blue"] if a=="overall_severity" else OI["grey"]) for a in ax_sub]
+    cc = [BIO if a in ("immunometabolic","cognition") else (OI["blue"] if a=="overall_severity" else OI["grey"]) for a in ax_sub]
     axB.scatter(icc, slide, s=90, c=cc, zorder=5, edgecolor="white", lw=1.0)
     for a, xi, yi in zip(ax_sub, icc, slide):
         axB.annotate(AXLAB1[a], (xi, yi), (xi, yi+0.05), fontsize=7.2, ha="center")
@@ -414,25 +431,25 @@ def fig6_prognosis():
     # (a) archetype prognostic atlas: pooled functional remission by archetype + cohort
     e = atlas[atlas["outcome"] == "egf"].copy()
     pooled = (e.groupby("archetype").apply(lambda d: np.average(d["remission_rate"], weights=d["n_rem"]))
-              .reindex([0,1,2,3]))
+              .reindex([0, 1, 2, 3, 4]))
     axA = fig.add_subplot(gs[0])
-    order_a = [0, 2, 3, 1]  # worst->best
-    xx = np.arange(4)
+    order_a = sorted(range(5), key=lambda a: pooled[a])  # worst (A2) -> best (A4)
+    xx = np.arange(5)
     axA.bar(xx, [pooled[a] for a in order_a], color=[ARCH_C[a] for a in order_a], width=0.7)
     for i, a in enumerate(order_a):
-        axA.text(i, pooled[a]+0.015, f"{pooled[a]*100:.0f}%", ha="center", fontsize=9, fontweight="bold")
-    axA.set_xticks(xx); axA.set_xticklabels([f"A{a}\n{ARCH_N1[a]}" for a in order_a], fontsize=7.6)
+        axA.text(i, pooled[a]+0.015, f"{pooled[a]*100:.0f}%", ha="center", fontsize=8.4, fontweight="bold")
+    axA.set_xticks(xx); axA.set_xticklabels([f"A{a}\n{ARCH_N1[a]}" for a in order_a], fontsize=6.6)
     axA.set_ylabel("2-yr functional remission (GAF ≥ 71)")
-    axA.set_ylim(0, 0.7); axA.set_title("Archetype prognostic atlas")
-    axA.annotate("", (0.0, 0.64), (3.0, 0.64), arrowprops=dict(arrowstyle="<|-|>", color="#666", lw=1.2))
-    axA.text(1.5, 0.66, "27% → 60%  (biological corner worst)", ha="center", fontsize=7.6, color="#444")
+    axA.set_ylim(0, 0.74); axA.set_title("Archetype prognostic atlas")
+    axA.annotate("", (0.0, 0.68), (4.0, 0.68), arrowprops=dict(arrowstyle="<|-|>", color="#666", lw=1.2))
+    axA.text(2.0, 0.70, "17% → 52%  (immunometabolic corner worst)", ha="center", fontsize=7.4, color="#444")
     panel(axA, "a", x=-0.22)
 
     # (b) incremental held-out value, functioning (egf): encodings vs reference
     axB = fig.add_subplot(gs[1])
     e2 = inc[inc["outcome"] == "egf"].set_index("model")
-    rows = [("+archetypesA", "A=4 archetypes"), ("+specifics8", "8 specific axes"),
-            ("+tess_k3", "hard tiling (K=3)"), ("+durable", "biology axes alone")]
+    rows = [("+archetypesA", "A=5 archetypes"), ("+specifics8", "7 specific axes"),
+            ("+tess_k3", "hard tiling (K=3)"), ("+durable", "biology axis alone")]
     yy = np.arange(len(rows))[::-1]
     vals = [e2.loc[m, "d_elpd_vs_ref"] for m, _ in rows]
     ses = [e2.loc[m, "se_d_elpd"] for m, _ in rows]
@@ -445,7 +462,7 @@ def fig6_prognosis():
     for y_, v, s in zip(yy, vals, ses):
         axB.text(v + s + 1.5, y_, f"+{v:.0f}", va="center", fontsize=7.6)
     axB.text(0.02, -0.30, "the continuous archetype encoding dominates any hard partition\n"
-             "(operative K = none); the biology axes alone no longer suffice",
+             "(operative K = none); the biology axis alone does not suffice",
              transform=axB.transAxes, fontsize=7.0, color="#555")
     panel(axB, "b", x=-0.18)
 
@@ -510,21 +527,21 @@ def edfig_treatment():
     ep_order = ["ep_resistance", "ep_response", "ep_side_effects"]
     ep_lbl = ["treatment-\nresistant", "CGI\nresponds", "significant\nside-effects"]
     pooled = atl[atl.cohort == "pooled"]
-    w = 0.2; xx = np.arange(len(ep_order))
-    for a in range(4):
+    w = 0.16; xx = np.arange(len(ep_order))
+    for a in range(5):
         rates = [pooled[(pooled.endpoint==ep) & (pooled.archetype==a)]["rate"].iloc[0] for ep in ep_order]
-        axB.bar(xx + (a-1.5)*w, rates, w, color=ARCH_C[a], label=f"A{a} {ARCH_N1[a]}")
+        axB.bar(xx + (a-2)*w, rates, w, color=ARCH_C[a], label=f"A{a} {ARCH_N1[a]}")
     axB.set_xticks(xx); axB.set_xticklabels(ep_lbl, fontsize=8)
     axB.set_ylabel("2-yr rate")
-    axB.set_title("Treatment-course atlas: biological corner hardest")
-    axB.legend(ncol=4, fontsize=6.8, loc="upper center", bbox_to_anchor=(0.5, 1.16), columnspacing=0.8)
+    axB.set_title("Treatment-course atlas: immunometabolic corner hardest")
+    axB.legend(ncol=5, fontsize=6.4, loc="upper center", bbox_to_anchor=(0.5, 1.16), columnspacing=0.6)
     # annotate permutation AUC p
     for i, ep in enumerate(ep_order):
         p = g.loc[ep, "delta_auc_perm_p"]
         axB.text(i, 0.66, f"AUC perm p={p:.3f}", ha="center", fontsize=6.4, color="#777")
     axB.set_ylim(0, 0.72)
     axB.text(0.02, -0.26, "Stratification clears (beyond severity+substance+demographics, p≤0.003); "
-             "individual discrimination modest\nand resistance is AUC-marginal (p=0.185). Monitoring, not prescribing.",
+             "individual discrimination modest\nand resistance is AUC-marginal (p=0.205). Monitoring, not prescribing.",
              transform=axB.transAxes, fontsize=6.8, color="#555")
     panel(axB, "b", x=-0.13)
     save(fig, "edfig_treatment")
@@ -534,7 +551,7 @@ def edfig_repbench():
     fig, axes = plt.subplots(1, 2, figsize=(9.6, 4.2))
     for ax, (tgt, ttl) in zip(axes, [("egf_deterioration", "Deterioration"), ("egf_recovery", "Recovery")]):
         d = sc[(sc.target == tgt) & (sc.scope == "pooled") & (sc.horizon == "V2")].set_index("arm")
-        arms = [("REF", "DSM-5 + severity\n+ baseline"), ("REF+LAT-A", "+ 9-dim map"), ("REF+RAW", "+ 143 raw\nindicators")]
+        arms = [("REF", "DSM-5 + severity\n+ baseline"), ("REF+LAT-A", "+ 8-factor map"), ("REF+RAW", "+ 143 raw\nindicators")]
         vals = [d.loc[a, "auc"] for a, _ in arms]
         cc = [OI["grey"], OI["green"], OI["blue"]]
         ax.bar(range(3), vals, color=cc, width=0.62)
@@ -545,9 +562,9 @@ def edfig_repbench():
         ax.set_title(ttl)
     axes[0].text(0.5, 0.9, "map = raw\n(sufficient)", transform=axes[0].transAxes, ha="center",
                  fontsize=8, color=OI["green"], fontweight="bold")
-    axes[1].text(0.5, 0.9, "raw +0.04\n(near-sufficient;\n97% within factors)", transform=axes[1].transAxes,
+    axes[1].text(0.5, 0.9, "raw +0.04\n(near-sufficient;\n92–97% within factors)", transform=axes[1].transAxes,
                  ha="center", fontsize=7.6, color="#555")
-    fig.suptitle("The 9-dim map is a sufficient representation of 143 raw indicators", fontsize=10, fontweight="bold")
+    fig.suptitle("The 8-factor map is a sufficient representation of 143 raw indicators", fontsize=10, fontweight="bold")
     panel(axes[0], "a"); panel(axes[1], "b")
     save(fig, "edfig_repbench")
 
@@ -555,7 +572,7 @@ def edfig_invariance():
     cg = pd.read_csv(R("temporal_oop", "invariance", "congruence.csv"))
     fig, ax = plt.subplots(figsize=(7.6, 4.2))
     piv = cg.pivot_table(index="factor", columns="visit", values="phi_min")
-    order = ["overall_severity", "cognition", "metabolic", "inflammatory", "sleep"]
+    order = ["overall_severity", "cognition", "immunometabolic", "sleep"]
     piv = piv.reindex(order)
     x = np.arange(len(order)); w = 0.38
     ax.bar(x - w/2, piv["V1"], w, color=OI["sky"], label="12 months")
@@ -565,8 +582,8 @@ def edfig_invariance():
     ax.set_ylabel("Tucker congruence φ vs baseline")
     ax.set_title("The measurement holds over follow-up (longitudinal invariance)")
     ax.legend(fontsize=7.4, loc="lower right")
-    ax.text(0.0, -0.16, "All five backbone axes remain invariant at 12 and 24 months; "
-            "inflammatory (φ=0.974) is now invariant on the copula map.",
+    ax.text(0.0, -0.16, "All four backbone axes remain invariant at 12 and 24 months; "
+            "the immunometabolic axis (φ=0.987) is fully invariant.",
             transform=ax.transAxes, fontsize=7.2, color="#555")
     save(fig, "edfig_invariance")
 

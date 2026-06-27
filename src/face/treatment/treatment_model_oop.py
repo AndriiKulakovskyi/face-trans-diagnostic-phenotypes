@@ -548,11 +548,13 @@ class TreatmentAtlas:
     (resistance / response / side-effects), pooled and within cohort — the monitoring artifact (the M4-atlas
     analogue). Plus the gates that make it *proven* rather than chance: **specificity** (the corner adds beyond
     baseline severity + substance comorbidity + demographics; and how much substance alone carries),
-    **de-confounding** (composition share of the A0–A1 gradient + the corner×cohort interaction), and a
+    **de-confounding** (composition share of the worst→best corner gradient + the corner×cohort interaction), and a
     held-out **ΔAUC permutation null**. Descriptive (monitoring), never prescriptive."""
 
     ENDPOINTS = ["ep_resistance", "ep_response", "ep_side_effects"]
-    CORNER = {0: "A0 biological", 1: "A1 low-burden", 2: "A2 severe·low-bio", 3: "A3 symptom"}
+    # A=5 archetype corners on the 8-factor map (the biology corner is A2 immunometabolic — see M2 atlas)
+    CORNER = {0: "A0 activation", 1: "A1 severe·clean-bio", 2: "A2 immunometabolic",
+              3: "A3 trauma", 4: "A4 well"}
 
     def __init__(self, config: TreatmentConfig | None = None):
         self.config = config or TreatmentConfig()
@@ -588,13 +590,14 @@ class TreatmentAtlas:
 
         fr = frame.copy()
         fr["corner_id"] = fr["arch_dominant"].astype("int64")
+        nA = int(fr["corner_id"].max()) + 1                                  # A=5 on the 8-factor map (dynamic)
         atlas_rows, gate_rows = [], []
         for ep in self.ENDPOINTS:
             if ep not in fr.columns:
                 continue
             d = fr.dropna(subset=[ep]).copy(); d["y"] = d[ep].astype("int64")
             present = [c for c in ("bp", "sz", "dr") if (d["cohort"] == c).sum() >= 30]
-            for a in range(4):                                               # per-corner rates + Wilson CIs
+            for a in range(nA):                                              # per-corner rates + Wilson CIs
                 for coh in ["pooled", *present]:
                     sub = d[d.corner_id == a] if coh == "pooled" else d[(d.corner_id == a) & (d["cohort"] == coh)]
                     n, k = len(sub), int(sub["y"].sum())
@@ -616,7 +619,7 @@ class TreatmentAtlas:
                 subst_p = float(chi2.sf(2 * (s1.llf - s0.llf), 1))
             except Exception:                                                # noqa: BLE001 (degenerate cell)
                 pass
-            # de-confounding — composition share of the A0–A1 gradient + corner×cohort interaction
+            # de-confounding — composition share of the worst→best corner gradient + corner×cohort interaction
             comp_share = inter_p = float("nan")
             if len(present) >= 2:
                 dc = d[d["cohort"].isin(present)]
@@ -624,9 +627,11 @@ class TreatmentAtlas:
                 cell = dc.groupby(["corner_id", "cohort"])["y"].mean().unstack().reindex(columns=mix.index)
                 pooled = dc.groupby("corner_id")["y"].mean()
                 std = (cell * mix).sum(1)
-                if 0 in pooled.index and 1 in pooled.index:
-                    raw = float(pooled[0] - pooled[1])
-                    comp_share = round(1 - float(std.get(0, np.nan) - std.get(1, np.nan)) / raw, 3) if raw else np.nan
+                if len(pooled) >= 2:                            # data-driven worst→best corner spread (A-agnostic)
+                    WORST, BEST = int(pooled.idxmin()), int(pooled.idxmax())
+                    raw = float(pooled[BEST] - pooled[WORST])
+                    comp_share = (round(1 - float(std.get(BEST, np.nan) - std.get(WORST, np.nan)) / raw, 3)
+                                  if raw else np.nan)
                 try:
                     ma = smf.logit("y ~ C(corner_id) + C(cohort)", dc).fit(disp=0)
                     mi = smf.logit("y ~ C(corner_id) * C(cohort)", dc).fit(disp=0)
@@ -867,17 +872,19 @@ class TreatmentVisualizer:
         import matplotlib.pyplot as plt
         eps = [("ep_resistance", "treatment resistance"), ("ep_response", "CGI response"),
                ("ep_side_effects", "significant side-effects")]
-        corners = ["A0 biological", "A1 low-burden", "A2 severe·low-bio", "A3 symptom"]
-        colors = ["#B42318", "#1a9850", "#B7791F", "#6B4FA1"]
+        # A=5 archetype corners on the 8-factor map (the biology corner is A2 immunometabolic — see M2 atlas)
+        corners = ["A0 activation", "A1 severe·clean-bio", "A2 immunometabolic", "A3 trauma", "A4 well"]
+        colors = ["#6B4FA1", "#B7791F", "#B42318", "#0F766E", "#1a9850"]
+        nA = len(corners)
         g = atlas[atlas.cohort == "pooled"]
         gate = gates.set_index("endpoint") if gates is not None and len(gates) else None
         fig, axes = plt.subplots(1, 3, figsize=(12.6, 4.2))
         for ax, (ep, label) in zip(axes, eps, strict=False):
-            sub = g[g.endpoint == ep].set_index("archetype").reindex(range(4))
+            sub = g[g.endpoint == ep].set_index("archetype").reindex(range(nA))
             rates = sub["rate"].to_numpy()
             yerr = np.vstack([rates - sub["lo"].to_numpy(), sub["hi"].to_numpy() - rates])
-            ax.bar(range(4), rates, color=colors, yerr=yerr, capsize=3, error_kw={"lw": 0.8})
-            ax.set_xticks(range(4)); ax.set_xticklabels([c.split()[0] for c in corners], fontsize=9)
+            ax.bar(range(nA), rates, color=colors, yerr=yerr, capsize=3, error_kw={"lw": 0.8})
+            ax.set_xticks(range(nA)); ax.set_xticklabels([c.split()[0] for c in corners], fontsize=9)
             ax.set_ylim(0, min(1.0, np.nanmax(sub["hi"].to_numpy()) + 0.12))
             ax.set_title(label, fontsize=10.5, fontweight="bold")
             if ax is axes[0]:
@@ -886,7 +893,7 @@ class TreatmentVisualizer:
                 pp = gate.loc[ep, "delta_auc_perm_p"]; sp = gate.loc[ep, "corner_beyond_sev_subst_demo_p"]
                 ax.annotate(f"beyond sev+subst p={sp:.0e}\nΔAUC perm p={pp:.2f}", (0.5, 0.97),
                             xycoords="axes fraction", ha="center", va="top", fontsize=7.5, color="#5B6573")
-        fig.suptitle("Treatment-course atlas — the biological corner (A0) carries the difficult course "
+        fig.suptitle("Treatment-course atlas — the immunometabolic corner (A2) carries the difficult course "
                      "(monitoring, not prescribing)", y=1.02, fontsize=11.5, fontweight="bold", color="#1E366B")
         fig.tight_layout()
         out = self.config.figure_dir / filename
