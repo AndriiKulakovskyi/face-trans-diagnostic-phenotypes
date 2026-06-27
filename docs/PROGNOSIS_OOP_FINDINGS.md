@@ -1,9 +1,9 @@
-# M4 prognosis on the Gaussian-copula M2 object — findings
+# M4 prognosis on the M2 object — findings
 
 > **Canonical M4 findings record (8-factor map, 2026-06-27; pending PI sign-off).** Built on the **8-factor**
-> copula M1/M2/M3 objects (continuum: continuous coordinates + **A = 5** archetype simplex + nested K-family;
-> immunometabolic merge + substance orthogonal). Engine
-> [`src/face/prognosis/prognosis_model_oop.py`](../src/face/prognosis/prognosis_model_oop.py) (wraps the proven
+> M1/M2/M3 objects (continuum: continuous coordinates + **A = 5** archetype simplex + nested K-family;
+> immunometabolic biology axis + substance orthogonal). Engine
+> [`src/face/prognosis/prognosis_model_oop.py`](../src/face/prognosis/prognosis_model_oop.py) (wraps the
 > `glm.fit_glm` / `compare.delta_elpd` / `reference.py` kernels); driver
 > [`notebooks/run_prognosis_model_oop.py`](../notebooks/run_prognosis_model_oop.py). **Internal
 > incremental-association validity only.** Inputs: M2 strata (5 archetype weights), M3 panel + draws + IPW.
@@ -12,8 +12,7 @@
 
 On the fixed M1/M2/M3 objects, an errors-in-variables Bayesian GLM (propagating M1 uncertainty via the panel
 draws, attrition-corrected by the M3 IPW) tests whether a baseline coordinate/stratum **forecasts a 2-year
-outcome incrementally beyond DSM-5 + severity + the baseline value of that same outcome**. The M4 story
-**replays — and the headline forecast is slightly stronger** on the 8-factor map.
+outcome incrementally beyond DSM-5 + severity + the baseline value of that same outcome**.
 
 ## Result 1 — the map predicts 2-year *functioning*, beyond DSM-5 + severity + baseline
 
@@ -29,8 +28,8 @@ Incremental held-out ΔELPD vs the R3y bar (diagnosis + severity + baseline outc
 
 For **severity (cgi_s)** the increments are small/ambiguous (+archetypesB +14.0, +archetypesA +12.0; +durable
 −0.7): severity is **autoregression-saturated** (baseline CGI-S/G carries it). *The map forecasts functioning,
-not severity* — the native + copula M4 headline, replayed. The archetype forecast is **+62.8 (was +59 on the
-9-factor map)** — the 5-corner representation is, if anything, a slightly better functional predictor.
+not severity* — the M4 headline. The archetype forecast is **+62.8** — the 5-corner representation is a strong functional
+predictor of future functioning.
 
 ## Result 2 — the operative K is **none**: the continuum/archetypes win (the answer to the K question)
 
@@ -67,8 +66,8 @@ severity-saturation story again.
 | **A2 — immunometabolic (biology) corner** | **17%** |
 
 A **17% → 52%** transdiagnostic gradient; **the immunometabolic biology corner (A2) carries the worst
-functional prognosis** — the precise value a biology-aware map adds. (On the 9-factor A=4 map this was 27→60%;
-the merged-biology corner is now an even sharper low-prognosis pole.)
+functional prognosis** — the precise value a biology-aware map adds; the immunometabolic corner is the sharp
+low-prognosis pole.
 
 ## Result 4b — the gradient is *within-diagnosis*, not a cohort-composition artefact
 
@@ -79,8 +78,7 @@ SZ low-floor), so a pooled gradient must be checked within cohort. De-confoundin
 1. **Within every cohort the rank holds** (immunometabolic corner → well pole): **BP 27% → 73%, DR 31% → 72%,
    SZ 9% → 25%.**
 2. **Direct standardization** to a common cohort mix barely moves the gradient (0.23 → 0.62 vs raw 0.17 → 0.52):
-   **composition explains only ~4%** of the pooled spread — a genuine within-diagnosis effect (stronger than the
-   9-factor map's 6%).
+   **composition explains only ~4%** of the pooled spread — a genuine within-diagnosis effect.
 3. **Logistic decomposition** `remission ~ corner + cohort (+interaction)`: the cohort-adjusted best-vs-worst
    corner effect is large (**OR ≈ 6.3**), cohort is the dominant axis (SZ-vs-BP **OR 0.15**), and the
    **corner×cohort interaction is NS** (p = 0.79) — the relative corner effect is cohort-homogeneous; the
@@ -95,7 +93,7 @@ have room above the floor, even though the relative gradient is present everywhe
 ## Result 5 — group-level forecasting, not a large individual-binary boost (honest)
 
 Deployable-classifier read (5-fold CV AUC, foundation vs +map): egf functional remission **0.745 → 0.755
-(ΔAUC +0.010)**; cgi_s +0.004. As on the native/copula map, the strong continuous ΔELPD (+62.8) collapses to a
+(ΔAUC +0.010)**; cgi_s +0.004. The strong continuous ΔELPD (+62.8) collapses to a
 small binary lift — the map's value is **group-level stratification + continuous functional forecasting**, not a
 large individual yes/no gain.
 
@@ -113,14 +111,14 @@ Stressing the operative winner (`+archetypesA` on egf, ΔELPD vs R3y):
 
 The clean ⊥G `+archetypesB` behaves identically (base +33.5 / IPW +27.7 predictive; permutation −2.1 null). So
 the archetype functioning forecast is **real (permutation), IPW-robust, and BP-driven** (the episodic,
-open-course cohort) — the copula M4 robustness story, replayed.
+open-course cohort).
 
-## Result 7 — the map is a *sufficient representation* (raw-vs-map benchmark) — re-run on the 8-factor map
+## Result 7 — the map is a *sufficient representation* (raw-vs-map benchmark)
 
 One fixed regularised XGBoost, identical CV folds, three representations (REF = DSM-5+severity+baseline GAF;
 REF+map = 8 coords + uncertainty + A=5 archetypes; REF+raw = raw indicators), predicting recovery
-(impaired→GAF≥71) and deterioration (GAF drop ≥10), V1+V2 pooled. The 8-factor map **replays the 9-factor
-sufficiency verdict** (`results/face/m4_repbench/`; xgboost run under `OMP_NUM_THREADS=1` to dodge the macOS
+(impaired→GAF≥71) and deterioration (GAF drop ≥10), V1+V2 pooled. The 8-factor map is a **sufficient
+representation** (`results/face/m4_repbench/`; xgboost run under `OMP_NUM_THREADS=1` to dodge the macOS
 libomp segfault):
 
 - **Deterioration: map = raw** (AUC raw−map +0.009 V1 / +0.005 V2 — **tie → sufficient**).
@@ -130,20 +128,20 @@ libomp segfault):
   immunometabolic, CVLT/WAIS → cognition, Fagerström → substance, CSM → sleep); the only off-map residual is the
   depression/anxiety window items (STAI/MADRS/QIDS).
 
-**Calibrated claim (unchanged from the 9-factor map):** the 8-factor copula map is a **sufficient** summary for
+**Calibrated claim:** the 8-factor copula map is a **sufficient** summary for
 deterioration and a **near-sufficient, structurally faithful** summary for recovery whose ≈0.04-AUC residual is
 item-level compression (≥92% inside its own factors) — parsimony + interpretability for a sliver of resolution.
 Methods: [`M4_REPRESENTATION_BENCHMARK.md`](M4_REPRESENTATION_BENCHMARK.md). *(NB the SHAP `home_factor` labels
-still carry the pre-merge metabolic/inflammatory names — cosmetic; both fold into immunometabolic and the
-within-factor share is unaffected.)*
+carry separate metabolic/inflammatory tags — cosmetic; both fold into immunometabolic and the within-factor
+share is unaffected.)*
 
 ## Honest caveats
 
-* **The durable-pair-alone signal is ambiguous** (egf +2.3; cgi_s −0.7) — as on the 9-factor copula map. The
+* **The durable-pair-alone signal is ambiguous** (egf +2.3; cgi_s −0.7). The
   immunometabolic *axis* has a credible adverse direction (EGF coef −0.053 [−0.088, −0.019], p-dir 0.003 —
   higher immunometabolic → worse future functioning), but the **2-axis durable EIV block alone does not beat the
   R3y bar by ELPD**. The robust predictive object is the **fuller A = 5 archetype representation**, where the
-  biology lives as the worst-prognosis corner (A2). An honest, map-version-specific carrier.
+  biology lives as the worst-prognosis corner (A2). An honest, specific carrier.
 * **Internal incremental-association only** — not causal, not external; outcomes are re-administered scales, not
   incident events; 2-year horizon; complete-case (IPW is a sensitivity, not the headline).
 * **Severity is autoregression-saturated** — by design.
@@ -161,5 +159,4 @@ within-factor share is unaffected.)*
 DSM-5 + severity + baseline (IPW-robust, permutation-null, co-informative with DSM-5, course-dependent /
 BP-led), with a 17→52% transdiagnostic functional-remission gradient (within-diagnosis: composition only ~4%)
 whose worst pole is the immunometabolic biology corner. Operative K = none. Not severity. The map is a
-sufficient representation for deterioration and near-sufficient (≥92% within-factor) for recovery. Replays the
-copula M4 on the better map, in full.
+sufficient representation for deterioration and near-sufficient (≥92% within-factor) for recovery.

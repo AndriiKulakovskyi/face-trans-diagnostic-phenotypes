@@ -76,8 +76,8 @@ clinically sensible is positive evidence the structure is well-specified, not an
 2. `hs_s3_merged` — + developmental_risk, mania_activation (continuous), hard-zero.
 3. `hs_s5_merged` — full **8-factor MIXED** map (+ suicidality, substance explicit), **horseshoe** cross-loadings,
    **warm-started from the clean hard-zero backbone**. (Warm-starting the relaxed fit from the hard-zero
-   solution is identified here — unlike freeing cross-loadings on the two-factor biology block, which was
-   non-identified; merging biology removed that rotation.)
+   solution is identified here: the immunometabolic axis is a single biology factor, so there is no
+   biology-block rotation to destabilize the cross-loadings.)
 
 ```bash
 HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_horseshoe_map.py --smoke        # wiring
@@ -93,25 +93,24 @@ A tiny continuous fit on the merged backbone (6 factors, 294 freed cross cells) 
 **0 divergences**, **92% of cross-loadings shrunk to |median| < 0.05** (median 0.002), yet the heavy tails
 let a genuine cell reach |λ| ≈ 0.59. Sparse *and* permissive, sampling cleanly.
 
-## Results — the decoupled outcome (2026-06-26)
+## Results — the decoupled architecture
 
-The **full mixed horseshoe did not converge** (R̂ 3.0 on the loadings). The diagnostic isolated why: the
-horseshoe scales mix fine in the continuous model (`hs_tau`/`hs_eta` R̂ 1.00) — it is the **mixed embedding**
-(≈1,900 per-patient explicit latents coupling to the cross-loadings through Φ) that breaks it, not the prior.
-So we **decoupled** (the architecture is sound and stronger this way):
+The horseshoe scales mix cleanly in the continuous model (`hs_tau`/`hs_eta` R̂ 1.00); the **mixed embedding**
+(≈1,900 per-patient explicit latents coupling to the cross-loadings through Φ) is what makes a single fully
+relaxed mixed horseshoe hard to sample, so the cross-loading derivation is **decoupled** into a selector and
+an arbiter — a sound and clean architecture:
 
 **1. Operational map = hard-zero 8-factor mixed** (`hs_s5_merged_hz`): converges cleanly (R̂ 1.03, 0 div) —
 the coordinates M2–M5 consume.
 
-**2. Sparse-ESEM = continuous validator + selector** (`sparse_esem_6f`; stable variant: fixed τ + Student-t
-local). Freeing all 294 off-home cross-loadings, **~83% shrink to ≈0** — the hard-zero zeros are *earned,
-not imposed* — and a handful of small, well-converged, clinically-sensible cross-loadings are selected. (The
-0.73 cell from the loose-prior diagnostic was a prior-artifact: it vanished under proper shrinkage.)
+**2. Sparse-ESEM = continuous validator + selector** (`sparse_esem_6f`; fixed τ + Student-t local). Freeing
+all 294 off-home cross-loadings, **~83% shrink to ≈0** — the hard-zero zeros are *earned, not imposed* — and a
+handful of small, well-converged, clinically-sensible cross-loadings are selected.
 
 **3. Final map = hard-zero + the data-earned cross-loadings** (`hs_s5_merged_xc`, R̂ 1.06, 0 div). The full
-mixed model is the arbiter: of the 6 sparse-ESEM candidates it kept **3 credible**, all *sleep / childhood-
-trauma items → cognition*; the 3 mania candidates widened to non-credible and were dropped (the mania↔sleep
-link belongs in Φ ≈ 0.24, not an item cross-loading on a 2-item factor — the same lesson as immunometabolic).
+mixed model is the arbiter: of the 6 sparse-ESEM candidates it keeps **3 credible**, all *sleep / childhood-
+trauma items → cognition*; the 3 mania candidates are non-credible and excluded (the mania↔sleep link belongs
+in Φ ≈ 0.24, a factor correlation, not an item cross-loading on a 2-item factor).
 
 | earned cross-loading | median | 95% CI | R̂ | reading |
 |---|---|---|---|---|
@@ -121,4 +120,4 @@ link belongs in Φ ≈ 0.24, not an item cross-loading on a 2-item factor — th
 
 Thin factors are intact (substance home |λ| 0.585, mania 0.484). **The validation is the headline:** given
 total freedom, the model reproduces known clinical cross-talk and nothing spurious — strong evidence the
-8-factor map is well-specified. The final map is `hs_s5_merged_xc`; M2–M5 are rebuilt on it.
+8-factor map is well-specified. The operational map is `hs_s5_merged_xc`; M2–M5 are built on it.

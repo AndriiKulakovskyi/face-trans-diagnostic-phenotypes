@@ -1,20 +1,19 @@
-# M5 treatment on the Gaussian-copula objects — findings (bounds-and-defends)
+# M5 treatment — findings (bounds-and-defends)
 
-> **Canonical M5 findings record (8-factor map, 2026-06-27; pending PI sign-off).** Reworks the FACE M5
-> treatment causal pipeline on the **8-factor** copula map + the **A=5** copula archetypes (immunometabolic
-> merge + substance orthogonal). Engine
+> **Canonical M5 findings record (8-factor map, 2026-06-27; pending PI sign-off).** The FACE M5
+> treatment causal pipeline runs on the **8-factor** copula map + the **A=5** copula archetypes (immunometabolic
+> biology factor + substance orthogonal). Engine
 > [`src/face/treatment/treatment_model_oop.py`](../src/face/treatment/treatment_model_oop.py) (wraps the
 > `treatment.{medications,endpoints,propensity,moderation}` + `prognosis.{glm,reference,compare}` kernels);
 > driver [`notebooks/run_treatment_model_oop.py`](../notebooks/run_treatment_model_oop.py). Inputs: the
-> regenerated 8-factor prognosis_oop frame (coords + A=5 archetypes + covariates + outcomes + IPW) + the
+> 8-factor prognosis_oop frame (coords + A=5 archetypes + covariates + outcomes + IPW) + the
 > map-independent harmonized drug-class exposures.
 
-## What this is — the milestone, re-scoped
+## What this is — the milestone
 
 M5 asks the strongest "actionable" question: does the map **moderate / select** treatment response on
-observational treatment-as-usual? Re-scoped (2026-06-24) as **bounds-and-defends**: an MDE-guarded ceiling on
-moderation + a confound-survival defense of the M4 forecast + a descriptive treatment-course atlas. The
-8-factor result **replays the copula vertical in full** — and the M4-defense is, if anything, stronger.
+observational treatment-as-usual? It is a **bounds-and-defends** milestone: an MDE-guarded ceiling on
+moderation + a confound-survival defense of the M4 forecast + a descriptive treatment-course atlas.
 
 ## Result 1 — the bounded boundary: the map does not select/moderate treatment on TAU
 
@@ -40,7 +39,7 @@ The question is **moderation** — treat × map interaction (per-axis HDI + held
   the design *could* have resolved a meaningful interaction and didn't. A **bounded null** — the map does not
   pick lithium responders. (Lifetime/indication-confounded exposure only makes a null *more* credible.)
 - **Antipsychotic-BP — the exception that proves the boundary.** The *average* effect excludes 0 (ATE ≈ −0.24)
-  but is **confounding-fragile** (E-value **1.80 ≈ native 1.79**), and the **moderation is suggestive but
+  but is **confounding-fragile** (E-value **1.80**), and the **moderation is suggestive but
   unconfirmed**: `any_axis` flags on functioning, but the held-out ΔELPD is weak (durable +3.4 ± 3.4, archetype
   +1.8 ± 4.3 — both bands span 0), so the verdict is *"suggestive (HDI, ΔELPD weak)"* in both representations.
   A hypothesis at most, not a moderation signal.
@@ -55,7 +54,7 @@ engine.
 ## Result 2 — M5 strengthens M4: the prognostic carrier is not a treatment proxy
 
 The most damaging alternative to M4 ("the immunometabolic corner forecasts worse functioning") is that those
-patients merely got different drugs. We refit the copula-M4 functioning prognosis with vs without the
+patients merely got different drugs. We refit the M4 functioning prognosis with vs without the
 harmonized drug-class exposures, on the treatment-data subset, **both unweighted and under the M3
 strata-independent attrition IPW**:
 
@@ -65,12 +64,11 @@ strata-independent attrition IPW**:
 | archetype A0 / A3 | −0.141 → −0.133 / −0.154 → −0.144 | 5.3% / 6.6% | 4.3% / 5.7% | **yes** |
 | **durable immunometabolic axis** | −0.049 → −0.046 | 6.4% | 4.1% | **yes** |
 
-**The carrier survives treatment adjustment** with only ~4–8% attenuation, **robust to attrition IPW** — and on
-the 8-factor map it survives in **both** representations: the archetype corners (led by **A2, the immunometabolic
-biology corner — the M4 worst-prognosis pole**) *and* the durable immunometabolic axis itself. (This is a
-cleaner defense than the 9-factor map, where only the archetype survived and the durable trio did not; the
-merged immunometabolic axis is now durable enough to survive on its own. Cognition and archetype A1 do not
-survive — reported honestly.) So the map's functional forecast is **not merely unmodelled treatment**. **M5
+**The carrier survives treatment adjustment** with only ~4–8% attenuation, **robust to attrition IPW** — and it
+survives in **both** representations: the archetype corners (led by **A2, the immunometabolic
+biology corner — the M4 worst-prognosis pole**) *and* the durable immunometabolic axis itself. The
+immunometabolic axis is durable enough to survive on its own. Cognition and archetype A1 do not
+survive — reported honestly. So the map's functional forecast is **not merely unmodelled treatment**. **M5
 strengthens M4.** (Honest scope: adjusts for baseline/lifetime drug-class exposure, not time-varying treatment.)
 
 ## Result 3 — the treatment-course atlas: the map flags who faces a difficult course (monitoring)

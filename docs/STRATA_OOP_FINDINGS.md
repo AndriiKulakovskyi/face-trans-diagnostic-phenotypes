@@ -7,9 +7,9 @@
 > docs/STRATA_READING_GUIDE.md. Read the framing below as the *derivation* of those lenses, not a claim that
 > patients fall into discrete strata.
 
-> **Canonical M2 findings record (8-factor map, 2026-06-26; pending PI sign-off).** Rebuilt on the
-> **8-dimension** cohort-weighted full-N Gaussian-copula map — the immunometabolic merge (metabolic +
-> inflammatory → one axis) + the 3 earned cross-loadings (CTQ/PSQI → cognition) + **substance pinned
+> **Canonical M2 findings record (8-factor map, 2026-06-26; pending PI sign-off).** Built on the
+> **8-dimension** cohort-weighted full-N Gaussian-copula map — an immunometabolic biology axis (cardiometabolic
+> + inflammatory markers on one factor) + the 3 earned cross-loadings (CTQ/PSQI → cognition) + **substance pinned
 > orthogonal** (its cross-factor correlations are non-identifiable). Map: `copula/weighted_8d/hs_s5_merged_xc`
 > (R̂ 1.03, 0 div). Engine [`src/face/strata/strata_model_oop.py`](../src/face/strata/strata_model_oop.py);
 > driver [`notebooks/run_strata_model_oop.py`](../notebooks/run_strata_model_oop.py). Detailed atlas of what
@@ -18,8 +18,8 @@
 ## What this is
 
 On the fixed 8-factor M1 map, M2 asks whether the transdiagnostic space carves into useful strata. The answer
-replays the 9-factor result with one substantive change — **A = 5 stable archetypes (was 4)** — and is, if
-anything, cleaner: a continuum (not biotypes), a nested K-family with no privileged K, an archetype simplex
+is a clean transdiagnostic structure with **A = 5 stable archetypes**: a continuum (not biotypes), a nested
+K-family with no privileged K, an archetype simplex
 that separates biology ⊥ symptoms ⊥ severity, transdiagnostic and not-just-severity. The eight axes are
 overall_severity (G), cognition, **immunometabolic**, sleep, mania_activation, suicidality, developmental_risk,
 substance.
@@ -57,7 +57,7 @@ drops). We export the family and let downstream validity decide
 | **3** (BIC-near-best, stable) | 185,019 | 0.94 | 0.998 | 0.115 | 0.108 | 0.163 | 0.476 | 0.028 |
 | 4 (BIC-min, less stable) | 185,006 | 0.88 | 0.663 | 0.136 | 0.203 | 0.229 | 0.523 | 0.057 |
 
-**The headline nuance (unchanged from 9-factor):** every K splits *first* on **psychiatric symptom burden** —
+**The headline nuance:** every K splits *first* on **psychiatric symptom burden** —
 mania (η² 0.224) and suicidality (η² 0.225 → 0.476 → 0.523) — and **finer K progressively picks up severity (G:
 0.050 → 0.108 → 0.203) and the immunometabolic gradient (0.027 → 0.057)** that K = 2 discards. Biology has no
 density *gap*, so it never forms a region boundary at any K (it is an archetype/continuous feature — Result 3),
@@ -66,10 +66,10 @@ but finer tiling captures more of its continuous gradient. K = 3 is the sweet sp
 "the answer"** — the operative choice is M4/M5's. The `tess_*` columns carry **K = 2** as the M3 contract
 default (smallest confidently-assignable, stable convention); the family ships as `tessfam_k{2,3,4}_*`.
 
-## Result 3 — archetypes carry biology ⊥ symptom ⊥ severity (A = 5, stable) — **changed from A = 4**
+## Result 3 — archetypes carry biology ⊥ symptom ⊥ severity (A = 5, stable)
 
-Archetype granularity is chosen by **cross-seed stability** (largest A with min Tucker congruence ≥ 0.8). The
-8-factor map shifts the answer: there is a clean **stability cliff at A = 6**.
+Archetype granularity is chosen by **cross-seed stability** (largest A with min Tucker congruence ≥ 0.8). There
+is a clean **stability cliff at A = 6**.
 
 | A | explained variance | stability (Tucker) |
 |---|---|---|
@@ -81,7 +81,7 @@ Archetype granularity is chosen by **cross-seed stability** (largest A with min 
 | 7 | 0.720 | 0.197 |
 | 8 | 0.763 | 0.545 |
 
-**A = 5 is the last stable archetype count** (EV 0.60), one more than the 9-factor map's A = 4. The five
+**A = 5 is the last stable archetype count** (EV 0.60). The five
 archetypes (z-scale corners; sizes from dominant membership, N = 9,013):
 
 | archetype | profile | size | reading |
@@ -92,10 +92,10 @@ archetypes (z-scale corners; sizes from dominant membership, N = 9,013):
 | A3 | ↑developmental (+2.8) ↑suicidality (+1.4) ↓immunometabolic | 2,004 | **trauma / suicidality** |
 | A4 | ↓sleep (−2.7) ↓severity (−2.0) ↓mania | 2,551 | **low-burden / well** pole |
 
-**What the 5th archetype buys (vs the 9-factor A = 4):** the symptom space now resolves into **two distinct
-corners — activation/sleep (A0) and trauma/suicidality (A3) — instead of one combined symptom corner**, and the
-biology corner (A2) is now *immunometabolic* (the merged axis) rather than separate inflammatory/metabolic. This
-is the finer, stable structure the merged 8-factor coordinates support. Biology (A2) is a *direction of maximal
+**What the five archetypes carve:** the symptom space resolves into **two distinct
+corners — activation/sleep (A0) and trauma/suicidality (A3)**, and the
+biology corner (A2) is *immunometabolic*. This
+is the finer, stable structure the 8-factor coordinates support. Biology (A2) is a *direction of maximal
 phenotype* with no density gap, so it is an archetype corner the tessellation cannot cleanly split on — **which
 is why the archetypes + continuous coordinates, not the tessellation, are load-bearing for biology.** Figure:
 `archetype_profiles.png`.
@@ -119,7 +119,7 @@ independent of diagnosis, stable, not a coverage artefact, and a tighter descrip
 ## Honest caveats
 
 * **Internal/baseline only.** Whether the regions/archetypes *predict* (2-year course, treatment) is the M3/M4
-  rerun on this object. A2 (immunometabolic biology) and the K = 3/4 biology gradient are the natural carriers
+  question on this object. A2 (immunometabolic biology) and the K = 3/4 biology gradient are the natural carriers
   of durable/prognostic signal — the hypothesis M4/M5 test, and exactly *how* the operative K is chosen
   (incremental validity, not internal parsimony).
 * **The K = 2 split is symptom-led and soft.** At K = 2 the tessellation separates on mania + suicidality (η²
@@ -127,8 +127,8 @@ independent of diagnosis, stable, not a coverage artefact, and a tighter descrip
   norm-entropy 0.65 → the two-region split is genuinely soft (the assignment gate passes *conditionally*).
 * **No privileged K.** The tessellation is a convention; the load-bearing objects are the continuous
   coordinates and the **A = 5** archetype simplex. K = 2 is only the M3-contract default.
-* **Substance is thin and now orthogonal.** 2 SUD binaries, DR = 0; in the 8-factor map substance is pinned
-  ⊥ the correlated block (its cross-factor correlations were non-identifiable), so it no longer anchors an
+* **Substance is thin and orthogonal.** 2 SUD binaries, DR = 0; substance is pinned
+  ⊥ the correlated block (its cross-factor correlations are non-identifiable), so it does not anchor an
   archetype corner — its coordinate is carried with a prior-dominated reliability tier.
 
 ## Hand-off
@@ -145,7 +145,7 @@ contract (keyed `cohort` / `patient_id`; `arm` = validation-only):
 The **continuous load-bearing coordinates** ship in `results/face/strata_oop/coordinates/`:
 `coordinates_full.parquet` (per-axis mean/sd/HDI/n_obs/reliability), `coordinates_draws.npz` (joint draws),
 `coordinates_cov.npz` (per-patient covariance S_i). Per-K decision menu: `consolidate/k_family_menu.csv`. Next:
-the **M3 temporal-persistence rerun** on this object, then M4 (which selects the operative K by incremental
+the **M3 temporal-persistence analysis** on this object, then M4 (which selects the operative K by incremental
 validity).
 
 Reproduce: `PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_strata_model_oop.py --mode full`.
