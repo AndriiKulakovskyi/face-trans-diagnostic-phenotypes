@@ -44,37 +44,41 @@
 \newcommand{\archetypesimplexblend}{%
 \begin{center}\resizebox{0.95\linewidth}{!}{%
 \begin{tikzpicture}[font=\sffamily\scriptsize,
-   cnr/.style={fill=white,rounded corners=2pt,line width=0.9pt,inner sep=3.5pt,align=center}]
-  \coordinate (a1) at (-4.4,2.2);
-  \coordinate (a0) at ( 4.4,2.2);
-  \coordinate (a2) at ( 4.4,-2.2);
-  \coordinate (a3) at (-4.4,-2.2);
-  \coordinate (p)  at (1.7,0.85);
+   cnr/.style={fill=white,rounded corners=2pt,line width=0.9pt,inner sep=3.0pt,align=center}]
+  % five archetypal corners of the convex hull (the A=5 simplex). Right side = high severity:
+  % A2 (immunometabolic) and A1 (severe, clean biology) share severity but have opposite biology.
+  \coordinate (a0) at (-3.1, 2.5);   % activation / sleep
+  \coordinate (a2) at ( 4.4, 2.2);   % immunometabolic (biology corner)
+  \coordinate (a1) at ( 4.4,-2.2);   % severe, clean biology
+  \coordinate (a3) at (-3.1,-2.5);   % trauma / suicidality
+  \coordinate (a4) at (-5.2, 0.0);   % low-burden / well
+  \coordinate (p)  at (1.9,0.55);
   % the simplex --- the convex region every patient lives inside
-  \draw[facerule,line width=0.7pt,dashed] (a1)--(a0)--(a2)--(a3)--cycle;
-  % the blend: this patient = a convex combination of the four corners
-  \draw[facemute,line width=0.5pt] (p)--(a1); \draw[facemute,line width=0.5pt] (p)--(a0);
-  \draw[facemute,line width=0.5pt] (p)--(a2); \draw[facemute,line width=0.5pt] (p)--(a3);
-  % A0 <-> A2 contrast: same severity, opposite biology
+  \draw[facerule,line width=0.7pt,dashed] (a4)--(a0)--(a2)--(a1)--(a3)--cycle;
+  % the blend: this patient = a convex combination of the five corners
+  \foreach \c in {a0,a1,a2,a3,a4}{\draw[facemute,line width=0.5pt] (p)--(\c);}
+  % A2 <-> A1 contrast: same severity, opposite biology
   \draw[facecav,line width=1pt,dash pattern=on 3pt off 2pt] (6.15,1.5)--(6.15,-1.5);
   \node[rotate=-90,font=\sffamily\scriptsize\itshape,text=facecav] at (6.6,0) {same severity, opposite biology};
   % corner phenotypes (the convex-hull extremes)
-  \node[cnr,draw=facemeth,text=facemeth] at (a1) {\textbf{A1} low-burden\\\scriptsize relatively well};
-  \node[cnr,draw=facekr,text=facekr]     at (a0) {\textbf{A0} biological\\\scriptsize metabolic\,$+$\,inflam.};
-  \node[cnr,draw=faceinv,text=faceinv]   at (a2) {\textbf{A2} severe\\\scriptsize biology \emph{low}};
-  \node[cnr,draw=faceopen,text=faceopen] at (a3) {\textbf{A3} symptom\\\scriptsize sleep, mood, adversity};
+  \node[cnr,draw=facekr,text=facekr]     at (a2) {\textbf{A2} immunometabolic\\\scriptsize biology corner};
+  \node[cnr,draw=faceinv,text=faceinv]   at (a1) {\textbf{A1} severe\\\scriptsize biology \emph{low}};
+  \node[cnr,draw=faceopen,text=faceopen] at (a0) {\textbf{A0} activation\\\scriptsize mania\,$+$\,sleep};
+  \node[cnr,draw=facecav,text=facecav]   at (a3) {\textbf{A3} trauma\\\scriptsize adversity, suicidality};
+  \node[cnr,draw=facemeth,text=facemeth] at (a4) {\textbf{A4} low-burden\\\scriptsize relatively well};
   % the patient itself
   \fill[faceink] (p) circle (2.6pt);
-  \node[font=\sffamily\scriptsize,text=faceink,align=center,anchor=north] at (1.7,0.5)
+  \node[font=\sffamily\scriptsize,text=faceink,align=center,anchor=north] at (1.9,0.20)
        {one patient\\[-1pt]\scriptsize a convex blend, $\textstyle\sum_a w_a=1$};
   % this patient's archetype weights, as a stacked bar
-  \fill[facekr]   (-2.4,-3.45) rectangle (0.24,-3.03);
-  \fill[faceinv]  ( 0.24,-3.45) rectangle (1.44,-3.03);
-  \fill[faceopen] ( 1.44,-3.45) rectangle (2.16,-3.03);
-  \fill[facemeth] ( 2.16,-3.45) rectangle (2.40,-3.03);
-  \draw[white,line width=0.6pt] (0.24,-3.45)--(0.24,-3.03) (1.44,-3.45)--(1.44,-3.03) (2.16,-3.45)--(2.16,-3.03);
-  \node[font=\sffamily\scriptsize,text=faceink,anchor=north] at (0,-3.58)
-       {this patient $=0.55\,$A0 $+\,0.25\,$A2 $+\,0.15\,$A3 $+\,0.05\,$A1};
+  \fill[facekr]   (-2.7,-3.55) rectangle (0.00,-3.13);
+  \fill[faceinv]  ( 0.00,-3.55) rectangle (1.20,-3.13);
+  \fill[faceopen] ( 1.20,-3.55) rectangle (1.92,-3.13);
+  \fill[facecav]  ( 1.92,-3.55) rectangle (2.40,-3.13);
+  \fill[facemeth] ( 2.40,-3.55) rectangle (2.64,-3.13);
+  \draw[white,line width=0.6pt] (0.00,-3.55)--(0.00,-3.13) (1.20,-3.55)--(1.20,-3.13) (1.92,-3.55)--(1.92,-3.13) (2.40,-3.55)--(2.40,-3.13);
+  \node[font=\sffamily\scriptsize,text=faceink,anchor=north] at (0,-3.68)
+       {this patient $=0.55\,$A2 $+\,0.25\,$A1 $+\,0.15\,$A0 $+\,0.05\,$A3};
 \end{tikzpicture}}\end{center}}
 
 \title{\bfseries FACE ATLAS: A transdiagnostic latent atlas of severe mental illness
@@ -107,22 +111,22 @@ depression from the three FACE cohorts using one global,
 missingness-aware Bayesian bifactor / exploratory structural-equation model,
 specified and fit to each patient's observed cells only (no imputation), with
 diagnosis withheld from model fitting. The model resolved a transdiagnostic
-coordinate system: a general functional-burden factor (\Gfac) and eight specific
-dimensions---cognition, metabolic, inflammatory, sleep, developmental risk,
+coordinate system: a general functional-burden factor (\Gfac) and seven specific
+dimensions---cognition, immunometabolic load, sleep, developmental risk,
 suicidality, mania and substance use. The central finding is a \textbf{dissociation
-between biology, symptoms and functional burden}: metabolic and inflammatory load
-were the \emph{least} burden-entangled domains, and they remained so
+between biology, symptoms and functional burden}: immunometabolic load
+was the \emph{least} burden-entangled domain, and it remained so
 after adjustment for medication, adiposity and site. The coordinate space was a
 graded \textbf{continuum, not discrete biotypes}---apparent clustering was
-reproduced by a single-Gaussian null --- yet four archetypal extremes gave a clinically legible reading,
-including a \emph{biological} corner and a \emph{severe, non-biological} corner with
+reproduced by a single-Gaussian null --- yet five archetypal extremes gave a clinically legible reading,
+including an \emph{immunometabolic} corner and a \emph{severe, clean-biology} corner with
 comparable functional burden but opposite biological profiles. Scored forward onto
-follow-up without re-estimation, biological coordinates were stable (test--retest
-intraclass correlation $0.91$ for metabolic load) whereas symptom axes were
+follow-up without re-estimation, immunometabolic coordinates were stable (test--retest
+intraclass correlation $0.91$) whereas symptom axes were
 state-like (they shifted with clinical state). The archetype phenotype predicted two-year functioning beyond diagnosis,
 baseline severity and baseline functioning (held-out expected log predictive density
-$+59$; two-year functional-remission $27\%$--$60\%$ across corners), but the
-individual-level discrimination gain was small (remission AUC $+0.011$). These results define a
+$+62.8$; two-year functional-remission $17\%$--$52\%$ across corners, the immunometabolic
+corner worst), but the individual-level discrimination gain was small (remission AUC $+0.010$). These results define a
 transdiagnostic biological atlas of severe mental illness that supports mechanistic
 stratification and group-level functional forecasting, and they delineate the
 requirements for clinical utility: external validation, incident-event outcomes and

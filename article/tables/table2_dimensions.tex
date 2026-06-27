@@ -1,31 +1,31 @@
-% Table 2 — the nine dimensions (compact, upright). Source: docs/ADJUDICATION.md,
-% docs/M1_FINDINGS.md, reports/11_s5_9dim_loadings.csv, reports/07_corrG_phi.csv
+% Table 2 — the eight factors (compact, upright). Source: docs/ADJUDICATION.md,
+% docs/M1_FINDINGS.md, reports/copula_8factor_loadings.csv, reports/copula_8factor_phi.csv
 \begin{table}[t]
 \centering
-\caption{\textbf{The nine-dimension transdiagnostic map.} Anchoring indicators,
+\caption{\textbf{The eight-factor transdiagnostic map.} Anchoring indicators,
 entanglement with general burden, adjudication verdict and cross-cohort measurement
-invariance for each dimension. Correlation with \Gfac{} is from the
+invariance for each factor. Correlation with \Gfac{} is from the
 correlated-\Gfac{} model (continuous backbone); for mania and substance it is the
-bifactor direct $|\lambda_G|$. Depression/anxiety instruments are cross-loading
-windows on \Gfac{} (loadings $0.66$--$0.80$), not a separate factor; anhedonia was
-rejected; impulsivity, negative symptoms and sensory abnormality were not testable for
-lack of common indicators.}
+bifactor direct $|\lambda_G|$. Substance is pinned orthogonal to the correlated block
+(its cross-factor correlations are non-identifiable). Depression/anxiety instruments are
+cross-loading windows on \Gfac{} (loadings $0.66$--$0.80$), not a separate factor; the map
+is otherwise simple-structure apart from three earned cross-loadings into cognition
+(childhood adversity and poor sleep, $|\lambda|\le0.09$, $95\%$ CI excluding zero).}
 \label{tab:dimensions}
 \small
 \renewcommand{\arraystretch}{1.15}
-\begin{tabular}{@{}l p{4.3cm} c l l@{}}
+\begin{tabular}{@{}l p{4.6cm} c l l@{}}
 \toprule
-Dimension & Anchoring indicators & $\mathrm{corr}\,\Gfac$ & Verdict & Invariance \\
+Factor & Anchoring indicators & $\mathrm{corr}\,\Gfac$ & Verdict & Invariance \\
 \midrule
-\Gfac{} (burden)   & FAST, EGF, EQ-5D (no symptoms)  & ---  & severity factor   & partial (SZ) \\
-Cognition          & TMT, WAIS coding, fluency       & 0.39 & confirmed         & invariant \\
-Metabolic          & BMI, lipids, glycaemia, BP      & 0.12 & confirmed (split) & invariant \\
-Inflammatory       & CRP, leukocyte subsets          & 0.07 & confirmed (split) & re-weights (DR) \\
-Sleep              & PSQI total $+$ subscales        & 0.42 & confirmed         & invariant \\
-Developmental risk & CTQ, perinatal, family history  & ---  & confirmed (proxy) & invariant \\
-Suicidality        & ISF ideation / attempt (binary) & ---  & confirmed (mixed) & 3-cohort \\
-Mania              & YMRS, Altman                    & 0.15 & confirmed         & Altman floors (DR) \\
-Substance          & alcohol/cannabis SUD, nicotine  & 0.13 & confirmed         & BP--SZ (2-cohort) \\
+\Gfac{} (burden)   & FAST, EGF, EQ-5D (no symptoms)        & ---  & severity factor   & partial (SZ) \\
+Cognition          & TMT, WAIS coding, fluency             & 0.39 & confirmed         & invariant \\
+Immunometabolic    & BMI, lipids, glycaemia, BP, CRP, leukocytes & 0.07 & confirmed (single biology axis) & invariant \\
+Sleep              & PSQI total $+$ subscales              & 0.42 & confirmed         & invariant \\
+Mania              & YMRS, Altman                          & 0.15 & confirmed         & Altman floors (DR) \\
+Suicidality        & ISF ideation / attempt (binary)       & ---  & confirmed (mixed) & 3-cohort \\
+Developmental risk & CTQ, perinatal, family history        & ---  & confirmed (proxy) & invariant \\
+Substance          & alcohol/cannabis SUD, nicotine        & 0.13 & confirmed (orthogonal) & BP--SZ (2-cohort) \\
 \bottomrule
 \end{tabular}
 \end{table}

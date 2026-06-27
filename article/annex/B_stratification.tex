@@ -2,8 +2,12 @@
 \label{ann:stratification}
 
 The stratification operates on the fitted coordinates $\{x_i,S_i\}_{i=1}^{N}$ with
-$x_i=\hat f_i\in\mathbb{R}^{D}$ ($D=9$) and known posterior covariance $S_i$ from
-\eqref{eqA:scores}; uncertainty is carried throughout rather than discarded.
+$x_i=\hat f_i\in\mathbb{R}^{D}$ ($D=8$; the eight axes are overall severity \Gfac{},
+cognition, immunometabolic, sleep, mania/activation, suicidality, developmental risk and
+substance) and known posterior covariance $S_i$ from \eqref{eqA:scores}; uncertainty is
+carried throughout rather than discarded. All $N=9{,}013$ patients are scored on all
+eight axes (latent $z$-scale, $100\%$ finite), with the immunometabolic, cognition and
+developmental coordinates tight, and mania, substance and suicidality wide.
 
 \subsection{Structure-discovery gate and the single-Gaussian falsification null}
 
@@ -20,8 +24,11 @@ Gaussian-mixture BIC profile; \emph{density} uses HDBSCAN~\citep{campello2013hdb
 graph~\citep{singh2007mapper}; and \emph{separation} the best silhouette over $K$.
 A continuum verdict requires $H\!\to\!\tfrac12$, a unimodal dip, the gap and BIC failing
 to prefer $K>1$, HDBSCAN near-all-noise, and a single Mapper component. Empirically:
-$H=0.80$, PC1 dip $p\approx1.0$, silhouette peak $0.14$, HDBSCAN $0$ clusters
-($100\%$ noise), Mapper a single connected component.
+$H=0.80$, PC1 dip $p\approx1.0$, silhouette peak $0.146$ ($<0.15$, no separation),
+gap-statistic $k_{\text{opt}}=1$, HDBSCAN $0$ clusters ($100\%$ noise), Mapper a single
+connected component. Per-axis, six of the eight dip tests are unimodal ($p>0.99$); only
+mania/activation and suicidality are multimodal ($p=0$)---the symptom axes carry internal
+structure, but the joint space does not separate.
 
 Because all of these are absolute statistics, we anchor them with a
 \emph{falsification null}. We draw synthetic data from a single multivariate Gaussian
@@ -30,11 +37,12 @@ by construction---and run the identical pipeline. If the real cloud were truly
 clustered, its best partition would separate points \emph{better} than the null's.
 \begin{equation}
   z_{\text{sil}}=\frac{s^{\star}_{\text{real}}-\mathbb E[s^{\star}_{\text{null}}]}{\operatorname{sd}[s^{\star}_{\text{null}}]}
-  =\frac{0.140-0.141}{0.002}=-0.36 ,
+  =\frac{0.140-0.137}{0.002}=1.13 ,
 \end{equation}
-i.e.\ the real data are \emph{not} better separated than a Gaussian blob; the
-mixture-optimal number of components collapsed to one in all $20$ posterior draws. This
-turns ``no elbow'' into a calibrated negative result.
+i.e.\ the real data's best partition is \emph{not} reliably better separated than a
+structureless Gaussian blob ($z=1.13$, n.s.); the mixture-optimal number of components
+collapsed to one in all $20$ posterior draws. This turns ``no elbow'' into a calibrated
+negative result.
 
 \subsection{Archetypal analysis (the load-bearing continuum view)}
 
@@ -52,15 +60,23 @@ $w_i\in\Delta^{A-1}$ are the soft archetype membership. Uncertainty is propagate
 refitting \eqref{eqB:aa} across posterior draws and projecting each draw onto the fixed
 archetypes (simplex-constrained least squares). The number of corners $A$ is set by
 \emph{cross-seed stability} (largest $A$ whose minimum cross-seed Tucker congruence
-$\ge0.8$), not by parsimony: only $A=2$ ($0.999$) and $A=4$ ($0.98$, minimum congruence
-$0.997$ over three seeds at full $N$) were stable, while $A=3,5,\dots,8$ collapsed
-($0.05$--$0.51$). The operational rule selected $A=4$ (explained variance $0.52$). This
-is copula-specific: the higher-$A$ corners of a plain-Gaussian map do not reproduce
-once the honest, wider explicit-axis uncertainty is carried. Because biological load
-varies continuously without a density gap, it is a \emph{direction of maximal
-phenotype}---an archetypal corner---rather than a partition boundary, which is why the
-archetypes (and the continuous coordinates), not any tessellation, are the load-bearing
-object for biology.
+$\ge0.8$), not by parsimony: $A=2$ ($0.999$), $A=4$ ($0.997$) and $A=5$ ($0.979$,
+explained variance $0.601$) are stable, with a clean stability cliff at $A=6$
+($0.979\!\to\!0.436$) and below ($A=7,8$ at $0.20$--$0.55$). The operational rule
+selected $A=5$. The five corners are: $A_0$ \emph{activation/sleep}
+($\uparrow$sleep $+2.8$, $\uparrow$mania $+1.7$; BP-enriched, $N=1{,}448$); $A_1$
+\emph{severe, clean-biology} ($\uparrow$severity $+1.9$, $\downarrow$immunometabolic
+$-1.9$, $\downarrow$developmental; $N=1{,}584$); $A_2$ \emph{immunometabolic burden}
+($\uparrow$immunometabolic $+3.5$, $\uparrow$severity $+2.4$, $\uparrow$suicidality;
+$N=1{,}426$)---the biology corner; $A_3$ \emph{trauma/suicidality} ($\uparrow$developmental
+$+2.8$, $\uparrow$suicidality $+1.4$; $N=2{,}004$); and $A_4$ \emph{low-burden/well}
+($\downarrow$sleep $-2.7$, $\downarrow$severity $-2.0$, $\downarrow$mania; $N=2{,}551$).
+The symptom space resolves into two distinct corners---activation/sleep ($A_0$) and
+trauma/suicidality ($A_3$)---and the biology corner ($A_2$) is the merged immunometabolic
+axis. Because immunometabolic load varies continuously without a density gap, it is a
+\emph{direction of maximal phenotype}---an archetypal corner---rather than a partition
+boundary, which is why the archetypes (and the continuous coordinates), not any
+tessellation, are the load-bearing object for biology.
 
 \subsection{Measurement-error mixture and the nested \texorpdfstring{$K$}{K}-family}
 
@@ -76,25 +92,34 @@ in which \emph{every} observation carries its own additive, known covariance $S_
 imprecise coordinates spread their mass over components and prior-dominated axes
 self-down-weight. The soft regions are the posterior responsibilities
 $r_{ik}=\pi_k\,\mathcal N(x_i\mid m_k,\Sigma_k+S_i)/\sum_l\pi_l\,\mathcal N(x_i\mid m_l,\Sigma_l+S_i)$.
-On a continuum the mixture BIC is essentially flat ($197{,}900$--$198{,}100$ across
-$K=2$--$8$), so no $K$ is privileged; we export a nested family ($K=2,3,4$) as labelling
-conventions and \emph{defer the operative granularity to incremental predictive validity}
-(Annex~\ref{ann:prognosis}), which returns ``no hard $K$''. A coarsest-$K$ default
-($K=2$) is carried only as a hand-off contract.
+On a continuum the mixture BIC is essentially flat ($185{,}006$--$185{,}557$ across
+$K=2$--$4$, $<0.4\%$; the minimum at $K=4$ but with the lowest stability), so no $K$ is
+privileged; we export a nested family ($K=2,3,4$) as labelling conventions and
+\emph{defer the operative granularity to incremental predictive validity}
+(Annex~\ref{ann:prognosis}), which returns ``no hard $K$''. Every $K$ splits first on
+psychiatric symptom burden---mania ($\eta^2=0.224$) and suicidality ($0.225\!\to\!0.476\!\to\!0.523$
+across $K=2,3,4$)---while finer $K$ progressively picks up severity (\Gfac{}:
+$0.050\!\to\!0.108\!\to\!0.203$) and the immunometabolic gradient ($0.027\!\to\!0.057$)
+that $K=2$ discards; biology has no density gap and so never forms a region boundary at
+any $K$. A coarsest-$K$ default ($K=2$) is carried only as a hand-off contract.
 
 \subsection{Validation gates}
 
-The representation is tested on four gates. \emph{Not-just-severity}: variance explained
+The representation is tested on four gates, run on the $K=2$ contract default (the gates
+hold across the confident-stable family). \emph{Not-just-severity}: variance explained
 per axis
 $\eta^2_d=1-\sum_k\sum_{i\in\mathcal C_k}(x_{id}-\bar x_{kd})^2/\sum_i(x_{id}-\bar x_d)^2$
-peaks on the specific axes (mean $\eta^2_{\text{spec}}=0.12$) far above \Gfac{}
-($0.008$). \emph{Transdiagnosticity}: the adjusted Rand index
+peaks on the specific axes (mean $\eta^2_{\text{spec}}=0.077$, driven by mania $0.224$ and
+suicidality $0.225$) above \Gfac{} ($0.050$). \emph{Transdiagnosticity}: the adjusted Rand
+index
 $\mathrm{ARI}=(\mathrm{RI}-\mathbb E[\mathrm{RI}])/(\max\mathrm{RI}-\mathbb E[\mathrm{RI}])$
-against cohort and the seven DSM-5 subtypes is $\approx0$ ($0.00$ and $0.01$).
-\emph{Stability and not-a-missingness-artefact}: cross-seed ARI $0.998$, and a
+against cohort and the seven DSM-5 subtypes is $\approx0$ ($0.011$ and $0.006$).
+\emph{Stability and not-a-missingness-artefact}: cross-seed ARI $0.991$, and a
 classifier predicting region membership from each patient's per-axis coverage pattern
-underperforms the majority baseline (lift $-0.05$, permutation $p=0.23$).
+underperforms the majority baseline (accuracy $0.611$ vs $0.683$, lift $-0.072$).
 \emph{Tighter than DSM-5}: a free mixture beats one constrained to the DSM-5 partition
-by information criterion ($197{,}900$ vs $201{,}300$). Embeddings (PCA,
+by information criterion ($185{,}557$ at $K=2$ vs $188{,}200$ for DSM-5 at $K=7$; mean
+$\eta^2$ $0.074$ vs $0.026$, roughly $3\times$ the explained variance at lower BIC).
+Embeddings (PCA,
 Figure~\ref{fig:continuum}; UMAP~\citep{mcinnes2018umap}) are used for visualization
 only, never as clustering inputs.

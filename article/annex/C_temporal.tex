@@ -21,11 +21,13 @@ $V0$ $9{,}013$, $V1$ $4{,}270$, $V2$ $2{,}958$).
 
 Re-fitting the simple-structure backbone per visit (scale-invariant by design) and
 computing the Tucker congruence of the primary loadings against $V0$, every backbone
-axis was invariant at both follow-ups (minimum congruence $\varphi$: sleep $0.996$,
-cognition $0.995$, overall severity $0.991$, metabolic $0.988$, inflammatory $0.974$;
-\edfig{fig:invariance}). Inflammatory load, only partially invariant on a plain
-Gaussian map, was invariant here. Coordinate change can therefore be read as patient
-change rather than instrument drift.
+axis was invariant at both follow-ups ($\varphi\ge 0.95$, $4/4$; minimum congruence
+$\varphi$: sleep $0.996$, cognition $0.995$, overall severity $0.991$,
+immunometabolic $0.987$; \edfig{fig:invariance}). The merged immunometabolic biology
+axis is measured consistently over time ($\varphi=0.987$, fully invariant), so
+coordinate change on it reads as patient change rather than instrument drift. The
+explicit axes (suicidality, developmental risk, substance) are not part of the
+continuous backbone test, and mania is data-limited (two indicators).
 
 \subsection{Trait/state decomposition}
 
@@ -44,16 +46,25 @@ intraclass correlation
 \begin{equation}
   \mathrm{ICC}=\frac{\tau^2}{\tau^2+\omega^2},
 \end{equation}
-estimated as a posterior with $94\%$ credible interval. The biological and cognitive
-axes were trait (metabolic $0.91$, substance $0.88$, cognition $0.70$, inflammatory
-$0.62$); the symptom axes were state (sleep $0.47$, suicidality $0.42$, developmental
-risk $0.39$); general burden was trait by rank ($0.62$). The population shift
-$\gamma_{V2}-\gamma_{V0}$ was strongly negative on severity ($-0.46$) and suicidality
-($-0.84$) and near zero on biology, the formal statement of ``the cohort improves on
-symptoms while individual biological rank is held.'' A complementary geometric route
-confirmed that the archetype weight vector moved little (median cosine similarity
-$0.90$ over $V0\!\to\!V2$ completers); the two routes agree (Spearman of per-axis
-reliable-change rate against ICC $\rho=-0.27$, the correct sign). Developmental risk
-scores as state partly because childhood-adversity reports carry recall noise rather
-than true change; mania is data-limited (two indicators) and its trait/state verdict is
-not load-bearing.
+estimated as a posterior with $94\%$ credible interval. The immunometabolic biology
+axis is the single most durable axis (ICC $0.91$ $[0.90,0.91]$), with cognition
+($0.70$ $[0.67,0.72]$) trait beside it; the moving symptom axes are state or mixed
+(substance $0.49$, sleep $0.47$, suicidality $0.43$, developmental risk $0.39$
+$[0.33,0.44]$); general burden is trait by rank ($0.62$ $[0.60,0.63]$). The population
+shift $\gamma_{V2}-\gamma_{V0}$ was strongly negative on severity ($-0.46$) and
+suicidality ($-0.84$) and near zero on biology ($+0.04$), the formal statement of
+``the cohort improves on symptoms while individual biological rank is held.'' A
+complementary geometric route confirmed that the archetype weight vector moved little
+across the $A=5$ simplex (median cosine similarity $0.81$ over $V0\!\to\!V2$
+completers, $n=2{,}958$), with severity sliding more than biology
+(spine-moves-not-biology $0.234 >$ biology-moves-not-spine $0.163$, consistent with
+the ICC ranks). The error-corrected ICC carries the trait/state headline; the
+geometric route is read as persistence of archetype identity in the weights rather
+than as an independent confirmation of the variance ranks (the per-axis Spearman of
+reliable-change rate against ICC is near zero, $\rho=0.07$, $p=0.87$, with the merged
+biology axis, the $A=5$ argmax churn, and the orthogonal/thin substance and data-limited
+mania axes muddying an eight-point correlation). Developmental risk scores as state
+partly because childhood-adversity reports carry recall noise rather than true change;
+substance now carries no inter-factor correlation (pinned orthogonal) and rests on two
+binary indicators, so less of its variance reads as durable trait; mania is data-limited
+(two indicators) and its trait/state verdict is not load-bearing.

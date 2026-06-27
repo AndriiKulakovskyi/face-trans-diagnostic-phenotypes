@@ -1,16 +1,19 @@
 \section{Discussion}
 
 Across three cohorts of severe mental illness, a single missingness-aware Bayesian
-model placed clinical and biological measurements in one transdiagnostic coordinate
-system and yielded a nine-dimension atlas whose most consequential property is a
-dissociation: metabolic and inflammatory load are the domains least entangled with
-overall functional severity. If biological burden simply tracked how impaired a
+model places clinical and biological measurements in one transdiagnostic coordinate
+system and yields an eight-dimension atlas whose most consequential property is a
+dissociation: immunometabolic load is the domain least entangled with overall
+functional severity. The cardiometabolic and inflammatory markers resolve as a single
+immunometabolic axis (BMI loading $\approx 0.95$, CRP $\approx 0.37$), and that axis
+sits nearly orthogonal to \Gfac{}. If biological burden simply tracked how impaired a
 patient is, it would add little to a clinician's global impression. The data say the
-opposite---biological risk rides on axes the severity picture does not see---and the
-four archetypal extremes make the consequence concrete. The biological corner and the
-severe, non-biological corner carry comparable functional burden but opposite
-biological profiles, and they diverge in prognosis (two-year functional remission
-$27\%$ vs $32\%$, the biological corner worse). This is the precise property a
+opposite---biological risk rides on an axis the severity picture does not see---and the
+five archetypal extremes make the consequence concrete. The immunometabolic corner and
+the severe, clean-biology corner carry comparable functional burden but opposite
+biological profiles, and they diverge in prognosis (the immunometabolic corner is the
+worst-prognosis pole and the well pole the best, two-year functional remission spanning
+$17\%$ to $52\%$ across the five corners). This is the precise property a
 biology-aware stratification can exploit: it separates patients who look equally ill
 but are biologically opposite, and that separation is durable and prognostically
 meaningful.
@@ -34,9 +37,9 @@ dose--response for metabolic burden exists~\citep{penninxlange2018,pillinger2022
 metabolic dysfunction does track cognition and functioning in mood
 disorders~\citep{maksyutynska2024}, and much of the inflammation--symptom association
 is carried by adiposity rather than inflammation \emph{per
-se}~\citep{kappelmann2021,zagaria2024}. Our $0.07$--$0.12$ correlations are best read
-as a quantification of a known qualitative pattern, sitting at its low end because
-\Gfac{} indexes \emph{functional burden}---from which biology is most
+se}~\citep{kappelmann2021,zagaria2024}. Our small immunometabolic--\Gfac{} couplings
+are best read as a quantification of a known qualitative pattern, sitting at its low
+end because \Gfac{} indexes \emph{functional burden}---from which biology is most
 decoupled---rather than the case--control contrast of being ill. That they survive,
 and even fall slightly under, adjustment for medication, adiposity and site is the
 strongest available evidence that the dissociation is not a confound.
@@ -52,9 +55,14 @@ measurement spaces, B-SNIP itself found DSM diagnoses to be a severity continuum
 recent syntheses endorse both categorical and dimensional
 views~\citep{clementz2024}; clustering choices can also resurface apparent biotypes
 from continuous data~\citep{pan2026}. We therefore claim no biotypes \emph{in this
-nine-dimensional clinical--biological space}---a claim we make rigorous with a
-single-Gaussian falsification null rather than by the absence of an elbow---not that
-biotypes are absent from all spaces. Anchoring \Gfac{} on functioning alone also
+eight-dimensional clinical--biological space}---a claim we make rigorous with a
+single-Gaussian falsification null (best-partition silhouette $0.140$ against a
+structureless-Gaussian null of $0.137 \pm 0.002$, $z = 1.13$) rather than by the
+absence of an elbow---not that biotypes are absent from all spaces. The five
+archetypes are corners of this continuum, not clusters within it, and the partition
+they induce is driven by activation and suicidality rather than by overall severity,
+which is why it cuts almost orthogonally across DSM-5 (ARI $0.006$) while describing
+the space more tightly than diagnosis does. Anchoring \Gfac{} on functioning alone also
 sidesteps the well-known instability in what a symptom-only general factor
 means~\citep{heinrich2021bifactor,levinaspenson2020,watts2021}, while remaining
 consistent with the impairment reading of the \textit{p}
@@ -63,32 +71,43 @@ factor~\citep{caspi2014pfactor,lahey2017general}.
 The remaining contributions are deliberately calibrated. The map persists over two
 years---durable biology, moving symptoms---which both validates the measurement
 longitudinally and motivates a clinical division of labour between traits to stratify
-on and states to monitor. It predicts future functioning incrementally beyond
-diagnosis and severity, but the gain is modest and group-level, it is co-informative
-with rather than superior to DSM-5, and it is carried by the biological
-\emph{phenotype} (the archetype corner) rather than by any isolated laboratory axis.
-We report this last point as an honest, model-specific refinement of our own earlier
-analyses: on the better-calibrated map, ``biology predicts functioning'' is a
-phenotype-level claim. That the nine-dimension map is nonetheless a
-\emph{sufficient} representation of $143$ raw indicators for predicting deterioration,
-and near-sufficient for recovery, shows the parsimony is faithful rather than lossy.
-And on observational, expert-centre treatment-as-usual the map does not reliably
-moderate response: where identification is clean the result is a well-identified null,
-and where it is not (channelled prescribing) the effect is non-estimable. We regard
-reporting these modest and null findings as a feature. The field has repeatedly
-produced biotype and biomarker claims that fail to replicate; a transdiagnostic
-biology atlas that is explicit about the difference between scientific validity
-(demonstrated here) and individual-level clinical utility (not demonstrated here) is a
-useful corrective.
+on and states to monitor. The immunometabolic axis is the single most durable
+dimension (test--retest ICC $0.91$, fully invariant across visits), cognition is also
+trait-like, while severity and symptoms slide as the population improves: the durable
+part of the map is precisely its biological part. It predicts future functioning
+incrementally beyond diagnosis and severity (archetypes $\Delta$ELPD $+62.8$
+held-out, robust to inverse-probability weighting and permutation), but the gain is
+modest and group-level---the individual-binary lift is small (AUC $+0.010$)---it is
+co-informative with rather than superior to DSM-5, and it is carried by the biological
+\emph{phenotype} (the immunometabolic archetype corner) rather than by any isolated
+laboratory axis. ``Biology predicts functioning'' is therefore a phenotype-level
+claim: the immunometabolic axis carries a credible adverse direction, but the
+predictive object is the fuller archetype representation in which it is embedded. That
+the eight-dimension map is nonetheless a \emph{sufficient} representation of $143$ raw
+indicators for predicting deterioration, and near-sufficient for recovery (the residual
+is within-factor item-level compression, not a missing axis), shows the parsimony is
+faithful rather than lossy. And on observational, expert-centre treatment-as-usual the
+map does not reliably moderate response: where identification is clean the result is a
+well-identified, MDE-bounded null (lithium in bipolar disorder), where confounding is
+the dominant threat the average effect is fragile and any moderation is suggestive but
+unconfirmed (antipsychotics in bipolar disorder), and where prescribing is channelled
+the effect is non-estimable (clozapine in schizophrenia). The map is prognostic and
+descriptive, not prescriptive---a boundary that is bounded rather than assumed, and the
+prognostic signal survives treatment adjustment (the immunometabolic carrier attenuates
+by under $8\%$), so it is not a treatment proxy. We regard reporting these modest and
+null findings as a feature. The field has repeatedly produced biotype and biomarker
+claims that fail to replicate; a transdiagnostic biology atlas that is explicit about
+the difference between scientific validity (demonstrated here) and individual-level
+clinical utility (not demonstrated here) is a useful corrective.
 
 In sum, this atlas reframes a clinically actionable hypothesis with measured
 coordinates: not ``which biotype is this patient?'' but ``where does this patient sit
 on continuous, partly biological axes that diagnosis and severity do not capture, and
-how durable is that position?'' The biological axes a patient keeps over time forecast
-the functional state they move toward---a group-level, transdiagnostic signal that
-complements diagnosis, identifies the biological corner as a concrete enrichment and
-monitoring target, and points to a specific, testable metabolic/inflammatory $\times$
-treatment hypothesis for prospective study. Separating biological burden from clinical
+how durable is that position?'' The immunometabolic axis a patient keeps over time
+forecasts the functional state they move toward---a group-level, transdiagnostic signal
+that complements diagnosis, identifies the immunometabolic corner as a concrete
+enrichment and monitoring target, and points to a specific, testable immunometabolic
+$\times$ treatment hypothesis for prospective study. Separating biological burden from clinical
 severity, and showing that the biological part is stable and prognostic, is the step
 that makes mechanistic stratification in severe mental illness a measurable rather than
 a rhetorical goal.
@@ -96,10 +115,10 @@ a rhetorical goal.
 \subsection*{Limitations}
 
 Four classes of limitation bound these claims. \emph{Internal validity only:} the map
-is discovered and validated within FACE, with no external-cohort replication, and
-several invariance partials are documented rather than hidden (\Gfac{} re-anchors in
-schizophrenia, which lacks the FAST functioning anchor; the inflammatory axis
-re-weights across the depression cohort; self-rated mania floors in depression).
+is discovered and validated within FACE, with no external-cohort replication, and the
+invariance partials that exist are documented rather than hidden (\Gfac{} re-anchors in
+schizophrenia, which lacks the FAST functioning anchor; self-rated mania floors in
+depression).
 \emph{Outcomes are scale trajectories, not recorded events:} prognostic endpoints are
 state transitions defined from repeated functioning and severity scales, not registered
 relapses or hospitalizations---a deliberate de-scope from event-level prognosis.

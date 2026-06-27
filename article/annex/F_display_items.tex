@@ -22,10 +22,13 @@
   \centering
   \includegraphics[height=0.86\textheight]{edfig_full_atlas.png}
   \caption{\textbf{The complete posterior loading atlas.} As Figure~\ref{fig:atlas}a but
-  showing \emph{every} modelled indicator (all $109$ continuous and explicit items) grouped
+  showing \emph{every} modelled indicator (all $88$ continuous and explicit items) grouped
   by home factor, with no per-block cap. Dot size and colour encode the absolute posterior
   median loading; outlined dots have a $95\%$ credible interval excluding zero (heavier ring
-  $=$ home-factor anchor). The diagonal block structure---each clinical block loading
+  $=$ home-factor anchor). Three earned cross-loadings render as outlined dots in the
+  cognition column---childhood adversity (CTQ-37, $-0.094$) and two poor-sleep items
+  (PSQI latency $+0.057$, PSQI daytime dysfunction $-0.070$), each with a $95\%$ credible
+  interval excluding zero. The diagonal block structure---each clinical block loading
   cleanly on its own specific axis, with a sparse general-burden ($\Gfac$) column---is the
   full anatomy of the measurement model summarised in the main-text Figure~\ref{fig:atlas}.}
   \label{fig:fullatlas}
@@ -45,22 +48,22 @@
   \centering
   \includegraphics[width=0.72\linewidth]{edfig_invariance.png}
   \caption{\textbf{Longitudinal measurement invariance.} Tucker congruence of each
-  backbone axis against baseline at $12$ and $24$ months. All five axes remain invariant
-  ($\varphi\ge0.95$); inflammatory load (only partially invariant on a plain Gaussian
-  map) is invariant here.}
+  backbone axis against baseline at $12$ and $24$ months. All four backbone axes
+  (\Gfac, cognition, immunometabolic, sleep) remain invariant ($\varphi\ge0.95$); the
+  merged immunometabolic biology axis is fully invariant ($\varphi=0.987$).}
   \label{fig:invariance}
 \end{figure}
 
 \begin{figure}[hbtp]
   \centering
   \includegraphics[width=0.85\linewidth]{edfig_repbench.png}
-  \caption{\textbf{The nine-dimension map is a sufficient representation of the $143$
+  \caption{\textbf{The eight-factor map is a sufficient representation of the $143$
   raw indicators.} Held-out AUC for a matched gradient-boosting classifier predicting
   two-year deterioration and recovery, using the reference (DSM-5 $+$ severity $+$
-  baseline), the reference $+$ the nine-dimension map, or the reference $+$ all $143$ raw
+  baseline), the reference $+$ the eight-factor map, or the reference $+$ all $143$ raw
   indicators. The map equals the raw indicators for deterioration (sufficient) and
-  trails by $\approx0.04$ AUC for recovery (near-sufficient); $97\%$ of the raw recovery
-  signal lies within the nine factors.}
+  trails by $\approx0.04$ AUC for recovery (near-sufficient); $\ge92\%$ of the raw recovery
+  signal lies within the eight factors.}
   \label{fig:repbench}
 \end{figure}
 
@@ -72,8 +75,8 @@
   minimum-detectable-effect band (grey). Lithium in bipolar disorder is a well-identified,
   bounded null; antipsychotic is a confounded average effect with no reliable moderation;
   clozapine is channelled and underpowered. (\textbf{b}) Treatment-course atlas: the
-  biological corner carries roughly twice the resistance and side-effect burden of the
-  low-burden corner; stratification clears beyond confounders but individual
+  immunometabolic corner (A2) carries roughly twice the resistance and side-effect burden of the
+  low-burden corner (A4); stratification clears beyond confounders but individual
   discrimination is modest (resistance AUC-marginal under permutation).}
   \label{fig:treatment}
 \end{figure}
@@ -104,13 +107,14 @@ deliberately does not---the spine of the Limitations and of any response to revi
 \toprule
 \textbf{We claim} & \textbf{We do not claim} \\
 \midrule
-A certified nine-dimension transdiagnostic measurement map (internal validity). &
+A certified eight-dimension transdiagnostic measurement map (internal validity). &
 Natural biotypes or subtypes; that no biotype exists in any measurement space. \\
-Metabolic/inflammatory load \emph{largely independent} of a general functional-burden
+Immunometabolic load \emph{largely independent} of a general functional-burden
 axis (quantified, with boundary conditions). &
 Strict statistical orthogonality, or independence from \emph{being ill}
 (case--control elevations). \\
-A graded continuum that is, descriptively, tighter than DSM-5. &
+A graded continuum, resolved by five stable archetypes, that is descriptively
+tighter than DSM-5. &
 That the regions are clinically superior to DSM-5 beyond the modest prognostic
 increment shown. \\
 Temporal coherence: durable biology, moving symptoms. &

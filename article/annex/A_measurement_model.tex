@@ -5,8 +5,9 @@ This annex develops the global measurement model from first principles: the gene
 factor model and its defining local-independence assumption (\ref{annA:gen}); the
 mixed-likelihood observation model and the Gaussian-copula marginal
 (\ref{annA:mixed}); the observed-data likelihood and why missingness is handled by
-marginalization rather than imputation (\ref{annA:obs}); the soft-prior loadings and
-the rotation problem they resolve (\ref{annA:rotation}); the closed-form covariance
+marginalization rather than imputation (\ref{annA:obs}); the soft-prior loadings, the
+regularized-horseshoe sparse-ESEM that lets a few evidence-backed cross-loadings emerge,
+and the rotation problem they resolve (\ref{annA:rotation}); the closed-form covariance
 identity that carries the headline estimand (\ref{annA:sigma}); the Woodbury
 evaluation and its exact equivalence with full-information maximum likelihood
 (\ref{annA:woodbury}); and the staged estimation and in-engine confirmation
@@ -71,8 +72,12 @@ latent (the sum rule). Equation~\eqref{eqA:linpred} is a bifactor exploratory
 structural-equation model~\citep{reise2012bifactor,asparouhov2009esem}---bifactor
 because every indicator may load on \Gfac{} \emph{and} on its home specific factor;
 exploratory because an indicator is \emph{allowed} small cross-loadings on plausibly
-related factors, shrunk toward zero by the soft priors (\ref{annA:rotation}), rather
-than forbidden outright as in confirmatory factor analysis.
+related factors, governed by a sparsity-inducing prior (\ref{annA:rotation}) that keeps
+the map mostly simple-structure yet lets a few evidence-backed cross-loadings emerge,
+rather than forbidding them outright as in confirmatory factor analysis. The fitted map
+has $K{+}1=8$ factors: the general factor \Gfac{} (overall burden) and seven specific
+axes---cognition, immunometabolic, sleep, mania/activation, suicidality,
+developmental-risk and substance.
 
 \subsection{Mixed-likelihood observation model and the Gaussian copula}
 \label{annA:mixed}
@@ -144,7 +149,7 @@ incomplete multivariate-normal data. This is the formal justification of the
 no-imputation invariant: any completed matrix would inject between-cell covariance that
 \eqref{eqA:localindep} would misattribute to a latent factor.
 
-\subsection{Soft-prior loadings, identification and the rotation problem}
+\subsection{Soft-prior loadings, sparse-ESEM cross-loadings and the rotation problem}
 \label{annA:rotation}
 
 Theory enters through the prior on each loading. Each (indicator, factor) cell is
@@ -154,7 +159,7 @@ assigned a role $\rho(j,k)$---one of \textsc{primary}, plausible \textsc{cross},
   \lambda_{jk}\mid\rho(j,k)\ \sim\
   \begin{cases}
     \mathcal{N}_{+}(0.70,\,0.25^2) & \textsc{primary (home cell)},\\[2pt]
-    \mathcal{N}(0,\,0.25^2)        & \textsc{plausible cross},\\[2pt]
+    \text{regularized horseshoe } \eqref{eqA:horseshoe} & \textsc{plausible cross},\\[2pt]
     \mathcal{N}(0,\,0.05^2)        & \textsc{unlikely},\\[2pt]
     \delta_{0}                     & \textsc{forbidden},
   \end{cases}
@@ -168,6 +173,78 @@ half-normal; and $\Phi\sim\mathrm{LKJ}(\eta{=}2)$, whose density
 $\propto\det(\Phi)^{\eta-1}$ gently favours weakly correlated
 factors~\citep{lewandowski2009lkj}. Latent scores use a non-centred parameterization to
 defuse the hierarchical funnel.
+
+\paragraph{The cross-loading prior: a regularized horseshoe (default-off, evidence-on,
+magnitude-capped).} A measurement map must choose how each indicator relates to factors
+other than its home factor. Both naive choices fail here. \emph{Hard-zero} (rigid CFA)
+fixes every off-home specific$\leftrightarrow$specific cell at exactly $0$: clean and
+identified, but it forbids an instrument from loading weakly on a second axis even when
+the data support it. \emph{Free / soft-Normal} (naive ESEM) frees every off-home cell at
+$\mathcal N(0,0.05^2)$: this floods every factor's column with weak cross-loadings, and a
+\emph{thin} factor---one defined by very few indicators (substance, four; mania,
+two)---loses its identity as the flood of spurious cross-loadings into its column
+overwhelms its handful of genuine home loadings, going multimodal and poisoning
+convergence. The map needs the middle ground: let an instrument carry a small loading on
+several axes when the data genuinely support it, without collapsing a low-instrument
+factor. The classic tool for ``mostly zero, but let real signal through'' is a
+sparsity-inducing prior, and the right one is the regularized (``Finnish'')
+horseshoe~\citep{carvalho2009horseshoe,piironen2017horseshoe}. For each off-home
+specific$\leftrightarrow$specific cross-loading $\lambda_j$ (the \textsc{plausible cross}
+cells),
+\begin{equation}
+  \lambda_j=z_j\,\tau\,\tilde\eta_j,\qquad
+  \tilde\eta_j=\sqrt{\dfrac{c^2\,\eta_j^2}{c^2+\tau^2\eta_j^2}},\qquad
+  z_j\sim\mathcal N(0,1),\ \ \eta_j\sim\mathrm{HalfCauchy}(1),\ \ \tau\sim\mathrm{HalfNormal}(\tau_0),
+  \label{eqA:horseshoe}
+\end{equation}
+with $\tau_0=0.05$ and slab $c=0.30$, fit non-centred ($z$ separate from the scales).
+Three pieces, each doing one job. The \emph{global shrinkage} $\tau$ pulls the whole set
+of cross-loadings toward $0$---the prior's default belief is ``no cross-loadings.'' The
+\emph{local shrinkage} $\eta_j$ has heavy (Cauchy) tails, so a single cross-loading the
+data insist on can take a large $\eta_j$ and escape the global shrinkage---the sharp
+spike at $0$ with heavy tails that defines the horseshoe. The \emph{slab} $c$ caps the
+escape ($\tilde\eta_j\to c/\tau$ for large $\eta_j$), so an escaped loading stays near
+$|\lambda|\approx c$ (cross-loadings remain \emph{small}---they are not home loadings)
+and the funnel is tamed so the sampler mixes.
+
+This prior is exactly matched to the scientific situation. Dilution happens when
+indicators from \emph{other} factors acquire spurious cross-loadings \emph{into} a thin
+factor's column; under the horseshoe those spurious cells get small local $\eta$ and are
+crushed to $\approx 0$ by the global $\tau$, so the thin column stays defined only by its
+home indicators (which keep their separate, sign-anchored positive prior and are
+\emph{not} horseshoed). A genuine weak cross-loading---clinically real but carried by few
+instruments---can still emerge through the heavy tails and be reported with a credible
+interval. The prior is therefore default-off, evidence-on, magnitude-capped: the honest
+way to handle a weak signal in a factor with very few indicators. A map whose credible
+cross-loadings are few, small and clinically sensible is positive evidence the structure
+is well-specified, not an artefact of rigid zeros.
+
+\paragraph{The earned cross-loadings.} A continuous sparse-ESEM validator freed all
+off-home specific$\leftrightarrow$specific cells simultaneously and let the horseshoe
+select: $\approx 83\%$ shrank to $\approx 0$ (median $0.002$), so the simple structure is
+\emph{earned, not imposed}, while the heavy tails let a handful of small,
+well-converged, clinically sensible cells survive; the thin factors stayed intact
+(substance home $|\lambda|\,0.585$, mania $0.484$). Folding the survivors into the full
+mixed map---which arbitrates them under the correlated factor block---keeps three
+credible cross-loadings, all childhood-trauma / sleep items loading on cognition, each
+with a $95\%$ credible interval excluding zero:
+\begin{center}\small
+\begin{tabular}{lccl}
+\toprule
+earned cross-loading & median & $95\%$ CI & reading \\
+\midrule
+CTQ-37 $\to$ cognition            & $-0.094$ & $[-0.134,\,-0.053]$ & childhood adversity $\leftrightarrow$ cognition \\
+PSQI latency $\to$ cognition      & $+0.057$ & $[+0.011,\,+0.102]$ & sleep $\leftrightarrow$ cognition \\
+PSQI daytime $\to$ cognition      & $-0.070$ & $[-0.122,\,-0.020]$ & sleepiness $\leftrightarrow$ cognition \\
+\bottomrule
+\end{tabular}
+\end{center}
+The candidate mania cross-loadings widened to non-credible and were dropped: a
+mania$\leftrightarrow$sleep relation belongs in the factor correlation
+($\phi_{\text{mania,sleep}}\approx 0.24$), not an item cross-loading on a two-indicator
+factor. The headline of this exercise is the validation: given total freedom the model
+reproduces known clinical cross-talk and nothing spurious---positive evidence the
+8-factor map is well-specified.
 
 \begin{proposition}[Rotation invariance of the likelihood]\label{propA:rotation}
 For any invertible $M\in\mathbb{R}^{(K+1)\times(K+1)}$, the reparameterization
@@ -245,12 +322,12 @@ items.
 \end{equation}
 The vector $\phi_{Gd}$---the correlation of each specific factor with general
 burden---is the headline estimand of the enterprise: ``biology is the least
-severity-entangled domain'' is the statement that its metabolic and inflammatory
-entries are near zero ($0.12$ and $0.07$) while cognition and sleep are far larger
-($0.39$ and $0.42$). The bifactor orthogonality is the \emph{null}; the
-correlated-\Gfac{} arm measures the departure from it; and the bifactor direct loading
-$|\lambda_{jG}|$ and the correlation $\phi_{Gd}$ agree on the ordering---reporting both
-is what turns ``biology is separable'' from a constraint artefact into a finding.
+severity-entangled domain'' is the statement that the immunometabolic entry is near zero
+while cognition and sleep are far larger ($0.39$ and $0.42$). The bifactor orthogonality
+is the \emph{null}; the correlated-\Gfac{} arm measures the departure from it; and the
+bifactor direct loading $|\lambda_{jG}|$ and the correlation $\phi_{Gd}$ agree on the
+ordering---reporting both is what turns ``biology is separable'' from a constraint
+artefact into a finding.
 
 \subsection{Woodbury evaluation and equivalence with FIML}
 \label{annA:woodbury}
@@ -307,17 +384,20 @@ indicator for a factor is \emph{not} treated as equally characterized as one wit
 
 The global posterior was reached by continuation (homotopy): a well-conditioned
 sub-model was fit and then deformed toward the full target one source of difficulty at
-a time (continuous core at full $N$; exploratory cross-loadings; mixed-likelihood
-suicidality and developmental risk; thin cohort-specific factors; all factors jointly
-plus the correlated-\Gfac{} variant), each converged posterior warm-starting the next.
-\emph{Only the global fit is interpreted}; the earlier stages are
+a time. A clean hard-zero backbone was built first (continuous core at full $N$:
+\Gfac{}, cognition, immunometabolic, sleep), then extended to developmental-risk and
+mania/activation, each converged posterior warm-starting the next; the full 8-factor
+mixed map adds the suicidality and substance factors. The data-earned cross-loadings of
+\ref{annA:rotation} are then folded onto this hard-zero solution---warm-starting the
+relaxed fit from the hard-zero basin is identified here, with the thin factors held in
+place. \emph{Only the global fit is interpreted}; the earlier stages are
 convergence/identification checkpoints. Sampling used the No-U-Turn
 sampler~\citep{hoffman2014nuts} via PyMC~\citep{abrilpla2023pymc} with the NumPyro/JAX
 backend~\citep{phan2019numpyro}; a stage advanced only on $\hat R\le1.01$, effective
 sample size $\ge400$, zero divergences, no Heywood cases and acceptable
 posterior-predictive behaviour. The full-$N$ continuous backbone met this strict gate;
-the joint nine-dimension (mixed) map is reported at the largest sample that mixes
-($\hat R\le1.04$) with a cross-seed stability guard (Tucker congruence
+the joint 8-factor (mixed) map is reported at the largest sample that mixes
+($\hat R\le1.03$, zero divergences) with a cross-seed stability guard (Tucker congruence
 $\varphi=0.99$). Confirmation used (i) the flat-prior refit
 (Corollary~\ref{corA:flat}); (ii) posterior-predictive checks (continuous Bayesian
 standardized root-mean-square residual $\approx0.07$; $21/22$ non-Gaussian indicators
