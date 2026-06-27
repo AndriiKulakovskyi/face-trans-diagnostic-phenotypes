@@ -32,28 +32,31 @@ OI = dict(black="#000000", orange="#E69F00", sky="#56B4E9", green="#009E73",
           grey="#7F7F7F", lgrey="#D9D9D9")
 COH = dict(bp=OI["blue"], sz=OI["orange"], dr=OI["green"])
 COH_LBL = dict(bp="Bipolar", sz="Schizophrenia", dr="Depression")
-# archetype palette: infographic-like + colorblind-safe.
-# A0 biological = orange (matches infographic), A1 low-burden = green (matches infographic),
-# A2 severe-nonbio = blue, A3 symptom = reddish-purple (accessible, mutually distinct).
-ARCH_C = {0: OI["orange"], 1: OI["green"], 2: OI["blue"], 3: OI["purple"]}
-ARCH_N = {0: "Biological", 1: "Low-burden", 2: "Severe /\nnon-biological", 3: "Symptom"}
-ARCH_N1 = {0: "Biological", 1: "Low-burden", 2: "Severe/non-bio", 3: "Symptom"}
-BIO = OI["verm"]   # biology highlight
+# A=5 archetype palette (8-factor map): colorblind-safe + mutually distinct.
+# A0 activation/sleep, A1 severe·clean-biology, A2 immunometabolic (biology corner), A3 trauma/suicidality,
+# A4 low-burden/well.
+ARCH_C = {0: OI["purple"], 1: OI["orange"], 2: OI["verm"], 3: OI["blue"], 4: OI["green"]}
+ARCH_N = {0: "Activation /\nsleep", 1: "Severe /\nclean-biology", 2: "Immuno-\nmetabolic",
+          3: "Trauma /\nsuicidality", 4: "Low-burden /\nwell"}
+ARCH_N1 = {0: "Activation/sleep", 1: "Severe/clean-bio", 2: "Immunometabolic",
+           3: "Trauma/suicidality", 4: "Low-burden/well"}
+BIO = OI["verm"]   # biology highlight (immunometabolic)
 
-AXES9 = ["overall_severity", "cognition", "metabolic", "inflammatory", "sleep",
-         "mania_activation", "suicidality", "developmental_risk", "substance"]
+# The 8-factor map (immunometabolic merge), CANON presentation order.
+AXES = ["overall_severity", "cognition", "immunometabolic", "sleep",
+        "mania_activation", "suicidality", "developmental_risk", "substance"]
 AXLAB = {"overall_severity": "General\nburden (G)", "cognition": "Cognition",
-         "metabolic": "Metabolic", "inflammatory": "Inflammatory", "sleep": "Sleep",
+         "immunometabolic": "Immuno-\nmetabolic", "sleep": "Sleep",
          "mania_activation": "Mania", "suicidality": "Suicidality",
          "developmental_risk": "Developmental", "substance": "Substance"}
 AXLAB1 = {k: v.replace("\n", " ") for k, v in AXLAB.items()}
-# Short axis tag: G for the burden backbone, D1..D8 for the specific axes (in AXES9 order).
-AXTAG = {a: ("G" if a == "overall_severity" else f"D{i}") for i, a in enumerate(AXES9)}
+# Short axis tag: G for the burden backbone, D1..D7 for the specific axes (in AXES order).
+AXTAG = {a: ("G" if a == "overall_severity" else f"D{i}") for i, a in enumerate(AXES)}
 
 # Per-block (home-factor) colour for the dot-atlas left strip + lollipops.
-# metabolic = vermillion to match the biology highlight (BIO) used in fig3/fig5.
-BLOCK_C = {"overall_severity": OI["black"], "cognition": OI["sky"], "metabolic": OI["verm"],
-           "inflammatory": OI["orange"], "sleep": OI["purple"], "mania_activation": OI["yellow"],
+# immunometabolic = vermillion to match the biology highlight (BIO) used in fig3/fig5.
+BLOCK_C = {"overall_severity": OI["black"], "cognition": OI["sky"], "immunometabolic": OI["verm"],
+           "sleep": OI["purple"], "mania_activation": OI["yellow"],
            "suicidality": OI["green"], "developmental_risk": OI["blue"], "substance": OI["grey"]}
 
 # Shared dot-atlas engine (article + technical report use one implementation; style is passed in).
@@ -102,7 +105,7 @@ def fig1_overview():
     layers = [
         ("Diagnostic\ncohorts", "BP 6,252 · SZ 2,209\nDR 552  ·  N = 9,013", OI["lgrey"], "#333333"),
         ("Transdiagnostic\ndimensions", "1 general (G) + 8\nspecific axes (M1)", OI["sky"], "#08306b"),
-        ("Continuous map +\nA = 4 archetypes", "continuum, no\nprivileged K (M2)", OI["green"], "#00441b"),
+        ("Continuous map +\nA = 5 archetypes", "continuum, no\nprivileged K (M2)", OI["green"], "#00441b"),
         ("Prognosis /\ntreatment", "2-yr functioning;\nTAU boundary (M4–M5)", OI["orange"], "#7f2704"),
     ]
     x0, w, gap, yc, h = 4, 19.0, 5.7, 17, 15
@@ -152,13 +155,13 @@ def fig1_overview():
 
 # ============================================================================ FIG 2
 # The dot-atlas engine lives in face.reporting.loading_atlas (shared with the technical report);
-# here we only bind the article house style (mako + Okabe-Ito block colours, AXES9 column order).
+# here we only bind the article house style (mako + Okabe-Ito block colours, AXES column order).
 ASTYLE = dict(cmap=_seq_cmap(), block_colors=BLOCK_C, axlab=AXLAB1, axtag=AXTAG, window_color=OI["yellow"])
 
 
 def _load_loadings():
     """Tidy long copula loadings (CI-aware). Fail loudly rather than fall back to stale native CSVs."""
-    path = REP("copula_s5_9dim_loadings.csv")
+    path = REP("copula_8factor_loadings.csv")
     if not os.path.exists(path):
         raise FileNotFoundError(
             f"{path} missing — run `python notebooks/run_export_loadings.py` first "
@@ -169,10 +172,10 @@ def _load_loadings():
 def fig2_map(max_per_block=8):
     """Figure 2: the standalone posterior loading dot-atlas (the centrepiece)."""
     L = _load_loadings()
-    rows = LA.atlas_rows(L, AXES9, max_per_block)
+    rows = LA.atlas_rows(L, AXES, max_per_block)
     n_rows = len(rows)
     fig, axA = plt.subplots(figsize=(9.6, max(8.5, 2.4 + 0.135 * n_rows)))
-    sc = LA.draw_dot_atlas(axA, L, AXES9, rows, **ASTYLE)
+    sc = LA.draw_dot_atlas(axA, L, AXES, rows, **ASTYLE)
     axA.set_title("Posterior loading atlas  (indicator × factor)", loc="left", fontsize=11.5)
     LA.atlas_legends(fig, axA, sc, window_color=OI["yellow"])
     save(fig, "fig2_map")
@@ -188,29 +191,31 @@ def fig_factors():
     axC = fig.add_subplot(outer[0, 1])
 
     # (a) factor-wise lollipops
-    for k, f in enumerate(AXES9):
+    for k, f in enumerate(AXES):
         LA.draw_lollipop(axLol[k], L, f, color=BLOCK_C[f], axlab=AXLAB1, axtag=AXTAG)
     fig.text(0.40, 0.99, "What defines each axis  (top home indicators, 95% CI)",
              ha="center", fontsize=10, fontweight="bold")
     panel(axLol[0], "a", x=-0.5, y=1.5)
 
     # (b) inter-factor correlations Φ (copula 9×9)
-    P = pd.read_csv(REP("copula_s5_9dim_phi.csv"), index_col=0).reindex(index=AXES9, columns=AXES9)
+    P = pd.read_csv(REP("copula_8factor_phi.csv"), index_col=0).reindex(index=AXES, columns=AXES)
     Pv = P.values
-    lab = [AXLAB1[c] for c in AXES9]
+    lab = [AXLAB1[c] for c in AXES]
+    nA = len(AXES)
     axC.imshow(Pv, cmap="RdBu_r", vmin=-0.5, vmax=0.5, aspect="equal")
-    axC.set_xticks(range(9)); axC.set_xticklabels(lab, rotation=45, ha="right", fontsize=6.8)
-    axC.set_yticks(range(9)); axC.set_yticklabels(lab, fontsize=6.8)
-    for i in range(9):
-        for j in range(9):
+    axC.set_xticks(range(nA)); axC.set_xticklabels(lab, rotation=45, ha="right", fontsize=6.8)
+    axC.set_yticks(range(nA)); axC.set_yticklabels(lab, fontsize=6.8)
+    for i in range(nA):
+        for j in range(nA):
             if i == j:
                 continue
             axC.text(j, i, f"{Pv[i, j]:.2f}", ha="center", va="center", fontsize=5.8,
                      color="white" if abs(Pv[i, j]) > 0.32 else "#222222")
     axC.set_title("Inter-factor correlations  Φ", loc="center", fontsize=10)
-    spec_off = Pv[1:, 1:][~np.eye(8, dtype=bool)]            # specific–specific block (G zeros excluded)
-    axC.text(0.5, -0.32, f"G orthogonal by construction (row/col 0); specific–specific mean |Φ| ≈ "
-             f"{np.abs(spec_off).mean():.2f}; metabolic–inflammatory = {P.loc['metabolic','inflammatory']:.2f}",
+    spec_off = Pv[1:, 1:][~np.eye(nA - 1, dtype=bool)]      # specific–specific block (G zeros excluded)
+    ms = float(P.loc["mania_activation", "sleep"])
+    axC.text(0.5, -0.32, f"G orthogonal by construction (row/col 0); substance pinned orthogonal; "
+             f"specific–specific mean |Φ| ≈ {np.abs(spec_off).mean():.2f} (e.g. mania–sleep = {ms:.2f})",
              transform=axC.transAxes, ha="center", va="top", fontsize=6.8, color="#555555")
     panel(axC, "b", x=-0.16, y=1.08)
     save(fig, "fig_factors")
@@ -219,10 +224,10 @@ def fig_factors():
 def edfig_full_atlas():
     """Extended Data: the FULL dot-atlas — every modelled indicator (no per-block cap)."""
     L = _load_loadings()
-    rows = LA.atlas_rows(L, AXES9, None)
+    rows = LA.atlas_rows(L, AXES, None)
     n_rows = len(rows)
     fig, axA = plt.subplots(figsize=(9.5, max(10.0, 2.6 + 0.135 * n_rows)))
-    sc = LA.draw_dot_atlas(axA, L, AXES9, rows, label_fs=5.4, **ASTYLE)
+    sc = LA.draw_dot_atlas(axA, L, AXES, rows, label_fs=5.4, **ASTYLE)
     axA.set_title("Posterior loading atlas — all modelled indicators", loc="left", fontsize=11)
     LA.atlas_legends(fig, axA, sc, window_color=OI["yellow"])
     save(fig, "edfig_full_atlas")
@@ -329,7 +334,7 @@ def fig4b_archetypes():
     prof = pd.read_csv(R("strata_oop", "consolidate", "archetype_profiles.csv"))
     fig, axE = plt.subplots(figsize=(8.6, 4.8))
     A = prof[prof["arm"] == "A_all9"].set_index("archetype")
-    order = AXES9; xx = np.arange(len(order)); w = 0.2
+    order = AXES; xx = np.arange(len(order)); w = 0.2
     for a in range(4):
         vals = [A.loc[a, c] for c in order]
         axE.bar(xx + (a-1.5)*w, vals, w, color=ARCH_C[a], label=f"A{a} {ARCH_N1[a]}")
