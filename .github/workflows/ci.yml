@@ -13,14 +13,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          # 3.13 to match the dev env the lockfile was generated against: the modern modular arviz
+          # (arviz==1.1.0, whose az.from_dict idata layout the GLM tests depend on) requires Python>=3.12,
+          # so the pinned bayesian stack is not installable on 3.11.
+          python-version: "3.13"
           cache: pip
       - name: Install (core + bayesian + dev)
         # Install the Bayesian backend (pymc/pytensor/numpyro/jax/arviz) so the measurement engine and
         # its golden tests are actually exercised in CI. requirements.lock pins the EXACT tested versions
         # (regenerate with scripts/gen_lockfile.py) and is applied as a constraint so CI runs the same
-        # versions as local — in particular arviz==1.1.0, whose az.from_dict idata layout the GLM tests
-        # depend on; ranges live in pyproject [bayesian].
+        # versions as local; ranges live in pyproject [bayesian].
         run: pip install -e ".[bayesian,dev]" -c requirements.lock
       - name: Lint (ruff)
         run: ruff check .
