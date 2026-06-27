@@ -18,8 +18,10 @@ jobs:
       - name: Install (core + bayesian + dev)
         # Install the Bayesian backend (pymc/pytensor/numpyro/jax/arviz) so the measurement engine and
         # its golden tests are actually exercised in CI. requirements.lock pins the EXACT tested versions
-        # (regenerate with scripts/gen_lockfile.py); ranges live in pyproject [bayesian].
-        run: pip install -e ".[bayesian,dev]"
+        # (regenerate with scripts/gen_lockfile.py) and is applied as a constraint so CI runs the same
+        # versions as local — in particular arviz==1.1.0, whose az.from_dict idata layout the GLM tests
+        # depend on; ranges live in pyproject [bayesian].
+        run: pip install -e ".[bayesian,dev]" -c requirements.lock
       - name: Lint (ruff)
         run: ruff check .
       - name: Unit tests + golden numerical-kernel regression
