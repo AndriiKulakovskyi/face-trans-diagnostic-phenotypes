@@ -5,9 +5,11 @@
     PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_export_loadings_nobmi.py
 """
 from __future__ import annotations
+
 import sys
 from dataclasses import replace
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -18,7 +20,9 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from face.models.bayesian.measurement_model_oop import (  # noqa: E402
-    DEFAULT_EXPLICIT_FACTORS, MeasurementConfig, MeasurementDataset,
+    DEFAULT_EXPLICIT_FACTORS,
+    MeasurementConfig,
+    MeasurementDataset,
 )
 from face.models.bayesian.synthetic import export_loadings_summary, export_phi  # noqa: E402
 

@@ -6,9 +6,11 @@ durability of the canonical axis is not merely BMI's test-retest stability.
     PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_nobmi_icc.py
 """
 from __future__ import annotations
+
 import sys
 from dataclasses import replace
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
@@ -17,7 +19,12 @@ SRC = REPO / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from face.temporal.temporal_model_oop import TemporalConfig, TemporalData, CopulaPanelScorer, F8_FIT  # noqa: E402
+from face.temporal.temporal_model_oop import (  # noqa: E402
+    F8_FIT,
+    CopulaPanelScorer,
+    TemporalConfig,
+    TemporalData,
+)
 from face.temporal.variance import decompose, patient_patterns, raw_icc  # noqa: E402
 
 XC = REPO / "configs" / "prior_loading_matrix_v3_biomerge_xc.csv"
@@ -33,8 +40,11 @@ class NoBMITemporalData(TemporalData):
         if self._mp is not None:
             return self._mp, self._idata
         import arviz as az
+
         from face.models.bayesian.measurement_model_oop import (
-            DEFAULT_EXPLICIT_FACTORS, MeasurementConfig, MeasurementDataset,
+            DEFAULT_EXPLICIT_FACTORS,
+            MeasurementConfig,
+            MeasurementDataset,
         )
         mcfg = MeasurementConfig(likelihood_mode="gaussian_copula", cohort_weighted=False,
                                  prior_matrix=XC, exclude_items=EXCL, output_dir=self.config.map_dir)
@@ -78,7 +88,7 @@ def main() -> None:
     print("\n=== no-anthropometry immunometabolic trait/state ===")
     print(ts.to_string(index=False))
     print(f"\nraw (uncorrected) ICC = {naive['immunometabolic']}")
-    print(f"\n[compare] canonical full-axis immunometabolic ICC = 0.91 (reports trait_state).")
+    print("\n[compare] canonical full-axis immunometabolic ICC = 0.91 (reports trait_state).")
     print(f"[written] {out}")
 
 
