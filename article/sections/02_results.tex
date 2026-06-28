@@ -446,3 +446,37 @@ group-level enrichment and monitoring, not as an individual remission calculator
 % exploratory negative control (reviewer R7). Its one central conclusion for the main
 % text---that the prognostic signal survives adjustment for treatment, so the forecast is not a
 % treatment proxy---is stated in the Discussion.
+
+\subsection{A variational re-estimation reproduces the atlas at a fraction of the cost}
+
+Because the audit-grade NUTS fit is expensive, we asked whether the same measurement model can
+be recovered by a much cheaper estimator. Re-estimating the eight-factor map as a generalized
+linear latent-variable model fit by stochastic variational inference (Methods;
+Supplement~\ref{ann:variational}) reproduces the NUTS atlas on its two load-bearing objects at
+roughly $100\times$ less cost (${\approx}4.5$ minutes on a CPU versus hours). The loading map is
+the same map: loading columns are congruent on all eight factors (Tucker $\varphi$ $0.96$--$0.999$;
+\Gfac{} $0.957$) and the full item$\times$factor loading scatter is $r=0.993$ with no sign flips
+(Figure~\ref{fig:vinuts}a). Patients land in the same place: per-patient coordinates correlate
+with the NUTS coordinates at $r\ge0.90$ on all eight axes ($\ge0.99$ for the
+\Gfac{} and immunometabolic axes; Figure~\ref{fig:vinuts}b). The map is also a faithful generative
+model---$9{,}013$ synthetic patients drawn from it match the observed marginals (Kolmogorov--Smirnov
+median $0.04$) and covariance (correlation SRMR $0.078$, as for NUTS). The one quantity the
+variational engine does \emph{not} reproduce is the inter-factor correlation $\Phi$: its structure
+is correct (the biology$\,\perp\,$\Gfac{} zeros are exact) but the off-diagonals are systematically
+attenuated by ${\sim}21\%$ under the mean-field posterior---a structural property of variational
+inference, not a tunable defect, which is why NUTS is retained for correlation magnitudes and all
+credible intervals (Supplement~\ref{ann:variational}). The variational engine is therefore a fast
+operational and generative stand-in for the map and coordinates; a fuller development is left to
+future work.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.95\linewidth]{gllvm_oop/vi_vs_nuts_metrics.png}
+  \caption{\textbf{A variational re-estimation reproduces the NUTS atlas at ${\sim}100\times$ less
+  cost.} (\textbf{a}) Per-factor loading congruence (Tucker $\varphi$) between the variational
+  GLLVM and the NUTS copula fit; all eight axes clear the major ($0.95$) and thin-factor ($0.85$)
+  bars. (\textbf{b}) Per-patient coordinate agreement (Pearson $r$); all eight axes exceed $0.90$.
+  The full loading scatter ($r=0.993$), the $\Phi$ comparison, and the model and inference details
+  are in Supplement~\ref{ann:variational}.}
+  \label{fig:vinuts}
+\end{figure}

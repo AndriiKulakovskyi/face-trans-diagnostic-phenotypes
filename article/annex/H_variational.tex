@@ -1,0 +1,203 @@
+\section{A variational GLLVM re-estimation: model, inference, and comparison to NUTS}
+\label{ann:variational}
+
+The atlas of the main text is estimated by Hamiltonian Monte Carlo (the No-U-Turn sampler,
+NUTS), which is audit-grade but costs hours of multi-chain sampling. Here we re-estimate the
+\emph{same} measurement model by stochastic variational inference (SVI), giving a
+${\sim}100\times$ faster operational engine that we calibrate against---rather than substitute
+for---the NUTS fit. We frame this as a generalized linear latent-variable model
+(GLLVM)~\citep{hui2017gllvm} fit variationally~\citep{blei2017vi,hoffman2013svi}; a fuller
+development of the variational engine (amortized scoring, richer posteriors, calibrated
+uncertainty) is left to future work. This section describes the model, the inference, the
+conceptual differences from NUTS, and the head-to-head comparison.
+
+\subsection{Generative model}
+
+The generative model is the atlas of Annex~\ref{ann:measurement}, unchanged. For patient $i$
+with factor vector $f_i=(G_i,D_{i1},\dots,D_{iK})^{\top}$ and item $j$,
+\begin{align}
+  f_i &\sim \mathcal N(\mathbf 0,\Phi), &&\Phi\ \text{bifactor-faithful (\Gfac{} and the pinned substance axis orthogonal),} \label{eqH:prior}\\
+  \eta_{ij} &= \alpha_j + \lambda_j^{\top} f_i, &&\text{linear decoder; home loadings positive (softplus), forbidden cells exact zero,}\label{eqH:decoder}\\
+  x_{ij} &\sim F_j(\eta_{ij},\theta_j), &&\text{per-item likelihood,}\label{eqH:lik}
+\end{align}
+with the same ontology prior matrix as the folded operational map (immunometabolic merge; the
+three earned cross-loadings freed; everything else hard-zero). $F_j$ is Gaussian on the
+rank-INT (Gaussian-copula) scale for continuous and high-cardinality items, and native
+Bernoulli-logit / ordered-logistic / negative-binomial for binary, low-cardinality ordinal and
+count items---the same tiered likelihood as the main fit. The log-likelihood is evaluated over
+\emph{observed cells only} (a missingness mask removes absent cells; no imputation). One
+implementation difference from the NUTS engine: rather than marginalizing the continuous block
+analytically (the Woodbury identity of Annex~\ref{ann:measurement}), the variational engine
+retains an explicit per-patient latent for \emph{every} factor and attaches every likelihood
+directly to $f_i$, so it carries the full $\approx142$-indicator block with no
+continuous/explicit split.
+
+\subsection{Variational inference}
+
+The exact posterior $p(\{f_i\},\Theta\mid X_{\mathrm{obs}})$ is intractable, so SVI replaces it
+with a tractable family and \emph{optimizes} rather than samples. Each patient receives an
+independent variational posterior over its coordinate,
+\begin{equation}
+  q_i(f_i)=\mathcal N(\mu_i,\Sigma_i),\qquad
+  \Sigma_i=\operatorname{diag}(s_i^2)\ \text{(mean-field default)},
+  \label{eqH:q}
+\end{equation}
+with optional low-rank-plus-diagonal $\Sigma_i=\operatorname{diag}(s_i^2)+U_iU_i^{\top}$ or full
+$K\times K$ covariance. Inference minimizes the negative evidence lower bound (ELBO),
+\begin{equation}
+  \mathcal J \;=\; \underbrace{\mathbb E_{q}\!\left[-\log p(X_{\mathrm{obs}}\mid f,\Theta)\right]}_{\text{observed-cell reconstruction}}
+  \;+\; \sum_{i=1}^{N}\operatorname{KL}\!\left[\,q_i(f_i)\,\big\|\,\mathcal N(\mathbf 0,\Phi)\,\right]
+  \;+\; \Omega(\Lambda) + \Omega(\Phi),
+  \label{eqH:elbo}
+\end{equation}
+where the reparameterization trick~\citep{kingma2014vae} makes the latent draws differentiable,
+the KL term regularizes each coordinate toward the bifactor prior \eqref{eqH:prior}, and
+$\Omega(\cdot)$ are the ontology penalties---the soft loading prior written as a per-cell
+$\tfrac12\sum_{\text{free}}((\lambda-m)/v)^2$ with $(m,v)$ read from the prior matrix, plus a
+weak off-diagonal penalty on $\Phi$. The objective is optimized by minibatch AdamW (per-patient
+terms scaled by $N/B$; global penalties added once), with the small $K\times K$ Cholesky/KL on
+CPU in double precision. The loadings, factor correlations, residual scales and cutpoints
+($\Lambda,\Phi,\sigma,\text{cutpoints}$) are \emph{maximum-a-posteriori} point estimates;
+loading credible bands are obtained from a seed ensemble, with NUTS retained as the
+uncertainty authority. A two-rung warm start (continuous backbone $\to$ full mixed map)
+protects the thin factors from ELBO-flat collapse. The full fit takes ${\approx}4.5$~minutes on
+a workstation CPU (PyTorch~\citep{paszke2019pytorch}), against the NUTS fit's hours.
+
+\subsection{NUTS versus variational inference}
+
+The two engines optimize the same model but differ in what they compute and what they cost
+(Table~\ref{tab:nuts_vs_vi}). NUTS draws asymptotically exact samples from the full joint
+posterior, delivering calibrated uncertainty for every quantity; SVI returns the best
+approximation \emph{within a chosen family}, which is fast but biased by the family. The
+load-bearing consequence here is specific and predictable: a mean-field (diagonal) $q_i$ cannot
+represent posterior covariance \emph{between} factors, so to fit the data it shrinks the prior
+inter-factor correlations the likelihood would otherwise support. The result is faithful factor
+loadings and patient coordinates---which are governed by the posterior \emph{means}---but
+systematically attenuated inter-factor correlations $\Phi$ and underestimated coordinate
+standard deviations, both governed by the posterior \emph{covariance}. This is why we keep NUTS
+as the authority for $\Phi$ magnitudes and for any credible interval, and use the variational
+engine for the map, the coordinates, fast reruns and synthetic-cohort generation.
+
+\begin{table}[ht]\centering\small
+\caption{NUTS versus variational inference for the FACE-ATLAS measurement model.}
+\label{tab:nuts_vs_vi}
+\begin{tabular}{@{}p{3.2cm}p{5.4cm}p{5.4cm}@{}}
+\toprule
+ & \textbf{NUTS (main fit)} & \textbf{Variational GLLVM} \\
+\midrule
+Inference & MCMC: asymptotically exact samples from the full joint posterior & Optimization: best approximation within a chosen posterior family \\
+Latent treatment & Continuous block marginalized (Woodbury); latents only for discrete items & Explicit per-patient latent for every factor; all $\approx142$ items \\
+Global parameters & Full posterior (loadings, $\Phi$, residuals) with credible intervals & MAP point estimates; loading bands from a seed ensemble \\
+Coordinate uncertainty & Calibrated posterior SD per axis & Relative reliability signal (mean-field underestimates SD) \\
+Inter-factor $\Phi$ & Posterior magnitudes with uncertainty & Structure correct; off-diagonals attenuated (mean-field bias) \\
+Cost & Hours (multi-chain) & ${\approx}4.5$ min CPU (${\sim}100\times$ faster) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Comparison results}
+
+On the eight-factor operational map, the variational engine reproduces the NUTS fit on its two
+load-bearing objects---the measurement map and the patient coordinates---and matches it as a
+generative model.
+
+\paragraph{The measurement map.} Loading columns are congruent on all eight factors (Tucker
+$\varphi$: \Gfac{} $0.957$, every specific axis $0.96$--$0.999$; Table~\ref{tab:vi_loadings}),
+and the full item$\times$factor loading scatter is $r=0.993$ over $208$ cells with no sign flips
+(Figure~\ref{fig:vi_loadings}). \Gfac{} is the hardest axis---it carries every item's small
+bifactor loading---and is the only one near the major-axis bar; a richer posterior raises it to
+$0.974$. \emph{It is the same map.}
+
+\paragraph{The patient coordinates.} Per-patient coordinates correlate with the NUTS
+coordinates at $r\ge0.90$ on all eight axes (Table~\ref{tab:vi_coords}: \Gfac{} $0.990$,
+immunometabolic $0.998$, cognition $0.992$, down to substance $0.908$, the orthogonal,
+instrument-poor axis). \emph{Patients land in the same place.}
+
+\begin{table}[ht]\centering\small
+\begin{minipage}[t]{0.48\textwidth}\centering
+\caption{Loading congruence (Tucker $\varphi$) vs NUTS.}
+\label{tab:vi_loadings}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Factor & cells & Tucker $\varphi$ \\
+\midrule
+\Gfac{} (overall severity) & 106 & 0.957 \\
+cognition & 16 & 0.998 \\
+immunometabolic & 37 & 0.998 \\
+sleep & 12 & 0.999 \\
+suicidality & 12 & 0.998 \\
+developmental risk & 21 & 0.998 \\
+mania/activation & 2 & 0.984 \\
+substance & 2 & 0.963 \\
+\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}\centering
+\caption{Coordinate agreement (Pearson $r$) vs NUTS.}
+\label{tab:vi_coords}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Factor & $n$ (well) & $r$ \\
+\midrule
+\Gfac{} (overall severity) & 8641 & 0.990 \\
+cognition & 6451 & 0.992 \\
+immunometabolic & 8825 & 0.998 \\
+sleep & 7522 & 0.968 \\
+suicidality & 8285 & 0.984 \\
+developmental risk & 8767 & 0.986 \\
+mania/activation & 6152 & 0.976 \\
+substance & 4249 & 0.908 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{table}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.6\linewidth]{gllvm_oop/vi_vs_nuts_loadings.png}
+  \caption{\textbf{The variational map is the NUTS map.} Item$\times$factor loadings from the
+  variational GLLVM against the NUTS copula fit ($n=208$ cells, $r=0.993$), coloured by cell
+  type. Large home and \Gfac{}-anchor loadings align on the diagonal; cross, window and small
+  bifactor-\Gfac{} cells cluster tightly near zero.}
+  \label{fig:vi_loadings}
+\end{figure}
+
+\paragraph{Generative fidelity.} Drawing $9{,}013$ synthetic patients from the fitted map and
+comparing to the observed data, the marginals match (Kolmogorov--Smirnov median $0.04$;
+per-variable mean fidelity $r=1.000$, SD fidelity $r=0.998$) and so does the joint covariance
+(correlation SRMR $0.078$, matching the NUTS fit's $\approx0.07$)---the eight factors reproduce
+the data's correlation structure, not merely its margins.
+
+\paragraph{The one gap: inter-factor $\Phi$.} The correlation structure is reproduced---\Gfac{}
+and substance rows are exactly zero in both engines, and the
+sleep/suicidality/developmental-risk/mania block is positively correlated in both
+(Figure~\ref{fig:vi_phi})---but the off-diagonals are systematically attenuated: correlated-block
+mean $|\phi|$ is $0.083$ (variational) versus $0.105$ (NUTS), a ${\sim}21\%$ shrinkage
+concentrated in the small negative cognition correlations (the substantive
+immunometabolic$\leftrightarrow$cognition coupling is preserved). Climbing the full
+posterior-richness ladder---mean-field $\to$ low-rank $\to$ full $K\times K$ covariance---reduces
+the shrinkage monotonically ($21\%\to20\%\to18\%$) but does not close it, establishing the
+residual as a \emph{structural bias of variational inference on the inter-factor correlation
+hyperparameter} rather than a tunable defect (an exploratory arm removing the $\Phi$ penalty and
+loosening gradient clipping left $\Phi$ unchanged). This is precisely the quantity for which
+NUTS is retained as the authority; the variational $\Phi$ should be read as directionally
+correct but not as a magnitude.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\linewidth]{gllvm_oop/vi_vs_nuts_phi.png}
+  \caption{\textbf{Inter-factor correlation $\Phi$: structure reproduced, magnitudes attenuated.}
+  Variational $\Phi$ (left), NUTS $\Phi$ (middle), and their difference (right). The
+  block-diagonal orthogonality (\Gfac{}, substance) is exact in both and the correlated specific
+  block is positive in both; the difference panel localizes the ${\sim}21\%$ attenuation to the
+  small cognition cross-correlations.}
+  \label{fig:vi_phi}
+\end{figure}
+
+\paragraph{Summary.} The variational GLLVM is a calibrated, ${\sim}100\times$-faster stand-in for
+the NUTS measurement map and patient coordinates (loadings Tucker $8/8$, scatter $r=0.993$;
+coordinates $r\ge0.90$ on $8/8$ axes) and a faithful generative model of the cohort, with the
+inter-factor correlation $\Phi$ as the one structurally attenuated quantity for which NUTS
+remains the authority. It is suited to fast reruns, sensitivity sweeps, synthetic-cohort
+generation, and as an independent-estimator robustness check on the map; developing it into a
+fully calibrated Bayesian engine is future work.
