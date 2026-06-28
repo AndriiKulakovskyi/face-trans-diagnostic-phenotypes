@@ -26,6 +26,16 @@ identifiers, covariates or validation labels and are never factor indicators. Th
 factor map carries $109$ of these indicators---$88$ in the Gaussian-copula continuous
 block and $21$ in the explicit non-Gaussian block---across its eight axes.
 
+No a-priori power calculation was performed: this is a secondary analysis of the complete
+baseline assessment of the three FACE cohorts, in which all $N=9{,}013$ available patients are
+modelled (balancing by subsampling is rejected in favour of cohort weighting). The sample is
+sized for the study's \emph{group-level} estimands---the factor structure, the biology--burden
+correlation $\phi_{Gd}$, and incremental held-out predictive density---which it resolves well
+beyond chance (for example, all $37$ immunometabolic loadings and the $\phi_{Gd}$ ordering have
+$95\%$ intervals excluding the relevant null); it is correspondingly \emph{not} powered for
+individual-level binary discrimination, so the small functional-remission AUC gain ($+0.010$)
+reflects this scope rather than an underpowered analysis.
+
 \subsection{Candidate ontology and soft priors}
 
 Ten candidate constructs defined a \emph{soft-prior} ontology rather than a fixed
@@ -221,6 +231,14 @@ inference and head-to-head comparison are in Supplement~\ref{ann:variational}.
 
 \subsection{Stratification, temporal coherence, prognosis and treatment}
 
+The analysis followed a pre-specified staged plan: the candidate construct ontology and the
+biology--burden correlation $\phi_{Gd}$---the primary estimand---were fixed a priori (the
+soft-prior matrix, Supplement~\ref{ann:measurement}), with the stratification, temporal and
+prognostic arms secondary and the treatment-moderation analysis explicitly exploratory. As a
+secondary analysis of an existing cohort the study was not prospectively registered; we
+therefore report all pre-planned arms, label post hoc analyses as such, and interpret the
+resulting multiplicity with caution.
+
 On the fitted coordinates $\{x_i,S_i\}$---each patient's posterior-mean position
 $x_i=\hat f_i\in\mathbb{R}^{8}$ together with its posterior covariance $S_i$---structure
 was tested \emph{before} any clustering by a multi-statistic battery computed over the
@@ -257,7 +275,9 @@ rank-stability intraclass correlation and a population-level shift
 outcome plus severity, then adding DSM-5 subtype, the map, or both---using an
 errors-in-variables Bayesian generalized linear model that propagates each coordinate's
 posterior standard deviation, scored by held-out expected log predictive density and,
-for binary endpoints, by change in AUC; robustness used inverse-probability weighting,
+for the binary endpoints---two-year \emph{functional remission} (reaching GAF $\ge 71$ from
+baseline impairment) and \emph{deterioration} (a GAF drop $\ge 10$), each pooled across the
+$12$- and $24$-month visits---by change in AUC; robustness used inverse-probability weighting,
 restriction to reliable axes and a permutation null, and a separate benchmark compared
 the map against all $143$ raw indicators under a matched gradient-boosting classifier
 (Supplement~\ref{ann:prognosis}). Treatment exposures, harmonized to drug classes, were
