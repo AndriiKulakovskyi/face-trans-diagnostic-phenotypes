@@ -1,0 +1,114 @@
+\section{Glossary of metrics: meaning and values}
+\label{ann:metrics}
+
+This glossary lists, in plain language, every quantitative metric used in the paper, how to
+read it, and the value obtained in this study. It is intended as a reading aid for clinical
+readers; formal definitions and provenance are in the cited sections. Throughout, a
+\emph{credible interval} is the Bayesian analogue of a confidence interval (the range that
+contains the true value with the stated probability), and ``$\hat f_i$'' denotes a patient's
+estimated position on a latent axis.
+
+{\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{@{}p{2.5cm}p{4.2cm}p{3.0cm}p{4.5cm}@{}}
+\toprule
+\textbf{Metric} & \textbf{What it measures} & \textbf{How to read it} & \textbf{Value in this study} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Metric} & \textbf{What it measures} & \textbf{How to read it} & \textbf{Value in this study} \\
+\midrule
+\endhead
+\midrule \multicolumn{4}{r}{\footnotesize\itshape continued on next page} \\
+\endfoot
+\bottomrule
+\endlastfoot
+
+\multicolumn{4}{@{}l}{\textbf{\textit{A. Did the model fit honestly?} (model convergence and goodness of fit)}} \\
+\addlinespace
+$\hat R$ (Gelman--Rubin) & Whether the Bayesian sampler converged---independent chains agree on the answer & $\approx1.00$ ideal; ${<}1.05$ acceptable; ${>}1.1$ suspect & Global 8-factor map $1.03$; continuous backbone $1.01$; anthropometry-excluded arm $1.09$ (its magnitudes read as approximate) \\
+\addlinespace
+Effective sample size (ESS) & How many independent posterior samples support an estimate & Higher is better; a few hundred is comfortable & $1{,}514$ (backbone); $38$ in the excluded arm (hence approximate) \\
+\addlinespace
+Divergences & Sampler failures that flag an untrustworthy posterior region & $0$ is ideal & $0$ in every reported fit \\
+\addlinespace
+Bayesian SRMR & Average gap between the observed and model-implied indicator correlations (absolute fit) & ${<}0.08$ is good fit & $0.074$ (continuous block) \\
+\addlinespace
+Posterior-predictive coverage & Share of indicators whose real data fall inside the model's $90\%$ predictive band & Higher is better & $21/22$ non-Gaussian indicators \\
+\addlinespace
+WAIC / PSIS-LOO ($\Delta$ELPD) & Out-of-sample fit used to compare model \emph{shapes} & Larger ELPD = better fit; we treat it as \emph{secondary} evidence (it favours bifactor models by form) & Bifactor preferred over correlated-factor ($\Delta\approx2{,}720$) and one-factor ($\Delta\approx53{,}000$) \\
+\addlinespace
+Tucker congruence ($\varphi$) & How identically two fits reproduce the \emph{same} factor & $1.0$ = identical; ${>}0.95$ excellent; ${>}0.85$ good & Prior-free refit $1.00$; resampling $\geq0.958$; longitudinal $0.987$--$0.996$; anthropometry-excluded axis $0.90$ \\
+\addlinespace
+\multicolumn{4}{@{}l}{\textbf{\textit{B. What are the axes?} (factor structure)}} \\
+\addlinespace
+Factor loading ($\lambda$) & Strength with which one indicator reflects a latent axis (a standardized weight) & $|\lambda|{>}0.3$ substantial; sign gives direction & e.g.\ BMI$\to$immunometabolic $0.95$, CRP $0.37$, FAST$\to$\Gfac{} $0.91$ (all $37$ immunometabolic loadings in Table~\ref{tab:immet_loadings}) \\
+\addlinespace
+Factor correlation ($\phi$, $\Phi$) & How strongly two axes move together & $-1$ to $+1$; near $0$ = independent & Specific axes mean $|\phi|\approx0.08$; under a free general factor $\phi(\Gfac,\text{cognition}){=}0.39$, $\phi(\Gfac,\text{sleep}){=}0.42$, $\phi(\Gfac,\text{immunometabolic})\approx0.10$ \\
+\addlinespace
+$95\%$ credible interval & Bayesian uncertainty range for a loading or effect & Excluding $0$ = reliably non-zero & All $37$ immunometabolic loadings exclude $0$ \\
+\addlinespace
+Coordinate uncertainty ($S_i$, reliability tier) & How precisely a patient's position on each axis is known, given how many indicators they had & Larger SD = less reliable; carried into every downstream analysis (no patient treated as exact) & Each patient has a per-axis posterior SD and tier (well / partial / prior-dominated) \\
+\addlinespace
+\multicolumn{4}{@{}l}{\textbf{\textit{C. Continuum or distinct biotypes?} (stratification, M2)}} \\
+\addlinespace
+Silhouette & How cleanly patients separate into clusters & $-1$ to $1$; ${>}0.5$ strong clusters; ${\sim}0.14$ = none & Best partition $0.140$ \\
+\addlinespace
+Falsification-null $z$ & Real-data clustering vs a structureless Gaussian of identical spread, in standard deviations & ${\sim}0$ = no real clustering; ${>}2$ would signal clusters & $z=1.13$ (not significant; null silhouette $0.137\pm0.002$) \\
+\addlinespace
+Hopkins statistic & Cluster \emph{tendency} of the cloud & $0.5$ = uniformly random; $\to1$ = clustered & $\to0.5$ (no tendency) \\
+\addlinespace
+Dip test ($p$) & Whether an axis is multimodal (clumpy) vs smooth & $p{>}0.05$ = unimodal (smooth) & Unimodal on $6/8$ axes \\
+\addlinespace
+Gap statistic ($k_{\text{opt}}$) & Data-driven optimal number of clusters & $1$ = no clusters & $1$ \\
+\addlinespace
+HDBSCAN & Density-based clustering (returns clusters or labels points as noise) & $0$ clusters / all-noise = a continuum & $0$ clusters \\
+\addlinespace
+Adjusted Rand Index (ARI) & Agreement between the map's partition and DSM-5 diagnosis & $0$ = chance; $1$ = identical & $0.006$ vs DSM-5 (transdiagnostic) \\
+\addlinespace
+Information criterion (BIC) & Which description fits the coordinate cloud more tightly---a free continuum or one constrained to DSM-5 & Lower = better (more parsimonious) description & $185{,}600$ (free) vs $188{,}200$ (DSM-constrained): the map describes the space ${\approx}3\times$ more tightly at lower BIC \\
+\addlinespace
+Archetype count ($A$) & Number of extreme ``corner'' phenotypes that reproduce across runs & The largest cross-seed-stable $A$ & $A=5$ (cross-seed $\varphi=0.979$; collapses to $0.436$ at $A=6$) \\
+\addlinespace
+Normalized entropy of weights & How \emph{blended} a patient is between corners & $0$ = a pure corner; $1$ = an even mix (continuum) & Median $0.65$ (patients sit between corners) \\
+\addlinespace
+\multicolumn{4}{@{}l}{\textbf{\textit{D. Does the map hold over time?} (temporal coherence, M3)}} \\
+\addlinespace
+Intraclass correlation (ICC, trait fraction) & Share of an axis that is a stable \emph{trait} vs moving \emph{state}, with measurement error removed & ${>}0.6$ trait; ${<}0.4$ state & Immunometabolic $0.91$ ($0.76$ without the anthropometric items); cognition $0.70$; severity $0.62$ (trait by rank); sleep $0.47$; suicidality $0.43$; developmental $0.39$ \\
+\addlinespace
+Population shift (slide) & Average $2$-year movement of the whole cohort on an axis & Near $0$ = population-stable; negative = improving & Biology $+0.04$ (static); severity $-0.46$; suicidality $-0.84$ \\
+\addlinespace
+Longitudinal invariance ($\varphi$) & Whether the instrument measures the same construct at follow-up & ${>}0.95$ = invariant & $0.987$--$0.996$ across the four backbone axes \\
+\addlinespace
+Archetype persistence (cosine) & How stable a patient's archetype mix is over $2$ years & $1$ = unchanged & Median $0.81$ \\
+\addlinespace
+V0 reproduction (Pearson $r$) & Check that re-scoring reproduces baseline coordinates & ${\sim}1$ = faithful re-scoring & $0.99$ \\
+\addlinespace
+\multicolumn{4}{@{}l}{\textbf{\textit{E. Does it forecast outcome?} (prognosis, M4)}} \\
+\addlinespace
+Held-out $\Delta$ELPD & Improvement in $2$-year outcome prediction from adding the map, on unseen patients & Larger = more predictive (group level) & Archetypes $+62.8$; the map adds $+17.3$ beyond DSM-5's $+29.0$ (co-informative); attrition-weighted $+54.4$ \\
+\addlinespace
+$\Delta$AUC & Gain in telling apart, at the \emph{individual} level, who will reach an outcome & $0$ = none; $0.5$ = perfect-from-chance; here small & Functional remission $+0.010$ \\
+\addlinespace
+Functional-remission rate & Share reaching $2$-year functional remission, by archetype corner & The clinical readout of the gradient & $17\%$ (immunometabolic corner) to $52\%$ (low-burden pole) \\
+\addlinespace
+Odds ratio (best vs worst corner) & Relative odds of remission across the corners & ${>}1$ favours the better pole & ${\approx}6.3$ (cohort-adjusted) \\
+\addlinespace
+Permutation null & Sanity check: the signal should vanish when outcome labels are shuffled & Vanishing = the signal is real & Vanished, as required \\
+\addlinespace
+Representation sufficiency ($\Delta$AUC vs raw) & Whether the $8$ axes capture what the $143$ raw indicators do for prognosis & Small gap = a sufficient summary & Tie for deterioration; raw $+0.04$ for recovery ($92$--$97\%$ captured) \\
+\addlinespace
+\multicolumn{4}{@{}l}{\textbf{\textit{F. What can be said about treatment?} (causal bounds, M5 --- exploratory)}} \\
+\addlinespace
+E-value & How strong an unmeasured confounder would have to be to explain away an observed effect & Higher = more robust; ${\sim}1.2$ = fragile & Lithium-BP $1.20$--$1.28$; antipsychotic-BP $1.80$ \\
+\addlinespace
+Minimum detectable effect (MDE) & Smallest treatment-moderation the design could have detected & Small = a null is \emph{informative}, not just underpowered & ${\approx}0.20$ SD (lithium); makes the lithium null a \emph{bounded} one \\
+\addlinespace
+Propensity-score overlap & Whether treated and untreated patients are comparable enough to contrast & High overlap = estimable; low = channelled & Near-complete (lithium); channelled, non-estimable (clozapine) \\
+\addlinespace
+Attenuation under treatment adjustment & How much the prognostic signal shrinks once the drugs patients received are controlled for & Small = not a treatment artefact & $4$--$8\%$ for the immunometabolic carrier \\
+\addlinespace
+Treatment-course $\Delta$AUC & Discrimination of $2$-year treatment course by archetype & Small here & Up to ${\approx}+0.04$ (response, side-effects); treatment-resistance marginal \\
+\end{longtable}
+}

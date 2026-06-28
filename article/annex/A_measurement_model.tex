@@ -219,10 +219,10 @@ way to handle a weak signal in a factor with very few indicators. A map whose cr
 cross-loadings are few, small and clinically sensible is positive evidence the structure
 is well-specified, not an artefact of rigid zeros.
 
-\paragraph{The earned cross-loadings.} A continuous sparse-ESEM validator freed all
+\paragraph{The data-supported cross-loadings.} A continuous sparse-ESEM validator freed all
 off-home specific$\leftrightarrow$specific cells simultaneously and let the horseshoe
 select: $\approx 83\%$ shrank to $\approx 0$ (median $0.002$), so the simple structure is
-\emph{earned, not imposed}, while the heavy tails let a handful of small,
+\emph{recovered from the data, not imposed}, while the heavy tails let a handful of small,
 well-converged, clinically sensible cells survive; the thin factors stayed intact
 (substance home $|\lambda|\,0.585$, mania $0.484$). Folding the survivors into the full
 mixed map---which arbitrates them under the correlated factor block---keeps three
@@ -231,7 +231,7 @@ with a $95\%$ credible interval excluding zero:
 \begin{center}\small
 \begin{tabular}{lccl}
 \toprule
-earned cross-loading & median & $95\%$ CI & reading \\
+cross-loading & median & $95\%$ CI & reading \\
 \midrule
 CTQ-37 $\to$ cognition            & $-0.094$ & $[-0.134,\,-0.053]$ & childhood adversity $\leftrightarrow$ cognition \\
 PSQI latency $\to$ cognition      & $+0.057$ & $[+0.011,\,+0.102]$ & sleep $\leftrightarrow$ cognition \\
@@ -274,7 +274,7 @@ substantial; the positive truncation removes the residual sign-flip.
 \begin{corollary}[Flat-prior confirmation]\label{corA:flat}
 Under a flat loading prior (identification constraints only) the posterior mode equals
 the maximum-likelihood (FIML) solution. Hence a prior-free refit landing on the same
-loadings demonstrates that the structure is earned from the data, not manufactured by
+loadings demonstrates that the structure is recovered from the data, not manufactured by
 the priors. Empirically this refit reproduced the map to Tucker congruence
 $\varphi=1.00$.
 \end{corollary}
@@ -329,6 +329,51 @@ bifactor direct loading $|\lambda_{jG}|$ and the correlation $\phi_{Gd}$ agree o
 ordering---reporting both is what turns ``biology is separable'' from a constraint
 artefact into a finding.
 
+The immunometabolic factor is anchored by body composition and graded across metabolic,
+inflammatory and cardiovascular markers. Table~\ref{tab:immet_loadings} lists all $37$
+primary loadings with $95\%$ credible intervals, every one excluding zero: the three
+body-size indicators (BMI $0.95$, weight $0.88$, waist $0.84$) are the strongest, while the
+metabolic, inflammatory (CRP $0.37$) and cardiovascular markers contribute smaller but
+credible loadings. The axis is therefore adiposity-anchored rather than inflammation-led; a
+sensitivity refit excluding the three anthropometric indicators, reported below, tests
+whether a coherent metabolic--inflammatory--cardiovascular axis survives once the body-size
+anchors are removed.
+
+\input{tables/tableS_immunometabolic}
+
+\subsection{Sensitivity: the axis without its anthropometric anchors}
+\label{annA:nobmi}
+
+To test whether the immunometabolic factor is merely a body-habitus axis, we refit the full
+eight-factor map after \emph{excluding} the three anthropometric indicators (BMI, weight,
+waist circumference), leaving the metabolic, inflammatory and cardiovascular markers to define
+the axis on their own (balanced $N=2{,}000$, otherwise identical specification; $0$
+divergences, $\hat R=1.09$, so magnitudes are read as approximate). The axis did not collapse.
+All $34$ remaining indicators loaded with $95\%$ credible intervals excluding zero, and the
+column re-anchored on blood pressure (systolic and diastolic, standing and supine,
+$0.63$--$0.67$), heart rate ($0.44$--$0.48$), the total/HDL cholesterol ratio ($0.44$),
+triglycerides ($0.40$) and inflammatory markers (white-cell count $0.36$, C-reactive protein
+$0.32$, neutrophils $0.28$)---a coherent cardiometabolic--inflammatory syndrome rather than a
+residue. Against the canonical axis the loading column was highly congruent on the shared
+items (Tucker $\varphi=0.90$), and the factor remained nearly uncorrelated with \Gfac{} and the
+symptom axes (specific--specific $|\phi|\le 0.02$, apart from the known immunometabolic--substance
+coupling $\approx 0.20$). The body-size indicators are therefore the strongest \emph{anchors}
+of the axis, not its content: removing them redistributes the loading onto the cardiovascular
+and metabolic markers without dissolving the dimension. Because the one inflammatory marker
+available, CRP, is itself substantially adiposity-driven~\citep{kappelmann2021,norton2025crp,ye2021inflammation},
+we name the axis cardiometabolic and adiposity-anchored and do not claim an inflammatory
+dimension independent of body composition.
+
+The axis is also durable without its anthropometric anchors. Scored forward onto the
+$12$- and $24$-month visits under the fixed excluded model (the temporal protocol of
+\ref{ann:temporal}), the immunometabolic coordinate remained trait-like: a
+measurement-error test--retest intraclass correlation of $0.76$ ($94\%$ CI $[0.74,0.78]$),
+with an essentially static population trajectory (shift $\approx 0$). This is below the
+full-axis $0.91$---body mass is indeed the most stable single component---but still
+comfortably in the trait range, so the $0.91$ durability is not merely the test--retest
+stability of body size but a property of the broader cardiometabolic--inflammatory
+constellation.
+
 \subsection{Woodbury evaluation and equivalence with FIML}
 \label{annA:woodbury}
 
@@ -376,7 +421,7 @@ maximizer.
 \end{equation}
 obtained by MCMC when non-Gaussian cells are present. The per-patient posterior
 covariance $S_i$ is exported and propagated downstream (it is the noise term in the
-stratification mixture, Annex~\ref{ann:stratification}): a patient with one observed
+stratification mixture, Supplement~\ref{ann:stratification}): a patient with one observed
 indicator for a factor is \emph{not} treated as equally characterized as one with six.
 
 \subsection{Staged estimation and in-engine confirmation}
@@ -387,7 +432,7 @@ sub-model was fit and then deformed toward the full target one source of difficu
 a time. A clean hard-zero backbone was built first (continuous core at full $N$:
 \Gfac{}, cognition, immunometabolic, sleep), then extended to developmental-risk and
 mania/activation, each converged posterior warm-starting the next; the full 8-factor
-mixed map adds the suicidality and substance factors. The data-earned cross-loadings of
+mixed map adds the suicidality and substance factors. The data-supported cross-loadings of
 \ref{annA:rotation} are then folded onto this hard-zero solution---warm-starting the
 relaxed fit from the hard-zero basin is identified here, with the thin factors held in
 place. \emph{Only the global fit is interpreted}; the earlier stages are

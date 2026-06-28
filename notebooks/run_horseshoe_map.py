@@ -76,6 +76,10 @@ def parse_args():
                    help="re-fit ONLY the weighted mixed stage with substance pinned ORTHOGONAL (kills the "
                         "immunometabolic<->substance rotation that broke the full-N fit) + warm-started from the "
                         "converged balanced map (anchors substance loadings at 0.585). Implies --weighted --fold.")
+    p.add_argument("--exclude", default="",
+                   help="comma-separated indicators to DROP entirely (sensitivity arm), e.g. "
+                        "'bmi,weight,wstcir' for the immunometabolic minus-anthropometry refit. The output "
+                        "dir gets an '_excl-<items>' suffix so it never collides with the canonical map.")
     p.add_argument("--overwrite", action="store_true")
     return p.parse_args()
 
@@ -101,9 +105,12 @@ def main():
     s5 = StageDefinition(s5name, F8, draws=mc_, tune=mt, chains=ch, target_accept=0.95,
                          specific_cross=a.fold, cross_sd_scale=1.0, **mixed)
 
+    excl = tuple(x.strip() for x in a.exclude.split(",") if x.strip())
     sub = "weighted_8d" if a.weighted else "horseshoe_8d"
+    if excl:
+        sub += "_excl-" + "-".join(excl)
     base = MeasurementConfig().with_gaussian_copula()
-    base = replace(base, prior_matrix=MERGED_MATRIX, cohort_weighted=a.weighted,
+    base = replace(base, prior_matrix=MERGED_MATRIX, cohort_weighted=a.weighted, exclude_items=excl,
                    output_dir=base.output_dir / "copula" / sub,
                    figure_dir=base.figure_dir / "copula" / sub)
     hs = base.with_horseshoe(tau0=a.tau0, slab_c=a.slab_c)
@@ -118,7 +125,8 @@ def main():
     else:
         final_cfg, final_mode = (hs, "HORSESHOE") if a.final == "horseshoe" else (base, "hard-zero")
     print(f"[hs-map] 8-factor merged map; final={a.final} (tau0={a.tau0} slab_c={a.slab_c}); "
-          f"N={'full' if a.weighted else a.n}", flush=True)
+          f"N={'full' if a.weighted else a.n}"
+          f"{'; EXCLUDING ' + ','.join(excl) if excl else ''}", flush=True)
     print(f"[hs-map] factors: {F8}", flush=True)
 
     if a.salvage:
