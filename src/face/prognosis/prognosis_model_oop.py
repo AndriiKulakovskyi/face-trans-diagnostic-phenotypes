@@ -67,7 +67,7 @@ RESULTS = REPO / "results" / "face" / "prognosis_oop"            # parallel outp
 FIGURES = REPO / "docs" / "figures" / "prognosis_oop"
 CONFIG = REPO / "configs" / "m4_outcomes.yaml"
 PROC = REPO / "data" / "processed"
-MODEL_VERSION = "prognosis_oop_2026_06_22_v1"
+MODEL_VERSION = "prognosis_oop_2026_06_27_v2"   # regenerated on the copula A=5 8-factor strata (2026-06-27)
 CGI_BASELINE = "cgi_s__V0"                                        # the manifest baseline-CGI-S column
 _COORD_METRICS = ("mean", "sd", "hdi_lo", "hdi_hi", "n_obs", "reliability")
 

@@ -59,13 +59,13 @@ severity-saturation story again.
 
 | archetype | 2-yr functional remission |
 |---|---|
-| A4 — low-burden / well pole | **52%** |
-| A0 — activation / sleep | 41% |
-| A3 — trauma / suicidality | 28% |
-| A1 — severe, clean-biology | 22% |
-| **A2 — immunometabolic (biology) corner** | **17%** |
+| A4 — low-burden / well pole | **63%** |
+| A0 — activation / sleep | 46% |
+| A3 — trauma / suicidality | 37% |
+| A1 — severe, clean-biology | 34% |
+| **A2 — immunometabolic (biology) corner** | **22%** |
 
-A **17% → 52%** transdiagnostic gradient; **the immunometabolic biology corner (A2) carries the worst
+A **22% → 63%** transdiagnostic gradient; **the immunometabolic biology corner (A2) carries the worst
 functional prognosis** — the precise value a biology-aware map adds; the immunometabolic corner is the sharp
 low-prognosis pole.
 
@@ -77,7 +77,7 @@ SZ low-floor), so a pooled gradient must be checked within cohort. De-confoundin
 
 1. **Within every cohort the rank holds** (immunometabolic corner → well pole): **BP 27% → 73%, DR 31% → 72%,
    SZ 9% → 25%.**
-2. **Direct standardization** to a common cohort mix barely moves the gradient (0.23 → 0.62 vs raw 0.17 → 0.52):
+2. **Direct standardization** to a common cohort mix barely moves the gradient (0.23 → 0.62 vs raw 0.22 → 0.63):
    **composition explains only ~4%** of the pooled spread — a genuine within-diagnosis effect.
 3. **Logistic decomposition** `remission ~ corner + cohort (+interaction)`: the cohort-adjusted best-vs-worst
    corner effect is large (**OR ≈ 6.3**), cohort is the dominant axis (SZ-vs-BP **OR 0.15**), and the
@@ -157,6 +157,6 @@ share is unaffected.)*
 
 **Verdict: the 8-factor map predicts 2-year functioning** — the A = 5 archetypes add ΔELPD +62.8 beyond
 DSM-5 + severity + baseline (IPW-robust, permutation-null, co-informative with DSM-5, course-dependent /
-BP-led), with a 17→52% transdiagnostic functional-remission gradient (within-diagnosis: composition only ~4%)
+BP-led), with a 22→63% transdiagnostic functional-remission gradient (within-diagnosis: composition only ~4%)
 whose worst pole is the immunometabolic biology corner. Operative K = none. Not severity. The map is a
 sufficient representation for deterioration and near-sufficient (≥92% within-factor) for recovery.

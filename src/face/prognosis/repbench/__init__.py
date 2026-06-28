@@ -1,5 +1,5 @@
 """M4 representation benchmark — does the M1/M2 Gaussian-copula latent map (coordinates + uncertainty +
-A=4 archetypes) match raw indicators at predicting 2-year functional outcomes, while winning on data
+A=5 archetypes) match raw indicators at predicting 2-year functional outcomes, while winning on data
 efficiency, transportability, honesty, and interpretability?
 
 The hypothesis is representation *quality*, not accuracy supremacy (the coordinates are a compression of the

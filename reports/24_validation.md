@@ -1,5 +1,16 @@
 # 24 — M2.4 validation (Q1–Q4) + head-to-head vs DSM-5
 
+> **⚠️ SUPERSEDED — native 9-d A=8 / K=4 fit. Do not cite the archetype/tessellation numbers below as current.**
+> This report was computed on the **native 9-dimension coordinates** (separate `metabolic` + `inflammatory`
+> axes, A = 8 archetypes, K = 4 tessellation). The reported map is the **8-factor Gaussian-copula** map with a
+> single `immunometabolic` axis, an **A = 5** archetype simplex, and a nested **K = 2/3/4** tessellation family.
+> The legacy archetype-level numbers here (archetype ARI_dsm5 0.046 / ARI_cohort 0.060, mean η²(specifics)
+> 0.319, free K=4 BIC 199,325 vs DSM-5 206,016, mean η² 0.209) are **NOT** the reported copula values. Canonical
+> copula numbers: **[docs/STRATA_OOP_FINDINGS.md](../docs/STRATA_OOP_FINDINGS.md)** (Result 4 = K=2 tessellation;
+> Result 4b = A=5 archetypes) and `results/face/strata_oop/usefulness/{data.json, a5_archetype_validation.json}`.
+> Reported copula equivalents: archetype ARI_dsm5 **0.021**, K=2 tessellation ARI_dsm5 **0.006**, free K=2 BIC
+> **185,557** vs DSM-5 **188,168**. Kept for provenance only.
+
 Both soft views (archetypes = lead; tessellation) on the M1 9-d coordinates. Diagnosis is validation-only. M2 establishes the **preconditions + the descriptive head-to-head**; predictive & treatment validity vs DSM-5 are M4/M5 (§1.7).
 
 ## Q1 — existence: the honest answer is a CONTINUUM (M2.1)

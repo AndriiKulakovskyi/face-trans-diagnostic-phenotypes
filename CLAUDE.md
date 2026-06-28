@@ -106,7 +106,7 @@ errors-in-variables Bayesian GLM tests whether a baseline coordinate/stratum pre
 incrementally beyond DSM-5 + severity + baseline outcome. The **A = 5 archetypes predict 2-year functioning**
 (ΔELPD +62.8 held-out; IPW-robust +54.4; permutation-null; **co-informative with DSM-5**; course-dependent,
 BP-led) but **not severity** (autoregression-saturated). **Operative K = none** (archetypes dominate every
-tessellation). Prognostic atlas: 2-yr functional remission **17% → 52%**, the immunometabolic corner (A2) the
+tessellation). Prognostic atlas: 2-yr functional remission **22% → 63%**, the immunometabolic corner (A2) the
 worst-prognosis pole, within-diagnosis (composition explains ~4%). Honest: small individual-binary lift (AUC
 +0.010 — the value is group-level stratification + continuous forecasting). **Representation benchmark**
 (`src/face/prognosis/repbench/`, [docs/M4_REPRESENTATION_BENCHMARK.md](docs/M4_REPRESENTATION_BENCHMARK.md)): vs

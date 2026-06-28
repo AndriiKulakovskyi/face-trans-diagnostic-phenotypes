@@ -116,6 +116,38 @@ So the soft regions are operationally assignable, driven by specific symptoms/bi
 independent of diagnosis, stable, not a coverage artefact, and a tighter description than the DSM-5 subtypes —
 **3× the explained variance of DSM-5 at lower BIC**.
 
+## Result 4b — archetype-level validity (A = 5, on the copula map)
+
+Result 4 above is the **K = 2 tessellation** battery; the **A = 5 archetype simplex** is validated separately
+on the same copula coordinates (`results/face/strata_oop/usefulness/a5_archetype_validation.json`, driver
+[`notebooks/compute_a5_archetype_validation.py`](../notebooks/compute_a5_archetype_validation.py); A = 5 dominant
+assignment, N = 9,013):
+
+| criterion | evidence (copula A = 5) |
+|---|---|
+| **transdiagnostic** | ARI **0.021** vs the 7 DSM-5 subtypes, **0.017** vs cohort (≈ 0); Cramér's V 0.139 / 0.166 (weak) — the corners cut across diagnosis |
+| **separates the cloud ≫ DSM-5** | mean η² over the 8 axes **0.256** (archetypes) vs **0.026** (DSM-5) — **9.7×** the coordinate variance DSM-5 captures |
+| **what it separates on** | η²: G **0.47** · immunometabolic **0.39** · sleep **0.38** · developmental **0.35** · mania 0.21 · suicidality 0.19 · cognition 0.05 · substance 0.00 |
+| **every corner is transdiagnostic** | each of A0–A4 is populated in all three cohorts (BP-led A0; DR concentrates in A1/A2; well pole A4 largest in BP/SZ) |
+
+**Read carefully — archetypes and the tessellation differ on severity.** Unlike the K = 2 tessellation (which
+splits *first* on mania + suicidality and discards G, η² 0.05), the A = 5 archetypes **do** span a severity
+gradient — G is their single strongest axis (η² 0.47: the well pole A4 ↔ the severe poles A1/A2). They are
+severity **plus** profile, not severity-free. The biology⊥severity point lives *within* that range: **A1**
+(high severity, **low** immunometabolic) vs **A2** (high severity, **high** immunometabolic) are two
+equally-severe poles with opposite biology, so severity is not a proxy for biological load. The "driven by
+mania + suicidality ≫ G" phrasing belongs to the **K = 2 tessellation** (Result 4) — do **not** apply it to the
+archetype simplex.
+
+> **Provenance note (corrects legacy artefacts).** Earlier archetype-level numbers in
+> `reports/23b_archetype_compare.md` and `reports/24_validation.md` (e.g. archetype ARI_dsm5 0.046, mean
+> η²(specifics) 0.319, low-burden share 0.549, metabolic/inflammatory corners) were computed on the
+> **superseded native 9-d A = 8 fit** and **do not describe the reported copula A = 5 simplex**; both reports
+> now carry a SUPERSEDED banner. The numbers in this section are the canonical copula A = 5 values. The on-disk
+> `archetype_robustness/{archetype_robustness.csv, robustness_detail.json}` likewise still encode the older
+> **A = 4** single-restart battery (A = 5 stability 0.51); the reported selection is **A = 5** (cross-seed
+> stability **0.979** under the n_init = 4 protocol — [ARCHETYPE_ROBUSTNESS.md](ARCHETYPE_ROBUSTNESS.md)).
+
 ## Honest caveats
 
 * **Internal/baseline only.** Whether the regions/archetypes *predict* (2-year course, treatment) is the M3/M4

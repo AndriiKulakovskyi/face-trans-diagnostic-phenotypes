@@ -49,7 +49,7 @@ PROGNOSIS_OOP = REPO / "results" / "face" / "prognosis_oop"     # the copula "M4
 RESULTS = REPO / "results" / "face" / "treatment_oop"
 FIGURES = REPO / "docs" / "figures" / "treatment_oop"
 DATA = REPO / "data"
-MODEL_VERSION = "treatment_oop_2026_06_24_v2"   # bounds-and-defends re-scope: MDE + IPW confounder + AUC heterogeneity
+MODEL_VERSION = "treatment_oop_2026_06_27_v3"   # bounds-and-defends; regenerated on copula A=5 8-factor strata (2026-06-27)
 SEV = "overall_severity__mean"
 CGI_BASELINE = "cgi_s__V0"
 MODES = ("active_comparator", "on_off")
