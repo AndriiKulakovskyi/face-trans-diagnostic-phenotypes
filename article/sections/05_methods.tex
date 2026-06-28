@@ -201,6 +201,24 @@ mean, standard deviation and credible interval, the number of observed indicator
 reliability tier, so that all downstream analyses propagate uncertainty rather than
 treating coordinates as equally measured.
 
+\subsection{A fast variational re-estimation}
+
+As an efficiency-oriented alternative to NUTS, we re-estimate the same measurement
+model---the bifactor/ESEM atlas of Eqs.~\eqref{eq:factors}--\eqref{eq:obslik}, identical
+ontology and mixed likelihood---as a generalized linear latent-variable
+model~\citep{hui2017gllvm} fit by stochastic variational
+inference~\citep{blei2017vi,hoffman2013svi} in PyTorch~\citep{paszke2019pytorch}. Each
+patient's coordinate receives a variational posterior $q_i(f_i)=\mathcal N(\mu_i,\Sigma_i)$,
+and the model is fit by minimizing the negative evidence lower bound (observed cells only; the
+soft loading prior enters as a penalty; reparameterized gradients~\citep{kingma2014vae}), with
+the global parameters as maximum-a-posteriori estimates. This trades NUTS's exact posterior
+sampling for optimization within an approximate family: it is ${\sim}100\times$ faster
+(${\approx}4.5$ minutes at full $N$ on a CPU, versus hours) and reproduces the NUTS loading map
+and patient coordinates closely, at the cost of attenuated inter-factor correlations under a
+mean-field posterior---so it serves as a fast operational and generative engine while NUTS
+remains the authority for correlation magnitudes and credible intervals. The full model,
+inference and head-to-head comparison are in Supplement~\ref{ann:variational}.
+
 \subsection{Stratification, temporal coherence, prognosis and treatment}
 
 On the fitted coordinates $\{x_i,S_i\}$---each patient's posterior-mean position

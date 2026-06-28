@@ -32,6 +32,10 @@ bayesian = ["pymc>=5.10", "arviz>=0.17", "h5netcdf>=1.0", "numpyro>=0.13", "jax>
 # M2 stratification engine: archetypal analysis (PCHA), Hartigan dip test, density clustering +
 # mapper-graph topology for the structure gate. Pinned exactly in requirements.lock.
 strata = ["archetypes>=0.12", "diptest>=0.11", "hdbscan>=0.8.40", "umap-learn>=0.5.7", "networkx>=3.0"]
+# Variational GLLVM atlas engine (src/face/models/variational): a PyTorch SVI re-estimation
+# of the M1 measurement model (exploration/acceleration arm). Kept out of core deps so the
+# default install stays light and the NUTS engine never imports torch.
+variational = ["torch>=2.2"]
 # Convenience alias for "everything needed to export static figures".
 full = ["kaleido>=0.2"]
 
