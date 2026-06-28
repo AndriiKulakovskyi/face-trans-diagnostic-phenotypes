@@ -1,102 +1,80 @@
 \section{Introduction}
 
 Psychiatric diagnoses are clinically indispensable but biologically nonspecific. The
-categories of the DSM aggregate patients who differ widely in their biology, course
-and treatment response, and they are undercut by pervasive comorbidity,
-within-category heterogeneity and diagnostic instability over
-time~\citep{insel2010rdoc,kotov2017hitop}. Two influential programmes have argued in
-response that psychopathology is better described by continuous,
-\emph{transdiagnostic} dimensions than by categorical boundaries: the U.S.\ National
-Institute of Mental Health's Research Domain Criteria
-(RDoC)~\citep{insel2010rdoc} and the Hierarchical Taxonomy of Psychopathology
-(HiTOP)~\citep{kotov2017hitop,ruggero2019hitop}. A recurring empirical motif within
-this work is a single general factor that spans disorders---the ``\textit{p}
-factor''---most defensibly read as a dimension of life impairment rather than a
-latent liability to specific symptoms~\citep{caspi2014pfactor,lahey2017general},
-although the substantive meaning of such general factors remains
-contested~\citep{heinrich2021bifactor,levinaspenson2020,watts2021}.
+categories of the DSM aggregate patients who differ widely in their biology, course and
+treatment response, and they are undercut by pervasive comorbidity, within-category
+heterogeneity and diagnostic instability over time~\citep{insel2010rdoc,kotov2017hitop}.
+Two influential programmes argue in response that psychopathology is better described by
+continuous, \emph{transdiagnostic} dimensions than by categorical boundaries: the U.S.\
+National Institute of Mental Health's Research Domain Criteria (RDoC)~\citep{insel2010rdoc}
+and the Hierarchical Taxonomy of Psychopathology
+(HiTOP)~\citep{kotov2017hitop,ruggero2019hitop}. A recurring motif within this work is a
+general factor that spans disorders---the ``\textit{p} factor''---most defensibly read as a
+dimension of life impairment rather than a latent liability to specific
+symptoms~\citep{caspi2014pfactor,lahey2017general}, though the meaning of such general
+factors remains contested~\citep{heinrich2021bifactor,watts2021}.
 
 This dimensional structure has, however, been mapped almost entirely from a single
-\emph{kind} of measurement. Symptom-based work~\citep{caspi2014pfactor,kotov2017hitop}
-and brain-imaging work~\citep{marquand2016,wolfers2018,segal2023} each describe one
-slice of the patient. The routinely collected \emph{biology} that dominates the
-physical-health burden of severe mental illness---the joint metabolic and inflammatory
-load that drives its excess mortality---has not been placed \emph{inside} the
+\emph{kind} of measurement---symptom report~\citep{caspi2014pfactor,kotov2017hitop} or
+brain imaging~\citep{marquand2016,wolfers2018,segal2023}. The routinely collected
+\emph{biology} that drives the excess physical-health mortality of severe mental
+illness---its joint metabolic and inflammatory load---has not been placed \emph{inside} the
 transdiagnostic factor space across disorders, even though an independent literature
-suggests it forms a partly separable, coherent \emph{immunometabolic} axis~\citep{penninx2024imd,milaneschi2017}. Metabolic and inflammatory abnormality
-co-occur in a sizeable minority of mood-disorder patients and track atypical,
-energy-related symptoms rather than overall
-severity~\citep{penninx2024imd,milaneschi2020,lamers2013,lamers2020}, and metabolic
-burden in severe mental illness follows medication, adiposity and chronicity more
-than symptom load~\citep{vancampfort2015mets,vancampfort2016diabetes,pillinger2017,perry2019}.
-Whether this immunometabolic load is genuinely decoupled from a transdiagnostic severity axis,
-and by how much, has never to our knowledge been measured directly.
+suggests it forms a partly separable immunometabolic axis that tracks atypical,
+energy-related symptoms more than overall
+severity~\citep{penninx2024imd,milaneschi2020,lamers2020}, and that metabolic burden
+follows medication, adiposity and chronicity more than symptom
+load~\citep{vancampfort2015mets,pillinger2017,perry2019}. Whether this load is separable
+from a transdiagnostic severity axis, and by how much, has not to our knowledge been
+measured directly.
 
-A second question is structural, and it determines what a clinician would do with
-such a map. If patients vary continuously, the actionable object is a position on an
-axis; if they fall into discrete biological kinds, it is group membership.
-Normative-modelling studies of brain structure in these disorders report
-heterogeneity so extensive that ``the average patient'' is barely
-informative~\citep{wolfers2018,marquand2016,segal2023}. Against this, the B-SNIP
-programme has identified replicable, brain-based psychosis ``biotypes'' that cut
-across DSM boundaries~\citep{clementz2016biotypes,clementz2020,clementz2024}. The
-continuum-versus-biotype question is therefore genuinely open, and its answer may
-depend on which measurement space is interrogated~\citep{pan2026}.
+We therefore ask three questions of a single transdiagnostic model. \textbf{(i)~Measurement
+structure:} what latent structure organizes routine clinical, cognitive and biological data
+when they are placed in one coordinate system with diagnosis held out, and is the resulting
+patient space a graded continuum or a set of discrete kinds? \textbf{(ii)~Biology--severity
+separation:} is immunometabolic load separable from a general functional-burden axis, and by
+how much? \textbf{(iii)~Prognostic value:} does the latent representation forecast functional
+outcome beyond diagnosis and current severity? The structural half of~(i) is itself
+contested: normative-modelling studies report individual heterogeneity so extensive that
+``the average patient'' is barely informative~\citep{wolfers2018,marquand2016}, whereas the
+B-SNIP programme reports replicable, brain-based psychosis ``biotypes'' that cut across DSM
+boundaries~\citep{clementz2016biotypes,clementz2020,clementz2024}---a tension whose
+resolution may depend on which measurement space is interrogated.
 
-Here we address both questions in a single analysis, and then ask how far the
-resulting map can be pushed. Why represent patients by latent dimensions rather than the
-raw measurements? Routine clinical and biological data are high-dimensional, redundant
-and pervasively incomplete; a latent model pools many noisy, overlapping indicators into
-a few reliable axes, places heterogeneous data types (laboratory values, ordinal scales,
-counts) on one comparable scale, and---fit to observed cells only---gives every patient a
-position with quantified uncertainty rather than discarding incomplete records, a
-compression we later show to be a near-sufficient representation of the raw indicators
-for prognosis. Using the harmonized baseline of the three FACE
-cohorts---bipolar disorder, schizophrenia and major depression, $N=9{,}013$---we
-build \emph{FACE-ATLAS}: one global, missingness-aware Bayesian sparse bifactor /
-exploratory structural-equation model with mixed likelihoods, fit to each patient's
-observed cells only, that places clinical, cognitive, behavioural and laboratory
-measurements in one coordinate system while holding diagnosis out as metadata. We then interrogate
-the fitted map through five dependent, increasingly demanding questions: does it
-\emph{exist} as a stable structure; does it \emph{organize} patients into biotypes
-or a continuum; does it \emph{persist} over two years of follow-up; does it
-\emph{predict} outcomes beyond diagnosis and severity; and---this being an observational,
-treatment-as-usual cohort---how far it can \emph{inform treatment} before randomized data
-would be required? The answers are, respectively: an eight-dimension map---a general
-burden factor and seven specific axes---on which a single \emph{immunometabolic}
-domain is the load least entangled with functional severity; a
-graded continuum rather than discrete biotypes, legible through five archetypal
-extremes; a geometry that persists, with durable biology and moving symptoms; a real
-but modest, group-level prognostic signal for functioning carried by the biological
-phenotype; and a treatment analysis that is deliberately bounded---marking where
-observational, expert-centre data reach their limit and specifying the randomized
-evidence that establishing treatment selection would require. We report the modest and the null results as deliberately as
-the positive ones. The contribution is a calibrated atlas that separates biological
-burden from clinical severity and forecasts functional course at the group level, not
-an overstated one; that calibration is itself the antidote to a literature of biotype
-and biomarker claims that have repeatedly failed to replicate.
+We use latent modelling as a measurement tool, not as a claim that latent factors are more
+real than the items that define them. Routine clinical and biological data are
+high-dimensional, redundant and pervasively incomplete; a latent model fit to each patient's
+observed cells pools many noisy, overlapping indicators into a few axes, places heterogeneous
+data types (laboratory values, ordinal scales, counts) on one comparable scale, and gives
+every patient a position with quantified uncertainty rather than discarding incomplete
+records. Whether that representation \emph{adds} anything over the raw indicators is then an
+empirical question, which we test directly: against the full raw indicator set under a matched
+classifier, the eight-dimension map is a sufficient representation for predicting deterioration
+and near-sufficient for recovery.
 
-Methodologically, FACE-ATLAS specifies a domain-tailored Bayesian bifactor /
-exploratory structural-equation model for severe mental illness, rather than simply
-applying a generic factor-analysis template. It builds on established
-latent-variable tools~\citep{reise2012bifactor,asparouhov2009esem,muthen2012bayesian}
-but advances their use by binding them into a single diagnosis-held-out,
-uncertainty-propagating atlas: mixed and Gaussian-copula observation layers, an
-observed-cell likelihood for structured missingness, a correlated-\Gfac{} sensitivity
-arm for the biology--severity estimand, an archetypal representation of a continuous
-patient space, and downstream errors-in-variables prognosis and treatment-moderation
-analyses. The novelty lies in the specification, estimand and validation chain:
-routine biological load is placed \emph{inside} a transdiagnostic psychiatric factor
-space, its separation from functional burden is quantified rather than assumed, and
-its temporal and prognostic implications are tested without converting a continuum
-into false biotypes. At the model level, this specification combines a psychiatric
-construct-ontology prior with per-indicator likelihoods for mixed clinical and
-biological data, and we derive the model's observed-data likelihood and
-full-information evaluation under structured missingness. The derivation is for this
-configured FACE-ATLAS model, not for a new generic estimator or likelihood family.
-It makes the inferential contract auditable: standard factor-analysis identities,
-observed-data marginalization and the Woodbury evaluation are assembled because
-together they define the atlas---diagnosis is not an input, missing cells are not
-imputed, \Gfac{}--specific correlations are measured in a separate correlated-\Gfac{}
-arm, and patient-score uncertainty is propagated into stratification, prognosis and
-treatment analysis.
+Using the harmonized baseline of the three FACE cohorts---bipolar disorder, schizophrenia and
+major depression, $N=9{,}013$---we build \emph{FACE-ATLAS}: one global, missingness-aware
+Bayesian bifactor / exploratory structural-equation model with mixed likelihoods, fit to each
+patient's observed cells only, that places clinical, cognitive, behavioural and laboratory
+measurements in one coordinate system while holding diagnosis out as metadata. We then score
+the fitted map forward onto two years of follow-up to test whether it persists and whether it
+predicts outcome. The answers are: an eight-dimension map---a general functional-burden factor
+and seven specific axes---on which immunometabolic load is the domain least coupled to
+functional severity; a graded continuum rather than discrete biotypes \emph{in this measurement
+space}, read through five archetypal extremes; a geometry that persists, with durable biology
+and moving symptoms; and a real but modest, \emph{group-level} prognostic signal for
+functioning that is co-informative with diagnosis rather than a replacement for it. We report
+the modest and null results---including a treatment-moderation analysis that this observational
+cohort can only bound---as deliberately as the positive ones.
+
+Methodologically, FACE-ATLAS configures established latent-variable
+tools~\citep{reise2012bifactor,asparouhov2009esem,muthen2012bayesian} into a single
+diagnosis-held-out, uncertainty-propagating atlas: mixed and Gaussian-copula observation
+layers, an observed-cell likelihood for structured missingness, a correlated-\Gfac{} arm that
+turns the biology--severity separation into a measured quantity, an archetypal representation
+of a continuous patient space, and downstream errors-in-variables prognosis and
+treatment-moderation analyses. The contribution is the specification and validation chain
+rather than a new generic estimator: routine biological load is placed inside a transdiagnostic
+psychiatric factor space, its separation from functional burden is measured rather than
+assumed, and its temporal and prognostic implications are tested without converting a continuum
+into biotypes.

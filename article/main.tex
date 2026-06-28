@@ -7,6 +7,7 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{longtable}
 \usepackage{array}
 \usepackage{multirow}
 \usepackage{rotating}
@@ -22,7 +23,7 @@
 \newcommand{\orth}{\ensuremath{\perp}}    % orthogonality, usable in text
 \newcommand{\todo}[1]{\textcolor{red}{[\textbf{TODO:} #1]}}
 
-% Annex theorem-like environments (proofs live in the Annexes only)
+% Supplement theorem-like environments (proofs live in the Supplement only)
 \newtheorem{proposition}{Proposition}
 \newtheorem{lemma}{Lemma}
 \newtheorem{corollary}{Corollary}
@@ -82,7 +83,8 @@
 \end{tikzpicture}}\end{center}}
 
 \title{\bfseries FACE ATLAS: A transdiagnostic latent atlas of severe mental illness
-separates biological burden from clinical severity and forecasts functional outcome}
+decouples biological burden from clinical severity and forecasts functional outcome at the
+group level}
 
 \author{%
   Andrii Kulakovskyi$^{1}$\thanks{Correspondence: andrii.kulakovskyi@fondation-fondamental.org}\and
@@ -112,25 +114,33 @@ missingness-aware Bayesian bifactor / exploratory structural-equation model,
 specified and fit to each patient's observed cells only (no imputation), with
 diagnosis withheld from model fitting. The model resolved a transdiagnostic
 coordinate system: a general functional-burden factor (\Gfac) and seven specific
-dimensions---cognition, immunometabolic load, sleep, developmental risk,
-suicidality, mania and substance use. The central finding is a \textbf{dissociation
-between biology, symptoms and functional burden}: immunometabolic load
-was the \emph{least} burden-entangled domain, and it remained so
-after adjustment for medication, adiposity and site. The coordinate space was a
-graded \textbf{continuum, not discrete biotypes}---apparent clustering was
-reproduced by a single-Gaussian null --- yet five archetypal extremes gave a clinically legible reading,
-including an \emph{immunometabolic} corner and a \emph{severe, clean-biology} corner with
-comparable functional burden but opposite biological profiles. Scored forward onto
-follow-up without re-estimation, immunometabolic coordinates were stable (test--retest
-intraclass correlation $0.91$) whereas symptom axes were
-state-like (they shifted with clinical state). The archetype phenotype predicted two-year functioning beyond diagnosis,
-baseline severity and baseline functioning (held-out expected log predictive density
-$+62.8$; two-year functional-remission $17\%$--$52\%$ across corners, the immunometabolic
-corner worst), but the individual-level discrimination gain was small (remission AUC $+0.010$). These results define a
-transdiagnostic biological atlas of severe mental illness that supports mechanistic
-stratification and group-level functional forecasting, and they delineate the
-requirements for clinical utility: external validation, incident-event outcomes and
-randomized treatment data.
+dimensions---cognition, immunometabolic load, sleep, developmental risk, suicidality,
+mania and substance use. The central finding is that \textbf{immunometabolic load is
+largely decoupled from functional impairment}: under a freely-correlated general factor
+it was the least burden-entangled domain (correlation with \Gfac{} $\approx 0.10$, versus
+$0.39$ for cognition and $0.42$ for sleep), and it remained so after adjustment for
+medication, adiposity and site. This axis is anchored by body composition (BMI loading
+$\approx 0.95$) but does not reduce to it: excluding the anthropometric indicators, a
+coherent cardiometabolic--inflammatory axis survived (Tucker congruence $0.90$ with the
+full axis); because the only inflammatory marker available was C-reactive protein, which
+is itself adiposity-driven, we interpret the axis as cardiometabolic rather than as an
+independent inflammatory dimension. The coordinate space was a graded \textbf{continuum,
+not discrete biotypes} in this measurement space---apparent clustering was reproduced by a
+single-Gaussian null---yet five archetypal extremes gave a clinically legible reading,
+including an immunometabolic corner and a severe, clean-biology corner with comparable
+functional burden but opposite biological profiles. Scored forward onto follow-up without
+re-estimation, immunometabolic coordinates were the most stable axis (test--retest
+intraclass correlation $0.91$) whereas symptom axes were state-like. The archetype
+phenotype predicted two-year functioning beyond diagnosis, baseline severity and baseline
+functioning, but the signal was \textbf{group-level}: a held-out expected log predictive
+density gain of $+62.8$ and a two-year functional-remission gradient of $17\%$--$52\%$
+across corners (the immunometabolic corner worst), yet only a small individual-level
+discrimination gain (remission AUC $+0.010$), and the map was co-informative with rather
+than superior to DSM-5 (incremental predictive density $+17.3$ for the map versus $+29.0$
+for diagnosis). These results define a transdiagnostic biological atlas of severe mental
+illness that supports mechanistic stratification and group-level functional forecasting;
+individual-level clinical utility would require external validation, incident-event
+outcomes and randomized treatment data.
 \end{abstract}
 
 \noindent\textbf{Keywords:} transdiagnostic psychiatry; dimensional
@@ -158,7 +168,7 @@ schizophrenia; major depression; archetypal analysis; precision psychiatry.
 \renewcommand{\thetable}{\Alph{section}\arabic{table}}
 \setcounter{figure}{0}
 \begin{center}
-  {\Large\bfseries Annexes — full derivations, proofs and secondary materials}
+  {\Large\bfseries Supplementary materials — derivations, proofs, diagnostics and reproducible tables}
 \end{center}
 \input{annex/A_measurement_model}
 \input{annex/B_stratification}
@@ -166,6 +176,7 @@ schizophrenia; major depression; archetypal analysis; precision psychiatry.
 \input{annex/D_prognosis}
 \input{annex/E_treatment}
 \input{annex/F_display_items}
+\input{annex/G_metrics}
 
 %================================ REFERENCES ==================================
 \bibliographystyle{unsrtnat}

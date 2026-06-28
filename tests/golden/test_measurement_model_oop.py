@@ -322,3 +322,27 @@ def test_oop_copula_promotes_high_cardinality_count_to_continuum():
     explicit_items = set(mixed.bin_items) | set(mixed.ord_items) | set(mixed.cnt_items)
     assert "sudose_cigarettes_lt" not in explicit_items   # no longer an explicit count
     assert "suoccur_alcool" in explicit_items             # rare binary SUD stays native/explicit
+
+
+def test_oop_exclude_items_drops_indicator_everywhere(tmp_path):
+    """The ``exclude_items`` sensitivity arm removes named indicators from the matrix, the metadata,
+    the home map, and the encoded core block -- without touching the canonical (unexcluded) fit."""
+    config, _truth = _synthetic_config(tmp_path)
+    base = MeasurementDataset(config)
+    base_core = base.core(S1_FACTORS, n_subsample=160, seed=1)
+    target = base_core.items[0]  # a continuous home item active in the S1 backbone
+
+    excl_cfg = config.with_excluded_items(target)
+    # accessor is pure (frozen dataclass): original config untouched, and repeated exclusion dedups.
+    assert config.exclude_items == ()
+    assert excl_cfg.exclude_items == (target,)
+    assert excl_cfg.with_excluded_items(target).exclude_items == (target,)
+
+    ds = MeasurementDataset(excl_cfg)
+    assert target not in set(ds.matrix["item"])
+    assert target not in ds.home
+    assert target not in ds.meta.index
+
+    core = ds.core(S1_FACTORS, n_subsample=160, seed=1)
+    assert target not in core.items
+    assert len(core.items) == len(base_core.items) - 1

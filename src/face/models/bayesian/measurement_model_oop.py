@@ -232,6 +232,12 @@ class MeasurementConfig:
     # a composite/pseudo-likelihood: the point estimate is the balanced estimand; the posterior SD is
     # order-correct but not fully Bayesian-calibrated (validate via cross-seed congruence).
     cohort_weighted: bool = False
+    # ``exclude_items``: drop these indicators from the model entirely (matrix rows + data columns), so
+    # they contribute no loadings and no likelihood terms.  For sensitivity arms that ask whether a factor
+    # survives removing specific indicators -- e.g. the immunometabolic "minus anthropometry" refit
+    # (exclude bmi/weight/wstcir) testing whether a coherent cardiometabolic-inflammatory axis remains once
+    # the body-size anchors are gone.  Not a primary fit: the canonical map keeps all indicators.
+    exclude_items: tuple[str, ...] = ()
     # ``orthogonal_factors``: specific factors pinned orthogonal to the correlated block (G is always
     # pinned -- bifactor).  Use for a factor whose cross-factor correlations are non-identifiable and
     # unstable across samples/weightings (substance: its SUD indicators are BP/SZ-only + rare, so its
@@ -298,6 +304,15 @@ class MeasurementConfig:
         equalize each cohort's influence (transdiagnostic estimand) in one coherent posterior.
         Pair with full-N stages (no subsample)."""
         return replace(self, cohort_weighted=True)
+
+    def with_excluded_items(self, *items: str) -> MeasurementConfig:
+        """Return a sensitivity variant that drops ``items`` from the model entirely.
+
+        The named indicators are removed from the prior matrix and the data block, so they contribute
+        no loadings and no likelihood terms.  Used e.g. for the immunometabolic "minus anthropometry"
+        refit (``with_excluded_items("bmi", "weight", "wstcir")``) -- a sensitivity arm, not the
+        canonical map (which keeps all indicators)."""
+        return replace(self, exclude_items=tuple(dict.fromkeys((*self.exclude_items, *items))))
 
     def with_smoke_defaults(self) -> MeasurementConfig:
         """Return a notebook-smoke variant optimized for fast wiring checks.
@@ -622,6 +637,14 @@ class MeasurementDataset:
     def __init__(self, config: MeasurementConfig | None = None):
         self.config = config or MeasurementConfig()
         self.matrix = pd.read_csv(self.config.prior_matrix)
+        if self.config.exclude_items:
+            # Sensitivity arm: drop named indicators entirely.  Filtering the matrix here propagates to
+            # ``self.meta``/``self.home`` and to item selection in ``core()`` (which iterates ``self.home``),
+            # so excluded items are never requested from the baseline parquet either.
+            self.matrix = (
+                self.matrix[~self.matrix["item"].isin(self.config.exclude_items)]
+                .reset_index(drop=True)
+            )
         self.meta = self.matrix.drop_duplicates("item").set_index("item")[
             ["likelihood_family", "modeling_block", "item_sign"]
         ]
@@ -938,6 +961,13 @@ class MeasurementDataset:
             bifactor_g_sd=bifactor_g_sd,
             flat=flat,
         )
+
+    def residualize(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Public FWL covariate-residualization of gaussian-scale columns (delegates to
+        :meth:`_residualize_on_covariates`).  Used by the parallel variational GLLVM engine
+        so its covariate adjustment is byte-identical to this engine's; behavior-preserving,
+        no cache/model impact."""
+        return self._residualize_on_covariates(df)
 
     def _gaussianizable(self, item: str, baseline: pd.DataFrame) -> bool:
         """Copula-mode tiering. Continuous families are always Gaussianized (rank-INT). An
