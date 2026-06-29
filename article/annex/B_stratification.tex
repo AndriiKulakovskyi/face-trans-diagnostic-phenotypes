@@ -141,6 +141,17 @@ underperforms the majority baseline (accuracy $0.611$ vs $0.683$, lift $-0.072$)
 \emph{Tighter than DSM-5}: a free mixture beats one constrained to the DSM-5 partition
 by information criterion ($185{,}557$ at $K=2$ vs $188{,}200$ for DSM-5 at $K=7$; mean
 $\eta^2$ $0.074$ vs $0.026$, roughly $3\times$ the explained variance at lower BIC).
+
+These four gates characterise the $K=2$ soft \emph{tessellation}; the load-bearing $A=5$
+\emph{archetype} simplex is validated separately and more strongly. Read against the held-out
+labels, the archetype assignment is essentially orthogonal to DSM-5 (ARI $0.021$; cohort
+$0.017$) yet explains $\eta^2=0.256$ of the eight-axis coordinate variance against $0.026$ for
+the DSM-5 grouping ($\approx9.7\times$, at lower BIC). The ``not-just-severity'' reading---driven
+by mania and suicidality above \Gfac{}---is specific to the coarse $K=2$ split; the archetypes
+instead separate on severity ($\eta^2_\Gfac=0.47$) \emph{and} biological/symptom profile
+(immunometabolic $0.39$, sleep $0.38$, developmental $0.35$), so equally severe corners (A1, A2)
+remain biologically opposite. Per-cohort composition is in Table~\ref{tab:archcomp}.
+
 Embeddings (PCA,
 Figure~\ref{fig:continuum}; UMAP~\citep{mcinnes2018umap}) are used for visualization
 only, never as clustering inputs.

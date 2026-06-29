@@ -50,7 +50,7 @@ glance; the study design and the three core modelling principles are detailed in
   corner (A3), and a \emph{low-burden} pole (A4). Immunometabolic load is largely
   dissociated from general burden; it is the most durable axis over two years; the
   archetype phenotype improves held-out two-year functional prediction ($\Delta$ELPD
-  $+62.8\pm11.2$); and two-year functional remission ranges $17\%$--$52\%$ across
+  $+62.8\pm11.2$); and two-year functional remission ranges $22\%$--$63\%$ across
   corners, the immunometabolic corner worst. A1 and A2 carry comparable severity but
   opposite biology.}
   \label{fig:glance}
@@ -96,7 +96,7 @@ Inter-factor correlations among the specific axes were weak throughout (mean abs
 off-diagonal $\approx 0.08$; Figure~\ref{fig:factors}b), confirming genuinely distinct
 axes rather than one collapsed dimension; the single notable coupling was a modest
 mania--sleep correlation ($\approx 0.24$). \Gfac{} was anchored only by
-functioning and global-severity indicators (FAST loading $0.91$, EGF $0.64$) and
+functioning and global-severity indicators (FAST loading $0.78$, EGF $0.60$) and
 carried no symptom content, supporting its conservative reading as transdiagnostic
 \emph{functional burden} rather than a symptom-liability ``\textit{p}'' factor.
 Depression and anxiety instruments (MADRS, QIDS, STAI) did not form a separate factor;
@@ -182,7 +182,7 @@ rigid zeros (Supplement~\ref{ann:measurement}).
   \label{fig:factors}
 \end{figure}
 
-\subsection{Immunometabolic load is largely decoupled from functional burden (the central result)}
+\subsection{How each domain relates to general burden}\label{subsec:biologyg}
 
 Because the bifactor identification fixes \Gfac{} orthogonal to the specifics by
 construction, a domain's relationship to general burden is read from its indicators'
@@ -227,8 +227,8 @@ quantifying---at the low end of what that literature would predict---a pattern p
 described only qualitatively. \emph{Clinically,} this means two patients with comparable
 functional burden can have sharply different cardiometabolic and inflammatory profiles:
 severity cannot be used as a proxy for biological load. This is the property a
-biology-aware stratification can exploit, and it is the central premise of
-everything that follows.
+biology-aware stratification can exploit, and it is one the downstream stages
+carry forward and re-test rather than assume.
 
 \begin{figure}[t]
   \centering
@@ -266,8 +266,9 @@ samples~\citep{marquand2016,parker2025,haslam2012}, nor a denial of the clinical
 we do find.
 
 The continuum is genuine and transdiagnostic, not an artefact. Diagnosis is intermixed
-throughout the cloud (adjusted Rand index $0.006$ against the seven DSM-5 subtypes and
-$0.011$ against cohort, both $\approx 0$; Figure~\ref{fig:continuum}b); overall burden
+throughout the cloud (the soft tessellation's adjusted Rand index is $0.006$ against the seven
+DSM-5 subtypes and $0.011$ against cohort, both $\approx 0$; the $A=5$ archetype assignment is
+likewise near-orthogonal, ARI $0.021$, \S\ref{subsec:archetypes}; Figure~\ref{fig:continuum}b); overall burden
 forms a smooth gradient along the principal axis (Figure~\ref{fig:continuum}c); and
 immunometabolic load varies along a \emph{different} direction
 (Figure~\ref{fig:continuum}d)---the biology--\Gfac{} dissociation, made visible.
@@ -302,7 +303,7 @@ biotype.
   \label{fig:continuum}
 \end{figure}
 
-\subsection{Five archetypal extremes define the shape of the continuum}
+\subsection{Five archetypal extremes define the shape of the continuum}\label{subsec:archetypes}
 
 A continuum has no clusters, but it still has a \emph{shape}. Archetypal analysis recovers
 that shape as a small set of reproducible extreme corners---a \emph{positive geometric
@@ -323,7 +324,8 @@ congruence $0.979$, explained variance $0.60$), with a clean stability cliff at 
 corners ($0.979\!\to\!0.436$)---and uncertainty was propagated by refitting
 Eq.~\eqref{eq:res-archetype} across posterior draws (Supplement~\ref{ann:stratification}).
 
-The five extremes separate biology from symptoms from severity (Figure~\ref{fig:archetypes}):
+The five extremes separate biology from symptoms from severity (Figure~\ref{fig:archetypes};
+Table~\ref{tab:archetypes}):
 an \emph{activation / sleep} corner (A0; high sleep and mania), a \emph{severe,
 clean-biology} corner (A1; high overall severity but low immunometabolic load), an
 \emph{immunometabolic} corner (A2; high immunometabolic load with severity and
@@ -342,6 +344,57 @@ maximal phenotype}---an archetypal corner---which is exactly why the continuous
 coordinates and the weight vectors $w_i$, not any hard tessellation, are the primary
 objects downstream. \emph{Clinically,} the archetypes provide a vocabulary for reading the
 continuum, not a replacement for it.
+
+Read against the held-out diagnostic labels, the archetype assignment is essentially
+orthogonal to DSM-5 (adjusted Rand index $0.021$) and every corner is populated in all three
+cohorts---the stratification analogue of diagnosis-as-metadata. Each diagnosis is a
+\emph{mixture} of corners and each corner draws from every diagnosis (Table~\ref{tab:archcomp}):
+the activation/sleep corner is bipolar-enriched (mania is a bipolar feature) and the biology
+corners (A1/A2) are depression/schizophrenia-enriched, yet none is diagnosis-specific. The
+simplex nonetheless describes \emph{where a patient sits} on the eight-dimensional map far more
+tightly than the diagnostic label: averaged over the eight axes, the archetype assignment
+accounts for $\eta^2=0.256$ of the coordinate variance against only $0.026$ for the DSM-5
+grouping---an $\approx\!9.7$-fold improvement, at lower BIC. A categorical diagnosis is thus a
+weak organiser of a patient's clinical--biological state and the archetype mixture an informative
+one, transdiagnostically; whether the mixture also \emph{predicts} better, beyond being a tighter
+\emph{description}, is the prognostic question taken up below.
+
+Stated precisely, the archetypes separate on severity \emph{and} profile. Severity (\Gfac) is in
+fact the single strongest separating axis ($\eta^2=0.47$)---the simplex spans a clear gradient
+from the well pole (A4) to the severe poles (A1/A2)---but the corners separate almost as strongly
+on immunometabolic load ($0.39$), sleep ($0.38$) and developmental risk ($0.35$). This is the
+value over a one-number severity score: at any given severity the archetype distinguishes patients
+by biological and symptom \emph{profile}, so A1 and A2---equally severe, biologically opposite---are
+different corners a severity score cannot tell apart. (The sharper ``driven by activation and
+suicidality more than severity'' statement belongs to the coarse two-region tessellation,
+$\eta^2\approx0.22$ each versus $0.05$ for \Gfac{}; a distinct, lower-resolution object,
+Supplement~\ref{ann:stratification}.) Choosing soft archetypal corners over hard clustering is
+itself the methodological point: on a cloud with no density gaps, convex mixtures of extreme
+phenotypes neither manufacture boundaries the data lack nor blur patients into centroid
+``averages,'' and they preserve a patient's position relative to \emph{every} pole rather than
+collapsing it to a bin.
+
+\begin{table}[t]
+\centering
+\caption{\textbf{Archetype composition by cohort (diagnosis-blind).} Share of each cohort's
+patients whose dominant ($\arg\max$) archetype is each corner. Every corner is populated in all
+three cohorts and each diagnosis is a mixture of corners; the archetype assignment is essentially
+orthogonal to DSM-5 (adjusted Rand index $0.021$).}
+\label{tab:archcomp}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}l ccc@{}}
+\toprule
+Dominant corner & BP & DR & SZ \\
+\midrule
+A4 low-burden / well     & 0.30 & 0.11 & 0.29 \\
+A3 trauma / suicidality  & 0.24 & 0.22 & 0.18 \\
+A0 activation / sleep    & 0.19 & 0.06 & 0.10 \\
+A1 severe, clean-biology & 0.14 & 0.31 & 0.25 \\
+A2 immunometabolic       & 0.13 & 0.30 & 0.19 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{figure}[t]
   \centering
@@ -414,12 +467,38 @@ category. The map was \emph{co-informative} with DSM-5 rather than redundant wit
 \emph{course-dependent}, with the signal concentrated in the episodic, open-course
 cohorts (bipolar disorder and depression) and weak when bipolar disorder was removed.
 
+\begin{table}[t]
+\centering
+\caption{\textbf{Incremental predictive value for the two-year outcome ($\Delta$ELPD).}
+Held-out expected log predictive density gain of each baseline encoding when added to the
+reference model (diagnosis $+$ baseline severity $+$ baseline outcome autoregression), for
+functioning (EGF) and clinician severity (CGI-S). The archetype encoding is the strongest
+predictor of \emph{functioning}; the same encoding gains little on \emph{severity} (saturated
+by its own baseline); the continuous and archetype encodings dominate every hard tessellation
+(operative number of clusters $=$ none).}
+\label{tab:incremental}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}l c c@{}}
+\toprule
+Encoding added to the reference & $\Delta$ELPD functioning & $\Delta$ELPD severity \\
+\midrule
+$+$ $A{=}5$ archetypes (all axes)        & $\mathbf{+62.8}$ & $+11.9$ \\
+$+$ continuous coordinates (8 axes)      & $+38.1$ & $+13.3$ \\
+$+$ $A{=}5$ archetypes ($\perp\Gfac$)    & $+33.5$ & $+14.0$ \\
+$+$ tessellation $K=3\,/\,4\,/\,2$       & $+19.6\,/\,16.6\,/\,15.9$ & $+5.6\,/\,4.4\,/\,4.9$ \\
+$+$ durable (immunometabolic) axis       & $+2.3$ (amb.) & $-0.7$ (amb.) \\
+reference (autoregression)               & $0$ & $0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 Translated to the clinic, ranking patients by their dominant archetypal extreme yielded
-two-year functional-remission rates from $17\%$ to $52\%$, transdiagnostically
+two-year functional-remission rates from $22\%$ to $63\%$, transdiagnostically
 (Figure~\ref{fig:prognosis}a). The \emph{immunometabolic} corner A2 carried the worst
-functional prognosis ($17\%$) and the low-burden pole A4 the best ($52\%$): A2 versus A4
+functional prognosis ($22\%$) and the low-burden pole A4 the best ($63\%$): A2 versus A4
 is why the biology corner \emph{matters prognostically}. A2 also remained worse than the
-equally severe clean-biology corner A1 ($17\%$ vs $22\%$)---the severity-is-not-biology
+equally severe clean-biology corner A1 ($22\%$ vs $34\%$)---the severity-is-not-biology
 dissociation, now translated into outcome. This gradient was a genuine within-diagnosis
 effect, not a cohort-composition artefact: the rank held inside every cohort
 (immunometabolic corner $\to$ well pole: bipolar $27\%\!\to\!73\%$, depression
@@ -447,8 +526,8 @@ group-level enrichment and monitoring, not as an individual remission calculator
   \includegraphics[width=0.99\linewidth]{fig6_prognosis.png}
   \caption{\textbf{Prognostic reach for functioning.} (\textbf{a}) Archetype
   prognostic atlas: two-year functional-remission rate by baseline dominant archetype;
-  the immunometabolic corner is worst ($17\%$) and the low-burden pole best ($52\%$), a
-  transdiagnostic $17\%$--$52\%$ gradient. (\textbf{b}) Held-out incremental value for
+  the immunometabolic corner is worst ($22\%$) and the low-burden pole best ($63\%$), a
+  transdiagnostic $22\%$--$63\%$ gradient. (\textbf{b}) Held-out incremental value for
   functioning: the continuous archetype encoding dominates the seven specific axes, any
   hard tessellation, and the isolated biology axes (operative number of clusters
   $=$ none). (\textbf{c}) The map and DSM-5 are co-informative---each adds beyond the
@@ -457,10 +536,46 @@ group-level enrichment and monitoring, not as an individual remission calculator
   \label{fig:prognosis}
 \end{figure}
 
-% Treatment-moderation analysis relocated to the supplement (Supplement~\ref{ann:treatment}) as an
-% exploratory negative control (reviewer R7). Its one central conclusion for the main
-% text---that the prognostic signal survives adjustment for treatment, so the forecast is not a
-% treatment proxy---is stated in the Discussion.
+\medskip\noindent\textbf{Treatment moderation: a bounded, defensive result.}
+On observational treatment-as-usual---not randomised arms---we asked whether the map
+\emph{moderates} treatment response, under an explicit bounds-and-defends design (overlap gate
+$\to$ propensity adjustment $\to$ doubly-robust errors-in-variables moderation $\to$ E-value; full
+analysis in Supplement~\ref{ann:treatment}). It does not reliably (Table~\ref{tab:moderation}):
+the best-identified contrast, lithium in bipolar disorder, is a well-identified null (E-value
+$1.20$--$1.28$, so a trivial unmeasured confounder would erase it); antipsychotic in bipolar
+disorder shows a non-zero average effect but an E-value of only $1.80$ and a suggestive,
+unconfirmed immunometabolic interaction; clozapine in schizophrenia is underpowered. With a
+minimum detectable interaction of $\approx0.20$\,SD, the map is \emph{prognostic and descriptive,
+not prescriptive} on these data. The analysis is nonetheless informative in one direction: it
+\emph{defends} the prognostic result---adding the drug classes patients actually received to the
+prognostic model attenuates the immunometabolic carrier by under $8\%$ (durable axis
+$6.4\%/4.1\%$ under inverse-probability weighting; A2 corner $7.7\%/6.4\%$), so the forecast is
+not a treatment proxy---and it \emph{describes} course: the immunometabolic corner faces the
+hardest two-year course (treatment resistance $44\%$ and side-effects $25\%$ versus $20\%$ and
+$11\%$ at the low-burden pole). Genuine treatment \emph{selection} would require randomised or
+trial-arm data.
+
+\begin{table}[t]
+\centering
+\caption{\textbf{Treatment moderation on observational treatment-as-usual (bounds-and-defends).}
+For each within-cohort contrast: overlap (max standardised mean difference, before $\to$ after
+weighting), average treatment effect on functioning (ATE), E-value (unmeasured-confounding
+strength that would explain the effect away), the moderation $\Delta$ELPD (whether a
+treatment $\times$ map interaction improves held-out fit), and the verdict. Full analysis in
+Supplement~\ref{ann:treatment}.}
+\label{tab:moderation}
+\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}l c c c c >{\raggedright\arraybackslash}p{2.7cm}@{}}
+\toprule
+Contrast & overlap (SMD $\to$) & ATE & E-value & mod.\ $\Delta$ELPD & Verdict \\
+\midrule
+Lithium (BP)       & $0.30\!\to\!0.01$ & $-0.03$ (incl.\ 0) & $1.20$--$1.28$ & $-1.6$ & well-identified null \\
+Antipsychotic (BP) & $0.71\!\to\!0.08$ & $-0.24$ (excl.\ 0) & $1.80$         & $+3.4$ & confounded; suggestive-only \\
+Clozapine (SZ)     & $0.33\!\to\!0.07$ & $+0.03$ (incl.\ 0) & $1.21$         & $-1.8$ & underpowered ($n\!\approx\!515$) \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{A variational re-estimation reproduces the atlas at a fraction of the cost}
 

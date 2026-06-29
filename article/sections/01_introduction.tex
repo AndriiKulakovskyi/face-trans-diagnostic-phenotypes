@@ -28,13 +28,21 @@ load~\citep{vancampfort2015mets,pillinger2017,perry2019}. Whether this load is s
 from a transdiagnostic severity axis, and by how much, has not to our knowledge been
 measured directly.
 
-We therefore ask three questions of a single transdiagnostic model. \textbf{(i)~Measurement
-structure:} what latent structure organizes routine clinical, cognitive and biological data
-when they are placed in one coordinate system with diagnosis held out, and is the resulting
-patient space a graded continuum or a set of discrete kinds? \textbf{(ii)~Biology--severity
-separation:} is immunometabolic load separable from a general functional-burden axis, and by
-how much? \textbf{(iii)~Prognostic value:} does the latent representation forecast functional
-outcome beyond diagnosis and current severity? The structural half of~(i) is itself
+We address this not with a single analysis but with a \textbf{five-stage
+measurement-and-validation pipeline}, and we treat the pipeline itself---not any one
+finding---as the contribution. \textbf{(i)~Measurement:} a global, missingness-aware Bayesian
+model places routine clinical, cognitive and biological data in one coordinate system with
+diagnosis held out, and reports all eight resulting factors uniformly. \textbf{(ii)~Structure:}
+on the fixed map, an uncertainty-aware structure test asks whether the patient space is a graded
+continuum or a set of discrete kinds, and summarizes it with archetypes rather than imposed
+clusters. \textbf{(iii)~Temporal coherence:} the map is scored forward onto follow-up under the
+frozen model. \textbf{(iv)~Prognosis:} its incremental value beyond diagnosis and severity is
+tested against a hard autoregression bar and benchmarked against the raw indicators.
+\textbf{(v)~Treatment:} a bounds-and-defends causal analysis states what observational treatment
+data can and cannot support. Two commitments run throughout: we report the eight factors
+\emph{uniformly} (loadings, general-factor loadings, factor correlations) and keep
+\emph{measurement separate from interpretation}---the clinically salient properties of the map
+are read off neutral structural summaries, not built into them. The structural question is itself
 contested: normative-modelling studies report individual heterogeneity so extensive that
 ``the average patient'' is barely informative~\citep{wolfers2018,marquand2016}, whereas the
 B-SNIP programme reports replicable, brain-based psychosis ``biotypes'' that cut across DSM
@@ -58,14 +66,17 @@ Bayesian bifactor / exploratory structural-equation model with mixed likelihoods
 patient's observed cells only, that places clinical, cognitive, behavioural and laboratory
 measurements in one coordinate system while holding diagnosis out as metadata. We then score
 the fitted map forward onto two years of follow-up to test whether it persists and whether it
-predicts outcome. The answers are: an eight-dimension map---a general functional-burden factor
-and seven specific axes---on which immunometabolic load is the domain least coupled to
-functional severity; a graded continuum rather than discrete biotypes \emph{in this measurement
-space}, read through five archetypal extremes; a geometry that persists, with durable biology
-and moving symptoms; and a real but modest, \emph{group-level} prognostic signal for
-functioning that is co-informative with diagnosis rather than a replacement for it. We report
-the modest and null results---including a treatment-moderation analysis that this observational
-cohort can only bound---as deliberately as the positive ones.
+predicts outcome. The pipeline yields an eight-dimension map---a general functional-burden factor
+and seven specific axes; a graded continuum rather than discrete biotypes \emph{in this
+measurement space}, read through five archetypal extremes; a geometry that persists, with durable
+biology and moving symptoms; and a real but modest, \emph{group-level} prognostic signal for
+functioning that is co-informative with diagnosis rather than a replacement for it. Running
+through all five stages is one recurring empirical property---a single immunometabolic axis that
+is distinct from the rest of the clinical picture, the most temporally durable dimension, and the
+worst-prognosis pole for functioning---which we present as a property the method \emph{reveals}
+rather than the premise it was built on. We report the modest and null results---including a
+treatment-moderation analysis that this observational cohort can only bound---as deliberately as
+the positive ones.
 
 Methodologically, FACE-ATLAS configures established latent-variable
 tools~\citep{reise2012bifactor,asparouhov2009esem,muthen2012bayesian} into a single

@@ -43,7 +43,7 @@ Tucker congruence ($\varphi$) & How identically two fits reproduce the \emph{sam
 \addlinespace
 \multicolumn{4}{@{}l}{\textbf{\textit{B. What are the axes?} (factor structure)}} \\
 \addlinespace
-Factor loading ($\lambda$) & Strength with which one indicator reflects a latent axis (a standardized weight) & $|\lambda|{>}0.3$ substantial; sign gives direction & e.g.\ BMI$\to$immunometabolic $0.95$, CRP $0.37$, FAST$\to$\Gfac{} $0.91$ (all $37$ immunometabolic loadings in Table~\ref{tab:immet_loadings}) \\
+Factor loading ($\lambda$) & Strength with which one indicator reflects a latent axis (a standardized weight) & $|\lambda|{>}0.3$ substantial; sign gives direction & e.g.\ BMI$\to$immunometabolic $0.95$, CRP $0.37$, FAST$\to$\Gfac{} $0.78$ (all $37$ immunometabolic loadings in Table~\ref{tab:immet_loadings}) \\
 \addlinespace
 Factor correlation ($\phi$, $\Phi$) & How strongly two axes move together & $-1$ to $+1$; near $0$ = independent & Specific axes mean $|\phi|\approx0.08$; under a free general factor $\phi(\Gfac,\text{cognition}){=}0.39$, $\phi(\Gfac,\text{sleep}){=}0.42$, $\phi(\Gfac,\text{immunometabolic})\approx0.10$ \\
 \addlinespace
@@ -65,7 +65,7 @@ Gap statistic ($k_{\text{opt}}$) & Data-driven optimal number of clusters & $1$ 
 \addlinespace
 HDBSCAN & Density-based clustering (returns clusters or labels points as noise) & $0$ clusters / all-noise = a continuum & $0$ clusters \\
 \addlinespace
-Adjusted Rand Index (ARI) & Agreement between the map's partition and DSM-5 diagnosis & $0$ = chance; $1$ = identical & $0.006$ vs DSM-5 (transdiagnostic) \\
+Adjusted Rand Index (ARI) & Agreement between the map's partition and DSM-5 diagnosis & $0$ = chance; $1$ = identical & $0.021$ archetypes; $0.006$ soft tessellation (both $\approx0$, transdiagnostic) \\
 \addlinespace
 Information criterion (BIC) & Which description fits the coordinate cloud more tightly---a free continuum or one constrained to DSM-5 & Lower = better (more parsimonious) description & $185{,}600$ (free) vs $188{,}200$ (DSM-constrained): the map describes the space ${\approx}3\times$ more tightly at lower BIC \\
 \addlinespace
@@ -91,7 +91,7 @@ Held-out $\Delta$ELPD & Improvement in $2$-year outcome prediction from adding t
 \addlinespace
 $\Delta$AUC & Gain in telling apart, at the \emph{individual} level, who will reach an outcome & $0$ = none; $0.5$ = perfect-from-chance; here small & Functional remission $+0.010$ \\
 \addlinespace
-Functional-remission rate & Share reaching $2$-year functional remission, by archetype corner & The clinical readout of the gradient & $17\%$ (immunometabolic corner) to $52\%$ (low-burden pole) \\
+Functional-remission rate & Share reaching $2$-year functional remission, by archetype corner & The clinical readout of the gradient & $22\%$ (immunometabolic corner) to $63\%$ (low-burden pole) \\
 \addlinespace
 Odds ratio (best vs worst corner) & Relative odds of remission across the corners & ${>}1$ favours the better pole & ${\approx}6.3$ (cohort-adjusted) \\
 \addlinespace

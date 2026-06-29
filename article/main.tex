@@ -82,9 +82,9 @@
        {this patient $=0.55\,$A2 $+\,0.25\,$A1 $+\,0.15\,$A0 $+\,0.05\,$A3};
 \end{tikzpicture}}\end{center}}
 
-\title{\bfseries FACE ATLAS: A transdiagnostic latent atlas of severe mental illness
-decouples biological burden from clinical severity and forecasts functional outcome at the
-group level}
+\title{\bfseries FACE ATLAS: constructing and validating a transdiagnostic dimensional map
+of severe mental illness --- a missingness-aware Bayesian measurement model and its archetypes
+across bipolar disorder, schizophrenia and depression}
 
 \author{%
   Andrii Kulakovskyi$^{1}$\thanks{Correspondence: andrii.kulakovskyi@fondation-fondamental.org}\and
@@ -106,41 +106,41 @@ group level}
 %================================ ABSTRACT ====================================
 \begin{abstract}
 \noindent
-Psychiatric diagnoses aggregate biologically heterogeneous patients, which limits
-mechanistic stratification and prognosis. We analysed the harmonized baseline
-assessment of $N=9{,}013$ patients with bipolar disorder, schizophrenia or major
-depression from the three FACE cohorts using one global,
-missingness-aware Bayesian bifactor / exploratory structural-equation model,
-specified and fit to each patient's observed cells only (no imputation), with
-diagnosis withheld from model fitting. The model resolved a transdiagnostic
-coordinate system: a general functional-burden factor (\Gfac) and seven specific
-dimensions---cognition, immunometabolic load, sleep, developmental risk, suicidality,
-mania and substance use. The central finding is that \textbf{immunometabolic load is
-largely decoupled from functional impairment}: under a freely-correlated general factor
-it was the least burden-entangled domain (correlation with \Gfac{} $\approx 0.10$, versus
-$0.39$ for cognition and $0.42$ for sleep), and it remained so after adjustment for
-medication, adiposity and site. This axis is anchored by body composition (BMI loading
-$\approx 0.95$) but does not reduce to it: excluding the anthropometric indicators, a
-coherent cardiometabolic--inflammatory axis survived (Tucker congruence $0.90$ with the
-full axis); because the only inflammatory marker available was C-reactive protein, which
-is itself adiposity-driven, we interpret the axis as cardiometabolic rather than as an
-independent inflammatory dimension. The coordinate space was a graded \textbf{continuum,
-not discrete biotypes} in this measurement space---apparent clustering was reproduced by a
-single-Gaussian null---yet five archetypal extremes gave a clinically legible reading,
-including an immunometabolic corner and a severe, clean-biology corner with comparable
-functional burden but opposite biological profiles. Scored forward onto follow-up without
-re-estimation, immunometabolic coordinates were the most stable axis (test--retest
-intraclass correlation $0.91$) whereas symptom axes were state-like. The archetype
-phenotype predicted two-year functioning beyond diagnosis, baseline severity and baseline
-functioning, but the signal was \textbf{group-level}: a held-out expected log predictive
-density gain of $+62.8$ and a two-year functional-remission gradient of $17\%$--$52\%$
-across corners (the immunometabolic corner worst), yet only a small individual-level
-discrimination gain (remission AUC $+0.010$), and the map was co-informative with rather
-than superior to DSM-5 (incremental predictive density $+17.3$ for the map versus $+29.0$
-for diagnosis). These results define a transdiagnostic biological atlas of severe mental
-illness that supports mechanistic stratification and group-level functional forecasting;
-individual-level clinical utility would require external validation, incident-event
-outcomes and randomized treatment data.
+Psychiatric diagnoses aggregate biologically heterogeneous patients, but a dimensional
+alternative is credible only if the \emph{measurement} is done well---comparable across
+cohorts, faithful to mixed data types, honest about missingness and uncertainty, and held
+fixed when it is later validated. We present a methodology that meets these requirements
+end-to-end and apply it to the harmonized baseline assessment of $N=9{,}013$ patients with
+bipolar disorder, schizophrenia or major depression from the three FACE cohorts, with
+diagnosis withheld from model fitting throughout. The pipeline has five stages. (i) One
+global, missingness-aware Bayesian sparse bifactor / exploratory structural-equation model
+with mixed likelihoods and a Gaussian-copula continuous block estimates an eight-dimensional
+map---a general functional-burden factor (\Gfac) and seven specific dimensions (cognition,
+immunometabolic load, sleep, mania/activation, suicidality, developmental risk and substance
+use)---from each patient's observed cells only, without imputation. (ii) On the fixed map, an
+uncertainty-aware structure test shows the patient space is a graded \textbf{continuum, not
+discrete biotypes} (apparent clustering is reproduced by a single-Gaussian null), summarized
+by a stable five-archetype simplex that describes a patient's clinical--biological state
+$\approx 9.7\times$ more tightly than the diagnostic label. (iii) Scoring two yearly
+follow-ups under the frozen model quantifies temporal coherence: the backbone axes keep their
+meaning, and a between/within/measurement variance decomposition separates durable traits from
+moving states. (iv) An errors-in-variables Bayesian generalized linear model tests incremental
+prognostic validity beyond diagnosis, severity and baseline outcome, with a representation
+benchmark against the raw indicators. (v) A bounds-and-defends causal analysis asks whether the
+map moderates treatment on observational data. Reporting all eight factors uniformly and
+separating measurement from interpretation, we find that one property of the map recurs across
+all five stages: a single \textbf{immunometabolic axis distinct from the rest of the clinical
+picture} (correlation with \Gfac{} $\approx 0.10$ versus $0.39$/$0.42$ for cognition/sleep,
+robust to medication, adiposity and site), which anchors its own archetype corner, is the most
+temporally durable axis (test--retest intraclass correlation $0.91$), and is the worst-prognosis
+pole for two-year functioning (functional-remission gradient $22\%$--$63\%$ across corners;
+held-out predictive-density gain $+62.8$ but only $+0.010$ individual-level discrimination,
+co-informative with rather than superior to DSM-5: incremental density $+17.3$ for the map versus
+$+29.0$ for diagnosis), and survives treatment adjustment. The contribution is the validated
+pipeline; the immunometabolic dissociation is a property it \emph{reveals}, not its premise. All
+findings are internal-validity results on observational data; individual-level clinical utility
+and treatment selection would require external validation, incident-event outcomes and randomized
+treatment data.
 \end{abstract}
 
 \noindent\textbf{Keywords:} transdiagnostic psychiatry; dimensional
