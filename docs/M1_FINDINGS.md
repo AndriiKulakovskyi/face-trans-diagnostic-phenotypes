@@ -34,26 +34,50 @@ factor, whereas cognition and sleep partly track it.
 
 ## 2. The empirical map
 
+**Table 1 — factors and primary loadings.**
+
 | # | Dimension | Block | Anchoring indicators | Mean primary \|λ\| |
 |---|---|---|---|---|
-| 0 | **G — functional burden** | explicit (Gaussian) | FAST 0.90, EGF 0.73, EQ-5D; **no symptom content** | — (general) |
-| 1 | cognition | marginalized | executive/processing-speed tasks | 0.57 |
-| 2 | **immunometabolic** | marginalized | BMI 0.95, lipids, glycemia, BP, CRP 0.37, leukocyte subsets | 0.32–0.39 |
-| 3 | sleep | marginalized | sleep/circadian items | 0.48 |
-| 4 | developmental-risk | explicit | childhood adversity (CTQ), birth/parental history | 0.42 |
-| 5 | suicidality | explicit (binary) | ISF ideation/attempt items (+2.2…+2.7 logit) | strong |
-| 6 | **mania/activation** | marginalized | YMRS (0.57), Altman (0.76 in BP) | 0.49–0.76 |
-| 7 | **substance** | explicit (mixed) | alcohol/cannabis lifetime SUD, nicotine | +0.38…+0.69 |
+| 0 | **G — functional burden** | explicit (Gaussian) | FAST 0.78, EGF 0.60, EQ-5D 0.60, CGI-S 0.57; **no symptom content** | 0.51 (anchors) |
+| 1 | cognition | marginalized | CVLT 0.85–0.89, WAIS, TMT (executive / processing-speed / memory) | 0.58 |
+| 2 | **immunometabolic** | marginalized | BMI 0.95, weight/waist, lipids, glycemia, BP, CRP 0.37, leukocyte subsets | 0.24 |
+| 3 | sleep | marginalized | PSQI items (PSQI-total 0.88) | 0.40 |
+| 4 | developmental-risk | explicit | childhood adversity (CTQ 0.50–0.93), birth/parental history | 0.60 (CTQ) / 0.24 (all) |
+| 5 | suicidality | explicit (binary/ordinal) | ISF ideation/attempt items (+2.2…+4.5 logit) | logit scale |
+| 6 | **mania/activation** | marginalized | YMRS 0.56, Altman 0.37 (0.76 BP-only) | 0.46 |
+| 7 | **substance** | explicit (mixed) | nicotine (cigarettes 0.72, Fagerström 0.41), alcohol/cannabis lifetime SUD | 0.39 |
 
-The biology axis is a **single immunometabolic factor** carrying cardiometabolic and inflammatory load
+*(Loadings are not comparable across blocks: the explicit suicidality/substance items are on a logit/threshold
+scale, and developmental-risk is heterogeneous — strong continuous CTQ items plus weak explicit birth-history
+flags.)* The biology axis is a **single immunometabolic factor** carrying cardiometabolic and inflammatory load
 together (BMI, lipids, glycemia, blood pressure, CRP, leukocyte subsets), kept simple-structure by the
-sparsity prior on its off-home cells. Inter-dimension correlations Φ are **weak** (specific–specific mean
-\|off-diagonal\| ≈ 0.08; the one notable coupling is mania–sleep ≈ 0.24): the specifics are genuinely
-distinct axes, not a single collapsed factor. The map is otherwise simple-structure with **3 earned
-cross-loadings** into cognition (CTQ-37 −0.094, PSQI-latency +0.057, PSQI-daytime −0.070, each 95% CI
-excluding 0 — childhood adversity and poor sleep load weakly on cognition). Depression/anxiety
-(MADRS/QIDS/STAI) are **not a dimension** — they load 0.66–0.80 on **G** as cross-loading "windows" (burden
-surfaces, no separable affective factor).
+sparsity prior on its off-home cells.
+
+**Table 2 — how each domain relates to G (direct loadings).** Because the map is identified as a bifactor (G
+orthogonal to the specifics *by construction*), a domain's relationship to general burden is read from its
+indicators' **direct loadings on G**, not from Φ. Mean \|G-loading\| per domain:
+
+| domain | mean \|G-loading\| |
+|---|---|
+| cognition | 0.20 |
+| sleep | 0.20 |
+| mania/activation | 0.13 |
+| suicidality | 0.11 |
+| developmental-risk | 0.07 |
+| substance | 0.07 |
+| immunometabolic | 0.06 |
+
+**Table 3 — factor correlations Φ.** Φ is the **latent factor-correlation matrix** (correlations between the
+factor scores themselves). Two rows are fixed by design — **G** is orthogonal to every specific (bifactor
+identification) and **substance** is pinned orthogonal (its cross-factor correlations are non-identifiable) — so
+Φ describes the six freely-correlating specifics, where it is **near-simple-structure** (specific–specific mean
+\|off-diagonal\| ≈ 0.08): the specifics are genuinely distinct axes, not a single collapsed factor. The
+non-trivial couplings are sleep–mania +0.23, sleep–developmental +0.20, suicidality–developmental +0.20, and
+cognition–sleep −0.16; **immunometabolic's largest tie is only +0.08**. The map is otherwise simple-structure
+with **3 earned cross-loadings** into cognition (CTQ-37 −0.08, PSQI-latency +0.05, PSQI-daytime −0.05, each 95%
+CI excluding 0 — childhood adversity and poor sleep load weakly on cognition). Depression/anxiety
+(MADRS/QIDS/STAI) are **not a dimension** — they load on **G** as cross-loading "windows" (burden surfaces, no
+separable affective factor).
 
 ---
 
@@ -67,14 +91,30 @@ G is anchored only by **functioning/severity** items (FAST, EGF, EQ-5D) and carr
 liability to psychopathology — a deliberately conservative reading that avoids the bifactor "p-factor"
 over-claim.
 
-### F2 — Biology ⊥ G (the load-bearing refinement)
-Under a sensitivity arm that *frees* G to correlate with the specifics (correlated-G, §3.1), G correlates
-only weakly with **immunometabolic** (≈ +0.10), versus **+0.39 cognition** and **+0.42 sleep**.
-**Result:** immunometabolic burden is the **least severity-entangled** domain — a patient's
-cardiometabolic/immune load is almost independent of how impaired they are overall, while cognitive and sleep
-burden partly track impairment. **Interpretation:** biological risk is carried on an axis the clinical severity
-picture does not see — exactly the kind of largely independent signal a stratification (M2) can exploit. *(The
-clean continuous-backbone estimate confirms the weak coupling; the ordering is stable across estimators.)*
+### F2 — A periphery of three weakly-G axes, of which immunometabolic is the *earned island*
+**Observation.** Three axes load only weakly on general burden — immunometabolic (0.06), substance (0.07) and
+developmental-risk (0.07) — a near-tie on the direct G-loading (Table 2). On this metric alone they are
+indistinguishable; the differences below come from *how* each is decoupled, not from the G-loading.
+
+**Result.** They are peripheral for three different reasons. **Substance** is orthogonal *by construction*
+(pinned; thin, two-cohort, DR = 0) — its independence is imposed, not estimated. **Developmental-risk** is weak
+on G but **couples to the symptom axes** (sleep / suicidality, Φ ≈ 0.20) and is a *historical antecedent* rather
+than a current state (the least temporally durable axis, M3, ICC 0.39). **Immunometabolic load** is the only
+domain weakly tied to the *entire* clinical picture — both general burden (direct loading 0.06; correlated-G
+≈ +0.10, versus **+0.39 cognition** and **+0.42 sleep**) **and** the symptom axes (max Φ 0.076, versus ≥ 0.16
+for every other freely-correlating factor). It is, uniquely, an **earned island** in the map: weakly tied to
+everything else on a freely-estimated basis.
+
+> **Caveat (correlated-G does not separate biology from developmental).** The freely-correlated-G arm cleanly
+> separates immunometabolic (≈ 0.10) from cognition / sleep (0.39 / 0.42), but it does **not** cleanly separate
+> it from developmental-risk: the one fit that included both put them at a comparable ≈ 0.28, and biology's value
+> was only later refined down to ≈ 0.10. The immunometabolic-vs-developmental distinction therefore rests on the
+> **Φ symptom-decoupling** (0.08 vs 0.20), not on the correlated-G arm.
+
+**Interpretation.** Because immunometabolic load is the only earned island — and is also measurable, modifiable,
+and overturns the clinical prior that more severely ill patients carry worse cardiometabolic/inflammatory load —
+it is the axis carried forward as the biological stratification target (M2). The robustness of its low coupling
+(unchanged under age/sex/education/site and antipsychotic adjustment) is the load-bearing premise downstream.
 
 ### F3 — Theory's "biology" candidate is confirmed as one immunometabolic factor
 The prior ontology posited a metabolic/immuno candidate; the data **confirm it as a single immunometabolic

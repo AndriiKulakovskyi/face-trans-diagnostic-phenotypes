@@ -184,23 +184,38 @@ rigid zeros (Supplement~\ref{ann:measurement}).
 
 \subsection{Immunometabolic load is largely decoupled from functional burden (the central result)}
 
-Because the bifactor identification fixes \Gfac{} orthogonal to the specifics by construction,
-we re-estimated the model allowing \Gfac{} to correlate freely with the specific axes.
-The resulting vector of general--specific correlations,
-$\phi_{Gd}=\operatorname{Corr}(\Gfac,D)$ (Methods, Eq.~\ref{eq:corrg}), is the
-\emph{primary estimand} of FACE-ATLAS: it converts ``biology is separable from
-severity'' from a modelling constraint into a measured quantity. Under this
-correlated-\Gfac{} model, immunometabolic load was the \emph{least} entangled with
-functional burden: a correlation with \Gfac{} of $\approx 0.10$, against $0.39$ for
-cognition and $0.42$ for sleep (Figure~\ref{fig:biologyg}). In shared-variance terms the
-gap is stark---immunometabolic load shares only $\approx 1\%$ of its variance with
-general burden, against $\approx 15\%$ (cognition) and $\approx 18\%$ (sleep). And
-because the specific axes are themselves only weakly inter-correlated (mean absolute
-off-diagonal $\approx 0.08$), immunometabolic load is weakly coupled not only to functional
-burden but to the symptom axes as well. Two patients with
-the same overall impairment can therefore carry very different immunometabolic
-loads---a patient's biological burden rides largely on axes that the global
-clinical-severity picture does not capture. This dissociation was robust to the obvious
+Because the bifactor identification fixes \Gfac{} orthogonal to the specifics by
+construction, a domain's relationship to general burden is read from its indicators'
+\emph{direct loadings on \Gfac{}} (Figure~\ref{fig:factors}). On this metric three axes
+sit at the periphery, loading only weakly on \Gfac{}: immunometabolic ($\approx 0.06$),
+substance ($\approx 0.07$) and developmental-risk ($\approx 0.07$)---a near-tie that, by
+itself, singles out none of them. To convert ``biology is separable from severity'' from a
+modelling constraint into a measured quantity, we re-estimated the model allowing \Gfac{}
+to correlate freely with the specific axes. The resulting vector of general--specific
+correlations, $\phi_{Gd}=\operatorname{Corr}(\Gfac,D)$ (Methods, Eq.~\ref{eq:corrg}), is
+the \emph{primary estimand} of FACE-ATLAS. Under this correlated-\Gfac{} model,
+immunometabolic load was the \emph{least} entangled with functional burden: a correlation
+with \Gfac{} of $\approx 0.10$, against $0.39$ for cognition and $0.42$ for sleep
+(Figure~\ref{fig:biologyg}). In shared-variance terms the gap is stark---immunometabolic
+load shares only $\approx 1\%$ of its variance with general burden, against $\approx 15\%$
+(cognition) and $\approx 18\%$ (sleep).
+
+What distinguishes immunometabolic load from the other two peripheral axes is that it is
+decoupled from the \emph{entire} clinical picture, on a freely-estimated basis. Substance
+is orthogonal \emph{by construction} (pinned, because its cross-factor correlations are
+non-identifiable), so its independence is imposed rather than measured; developmental-risk,
+though weak on \Gfac{}, couples to the symptom axes (sleep and suicidality,
+$\Phi\approx 0.20$) and indexes a historical antecedent rather than a current state.
+Immunometabolic load alone is weakly coupled both to functional burden \emph{and} to the
+symptom axes---its largest inter-factor correlation is $\approx 0.08$, against $\ge 0.16$
+for every other freely-correlating factor (Figure~\ref{fig:factors})---and is, uniquely, an
+earned ``island'' in the map. (We note one boundary: the correlated-\Gfac{} arm cleanly
+separates biology from cognition and sleep but not from developmental-risk, so the
+immunometabolic--developmental distinction rests on the symptom-decoupling in $\Phi$, not on
+$\phi_{Gd}$; Supplement~\ref{ann:measurement}.) Two patients with the same overall
+impairment can therefore carry very different immunometabolic loads---a patient's biological
+burden rides largely on an axis that the global clinical-severity picture does not capture.
+This dissociation was robust to the obvious
 confounders. Adjusting each indicator for age, sex, education and recruitment site, and
 then additionally for antipsychotic exposure, did \emph{not} raise the immunometabolic
 correlation---if anything it lowered it (to $\approx 0.07$), and the immunometabolic axis
