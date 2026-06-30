@@ -84,6 +84,96 @@ so a sparsely measured patient is never mistaken for a precisely located one. Th
 analysis is thus a position on eight continuous axes with quantified uncertainty, not a
 biotype label.
 
+\subsection{How sharply is a patient located? Information accumulation and a minimal-indicator rule}
+\label{subsec:localization}
+
+The covariance $S_i$ in \eqref{eq:res-post} is not a fixed property of the model but a
+closed-form function of \emph{which} indicators a patient has. Because the indicators are
+conditionally independent given the factors, each observed cell contributes additively to the
+posterior \emph{precision}: for the continuous (Gaussian-copula) block the posterior covariance
+after observing a set of indicators is
+\begin{equation}
+  S^{-1}=\Phi^{-1}+\sum_{j\ \text{observed}}\frac{1}{\sigma_j^{2}}\,\lambda_j\lambda_j^{\top},
+  \qquad
+  \hat f=S\!\!\sum_{j\ \text{observed}}\frac{\lambda_j\,x_{ij}}{\sigma_j^{2}},
+  \label{eq:res-precision}
+\end{equation}
+the information form of the EAP score map (Methods, Eq.~\ref{eq:m-scores}), with
+$\sigma_j^{2}=1-\lambda_j^{\top}\Phi\lambda_j$ the indicator's residual variance. Two
+consequences follow, illustrated in Fig.~\ref{fig:localization} on a synthetic patient placed
+at an interior, immunometabolic-dominant point of the archetype simplex, with the $88$
+continuous indicators revealed one at a time. First, \textbf{the position uncertainty can only
+shrink as instruments arrive}: the summed term in \eqref{eq:res-precision} is positive
+semidefinite, so every observed cell tightens the ellipsoid and the $95\%$ position region
+collapses from the prior onto the patient (Fig.~\ref{fig:localization}A). Second, \textbf{the
+localization is anisotropic}: the rate of collapse on each axis is set by the loading-weighted
+information it receives, so a heavily instrumented axis (immunometabolic, $37$ markers;
+cognition; general burden) reaches a posterior SD around $0.24$--$0.33$, while a thin axis
+(substance and mania, two indicators each) stays above $0.6$---barely better than its prior---even
+when every continuous indicator is observed (Fig.~\ref{fig:localization}B). This is the quantitative content of ``a sparsely
+measured patient is never mistaken for a precisely located one,'' and it propagates into the
+archetype weights: membership in the patient's dominant corner rises from chance ($1/5$) toward
+its true value while its posterior band collapses, so the archetyping becomes both more
+confident and more correct (Fig.~\ref{fig:localization}C).
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\linewidth]{fig_localization.png}
+  \caption{\textbf{Patient localization sharpens as instruments accumulate.} A synthetic patient
+  is placed at an interior, immunometabolic-dominant point of the archetype simplex and the $88$
+  continuous Gaussian-copula indicators are revealed in random order; the posterior coordinate
+  follows the closed-form update \eqref{eq:res-precision}. \textbf{(A)}~The $95\%$ position
+  ellipse on the (general burden, immunometabolic) plane collapses from the prior onto the true
+  patient ($\star$, inside the A0--A4 archetype hull) as more instruments are observed
+  (colour~$=$~number observed). \textbf{(B)}~Per-axis posterior SD versus the number of
+  instruments: well-instrumented axes collapse first; thin factors (substance, mania) stay above
+  $0.6$, far short of the well-measured axes, even at full coverage (parentheses: indicators
+  loading each axis).
+  \textbf{(C)}~Estimated membership in the patient's dominant corner (A2) rises from chance toward
+  its true value while its $10$--$90\%$ posterior band and the entropy of the five archetype
+  weights (dashed) collapse. Computed from the reported loadings $\Lambda$ and factor
+  correlations $\Phi$.}
+  \label{fig:localization}
+\end{figure}
+
+\paragraph{A minimal-indicator rule per dimension.} Equation~\eqref{eq:res-precision} also
+answers a practical design question: how many indicators must a factor carry before a patient's
+coordinate on it is acceptably precise? For a single standardized factor measured by $m$
+conditionally-independent indicators, the posterior SD is governed by the accumulated
+\emph{information}
+\begin{equation}
+  \operatorname{SD}(f)=\frac{1}{\sqrt{1+I}},\qquad
+  I=\sum_{j=1}^{m}\frac{\lambda_j^{2}}{1-\lambda_j^{2}},
+  \label{eq:res-mincount}
+\end{equation}
+in which $\lambda_j^{2}/(1-\lambda_j^{2})$ is the signal-to-noise (reliability ratio) each
+indicator contributes. Requiring a posterior SD no larger than a tolerance $\tau$ is then the
+requirement $I\ge 1/\tau^{2}-1$, i.e.\ for equal loadings $\lambda$ a minimal count
+$m^{\star}=\bigl\lceil(\tfrac{1}{\tau^{2}}-1)(1-\lambda^{2})/\lambda^{2}\bigr\rceil$. The cut-off
+is loading-dependent, not a fixed number of instruments (Fig.~\ref{fig:mincount}): for a target
+SD~$\le 0.5$ (reliability $0.75$, $I\ge 3$) a factor needs about $4$ strong indicators
+($\lambda=0.7$), $9$ moderate ($\lambda=0.5$) or $31$ weak ($\lambda=0.3$). Placed against this
+rule the FACE-ATLAS factors split exactly as the reliability tiers report: the immunometabolic,
+cognition, developmental and sleep axes clear the bar comfortably, whereas the two-indicator
+substance and mania axes fall short and are carried throughout as the thin, prior-leaning
+dimensions. The explicit binary and ordinal items, which add weaker per-item information, further
+sharpen the suicidality and substance axes beyond the continuous-block illustration shown here.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=0.66\linewidth]{fig_mincount.png}
+  \caption{\textbf{A minimal-indicator rule per dimension.} Posterior SD of a single standardized
+  factor coordinate against the number of indicators $m$, by per-indicator loading $\lambda$
+  (Eq.~\ref{eq:res-mincount}). Acceptable uncertainty (SD~$\le 0.5$, reliability $0.75$) needs
+  accumulated information $I\ge 3$: about $4$ indicators at $\lambda=0.7$, $9$ at $\lambda=0.5$,
+  $31$ at $\lambda=0.3$. Black diamonds place the FACE-ATLAS specific factors at their
+  continuous-block indicator count and realised posterior SD; immunometabolic, developmental,
+  cognition and sleep clear the threshold while the two-indicator mania and substance axes do not
+  (suicidality, carried mainly by binary items, is omitted from this continuous-block
+  illustration).}
+  \label{fig:mincount}
+\end{figure}
+
 \subsection{The eight dimensions of the transdiagnostic atlas}\label{subsec:eightdim}
 
 From ten candidate constructs, one global model returned a stable eight-dimension
