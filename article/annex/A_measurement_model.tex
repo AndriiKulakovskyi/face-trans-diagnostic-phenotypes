@@ -14,6 +14,66 @@ evaluation and its exact equivalence with full-information maximum likelihood
 (\ref{annA:staged}). Propositions are proved; everything reported in the main text is
 an evaluation of the objects defined here.
 
+\subsection{Variable accounting and indicator selection}
+\label{annA:vars}
+
+The harmonized common dictionary contains $225$ variables; the fitted map carries $109$ as
+indicators. A variable is admitted as a \emph{factor indicator} only if it satisfies four
+criteria: (i) it indexes a \emph{current} clinical or biological state---not a history, onset
+or outcome record; (ii) it is not a treatment-, demographic- or outcome-driven
+\emph{confound}; (iii) it is not \emph{redundant} with an already-admitted indicator; and
+(iv) it is present in at least two cohorts. Above that two-cohort floor, admission is
+deliberately \emph{coverage-agnostic}: because the observed-cell likelihood
+(Prop.~\ref{propA:marg}, Eq.~\eqref{eqA:obslik}) lets an indicator contribute only for the
+patients in whom it is measured, a marker observed in two of the three cohorts is a valid
+transdiagnostic indicator---it simply contributes no term for the third cohort, with no
+imputation. Coverage therefore does \emph{not} decide admission: of the $109$ fitted
+indicators only about two-thirds ($66$) are present in all three cohorts and about one-third
+($43$) in two---the latter including much of the biology panel (measured in bipolar disorder
+and depression) and the substance axis (recorded in bipolar disorder and schizophrenia). The
+remaining $116$ variables are set aside for one of six reasons (Table~\ref{tab:varaccounting});
+a single-cohort variable is the only purely coverage-based exclusion, because it cannot be
+placed on a transdiagnostic axis.
+
+``Set aside'' is not ``unused.'' The demographic covariates residualize every indicator before
+fitting; the validation labels (diagnosis, cohort, visit) are held out of fitting and used only
+to test measurement invariance and transdiagnosticity; and the redundant \emph{numeric}
+variables form the raw arm of the representation benchmark (Supplement~\ref{ann:prognosis}, the
+$143$-variable raw pool), where they are usable as raw predictors though not admitted as factor
+indicators. Only the treatment/outcome confounds and the single-cohort variables are excluded
+from the analysis entirely---the former because admitting them would inject medication or
+outcome signal into the latent axes (prolactin, for example, is a direct $\mathrm{D_2}$-blockade
+marker, and natremia tracks lithium and carbamazepine), the precise contamination the
+diagnosis-held-out, confound-adjusted design is built to avoid.
+
+\begin{table}[t]
+\centering
+\caption{\textbf{Variable accounting: the $225$ harmonized common variables by role.} A variable
+is fitted as a factor indicator only if it is a current clinical/biological state, not a
+confound, not redundant with an admitted indicator, and present in $\ge2$ cohorts; above the
+two-cohort floor admission is coverage-agnostic (the observed-cell likelihood handles partial
+coverage without imputation, so two-cohort markers are used where measured). The six set-aside
+roles are mutually exclusive.}
+\label{tab:varaccounting}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}l c >{\raggedright\arraybackslash}p{4.3cm} >{\raggedright\arraybackslash}p{4.6cm}@{}}
+\toprule
+Role & $n$ & Reason & Representative variables \\
+\midrule
+\textbf{Factor indicator} (fitted) & $109$ & current state; not confound/redundant; $\ge2$ cohorts ($66$ three-cohort, $43$ two-cohort) & FAST, EGF, CVLT, WAIS, PSQI, BMI, lipids, CRP, leukocytes, YMRS, ISF, CTQ \\
+\midrule
+Identifier & $2$ & record linkage only & \texttt{usubjid}, \texttt{fondacode} \\
+Covariate (residualization) & $5$ & adjusted out of each indicator; not a phenotype & age, sex, education, education level, recruitment site \\
+Validation / metadata label & $3$ & held out of fitting; used for invariance and transdiagnosticity & DSM-5 subtype, visit, visit number \\
+Treatment / outcome confound & $16$ & medication- or outcome-driven; would contaminate the latent axes & prolactin, oxcarbazepine level, QTc/RR, sodium/potassium/calcium, CGI-improvement, hypnotic use, menopausal/hormonal status \\
+Redundant / instrument sub-item & $46$ & captured by an already-admitted indicator & electrolyte \& haematology panel (albumin, haemoglobin, RBC, MCV, iron), C-SSRS items, FAST/PSQI sub-scores, MARS adherence, PRISM stigma \\
+History / onset / service-use & $22$ & antecedent or consequence, not a current state & medical \& family-history flags, age at onset, hospitalisations, work leave, occupational status \\
+Not usable & $22$ & single-cohort, too sparse, or incomparable & clozapine flag (SZ-only), MDQ screen, comorbidity flags, un-normed neuropsych scores \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Generative model and local independence}
 \label{annA:gen}
 

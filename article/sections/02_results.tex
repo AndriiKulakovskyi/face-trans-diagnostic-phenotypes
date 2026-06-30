@@ -14,7 +14,11 @@ map carries $109$ of them---$88$ in the Gaussian-copula continuous block and $21
 explicit non-Gaussian block; the remaining $58$ are identifiers, covariates and validation
 labels (ambiguous-direction laboratory values, treatment-efficacy ratings, ECG intervals,
 reproductive/hormonal and smoking-history confounders) and were never modelled as
-indicators. Diagnosis (cohort and DSM-5 subtype) was held out of the model and used only
+indicators. Supplement~\ref{annA:vars} (Table~\ref{tab:varaccounting}) classifies all $225$
+harmonized variables by role and the selection rule; admission is \emph{coverage-agnostic}
+above a two-cohort floor---the observed-cell likelihood lets a two-cohort marker serve as an
+indicator where it is measured, so about one-third of the fitted indicators are present in
+only two cohorts. Diagnosis (cohort and DSM-5 subtype) was held out of the model and used only
 as a validation or metadata label. The FACE-ATLAS map is one global,
 cohort-reweighted, full-sample fit estimated with a Gaussian-copula
 (rank-based) marginal model; because the same structure is recovered under a plain
