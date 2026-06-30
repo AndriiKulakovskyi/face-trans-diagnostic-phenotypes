@@ -153,30 +153,45 @@ for ext in ("pdf","png"):
 print("wrote fig_localization")
 
 # ============================ FIGURE 2: min-count ==============================
-fig2,ax = plt.subplots(figsize=(8.2,6.0))
+fig2,(ax,axi) = plt.subplots(1,2,figsize=(12.6,5.7),
+                             gridspec_kw=dict(width_ratios=[2.35,1],wspace=0.27))
+# --- A: SD vs number of indicators, by loading; real factors overlaid ---
 mm = np.arange(1,41)
 for lam in [0.7,0.6,0.5,0.4,0.3]:
-    I = mm*lam**2/(1-lam**2); sd = 1/np.sqrt(1+I)
+    sd = 1/np.sqrt(1+ mm*lam**2/(1-lam**2))
     ax.plot(mm, sd, lw=2, label=f"λ = {lam:.1f}")
-for tau,txt in [(0.5,"SD = 0.50  (reliability 0.75)")]:
-    ax.axhline(tau,color="0.3",ls="--",lw=1.3); ax.text(40,tau+0.012,txt,ha="right",fontsize=9,color="0.3")
+ax.axhline(0.5,color="0.3",ls="--",lw=1.3)
+ax.text(39.5,0.515,"SD = 0.50   (reliability 0.75,  I ≥ 3)",ha="right",fontsize=8.8,color="0.3")
 ax.axhspan(0,0.5,color="seagreen",alpha=0.06)
-ax.text(38,0.07,"acceptable",color="seagreen",ha="right",fontsize=10,style="italic")
-# real continuous-block specific factors (n_home, real SD); suicidality omitted (1 cont. item, mostly binary)
-real = {"immuno":(37,0.243),"developmental":(12,0.281),"cognition":(11,0.267),
-        "sleep":(9,0.306),"substance":(2,0.660),"mania":(2,0.783)}
-for nm,(n,sd) in real.items():
-    ax.scatter([n],[sd],color="k",marker="D",s=42,zorder=6)
-    dy = 0.03 if nm not in ("cognition",) else -0.05
-    ax.annotate(nm,(n,sd),textcoords="offset points",xytext=(6,6 if dy>0 else -12),fontsize=8.5)
+ax.text(38,0.06,"acceptable",color="seagreen",ha="right",fontsize=10,style="italic")
+# real continuous-block specific factors: (n_home, realized SD, dominant anchor, label offset)
+real = {"immuno":(37,0.243,"BMI .95",(-2,-15)), "developmental":(12,0.281,"CTQ .93",(5,11)),
+        "cognition":(11,0.267,"CVLT .89",(-2,-17)), "sleep":(9,0.306,"PSQI .88",(4,10)),
+        "substance":(2,0.660,"max .72",(9,-3)), "mania":(2,0.783,"no anchor",(9,3))}
+for nm,(n,sd,anc,off) in real.items():
+    col = "seagreen" if sd<=0.5 else "firebrick"
+    ax.scatter([n],[sd],color=col,marker="D",s=60,zorder=6,edgecolor="k",lw=0.6)
+    ax.annotate(f"{nm}\n({anc})",(n,sd),textcoords="offset points",xytext=off,
+                fontsize=8,ha="left",color=col,fontweight="bold")
 ax.set_xlim(0,40); ax.set_ylim(0,1.0)
 ax.set_xlabel("number of (standardized) indicators on the factor,  $m$")
 ax.set_ylabel("posterior SD of the factor coordinate")
-ax.set_title("Minimal instruments per factor for acceptable uncertainty\n"
+ax.set_title("A   Acceptable uncertainty needs information $I\\geq3$, not a fixed count\n"
              r"$\mathrm{SD}=1/\sqrt{1+I},\;\; I=\sum_j \lambda_j^2/(1-\lambda_j^2)$",
-             fontsize=11, fontweight="bold")
-ax.legend(title="per-indicator loading", fontsize=9, loc="upper right")
+             loc="left",fontsize=10.5,fontweight="bold")
+ax.legend(title="per-indicator loading",fontsize=8.6,loc="center right",framealpha=.92)
 ax.grid(alpha=.25)
+# --- B: per-indicator information is steeply nonlinear in the loading ---
+ll = np.linspace(0.1,0.96,200); axi.plot(ll, ll**2/(1-ll**2), color="k", lw=2)
+for lam in [0.3,0.5,0.7,0.95]:
+    iv = lam**2/(1-lam**2); axi.scatter([lam],[iv],color="firebrick",s=34,zorder=5)
+    axi.annotate(f"  i={iv:.1f}",(lam,iv),textcoords="offset points",
+                 xytext=(4,-2 if lam<0.9 else -10),fontsize=8.3)
+axi.axhline(3,color="seagreen",ls="--",lw=1.2); axi.text(0.12,3.25,"I = 3 bar",color="seagreen",fontsize=8.3)
+axi.set_xlabel("indicator loading  $\\lambda$")
+axi.set_ylabel("information per indicator  $i(\\lambda)$")
+axi.set_title("B   one strong marker\noutweighs many weak ones",loc="left",fontsize=10.5,fontweight="bold")
+axi.set_xlim(0.1,0.97); axi.set_ylim(0,9.8); axi.grid(alpha=.25)
 for ext in ("pdf","png"):
     fig2.savefig(f"{OUT}/fig_mincount.{ext}", dpi=200, bbox_inches="tight")
 print("wrote fig_mincount")

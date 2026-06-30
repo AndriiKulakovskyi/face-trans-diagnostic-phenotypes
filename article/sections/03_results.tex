@@ -136,41 +136,61 @@ confident and more correct (Fig.~\ref{fig:localization}C).
   \label{fig:localization}
 \end{figure}
 
-\paragraph{A minimal-indicator rule per dimension.} Equation~\eqref{eq:res-precision} also
-answers a practical design question: how many indicators must a factor carry before a patient's
-coordinate on it is acceptably precise? For a single standardized factor measured by $m$
-conditionally-independent indicators, the posterior SD is governed by the accumulated
-\emph{information}
+\paragraph{A loading-dependent minimal-indicator rule.} Equation~\eqref{eq:res-precision} also
+answers a practical design question---how many indicators must a factor carry before a patient's
+coordinate on it is acceptably precise---and the answer is set not by the raw \emph{count} of
+indicators but by the \emph{information} they carry. For a single standardized factor measured by
+$m$ conditionally-independent indicators the posterior SD is the accumulated information
 \begin{equation}
   \operatorname{SD}(f)=\frac{1}{\sqrt{1+I}},\qquad
   I=\sum_{j=1}^{m}\frac{\lambda_j^{2}}{1-\lambda_j^{2}},
   \label{eq:res-mincount}
 \end{equation}
-in which $\lambda_j^{2}/(1-\lambda_j^{2})$ is the signal-to-noise (reliability ratio) each
-indicator contributes. Requiring a posterior SD no larger than a tolerance $\tau$ is then the
-requirement $I\ge 1/\tau^{2}-1$, i.e.\ for equal loadings $\lambda$ a minimal count
-$m^{\star}=\bigl\lceil(\tfrac{1}{\tau^{2}}-1)(1-\lambda^{2})/\lambda^{2}\bigr\rceil$. The cut-off
-is loading-dependent, not a fixed number of instruments (Fig.~\ref{fig:mincount}): for a target
-SD~$\le 0.5$ (reliability $0.75$, $I\ge 3$) a factor needs about $4$ strong indicators
-($\lambda=0.7$), $9$ moderate ($\lambda=0.5$) or $31$ weak ($\lambda=0.3$). Placed against this
-rule the FACE-ATLAS factors split exactly as the reliability tiers report: the immunometabolic,
-cognition, developmental and sleep axes clear the bar comfortably, whereas the two-indicator
-substance and mania axes fall short and are carried throughout as the thin, prior-leaning
-dimensions. The explicit binary and ordinal items, which add weaker per-item information, further
-sharpen the suicidality and substance axes beyond the continuous-block illustration shown here.
+in which each indicator contributes $i(\lambda_j)=\lambda_j^{2}/(1-\lambda_j^{2})$, its
+signal-to-noise (reliability) ratio. This per-indicator information is steeply nonlinear in the
+loading (Fig.~\ref{fig:mincount}B): $i(0.3)=0.10$, $i(0.5)=0.33$, $i(0.7)=0.96$ and
+$i(0.95)=9.3$, so a single strong indicator can be worth dozens of weak ones. Requiring a
+posterior SD no larger than a tolerance $\tau$ is the information threshold $I\ge 1/\tau^{2}-1$;
+for a target SD~$\le 0.5$ (reliability $0.75$) this is $I\ge 3$, met by about $4$ indicators at
+$\lambda=0.7$, $9$ at $\lambda=0.5$ or $31$ at $\lambda=0.3$ for equal loadings
+(Fig.~\ref{fig:mincount}A)---or by a single very strong anchor on its own. The cut-off is
+therefore loading-dependent, not a fixed instrument count, with minimal count
+$m^{\star}=\bigl\lceil(\tfrac{1}{\tau^{2}}-1)(1-\lambda^{2})/\lambda^{2}\bigr\rceil$.
+
+Real factors do not lie on any single equal-loading curve, because their loadings are
+heterogeneous; each factor's diamond in Fig.~\ref{fig:mincount}A sits at its indicator count and
+its \emph{realised} posterior SD, fixed by its total accumulated information. Read against the
+$I\ge 3$ bar, the FACE-ATLAS factors split exactly as their reliability tiers report, and the
+mechanism is explicit: immunometabolic ($37$ markers, but pinned by body-mass index,
+$\lambda=0.95$, which alone supplies $I=8.6$, $54\%$ of the axis's information), sleep (the PSQI
+global score, $\lambda=0.88$, $84\%$), developmental risk (the CTQ, $\lambda=0.93$, $68\%$) and
+cognition (several strong verbal-memory and processing-speed items, top $\lambda=0.89$) each
+clear the bar because they are effectively anchored by one or a few high-loading markers. The
+two-indicator mania ($I=0.6$, SD $0.78$) and substance ($I=1.3$, SD $0.66$) axes have no such
+anchor and fall well short, which is why they are carried throughout as the thin, prior-leaning
+dimensions. The practical lesson for instrument design is therefore not ``collect more
+questionnaires'' but ``include at least one high-loading marker per intended dimension'' (the
+explicit binary and ordinal items, which add weaker per-item information, further sharpen the
+suicidality and substance axes beyond the continuous-block illustration shown here).
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=0.66\linewidth]{fig_mincount.png}
-  \caption{\textbf{A minimal-indicator rule per dimension.} Posterior SD of a single standardized
-  factor coordinate against the number of indicators $m$, by per-indicator loading $\lambda$
-  (Eq.~\ref{eq:res-mincount}). Acceptable uncertainty (SD~$\le 0.5$, reliability $0.75$) needs
-  accumulated information $I\ge 3$: about $4$ indicators at $\lambda=0.7$, $9$ at $\lambda=0.5$,
-  $31$ at $\lambda=0.3$. Black diamonds place the FACE-ATLAS specific factors at their
-  continuous-block indicator count and realised posterior SD; immunometabolic, developmental,
-  cognition and sleep clear the threshold while the two-indicator mania and substance axes do not
-  (suicidality, carried mainly by binary items, is omitted from this continuous-block
-  illustration).}
+  \includegraphics[width=\linewidth]{fig_mincount.png}
+  \caption{\textbf{A loading-dependent minimal-indicator rule.} \textbf{(A)}~Posterior SD of a
+  single standardized factor coordinate against the number of indicators $m$, for several
+  per-indicator loadings $\lambda$ (Eq.~\ref{eq:res-mincount}); acceptable uncertainty
+  (SD~$\le 0.5$, reliability $0.75$) requires accumulated information $I\ge 3$---about $4$
+  indicators at $\lambda=0.7$, $9$ at $\lambda=0.5$ or $31$ at $\lambda=0.3$. Diamonds place the
+  FACE-ATLAS specific factors at their continuous-block indicator count and realised posterior
+  SD, coloured green if they clear the bar and red if not, and annotated with each factor's
+  dominant anchor indicator: immunometabolic (BMI, $\lambda=0.95$), developmental (CTQ, $0.93$),
+  cognition (verbal memory, $0.89$) and sleep (PSQI, $0.88$) clear it---each effectively carried
+  by one or a few strong markers---whereas the two-indicator mania and substance axes, lacking a
+  strong anchor, do not. \textbf{(B)}~The information a single indicator contributes,
+  $i(\lambda)=\lambda^{2}/(1-\lambda^{2})$, is steeply nonlinear in its loading: $i(0.3)=0.1$,
+  $i(0.7)=1.0$, $i(0.95)=9.3$, so one high-loading marker (above the $I=3$ bar by itself)
+  outweighs dozens of weak ones. Suicidality, carried mainly by binary items, is omitted from
+  this continuous-block illustration.}
   \label{fig:mincount}
 \end{figure}
 
