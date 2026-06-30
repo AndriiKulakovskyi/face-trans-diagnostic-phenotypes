@@ -36,11 +36,10 @@ with the empirical mean and covariance of the real coordinates---a structureless
 by construction---and run the identical pipeline. If the real cloud were truly
 clustered, its best partition would separate points \emph{better} than the null's.
 \begin{equation}
-  z_{\text{sil}}=\frac{s^{\star}_{\text{real}}-\mathbb E[s^{\star}_{\text{null}}]}{\operatorname{sd}[s^{\star}_{\text{null}}]}
-  =\frac{0.140-0.137}{0.002}=1.13 ,
+  z_{\text{sil}}=\frac{s^{\star}_{\text{real}}-\mathbb E[s^{\star}_{\text{null}}]}{\operatorname{sd}[s^{\star}_{\text{null}}]}=1.13 ,
 \end{equation}
-i.e.\ the real data's best partition is \emph{not} reliably better separated than a
-structureless Gaussian blob ($z=1.13$, n.s.); the mixture-optimal number of components
+i.e.\ the real data's best partition (silhouette $0.140$) is \emph{not} reliably better
+separated than a structureless Gaussian blob ($0.137\pm0.002$; $z=1.13$, n.s.); the mixture-optimal number of components
 collapsed to one in all $20$ posterior draws. This turns ``no elbow'' into a calibrated
 negative result.
 
