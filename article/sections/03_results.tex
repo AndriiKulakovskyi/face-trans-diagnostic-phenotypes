@@ -194,6 +194,38 @@ suicidality and substance axes beyond the continuous-block illustration shown he
   \label{fig:mincount}
 \end{figure}
 
+\paragraph{From uncertainty to an adaptive battery.} The same arithmetic also turns the map
+into a tool for \emph{choosing} measurements. By the matrix-determinant lemma applied to
+\eqref{eq:res-precision}, observing a not-yet-measured indicator $j$ reduces the differential
+entropy (log-volume) of the posterior ellipsoid by
+$\tfrac12\log\!\big(1+\lambda_j^{\top}S\lambda_j/\sigma_j^{2}\big)$---a closed-form
+\emph{value of information} that depends on what has already been measured. Ordering
+instruments by this quantity, recomputed after each (once an axis is pinned its indicators lose
+value), yields an adaptive battery that reaches a target precision far faster than a fixed or
+random order: on the synthetic patient of Fig.~\ref{fig:localization}, the information-greedy
+order reaches an overall position SD of $0.5$ in $8$ instruments where a random order needs $53$
+(Fig.~\ref{fig:voi}A), a $6.6$-fold saving. The greedy order is also self-diversifying
+(Fig.~\ref{fig:voi}B): it administers one strong anchor for each axis (PSQI for sleep, BMI for
+immunometabolic, the CTQ for developmental risk, verbal memory for cognition) before adding
+redundant items, because each anchor collapses its axis and so demotes its siblings. The
+arithmetic that quantifies a coordinate's uncertainty therefore also prescribes how to reduce it
+most cheaply---a concrete clinical use of the map beyond description.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\linewidth]{fig_voi.png}
+  \caption{\textbf{From uncertainty to an adaptive battery.} On the synthetic patient of
+  Fig.~\ref{fig:localization}, instruments are administered either in decreasing order of their
+  value of information (the entropy reduction $\tfrac12\log(1+\lambda_j^{\top}S\lambda_j/\sigma_j^{2})$
+  from Eq.~\eqref{eq:res-precision}, recomputed after each) or in random order. \textbf{(A)}~Overall
+  position uncertainty (geometric-mean posterior SD) against the number of instruments: the
+  information-greedy order reaches SD~$=0.5$ in $8$ instruments, a random order needs $53$ (median
+  over $200$ orders, band $10$--$90\%$), and a worst-first order lags far behind. \textbf{(B)}~The
+  first $14$ greedy picks, coloured by home factor: the battery administers one strong anchor per
+  axis before adding redundant items, because pinning an axis demotes its remaining indicators.}
+  \label{fig:voi}
+\end{figure}
+
 \subsection{The eight dimensions of the transdiagnostic atlas}\label{subsec:eightdim}
 
 From ten candidate constructs, one global model returned a stable eight-dimension
@@ -518,6 +550,28 @@ A2 immunometabolic       & 0.13 & 0.30 & 0.19 \\
   \label{fig:archetypes}
 \end{figure}
 
+\paragraph{The archetype simplex is a fog, not five clusters.} The continuum verdict is equally
+visible in archetype space. Writing each patient as their membership vector $w_i\in\Delta^{4}$
+over the five corners and measuring how \emph{blended} they are by the entropy
+$H(w_i)=-\sum_{a}w_{ia}\log w_{ia}$, the $9{,}013$ patients fill the interior of the simplex
+rather than piling at its vertices (Fig.~\ref{fig:simplexfog}): the median entropy is $1.24$ of a
+possible $\log 5 = 1.61$ nats, $74\%$ of patients have no majority archetype (largest weight
+$<0.5$), and only $0.4\%$ sit near a single corner (largest weight $>0.8$). The archetypes are
+extremes that \emph{span} a continuous cloud, not labels that \emph{partition} it---the same
+conclusion the structure tests reach, now read directly off the membership weights.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\linewidth]{fig_simplexfog.png}
+  \caption{\textbf{The archetype simplex is a fog, not five clusters.} \textbf{(A)}~Each of the
+  $9{,}013$ patients placed at the barycentre of the five archetype corners by its membership
+  weights $w_i$, coloured by the entropy $H(w_i)$ of those weights; the cloud fills the interior
+  rather than the vertices. \textbf{(B)}~Distribution of $H(w_i)$: median $1.24$ of a maximum
+  $\log 5 = 1.61$ nats, with $74\%$ of patients having no majority archetype and only $0.4\%$ near
+  a single corner---the archetypes span the continuum, they do not partition it.}
+  \label{fig:simplexfog}
+\end{figure}
+
 \subsection{The geometry persists over two years (the map persists)}
 
 Scored forward onto the $12$- and $24$-month visits on the \emph{fixed} model
@@ -550,6 +604,31 @@ durable biology; monitor the moving symptoms}.
   correlation, near-zero population shift) while the cohort slides down the severity
   and symptom axes.}
   \label{fig:traitstate}
+\end{figure}
+
+\paragraph{A trait/state spectrum across the axes.} The same decomposition, shown in full as a
+variance \emph{thermometer} (Fig.~\ref{fig:thermometer}), partitions each axis into trait, state
+and measurement error and so sharpens the reading. Ordered by error-corrected trait fraction the
+eight axes form a single durability spectrum from immunometabolic biology (ICC $0.91$; $80\%$ of
+its total variance is the stable between-patient trait) down to developmental risk ($0.39$), with
+cognition ($0.70$) and general burden ($0.62$) trait-dominant and the symptom axes mixed.
+Separating state from measurement error also shows that the symptom axes (sleep, suicidality,
+developmental risk) carry genuine within-patient change rather than mere noise, whereas mania's
+variance is dominated by measurement error---its two indicators leave it data-limited and its
+trait verdict is not relied upon. The biology that anchors the map is again its most durable
+dimension, exactly the property a stratification axis should have.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=0.92\linewidth]{fig_traitstate.png}
+  \caption{\textbf{Trait/state thermometer.} Each axis's variance across the three visits,
+  partitioned into a stable between-patient (trait) part, a moving within-patient (state) part and
+  measurement error, normalised to the axis total and ordered by the error-corrected trait
+  fraction (ICC $=$ between/(between$+$within)). The immunometabolic biology axis is the most
+  durable (ICC $0.91$), developmental risk the most state-like ($0.39$); mania is mostly
+  measurement error (two indicators, data-limited). This variance view complements
+  Fig.~\ref{fig:traitstate}, separating genuine within-patient state from measurement noise.}
+  \label{fig:thermometer}
 \end{figure}
 
 \subsection{Archetype position predicts group-level two-year functioning (the map predicts)}
