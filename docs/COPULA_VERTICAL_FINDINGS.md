@@ -99,7 +99,7 @@ internal analysis — the vertical engines embody the continuum object end to en
   *(Figure panel D.)*
 - **Functioning, not severity** (severity autoregression-saturated). **Co-informative with DSM-5**
   (+both 62.6 > +DSM-5 29 > +map 17 — complements, not replaces).
-- **Prognostic atlas: 2-yr functional remission 17% → 52%** across archetypes, the immunometabolic corner (A2)
+- **Prognostic atlas: 2-yr functional remission 22% → 63%** across archetypes, the immunometabolic corner (A2)
   the worst-prognosis pole. *(Figure panel C.)*
 - **Robust**: archetype signal survives IPW (+54.4); permutation null vanishes (−2.4); weakens dropping BP —
   **course-dependent** (BP-led).

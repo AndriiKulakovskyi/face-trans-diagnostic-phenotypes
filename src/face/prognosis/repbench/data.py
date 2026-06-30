@@ -50,8 +50,8 @@ def raw_mask(raw: pd.DataFrame) -> pd.DataFrame:
 
 # --------------------------------------------------------------------------- LATENT (copula coords + arch)
 def load_latent() -> pd.DataFrame:
-    """Copula M1/M2 latent features per patient: ``{ax}__mean`` and ``{ax}__sd`` for the 9 axes, plus the
-    A=4 archetype weights. Source = the certified Gaussian-copula objects under ``results/face/strata_oop``."""
+    """Copula M1/M2 latent features per patient: ``{ax}__mean`` and ``{ax}__sd`` for the 8 axes, plus the
+    A=5 archetype weights. Source = the certified Gaussian-copula objects under ``results/face/strata_oop``."""
     coords = _keyed(pd.read_parquet(COPULA_COORDS / "coordinates_full.parquet"))
     strata = _keyed(pd.read_parquet(COPULA_CONSOLIDATE / "patient_strata.parquet"))
     mean_cols = [f"{ax}__mean" for ax in CANON]

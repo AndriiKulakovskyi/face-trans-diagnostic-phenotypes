@@ -1,0 +1,487 @@
+\section{Methods}
+
+This section gives a self-contained mathematical account of the model and the analysis; the
+complete development, with proofs, is in the Supplement
+(\ref{ann:measurement}--\ref{ann:treatment}). Throughout, $i=1,\dots,N$ indexes patients,
+$j=1,\dots,J$ indicators, $k=1,\dots,K$ the $K=7$ specific factors and \Gfac{} the general
+factor; $O_i$ is patient $i$'s set of observed indicators and $C_i\subseteq O_i$ its observed
+continuous cells.
+
+\subsection{Cohorts, harmonization and the no-imputation data layer}
+
+Data were the baseline (visit V0) of three FACE cohorts (Fondation FondaMental expert
+centres): bipolar disorder, schizophrenia and major depression ($N=9{,}013$; BP
+$6{,}252$, SZ $2{,}209$, DR $552$; $21$ recruitment sites). A harmonized data
+dictionary maps each modelled variable to its per-cohort source column, a
+harmonization rule and per-variable plausibility (``sanity'') bounds; out-of-range
+values are set to missing (never clipped, never imputed). Deterministic skip-logic
+decoding sets structural zeros only where a gate is explicitly negative (for example,
+attempt count $=0$ when ever-attempted $=0$); this is decoding, not imputation. Each
+variable carries a likelihood family and a missingness type. Identifiers (patient,
+cohort, DSM-5 subtype, visit, site) are never modelled as indicators; cohort and
+subtype enter only as covariates, invariance-grouping variables or validation labels.
+Of the $201$ usable harmonized common variables, $143$ form the modelled-indicator pool
+(the comparator for the raw-indicator prognostic benchmark); the remaining $58$ are
+identifiers, covariates or validation labels and are never factor indicators. The fitted
+factor map carries $109$ of these indicators---$88$ in the Gaussian-copula continuous
+block and $21$ in the explicit non-Gaussian block---across its eight axes.
+
+No a-priori power calculation was performed: this is a secondary analysis of the complete
+baseline assessment of the three FACE cohorts, in which all $N=9{,}013$ available patients are
+modelled (balancing by subsampling is rejected in favour of cohort weighting). The sample is
+sized for the study's \emph{group-level} estimands---the factor structure, the biology--burden
+correlation $\phi_{Gd}$, and incremental held-out predictive density---which it resolves well
+beyond chance (for example, all $37$ immunometabolic loadings and the $\phi_{Gd}$ ordering have
+$95\%$ intervals excluding the relevant null); it is correspondingly \emph{not} powered for
+individual-level binary discrimination, so the small functional-remission AUC gain ($+0.010$)
+reflects this scope rather than an underpowered analysis.
+
+\subsection{Candidate ontology and soft priors}
+
+Ten candidate constructs defined a \emph{soft-prior} ontology rather than a fixed
+output.
+Mapping the candidates against the common-variable coverage fixes the eligible set and
+is itself a primary result: a construct with no common indicator is reported
+\emph{not testable}, never back-filled with an invented proxy. Each (indicator, factor)
+cell receives a prior \emph{role}---primary, plausible-cross, unlikely or
+forbidden---whose default is shrinkage rather than exclusion, so the model can confirm,
+split, merge, downgrade, reject or declare not-testable any candidate. Formally, the
+loading in cell $(j,k)$ carries the role-dependent prior
+\begin{equation}
+  \lambda_{jk}\mid\rho(j,k)\ \sim\
+  \begin{cases}
+    \mathcal{N}_{+}(0.70,\,0.25^2) & \textsc{primary (home cell)},\\[2pt]
+    \text{regularized horseshoe }\eqref{eq:m-horseshoe} & \textsc{plausible cross},\\[2pt]
+    \mathcal{N}(0,\,0.05^2)        & \textsc{unlikely},\\[2pt]
+    \delta_{0}                     & \textsc{forbidden},
+  \end{cases}
+  \label{eq:m-softprior}
+\end{equation}
+with $\mathcal N_{+}$ the positive truncation that sign-anchors each home loading and
+$\delta_0$ a point mass at zero; the factor correlations take an $\mathrm{LKJ}(\eta{=}2)$
+prior and the remaining priors are weakly informative (Supplement~\ref{ann:measurement}).
+
+\subsection{The measurement model}
+
+The measurement model rests on a small set of core equations; their full derivation, with
+proofs, is in Supplement~\ref{ann:measurement}. We posit that a few latent factors generate the many
+measured quantities, so each patient is summarized by a low-dimensional coordinate.
+Patient $i$ carries a factor vector of one general functional-burden axis \Gfac{} and
+$K=7$ specific axes, given a standardized multivariate-normal prior,
+\begin{equation}
+  f_i=(G_i,D_{i1},\dots,D_{iK})^{\top}\ \sim\ \mathcal{N}_{K+1}\!\left(\mathbf 0,\,\Phi\right),
+  \qquad \operatorname{diag}(\Phi)=\mathbf 1 .
+  \label{eq:factors}
+\end{equation}
+The unit diagonal of the factor correlation matrix $\Phi$ fixes the latent scale;
+\Gfac{} is the burden axis every indicator may share, while $D_{i1},\dots,D_{iK}$ are the
+seven domain-specific axes (cognition, immunometabolic, sleep, mania/activation,
+suicidality, developmental risk and substance use), so the map is eight-dimensional:
+one general axis plus seven specifics. The immunometabolic axis is a single biology
+factor carrying the cardiometabolic and inflammatory markers together (body-mass index,
+glycated haemoglobin, lipids, C-reactive protein), with bmi$\to$immunometabolic $\approx
+0.95$ and crp$\to$immunometabolic $\approx 0.37$. Equation~\eqref{eq:factors} is the
+formal content of the idea that a patient is \emph{one general burden axis plus specific
+axes}.
+
+Each indicator $j$ is a linear reflection of those factors through a single predictor,
+\begin{equation}
+  \eta_{ij}=\alpha_j+\lambda_{jG}\,G_i+\sum_{k=1}^{K}\lambda_{jk}\,D_{ik}+\beta_j^{\top}c_i ,
+  \label{eq:measure}
+\end{equation}
+with item intercept $\alpha_j$, a general loading $\lambda_{jG}$ onto \Gfac{}, specific
+loadings $\lambda_{jk}$ (row $j$ of the loading matrix
+$\Lambda=[\,\lambda_G\mid\Lambda_D\,]$), and item-level covariates $c_i$ that shift an
+indicator's mean but are never themselves factor indicators. Equation~\eqref{eq:measure}
+\emph{is} the bifactor exploratory structural-equation
+model~\citep{reise2012bifactor,asparouhov2009esem}: bifactor because every indicator may
+load on \Gfac{} \emph{and} on its home specific factor; exploratory because small
+off-home cross-loadings $\lambda_{jk}$ are admitted under a sparsity-inducing prior
+rather than forbidden outright. The predictor feeds a per-type observation density---Gaussian
+or log-Gaussian for continuous and laboratory measures, ordered-logit for ordinal,
+Bernoulli for binary, negative-binomial for counts---and continuous indicators
+additionally enter through a rank-based \emph{Gaussian-copula} marginal
+$z_{ij}=\Phi_{\mathcal N}^{-1}\!\big(\hat F_j(X_{ij})\big)$ ($\hat F_j$ the frozen empirical
+distribution function of indicator $j$), so that forcing heterogeneous variables onto a
+shared scale never manufactures covariance and the latent dependence the claims live in is
+left unchanged.
+
+\emph{The loading as a measurement slope.} Equations~\eqref{eq:factors}--\eqref{eq:measure}
+separate two intrinsically different objects. The factor $f_i$ is a per-patient latent
+\emph{position}---a random coordinate with prior $\mathcal N(\mathbf 0,\Phi)$---whereas a
+loading is a fixed \emph{slope}: the rate at which a measurement changes as that position
+moves, shared by every patient. On the latent linear-predictor scale this slope is exact and
+patient-independent, $\partial\eta_{ij}/\partial f_{ik}=\lambda_{jk}$, so the loading matrix is
+nothing but the Jacobian of the measurement with respect to the latent,
+$\Lambda=[\,\partial\eta_{ij}/\partial f_{ik}\,]_{j,k}$. On the response scale, for the
+single-index likelihoods (the continuous, log-, Bernoulli and count blocks) with conditional
+mean $\mathbb E[X_{ij}\mid f_i]=h_j(\eta_{ij})$ and inverse link $h_j=g_j^{-1}$, the chain rule
+gives the marginal effect of a factor on an indicator and its population average,
+\begin{equation}
+  \frac{\partial\,\mathbb E[X_{ij}\mid f_i]}{\partial f_{ik}}=h_j'(\eta_{ij})\,\lambda_{jk},
+  \qquad
+  s_{jk}\equiv\mathbb E\!\left[\frac{\partial\,\mathbb E[X_{ij}\mid f_i]}{\partial f_{ik}}\right]
+  =\kappa_j\,\lambda_{jk},\qquad
+  \kappa_j=\mathbb E\!\left[h_j'(\eta_{ij})\right]\ge 0 ,
+  \label{eq:m-slope}
+\end{equation}
+so the \emph{expected derivative} of an indicator with respect to a factor is exactly its
+loading, rescaled by a non-negative, link-dependent constant $\kappa_j$ (identity link
+$h_j'\equiv1$, so $s_{jk}=\lambda_{jk}$; logit $h_j'(\eta)=\sigma(\eta)\{1-\sigma(\eta)\}$; log
+link $h_j'(\eta)=e^{\eta}$; the ordinal and copula blocks carry the same slope $\lambda_{jk}$
+on their latent scale). The two objects are complementary, not interchangeable: the factors say
+\emph{where} a patient lies in the coordinate system, while the loadings say \emph{how fast}
+each instrument reads out as one moves along an axis---a position and the slopes that read it
+out are different kinds of quantity. This is also why neither is fixed by the likelihood alone:
+rotating the factors trades position against slope while leaving the data untouched. The
+Gaussian likelihood is invariant under any invertible factor rotation
+$M$---replacing $(\Lambda,\Phi,f)$ by $(\Lambda M,\ M^{-1}\Phi M^{-\top},\ M^{-1}f)$ leaves
+$\Sigma=\Lambda\Phi\Lambda^{\top}+\Psi$ unchanged---so the model is not identified from the
+likelihood alone (Prop.~\ref{propA:rotation}). Identification comes from the soft-zero
+loading priors, which are \emph{not} rotation-invariant: the posterior concentrates at the
+orientation where small loadings align with their soft zeros and home loadings are positive
+and substantial. A prior-free (flat-prior) refit that recovers the same loadings to Tucker
+congruence $\varphi=1.00$ therefore shows the map is recovered from the data, not imposed
+(Cor.~\ref{corA:flat}).
+
+The off-home cross-loadings are governed by a designed sparsity mechanism that keeps the
+map mostly simple-structure while letting a few evidence-backed cross-loadings emerge.
+On each off-home specific$\leftrightarrow$specific cell we place a regularized
+(``Finnish'') horseshoe prior~\citep{carvalho2009horseshoe,piironen2017horseshoe},
+\begin{equation}
+  \lambda_j=z_j\,\tau\,\tilde\eta_j,\qquad
+  \tilde\eta_j^{2}=\frac{c^{2}\eta_j^{2}}{c^{2}+\tau^{2}\eta_j^{2}},\qquad
+  z_j\sim\mathcal N(0,1),\ \ \eta_j\sim\mathrm{HalfCauchy}(1),\ \ \tau\sim\mathrm{HalfNormal}(\tau_0),
+  \label{eq:m-horseshoe}
+\end{equation}
+with $\tau_0=0.05$ and slab $c=0.30$, fit non-centred. The three pieces each do one job: the
+\emph{global} shrinkage $\tau$ pulls the whole set toward zero (the prior's default belief is
+\emph{no} cross-loadings); the heavy-tailed \emph{local} scale $\eta_j$ lets a single
+cross-loading the data insist on escape that shrinkage; and the \emph{slab} $c$ caps the
+escape ($\tilde\eta_j\to c/\tau$ for large $\eta_j$) so a cross-loading stays small (it is not
+a home loading). The prior is therefore \emph{default-off, evidence-on, magnitude-capped}.
+This is exactly what protects the thin specific factors---substance and mania/activation are
+each defined by very few indicators---from dilution: spurious cells from other factors are
+crushed to zero by the global shrinkage, so a thin column stays defined only by its
+sign-anchored home indicators (home loadings are not horseshoed), while a clinically real weak
+cross-loading can still surface with a credible interval. Substance is additionally pinned
+orthogonal to the correlated block, its cross-factor correlations being non-identifiable. A
+continuous sparse-ESEM validation arm that frees every off-home cell confirms the structure is
+\emph{recovered from the data, not imposed}: roughly $83\%$ of the freed cells shrink to
+$\approx 0$, and the credible remainder is folded back into the full mixed map, which retains
+three small cross-loadings---childhood adversity (CTQ-37, $-0.094$), sleep latency
+(PSQI-latency, $+0.057$) and daytime dysfunction (PSQI-daytime, $-0.070$) onto cognition, each
+with a $95\%$ interval excluding zero. Given total freedom the model reproduces known clinical
+cross-talk and nothing spurious, which is positive evidence the map is well specified
+(Supplement~\ref{ann:measurement}).
+
+Given the latent scores the indicators are conditionally independent (local
+independence: once the factors are fixed, only item-specific noise remains, a diagonal
+residual covariance $\Psi$). Because the factors are then the only source of shared
+covariance, the complete-data density factorizes over items and the unobserved $f_i$ is
+integrated out patient by patient,
+\begin{equation}
+  L(\Theta)=\prod_{i=1}^{N}\int\Big[\textstyle\prod_{j\in O_i} p(X_{ij}\mid f_i,\Theta)\Big]\,
+  \mathcal N(f_i;\mathbf 0,\Phi)\,\mathrm{d}f_i ,
+  \label{eq:m-fulllik}
+\end{equation}
+the first-principles likelihood---a product over independent patients, a product over items
+(local independence), and the integral that removes the latent (the sum rule).
+Equations~\eqref{eq:factors}--\eqref{eq:measure} also generate a structured covariance among
+the indicators,
+\begin{equation}
+  \Sigma=\Lambda\,\Phi\,\Lambda^{\top}+\Psi
+        =\underbrace{\lambda_G\lambda_G^{\top}}_{\text{general: rank one}}
+         +\underbrace{\Lambda_D\Phi_D\Lambda_D^{\top}}_{\text{specific factors}}
+         +\underbrace{\Psi}_{\text{private noise}},
+  \label{eq:sigma}
+\end{equation}
+where $\Lambda=[\,\lambda_G\mid\Lambda_D\,]$ collects the loadings and $\Phi_D$ is the
+specific-factor correlation block; the cross-terms between \Gfac{} and the specifics vanish
+under the bifactor orthogonality $\mathbb E[G_iD_i^{\top}]=\mathbf 0$
+(Prop.~\ref{propA:sigma}). Equation~\eqref{eq:sigma} is the generative claim in one
+line---\Gfac{} leaves a rank-one footprint that touches every item, the specific factors
+contribute a block, and $\Psi$ absorbs what no factor explains---and it is also why imputation
+is forbidden: a filled-in cell would inject covariance that \eqref{eq:sigma} would misread as
+a factor.
+
+Accordingly the model is fit to each patient's \emph{observed cells only}. With $F_j$ the
+density of indicator $j$, the observed-data log-likelihood is
+\begin{equation}
+  \log p\!\left(X_{\mathrm{obs}}\mid\Theta\right)=\sum_{i=1}^{N}\ \sum_{j\in O_i}\ \log F_j\!\left(X_{ij}\mid\eta_{ij},\theta_j\right) .
+  \label{eq:obslik}
+\end{equation}
+A missing cell contributes no term and no completed $N\times J$ matrix is ever formed;
+deterministic skip-logic decodes structural zeros as \emph{observed} values, not imputed
+ones. For the Gaussian block this is exact full-information maximum likelihood: marginals of a
+normal are read off by deleting coordinates, so the observed continuous sub-vector is
+\begin{equation}
+  X_{i,C_i}\sim\mathcal N\!\big(\mu_{i,C_i},\,\Sigma_{C_i}\big),\qquad
+  \Sigma_{C_i}=\Lambda_{C_i}\Phi\Lambda_{C_i}^{\top}+\Psi_{C_i},
+  \label{eq:m-marg}
+\end{equation}
+keeping only the observed rows of $\Lambda$ and the observed diagonal of $\Psi$; summing
+$\log\mathcal N$ over each patient's observed sub-vector is precisely the full-information
+maximum-likelihood (FIML) objective for incomplete data, so \emph{marginalizing} the missing
+cells is the marginal property itself, not an imputation step (Prop.~\ref{propA:marg}).
+Equation~\eqref{eq:obslik} is the no-imputation invariant on which every downstream analysis
+rests.
+
+Two factor covariances are estimated. The primary \emph{bifactor} fit holds \Gfac{}
+orthogonal to the specific axes ($\Phi$ block-diagonal); this is the natural null for the
+biology question. A \emph{correlated-\Gfac{}} arm then unzips that zero block,
+\begin{equation}
+  \Phi=\begin{pmatrix}1 & \phi_{Gd}^{\top}\\[2pt] \phi_{Gd} & \Phi_D\end{pmatrix},
+  \qquad \phi_{Gd}=\operatorname{Corr}(G,D)\in[-1,1]^{K},
+  \label{eq:corrg}
+\end{equation}
+adding to the model-implied covariance the cross-terms the orthogonality had removed,
+\begin{equation}
+  \Sigma=\lambda_G\lambda_G^{\top}
+  +\underbrace{\lambda_G\phi_{Gd}^{\top}\Lambda_D^{\top}+\Lambda_D\phi_{Gd}\lambda_G^{\top}}_{\text{freed by correlating }\Gfac{}\text{ with the specifics}}
+  +\Lambda_D\Phi_D\Lambda_D^{\top}+\Psi .
+  \label{eq:m-corrgsigma}
+\end{equation}
+The arm thus turns ``biology is separable from severity'' from a built-in constraint into the
+\emph{measured} vector $\phi_{Gd}$: a domain is severity-entangled when its entry is
+large and separable when it is near zero (immunometabolic $\approx 0.10$, versus cognition
+$0.39$ and sleep $0.42$ in the same freely-correlated model---so the separation is a cross-domain ordering
+the model is free to violate, not a consequence of the bifactor zero block). Reporting the bifactor general loadings
+$|\lambda_{jG}|$ and the correlated-\Gfac{} correlations $\phi_{Gd}$ together---they
+agree on the ordering---is what makes the separation a measurable estimand rather than an
+artefact of the orthogonality constraint (Figure~\ref{fig:biologyg} in the Results;
+Supplement~\ref{ann:measurement}). The biology--\Gfac{} result is reported unadjusted and
+under a covariate-adjustment ladder (age, sex, education, site, antipsychotic exposure,
+adiposity) implemented by residualizing each indicator before the factor model.
+
+\subsection{Estimation, confirmation, invariance and scoring}
+
+The model is fit globally to the full sample ($N=9{,}013$) under per-patient cohort weights
+$w_i = N/(3\,n_{c(i)})$, with $n_{c(i)}$ the size of patient $i$'s cohort, so that each of the
+three cohorts contributes equal total weight $N/3$ while every patient is retained and
+$\sum_i w_i = N$. Balancing by subsampling is rejected because matching the smallest cohort would discard
+${\sim}92\%$ of the bipolar sample; weighting equalizes cohort influence without that loss. This is a
+composite-likelihood weighting: the point estimate is the balanced transdiagnostic estimand, and because the
+resulting posterior standard deviations are order-correct rather than fully calibrated we validate them by
+cross-seed congruence. The map's insensitivity to the weighting is quantified by the robustness battery below,
+one arm of which refits under inverse-cohort weighting against the unweighted full-sample fit (minimum Tucker
+$\varphi=0.96$). The global posterior was reached by continuation: a
+well-conditioned sub-model was fit and then deformed toward the full target one source of
+difficulty at a time, each converged posterior warm-starting the next, and \emph{only the
+global fit is interpreted}.
+
+The Gaussian block is marginalized analytically: evaluating \eqref{eq:m-marg} naively costs
+$\mathcal{O}(|C_i|^3)$ per patient, and the Woodbury identity reduces it to the
+$(K{+}1)$-dimensional factor space,
+\begin{equation}
+  \Sigma_{C_i}^{-1}=\Psi_{C_i}^{-1}-\Psi_{C_i}^{-1}\Lambda_{C_i}
+  \big(\Phi^{-1}+\Lambda_{C_i}^{\top}\Psi_{C_i}^{-1}\Lambda_{C_i}\big)^{-1}
+  \Lambda_{C_i}^{\top}\Psi_{C_i}^{-1},
+  \label{eq:m-woodbury}
+\end{equation}
+whose inner $(K{+}1)\times(K{+}1)$ solve is independent of $|C_i|$ and is shared by all
+patients with the same missingness pattern (computed once per pattern, with the
+matrix-determinant lemma for the log-determinant); this removes the per-patient latent funnel
+and makes full-sample estimation tractable on a workstation (Lemma~\ref{lemA:woodbury}).
+Sampling used the No-U-Turn sampler~\citep{hoffman2014nuts}
+in PyMC~\citep{abrilpla2023pymc} with the NumPyro/JAX backend~\citep{phan2019numpyro};
+a stage advanced only on standard convergence criteria (acceptable $\hat R$, adequate
+effective sample size, zero divergences, no Heywood cases, acceptable
+posterior-predictive behaviour), with a cross-seed stability guard for the joint mixed
+fit. The global $8$-factor fit converges cleanly ($\hat R=1.03$, zero divergences). Identification does not rest on information criteria, which favour bifactor over correlated-factor
+structures for reasons of functional form that are independent of which model generated the
+data~\citep{bonifaycai2017,greene2019fit,bonifay2017three}. We rely instead on three prior-free checks
+performed in-engine. First, an independent flat-prior refit (identification constraints only, fresh seed, no
+warm start) reproduced the loadings and factor correlations to three decimals (Tucker congruence
+$\varphi=1.00$), so the structure is driven by the data rather than by the soft loading priors. Second, the
+correlated-\Gfac{} arm (Eq.~\ref{eq:corrg}) tests the \Gfac{}--specific orthogonality directly rather than
+imposing it. Third, posterior-predictive checks gave a Bayesian standardized root-mean-square residual
+$\approx0.07$ for the continuous block and reproduced $21/22$ non-Gaussian indicators within the $90\%$
+predictive interval. As a secondary check WAIC and PSIS-LOO~\citep{watanabe2010waic,vehtari2017loo} also
+ranked the bifactor above unidimensional and correlated-factor alternatives, but for the reason above we
+treat this as confirmatory only. Because the marginalized Bayesian model and full-information maximum
+likelihood optimize the same observed-data objective (Prop.~\ref{propA:fiml}), a standalone
+maximum-likelihood arm adds no independent evidence. Measurement invariance across BP/SZ/DR was tested by multi-group loadings and
+Bayesian differential item functioning, and robustness by leave-one-cohort-out
+congruence, diagnosis-balanced subsampling, site cluster-bootstrap and inverse-cohort
+weighting (minimum Tucker $\varphi=0.96$).
+
+Each patient's coordinates are the expected a posteriori (EAP) factor scores from their
+observed cells; for an all-continuous pattern,
+\begin{equation}
+  \hat f_i=\mathbb E[f_i\mid X_{i,C_i}]
+  =\Phi\Lambda_{C_i}^{\top}\Sigma_{C_i}^{-1}\!\big(X_{i,C_i}-\mu_{i,C_i}\big),\qquad
+  S_i=\Phi-\Phi\Lambda_{C_i}^{\top}\Sigma_{C_i}^{-1}\Lambda_{C_i}\Phi ,
+  \label{eq:m-scores}
+\end{equation}
+obtained by MCMC when non-Gaussian cells are present. The posterior mean
+$x_i\equiv\hat f_i\in\mathbb R^{8}$ and the posterior covariance $S_i$ are the objects every
+downstream analysis consumes: a patient with one observed indicator on an axis is \emph{not}
+treated as equally characterized as one with six, so each downstream step propagates $S_i$
+rather than treating coordinates as equally measured.
+
+\subsection{A fast variational re-estimation}
+
+As an efficiency-oriented alternative to NUTS, we re-estimate the same measurement
+model---the bifactor/ESEM atlas of Eqs.~\eqref{eq:factors}--\eqref{eq:obslik}, identical
+ontology and mixed likelihood---as a generalized linear latent-variable
+model~\citep{hui2017gllvm} fit by stochastic variational
+inference~\citep{blei2017vi,hoffman2013svi} in PyTorch~\citep{paszke2019pytorch}. Each
+patient's coordinate receives a variational posterior $q_i(f_i)=\mathcal N(\mu_i,\Sigma_i)$,
+and the model is fit by minimizing the negative evidence lower bound (observed cells only; the
+soft loading prior enters as a penalty; reparameterized gradients~\citep{kingma2014vae}), with
+the global parameters as maximum-a-posteriori estimates. This trades NUTS's exact posterior
+sampling for optimization within an approximate family: it is ${\sim}100\times$ faster
+(${\approx}4.5$ minutes at full $N$ on a CPU, versus hours) and reproduces the NUTS loading map
+and patient coordinates closely, at the cost of attenuated inter-factor correlations under a
+mean-field posterior---so it serves as a fast operational and generative engine while NUTS
+remains the authority for correlation magnitudes and credible intervals. The full model,
+inference and head-to-head comparison are in Supplement~\ref{ann:variational}.
+
+\subsection{Pre-specification and the downstream estimands}
+
+The analysis followed a pre-specified staged plan: the candidate construct ontology and the
+biology--burden correlation $\phi_{Gd}$---the primary estimand---were fixed a priori (the
+soft-prior matrix, Supplement~\ref{ann:measurement}), with the stratification, temporal and
+prognostic arms secondary and the treatment-moderation analysis explicitly exploratory. As a
+secondary analysis of an existing cohort the study was not prospectively registered; we
+therefore report all pre-planned arms, label post hoc analyses as such, and interpret the
+resulting multiplicity with caution. Each downstream analysis then treats the measurement
+model as \emph{fixed}---reusing or re-scoring coordinates without re-discovering the
+map---and propagates each coordinate's posterior covariance $S_i$ from \eqref{eq:m-scores}
+rather than treating the scores as exact.
+
+\subsection{Stratification: structure testing and archetypes}
+
+On the coordinates $\{x_i,S_i\}_{i=1}^{N}$ structure was tested \emph{before} any clustering
+by a multi-statistic battery (Hopkins, Hartigan's dip, the gap statistic, the silhouette and
+HDBSCAN), each computed over the posterior draws so that measurement noise cannot manufacture
+structure, and anchored by a \emph{single-Gaussian falsification null}: synthetic data drawn
+from one Gaussian $\mathcal N\!\big(\bar x,\widehat{\operatorname{Cov}}(x)\big)$ with the
+empirical mean and covariance of the coordinates---structureless by construction---are run
+through the identical pipeline, and the real cloud's best partition (silhouette $0.140$) is
+compared with the null's ($0.137\pm0.002$),
+\begin{equation}
+  z_{\mathrm{sil}}=\frac{s^{\star}_{\mathrm{real}}-\mathbb E[s^{\star}_{\mathrm{null}}]}
+  {\operatorname{sd}[s^{\star}_{\mathrm{null}}]}=1.13\ (\text{n.s.}),
+  \label{eq:m-silz}
+\end{equation}
+so the real partition separates patients no better than a structureless blob: the verdict is a
+graded \emph{continuum}, not discrete biotypes. The continuum is summarized by archetypal
+analysis~\citep{cutler1994archetypal}, which writes each patient as a convex blend of $A$
+extreme phenotypes that are themselves convex combinations of patients,
+\begin{equation}
+  \min_{W,B}\ \sum_{i=1}^{N}\Big\|x_i-\sum_{a=1}^{A} w_{ia}\,z_a\Big\|^{2}
+  \quad\text{s.t.}\quad z_a=\sum_{j=1}^{N} b_{ja}\,x_j,\ \
+  w_{ia},b_{ja}\ge0,\ \ \textstyle\sum_a w_{ia}=\sum_j b_{ja}=1 ,
+  \label{eq:m-archetype}
+\end{equation}
+i.e.\ $X\approx WZ$ with $Z=BX$ and $W,B$ row-stochastic, which forces the archetypes $z_a$
+onto the convex hull of the cloud; the simplex weight $w_i\in\Delta^{A-1}$ is a patient's soft
+membership and is propagated by refitting across posterior draws. The number of corners
+($A=5$) is the largest with cross-seed Tucker congruence $\ge0.8$ (a clean stability cliff at
+$A=6$, $0.979\to0.436$), set by stability rather than parsimony. A complementary
+measurement-error mixture treats $x_i$ as a noisy reading of a latent position and
+deconvolves the \emph{known} $S_i$ (extreme deconvolution~\citep{bovy2011xd}),
+\begin{equation}
+  x_i\ \sim\ \sum_{r=1}^{R}\pi_r\,\mathcal N\!\big(m_r,\ \Sigma_r+S_i\big),\qquad
+  \pi\sim\mathrm{Dirichlet}\!\left(\tfrac{\alpha}{R}\mathbf 1\right) ,
+  \label{eq:m-xd}
+\end{equation}
+so imprecise coordinates spread their mass across regions and prior-dominated axes
+self-down-weight; the posterior responsibilities are the soft tessellations. Because the
+mixture BIC is essentially flat in the number of regions $R$, no $R$ is privileged: a nested
+family is exported and the operative granularity deferred to incremental predictive validity
+downstream. The representation is read against the held-out labels by the variance a partition
+explains per axis,
+$\eta^{2}_{d}=1-\sum_{k}\sum_{i\in\mathcal C_k}(x_{id}-\bar x_{kd})^{2}\big/\sum_i(x_{id}-\bar x_d)^{2}$,
+and by the adjusted Rand index against diagnosis: the $A=5$ archetypes explain mean
+$\eta^{2}=0.256$ of the eight-axis coordinate variance against $0.026$ for the DSM-5 grouping
+($\approx9.7\times$) yet are nearly orthogonal to it (ARI $0.021$).
+
+\subsection{Temporal coherence: invariance and trait/state}
+
+Follow-up visits were scored on the \emph{fixed} $V0$ model---the frozen
+$(\hat\Lambda,\hat\Phi,\hat\Psi)$, the frozen rank-copula maps $\hat F_j$ of~\eqref{eqA:copula}
+and the frozen covariate residualization---via the EAP map \eqref{eq:m-scores}; re-scoring
+$V0$ through this path reproduces the baseline coordinates at Pearson $r=0.99$, so $V0$, $V1$
+and $V2$ share one scale. Longitudinal measurement invariance was tested by the Tucker
+congruence of the per-visit loadings against $V0$ (all four backbone axes $\varphi\ge0.95$).
+Trait was separated from state by a measurement-error random-intercept model that plugs the
+\emph{known} baseline measurement variance $s_i^{2}$ (the relevant diagonal entry of $S_i$):
+writing $x_{it}$ for patient $i$'s coordinate at visit $t$,
+\begin{equation}
+  x_{it}=\underbrace{\gamma_t}_{\text{visit fixed effect}}
+  +\underbrace{u_i}_{\text{trait}}+\underbrace{e_{it}}_{\text{state}}
+  +\underbrace{m_{it}}_{\text{measurement}},\qquad
+  u_i\sim\mathcal N(0,\tau^{2}),\ e_{it}\sim\mathcal N(0,\omega^{2}),\ m_{it}\sim\mathcal N(0,s_i^{2}),
+  \label{eq:m-trait}
+\end{equation}
+the trait fraction being the intraclass correlation
+\begin{equation}
+  \mathrm{ICC}=\frac{\tau^{2}}{\tau^{2}+\omega^{2}},
+  \label{eq:m-icc}
+\end{equation}
+reported as a posterior with a $94\%$ credible interval. Plugging $s_i^{2}$ prevents a
+low-reliability axis from masquerading as state, and the visit fixed effects $\gamma_t$
+prevent a shared population trajectory---the shift $\gamma_{V2}-\gamma_{V0}$---from being
+miscounted as individual instability. The immunometabolic biology axis is the single most
+durable ($\mathrm{ICC}=0.91$), with cognition trait beside it ($0.70$) and the symptom axes
+state or mixed, while the population improves on symptoms (severity shift $-0.46$, suicidality
+$-0.84$) and holds on biology ($+0.04$).
+
+\subsection{Prognosis: errors-in-variables incremental validity}
+
+Prognosis tested whether a baseline coordinate predicts a two-year outcome \emph{incrementally}
+beyond diagnosis, current severity and the baseline value of the outcome. Because coordinates
+are estimated rather than observed, a naive regression on $\hat f_i$ attenuates, so we fit an
+errors-in-variables Bayesian generalized linear model that carries each coordinate's posterior
+standard deviation $s_{id}$ as a measurement model on a latent regressor $\theta_i$,
+\begin{equation}
+  \theta_{id}\sim\mathcal N\!\big(\hat f_{id},\,s_{id}^{2}\big),\qquad
+  g\big(\mathbb E[y_i]\big)=\beta_0+\beta_W^{\top}W_i+\beta_\theta^{\top}\theta_i ,
+  \label{eq:m-eiv}
+\end{equation}
+for outcome $y_i$ (two-year functioning or severity) and link $g$, over a fixed ladder of
+designs $W$: a reference (age, sex, baseline outcome, baseline severity), then $+$DSM-5
+subtype, $+$map (continuous coordinates, archetypes or a tessellation), or $+$both.
+Incremental value is the held-out expected log predictive density by Pareto-smoothed
+importance-sampling leave-one-out~\citep{vehtari2017loo},
+\begin{equation}
+  \Delta\mathrm{ELPD}=\widehat{\mathrm{elpd}}_{\mathrm{loo}}(\text{model})
+  -\widehat{\mathrm{elpd}}_{\mathrm{loo}}(\text{reference}),
+  \label{eq:m-elpd}
+\end{equation}
+declared \emph{predictive} only when it exceeds twice its standard error; for the binary
+endpoints---two-year functional remission (reaching GAF $\ge71$ from baseline impairment) and
+deterioration (a GAF drop $\ge10$), each pooled across the $12$- and $24$-month visits---we
+also report the cross-validated change in AUC. Robustness used
+inverse-probability-of-attrition weighting, restriction to the reliable axes and a permutation
+null, and a separate representation benchmark compared the map against all $143$ raw indicators
+under a matched gradient-boosting classifier (Supplement~\ref{ann:prognosis}).
+
+\subsection{Treatment moderation: an exploratory negative control}
+
+Treatment exposures, harmonized to drug classes, were analysed as an \emph{exploratory
+negative control}: the baseline cohort carries no randomization, so the pipeline \emph{bounds}
+what the map licenses on treatment moderation and \emph{defends} the prognostic signal, rather
+than claiming a treatment effect. For each contrast a propensity
+$e(v_i)=\Pr(\text{treat}\mid v_i)$ was fit on a design $v_i$ including severity, diagnosis,
+demographics \emph{and} the eight coordinates~\citep{rosenbaum1983propensity}; after gating on
+common support (the region where both arms have mass), patients were reweighted by stabilized
+inverse-probability-of-treatment weights~\citep{austin2011iptw},
+\begin{equation}
+  w_i=\frac{\Pr(\text{treat})}{e(v_i)}\ \ (\text{treated}),\qquad
+  w_i=\frac{1-\Pr(\text{treat})}{1-e(v_i)}\ \ (\text{control}) .
+  \label{eq:m-iptw}
+\end{equation}
+Moderation---whether a durable axis or archetype changes \emph{who} benefits---was estimated
+by a doubly-robust errors-in-variables outcome model with a treatment-by-coordinate
+interaction \eqref{eq:m-eiv}, reporting the per-axis interaction credible interval and the
+held-out $\Delta\mathrm{ELPD}$ of adding it. Each average treatment effect carries an
+E-value~\citep{vanderweele2017evalue}---the minimum association an unmeasured confounder would
+need, with both treatment and outcome, to explain the estimate away---and a
+\emph{minimum detectable effect}, the smallest interaction the design resolves at $80\%$ power,
+which is what makes a null \emph{bounded} rather than blind. The full analysis, including the
+confounder-survival refit that defends the prognosis and the treatment-course atlas, is in
+Supplement~\ref{ann:treatment}.

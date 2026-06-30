@@ -1,10 +1,11 @@
 \section{Discussion}
 
 Across three cohorts of severe mental illness, a single missingness-aware Bayesian
-model places clinical and biological measurements in one transdiagnostic coordinate
-system and yields an eight-dimension atlas whose most consequential property is a
-dissociation: immunometabolic load is the domain least entangled with overall
-functional severity. The cardiometabolic and inflammatory markers resolve as a single
+pipeline places clinical and biological measurements in one transdiagnostic coordinate
+system, holds that eight-dimension map fixed, and validates it for structure, temporal
+coherence and prognosis. The contribution is that validated pipeline; running through it
+is one recurring empirical property---a dissociation: immunometabolic load is the domain
+least entangled with overall functional severity. The cardiometabolic and inflammatory markers resolve as a single
 immunometabolic axis anchored by body composition (BMI loading $\approx 0.95$, weight
 $0.88$, waist circumference $0.84$), with smaller metabolic, inflammatory and
 cardiovascular contributions (C-reactive protein $\approx 0.37$); that axis sits nearly
@@ -22,7 +23,7 @@ five archetypal extremes make the consequence concrete. The immunometabolic corn
 the severe, clean-biology corner carry comparable functional burden but opposite
 biological profiles, and they diverge in prognosis (the immunometabolic corner is the
 worst-prognosis pole and the well pole the best, two-year functional remission spanning
-$17\%$ to $52\%$ across the five corners). This is the precise property a
+$22\%$ to $63\%$ across the five corners). This is the precise property a
 biology-aware stratification can exploit: it separates patients who look equally ill
 but are biologically opposite, and that separation is durable and prognostically
 meaningful.
@@ -53,7 +54,7 @@ decoupled---rather than the case--control contrast of being ill. That they survi
 and even fall slightly under, adjustment for medication, adiposity and site is the
 strongest available evidence that the dissociation is not a confound.
 
-The second contribution is structural. On these clinical--biological coordinates the
+A second recurring result is structural. On these clinical--biological coordinates the
 patient space is a graded continuum, not a set of discrete biotypes, and it cuts
 almost entirely across DSM-5. This aligns with normative-modelling work reporting
 extensive individual heterogeneity in the same
@@ -68,10 +69,15 @@ eight-dimensional clinical--biological space}---a claim we make rigorous with a
 single-Gaussian falsification null (best-partition silhouette $0.140$ against a
 structureless-Gaussian null of $0.137 \pm 0.002$, $z = 1.13$) rather than by the
 absence of an elbow---not that biotypes are absent from all spaces. The five
-archetypes are corners of this continuum, not clusters within it, and the partition
-they induce is driven by activation and suicidality rather than by overall severity,
-which is why it cuts almost orthogonally across DSM-5 (ARI $0.006$) while describing
-the space more tightly than diagnosis does. Anchoring \Gfac{} on functioning alone also
+archetypes are corners of this continuum, not clusters within it; they cut almost
+orthogonally across DSM-5 (adjusted Rand index $0.021$) yet describe a patient's position
+on the eight-dimensional map about $9.7\times$ more tightly than diagnosis does (mean
+$\eta^2$ $0.256$ versus $0.026$). The corners span a severity gradient \emph{and} a
+biological one---the immunometabolic and severe, clean-biology corners are equally severe
+but biologically opposite---so the simplex separates on profile as well as severity; the
+sharper claim that a partition is driven by activation and suicidality rather than overall
+severity belongs to the coarse two-region tessellation (Supplement~\ref{ann:stratification}),
+a distinct, lower-resolution object. Anchoring \Gfac{} on functioning alone also
 sidesteps the well-known instability in what a symptom-only general factor
 means~\citep{heinrich2021bifactor,levinaspenson2020,watts2021}, while remaining
 consistent with the impairment reading of the \textit{p}

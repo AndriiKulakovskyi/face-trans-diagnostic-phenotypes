@@ -41,6 +41,36 @@ ds = to_harmonized_dataset(df, load_variables("data/face-common-vars.xlsx"), vis
 
 ---
 
+## Indicator selection & variable accounting (225 → 109)
+
+The workbook carries **225 variables**; the reported measurement model (M1) uses **109 of them as factor
+indicators**. The 109 is a *curated modelling set* fixed by the prior-loading matrix
+(`configs/prior_loading_matrix_v3.csv`) — it is **not** simply the dictionary's `READY` tag (that the dictionary
+also has 109 `READY` rows is a near-coincidence; the two sets are not identical — demographic covariates such as
+`age`/`sex`/`education` are `READY` but used for residualization, while lab indicators are modelled under a
+`_lbstresc` name). A variable is promoted to an **indicator** only if it is (i) comparable across all three
+cohorts, (ii) a **current clinical/biological state** — not a history flag, service-use record, or onset
+descriptor — and (iii) not redundant with another indicator. Everything else becomes a covariate, a validation
+label, or is set aside. *(Example: measured **blood pressure** is an immunometabolic indicator, but hypertension
+**history**, `hta_mhoccur`, is excluded — same biology, but one is a current measurement and the other a
+retrospective flag.)* Treatment/medication variables are **not** in this workbook at all — M5 exposures were
+harmonized separately from the per-cohort `TRAITEMENTS` thesaurus tabs.
+
+| bucket | n | role |
+|---|--:|---|
+| **Factor indicators** | 109 | the dimensional-map input (88 continuous + 21 explicit) |
+| Identifiers | 2 | `usubjid_patients`, `fondacode` — record linkage only |
+| Covariates (residualization) | ~5 | `age` (spline), `sex`, `education_years`/`edulevel`, `siteid_city`; + `on_antipsychotic`, `bmi` in the sensitivity ladder |
+| Validation / grouping labels | ~4 | `arm` (DSM-5 subtype), `cohort`, `visit`/`visitnum` |
+| NOT USABLE | 22 | single-cohort, too sparse, or incomparable (e.g. `mdq`, raw un-normed neuropsych scores) |
+| PARTIAL — instrument sub-items | ~50 | detailed items of modelled instruments not promoted (suicide module ~24, biology panel ~14) |
+| READY but set aside | ~33 | redundant biology/anthropometry (`height`, `qtc`, `rbc`, `hgb`, `mcv`, `prolctn`); antecedent / family-history flags (`hta_mhoccur`, `acne`, `mere_suicide`…); service-use & social (`*_hospitalisation`, `arret_travail`, `jobclas`); onset/age descriptors (`agedebutpremier_episode`, `agemere`) |
+
+Counts reproduce from `data/face-common-vars.xlsx` (the `Cluster readiness` column) cross-referenced against
+`reports/copula_8factor_loadings.csv` (the 109 modelled `item`s).
+
+---
+
 ## V3 data contract (what V3 adds)
 
 V3 depends on explicit, machine-readable modeling assumptions — they must live in the dictionary, not

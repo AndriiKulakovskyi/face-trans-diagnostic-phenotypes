@@ -451,7 +451,7 @@ def fig6_prognosis():
     axA.set_ylabel("2-yr functional remission (GAF ≥ 71)")
     axA.set_ylim(0, 0.74); axA.set_title("Archetype prognostic atlas")
     axA.annotate("", (0.0, 0.68), (4.0, 0.68), arrowprops=dict(arrowstyle="<|-|>", color="#666", lw=1.2))
-    axA.text(2.0, 0.70, "17% → 52%  (immunometabolic corner worst)", ha="center", fontsize=7.4, color="#444")
+    axA.text(2.0, 0.70, "22% → 63%  (immunometabolic corner worst)", ha="center", fontsize=7.4, color="#444")
     panel(axA, "a", x=-0.22)
 
     # (b) incremental held-out value, functioning (egf): encodings vs reference
