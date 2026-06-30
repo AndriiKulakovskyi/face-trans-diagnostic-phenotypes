@@ -6,11 +6,15 @@
 
 All from the real reported objects. Run from article/:  python make_sequel_figs.py
 """
-import numpy as np, pandas as pd, os
-import matplotlib; matplotlib.use("Agg")
+import os
+
+import matplotlib
+import numpy as np
+import pandas as pd
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import cm
-from matplotlib.colors import Normalize
 
 ROOT = os.path.expanduser("~/Desktop/face-common-bp-sz-dr")
 OUT  = os.path.join(ROOT, "article", "figures")

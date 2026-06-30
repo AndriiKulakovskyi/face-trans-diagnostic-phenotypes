@@ -12,14 +12,19 @@ The continuous block is used because there the EAP update is exactly Gaussian/cl
 
 Run from the article/ directory:  python make_localization_figs.py
 """
-import numpy as np, pandas as pd, os
-import matplotlib; matplotlib.use("Agg")
+import os
+
+import matplotlib
+import numpy as np
+import pandas as pd
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.colors import Normalize
 from scipy.optimize import nnls
-from scipy.stats import chi2
 from scipy.spatial import ConvexHull
+from scipy.stats import chi2
 
 ROOT = os.path.expanduser("~/Desktop/face-common-bp-sz-dr")
 OUT  = os.path.join(ROOT, "article", "figures")
