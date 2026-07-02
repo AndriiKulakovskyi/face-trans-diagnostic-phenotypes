@@ -22,13 +22,33 @@ uses Hartigan's dip statistic~\citep{hartigan1985dip} on PC1 and each axis;
 Gaussian-mixture BIC profile; \emph{density} uses HDBSCAN~\citep{campello2013hdbscan}
 (fraction of points assigned to noise); \emph{topology} a Mapper
 graph~\citep{singh2007mapper}; and \emph{separation} the best silhouette over $K$.
-A continuum verdict requires $H\!\to\!\tfrac12$, a unimodal dip, the gap and BIC failing
-to prefer $K>1$, HDBSCAN near-all-noise, and a single Mapper component. Empirically:
-$H=0.80$, PC1 dip $p\approx1.0$, silhouette peak $0.146$ ($<0.15$, no separation),
-gap-statistic $k_{\text{opt}}=1$, HDBSCAN $0$ clusters ($100\%$ noise), Mapper a single
+A continuum verdict does \emph{not} require $H\!\to\!\tfrac12$: Hopkins measures departure
+from \emph{uniformity}, not from separability, and an elongated or heavy-tailed single
+Gaussian---exactly the symptom-axis geometry we observe---scores high on it. The operative
+criterion is instead a unimodal dip, the gap and BIC failing to prefer $K>1$, HDBSCAN
+near-all-noise, a single Mapper component, and---the decisive separability test---a
+best-partition silhouette indistinguishable from the single-Gaussian null. Empirically:
+$H=0.80$ (real), against a dispersion null of $0.756\pm0.004$, i.e.\ $z=8.71$ versus a
+\emph{uniform} reference---a large, significant departure from uniformity that we disclose
+openly rather than omit, because it does \emph{not} contradict the continuum verdict (see
+below); PC1 dip $p\approx1.0$; silhouette peak $0.146$ ($<0.15$, no separation);
+gap-statistic $k_{\text{opt}}=1$; HDBSCAN $0$ clusters ($100\%$ noise); Mapper a single
 connected component. Per-axis, six of the eight dip tests are unimodal ($p>0.99$); only
 mania/activation and suicidality are multimodal ($p=0$)---the symptom axes carry internal
 structure, but the joint space does not separate.
+
+The high Hopkins value therefore does \emph{not} indicate discrete clusters. Cluster
+\emph{tendency} (departure from uniformity) and cluster \emph{separability} (departure
+from a single, matched Gaussian) are distinct properties, and only the latter bears on
+whether the map contains discrete biotypes. Against the uniform reference used by Hopkins,
+$z=8.71$ is unsurprising for any elongated, correlated cloud of clinical coordinates and
+carries no information about separability. The operative separability test is the
+silhouette against the single-Gaussian falsification null detailed just below: real
+$0.140$ versus null $0.137\pm0.002$ ($z=1.13$, n.s.)---not reliably better separated than a
+structureless Gaussian blob. Cluster
+tendency and cluster separability are thus dissociated in these data: the cloud is
+non-uniform (as any clinical population is) but not separable into discrete regions, which
+is precisely the signature of a graded continuum rather than a set of biotypes.
 
 Because all of these are absolute statistics, we anchor them with a
 \emph{falsification null}. We draw synthetic data from a single multivariate Gaussian

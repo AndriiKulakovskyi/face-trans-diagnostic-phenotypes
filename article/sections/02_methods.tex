@@ -52,7 +52,7 @@ loading in cell $(j,k)$ carries the role-dependent prior
   \begin{cases}
     \mathcal{N}_{+}(0.70,\,0.25^2) & \textsc{primary (home cell)},\\[2pt]
     \text{regularized horseshoe }\eqref{eq:m-horseshoe} & \textsc{plausible cross},\\[2pt]
-    \mathcal{N}(0,\,0.05^2)        & \textsc{unlikely},\\[2pt]
+    \delta_{0}                     & \textsc{unlikely (reported map)},\\[2pt]
     \delta_{0}                     & \textsc{forbidden},
   \end{cases}
   \label{eq:m-softprior}
@@ -60,6 +60,20 @@ loading in cell $(j,k)$ carries the role-dependent prior
 with $\mathcal N_{+}$ the positive truncation that sign-anchors each home loading and
 $\delta_0$ a point mass at zero; the factor correlations take an $\mathrm{LKJ}(\eta{=}2)$
 prior and the remaining priors are weakly informative (Supplement~\ref{ann:measurement}).
+Off-home loadings therefore fall into two operative tiers. The curated \textsc{plausible
+cross} cells are freed under the regularized horseshoe of \eqref{eq:m-horseshoe}; the
+remaining $\approx980$ \textsc{unlikely} cells are fixed at exactly zero in the reported
+map (\texttt{soft\_unlikely=False}),
+\[
+  \lambda_{jk}^{\text{unlikely}} = 0 \qquad \text{(hard zero, reported map)},
+\]
+rather than given a tight prior. Hard-zeroing these $\approx980$ cells is the principled
+choice for identifiability: freeing them instead as $\mathcal N(0,0.05^2)$ floods every
+factor column with weak cross-loadings and dilutes the thin specific factors (substance
+use, mania/activation), degrading mixing. We additionally report the soft variant,
+$\lambda_{jk}^{\text{unlikely}}\sim\mathcal N(0,0.05^2)$, as a documented
+\emph{sensitivity} arm, which is congruent with the hard-zero map on the well-anchored
+backbone (Supplement~\ref{ann:measurement}).
 
 \subsection{The measurement model}
 
@@ -95,9 +109,14 @@ $\Lambda=[\,\lambda_G\mid\Lambda_D\,]$), and item-level covariates $c_i$ that sh
 indicator's mean but are never themselves factor indicators. Equation~\eqref{eq:measure}
 \emph{is} the bifactor exploratory structural-equation
 model~\citep{reise2012bifactor,asparouhov2009esem}: bifactor because every indicator may
-load on \Gfac{} \emph{and} on its home specific factor; exploratory because small
-off-home cross-loadings $\lambda_{jk}$ are admitted under a sparsity-inducing prior
-rather than forbidden outright. The predictor feeds a per-type observation density---Gaussian
+load on \Gfac{} \emph{and} on its home specific factor; exploratory, but \emph{targeted},
+because only the curated \textsc{plausible cross} cells of \eqref{eq:m-softprior} are
+admitted under the sparsity-inducing horseshoe prior~\eqref{eq:m-horseshoe}, while the
+great majority of off-home cells (the $\approx980$ \textsc{unlikely} cells) are fixed at
+exactly zero rather than left open under a diffuse prior. A validator that instead frees
+\emph{every} off-home cell under the same horseshoe shows the zeros are data-consistent
+rather than assumed: $\approx83\%$ of the freed cells shrink to $\approx0$, recovering the
+same anchored map (detailed below). The predictor feeds a per-type observation density---Gaussian
 or log-Gaussian for continuous and laboratory measures, ordered-logit for ordinal,
 Bernoulli for binary, negative-binomial for counts---and continuous indicators
 additionally enter through a rank-based \emph{Gaussian-copula} marginal
@@ -174,6 +193,21 @@ three small cross-loadings---childhood adversity (CTQ-37, $-0.094$), sleep laten
 with a $95\%$ interval excluding zero. Given total freedom the model reproduces known clinical
 cross-talk and nothing spurious, which is positive evidence the map is well specified
 (Supplement~\ref{ann:measurement}).
+
+\paragraph{Robustness of the bifactor specification.} Bifactor models are known to fit
+flexibly and, under some fit indices, to be preferred for reasons that are partly
+artifactual~\citep{bonifaycai2017,greene2019fit}. We guard against this in three ways,
+and the immunometabolic dissociation survives all three. First, the finding does not
+depend on a general factor at all: the correlated-\Gfac{} arm of \eqref{eq:corrg}---no
+forced orthogonal \Gfac{}---reproduces the same axis ordering, with the immunometabolic
+axis the least entangled with severity (correlation $\approx0.10$ versus $0.39$ for
+cognition and $0.42$ for sleep). The dissociation is therefore not a bifactor artifact.
+Second, simple structure is chosen by the data, not imposed by the prior: in the
+all-cells-freed sparse-ESEM validation arm above, $\approx83\%$ of the freed off-home
+cells shrink to near zero, recovering the same anchored map. Third, the reported map
+fixes the $\approx980$ implausible cross-loadings at exactly zero (Eq.~\ref{eq:m-softprior}),
+which prevents the general factor from absorbing thin specific factors---the failure
+mode behind most bifactor over-extraction.
 
 Given the latent scores the indicators are conditionally independent (local
 independence: once the factors are fixed, only item-specific noise remains, a diagonal
@@ -283,12 +317,28 @@ whose inner $(K{+}1)\times(K{+}1)$ solve is independent of $|C_i|$ and is shared
 patients with the same missingness pattern (computed once per pattern, with the
 matrix-determinant lemma for the log-determinant); this removes the per-patient latent funnel
 and makes full-sample estimation tractable on a workstation (Lemma~\ref{lemA:woodbury}).
+The reported map is fit on the full sample ($N=9{,}013$), not on a balanced subsample: the
+Gaussian-copula continuous block is estimated at full $N$ by marginalizing the per-patient
+latents in closed form via \eqref{eq:m-woodbury}, and the explicit non-Gaussian block
+carries per-patient latents and is fit cohort-weighted at full $N$ in the production run.
+Fitting the full sample rather than a balanced $N=2{,}000$ approximation is a deliberate
+cost---the full-$N$ mixed fit is the computational long pole of the pipeline---accepted so
+that the map reflects every patient's observed data rather than a down-sampled stand-in.
+Balanced $N=2{,}000$ configurations appear only as a diagnostic scale and in the
+no-anthropometrics sensitivity arm, where they are labelled as such.
 Sampling used the No-U-Turn sampler~\citep{hoffman2014nuts}
 in PyMC~\citep{abrilpla2023pymc} with the NumPyro/JAX backend~\citep{phan2019numpyro};
 a stage advanced only on standard convergence criteria (acceptable $\hat R$, adequate
 effective sample size, zero divergences, no Heywood cases, acceptable
 posterior-predictive behaviour), with a cross-seed stability guard for the joint mixed
-fit. The global $8$-factor fit converges cleanly ($\hat R=1.03$, zero divergences). Identification does not rest on information criteria, which favour bifactor over correlated-factor
+fit. Convergence is assessed against a two-tier gate. The continuous backbone---which
+carries the loadings and factor correlations---certifies at the strict bar ($\hat R\le
+1.01$, bulk-ESS $\ge400$, zero divergences). The full mixed map, which adds per-patient
+discrete latents for the explicit non-Gaussian indicators (suicidality, substance
+counts), is reported at the largest sample that mixes ($\hat R\le1.03$, within the
+$<1.05$ convergence range of~\citep{vehtari2017loo}); reproducibility for this block is
+established by cross-seed stability (Tucker congruence $\varphi=0.99$) rather than by a
+single chain's $\hat R$ alone. Identification does not rest on information criteria, which favour bifactor over correlated-factor
 structures for reasons of functional form that are independent of which model generated the
 data~\citep{bonifaycai2017,greene2019fit,bonifay2017three}. We rely instead on three prior-free checks
 performed in-engine. First, an independent flat-prior refit (identification constraints only, fresh seed, no

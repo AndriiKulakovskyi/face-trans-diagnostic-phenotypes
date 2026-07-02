@@ -1,11 +1,22 @@
 \section{Discussion}
 
-Across three cohorts of severe mental illness, a single missingness-aware Bayesian
-pipeline places clinical and biological measurements in one transdiagnostic coordinate
-system, holds that eight-dimension map fixed, and validates it for structure, temporal
-coherence and prognosis. The contribution is that validated pipeline; running through it
-is one recurring empirical property---a dissociation: immunometabolic load is the domain
-least entangled with overall functional severity. The cardiometabolic and inflammatory markers resolve as a single
+Across three cohorts of severe mental illness, a single Bayesian measurement pipeline
+places clinical and biological measurements in one transdiagnostic coordinate system,
+holds that eight-dimension map fixed, and validates it for structure, temporal coherence
+and prognosis. The contribution is not a new estimator but the discipline of its
+integration, novel in combination on three counts. The measurement layer is
+\emph{missingness-native}: one global observed-cell likelihood carries the modelled pool's
+$\approx 40\%$ mean cell-missingness and two-cohort indicators, fit jointly rather than
+imputed or deleted. \emph{Uncertainty is propagated end-to-end}: each patient's posterior
+coordinates and their covariance flow into structure-testing, temporal decomposition and
+errors-in-variables prognosis rather than collapsing to point scores at the measurement
+boundary. And the map is \emph{fixed with diagnosis held out, then validated}---frozen
+before any validation stage touches it, which is what licenses the downstream results as
+properties of the measurement rather than artifacts fitted to an outcome. The
+immunometabolic dissociation that runs through the paper is the existence proof for that
+discipline: the same rigor that makes the map honest reveals structure a looser
+measurement would blur---one recurring empirical property in which immunometabolic load is
+the domain least entangled with overall functional severity. The cardiometabolic and inflammatory markers resolve as a single
 immunometabolic axis anchored by body composition (BMI loading $\approx 0.95$, weight
 $0.88$, waist circumference $0.84$), with smaller metabolic, inflammatory and
 cardiovascular contributions (C-reactive protein $\approx 0.37$); that axis sits nearly
@@ -53,6 +64,20 @@ end because \Gfac{} indexes \emph{functional burden}---from which biology is mos
 decoupled---rather than the case--control contrast of being ill. That they survive,
 and even fall slightly under, adjustment for medication, adiposity and site is the
 strongest available evidence that the dissociation is not a confound.
+
+What is new is less the direction of this finding---which the literature above
+corroborates---than where biology sits in the model. The dimensional-psychopathology
+tradition builds its coordinate systems from symptom report alone, with no biological
+measurement inside the space~\citep{kotov2017hitop}, and normative modelling charts
+per-measure deviation from a reference rather than a shared low-dimensional
+map~\citep{marquand2016,wolfers2018}. The closest biological precedent identifies a
+separable immuno-metabolic profile \emph{within} major depression, anchored on symptom
+dimensions with biology entered as a correlated \emph{outcome}~\citep{lamers2013,lamers2020}, while
+the B-SNIP biotype programme resolves discrete brain-based groups rather than a
+continuum~\citep{clementz2016biotypes}. Placing routine biology as a co-equal latent axis
+\emph{inside} a single diagnosis-blind map across bipolar disorder, schizophrenia and
+depression---and testing its decoupling, durability and prognosis in that same
+model---is the slot none of these occupy.
 
 A second recurring result is structural. On these clinical--biological coordinates the
 patient space is a graded continuum, not a set of discrete biotypes, and it cuts
@@ -171,3 +196,25 @@ informative (addressed by inverse-probability weighting), and the follow-up wind
 two years across three visits. Establishing individual-level clinical utility or
 treatment guidance would require incident-event outcomes, randomized or trial-arm
 treatment data, and external validation beyond this baseline observational cohort.
+
+\emph{Measurement precision is not uniform across axes.} A distinct limit is the
+resolution the current instrument bank affords each axis. Six of the eight axes are
+estimated with high reliability ($0.85$ and above), but two---mania/activation and
+substance use---cannot exceed a reliability of about $0.45$ regardless of sample size
+(maxima $0.408$ and $0.429$). This is a property of the instrument bank, not of missing
+data: $95$--$96\%$ of patients have at least one item on these axes, but mania rests on
+only two summary scores and substance use on four items, two of which are rare binary
+flags that carry almost no information. Because the measurement model is missingness-native
+and fully Bayesian, the consequence is graceful degradation rather than bias---an
+under-instrumented axis returns a wide posterior rather than a false-precise point score,
+so a barely-measured axis is never mistaken for a precisely located one. Two archetype
+poles (\textbf{A0}, \textbf{A4}) are partly defined by the mania axis; these survive
+nonetheless because an archetype coordinate is a group mean, and averaging over more than a
+thousand patients per pole resolves the between-pole mania contrast to within $\approx0.02$
+standard-deviation units even though any single patient's mania score is uncertain. The
+model thus reports its own per-axis precision and names mania and substance use as the
+priorities for the next data-collection wave---specifically graded severity instruments
+(for example AUDIT- or DAST-style quantity--frequency measures) rather than additional
+binary screens, which would add coverage without adding information. This sharpens the
+external-validity boundary above: what a replication cohort should collect is not merely
+more patients but better-instrumented mania and substance measures.

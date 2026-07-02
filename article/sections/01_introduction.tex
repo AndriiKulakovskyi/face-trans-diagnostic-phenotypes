@@ -30,7 +30,16 @@ measured directly.
 
 We address this not with a single analysis but with a \textbf{five-stage
 measurement-and-validation pipeline}, and we treat the pipeline itself---not any one
-finding---as the contribution. \textbf{(i)~Measurement:} a global, missingness-aware Bayesian
+finding---as the contribution. Its methodological novelty is not a new estimator but a
+\emph{discipline} assembled from three commitments that are rarely held jointly: the map is
+estimated from each patient's observed cells only, with \emph{no imputation}, under mixed
+likelihoods and a Gaussian-copula continuous block; per-patient \emph{uncertainty is propagated
+end-to-end}, so every downstream test (structure, temporal coherence, prognosis, treatment
+bounds) operates on posterior coordinates rather than point scores; and the map is \emph{fixed
+before any validation stage}, with diagnosis held out, so each result is a property of the
+measurement rather than an artifact fitted to the outcome. The immunometabolic dissociation that
+recurs across all five stages is the existence proof that this discipline reveals structure a
+looser measurement would blur. \textbf{(i)~Measurement:} a global, missingness-aware Bayesian
 model places routine clinical, cognitive and biological data in one coordinate system with
 diagnosis held out, and reports all eight resulting factors uniformly. \textbf{(ii)~Structure:}
 on the fixed map, an uncertainty-aware structure test asks whether the patient space is a graded
@@ -83,8 +92,11 @@ diagnosis-held-out and uncertainty-propagating atlas relying on mixed and Gaussi
 layers, an observed-cell likelihood for structured missingness, a correlated-\Gfac{} arm that
 turns the biology--severity separation into a measured quantity, an archetypal representation
 of a continuous patient space, and downstream errors-in-variables prognosis and
-treatment-moderation analyses \citep{reise2012bifactor,asparouhov2009esem,muthen2012bayesian}. The contribution is the measurement model, its specification and validation chain
-rather than a new generic estimator: routine biological load is placed inside a transdiagnostic
+treatment-moderation analyses \citep{reise2012bifactor,asparouhov2009esem,muthen2012bayesian}. The contribution is the measurement model---its specification and validation
+chain---as an \emph{integration discipline} that binds three commitments rarely held jointly
+(missingness-native measurement without imputation, uncertainty propagated end-to-end, and a
+diagnosis-blind map fixed before validation) rather than as any new generic estimator: routine
+biological load is placed inside a transdiagnostic
 psychiatric factor space, its separation from functional burden is measured rather than
 assumed, and its temporal and prognostic implications are tested without converting a continuum
 into biotypes.

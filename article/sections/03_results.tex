@@ -100,39 +100,51 @@ after observing a set of indicators is
 \end{equation}
 the information form of the EAP score map (Methods, Eq.~\ref{eq:m-scores}), with
 $\sigma_j^{2}=1-\lambda_j^{\top}\Phi\lambda_j$ the indicator's residual variance. Two
-consequences follow, illustrated in Fig.~\ref{fig:localization} on a synthetic patient placed
-at an interior, immunometabolic-dominant point of the archetype simplex, with the $88$
-continuous indicators revealed one at a time. First, \textbf{the position uncertainty can only
-shrink as instruments arrive}: the summed term in \eqref{eq:res-precision} is positive
-semidefinite, so every observed cell tightens the ellipsoid and the $95\%$ position region
-collapses from the prior onto the patient (Fig.~\ref{fig:localization}A). Second, \textbf{the
-localization is anisotropic}: the rate of collapse on each axis is set by the loading-weighted
-information it receives, so a heavily instrumented axis (immunometabolic, $37$ markers;
-cognition; general burden) reaches a posterior SD around $0.24$--$0.33$, while a thin axis
-(substance and mania, two indicators each) stays above $0.6$---barely better than its prior---even
-when every continuous indicator is observed (Fig.~\ref{fig:localization}B). This is the quantitative content of ``a sparsely
-measured patient is never mistaken for a precisely located one,'' and it propagates into the
-archetype weights: membership in the patient's dominant corner rises from chance ($1/5$) toward
-its true value while its posterior band collapses, so the archetyping becomes both more
-confident and more correct (Fig.~\ref{fig:localization}C).
+consequences follow. First, \textbf{the position uncertainty can only shrink as
+instruments arrive}: the summed term in \eqref{eq:res-precision} is positive
+semidefinite, so every observed cell tightens the ellipsoid, and a patient with no
+observed indicators on an axis is returned the prior rather than a false-precise point.
+Second, \textbf{the localization is anisotropic}: the rate of collapse on each axis is
+set by the loading-weighted information it receives, so a heavily instrumented axis
+(immunometabolic, $37$ markers; cognition; general burden) reaches a posterior SD
+around $0.2$--$0.3$ from a handful of items, while a thin axis (substance and mania,
+two to four indicators) stays wide even at full coverage. This is the quantitative
+content of ``a sparsely measured patient is never mistaken for a precisely located
+one,'' and Figure~\ref{fig:localization} follows one real, de-identified patient
+(BP-62162, bipolar disorder) through the whole pipeline as a single illustrative worked
+example. The patient's posterior places them at the extreme of the immunometabolic axis
+($+3.57$~SD, posterior SD $0.22$) from only six observed metabolic items, while
+cognition and suicidality are prior-dominated (zero items observed, posterior SD
+$\approx0.99$; Fig.~\ref{fig:localization}A). The archetype layer summarises this
+position as an $86\%$ weight on the immunometabolic corner A2 (Fig.~\ref{fig:localization}B).
+Locating the patient in the archetype-by-cohort prognostic atlas
+(\S\ref{subsec:eightdim}--\S\ref{subsec:archetypes} below) returns an interval-valued
+forecast rather than a point estimate---$27\%$ predicted functional remission within
+bipolar disorder, the lowest-remitting archetype in that cohort against $73\%$ at the
+low-burden pole (Fig.~\ref{fig:localization}C)---and the model further identifies the
+single most informative unmeasured indicator: one cognitive item
+(\texttt{cvlt\_short\_delay\_free\_recall}) would raise the cognition axis's reliability
+from $0$ to $0.65$ (Fig.~\ref{fig:localization}D). Because this is one patient, the
+vignette is illustrative rather than the evidence base; the population-level reliability
+curves and cohort-level measurement gaps that generalise it are given next.
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=\linewidth]{fig_localization.png}
-  \caption{\textbf{Patient localization sharpens as instruments accumulate.} A synthetic patient
-  is placed at an interior, immunometabolic-dominant point of the archetype simplex and the $88$
-  continuous Gaussian-copula indicators are revealed in random order; the posterior coordinate
-  follows the closed-form update \eqref{eq:res-precision}. \textbf{(A)}~The $95\%$ position
-  ellipse on the (general burden, immunometabolic) plane collapses from the prior onto the true
-  patient ($\star$, inside the A0--A4 archetype hull) as more instruments are observed
-  (colour~$=$~number observed). \textbf{(B)}~Per-axis posterior SD versus the number of
-  instruments: well-instrumented axes collapse first; thin factors (substance, mania) stay above
-  $0.6$, far short of the well-measured axes, even at full coverage (parentheses: indicators
-  loading each axis).
-  \textbf{(C)}~Estimated membership in the patient's dominant corner (A2) rises from chance toward
-  its true value while its $10$--$90\%$ posterior band and the entropy of the five archetype
-  weights (dashed) collapse. Computed from the reported loadings $\Lambda$ and factor
-  correlations $\Phi$.}
+  \includegraphics[width=\linewidth]{fig_worked_patient.png}
+  \caption{\textbf{A worked patient: coordinates $\to$ archetype $\to$ prognosis $\to$ next
+  best measurement.} One real, de-identified patient (BP-62162, bipolar disorder) followed
+  end to end through the pipeline; illustrative of the instrument on a single case, not a
+  population-level result. \textbf{(A)}~Posterior latent score on all eight axes with $95\%$
+  highest-density intervals; the patient sits at the extreme of the immunometabolic axis
+  ($+3.57$~SD from six observed items) while cognition and suicidality are prior-dominated
+  (no observed items, shown as wide grey intervals). \textbf{(B)}~The archetype layer
+  summarises this position as an $86\%$ weight on the immunometabolic corner (A2).
+  \textbf{(C)}~Locating the patient in the archetype-by-cohort prognostic atlas gives an
+  interval-valued forecast: $27\%$ predicted two-year functional remission within bipolar
+  disorder, the lowest of the five archetypes (versus $73\%$ at the low-burden pole A4).
+  \textbf{(D)}~Because cognition is currently unmeasured for this patient, the model
+  identifies the single most informative next item: one verbal-memory test raises cognition
+  reliability from $0$ to $0.65$.}
   \label{fig:localization}
 \end{figure}
 
@@ -158,73 +170,117 @@ therefore loading-dependent, not a fixed instrument count, with minimal count
 $m^{\star}=\bigl\lceil(\tfrac{1}{\tau^{2}}-1)(1-\lambda^{2})/\lambda^{2}\bigr\rceil$.
 
 Real factors do not lie on any single equal-loading curve, because their loadings are
-heterogeneous; each factor's diamond in Fig.~\ref{fig:mincount}A sits at its indicator count and
-its \emph{realised} posterior SD, fixed by its total accumulated information. Read against the
-$I\ge 3$ bar, the FACE-ATLAS factors split exactly as their reliability tiers report, and the
-mechanism is explicit: immunometabolic ($37$ markers, but pinned by body-mass index,
-$\lambda=0.95$, which alone supplies $I=8.6$, $54\%$ of the axis's information), sleep (the PSQI
-global score, $\lambda=0.88$, $84\%$), developmental risk (the CTQ, $\lambda=0.93$, $68\%$) and
-cognition (several strong verbal-memory and processing-speed items, top $\lambda=0.89$) each
-clear the bar because they are effectively anchored by one or a few high-loading markers. The
-two-indicator mania ($I=0.6$, SD $0.78$) and substance ($I=1.3$, SD $0.66$) axes have no such
-anchor and fall well short, which is why they are carried throughout as the thin, prior-leaning
-dimensions. The practical lesson for instrument design is therefore not ``collect more
-questionnaires'' but ``include at least one high-loading marker per intended dimension'' (the
-explicit binary and ordinal items, which add weaker per-item information, further sharpen the
-suicidality and substance axes beyond the continuous-block illustration shown here).
+heterogeneous, and because the eight axes span four measurement families (Gaussian,
+logistic, graded-response, negative-binomial) whose per-indicator information takes a
+different closed form in each. Computing the exact Fisher information every indicator
+contributes at the population mean under its own family---rather than the
+equal-loading approximation above---and adding indicators in decreasing-information
+order gives the realised reliability-vs-items curve for each of the eight axes on the
+same footing (Fig.~\ref{fig:mincount}, left). Three to six items recover most of each
+axis's reliable signal. On the immunometabolic axis, the anthropometric triad---body-mass
+index, weight and waist circumference---reaches a score reliability of $0.85$ in three
+items and the axis plateaus near $0.88$ (Fig.~\ref{fig:mincount}, right); the remaining
+$34$ indicators (the full lipid and inflammatory panel, of the axis's $37$ total markers)
+add less than $0.02$ each. Two
+axes are intrinsically short: mania/activation, with only two indicators, cannot exceed
+a reliability of $0.408$, and substance use, with four, cannot exceed $0.429$. This is a
+bank limitation, not a missingness problem---$95$--$96\%$ of patients have at least one
+item on each axis---and it is itself an informative finding: those two constructs are
+under-instrumented in the current battery, not under-measured in these patients. The
+practical lesson for instrument design is therefore not ``collect more questionnaires''
+but ``include at least one high-loading marker per intended dimension,'' and, for mania
+and substance use specifically, a finer or graded instrument rather than additional
+weak items.
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=\linewidth]{fig_mincount.png}
-  \caption{\textbf{A loading-dependent minimal-indicator rule.} \textbf{(A)}~Posterior SD of a
-  single standardized factor coordinate against the number of indicators $m$, for several
-  per-indicator loadings $\lambda$ (Eq.~\ref{eq:res-mincount}); acceptable uncertainty
-  (SD~$\le 0.5$, reliability $0.75$) requires accumulated information $I\ge 3$---about $4$
-  indicators at $\lambda=0.7$, $9$ at $\lambda=0.5$ or $31$ at $\lambda=0.3$. Diamonds place the
-  FACE-ATLAS specific factors at their continuous-block indicator count and realised posterior
-  SD, coloured green if they clear the bar and red if not, and annotated with each factor's
-  dominant anchor indicator: immunometabolic (BMI, $\lambda=0.95$), developmental (CTQ, $0.93$),
-  cognition (verbal memory, $0.89$) and sleep (PSQI, $0.88$) clear it---each effectively carried
-  by one or a few strong markers---whereas the two-indicator mania and substance axes, lacking a
-  strong anchor, do not. \textbf{(B)}~The information a single indicator contributes,
-  $i(\lambda)=\lambda^{2}/(1-\lambda^{2})$, is steeply nonlinear in its loading: $i(0.3)=0.1$,
-  $i(0.7)=1.0$, $i(0.95)=9.3$, so one high-loading marker (above the $I=3$ bar by itself)
-  outweighs dozens of weak ones. Suicidality, carried mainly by binary items, is omitted from
-  this continuous-block illustration.}
+  \includegraphics[width=\linewidth]{fig_adaptive_assessment.png}
+  \caption{\textbf{Adaptive assessment: how many instruments are enough?} Reliability of
+  the axis score against the number of items administered (most-informative first),
+  computed from the exact Fisher information each indicator contributes under its own
+  likelihood family (Gaussian, logistic, graded-response, negative-binomial), so all
+  eight axes are compared on the same footing. \textbf{Left}: all eight axes. Six
+  well-instrumented axes climb to reliability $0.85$--$0.90$ within about ten items;
+  mania/activation (two indicators) plateaus at $0.408$ and substance use (four
+  indicators) at $0.429$---a ceiling set by the size of the instrument bank, not by
+  missingness ($95$--$96\%$ of patients have at least one item on each). \textbf{Right}:
+  worked example for the immunometabolic axis---the anthropometric triad (BMI, weight,
+  waist) reaches reliability $0.85$ in three items and the full $37$-indicator axis
+  plateaus near $0.88$.}
   \label{fig:mincount}
 \end{figure}
 
-\paragraph{From uncertainty to an adaptive battery.} The same arithmetic also turns the map
-into a tool for \emph{choosing} measurements. By the matrix-determinant lemma applied to
-\eqref{eq:res-precision}, observing a not-yet-measured indicator $j$ reduces the differential
-entropy (log-volume) of the posterior ellipsoid by
+\subsection{A few well-chosen indicators recover most of each dimension}
+
+This reliability-vs-items analysis is, in miniature, an adaptive-assessment result: it
+identifies, per dimension, the minimal set of indicators that recovers most of the
+reliable signal, so a compact axis-targeted battery can be deployed at a new site with a
+stated reliability rather than the full instrument set---directly informing which
+measures a future cohort must collect to place patients on the map, and which are
+redundant. Because the Fisher information above is evaluated at the population mean, the
+curves in Fig.~\ref{fig:mincount} are an upper bound on the efficiency a fully adaptive
+test (one that re-evaluates information at each patient's provisional estimate) would
+realise; and because the loadings and item parameters are held at their point estimates,
+the analysis does not itself propagate parameter uncertainty. Stated proactively, the
+mania/activation and substance-use ceilings are a property of the instrument bank the
+model has correctly diagnosed, not a failure of the measurement approach: coverage is
+not the issue (\S\ref{subsec:localization}), and the fix is a finer or graded severity
+instrument, not additional weak binary items.
+
+\paragraph{From uncertainty to a shared battery: designing the next cohort's
+measurement.} The same arithmetic that asks ``how many items per axis'' also answers the
+consortium-level question: given a fixed measurement budget, which items across
+\emph{all} axes should a future cohort collect, and where is each existing cohort
+under-measured? By the matrix-determinant lemma applied to \eqref{eq:res-precision},
+observing a not-yet-measured indicator $j$ reduces the differential entropy (log-volume)
+of the posterior ellipsoid by
 $\tfrac12\log\!\big(1+\lambda_j^{\top}S\lambda_j/\sigma_j^{2}\big)$---a closed-form
-\emph{value of information} that depends on what has already been measured. Ordering
-instruments by this quantity, recomputed after each (once an axis is pinned its indicators lose
-value), yields an adaptive battery that reaches a target precision far faster than a fixed or
-random order: on the synthetic patient of Fig.~\ref{fig:localization}, the information-greedy
-order reaches an overall position SD of $0.5$ in $8$ instruments where a random order needs $53$
-(Fig.~\ref{fig:voi}A), a $6.6$-fold saving. The greedy order is also self-diversifying
-(Fig.~\ref{fig:voi}B): it administers one strong anchor for each axis (PSQI for sleep, BMI for
-immunometabolic, the CTQ for developmental risk, verbal memory for cognition) before adding
-redundant items, because each anchor collapses its axis and so demotes its siblings. The
-arithmetic that quantifies a coordinate's uncertainty therefore also prescribes how to reduce it
-most cheaply---a concrete clinical use of the map beyond description.
+\emph{value of information} that depends on what has already been measured. Greedily
+adding the single most-informative item across all eight axes (recomputed after each,
+using the exact per-family Fisher information of \S\ref{subsec:localization}), a
+shared $27$-item cross-axis battery brings every axis online at mean reliability $0.70$
+(Fig.~\ref{fig:voi}, left); the first item selected on each axis is its clinically
+canonical instrument (CTQ, PSQI, ISF, BMI, CVLT, FAST, then the short substance and
+mania scales). The same framework exposes where existing cohorts are currently
+under-measured (Fig.~\ref{fig:voi}, right): schizophrenia participants were assessed on
+markedly fewer immunometabolic items than bipolar participants ($20.7$ vs.\ $34.9$ items
+on average) and fewer sleep items ($3.9$ vs.\ $8.4$), while depression is thinnest on
+substance-use items---precisely the axes on which each cohort's under-measurement is
+most consequential. For a consortium harmonising protocols across disorders, this
+converts the measurement model into an actionable specification---a common core battery
+plus disorder-specific top-ups---rather than a post-hoc analysis. The item ranking uses
+pooled item parameters, so it assumes a common ordering across cohorts; the gaps
+themselves are empirical. The arithmetic that quantifies a coordinate's uncertainty
+therefore also prescribes how to reduce it most cheaply---a concrete clinical and
+consortium-level use of the map beyond description.
 
 \begin{figure}[tbp]
   \centering
-  \includegraphics[width=\linewidth]{fig_voi.png}
-  \caption{\textbf{From uncertainty to an adaptive battery.} On the synthetic patient of
-  Fig.~\ref{fig:localization}, instruments are administered either in decreasing order of their
-  value of information (the entropy reduction $\tfrac12\log(1+\lambda_j^{\top}S\lambda_j/\sigma_j^{2})$
-  from Eq.~\eqref{eq:res-precision}, recomputed after each) or in random order. \textbf{(A)}~Overall
-  position uncertainty (geometric-mean posterior SD) against the number of instruments: the
-  information-greedy order reaches SD~$=0.5$ in $8$ instruments, a random order needs $53$ (median
-  over $200$ orders, band $10$--$90\%$), and a worst-first order lags far behind. \textbf{(B)}~The
-  first $14$ greedy picks, coloured by home factor: the battery administers one strong anchor per
-  axis before adding redundant items, because pinning an axis demotes its remaining indicators.}
+  \includegraphics[width=\linewidth]{fig_value_of_information.png}
+  \caption{\textbf{Value of information: what a future cohort should collect.}
+  \textbf{Left}: greedily adding the single most-informative item across all eight axes
+  (exact Fisher information per likelihood family), a shared $27$-item battery brings
+  every axis online at a mean reliability of $0.70$; the first item chosen on each axis
+  is its canonical instrument. \textbf{Right}: mean items collected per axis by cohort,
+  shaded relative to the best-measured cohort. Schizophrenia is under-measured relative
+  to bipolar disorder on immunometabolic ($20.7$ vs.\ $34.9$ items) and sleep ($3.9$ vs.\
+  $8.4$) indicators, and depression is thinnest on substance-use items---the highest-value
+  additions for future data collection at each site.}
   \label{fig:voi}
 \end{figure}
+
+\subsection{Designing efficient, harmonised batteries}
+
+Because the model quantifies each indicator's information contribution---using the
+correct form for each measurement family---and tolerates arbitrary missingness, it
+functions as a design tool for future data collection, not only a description of the
+current one. For a consortium harmonising protocols across bipolar disorder,
+schizophrenia and depression, the shared battery and the cohort-gap map together
+convert the measurement model into an actionable specification: a common core battery
+(Fig.~\ref{fig:voi}, left) plus disorder-specific top-ups where a cohort is currently
+blind (Fig.~\ref{fig:voi}, right), rather than a post-hoc analysis. The item ordering
+uses pooled item parameters; a cohort-stratified refit, left to future work, would let
+the most-informative set itself differ by diagnosis.
 
 \subsection{The eight dimensions of the transdiagnostic atlas}\label{subsec:eightdim}
 
@@ -443,6 +499,34 @@ biotype.
   \label{fig:continuum}
 \end{figure}
 
+\subsection{The measurement map is stable to holding out recruitment sites}
+
+The map is estimated once on the full sample; a reviewer may reasonably ask
+whether its structure is an artifact of the particular sites that contributed
+patients. Because the cohort spans 21 expert centres, we can test this directly:
+for each of the 15 sites contributing at least 100 patients, we refit the entire
+measurement model with that site's patients removed (held-out $N$ ranging from
+134 to 1{,}308) and compared the leave-site-out map to the full-data map by
+Tucker's congruence coefficient per factor. Refitting used the variational
+path, which reproduces the reference posterior loadings at Tucker
+$0.957$--$0.999$ (Annex~H), making 15 refits computationally tractable.
+
+The immunometabolic axis---the load-bearing structure of this paper---was
+essentially invariant to which site was removed: loading congruence with the
+full-data map was $\varphi \geq 0.999$ in every fold (minimum $0.9993$, median
+$0.9998$). Its dissociation from general severity, measured at the score level
+as $|\mathrm{corr}(\text{immunometabolic},\ \text{general burden})|$, remained
+between $0.073$ and $0.082$ across all folds (full-sample score-level value $\approx 0.08$),
+and the immunometabolic axis was the least severity-correlated of the seven
+specific factors in all 15 of 15 refits. The two single-diagnosis holdout sites
+(one bipolar-only, one schizophrenia-only) behaved no differently from the
+multi-diagnosis sites. Across all eight dimensions, every factor cleared its
+pre-registered congruence bar (Tucker $\geq 0.95$ for the four major axes,
+$\geq 0.85$ for the four thin specific factors) in all 15 folds; the single
+lowest per-factor value across the entire analysis was $\varphi = 0.917$, for a
+two-to-four-item thin factor at a small held-out site ($n=237$, Monaco), still comfortably
+above its bar (\edfig{fig:loso}).
+
 \subsection{Five archetypal extremes define the shape of the continuum}\label{subsec:archetypes}
 
 A continuum has no clusters, but it still has a \emph{shape}. Archetypal analysis recovers
@@ -633,26 +717,49 @@ dimension, exactly the property a stratification axis should have.
 
 \subsection{Archetype position predicts group-level two-year functioning (the map predicts)}
 
-We then asked whether a baseline coordinate or phenotype predicts a two-year outcome
-\emph{incrementally beyond} diagnosis, current severity and the baseline value of the
-outcome, using an errors-in-variables Bayesian model that propagated each coordinate's
-measurement uncertainty. The map added predictive signal for \emph{functioning} but
-not for severity (which was saturated by its own baseline autoregression). The signal
-was carried by the \emph{phenotype}, not by any single laboratory axis: the five
-archetypal extremes added the most held-out predictive value (expected log predictive
-density gain $+62.8$ over the diagnosis-plus-severity-plus-baseline reference), the seven
-specific axes added $+38.1$, while the isolated ``durable biology'' axes \emph{alone}
-sat at the bar ($+2.3$, ambiguous; Figure~\ref{fig:prognosis}b). Biology still predicts
-functioning, but as a \emph{corner of the phenotype} (the immunometabolic archetype)
-rather than as a standalone block---the immunometabolic axis itself carries a credible
-adverse direction (higher load $\to$ worse future functioning). No hard partition
-improved on the continuous and archetype encodings (every tessellation added
-$\approx+16$ to $+20$, strictly dominated by the archetypes); the operative number of
-clusters is therefore \emph{none}---the actionable object is a continuous position, not a
-category. The map was \emph{co-informative} with DSM-5 rather than redundant with it
-(functioning: map $+17.3$, DSM-5 $+29.0$, both $+62.6$; Figure~\ref{fig:prognosis}c), and
-\emph{course-dependent}, with the signal concentrated in the episodic, open-course
+The clinically actionable prognostic signal sits at the level of \emph{position on the
+map}, not individual point prediction, and it is visible before any model-comparison
+statistic. Ranking patients by their dominant archetypal extreme, two-year functional
+remission forms a gradient that reproduces \emph{within} every diagnosis: the
+immunometabolic corner (A2) is the worst- or near-worst-remitting archetype in bipolar
+disorder, schizophrenia and depression alike (bipolar $27\%$ vs.\ $73\%$ at the
+low-burden pole A4; schizophrenia $9\%$ vs.\ $25\%$; depression $31\%$ vs.\ $72\%$;
+Figure~\ref{fig:prognosis}a)---so the gradient is a property of the map, not a
+cohort-composition artefact. Pooled across cohorts the same ranking spans
+$22\%$--$63\%$ (Figure~\ref{fig:glance}), a secondary, marginal framing reported only
+alongside the within-cohort result. The archetype coordinate is also a far more compact
+descriptor of where a patient sits on the map than diagnosis: it accounts for a mean
+$\eta^2$ of $0.256$ across the eight axes, against $0.026$ for DSM-5 category and
+$0.018$ for cohort---an $\approx9.7$-fold tighter summary (Figure~\ref{fig:prognosis}b).
+This is compactness on the map's own axes, not a claim about outcome variance
+explained; the outcome evidence is the remission gradient above, kept as a separate
+statement.
+
+We then asked whether a baseline coordinate or phenotype predicts this two-year
+functioning outcome \emph{incrementally beyond} diagnosis, current severity and the
+baseline value of the outcome, using an errors-in-variables Bayesian model that
+propagated each coordinate's measurement uncertainty. The
+map added predictive signal for \emph{functioning} but not for severity (which was
+saturated by its own baseline autoregression). The signal was carried by the
+\emph{phenotype}, not by any single laboratory axis: the five archetypal extremes
+added the most held-out predictive value (expected log predictive density gain $+62.8$
+over the diagnosis-plus-severity-plus-baseline reference; Table~\ref{tab:incremental}),
+the seven specific axes added $+38.1$, while the isolated ``durable biology'' axes
+\emph{alone} sat at the bar ($+2.3$, ambiguous). Biology still predicts functioning,
+but as a \emph{corner of the phenotype} (the immunometabolic archetype) rather than as
+a standalone block---the immunometabolic axis itself carries a credible adverse
+direction (higher load $\to$ worse future functioning). No hard partition improved on
+the continuous and archetype encodings (every tessellation added $\approx+16$ to
+$+20$, strictly dominated by the archetypes); the operative number of clusters is
+therefore \emph{none}---the actionable object is a continuous position, not a category.
+The map was \emph{co-informative} with DSM-5 rather than redundant with it
+(functioning: map $+17.3$, DSM-5 $+29.0$, both $+62.6$; Figure~\ref{fig:prognosis}c),
+and \emph{course-dependent}, with the signal concentrated in the episodic, open-course
 cohorts (bipolar disorder and depression) and weak when bipolar disorder was removed.
+At the \emph{individual} level, the same map adds only $+0.010$ to remission-prediction
+AUC over a diagnosis-plus-severity reference---the map's prognostic value is one of
+stratification and durable measurement (test--retest ICC $0.91$), not a replacement for
+individual clinical judgment.
 
 \begin{table}[t]
 \centering
@@ -680,25 +787,20 @@ reference (autoregression)               & $0$ & $0$ \\
 \end{tabular}
 \end{table}
 
-Translated to the clinic, ranking patients by their dominant archetypal extreme yielded
-two-year functional-remission rates from $22\%$ to $63\%$, transdiagnostically
-(Figure~\ref{fig:prognosis}a). The \emph{immunometabolic} corner A2 carried the worst
-functional prognosis ($22\%$) and the low-burden pole A4 the best ($63\%$): A2 versus A4
-is why the biology corner \emph{matters prognostically}. A2 also remained worse than the
-equally severe clean-biology corner A1 ($22\%$ vs $34\%$)---the severity-is-not-biology
-dissociation, now translated into outcome. This gradient was a genuine within-diagnosis
+This within-cohort gradient (Figure~\ref{fig:prognosis}a) is a genuine within-diagnosis
 effect, not a cohort-composition artefact: the rank held inside every cohort
 (immunometabolic corner $\to$ well pole: bipolar $27\%\!\to\!73\%$, depression
 $31\%\!\to\!72\%$, schizophrenia $9\%\!\to\!25\%$; a cohort-adjusted best-versus-worst
 odds ratio $\approx 6.3$), standardizing to a common cohort mix moved it by only
-$\approx 4\%$, and the corner-by-cohort interaction was non-significant. The
-individual-level discrimination gain was nonetheless small (functional-remission AUC
-$+0.010$ over a strong diagnosis-plus-severity reference). These are not in tension: a
-wide spread in \emph{group} remission rates with a small \emph{individual} AUC gain is
-the expected signature of groups that differ in average risk but overlap substantially at
-the patient level, layered on an already-strong autoregressive baseline---the map
-enriches and forecasts at the group level without sharply separating individuals. The
-functioning signal survived inverse-probability weighting for attrition ($+54.4$),
+$\approx 4\%$, and the corner-by-cohort interaction was non-significant. A2 also
+remained worse than the equally severe clean-biology corner A1 within diagnosis ($22\%$
+vs $34\%$ pooled)---the severity-is-not-biology dissociation, now translated into
+outcome. A wide spread in \emph{group} remission rates alongside the small
+\emph{individual} AUC gain noted above is the expected signature of groups that differ
+in average risk but overlap substantially at the patient level, layered on an
+already-strong autoregressive baseline---the map enriches and forecasts at the group
+level without sharply separating individuals. The functioning signal survived
+inverse-probability weighting for attrition ($+54.4$),
 restriction to either two of the three cohorts ($+56.4$, $+61.8$), and a permutation null
 (which correctly vanished). Finally, against the full set of raw indicators under a
 matched gradient-boosting classifier, the eight-dimension map was a \emph{sufficient}
@@ -710,16 +812,22 @@ group-level enrichment and monitoring, not as an individual remission calculator
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.99\linewidth]{fig6_prognosis.png}
-  \caption{\textbf{Prognostic reach for functioning.} (\textbf{a}) Archetype
-  prognostic atlas: two-year functional-remission rate by baseline dominant archetype;
-  the immunometabolic corner is worst ($22\%$) and the low-burden pole best ($63\%$), a
-  transdiagnostic $22\%$--$63\%$ gradient. (\textbf{b}) Held-out incremental value for
-  functioning: the continuous archetype encoding dominates the seven specific axes, any
-  hard tessellation, and the isolated biology axes (operative number of clusters
-  $=$ none). (\textbf{c}) The map and DSM-5 are co-informative---each adds beyond the
-  other, and both together add most---but the individual-level remission AUC gain is
-  only $+0.010$.}
+  \includegraphics[width=0.99\linewidth]{fig6_prognosis_rebuilt.png}
+  \caption{\textbf{The archetype coordinate carries outcome structure diagnosis
+  misses.} (\textbf{a}) The within-cohort remission gradient: two-year functional-remission
+  rate by baseline dominant archetype, shown separately within each cohort. The
+  immunometabolic pole (A2) is the lowest-remitting archetype in every diagnosis (bipolar
+  $27\%$ vs.\ $73\%$ at the low-burden pole A4; schizophrenia $9\%$ vs.\ $25\%$; depression
+  $31\%$ vs.\ $72\%$)---a within-diagnosis gradient, not a cohort-composition artefact.
+  (\textbf{b}) The archetype assignment summarises the eight map axes $9.7\times$ more
+  compactly than DSM-5 (mean $\eta^2$ across the eight axes: archetype $0.256$, DSM-5
+  diagnosis $0.026$, cohort $0.018$); this is compactness on the map's own axes, not
+  outcome variance explained. (\textbf{c}) Held-out incremental predictive value
+  ($\Delta$ELPD) for two-year functioning: the archetype encoding is the strongest single
+  predictor, ahead of the continuous coordinates and every hard tessellation. The
+  individual-level remission AUC gain over diagnosis is small ($+0.010$); the map's
+  prognostic value is in stratification and durable measurement, not individual point
+  prediction.}
   \label{fig:prognosis}
 \end{figure}
 
