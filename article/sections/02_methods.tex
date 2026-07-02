@@ -2,7 +2,7 @@
 
 This section gives a self-contained mathematical account of the model and the analysis; the
 complete development, with proofs, is in the Supplement
-(\ref{ann:measurement}--\ref{ann:treatment}). Throughout, $i=1,\dots,N$ indexes patients,
+(\ref{ann:measurement}--\ref{ann:prognosis}). Throughout, $i=1,\dots,N$ indexes patients,
 $j=1,\dots,J$ indicators, $k=1,\dots,K$ the $K=7$ specific factors and \Gfac{} the general
 factor; $O_i$ is patient $i$'s set of observed indicators and $C_i\subseteq O_i$ its observed
 continuous cells.
@@ -393,7 +393,7 @@ inference and head-to-head comparison are in Supplement~\ref{ann:variational}.
 The analysis followed a pre-specified staged plan: the candidate construct ontology and the
 biology--burden correlation $\phi_{Gd}$---the primary estimand---were fixed a priori (the
 soft-prior matrix, Supplement~\ref{ann:measurement}), with the stratification, temporal and
-prognostic arms secondary and the treatment-moderation analysis explicitly exploratory. As a
+prognostic arms secondary. As a
 secondary analysis of an existing cohort the study was not prospectively registered; we
 therefore report all pre-planned arms, label post hoc analyses as such, and interpret the
 resulting multiplicity with caution. Each downstream analysis then treats the measurement
@@ -509,29 +509,3 @@ also report the cross-validated change in AUC. Robustness used
 inverse-probability-of-attrition weighting, restriction to the reliable axes and a permutation
 null, and a separate representation benchmark compared the map against all $143$ raw indicators
 under a matched gradient-boosting classifier (Supplement~\ref{ann:prognosis}).
-
-\subsection{Treatment moderation: an exploratory negative control}
-
-Treatment exposures, harmonized to drug classes, were analysed as an \emph{exploratory
-negative control}: the baseline cohort carries no randomization, so the pipeline \emph{bounds}
-what the map licenses on treatment moderation and \emph{defends} the prognostic signal, rather
-than claiming a treatment effect. For each contrast a propensity
-$e(v_i)=\Pr(\text{treat}\mid v_i)$ was fit on a design $v_i$ including severity, diagnosis,
-demographics \emph{and} the eight coordinates~\citep{rosenbaum1983propensity}; after gating on
-common support (the region where both arms have mass), patients were reweighted by stabilized
-inverse-probability-of-treatment weights~\citep{austin2011iptw},
-\begin{equation}
-  w_i=\frac{\Pr(\text{treat})}{e(v_i)}\ \ (\text{treated}),\qquad
-  w_i=\frac{1-\Pr(\text{treat})}{1-e(v_i)}\ \ (\text{control}) .
-  \label{eq:m-iptw}
-\end{equation}
-Moderation---whether a durable axis or archetype changes \emph{who} benefits---was estimated
-by a doubly-robust errors-in-variables outcome model with a treatment-by-coordinate
-interaction \eqref{eq:m-eiv}, reporting the per-axis interaction credible interval and the
-held-out $\Delta\mathrm{ELPD}$ of adding it. Each average treatment effect carries an
-E-value~\citep{vanderweele2017evalue}---the minimum association an unmeasured confounder would
-need, with both treatment and outcome, to explain the estimate away---and a
-\emph{minimum detectable effect}, the smallest interaction the design resolves at $80\%$ power,
-which is what makes a null \emph{bounded} rather than blind. The full analysis, including the
-confounder-survival refit that defends the prognosis and the treatment-course atlas, is in
-Supplement~\ref{ann:treatment}.

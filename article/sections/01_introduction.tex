@@ -28,17 +28,17 @@ load~\citep{vancampfort2015mets,pillinger2017,perry2019}. Whether this load is s
 from a transdiagnostic severity axis, and by how much, has not to our knowledge been
 measured directly.
 
-We address this not with a single analysis but with a \textbf{five-stage
+We address this not with a single analysis but with a \textbf{four-stage
 measurement-and-validation pipeline}, and we treat the pipeline itself---not any one
 finding---as the contribution. Its methodological novelty is not a new estimator but a
 \emph{discipline} assembled from three commitments that are rarely held jointly: the map is
 estimated from each patient's observed cells only, with \emph{no imputation}, under mixed
 likelihoods and a Gaussian-copula continuous block; per-patient \emph{uncertainty is propagated
-end-to-end}, so every downstream test (structure, temporal coherence, prognosis, treatment
-bounds) operates on posterior coordinates rather than point scores; and the map is \emph{fixed
+end-to-end}, so every downstream test (structure, temporal coherence, prognosis) operates on
+posterior coordinates rather than point scores; and the map is \emph{fixed
 before any validation stage}, with diagnosis held out, so each result is a property of the
 measurement rather than an artifact fitted to the outcome. The immunometabolic dissociation that
-recurs across all five stages is the existence proof that this discipline reveals structure a
+recurs across all four stages is the existence proof that this discipline reveals structure a
 looser measurement would blur. \textbf{(i)~Measurement:} a global, missingness-aware Bayesian
 model places routine clinical, cognitive and biological data in one coordinate system with
 diagnosis held out, and reports all eight resulting factors uniformly. \textbf{(ii)~Structure:}
@@ -47,8 +47,7 @@ continuum or a set of discrete kinds, and summarizes it with archetypes rather t
 clusters. \textbf{(iii)~Temporal coherence:} the map is scored forward onto follow-up under the
 frozen model. \textbf{(iv)~Prognosis:} its incremental value beyond diagnosis and severity is
 tested against a hard autoregression bar and benchmarked against the raw indicators.
-\textbf{(v)~Treatment:} a bounds-and-defends causal analysis states what observational treatment
-data can and cannot support. Two commitments run throughout: we report the eight factors
+Two commitments run throughout: we report the eight factors
 \emph{uniformly} (loadings, general-factor loadings, factor correlations) and keep
 \emph{measurement separate from interpretation}---the clinically salient properties of the map
 are read off neutral structural summaries, not built into them. The structural question is itself
@@ -80,19 +79,18 @@ and seven specific axes; a graded continuum rather than discrete biotypes \emph{
 measurement space}, read through five archetypal extremes; a geometry that persists, with durable
 biology and moving symptoms; and a real but modest, \emph{group-level} prognostic signal for
 functioning that is co-informative with diagnosis rather than a replacement for it. Running
-through all five stages is one recurring empirical property---a single immunometabolic axis that
+through all four stages is one recurring empirical property---a single immunometabolic axis that
 is distinct from the rest of the clinical picture, the most temporally durable dimension, and the
 worst-prognosis pole for functioning---which we present as a property the method \emph{reveals}
-rather than the premise it was built on. We report the modest and null results---including a
-treatment-moderation analysis that this observational cohort can only bound---as deliberately as
+rather than the premise it was built on. We report the modest and null results as deliberately as
 the positive ones.
 
 Methodologically, FACE-ATLAS proposes a latent-variable dimensional measurement model for a single,
 diagnosis-held-out and uncertainty-propagating atlas relying on mixed and Gaussian-copula observation
 layers, an observed-cell likelihood for structured missingness, a correlated-\Gfac{} arm that
 turns the biology--severity separation into a measured quantity, an archetypal representation
-of a continuous patient space, and downstream errors-in-variables prognosis and
-treatment-moderation analyses \citep{reise2012bifactor,asparouhov2009esem,muthen2012bayesian}. The contribution is the measurement model---its specification and validation
+of a continuous patient space, and a downstream errors-in-variables prognosis
+analysis \citep{reise2012bifactor,asparouhov2009esem,muthen2012bayesian}. The contribution is the measurement model---its specification and validation
 chain---as an \emph{integration discipline} that binds three commitments rarely held jointly
 (missingness-native measurement without imputation, uncertainty propagated end-to-end, and a
 diagnosis-blind map fixed before validation) rather than as any new generic estimator: routine

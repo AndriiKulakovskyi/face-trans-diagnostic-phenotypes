@@ -112,7 +112,7 @@ cohorts, faithful to mixed data types, honest about missingness and uncertainty,
 fixed when it is later validated. We present a methodology that meets these requirements
 end-to-end and apply it to the harmonized baseline assessment of $N=9{,}013$ patients with
 bipolar disorder, schizophrenia or major depression from the three FACE cohorts, with
-diagnosis withheld from model fitting throughout. The pipeline has five stages. (i) One
+diagnosis withheld from model fitting throughout. The pipeline has four stages. (i) One
 global, missingness-aware Bayesian sparse bifactor / exploratory structural-equation model
 with mixed likelihoods and a Gaussian-copula continuous block estimates an eight-dimensional
 map---a general functional-burden factor (\Gfac) and seven specific dimensions (cognition,
@@ -126,17 +126,16 @@ follow-ups under the frozen model quantifies temporal coherence: the backbone ax
 meaning, and a between/within/measurement variance decomposition separates durable traits from
 moving states. (iv) An errors-in-variables Bayesian generalized linear model tests incremental
 prognostic validity beyond diagnosis, severity and baseline outcome, with a representation
-benchmark against the raw indicators. (v) A bounds-and-defends causal analysis asks whether the
-map moderates treatment on observational data. Reporting all eight factors uniformly and
+benchmark against the raw indicators. Reporting all eight factors uniformly and
 separating measurement from interpretation, we find that one property of the map recurs across
-all five stages: a single \textbf{immunometabolic axis distinct from the rest of the clinical
+all four stages: a single \textbf{immunometabolic axis distinct from the rest of the clinical
 picture} (correlation with \Gfac{} $\approx 0.10$ versus $0.39$/$0.42$ for cognition/sleep,
 robust to medication, adiposity and site), which anchors its own archetype corner, is the most
 temporally durable axis (test--retest intraclass correlation $0.91$), and is the worst-prognosis
 pole for two-year functioning (functional-remission gradient $22\%$--$63\%$ across corners;
 held-out predictive-density gain $+62.8$ but only $+0.010$ individual-level discrimination,
 co-informative with rather than superior to DSM-5: incremental density $+17.3$ for the map versus
-$+29.0$ for diagnosis), and survives treatment adjustment. The contribution is the measurement-model pipeline---missingness-native (no imputation),
+$+29.0$ for diagnosis). The contribution is the measurement-model pipeline---missingness-native (no imputation),
 mixed-likelihood, and uncertainty-propagating end-to-end, with the map fixed before any
 validation stage. The immunometabolic dissociation is what that discipline \emph{reveals}: a
 property a coarser, point-estimate or listwise-complete measurement would blur, and the
@@ -145,8 +144,7 @@ collected biology \emph{inside} the transdiagnostic factor space---as a co-equal
 rather than a correlate of symptom dimensions---is, to our knowledge, the first such map across
 bipolar disorder, schizophrenia and major depression. All
 findings are internal-validity results on observational data; individual-level clinical utility
-and treatment selection would require external validation, incident-event outcomes and randomized
-treatment data.
+would require external validation and incident-event outcomes.
 \end{abstract}
 
 \noindent\textbf{Keywords:} transdiagnostic psychiatry; dimensional
@@ -180,7 +178,6 @@ schizophrenia; major depression; archetypal analysis; precision psychiatry.
 \input{annex/B_stratification}
 \input{annex/C_temporal}
 \input{annex/D_prognosis}
-\input{annex/E_treatment}
 \input{annex/F_display_items}
 \input{annex/G_metrics}
 \input{annex/H_variational}

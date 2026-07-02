@@ -113,7 +113,7 @@ def fig1_overview():
         ("Diagnostic\ncohorts", "BP 6,252 · SZ 2,209\nDR 552  ·  N = 9,013", OI["lgrey"], "#333333"),
         ("Transdiagnostic\ndimensions", "1 general (G) + 7\nspecific axes (M1)", OI["sky"], "#08306b"),
         ("Continuous map +\nA = 5 archetypes", "continuum, no\nprivileged K (M2)", OI["green"], "#00441b"),
-        ("Prognosis /\ntreatment", "2-yr functioning;\nTAU boundary (M4–M5)", OI["orange"], "#7f2704"),
+        ("Prognosis", "2-yr functioning\n(M4)", OI["orange"], "#7f2704"),
     ]
     x0, w, gap, yc, h = 4, 19.0, 5.7, 17, 15
     for i, (t, sub, c, tc) in enumerate(layers):
@@ -145,17 +145,17 @@ def fig1_overview():
         axL.add_patch(plt.Circle((3.2, y + 0.4), 0.7, color=OI["green"]))
         axL.text(3.2, y + 0.4, "✓", ha="center", va="center", color="white", fontsize=9, fontweight="bold")
         axL.text(5.6, y + 0.4, s, va="center", fontsize=8.6)
-    # five questions strip
-    axL.text(2, 4.2, "Five questions, increasingly hard:", fontsize=9, fontweight="bold")
-    qs = ["exists", "organizes", "persists", "predicts", "guides Tx?"]
+    # four questions strip
+    axL.text(2, 4.2, "Four questions, increasingly hard:", fontsize=9, fontweight="bold")
+    qs = ["exists", "organizes", "persists", "predicts"]
     qx = 30
     for i, q in enumerate(qs):
         x = qx + i * 14.0
-        c = OI["green"] if i < 4 else OI["verm"]
+        c = OI["green"]
         axL.add_patch(FancyBboxPatch((x, 1.6), 12.0, 4.0, boxstyle="round,pad=0.2,rounding_size=0.8",
                       fc="white", ec=c, lw=1.6))
         axL.text(x + 6.0, 3.6, q, ha="center", va="center", fontsize=8.4, fontweight="bold", color=c)
-        if i < 4:
+        if i < 3:
             axL.annotate("", (x + 13.4, 3.6), (x + 12.1, 3.6),
                          arrowprops=dict(arrowstyle="-|>", lw=1.4, color="#888888"))
     save(fig, "fig1_overview")

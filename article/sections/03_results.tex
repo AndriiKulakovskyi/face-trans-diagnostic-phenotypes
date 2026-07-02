@@ -514,7 +514,7 @@ measurement model with that site's patients removed (held-out $N$ ranging from
 134 to 1{,}308) and compared the leave-site-out map to the full-data map by
 Tucker's congruence coefficient per factor. Refitting used the variational
 path, which reproduces the reference posterior loadings at Tucker
-$0.957$--$0.999$ (Annex~H), making 15 refits computationally tractable.
+$0.957$--$0.999$ (Annex~G), making 15 refits computationally tractable.
 
 The immunometabolic axis---the load-bearing structure of this paper---was
 essentially invariant to which site was removed: loading congruence with the
@@ -839,47 +839,6 @@ group-level enrichment and monitoring, not as an individual remission calculator
   prediction.}
   \label{fig:prognosis}
 \end{figure}
-
-\medskip\noindent\textbf{Treatment moderation: a bounded, defensive result.}
-On observational treatment-as-usual---not randomised arms---we asked whether the map
-\emph{moderates} treatment response, under an explicit bounds-and-defends design (overlap gate
-$\to$ propensity adjustment $\to$ doubly-robust errors-in-variables moderation $\to$ E-value; full
-analysis in Supplement~\ref{ann:treatment}). It does not reliably (Table~\ref{tab:moderation}):
-the best-identified contrast, lithium in bipolar disorder, is a well-identified null (E-value
-$1.20$--$1.28$, so a trivial unmeasured confounder would erase it); antipsychotic in bipolar
-disorder shows a non-zero average effect but an E-value of only $1.80$ and a suggestive,
-unconfirmed immunometabolic interaction; clozapine in schizophrenia is underpowered. With a
-minimum detectable interaction of $\approx0.20$\,SD, the map is \emph{prognostic and descriptive,
-not prescriptive} on these data. The analysis is nonetheless informative in one direction: it
-\emph{defends} the prognostic result---adding the drug classes patients actually received to the
-prognostic model attenuates the immunometabolic carrier by under $8\%$ (durable axis
-$6.4\%/4.1\%$ under inverse-probability weighting; A2 corner $7.7\%/6.4\%$), so the forecast is
-not a treatment proxy---and it \emph{describes} course: the immunometabolic corner faces the
-hardest two-year course (treatment resistance $44\%$ and side-effects $25\%$ versus $20\%$ and
-$11\%$ at the low-burden pole). Genuine treatment \emph{selection} would require randomised or
-trial-arm data.
-
-\begin{table}[t]
-\centering
-\caption{\textbf{Treatment moderation on observational treatment-as-usual (bounds-and-defends).}
-For each within-cohort contrast: overlap (max standardised mean difference, before $\to$ after
-weighting), average treatment effect on functioning (ATE), E-value (unmeasured-confounding
-strength that would explain the effect away), the moderation $\Delta$ELPD (whether a
-treatment $\times$ map interaction improves held-out fit), and the verdict. Full analysis in
-Supplement~\ref{ann:treatment}.}
-\label{tab:moderation}
-\small
-\renewcommand{\arraystretch}{1.15}
-\begin{tabular}{@{}l c c c c >{\raggedright\arraybackslash}p{2.7cm}@{}}
-\toprule
-Contrast & overlap (SMD $\to$) & ATE & E-value & mod.\ $\Delta$ELPD & Verdict \\
-\midrule
-Lithium (BP)       & $0.30\!\to\!0.01$ & $-0.03$ (incl.\ 0) & $1.20$--$1.28$ & $-1.6$ & well-identified null \\
-Antipsychotic (BP) & $0.71\!\to\!0.08$ & $-0.24$ (excl.\ 0) & $1.80$         & $+3.4$ & confounded; suggestive-only \\
-Clozapine (SZ)     & $0.33\!\to\!0.07$ & $+0.03$ (incl.\ 0) & $1.21$         & $-1.8$ & underpowered ($n\!\approx\!515$) \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \subsection{A variational re-estimation reproduces the atlas at a fraction of the cost}
 
