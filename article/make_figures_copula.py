@@ -230,6 +230,54 @@ def fig_factors():
     save(fig, "fig_factors")
 
 
+def fig_factors_split():
+    """Figure 6, split into two standalone larger images so each is legible at full
+    text width (the two panels were previously cramped side-by-side in fig_factors):
+      (a) factor-wise interpretability lollipops -> fig_factors_lollipops.{pdf,png}
+      (b) inter-factor correlation matrix Phi     -> fig_factors_phi.{pdf,png}
+    Same underlying objects as fig_factors(); only the layout is re-sized."""
+    L = _load_loadings()
+
+    # --- (a) factor-wise lollipops: standalone 3x3 grid, full width -----------------
+    figA = plt.figure(figsize=(11.0, 8.6))
+    gsL = figA.add_gridspec(3, 3, hspace=0.60, wspace=0.42,
+                            left=0.075, right=0.985, top=0.905, bottom=0.055)
+    axLol = [figA.add_subplot(gsL[i // 3, i % 3]) for i in range(9)]
+    for k, f in enumerate(AXES):
+        LA.draw_lollipop(axLol[k], L, f, color=BLOCK_C[f], axlab=AXLAB1, axtag=AXTAG)
+    for ax in axLol[len(AXES):]:           # hide unused 9th cell (8 axes in a 3x3 grid)
+        ax.axis("off")
+    figA.suptitle("What defines each axis  (top home indicators, 95% CI)",
+                  x=0.53, y=0.965, fontsize=13, fontweight="bold")
+    save(figA, "fig_factors_lollipops")
+
+    # --- (b) inter-factor correlations Phi: standalone, full width ------------------
+    figB, axC = plt.subplots(figsize=(8.8, 8.2))
+    figB.subplots_adjust(left=0.30, right=0.965, top=0.905, bottom=0.28)
+    P = pd.read_csv(REP("copula_8factor_phi.csv"), index_col=0).reindex(index=AXES, columns=AXES)
+    Pv = P.values
+    lab = [AXLAB1[c] for c in AXES]
+    nA = len(AXES)
+    axC.imshow(Pv, cmap="RdBu_r", vmin=-0.5, vmax=0.5, aspect="equal")
+    axC.set_xticks(range(nA)); axC.set_xticklabels(lab, rotation=45, ha="right", fontsize=9.5)
+    axC.set_yticks(range(nA)); axC.set_yticklabels(lab, fontsize=9.5)
+    for i in range(nA):
+        for j in range(nA):
+            if i == j:
+                continue
+            axC.text(j, i, f"{Pv[i, j]:.2f}", ha="center", va="center", fontsize=8.5,
+                     color="white" if abs(Pv[i, j]) > 0.32 else "#222222")
+    axC.set_title("Inter-factor correlations  \u03a6", loc="center", fontsize=13,
+                  fontweight="bold", pad=12)
+    spec_off = Pv[1:, 1:][~np.eye(nA - 1, dtype=bool)]      # specific-specific block (G zeros excluded)
+    ms = float(P.loc["mania_activation", "sleep"])
+    figB.text(0.5, 0.085, f"G orthogonal by construction (row/col 0); substance pinned orthogonal; "
+              f"specific\u2013specific mean |\u03a6| \u2248 {np.abs(spec_off).mean():.2f} "
+              f"(e.g. mania\u2013sleep = {ms:.2f})",
+              ha="center", va="top", fontsize=9, color="#555555")
+    save(figB, "fig_factors_phi")
+
+
 def edfig_full_atlas():
     """Extended Data: the FULL dot-atlas — every modelled indicator (no per-block cap)."""
     L = _load_loadings()
@@ -243,44 +291,73 @@ def edfig_full_atlas():
 
 # ============================================================================ FIG 3
 def fig3_biology_g():
-    """Immunometabolic load is the least burden-entangled axis — biology ⊥ G.
+    """Immunometabolic load is the least burden-entangled domain — biology ⊥ G.
 
-    Read straight from the 8-factor inter-factor matrix Φ (reports/copula_8factor_phi.csv):
-    G is orthogonal to every specific by construction (bifactor row/col 0 = 0), and among the
-    correlated specifics the immunometabolic axis carries the smallest mean coupling of all.
+    The estimand is the general–specific correlation phi_Gd = Corr(G, D) from the
+    correlated-G refit (the bifactor arm fixes it to zero by construction, so it must be
+    measured on a freely-correlated model). Bars show phi_Gd per domain, with the bifactor
+    general loading |lambda_G| (diamonds) for comparison; the immunometabolic bar is
+    annotated with its confounder-adjusted value.
+
+    Two quantities per domain, both on the single-axis (canonical map) footing:
+      * bars  = phi_Gd, the general–specific correlation from the correlated-G refit
+                (primary estimand). The Stage-5 refit resolves biology into two factors
+                (inflammatory, metabolic); we average their phi_Gd into the one immunometabolic
+                axis so the figure matches the map and the body numbers
+                (immuno ~0.10, cognition 0.39, sleep 0.42).
+      * diamonds = |lambda_G|, the mean absolute DIRECT bifactor-G loading, taken from the
+                CANONICAL 8-factor fit (not the Stage-5 refit) so it equals the value printed in
+                Table 2 / the body (immuno ~0.06, cognition/sleep ~0.20). Sourcing the diamond
+                from the 2-factor refit instead would give ~0.075 for immunometabolic, which
+                overstates it relative to the body's ~0.06 near-tie with substance/developmental.
+    Sources:
+      reports/07_corrG_phi.csv            — phi_Gd (corrG_phi_with_G) for the bars.
+      reports/copula_8factor_loadings.csv — |lambda_G| = mean abs bifactor_G loading per home
+                                            domain, for the diamonds (canonical, matches Table 2).
+      reports/12_biology_g_confound.csv   — fully-adjusted immunometabolic phi_Gd (A3_bmi =
+                                            medication + adiposity + site) for the annotation only.
+    Immunometabolic sits in the biology zone (phi_Gd < 0.15) and stays there under adjustment,
+    whereas cognition and sleep partly track G.
     """
-    P = pd.read_csv(REP("copula_8factor_phi.csv"), index_col=0).reindex(index=AXES, columns=AXES)
-    # Correlated specific axes (exclude G — orthogonal by construction — and substance — pinned orthogonal).
-    spec = [a for a in AXES if a not in ("overall_severity", "substance")]
-    # Each axis's entanglement = mean |Φ| with the *other* correlated specifics.
-    def entangle(a):
-        others = [b for b in spec if b != a]
-        return float(np.abs([P.loc[a, b] for b in others]).mean())
-    ent = {a: entangle(a) for a in spec}
-    order = sorted(spec, key=lambda a: ent[a])  # least → most entangled (immunometabolic first)
+    lam  = pd.read_csv(REP("07_corrG_phi.csv")).set_index("domain")
+    conf = pd.read_csv(REP("12_biology_g_confound.csv")).set_index("domain")
+    load = pd.read_csv(REP("copula_8factor_loadings.csv"))
+    BIOSET = ["inflammatory", "metabolic"]
+    # phi_Gd bars: collapse the two Stage-5 biology factors into the single map axis.
+    corr = {"immunometabolic": float(lam.loc[BIOSET, "corrG_phi_with_G"].mean()),
+            "cognition": float(lam.loc["cognition", "corrG_phi_with_G"]),
+            "sleep": float(lam.loc["sleep", "corrG_phi_with_G"])}
+    # |lambda_G| diamonds: canonical single-axis direct-G loadings (mean abs over home items).
+    bg = load[load["kind"] == "bifactor_G"].groupby("home")["abs_loading"].mean()
+    lamG = {d: float(bg[d]) for d in ("immunometabolic", "cognition", "sleep")}
+    immuno_adj = float(conf.loc[BIOSET, "A3_bmi"].mean())  # adjusted immunometabolic phi_Gd
 
-    fig, ax = plt.subplots(figsize=(7.6, 4.5))
-    x = np.arange(len(order)); w = 0.6
-    vals = [ent[a] for a in order]
-    cols = [BIO if a == "immunometabolic" else OI["grey"] for a in order]
-    ax.bar(x, vals, w, color=cols)
-    for xi, a, v in zip(x, order, vals):
-        ax.text(xi, v + 0.004, f"{v:.3f}", ha="center", fontsize=8,
-                fontweight="bold" if a == "immunometabolic" else "normal")
-    ax.axhspan(0, 0.05, color=OI["green"], alpha=0.07)
-    ax.text(len(order) - 0.5, 0.025, "biology\nzone", ha="center", va="center", fontsize=7.5,
-            color=OI["green"], fontweight="bold")
-    ax.set_xticks(x); ax.set_xticklabels([AXLAB1[a] for a in order], rotation=20, ha="right", fontsize=8)
-    ax.set_ylabel("mean inter-factor coupling  |Φ| with other axes")
-    ax.set_ylim(0, max(vals) * 1.28)
-    ax.set_title("Immunometabolic load is the least burden-entangled axis")
-    ax.legend(handles=[Line2D([], [], color=BIO, lw=6, label="immunometabolic (biology)"),
-                       Line2D([], [], color=OI["grey"], lw=6, label="symptom / cognitive axes")],
-              loc="upper left", fontsize=7.6)
-    ax.text(0.0, -0.26, "General burden (G) is orthogonal to every specific axis by construction; among the "
-            "correlated specifics\nthe immunometabolic axis carries the smallest coupling (mean |Φ| ≈ "
-            f"{ent['immunometabolic']:.3f}) — biology ⊥ G.",
-            transform=ax.transAxes, fontsize=7.4, color="#555555")
+    PRETTY = {"immunometabolic": "Immuno-\nmetabolic", "cognition": "Cognition", "sleep": "Sleep"}
+    order = sorted(corr, key=lambda d: corr[d])      # least → most entangled (immuno first)
+    y = np.arange(len(order))
+    vals = [corr[d] for d in order]
+    lams = [lamG[d] for d in order]
+    cols = [BIO if d == "immunometabolic" else OI["grey"] for d in order]
+
+    fig, ax = plt.subplots(figsize=(7.6, 3.5))
+    ax.barh(y, vals, height=0.55, color=cols, zorder=3)
+    for yi, d, v in zip(y, order, vals):
+        lbl = f"{v:.2f}" + (f"  ({immuno_adj:.2f} adjusted)" if d == "immunometabolic" else "")
+        ax.text(v + 0.008, yi, lbl, va="center", ha="left", fontsize=8.3, color="#222",
+                fontweight="bold" if d == "immunometabolic" else "normal")
+    ax.scatter(lams, y, marker="D", s=46, color=OI["black"], zorder=5)
+    ax.axvspan(0, 0.15, color=OI["green"], alpha=0.07, zorder=0)
+    ax.text(0.075, len(order) - 0.45, "biology zone\n($\\varphi_{Gd}<0.15$)", ha="center", va="top",
+            fontsize=7.2, color=OI["green"], fontweight="bold", zorder=6)
+    ax.set_yticks(y); ax.set_yticklabels([PRETTY[d] for d in order], fontsize=9)
+    ax.set_xlim(0, 0.56); ax.set_ylim(-0.6, len(order) - 0.4)
+    ax.set_xlabel(r"correlation with general functional-burden factor $\varphi_{Gd}$")
+    ax.set_title("Immunometabolic load is the least burden-entangled domain", fontsize=11, pad=8)
+    leg = [plt.Rectangle((0, 0), 1, 1, color=BIO, label="immunometabolic (biology)"),
+           plt.Rectangle((0, 0), 1, 1, color=OI["grey"], label="cognition / sleep"),
+           Line2D([], [], marker="D", ls="", color=OI["black"], label=r"bifactor $|\lambda_G|$ (comparison)")]
+    ax.legend(handles=leg, loc="lower right", fontsize=7.2, framealpha=0.92)
+    fig.subplots_adjust(left=0.16, right=0.985, top=0.885, bottom=0.165)
     save(fig, "fig3_biology_g")
 
 # ============================================================================ FIG 4
@@ -641,7 +718,7 @@ if __name__ == "__main__":
     import sys
     only = sys.argv[1] if len(sys.argv) > 1 else None     # e.g. `python make_figures_copula.py fig2`
     print("Building FACE-ATLAS copula figures ->", OUT)
-    for fn in [fig1_overview, fig2_map, fig_factors, edfig_full_atlas, fig3_biology_g, fig4_continuum,
+    for fn in [fig1_overview, fig2_map, fig_factors, fig_factors_split, edfig_full_atlas, fig3_biology_g, fig4_continuum,
                fig4b_archetypes, fig5_persistence, fig6_prognosis, edfig_treatment, edfig_repbench,
                edfig_invariance, edfig_robustness, edfig_consort]:
         if only and only not in fn.__name__:

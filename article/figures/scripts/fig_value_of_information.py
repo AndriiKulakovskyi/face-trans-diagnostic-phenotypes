@@ -206,10 +206,7 @@ cb = fig.colorbar(im, ax=axR, fraction=0.046, pad=0.04)
 cb.set_label("relative to best-measured cohort", fontsize=5.5)
 cb.ax.tick_params(labelsize=5.5)
 
-fig.suptitle("Value of information: what a future cohort should collect", fontsize=9, fontweight='bold', y=1.0)
-fig.text(0.5, -0.04, "Left: greedily adding the most-informative item across all eight axes (exact Fisher information per likelihood family), a shared 27-item battery brings "
-         "every axis online at mean reliability 0.70; the first item per axis is the canonical instrument (CTQ, PSQI, ISF, BMI, CVLT, FAST...). Right: mean items collected "
-         "per axis per cohort, shaded relative to the best-measured cohort — schizophrenia is most under-measured on immunometabolic and sleep, the highest-value additions.",
-         ha='center', fontsize=5.2, color='#666')
-fig.subplots_adjust(top=0.88, bottom=0.19, left=0.075, right=0.985)
+# Title and bottom caption paragraph intentionally removed — that text now lives in the
+# LaTeX figure caption (\caption{} for fig:voi in sections/03_results.tex).
+fig.subplots_adjust(top=0.955, bottom=0.11, left=0.075, right=0.985)
 fig.savefig("fig_value_of_information.png", dpi=200, bbox_inches='tight')

@@ -119,13 +119,7 @@ axC.set_xlabel("Δ ELPD, held-out functioning")
 axC.set_xlim(0, 72)
 axC.set_title("(c) Archetype encoding predicts\nfunctioning best", fontsize=7.4, loc='left')
 
-fig.suptitle("Prognostic reach: the archetype coordinate carries outcome structure diagnosis misses", fontsize=9.2, fontweight='bold', y=1.02)
-fig.text(0.5, -0.10, "(a) Two-year functional-remission rate by baseline dominant archetype, shown within each cohort (cells n≥50): the immunometabolic pole (A2, shaded) is the "
-         "lowest-remitting archetype in every diagnosis — a within-diagnosis gradient, not a cohort-composition artefact. (b) Variance in the eight map axes explained by "
-         "archetype vs DSM-5 vs cohort (mean η²=0.256 / 0.026 / 0.018); the archetype coordinate is a 9.7× more compact summary of where a patient sits than the diagnostic label "
-         "(compactness on the map axes, not outcome variance). (c) Held-out incremental predictive value (ΔELPD) for two-year functioning: the A=5 archetype encoding is the "
-         "strongest single predictor, ahead of the continuous coordinates and every hard tessellation. The individual-level remission AUC gain over diagnosis is small (+0.010); "
-         "the map's prognostic value is in stratification and durable measurement, not individual point prediction.",
-         ha='center', fontsize=5.2, color='#555', wrap=True)
-fig.subplots_adjust(top=0.82, bottom=0.30, left=0.10, right=0.985)
+# Title and bottom caption paragraph intentionally removed — that text now lives in the
+# LaTeX figure caption (\caption{} for fig:prognosis in sections/03_results.tex).
+fig.subplots_adjust(top=0.93, bottom=0.16, left=0.10, right=0.985)
 fig.savefig("fig6_prognosis_rebuilt.png", dpi=200, bbox_inches='tight')

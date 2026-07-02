@@ -261,7 +261,8 @@ consortium-level use of the map beyond description.
   \textbf{Left}: greedily adding the single most-informative item across all eight axes
   (exact Fisher information per likelihood family), a shared $27$-item battery brings
   every axis online at a mean reliability of $0.70$; the first item chosen on each axis
-  is its canonical instrument. \textbf{Right}: mean items collected per axis by cohort,
+  is its canonical instrument (e.g.\ CTQ, PSQI, ISF, BMI, CVLT, FAST). \textbf{Right}:
+  mean items collected per axis by cohort,
   shaded relative to the best-measured cohort. Schizophrenia is under-measured relative
   to bipolar disorder on immunometabolic ($20.7$ vs.\ $34.9$ items) and sleep ($3.9$ vs.\
   $8.4$) indicators, and depression is thinnest on substance-use items---the highest-value
@@ -291,7 +292,7 @@ risk and substance use (Figure~\ref{fig:atlas}; Table~\ref{tab:dimensions}).
 Inter-factor correlations among the specific axes were weak throughout (mean absolute
 off-diagonal $\approx 0.08$; Figure~\ref{fig:factors}b), confirming genuinely distinct
 axes rather than one collapsed dimension; the single notable coupling was a modest
-mania--sleep correlation ($\approx 0.24$). \Gfac{} was anchored only by
+mania--sleep correlation ($\approx 0.23$). \Gfac{} was anchored only by
 functioning and global-severity indicators (FAST loading $0.78$, EGF $0.60$) and
 carried no symptom content, supporting its conservative reading as transdiagnostic
 \emph{functional burden} rather than a symptom-liability ``\textit{p}'' factor.
@@ -363,16 +364,17 @@ rigid zeros (Supplement~\ref{ann:measurement}).
   \label{fig:atlas}
 \end{figure}
 
-\begin{figure}[tbp]
+\begin{figure}[p]
   \centering
-  \includegraphics[width=\linewidth]{fig_factors.png}
+  \includegraphics[width=0.82\linewidth]{fig_factors_lollipops.png}\\[6pt]
+  \includegraphics[width=0.52\linewidth]{fig_factors_phi.png}
   \caption{\textbf{Factor interpretability and inter-factor correlations.}
-  (\textbf{a}) Factor-wise lollipops: for each axis (\Gfac{} and D1--D7), its strongest
+  (\textbf{a},~top) Factor-wise lollipops: for each axis (\Gfac{} and D1--D7), its strongest
   home indicators with $95\%$ credible whiskers---``what defines each axis.''
-  (\textbf{b}) The inter-factor correlation matrix $\Phi$ is weak throughout
+  (\textbf{b},~bottom) The inter-factor correlation matrix $\Phi$ is weak throughout
   (specific--specific mean $|\text{off-diagonal}|\approx 0.08$); \Gfac{} is orthogonal to
   the specific axes by construction (top row and column). The one notable specific
-  coupling is mania--sleep ($\approx 0.24$); substance is pinned orthogonal to the
+  coupling is mania--sleep ($\approx 0.23$); substance is pinned orthogonal to the
   correlated block (its cross-factor correlations are non-identifiable), and the
   biology$\times$symptom cells all stay at the off-diagonal floor.}
   \label{fig:factors}
@@ -431,11 +433,14 @@ carry forward and re-test rather than assume.
   \includegraphics[width=0.80\linewidth]{fig3_biology_g.png}
   \caption{\textbf{Immunometabolic load is the least burden-entangled domain.}
   Correlation of each continuous specific axis with the general
-  functional-burden factor \Gfac{} (bars), unadjusted and after adjustment for
-  medication, adiposity and site; the bifactor general loading $|\lambda_G|$
+  functional-burden factor \Gfac{}, $\phi_{Gd}=\operatorname{Corr}(\Gfac,D)$, from the
+  correlated-\Gfac{} refit (bars); the bifactor general loading $|\lambda_G|$
   (diamonds) is shown for comparison. Immunometabolic load falls in the
-  ``biology zone'' ($\Phi<0.15$) and stays there under adjustment, whereas cognition
-  and sleep partly track \Gfac{}.}
+  ``biology zone'' ($\phi_{Gd}<0.15$) and stays there under adjustment for medication,
+  adiposity and site (annotated value), whereas cognition and sleep partly track \Gfac{}.
+  (The correlated-\Gfac{} sensitivity model resolves biology into inflammatory and metabolic
+  factors; these are averaged into the single immunometabolic axis of the map,
+  Supplement~\ref{ann:measurement}.)}
   \label{fig:biologyg}
 \end{figure}
 
@@ -649,10 +654,13 @@ conclusion the structure tests reach, now read directly off the membership weigh
   \includegraphics[width=\linewidth]{fig_simplexfog.png}
   \caption{\textbf{The archetype simplex is a fog, not five clusters.} \textbf{(A)}~Each of the
   $9{,}013$ patients placed at the barycentre of the five archetype corners by its membership
-  weights $w_i$, coloured by the entropy $H(w_i)$ of those weights; the cloud fills the interior
-  rather than the vertices. \textbf{(B)}~Distribution of $H(w_i)$: median $1.24$ of a maximum
-  $\log 5 = 1.61$ nats, with $74\%$ of patients having no majority archetype and only $0.4\%$ near
-  a single corner---the archetypes span the continuum, they do not partition it.}
+  weights $w_i$, coloured by its \emph{dominant} (largest-weight) archetype so the directional
+  lean of the cloud toward each corner is visible. The colours form five contiguous territories
+  that fan out toward their corners, yet the cloud fills the interior rather than the vertices:
+  patients tilt toward an archetype without reaching it. \textbf{(B)}~Distribution of the mixing
+  entropy $H(w_i)$: median $1.24$ of a maximum $\log 5 = 1.61$ nats, with $74\%$ of patients
+  having no majority archetype and only $0.4\%$ near a single corner---the archetypes span the
+  continuum, they do not partition it.}
   \label{fig:simplexfog}
 \end{figure}
 
@@ -815,7 +823,8 @@ group-level enrichment and monitoring, not as an individual remission calculator
   \includegraphics[width=0.99\linewidth]{fig6_prognosis_rebuilt.png}
   \caption{\textbf{The archetype coordinate carries outcome structure diagnosis
   misses.} (\textbf{a}) The within-cohort remission gradient: two-year functional-remission
-  rate by baseline dominant archetype, shown separately within each cohort. The
+  rate by baseline dominant archetype, shown separately within each cohort (cells with
+  $n\ge50$ patients). The
   immunometabolic pole (A2) is the lowest-remitting archetype in every diagnosis (bipolar
   $27\%$ vs.\ $73\%$ at the low-burden pole A4; schizophrenia $9\%$ vs.\ $25\%$; depression
   $31\%$ vs.\ $72\%$)---a within-diagnosis gradient, not a cohort-composition artefact.

@@ -167,10 +167,7 @@ axD.set_ylim(0,0.9); axD.set_xlim(0,6)
 axD.annotate(f"first item ({items[0]})\n→ reliability {rr[0]:.2f}",xy=(1,rr[0]),xytext=(1.7,0.22),
              fontsize=5.8,color="#4c72b0",arrowprops=dict(arrowstyle="->",color="#4c72b0",lw=0.7))
 
-fig.suptitle("A worked patient: coordinates → archetype → prognosis → next best measurement",fontsize=9.5,fontweight='bold',y=0.985)
-fig.text(0.5,0.005,"Patient BP-62162 (illustrative, real fitted values). The map places the patient on all eight axes with per-axis uncertainty (A), summarises that position "
-         "as an archetype mixture (B, 86% immunometabolic pole), locates the patient in the archetype×cohort atlas for an interval-valued prognosis (C: the "
-         "lowest-remitting archetype within bipolar disorder), and — knowing which axes are data-poor — names the most informative next measurement (D).",
-         ha='center',fontsize=5.3,color='#666')
-fig.subplots_adjust(top=0.90,bottom=0.10,left=0.13,right=0.97)
+# Title and bottom caption paragraph intentionally removed — that text now lives in the
+# LaTeX figure caption (\caption{} for fig:localization in sections/03_results.tex).
+fig.subplots_adjust(top=0.955,bottom=0.075,left=0.13,right=0.97)
 fig.savefig("fig_worked_patient.png",dpi=200,bbox_inches='tight')

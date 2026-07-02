@@ -15,6 +15,7 @@ import pandas as pd
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import cm
+from matplotlib.lines import Line2D
 
 ROOT = os.path.expanduser("~/Desktop/face-common-bp-sz-dr")
 OUT  = os.path.join(ROOT, "article", "figures")
@@ -130,16 +131,31 @@ Anm = ["A0 activation/\nsleep","A1 severe\nclean-biology","A2 immuno-\nmetabolic
 fig2 = plt.figure(figsize=(12.6,5.6))
 gs = fig2.add_gridspec(1,2, width_ratios=[1.25,1], wspace=0.22)
 ax = fig2.add_subplot(gs[0,0])
-sc = ax.scatter(P[:,0], P[:,1], c=H, s=4, cmap="viridis", alpha=.45, linewidths=0)
-poly = np.vstack([V, V[0]]); ax.plot(poly[:,0], poly[:,1], color="0.4", lw=1.2)
+# Colour each patient by its DOMINANT (argmax) archetype so the directional lean of the
+# cloud toward each corner is visible; the cloud still fills the interior (the "fog"),
+# but now one can read WHICH corner each patient tilts toward. Mixing entropy itself is
+# shown quantitatively in panel B. Palette is colourblind-safe (Okabe-Ito) and matches
+# the corner markers/labels 1:1.
+dom  = W.argmax(1)                                     # dominant archetype per patient
+ARCH_C = {0:"#CC79A7", 1:"#E69F00", 2:"#D55E00", 3:"#0072B2", 4:"#009E73"}
+from numpy.random import default_rng
+_ord = default_rng(0).permutation(len(P))              # shuffle so no colour is drawn last on top
+ax.scatter(P[_ord,0], P[_ord,1], c=[ARCH_C[d] for d in dom[_ord]],
+           s=4, alpha=.45, linewidths=0, zorder=2)
+poly = np.vstack([V, V[0]]); ax.plot(poly[:,0], poly[:,1], color="0.55", lw=1.1, zorder=4)
 for a in range(5):
-    ax.scatter(*V[a], color="firebrick", s=40, zorder=5)
-    dx,dy = V[a]*1.13
-    ax.text(dx, dy, Anm[a], ha="center", va="center", fontsize=8.3, fontweight="bold")
-ax.set_aspect("equal"); ax.axis("off"); ax.set_ylim(-1.45, 1.55)
-ax.set_title("A   Patients as blends of the five archetypes  (colour = mixing entropy)",
+    ax.scatter(*V[a], color=ARCH_C[a], s=55, zorder=6, edgecolor="black", linewidth=.7)
+    dx,dy = V[a]*1.15
+    ax.text(dx, dy, Anm[a], ha="center", va="center", fontsize=8.3, fontweight="bold",
+            color=ARCH_C[a])
+ax.set_aspect("equal"); ax.axis("off"); ax.set_ylim(-1.5, 1.62)
+ax.set_title("A   Patients as blends of the five archetypes",
              loc="left", fontsize=10.5, fontweight="bold", pad=14)
-cb = fig2.colorbar(sc, ax=ax, shrink=.6, pad=.02); cb.set_label("entropy of the 5 weights (nats)")
+_leg = [Line2D([0],[0], marker="o", ls="", markerfacecolor=ARCH_C[a], markeredgecolor="none",
+               markersize=6, label=Anm[a].replace("\n"," ").replace("- ","-")) for a in range(5)]
+ax.legend(handles=_leg, title="dominant archetype", fontsize=6.6, title_fontsize=7,
+          loc="lower left", bbox_to_anchor=(-0.02,-0.02), frameon=False, handletextpad=.3,
+          labelspacing=.3)
 axh = fig2.add_subplot(gs[0,1])
 axh.hist(H, bins=60, color="slateblue", alpha=.85)
 axh.axvline(np.median(H), color="crimson", lw=2, label=f"median {np.median(H):.2f}")

@@ -213,11 +213,7 @@ axR.set_title("Worked example: immunometabolic, 3 of 42 items", fontsize=7.6, lo
 axR.set_ylim(0.55, 0.92)
 axR.set_xlim(0.5, 20)
 
-fig.suptitle("Adaptive assessment: how many instruments are enough?", fontsize=9, fontweight='bold', x=0.5, y=1.0)
-fig.text(0.5, -0.035,
-         "Exact Fisher information from the fitted GLLVM, per likelihood family (Gaussian, logistic, graded-response, negative-binomial), so all eight axes are on the "
-         "same footing. Three to six items recover most of each well-instrumented axis (immunometabolic triad BMI/weight/waist → 0.85). Mania/activation (2 items) and "
-         "substance (4 items) cannot exceed reliability ~0.45: the FACE bank is too small for those constructs — a specification for the next data-collection wave, not a modelling failure.",
-         ha='center', fontsize=5.2, color='#666')
-fig.subplots_adjust(top=0.89, bottom=0.19, left=0.075, right=0.985)
+# Title and bottom caption paragraph intentionally removed — that text now lives in the
+# LaTeX figure caption (\caption{} for fig:mincount in sections/03_results.tex).
+fig.subplots_adjust(top=0.96, bottom=0.11, left=0.075, right=0.985)
 fig.savefig("fig_adaptive_assessment.png", dpi=200, bbox_inches='tight')
