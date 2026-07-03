@@ -1,0 +1,161 @@
+\section{Methods}
+
+\subsection{Cohorts, harmonization and the no-imputation data layer}
+We analysed the harmonized baseline assessment of $N=9{,}013$ patients with bipolar disorder
+($6{,}252$), schizophrenia ($2{,}209$) or major depression ($552$) from three national FACE
+cohorts across 21 expert centres. Instruments common to the cohorts were mapped to a shared
+143-variable pool spanning cognition, symptom and functioning scales, sleep and chronotype,
+developmental and substance-use history, and a routine biology panel (body composition, lipids,
+glycaemia, urate, C-reactive protein). Missingness is pervasive and non-random in such registries;
+rather than impute, we treat each patient's observed cells as the likelihood target and marginalize
+the rest, so no cell is ever filled in. Diagnosis was withheld from model fitting throughout and
+used only to describe, never to define, the map.
+
+\subsection{The measurement model: a Bayesian bifactor structure}
+The core is a single global Bayesian sparse bifactor / exploratory structural-equation
+model~\citep{reise2012bifactor,asparouhov2009esem}. The generative hypothesis is that a small set of
+latent axes is the \emph{only} reason a patient's many indicators move together: each patient $i$
+carries an eight-dimensional latent score
+\begin{equation}
+f_i=(G_i,D_{i1},\dots,D_{iK})^{\top}\ \sim\ \mathcal{N}_{K+1}\!\left(\mathbf 0,\,\Phi\right),
+\qquad \operatorname{diag}(\Phi)=\mathbf 1 ,
+\label{eq:factors}
+\end{equation}
+a general functional-burden factor \Gfac{} and $K=7$ specific axes (cognition, immunometabolic load,
+sleep, mania/activation, suicidality, developmental risk, substance use). $\Phi$ is a
+\emph{correlation} matrix: its unit diagonal fixes the otherwise-arbitrary latent scale, so a factor's
+variance is normalized to one and only the loadings carry magnitude. Every indicator $j$ is a linear
+reflection of these factors through a single linear predictor
+\begin{equation}
+\eta_{ij}=\alpha_j+\lambda_{jG}\,G_i+\sum_{k=1}^{K}\lambda_{jk}\,D_{ik}+\beta_j^{\top}c_i ,
+\label{eq:linpred}
+\end{equation}
+with item intercept $\alpha_j$, a \emph{general} loading $\lambda_{jG}$ on \Gfac, \emph{specific}
+loadings $\lambda_{jk}$ (row $j$ of the loading matrix $\Lambda=[\lambda_G\mid\Lambda_D]$), and
+item-level covariates $c_i$ that shift an indicator's mean (age, sex, site) but are never themselves
+factor indicators. The term \emph{bifactor} is exactly this structure: every indicator may load on
+\Gfac{} \emph{and} on its home specific factor, so general burden and a domain-specific signal are
+separated within each item rather than confounded. It is \emph{exploratory} rather than confirmatory
+because an indicator is \emph{allowed} small cross-loadings on plausibly related factors, governed by
+a regularized-horseshoe prior~\citep{carvalho2009horseshoe,piironen2017horseshoe} that shrinks the
+cross-loading matrix toward simple structure while leaving anchored home-factor loadings free---so
+sparsity is chosen by the data rather than imposed.
+
+\paragraph{Variance decomposition.} Taking the Gaussian indicators as the illustrative case (the
+mixed-likelihood generalization follows below) and stacking one patient's items, $x_i=\mu_i+\lambda_G
+G_i+\Lambda_D D_i+\varepsilon_i$---with mean term $\mu_i=\alpha+Bc_i$ collecting the intercepts and
+covariate shifts of Eq.~\ref{eq:linpred}, and residual $\varepsilon_i\sim\mathcal N(\mathbf 0,\Psi)$,
+diagonal $\Psi=\operatorname{diag}(\sigma_1^2,\dots,\sigma_J^2)$---each indicator's variance splits into
+three interpretable parts,
+\begin{equation}
+\operatorname{Var}(x_{ij})=\underbrace{\lambda_{jG}^{2}}_{\text{general}}
++\underbrace{\textstyle\sum_{k=1}^{K}\lambda_{jk}^{2}}_{\text{specific}}
++\underbrace{\sigma_j^{2}}_{\text{unique}} ,
+\label{eq:vardecomp}
+\end{equation}
+the share attributable to overall burden, to the domain axes, and to item-specific noise. The
+\emph{defining hypothesis} that makes this decomposition valid is \textbf{local independence}: given a
+patient's latent scores the items are conditionally independent,
+$p(x_i\mid f_i,\Theta)=\prod_{j\in O_i}p(x_{ij}\mid f_i,\Theta)$, i.e.\ the factors explain away all
+shared covariance. In the linear-Gaussian case this is \emph{identical} to ``$\Psi$ is diagonal.''
+This is also why missing cells are marginalized, never imputed: an invented value would inject
+between-cell covariance that the model would mistake for a factor.
+
+\paragraph{Observation model and identification.} Indicators are generated through mixed likelihoods
+appropriate to each variable's type---Gaussian for continuous and log-transformed laboratory values,
+ordinal-logit for scales, Bernoulli for binary, negative-binomial for counts---with a Gaussian-copula
+block coupling the correlated continuous biology panel~\citep{hui2017gllvm}, so no variable is coerced
+onto a foreign scale. Because $f_i$ is unobserved it is integrated out, and fitting targets each
+patient's observed cells only,
+\begin{equation}
+\log p\!\left(X_{\mathrm{obs}}\mid\Theta\right)=\sum_{i=1}^{N}\ \sum_{j\in O_i}\
+\log F_j\!\left(X_{ij}\mid\eta_{ij},\psi_j\right),
+\label{eq:obslik}
+\end{equation}
+where $\Theta$ collects all model parameters, $O_i$ is the set of indicators observed for patient $i$,
+$F_j$ is the per-indicator likelihood chosen by variable type (above) and $\psi_j$ its
+dispersion/threshold parameters. Unobserved indicators are marginalized via the Woodbury identity for
+the copula block---which avoids repeatedly inverting a large patient-specific covariance submatrix and
+is the
+no-imputation invariant on which every downstream analysis rests. The bifactor identification fixes
+\Gfac{} orthogonal to the specific axes ($\Phi$ block-diagonal); we treat this as an identifying
+coordinate choice defining the \emph{primary map}, not an empirical claim about independence.
+
+\subsection{The correlated-\texorpdfstring{\Gfac}{G} arm and the primary estimand}
+To measure---rather than assume---whether biology is separable from severity, we re-estimated the
+model with the block-diagonal constraint released, allowing \Gfac{} to correlate freely with the
+specific axes:
+\begin{equation}
+\Phi=\begin{pmatrix}1 & \phi_{Gd}^{\top}\\ \phi_{Gd} & \Phi_D\end{pmatrix},\qquad
+\phi_{Gd}=\operatorname{Corr}(\Gfac,D)\in[-1,1]^{7}.
+\label{eq:corrg}
+\end{equation}
+The vector $\phi_{Gd}$ (Eq.~\ref{eq:corrg}) is the \emph{primary estimand} for the biology--severity
+question; the bifactor map remains the coordinate system for all other analyses. Robustness of the
+immunometabolic separation was assessed by re-estimating $\phi_{Gd}$ after adjusting each indicator
+for age, sex, education and recruitment site, and then additionally for antipsychotic exposure.
+
+\subsection{Estimation, invariance and scoring}
+Posteriors were sampled with the No-U-Turn Sampler~\citep{hoffman2014nuts} in a probabilistic-%
+programming implementation~\citep{abrilpla2023pymc,phan2019numpyro}, with a fast stochastic-%
+variational re-estimation~\citep{blei2017vi,hoffman2013svi,kingma2014vae} used to confirm the atlas
+at reduced cost (variational and sampled factor scores agree to within posterior uncertainty). Key
+priors are weakly-informative: a regularized-horseshoe on the cross-loadings (global scale
+$\tau_0=0.05$, slab $c=0.30$) and $\Phi\sim\mathrm{LKJ}(\eta{=}2)$. Intermediate stages advanced only
+under a strict gate ($\hat R\le1.01$, effective sample size $\ge400$, zero divergences); the reported
+joint eight-factor (mixed-likelihood) map is taken at the largest sample that mixes
+($\hat R\le1.03$, zero divergences), with a cross-seed stability guard (Tucker congruence $\varphi=0.99$).
+Measurement invariance was checked across the three cohorts (\edfig{edfig:invariance}) and by
+leave-one-cohort-out refitting (\edfig{edfig:loso}), with split-half reproducibility benchmarking
+(\edfig{edfig:repbench}); patient factor scores and their posterior uncertainty were obtained under
+the frozen map. All validation analyses below were pre-specified against the fixed map;
+the map was never re-fit to improve a downstream result.
+
+\subsection{Structure testing and archetypes}
+Whether the patient space is clustered or continuous was tested by comparing the best silhouette
+(a standard cluster-separation score: within- versus between-cluster distance) over $K=2$--$12$
+clusters against the distribution expected under a single-multivariate-Gaussian null (a parametric
+bootstrap of the same covariance), and by Gaussian-mixture model selection. The continuum was
+summarized by archetypal analysis~\citep{cutler1994archetypal}, which represents each patient as a
+convex blend of extreme phenotypes (weights $w_a\ge 0$, $\sum_a w_a=1$); across candidate counts the
+five-archetype solution was retained as the point beyond which reconstruction error flattened and
+cross-seed archetype recovery remained stable. Descriptive tightness was quantified as the mean $\eta^{2}$ (the proportion of
+between-patient variance in a factor score explained by an encoding---unrelated to the linear
+predictor $\eta_{ij}$ above) of each encoding (archetype, DSM-5, cohort) across the eight axes: a
+higher value means the encoding localizes a patient more tightly on the map.
+
+\subsection{Temporal coherence and trait/state}
+Two yearly follow-ups were scored under the frozen map. A between/within/measurement variance
+decomposition yielded a test--retest intraclass correlation per axis,
+\begin{equation}
+\mathrm{ICC}=\frac{\tau^{2}}{\tau^{2}+\omega^{2}},
+\label{eq:m-icc}
+\end{equation}
+with $\tau^{2}$ the durable between-patient (trait) variance and $\omega^{2}$ the within-patient
+plus measurement (state) variance, separating durable traits from moving states.
+
+\subsection{Prognosis: errors-in-variables incremental validity}
+Two-year functional remission (based on the EGF, the French Global Assessment of Functioning scale)
+and continuous functioning were modelled with an
+errors-in-variables Bayesian generalized linear model that propagates each patient's factor-score
+uncertainty into the outcome regression,
+\begin{equation}
+\theta_{id}\sim\mathcal N\!\big(\hat f_{id},\,s_{id}^{2}\big),\qquad
+g\big(\mathbb E[y_i]\big)=\beta_0+\beta_W^{\top}W_i+\beta_\theta^{\top}\theta_i ,
+\label{eq:m-eiv}
+\end{equation}
+with $\hat f_{id}$ the posterior factor score, $s_{id}$ its posterior SD and $W_i$ the covariates
+(diagnosis, baseline severity, baseline outcome), avoiding regression dilution from treating latent
+scores as known. Incremental validity was assessed by expected log pointwise predictive density on
+held-out data~\citep{vehtari2017loo,watanabe2010waic}, with individual-level
+discrimination (AUC) reported alongside. Because retention at two years is associated with baseline
+map position, the incremental-validity estimate was confirmed under inverse-probability-of-attrition
+weighting. The archetype-prognosis map (Fig.~\ref{fig:money}) bins
+patients by their archetype-weight position and shades by mean two-year functional remission
+($n=2{,}420$ with follow-up, bins $\ge 5$ patients).
+
+\subsection{Data and code availability}
+Individual patient data are governed by the FACE cohort agreements and are not publicly
+redistributable; derived aggregate outputs underlying the figures, and the modelling and
+figure-generation code, are available from the corresponding author on reasonable request. Per-%
+patient data are never required to regenerate the aggregate results.

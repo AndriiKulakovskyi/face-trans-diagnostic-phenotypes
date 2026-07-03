@@ -1,0 +1,45 @@
+\section{Introduction}
+
+Psychiatric diagnoses group biologically heterogeneous patients under a single label, and two
+patients meeting criteria for the same disorder may share little in their cognition, biology or
+course. Dimensional frameworks were introduced to replace these categories with continuous axes
+that cut across diagnoses~\citep{insel2010rdoc,kotov2017hitop,ruggero2019hitop}, and a general
+factor of psychopathology---the tendency for symptoms to co-occur and severity to load
+together---has become their organizing backbone~\citep{caspi2014pfactor,lahey2017general}. A
+dimensional alternative, however, is only as good as the \emph{measurement} that produces it: to
+be credible across cohorts it must be comparable between sites, faithful to the mixed data types
+of a clinical assessment, honest about the missingness that pervades real registries, and stable
+enough that an axis defined once keeps its meaning when it is later validated.
+
+Where biology has entered these maps, it has almost always entered as a \emph{correlate}---a
+biomarker regressed on a symptom dimension, or a stratification computed after the fact---rather
+than as a coordinate of the space itself~\citep{marquand2016,wolfers2018,segal2023}. This choice
+has a consequence that is easy to miss. If biology is only ever compared to severity, one cannot
+ask whether a biological axis is \emph{separable} from severity, because the machinery that would
+answer the question has been assumed away. The immunometabolic burden of severe mental
+illness---weight, adiposity, dysglycaemia, inflammation---is a natural test case: it is elevated
+transdiagnostically, tracks medication and chronicity, and has been argued to form a partly
+distinct dimension of illness~\citep{vancampfort2015mets,pillinger2017,perry2019,penninx2024imd,milaneschi2020,lamers2020}.
+Yet whether that dimension stands \emph{apart from} the general severity axis, rather than
+riding along with it, has been described qualitatively but never measured inside a single
+transdiagnostic map.
+
+Here we build such a map. We fit one global, missingness-aware Bayesian bifactor model to the
+harmonized baseline assessment of $N=9{,}013$ patients with bipolar disorder, schizophrenia or
+major depression from three national cohorts, with diagnosis withheld from model fitting
+throughout, and place routinely-collected biology \emph{inside} the factor space as a co-equal
+latent axis alongside cognition, sleep and the symptom dimensions. We then interrogate the fixed
+map with a single question asked of every validation stage: \emph{what stands apart, what stays,
+and what predicts?} The answer converges on one axis. Immunometabolic load is nearly independent
+of general burden when the model is free to entangle them, is the most temporally durable
+dimension of the eight, and marks the worst-prognosis pole of the patient space---an
+``immunometabolic island'' that a diagnosis or a severity score does not resolve.
+
+We are explicit about what is and is not new. That immunometabolic biology matters in severe
+mental illness, and forms a partly separable dimension, is established; our finding
+\emph{converges} with that independent literature, which is why we report it as relative, measured
+independence rather than a new biological claim. What is new is the map: to our knowledge the
+first diagnosis-blind dimensional atlas spanning these three disorders that carries biology as a
+co-equal axis, and the measurement discipline---no imputation, mixed likelihoods, uncertainty
+propagated end-to-end, the map frozen before validation---that turns ``biology is separable from
+severity'' from a modelling assumption into an estimated quantity.

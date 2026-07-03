@@ -1,0 +1,120 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{rotating}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage[numbers,sort&compress]{natbib}
+
+% Relax float placement so large figures land near their callouts rather than
+% starving and drifting to the end of the document.
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.88}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.72}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+
+\graphicspath{{figures/}{../docs/figures/}}
+
+\newcommand{\Gfac}{\textit{G}} % the general functional-burden factor
+\newcommand{\orth}{\ensuremath{\perp}} % orthogonality, usable in text
+\newcommand{\todo}[1]{\textcolor{red}{[\textbf{TODO:} #1]}}
+
+% Supplement theorem-like environments (proofs live in the Supplement only)
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+
+% Extended Data figure numbering helper
+\newcommand{\edfig}[1]{Extended Data Fig.~\ref{#1}}
+
+% --- Archetype-simplex colours (ported from the technical report) ---
+\definecolor{faceink}{HTML}{14181F}
+\definecolor{facemute}{HTML}{5B6573}
+\definecolor{facerule}{HTML}{C7CED9}
+\definecolor{facekr}{HTML}{0F766E}
+\definecolor{faceinv}{HTML}{6D28D9}
+\definecolor{facemeth}{HTML}{47556A}
+\definecolor{facecav}{HTML}{B45309}
+\definecolor{faceopen}{HTML}{B42318}
+
+\title{\bfseries A transdiagnostic map places immunometabolic burden
+as a distinct, durable, prognostic axis of severe mental illness}
+
+\author{%
+  Andrii Kulakovskyi$^{1}$\thanks{Correspondence: andrii.kulakovskyi@fondation-fondamental.org}\and
+  Ophélia Godin$^{1,2}$\and
+  Léah Camarcat$^{1}$\and
+  Engin Altunlu$^{1}$\and
+  Marion Leboyer$^{1,2}$
+}
+
+\date{%
+  $^{1}$Fondation FondaMental \quad
+  $^{2}$Inserm\\[4pt]
+  \today
+}
+
+\begin{document}
+\maketitle
+
+%================================ ABSTRACT ====================================
+\begin{abstract}
+\noindent
+Psychiatric diagnoses group biologically heterogeneous patients, and dimensional
+alternatives have struggled to show that any single biological signal is more than a
+correlate of overall severity. We built \textbf{FACE-ATLAS}, a diagnosis-blind dimensional
+map of $N=9{,}013$ patients with bipolar disorder, schizophrenia or major depression (three
+harmonized FACE cohorts, 21 expert-centre sites), in which routinely-collected biology is
+placed as a \emph{co-equal latent axis} alongside cognition, sleep and symptom dimensions
+rather than as a downstream correlate. A single global Bayesian bifactor model---fit to each
+patient's observed cells only (no imputation), with mixed likelihoods, uncertainty propagated
+end-to-end, and the map frozen before any validation---yields eight axes: a general
+functional-burden factor (\Gfac) and seven specific dimensions (cognition, immunometabolic
+load, sleep, mania/activation, suicidality, developmental risk and substance use). The patient
+space is a graded \textbf{continuum, not discrete biotypes} (apparent clustering is reproduced
+by a single-Gaussian null), summarized by a five-archetype simplex that locates a patient's
+clinical--biological state $\approx 9.7\times$ more tightly than the DSM-5 label. Allowing
+\Gfac{} to correlate freely with the specific axes, one property recurs across every validation
+stage: an \textbf{immunometabolic axis nearly independent of general burden} (sharing
+$\approx 1\%$ of its variance with \Gfac{} versus $15$--$18\%$ for cognition and sleep---a
+correlation of $\approx 0.10$ against $0.39$/$0.42$; robust to medication, adiposity and site), which is the \textbf{most temporally
+durable} dimension (test--retest intraclass correlation $0.91$) and the \textbf{worst-prognosis
+pole} for two-year functioning (functional remission $22\%$--$63\%$ across corners). This
+separation is \emph{relative} and \emph{measured}, and converges with an independent
+immunometabolic-depression literature. The map improves prediction of future functioning beyond
+diagnosis and severity at the group level (held-out predictive-density gain $+62.8$) but not at
+the individual level (AUC $+0.010$), positioning the immunometabolic axis as a
+\textbf{cohort-enrichment and monitoring target rather than an individual treatment rule}. All
+results are internal-validity findings on observational data; individual-level utility would
+require external validation and incident-event outcomes. Placing routinely-collected biology
+\emph{inside} the transdiagnostic factor space---as a co-equal latent axis rather than a
+correlate of symptom dimensions---is, to our knowledge, the first such map across bipolar
+disorder, schizophrenia and major depression.
+\end{abstract}
+
+\input{sections/01_introduction}
+\input{sections/02_results}
+\clearpage
+\input{sections/03_discussion}
+\input{sections/04_methods}
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\input{sections/05_extended_data}
+
+\end{document}

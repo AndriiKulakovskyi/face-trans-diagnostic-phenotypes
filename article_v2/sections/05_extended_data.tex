@@ -1,0 +1,66 @@
+\clearpage
+\section*{Extended Data}
+\addcontentsline{toc}{section}{Extended Data}
+\renewcommand{\thefigure}{E\arabic{figure}}
+\setcounter{figure}{0}
+
+% Extended Data figures carry the supporting validation that the main figures rely on:
+% cohort attrition, the full loading atlas, measurement invariance, leave-one-cohort-out
+% stability, reproducibility benchmarking, and confound robustness of the biology axis.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\linewidth]{edfig_consort.png}
+\caption{\textbf{Cohort assembly and follow-up attrition.} Flow from the three FACE cohorts to the
+$N=9{,}013$ modelled patients and the $n=2{,}958$ retained at 24 months (of whom $n=2{,}420$ have a
+complete two-year functional-remission outcome, the sample used in Figure~\ref{fig:money}), with
+reasons for exclusion at each stage. Retention is associated with baseline map position and is
+addressed by inverse-probability weighting.}
+\label{edfig:consort}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[height=0.86\textheight]{edfig_fullatlas.png}
+\caption{\textbf{The full eight-axis loading atlas.} Complete posterior indicator$\times$factor
+loading matrix for all 143 modelled indicators, extending the summary of Figure~\ref{fig:atlas} to
+every variable and both the bifactor and correlated-\Gfac{} parameterizations.}
+\label{edfig:fullatlas}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{edfig_invariance.png}
+\caption{\textbf{Measurement invariance across cohorts.} Configural, metric and scalar invariance
+checks for the eight-axis map across the three cohorts; loadings and thresholds are stable enough
+that factor scores are comparable across sites.}
+\label{edfig:invariance}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{edfig_loso.png}
+\caption{\textbf{Leave-one-cohort-out stability.} The map re-estimated with each cohort held out in
+turn; axis definitions, the immunometabolic separation and the archetype geometry are reproduced,
+showing no single cohort drives the structure.}
+\label{edfig:loso}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{edfig_repbench.png}
+\caption{\textbf{Reproducibility benchmarking.} Split-half and re-fit reproducibility of the loading
+atlas and the general--specific correlation vector $\phi_{Gd}$, with the immunometabolic axis among
+the most reproducible.}
+\label{edfig:repbench}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{edfig_robustness.png}
+\caption{\textbf{Confound robustness of the biology axis.} The immunometabolic--\Gfac{} correlation
+$\phi_{Gd}$ under progressive adjustment (age, sex, education, site, then antipsychotic exposure):
+it does not rise with adjustment, falling from $\approx 0.10$ to $\approx 0.07$, and remains the
+least burden-entangled axis at every step.}
+\label{edfig:robustness}
+\end{figure}

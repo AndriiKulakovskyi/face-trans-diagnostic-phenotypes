@@ -1,0 +1,201 @@
+\section{Results}
+
+\subsection{A diagnosis-blind map of severe mental illness}
+
+We assembled the harmonized baseline assessment of $N=9{,}013$ patients (bipolar disorder
+$6{,}252$; schizophrenia $2{,}209$; major depression $552$) from three national FACE cohorts
+across 21 expert centres, spanning a 143-variable pool of cognitive tests, symptom scales,
+functioning measures, sleep and chronotype instruments, developmental and substance-use history,
+and a routine biology panel (body composition, lipids, glycaemia, inflammation; cohort assembly
+and follow-up attrition in \edfig{edfig:consort}). A single global
+Bayesian sparse bifactor / exploratory structural-equation model was fit to each patient's
+observed cells only---no imputation, mixed likelihoods for continuous, ordinal and count
+indicators, and a Gaussian-copula block for the correlated biology panel---estimating an
+eight-dimensional map: a general functional-burden factor (\Gfac) and seven specific dimensions
+(cognition, immunometabolic load, sleep, mania/activation, suicidality, developmental risk and
+substance use). Diagnosis was withheld from fitting throughout; the map is defined by the data,
+not the label.
+
+The bifactor identification fixes \Gfac{} orthogonal to the specific axes---this orthogonality is
+an identifying \emph{coordinate choice}, not an empirical claim, and the resulting map (the
+\emph{primary map}) is the coordinate system on which every downstream analysis is scored. Each
+axis is anchored by its expected indicators (Figure~\ref{fig:atlas}): general burden by global
+functioning and severity scales, cognition by memory and processing-speed tests, immunometabolic
+load by body-mass, waist circumference, triglycerides, urate and C-reactive protein, and so on
+through the symptom and history dimensions. The full 143-indicator loading atlas is given in
+\edfig{edfig:fullatlas}, and measurement invariance across the three cohorts in
+\edfig{edfig:invariance}. With the map fixed, we then ask three questions of it in turn---whether it
+resolves discrete biotypes or a continuum, whether any axis stands apart from general severity, and
+whether that axis persists and predicts.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.86\linewidth]{fig1_atlas.png}
+\caption{\textbf{A diagnosis-blind, biology-inclusive map of severe mental illness.}
+Posterior indicator$\times$factor loadings for the eight-axis model fit to $N=9{,}013$ patients'
+observed cells (no imputation), with the map \emph{frozen before any validation stage}---a
+pre-specification that guards the downstream claims against overfitting. Routinely-collected
+biology (immunometabolic panel) enters as a co-equal latent axis alongside cognition, sleep and
+the symptom dimensions rather than as a downstream correlate. Marker size is $|$loading$|$; the
+general factor \Gfac{} is orthogonal to the specifics by construction (the primary-map coordinate
+choice). This map is the coordinate system; the degree to which each axis is entangled with general
+burden is not read from it (that is set to zero here by construction) but estimated from a
+free-correlation re-fit, where the immunometabolic axis proves the least entangled of all
+(Fig.~\ref{fig:hinge}). Unlike prior single-diagnosis immunometabolic-depression subtyping, biology
+here is a co-equal axis (not a correlate), measured without imputation, across bipolar disorder,
+schizophrenia and major depression.}
+\label{fig:atlas}
+\end{figure}
+
+\subsection{The patient space is a continuum, summarized by five archetypes}
+
+On the fixed map we asked whether patients fall into discrete biotypes or occupy a graded
+continuum. An uncertainty-aware structure test found no clustering beyond that expected of a
+single multivariate-Gaussian blob: the best silhouette (a $0$--$1$ cluster-separation score) over
+$K=2$--$12$ clusters ($0.140$) is within noise of the Gaussian null ($0.137$, $z=1.13$), and a
+Gaussian mixture selects $K=1$ in $20/20$ posterior draws (Figure~\ref{fig:continuum}). Projected to
+two dimensions, the cohort is a single cloud in which the three diagnoses are fully intermixed
+(adjusted Rand index $0.021$, where $0$ is chance agreement and $1$ a perfect match to the DSM-5
+label), general burden varies as a smooth gradient, and---critically---%
+immunometabolic load varies along a \emph{different} direction than general burden, visible as a
+distinct axis of the same cloud.
+
+Because a continuum still needs a vocabulary, we summarized it with a stable five-archetype
+simplex: five extreme phenotypes whose convex combinations locate every patient as a blend of
+weights summing to one. The archetype encoding describes a patient's clinical--biological state
+$\approx 9.7\times$ more tightly than the DSM-5 diagnosis---it accounts for a mean $\eta^{2}=0.256$
+of the between-patient variance in factor scores (where $\eta^{2}$ is the $0$--$1$ fraction of
+variance an encoding explains), against $0.026$ for the diagnosis and $0.018$ for the cohort of
+origin. The five corners are interpretable---an activation/sleep pole, a severe ``clean-biology''
+pole, an \textbf{immunometabolic pole}, a trauma/suicidality pole and a low-burden ``well'' pole---and
+two of them, the immunometabolic and the severe clean-biology corners, share high general burden but
+sit at opposite ends of the biology axis. Whether that contrast reflects a genuine separation of
+biology from severity, or merely the map's built-in coordinates, is what we test next.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.9\linewidth]{fig2_continuum.png}
+\caption{\textbf{A graded continuum, not discrete biotypes.} (a)~Best silhouette versus a
+single-Gaussian null across $K$; the real data never clear the separation floor and a mixture
+selects $K=1$ in every draw. (b)~The two-dimensional cloud with diagnoses fully intermixed.
+(c)~General burden as a smooth gradient. (d)~Immunometabolic load varies along a different
+direction---a separate axis of the same continuum, not a pole of the severity gradient.}
+\label{fig:continuum}
+\end{figure}
+
+\subsection{Immunometabolic load separates from general severity (the hinge)}
+
+The map's defining property is read here. Because the bifactor fit fixes \Gfac{} orthogonal to
+the specifics by construction, a domain's entanglement with general burden cannot be read from
+that model---it has been set to zero by the coordinate choice. To convert ``biology is separable
+from severity'' from a modelling constraint into a measured quantity, we re-estimated the model
+allowing \Gfac{} to correlate freely with the specific axes. The resulting vector of
+general--specific correlations, $\phi_{Gd}=\operatorname{Corr}(\Gfac,D)$, is the \emph{primary
+estimand} of FACE-ATLAS for the biology--severity question; the bifactor map remains the
+coordinate system every other analysis is scored on, but the separation of biology from severity
+is read from $\phi_{Gd}$, not from the map's built-in orthogonality.
+
+Under this correlated-\Gfac{} model, immunometabolic load was the \emph{least} entangled with
+functional burden of any domain: a correlation with \Gfac{} of $\approx 0.10$, against $0.39$ for
+cognition and $0.42$ for sleep (Figure~\ref{fig:hinge}). In shared-variance terms the gap is
+stark---immunometabolic load shares only $\approx 1\%$ of its variance with general burden,
+against $\approx 15\%$ (cognition) and $\approx 18\%$ (sleep). The separation was robust to the
+obvious confounders: adjusting each indicator for age, sex, education and recruitment site, and
+then additionally for antipsychotic exposure, did not raise the immunometabolic correlation---if
+anything it fell, to $\approx 0.07$---and immunometabolic load remained the least entangled axis
+at every step (\edfig{edfig:robustness}). This is \emph{relative}, measured independence, quantifying at the low end of what
+an independent immunometabolic-depression literature would predict~\citep{penninx2024imd,milaneschi2020,lamers2013,lamers2020},
+now quantified inside one map. Clinically, it means two patients with the same overall impairment can
+carry very different immunometabolic loads---a difference the global severity picture does not
+capture.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.82\linewidth]{fig3_biology_g.png}
+\caption{\textbf{Immunometabolic load is the least burden-entangled domain.} Free (correlated-%
+\Gfac) correlation of each specific axis with general burden $\phi_{Gd}$ (bars), with the
+bifactor direct loadings $|\lambda_G|$ shown for comparison (diamonds). Immunometabolic load sits
+in the ``biology zone'' at $\approx 0.10$ ($0.06$ under confound adjustment), against $0.39$/$0.42$
+for cognition/sleep. This is the primary estimand for the biology--severity question.}
+\label{fig:hinge}
+\end{figure}
+
+\subsection{The separable axis is the durable one}
+
+If immunometabolic load is a distinct axis, is it a stable trait or a passing state? Scoring two
+yearly follow-ups under the frozen map, a between/within/measurement variance decomposition
+placed immunometabolic load as the most temporally durable of the eight axes: a test--retest
+intraclass correlation (ICC, the $0$--$1$ fraction of an axis's variance that is stable trait rather
+than transient state) of $0.91$, well above cognition ($0.70$), general burden ($0.62$) and every
+symptom axis (sleep $0.47$, suicidality $0.43$, developmental risk $0.39$;
+Figure~\ref{fig:persistence}). The symptom axes move while the biology holds: over two years the
+cohort improved on symptoms and severity, yet patients kept their rank on the immunometabolic axis
+almost exactly. An axis this durable is one a cohort could in principle be enriched or stratified
+on---it is still there at follow-up---whereas the fast-moving symptom axes suit moment-to-moment
+monitoring instead.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.92\linewidth]{fig4_persistence.png}
+\caption{\textbf{Biology is trait; symptoms are state.} (a)~Trait fraction (test--retest ICC,
+baseline$\to$2 years) for each axis; immunometabolic load is the most durable ($0.91$).
+(b)~Individual rank stability against population change: symptom axes slide as the cohort improves,
+while immunometabolic load holds its rank (upper right).}
+\label{fig:persistence}
+\end{figure}
+
+\subsection{It marks the worst-prognosis pole---at the group level}
+
+Finally we asked whether the map carries prognosis. Projecting all $9{,}013$ patients onto the
+five-archetype simplex and shading by two-year functional remission reveals a clean gradient
+across the patient space, from the low-burden ``well'' pole (remission $63\%$) to the
+\textbf{immunometabolic pole} (remission $22\%$), which is the worst-prognosis corner of the map
+(Figure~\ref{fig:money}). Decisively, the immunometabolic corner ($22\%$) is worse than the
+\emph{equally high-severity} clean-biology corner ($34\%$): the two poles carry the same general
+burden but diverge in outcome, so a severity score---which cannot tell them apart---misses the
+gap. The remission gradient holds \emph{within} every diagnosis, indicating it is a property of
+the map rather than of the diagnostic mix (Figure~\ref{fig:prognosis_quant}).
+
+We are deliberate about the size of this effect. An errors-in-variables Bayesian generalized
+linear model, which propagates each patient's factor-score uncertainty into the outcome
+regression, shows the archetype encoding improves prediction of two-year functioning beyond
+diagnosis, severity and baseline outcome. On held-out patients the gain in expected log predictive
+density---a standard measure of how much better a model forecasts unseen outcomes, larger is
+better---is $\Delta\text{ELPD}=+62.8$, a clear group-level improvement; but the individual-level
+discrimination gain is small (AUC $+0.010$, barely above the $+0$ of no improvement). On the same
+scale the map adds $+17.3$ where the diagnosis label adds $+29.0$, so the two are co-informative---the
+map carries prognostic information of the same order as diagnosis, not exceeding it. The prognostic
+signal is real and group-level; it is not, on this observational baseline cohort, an individual-level
+predictor.
+
+Across the four tests, one axis answers to the same name each time: immunometabolic load is the
+\emph{least} entangled with general severity (correlation $\approx 0.10$ versus $0.39$/$0.42$), the
+\emph{most} durable over two years (ICC $0.91$), and the \emph{worst}-prognosis pole ($22\%$ versus
+$63\%$ functional remission). No single one of these numbers is the result; their convergence on one
+axis is. That convergence positions the immunometabolic axis as a cohort-enrichment and monitoring
+target---a durable, severity-independent axis that concentrates poor outcomes---rather than as an
+individual treatment rule.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.98\linewidth]{fig5_archetype_prognosis.png}
+\caption{\textbf{The immunometabolic pole is the worst-prognosis corner.} (a)~All $9{,}013$
+patients projected onto the five-archetype simplex as convex blends; position is the
+archetype-weight mix. (b)~The same map shaded by two-year functional remission (bin mean, bins
+$\ge 5$ patients, $n=2{,}420$ with follow-up): remission falls from $63\%$ at the well pole to
+$22\%$ at the immunometabolic pole. The immunometabolic corner is worse than the equally severe
+clean-biology corner---an axis a diagnosis or a severity score does not resolve.}
+\label{fig:money}
+\end{figure}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.98\linewidth]{fig6_prognosis_quant.png}
+\caption{\textbf{The remission gradient is a property of the map.} (a)~The two-year functional-%
+remission gradient across archetypes holds within each diagnosis (bipolar, schizophrenia,
+depression scored separately). (b)~Archetypes summarize the map $\approx 9.7\times$ more tightly
+than the DSM-5 label ($\eta^{2}$ across the eight axes). (c)~Incremental held-out predictive
+density for functioning: the archetype encoding adds most, above the continuous map, tessellation
+and durable-biology-only encodings.}
+\label{fig:prognosis_quant}
+\end{figure}

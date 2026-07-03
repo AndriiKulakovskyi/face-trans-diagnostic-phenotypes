@@ -63,7 +63,11 @@ def apply_figure_style(*, frame="open", font=None, sizes=(8, 7, 6), grid=False):
 
 apply_figure_style()
 
-atlas = pd.read_csv("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/face/prognosis_oop/endpoints/archetype_atlas.csv")
+import os as _os
+_HERE = _os.path.dirname(_os.path.abspath(__file__))
+_ROOT = _os.path.dirname(_os.path.dirname(_os.path.dirname(_HERE)))
+_OUT = _os.path.join(_ROOT, "article", "figures")
+atlas = pd.read_csv(_os.path.join(_ROOT, "results", "face", "prognosis_oop", "endpoints", "archetype_atlas.csv"))
 egf = atlas[atlas.outcome == "egf"].copy()
 
 short = {0: "A0 ↑sleep/mania", 1: "A1 ↑burden", 2: "A2 ↑immuno", 3: "A3 ↑dev/suic", 4: "A4 low-sev"}
@@ -122,4 +126,6 @@ axC.set_title("(c) Archetype encoding predicts\nfunctioning best", fontsize=7.4,
 # Title and bottom caption paragraph intentionally removed — that text now lives in the
 # LaTeX figure caption (\caption{} for fig:prognosis in sections/03_results.tex).
 fig.subplots_adjust(top=0.93, bottom=0.16, left=0.10, right=0.985)
-fig.savefig("fig6_prognosis_rebuilt.png", dpi=200, bbox_inches='tight')
+fig.savefig(_os.path.join(_OUT, "fig6_prognosis_rebuilt.png"), dpi=200, bbox_inches='tight')
+fig.savefig(_os.path.join(_OUT, "fig6_prognosis_rebuilt.pdf"), bbox_inches='tight')
+print("wrote", _os.path.join(_OUT, "fig6_prognosis_rebuilt.png"))

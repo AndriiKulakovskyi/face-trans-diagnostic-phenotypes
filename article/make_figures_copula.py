@@ -493,14 +493,27 @@ def fig5_persistence():
     slide = [ts.loc[a, "pop_slide"] for a in ax_sub]
     cc = [BIO if a in ("immunometabolic","cognition") else (OI["blue"] if a=="overall_severity" else OI["grey"]) for a in ax_sub]
     axB.scatter(icc, slide, s=90, c=cc, zorder=5, edgecolor="white", lw=1.0)
+    # per-point label placement to avoid label/label and label/annotation collisions
+    lab_off = {
+        "immunometabolic":    (0.0,  0.055, "center", "bottom"),
+        "cognition":          (0.0,  0.055, "center", "bottom"),
+        "overall_severity":   (0.0,  0.055, "center", "bottom"),
+        "suicidality":        (0.0, -0.055, "center", "top"),      # push its label BELOW the point
+        "developmental_risk": (0.0,  0.055, "center", "bottom"),
+    }
     for a, xi, yi in zip(ax_sub, icc, slide):
-        axB.annotate(AXLAB1[a], (xi, yi), (xi, yi+0.05), fontsize=7.2, ha="center")
+        dx, dy, ha, va = lab_off[a]
+        axB.annotate(AXLAB1[a], (xi, yi), (xi + dx, yi + dy), fontsize=7.2, ha=ha, va=va)
     axB.axhline(0, color="#444", lw=0.8)
+    # headroom so top/bottom labels are not clipped
+    axB.set_xlim(min(icc) - 0.08, max(icc) + 0.08)
+    axB.set_ylim(min(slide) - 0.16, max(slide) + 0.16)
     axB.set_xlabel("individual rank stability (ICC)")
     axB.set_ylabel("population change V0→V2  (z)")
     axB.set_title("Symptoms slide; biology holds")
-    axB.text(0.02, 0.03, "patients keep their\nbiological rank while\nthe cohort improves\non symptoms/severity",
-             transform=axB.transAxes, fontsize=7.0, color="#555", va="bottom")
+    # explanatory note moved to the empty bottom-right (high ICC, low slide) region
+    axB.text(0.97, 0.05, "patients keep their\nbiological rank while\nthe cohort improves\non symptoms/severity",
+             transform=axB.transAxes, fontsize=7.0, color="#555", ha="right", va="bottom")
     panel(axB, "b", x=-0.26)
     save(fig, "fig5_persistence")
 

@@ -77,7 +77,7 @@ DISP = {
 # Always-keep indicators so per-block capping never drops the G anchors or the dep/anx windows.
 DEFAULT_PIN = {"overall_severity": {"fast", "egf", "cgi01", "madrs", "qidsr120", "staya"}}
 
-DEFAULT_SUBTITLE = ("columns: G (burden backbone)  +  specific axes D1–D8    ·    "
+DEFAULT_SUBTITLE = ("columns: G (burden backbone)  +  specific axes D1–D7    ·    "
                     "shaded = depression/anxiety windows on G")
 
 
@@ -126,7 +126,7 @@ def draw_dot_atlas(ax, L, axes, rows, *, cmap, block_colors, axlab, axtag,
     """Draw the indicator x factor dot-atlas on ``ax``; return the scatter handle (for the colorbar).
 
     Style is fully caller-supplied: ``cmap`` (sequential), ``block_colors`` (home factor -> colour),
-    ``axlab`` (factor -> long label), ``axtag`` (factor -> short tag e.g. G / D1..D8).
+    ``axlab`` (factor -> long label), ``axtag`` (factor -> short tag e.g. G / D1..D7).
     """
     disp = DISP if disp is None else disp
     key = {(r.item, r.factor): r for r in L.itertuples()}
