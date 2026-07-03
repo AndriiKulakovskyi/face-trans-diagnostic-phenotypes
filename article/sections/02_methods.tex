@@ -1,8 +1,6 @@
 \section{Methods}
 
-This section gives a self-contained mathematical account of the model and the analysis; the
-complete development, with proofs, is in the Supplement
-(\ref{ann:measurement}--\ref{ann:prognosis}). Throughout, $i=1,\dots,N$ indexes patients,
+The complete development, with proofs, is in the Supplement (\ref{ann:measurement}--\ref{ann:prognosis}). Throughout, $i=1,\dots,N$ indexes patients,
 $j=1,\dots,J$ indicators, $k=1,\dots,K$ the $K=7$ specific factors and \Gfac{} the general
 factor; $O_i$ is patient $i$'s set of observed indicators and $C_i\subseteq O_i$ its observed
 continuous cells.
@@ -77,8 +75,7 @@ backbone (Supplement~\ref{ann:measurement}).
 
 \subsection{The measurement model}
 
-The measurement model rests on a small set of core equations; their full derivation, with
-proofs, is in Supplement~\ref{ann:measurement}. We posit that a few latent factors generate the many
+The measurement model rests on a small set of core equations. We posit that a few latent factors generate the many
 measured quantities, so each patient is summarized by a low-dimensional coordinate.
 Patient $i$ carries a factor vector of one general functional-burden axis \Gfac{} and
 $K=7$ specific axes, given a standardized multivariate-normal prior,
@@ -197,11 +194,7 @@ cross-talk and nothing spurious, which is positive evidence the map is well spec
 \paragraph{Robustness of the bifactor specification.} Bifactor models are known to fit
 flexibly and, under some fit indices, to be preferred for reasons that are partly
 artifactual~\citep{bonifaycai2017,greene2019fit}. We guard against this in three ways,
-and the immunometabolic dissociation survives all three. First, the finding does not
-depend on a general factor at all: the correlated-\Gfac{} arm of \eqref{eq:corrg}---no
-forced orthogonal \Gfac{}---reproduces the same axis ordering, with the immunometabolic
-axis the least entangled with severity (correlation $\approx0.10$ versus $0.39$ for
-cognition and $0.42$ for sleep). The dissociation is therefore not a bifactor artifact.
+and the immunometabolic dissociation survives all three. First, the finding does not depend on a general factor at all: the correlated-\Gfac{} arm of \eqref{eq:corrg}---no forced orthogonal \Gfac{}---reproduces the same axis ordering, with the immunometabolic axis the least entangled with severity. The dissociation is therefore not a bifactor artifact.
 Second, simple structure is chosen by the data, not imposed by the prior: in the
 all-cells-freed sparse-ESEM validation arm above, $\approx83\%$ of the freed off-home
 cells shrink to near zero, recovering the same anchored map. Third, the reported map
@@ -293,8 +286,7 @@ adiposity) implemented by residualizing each indicator before the factor model.
 The model is fit globally to the full sample ($N=9{,}013$) under per-patient cohort weights
 $w_i = N/(3\,n_{c(i)})$, with $n_{c(i)}$ the size of patient $i$'s cohort, so that each of the
 three cohorts contributes equal total weight $N/3$ while every patient is retained and
-$\sum_i w_i = N$. Balancing by subsampling is rejected because matching the smallest cohort would discard
-${\sim}92\%$ of the bipolar sample; weighting equalizes cohort influence without that loss. This is a
+$\sum_i w_i = N$. Balancing by subsampling would discard ${\sim}92\%$ of the bipolar sample; weighting equalizes cohort influence without that loss. This is a
 composite-likelihood weighting: the point estimate is the balanced transdiagnostic estimand, and because the
 resulting posterior standard deviations are order-correct rather than fully calibrated we validate them by
 cross-seed congruence. The map's insensitivity to the weighting is quantified by the robustness battery below,
@@ -349,12 +341,8 @@ imposing it. Third, posterior-predictive checks gave a Bayesian standardized roo
 $\approx0.07$ for the continuous block and reproduced $21/22$ non-Gaussian indicators within the $90\%$
 predictive interval. As a secondary check WAIC and PSIS-LOO~\citep{watanabe2010waic,vehtari2017loo} also
 ranked the bifactor above unidimensional and correlated-factor alternatives, but for the reason above we
-treat this as confirmatory only. Because the marginalized Bayesian model and full-information maximum
-likelihood optimize the same observed-data objective (Prop.~\ref{propA:fiml}), a standalone
-maximum-likelihood arm adds no independent evidence. Measurement invariance across BP/SZ/DR was tested by multi-group loadings and
-Bayesian differential item functioning, and robustness by leave-one-cohort-out
-congruence, diagnosis-balanced subsampling, site cluster-bootstrap and inverse-cohort
-weighting (minimum Tucker $\varphi=0.96$).
+treat this as confirmatory only.  Measurement invariance across BP/SZ/DR was tested by multi-group loadings and
+Bayesian differential item functioning, and robustness by leave-one-cohort-out congruence, subsampling, site cluster-bootstrap and inverse-cohort weighting.
 
 Each patient's coordinates are the expected a posteriori (EAP) factor scores from their
 observed cells; for an all-continuous pattern,

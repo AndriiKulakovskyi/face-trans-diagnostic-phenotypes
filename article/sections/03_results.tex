@@ -5,8 +5,7 @@
 The analysis sample was the harmonized baseline (visit V0) of the three FACE
 cohorts: $N=9{,}013$ patients (bipolar disorder [BP] $6{,}252$; schizophrenia [SZ]
 $2{,}209$; major depression [DR] $552$) recruited across $21$ expert-centre sites
-(Table~\ref{tab:characteristics}). The cohorts differ in age, sex distribution and
-chronicity, as expected for these disorders. We deliberately fit the measurement
+(Table~\ref{tab:characteristics}).  We deliberately fit the measurement
 model on the \emph{full} sample without completeness selection. Of the $201$ usable
 harmonized common variables (the full role breakdown is in the Methods), the $143$-variable
 modelled-indicator pool has mean cell missingness $39.8\%$, preserved as missing and never
@@ -221,11 +220,7 @@ redundant. Because the Fisher information above is evaluated at the population m
 curves in Fig.~\ref{fig:mincount} are an upper bound on the efficiency a fully adaptive
 test (one that re-evaluates information at each patient's provisional estimate) would
 realise; and because the loadings and item parameters are held at their point estimates,
-the analysis does not itself propagate parameter uncertainty. Stated proactively, the
-mania/activation and substance-use ceilings are a property of the instrument bank the
-model has correctly diagnosed, not a failure of the measurement approach: coverage is
-not the issue (\S\ref{subsec:localization}), and the fix is a finer or graded severity
-instrument, not additional weak binary items.
+the analysis does not itself propagate parameter uncertainty. These mania/activation and substance-use ceilings are a property of the instrument bank, not of the measurement approach (coverage is not the issue, \S\ref{subsec:localization}).
 
 \paragraph{From uncertainty to a shared battery: designing the next cohort's
 measurement.} The same arithmetic that asks ``how many items per axis'' also answers the
@@ -270,18 +265,7 @@ consortium-level use of the map beyond description.
   \label{fig:voi}
 \end{figure}
 
-\subsection{Designing efficient, harmonised batteries}
 
-Because the model quantifies each indicator's information contribution---using the
-correct form for each measurement family---and tolerates arbitrary missingness, it
-functions as a design tool for future data collection, not only a description of the
-current one. For a consortium harmonising protocols across bipolar disorder,
-schizophrenia and depression, the shared battery and the cohort-gap map together
-convert the measurement model into an actionable specification: a common core battery
-(Fig.~\ref{fig:voi}, left) plus disorder-specific top-ups where a cohort is currently
-blind (Fig.~\ref{fig:voi}, right), rather than a post-hoc analysis. The item ordering
-uses pooled item parameters; a cohort-stratified refit, left to future work, would let
-the most-informative set itself differ by diagnosis.
 
 \subsection{The eight dimensions of the transdiagnostic atlas}\label{subsec:eightdim}
 
@@ -594,10 +578,7 @@ from the well pole (A4) to the severe poles (A1/A2)---but the corners separate a
 on immunometabolic load ($0.39$), sleep ($0.38$) and developmental risk ($0.35$). This is the
 value over a one-number severity score: at any given severity the archetype distinguishes patients
 by biological and symptom \emph{profile}, so A1 and A2---equally severe, biologically opposite---are
-different corners a severity score cannot tell apart. (The sharper ``driven by activation and
-suicidality more than severity'' statement belongs to the coarse two-region tessellation,
-$\eta^2\approx0.22$ each versus $0.05$ for \Gfac{}; a distinct, lower-resolution object,
-Supplement~\ref{ann:stratification}.) Choosing soft archetypal corners over hard clustering is
+different corners a severity score cannot tell apart.  Choosing soft archetypal corners over hard clustering is
 itself the methodological point: on a cloud with no density gaps, convex mixtures of extreme
 phenotypes neither manufacture boundaries the data lack nor blur patients into centroid
 ``averages,'' and they preserve a patient's position relative to \emph{every} pole rather than
@@ -698,9 +679,7 @@ durable biology; monitor the moving symptoms}.
   \label{fig:traitstate}
 \end{figure}
 
-\paragraph{A trait/state spectrum across the axes.} The same decomposition, shown in full as a
-variance \emph{thermometer} (Fig.~\ref{fig:thermometer}), partitions each axis into trait, state
-and measurement error and so sharpens the reading. Ordered by error-corrected trait fraction the
+\paragraph{A trait/state spectrum across the axes.} Shown in full as a variance \emph{thermometer} (Fig.~\ref{fig:thermometer}) partitioning each axis into trait, state and measurement error, and ordered by error-corrected trait fraction the
 eight axes form a single durability spectrum from immunometabolic biology (ICC $0.91$; $80\%$ of
 its total variance is the stable between-patient trait) down to developmental risk ($0.39$), with
 cognition ($0.70$) and general burden ($0.62$) trait-dominant and the symptom axes mixed.
@@ -796,10 +775,7 @@ reference (autoregression)               & $0$ & $0$ \\
 \end{table}
 
 This within-cohort gradient (Figure~\ref{fig:prognosis}a) is a genuine within-diagnosis
-effect, not a cohort-composition artefact: the rank held inside every cohort
-(immunometabolic corner $\to$ well pole: bipolar $27\%\!\to\!73\%$, depression
-$31\%\!\to\!72\%$, schizophrenia $9\%\!\to\!25\%$; a cohort-adjusted best-versus-worst
-odds ratio $\approx 6.3$), standardizing to a common cohort mix moved it by only
+effect, not a cohort-composition artefact: the rank held inside every cohort (cohort-adjusted best-versus-worst odds ratio $\approx 6.3$), standardizing to a common cohort mix moved it by only
 $\approx 4\%$, and the corner-by-cohort interaction was non-significant. A2 also
 remained worse than the equally severe clean-biology corner A1 within diagnosis ($22\%$
 vs $34\%$ pooled)---the severity-is-not-biology dissociation, now translated into
