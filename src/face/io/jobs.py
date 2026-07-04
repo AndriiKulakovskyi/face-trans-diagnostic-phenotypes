@@ -49,7 +49,8 @@ def launch(job: str, cmd: list[str]) -> Path:
     """Spawn ``cmd`` as a detached, wake-locked job and return immediately. Output in ``logs/<job>.log``."""
     (REPO / "run").mkdir(exist_ok=True)
     (REPO / "logs").mkdir(exist_ok=True)
-    runstate.merge_state(job, status="launching", queued_at=runstate.utcnow())
+    # fresh state on relaunch — clear any terminal fields from a prior run of the same job name
+    runstate.write_state(job, {"name": job, "status": "launching", "queued_at": runstate.utcnow()})
     supervisor = [sys.executable, "-u", "-m", "face.io.jobs", "--supervise", job, "--", *cmd]
     env = dict(os.environ)
     env["PYTHONPATH"] = f"{REPO / 'src'}:" + env.get("PYTHONPATH", "")
