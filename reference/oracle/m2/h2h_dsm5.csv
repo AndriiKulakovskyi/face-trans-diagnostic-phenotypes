@@ -1,0 +1,9 @@
+contrast,d_elpd,se,verdict,outcome
+DSM-5 beyond foundation (A−D),28.6,8.94,predictive,egf
+map beyond foundation (C−D),36.29,9.34,predictive,egf
+map beyond DSM-5 (B−A),47.18,10.3,predictive,egf
+DSM-5 beyond map (B−C),39.5,10.2,predictive,egf
+DSM-5 beyond foundation (A−D),30.53,8.58,predictive,cgi_s
+map beyond foundation (C−D),10.44,6.15,ambiguous,cgi_s
+map beyond DSM-5 (B−A),15.17,6.99,predictive,cgi_s
+DSM-5 beyond map (B−C),35.26,9.01,predictive,cgi_s

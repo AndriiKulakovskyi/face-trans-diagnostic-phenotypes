@@ -1,0 +1,7 @@
+question,mode,n_treated,n_control,frac_in_support,max_smd_before,max_smd_after,verdict
+lithium_bp,active_comparator,1065,1077,0.9953314659197012,0.298,0.012,estimable
+lithium_bp,on_off,1065,1231,0.9965156794425087,0.372,0.028,estimable
+clozapine_sz,active_comparator,175,517,0.9812138728323699,0.441,0.607,estimable — residual imbalance (caution)
+clozapine_sz,on_off,175,1918,0.9880554228380315,0.262,0.048,estimable
+antipsychotic_bp,active_comparator,1700,580,0.9929824561403509,0.711,0.093,estimable
+antipsychotic_bp,on_off,1700,626,0.9939810834049871,0.701,0.078,estimable

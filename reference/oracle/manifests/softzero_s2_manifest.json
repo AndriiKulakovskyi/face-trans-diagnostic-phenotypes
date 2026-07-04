@@ -1,0 +1,28 @@
+{
+  "stage": "softzero_s2",
+  "created_at": "2026-06-17T19:15:12Z",
+  "N": 1884,
+  "cohort_counts": null,
+  "seed": 20260606,
+  "patient_index_hash": null,
+  "git_commit": "378660b4c9ea7b698a6d1c3b9b638bde3cb964fa",
+  "package_versions": {
+    "python": "3.13.9",
+    "numpy": "2.3.5",
+    "scipy": "1.16.3",
+    "pandas": "2.3.3",
+    "scikit-learn": "1.7.2",
+    "pymc": "6.0.1",
+    "pytensor": "3.0.4",
+    "numpyro": "0.21.0",
+    "jax": "0.10.1",
+    "jaxlib": "0.10.1",
+    "arviz": "1.1.0",
+    "h5netcdf": "1.8.1"
+  },
+  "diagnostics": {
+    "hard_rhat": 1.01,
+    "soft_rhat": 1.02
+  },
+  "arm": "soft_unlikely"
+}

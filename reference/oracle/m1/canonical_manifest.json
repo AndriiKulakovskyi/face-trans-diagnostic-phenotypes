@@ -1,0 +1,70 @@
+{
+  "model_version": "oop_measurement_2026_06_20_v5",
+  "stage": "hs_s5_merged_xc",
+  "stage_spec": {
+    "name": "hs_s5_merged_xc",
+    "factors": [
+      "overall_severity",
+      "cognition",
+      "immunometabolic",
+      "sleep",
+      "suicidality",
+      "developmental_risk",
+      "mania_activation",
+      "substance"
+    ],
+    "correlated": true,
+    "windows": true,
+    "mixed": true,
+    "explicit_factors": [
+      "overall_severity",
+      "suicidality",
+      "developmental_risk",
+      "substance"
+    ],
+    "min_cohorts": 2,
+    "n_subsample": null,
+    "balanced": false,
+    "draws": 1500,
+    "tune": 2000,
+    "chains": 4,
+    "target_accept": 0.95,
+    "seed": 20260605,
+    "specific_cross": true,
+    "cross_sd_scale": 1.0
+  },
+  "config_sig": {
+    "soft_unlikely": false,
+    "soft_g_anchor_specific": false,
+    "covariate_mode": "residualize",
+    "include_cohort_covariates": false,
+    "psi_floor": 0.05,
+    "lkj_eta": 2.0,
+    "age_spline_knots": 4,
+    "likelihood_mode": "gaussian_copula",
+    "cohort_weighted": true,
+    "orthogonal_factors": [
+      "substance"
+    ],
+    "copula_min_distinct": 8,
+    "copula_max_modal_frac": 0.5
+  },
+  "elapsed_sec": 11053.82817697525,
+  "N": 9013,
+  "J": 88,
+  "factors": [
+    "overall_severity",
+    "cognition",
+    "immunometabolic",
+    "sleep",
+    "suicidality",
+    "developmental_risk",
+    "mania_activation",
+    "substance"
+  ],
+  "diagnostics": {
+    "rhat": 1.03,
+    "ess": 97.0,
+    "divergences": 0
+  }
+}

@@ -1,0 +1,5 @@
+domain,bifactor_loading_on_G,corrG_phi_with_G,seed_range
+inflammatory,0.07,0.071,0.027
+metabolic,0.08,0.124,0.03
+cognition,0.26,0.385,0.018
+sleep,0.25,0.422,0.038
