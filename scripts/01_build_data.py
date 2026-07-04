@@ -129,6 +129,16 @@ def main() -> None:
     print("\n".join(lines))
     print(f"\nwrote data/processed/baseline_v0.parquet  shape={B.shape}")
 
+    # ---- follow-up visits V1/V2 (same pipeline; modeled indicators, NaN = missing) — M3/M4 inputs ----
+    # Identical harmonization to V0 (skip-logic on, no normalization), parameterized by visit; the
+    # per-visit roster is the completers at that visit. Downstream engines align columns on read.
+    for v in ("V1", "V2"):
+        dsv = to_harmonized_dataset(df, variables, visit=v, normalize=False, apply_skip_logic=True)
+        presv = [it for it in modeled if it in dsv.X.columns]
+        Bv = dsv.X[presv].apply(pd.to_numeric, errors="coerce")
+        Bv.to_parquet(PROC / f"baseline_{v.lower()}.parquet")
+        print(f"wrote data/processed/baseline_{v.lower()}.parquet  shape={Bv.shape}")
+
 
 if __name__ == "__main__":
     main()
