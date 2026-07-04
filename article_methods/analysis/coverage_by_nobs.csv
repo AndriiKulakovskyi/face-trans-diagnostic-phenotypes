@@ -1,0 +1,50 @@
+# coverage_by_nobs.csv  --  95% interval coverage stratified by #observed HOME items on the axis
+# (n_obs uses the instrument's own definition: observed indicators whose home factor is the axis,
+#  matching coordinates.parquet <axis>__n_obs). axis='ALL_pooled' pools patients across axes per bin.
+# n_sim=10000 seed=20260704. columns: axis,nobs_bin,nominal_0p95_empirical_coverage,n
+axis,nobs_bin,nominal_0p95_empirical_coverage,n
+overall_severity,0,0.9618,157
+overall_severity,1-2,0.9522,251
+overall_severity,3-5,0.9456,2022
+overall_severity,6-10,0.9485,3712
+overall_severity,11+,0.9479,3858
+cognition,0,0.9489,2836
+cognition,1-2,0.9811,53
+cognition,3-5,0.972,286
+cognition,6-10,0.9537,6020
+cognition,11+,0.9491,805
+immunometabolic,0,0.9314,175
+immunometabolic,1-2,0.9688,32
+immunometabolic,3-5,0.9474,76
+immunometabolic,6-10,0.9473,626
+immunometabolic,11+,0.9486,9091
+sleep,0,0.9418,1461
+sleep,1-2,0.9453,128
+sleep,3-5,0.943,158
+sleep,6-10,0.9485,8253
+sleep,11+,,0
+suicidality,0,0.9408,710
+suicidality,1-2,0.9873,79
+suicidality,3-5,0.9124,251
+suicidality,6-10,0.9439,6739
+suicidality,11+,0.9518,2221
+developmental_risk,0,0.9365,189
+developmental_risk,1-2,0.9608,51
+developmental_risk,3-5,0.9448,163
+developmental_risk,6-10,0.9521,1169
+developmental_risk,11+,0.9483,8428
+mania_activation,0,0.9679,436
+mania_activation,1-2,0.9513,9564
+mania_activation,3-5,,0
+mania_activation,6-10,,0
+mania_activation,11+,,0
+substance,0,0.9459,388
+substance,1-2,0.9513,4907
+substance,3-5,0.9511,4705
+substance,6-10,,0
+substance,11+,,0
+ALL_pooled,0,0.9469,6352
+ALL_pooled,1-2,0.9516,15065
+ALL_pooled,3-5,0.9488,7661
+ALL_pooled,6-10,0.9486,26519
+ALL_pooled,11+,0.9487,24403

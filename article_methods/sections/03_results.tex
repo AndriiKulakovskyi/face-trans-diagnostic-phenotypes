@@ -1,0 +1,399 @@
+\section{Results}
+
+We demonstrate the five instrument properties in the order a user meets them, on
+the fitted eight-axis map of $N=9{,}013$ patients. A single real patient
+(\S\ref{sec:res-project}) makes the whole chain concrete; the remaining
+subsections establish each property at the level of the full sample. Throughout,
+where a specific axis or patient appears it illustrates a measurement property, not
+a clinical claim.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig1_projection.png}
+  \caption{\textbf{Projection --- the instrument returns a coordinate, its
+  uncertainty, a summary, a prognosis, and the next measurement, for one patient.}
+  A real patient from the bipolar cohort projected through the measurement model
+  (Eq.~\ref{eq:m-scores}). \textbf{(A)} Posterior coordinate on all eight axes with
+  $95\%$ credible intervals; axes with no observed indicator return the prior and
+  are labelled as such, alongside the per-axis count of observed items.
+  \textbf{(B)} The patient's archetype-simplex membership, concentrating $86\%$ of
+  weight on one corner. \textbf{(C)} The interval-valued prognosis read from the
+  coordinate's neighbourhood. \textbf{(D)} Value of information: the single next
+  measurement that most reduces this patient's coordinate uncertainty, lifting the
+  prior-dominated cognition axis to reliability $0.65$. The panels are one object
+  read four ways.}
+  \label{fig:projection}
+\end{figure}
+
+\subsection{Projection: a coordinate with its uncertainty, per patient}
+\label{sec:res-project}
+
+Figure~\ref{fig:projection} follows one patient from the bipolar cohort through the
+instrument. Projecting their observed cells through \eqref{eq:m-scores} returns a
+posterior coordinate on all eight axes together with its uncertainty
+(Fig.~\ref{fig:projection}A). The two are inseparable and they are heterogeneous
+across axes for the same patient: the immunometabolic coordinate is pinned down to
+a posterior standard deviation of $0.22$ by six observed indicators, whereas
+cognition and suicidality --- on which this patient has no observed item --- return
+the prior, a standard deviation near $0.99$. The map does not paper over the gap
+with a point estimate; it reports a wide interval and labels the axis
+prior-dominated. This is the instrument's first and most basic honesty: a
+coordinate is always accompanied by how much data produced it.
+
+The same posterior supports three immediate reads. The patient's archetype mixture
+(Fig.~\ref{fig:projection}B) places $86\%$ of their weight on a single corner of
+the simplex, so the eight-number coordinate compresses to an interpretable
+one-line summary without discarding the minority mixture. The interval-valued
+prognosis (Fig.~\ref{fig:projection}C) is read off the coordinate's neighbourhood,
+and --- because the coordinate carries $S_i$ --- it too is an interval, not a point.
+And the value-of-information panel (Fig.~\ref{fig:projection}D) names the single
+most informative next measurement for this patient: one verbal-memory test would
+lift the cognition axis from prior-dominated to a reliability of $0.65$. Projection,
+summary, prognosis and next-measurement all read off one object.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig2_information.png}
+  \caption{\textbf{Information, not loading, localizes a patient.} For every
+  modelled indicator, its loading on its home axis versus the Fisher information it
+  contributes about that axis under its own likelihood family
+  (Eq.~\ref{eq:m-fisher}). Continuous items convert loading into information
+  efficiently; binary flags carry information $\lambda^2 p(1-p)$ that collapses at
+  low endorsement, so a strongly-loading rare symptom localizes almost no one. The
+  right panel translates this into a target-driven item count: reaching a posterior
+  standard deviation of $0.5$ needs $\sim\!4$ items at loading $0.7$ but $\sim\!31$
+  at loading $0.3$.}
+  \label{fig:information}
+\end{figure}
+
+\subsection{Information: what localizes a patient is not the loading}
+\label{sec:res-info}
+
+Reading the map as an instrument reorders the item bank. Figure~\ref{fig:information}
+contrasts each indicator's loading on its home axis with the Fisher information it
+actually contributes under its own likelihood family \eqref{eq:m-fisher}. The two
+diverge sharply. For a binary indicator the information is $\lambda^2 p(1-p)$, so a
+symptom flag endorsed by a few percent of patients contributes almost nothing to
+localization however strongly it loads: at $30\%$ endorsement a unit-loading item
+carries information $\approx0.10$, at $50\%$ it carries $0.33$, and only a
+near-ubiquitous item approaches the information a single well-scaled continuous
+measure supplies. The practical consequence is a target-driven item count: to reach
+a posterior standard deviation of $0.5$ on an axis requires accumulated information
+$\gtrsim3$, which is roughly four items at loading $0.7$ but $\sim\!9$ at loading
+$0.5$ and $\sim\!31$ at loading $0.3$. What localizes a patient is the information
+an item carries, and information --- not loading --- is the currency the rest of the
+instrument spends.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig3_adaptive.png}
+  \caption{\textbf{Adaptive assessment --- the fixed order is a tight upper bound,
+  and two axes are bank-limited.} \textbf{(A)} Reliability versus number of items
+  administered, most-informative-first, for all eight axes; three to six items
+  reach the useful range on well-populated axes, while mania/activation (reliability
+  $0.41$, $2$-item bank) and substance ($0.43$, $4$-item bank) are capped by
+  instrument content, not missingness. \textbf{(B)} A simulated computerized
+  adaptive test (500 synthetic patients per axis, seed $20240704$) versus the
+  fixed population-mean order. On Gaussian-topped axes (e.g.\ immunometabolic) the
+  two coincide, because $\theta$-independent information leaves nothing to adapt to;
+  only Bernoulli-topped axes (e.g.\ suicidality) show a small adaptive signature.
+  The population-mean reliability curve is therefore a tight upper bound on adaptive
+  efficiency.}
+  \label{fig:adaptive}
+\end{figure}
+
+\subsection{Adaptive sampling: a tight upper bound, and where the bank is the limit}
+\label{sec:res-adaptive}
+
+Accumulating information most-informative-first yields the reliability-versus-items
+curve for each axis (Fig.~\ref{fig:adaptive}A). A small number of well-chosen
+indicators recovers most of an axis's reliable signal: three to six items reach the
+useful range on the well-populated axes. Two axes cannot be rescued by more items
+of the same kind --- mania/activation plateaus at reliability $0.41$ (a $2$-item
+bank) and substance at $0.43$ (a $4$-item bank). These ceilings are a property of
+the \emph{instrument content}, not of missingness: no adaptive schedule and no
+completed data matrix can exceed them, because the information simply is not in the
+bank. Naming them is a service the instrument performs that a point-estimate map
+cannot.
+
+The fixed most-informative-first order is the population-mean curve, an upper bound
+on any patient-adaptive schedule. Simulating a full CAT
+(\S\ref{sec:m-voi}) shows the bound is \emph{tight} (Fig.~\ref{fig:adaptive}B): on
+every axis whose leading items are Gaussian --- whose information is
+$\theta$-independent --- patient-adaptive selection coincides with the fixed order
+to within $2\times10^{-4}$ in reliability, because there is nothing to adapt to.
+Only the two axes with Bernoulli-topped banks show any adaptive signature at all,
+and it is small: suicidality diverges by at most $0.012$ (at two items) and
+substance by $0.0015$ at its four-item cap. The operational message is
+counter-intuitive but useful: for this instrument a fixed, pre-specified battery is
+essentially as efficient as a fully adaptive one, so the minimal-indicator rule can
+be published as a static list rather than requiring adaptive delivery
+infrastructure.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig4_voi.png}
+  \caption{\textbf{Value of information --- designing an efficient shared battery
+  and locating under-measured cohorts.} The closed-form entropy reduction from each
+  candidate item (Eq.~\ref{eq:m-voi}) drives a greedy cross-axis selection: mean
+  reliability across the eight axes rises with battery size, reaching $0.70$ for a
+  shared $27$-item battery. Applied per cohort, the same accounting shows where an
+  axis is under-measured (e.g.\ schizophrenia carries $20.7$ immunometabolic items
+  on average versus $34.9$ in bipolar disorder), concentrating the value of
+  additional measurement.}
+  \label{fig:voi}
+\end{figure}
+
+\subsection{Value of information: designing an efficient shared battery}
+\label{sec:res-voi}
+
+The closed-form entropy reduction \eqref{eq:m-voi} lets a greedy rule assemble a
+battery that maximises information per item across all eight axes at once.
+Figure~\ref{fig:voi} shows the cross-axis reliability rising with battery size; a
+shared $27$-item battery reaches a mean reliability of $0.70$ across the eight
+axes, a substantial reduction from administering every bank in full. The same
+accounting, applied within each cohort, localizes where an axis is under-measured:
+schizophrenia patients carry far fewer immunometabolic observations than bipolar
+patients ($20.7$ versus $34.9$ items on average) and fewer sleep observations
+($3.9$ versus $8.4$), so the value of adding those measurements is concentrated in
+the schizophrenia cohort. Value of information thus turns the map into a design
+tool --- it prescribes not just how few items suffice in general, but which cohort
+should be measured more, and on what.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig5_calibration.png}
+  \caption{\textbf{Trust I --- the posterior coordinate is calibrated.} From
+  $10{,}000$ synthetic patients with known coordinates and real bootstrapped
+  missingness patterns (seed $20260704$), projected through Fisher-scoring EAP
+  (\S\ref{sec:m-calib}). \textbf{(A)} Empirical versus nominal credible level: the
+  per-axis mean and the joint eight-dimensional ellipsoid both fall on the identity
+  line ($0.949$ at nominal $0.95$). \textbf{(B)} $95\%$ interval coverage
+  stratified by the number of observed indicators on the axis, with per-bin
+  binomial error bars; coverage is flat from prior-dominated ($0$ items, nominal by
+  construction) to richly observed ($11+$).}
+  \label{fig:calibration}
+\end{figure}
+
+\subsection{Trust I --- the coordinate's uncertainty is calibrated}
+\label{sec:res-calib}
+
+An instrument that reports intervals is only useful if the intervals are honest.
+Simulating $10{,}000$ patients with known coordinates and real missingness patterns
+(\S\ref{sec:m-calib}), the credible intervals are well-calibrated across the board
+(Fig.~\ref{fig:calibration}). Empirical coverage tracks nominal at every level ---
+$0.501$, $0.801$, $0.900$ and $0.949$ against nominal $0.50$, $0.80$, $0.90$ and
+$0.95$ --- both averaged over the eight axes and for the joint eight-dimensional
+credible ellipsoid ($0.947$ at the $95\%$ level; Monte-Carlo standard error
+$0.0022$). Coverage is flat as a function of how much data the patient supplied
+(Fig.~\ref{fig:calibration}B): from prior-dominated axes with zero observed items,
+through one or two, up to eleven or more, the $95\%$ interval covers at
+$0.947$--$0.952$, every bin within its binomial error of nominal. The zero-item bin
+recovers nominal coverage by construction --- the projection returns the prior when
+there is no data, and the test confirms the machinery does exactly that. The map's
+uncertainty is therefore not decorative: an interval labelled $95\%$ contains the
+truth $95\%$ of the time, whether the patient was richly or barely assessed.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig6_archetype.png}
+  \caption{\textbf{Trust II --- the archetype simplex summarizes the continuum, and
+  its reconstruction fidelity is quantified.} \textbf{(A)} The five-corner
+  archetypal simplex (Eq.~\ref{eq:m-archetype}) with all $9{,}013$ patients
+  projected into it, coloured by dominant corner; the interior is densely
+  populated. \textbf{(B)} Distribution of archetype-weight entropy: most patients
+  are blends, not types. \textbf{(C)} Reconstruction fidelity per axis --- the
+  five-corner convex blend ($R^2=0.59$ pooled) against a five-component PCA linear
+  optimum ($0.80$) and a five-centroid hard partition ($0.33$); faithful where
+  corners separate (immunometabolic $0.89$), weak on the bank-limited axes
+  (cognition, substance). \textbf{(D)} Reconstruction error versus archetype
+  entropy: ambiguous ``fog'' patients do not reconstruct worse ($r=-0.13$).}
+  \label{fig:archetype}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{explain_pca_vs_archetype.png}
+  \caption{\textbf{What each low-dimensional summary produces on the map.}
+  \textbf{(A)} The five leading principal components: each is a signed
+  \emph{contrast} that mixes axes (PC1 loads jointly on developmental risk, sleep,
+  severity and suicidality; PC2 is essentially $-$immunometabolic), captures a
+  named fraction of variance, and describes a \emph{direction} no patient can
+  \emph{be}. \textbf{(B)} The five archetype corners: each is a near-real extreme
+  \emph{profile} on the eight axes with a clinical label (C3 $=$ immunometabolic
+  $+3.5$, severity $+2.4$; C1 $=$ sleep $+2.8$, mania $+1.7$), so a patient can be
+  described as a convex blend --- ``$70\%$ C3'' --- with an attendant clinical
+  reading. Both summarize the same $8$-dimensional cloud in five numbers; only the
+  archetype corners are nameable poles.}
+  \label{fig:pcaarch}
+\end{figure}
+
+\subsection{Trust II --- the archetype summary reconstructs the coordinate faithfully}
+\label{sec:res-arch}
+
+\emph{The population is a continuum, not a set of types}, and this dictates the
+summary. The best five-way partition of the real coordinate cloud separates
+patients no better than a structureless Gaussian null (silhouette $0.140$ versus
+$0.137\pm0.002$; $z=1.13$, not significant), and most patients sit in the interior
+of the simplex as blends rather than at a corner (Fig.~\ref{fig:archetype}B): the
+median archetype-weight entropy is well away from zero, and the majority have no
+single dominant corner. When there are no natural clusters, a hard-partition
+``biotype'' claim is unjustified, and the honest low-dimensional summary is not a
+set of groups but a set of \emph{reference poles} that each patient is a graded
+mixture of --- exactly what the five-corner archetypal simplex provides
+(Fig.~\ref{fig:archetype}A), and exactly what neither a $k$-means partition nor a
+principal-component projection can.
+
+\emph{Reconstruction fidelity is the wrong yardstick for this summary, and it is
+instructive to see why.} Reconstructing each patient from their five archetype
+weights recovers $59.0\%$ of the pooled coordinate variance
+(Fig.~\ref{fig:archetype}C). Taken alone that looks modest against a five-component
+principal-component projection, the unconstrained linear optimum at the same
+dimension, which recovers $79.6\%$. But the map's coordinate variance is nearly
+isotropic --- the leading principal component carries only $26.9\%$, and five
+components are needed to reach $80\%$ --- so variance capture is a weak test of any
+five-dimensional summary here. The expected variance a \emph{random} five-dimensional
+subspace retains is exactly $k/d=5/8=0.625$ regardless of the covariance spectrum,
+and a $500$-seed simulation confirms it ($0.624\pm0.042$). The archetype simplex
+therefore does not merely trail the linear optimum; it sits at the $21$st percentile
+of \emph{random} five-dimensional projections --- slightly below what an arbitrary
+subspace achieves. Reconstruction $R^2$ cannot be the reason to prefer the simplex,
+because a coin-flip subspace beats it, and the fidelity rises only slowly with the
+number of corners ($R^2\approx0.53$, $0.62$, $0.69$ at four, five and six archetypes
+in a fresh refit whose five-corner value reproduces the production $0.59$ to within
+optimizer reinitialization noise; Fig.~\ref{fig:added}B inset). What the simplex provides is what none of these linear
+or random summaries do: convex, non-negative, sum-to-one membership in five
+\emph{named} clinical poles (Fig.~\ref{fig:pcaarch}) --- a principal component is a
+signed contrast that mixes axes and that no patient can \emph{be}, whereas an
+archetype corner is a near-real extreme profile a patient can be $70\%$ of, with the
+attendant clinical reading. The categorical resolution bears this out: the archetype
+assignment accounts for $\eta^2=0.256$ of the variance in the map's coordinates,
+against $0.026$ for the DSM-5 diagnosis and $0.018$ for cohort --- an
+$\approx\!9.7$-fold tighter description of where a patient sits, on the map's own
+axes.
+
+Read this way, the per-axis reconstruction pattern is a diagnostic rather than a
+scorecard: the simplex is faithful where the corners are well separated
+(immunometabolic $R^2=0.89$, overall severity $0.86$, sleep $0.76$, developmental
+risk $0.75$) and near-flat where they are not (cognition $0.06$, substance
+$\approx0$) --- the same two bank-limited axes the information analysis already
+flagged, now visible as axes along which no five poles could separate patients
+because the items carry too little information. And reconstruction does not degrade
+for the ambiguous ``fog'' patients: error correlates \emph{negatively} with
+archetype entropy (Fig.~\ref{fig:archetype}D; $r=-0.13$, $p<10^{-30}$), because
+interior blends lie inside the corner hull whereas near-corner patients include
+hull-exceeding extremes. The simplex is thus the defensible summary of a continuum
+with no clusters: interpretable poles, graded membership, and a fidelity profile
+that reports --- rather than hides --- the axes on which the instrument itself is
+weak.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig7_added_value.png}
+  \caption{\textbf{The instrument's choices change decisions.} \textbf{(A)} Building
+  the shared battery by ranking items on Fisher information (this paper) versus on
+  loading magnitude, over all eight axes: at the $27$-item battery the
+  information-ranked rule reaches mean reliability $0.71$ against $0.60$ for the
+  loading-ranked rule (a $+0.11$ gap), because high-loading, low-prevalence items
+  localize no one. \textbf{(B)} Reconstruction $R^2$ of the five-corner archetype
+  simplex placed against the full $0\to1$ range: the raw eight-dimensional
+  coordinate ($1.00$), the best five-dimensional linear projection (PCA-5, $0.80$),
+  a \emph{random} five-dimensional subspace (mean $0.62$, the analytic $k/d$ value,
+  $500$ seeds), the archetype simplex ($0.59$), a five-centroid hard partition
+  ($0.33$) and a single centroid ($0.00$). Because the coordinate variance is nearly
+  isotropic, a random subspace retains \emph{more} variance than the archetypes;
+  $R^2$ is therefore uninformative here, and the case for the simplex rests on
+  interpretability, not fidelity. Inset: reconstruction $R^2$ is stable across the
+  number of corners.}
+  \label{fig:added}
+\end{figure}
+
+\subsection{Utility I --- the information rule changes which items you would collect}
+\label{sec:res-utility-battery}
+
+Two of the instrument's claims --- that information, not loading, should rank items,
+and that the archetype simplex is worth its fidelity cost --- can be tested as
+head-to-head design decisions rather than asserted. Both hold, and both matter
+(Fig.~\ref{fig:added}). Assembling the shared battery by the information rule of
+\S\ref{sec:res-voi} against the naive alternative of ranking items by loading
+magnitude, at the same $27$-item budget, yields mean reliability $0.705$ for the
+information rule against $0.599$ for the loading rule --- a $0.106$ gap across the
+eight axes (Fig.~\ref{fig:added}A). The loading rule spends its early picks on
+high-loading but low-prevalence indicators that localize almost no one, and does not
+catch up until roughly item sixteen. Choosing items by the information they carry is
+thus not a refinement of choosing by loading; it selects a materially different, and
+measurably better, battery.
+
+The archetype summary invites the opposite test --- whether its interpretability is
+bought at an indefensible fidelity cost --- and the answer reframes what the
+$59\%$ reconstruction figure means (Fig.~\ref{fig:added}B). Anchored against the
+full range, the archetype simplex ($0.59$) sits below not only the five-component
+linear optimum ($0.80$) but a \emph{random} five-dimensional subspace ($0.62$),
+because the near-isotropic coordinate variance makes any five-dimensional projection
+capture roughly $k/d=0.625$. Reconstruction $R^2$ cannot adjudicate between the
+summaries, and the choice is therefore made on what only the simplex delivers ---
+named, convex, per-patient membership in five clinical poles --- not on variance
+retained.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig8_blockers.png}
+  \caption{\textbf{The posterior earns its keep, and its intervals degrade
+  gracefully.} \textbf{(A)} Head-to-head prognosis on model-simulated data with a
+  known remission rule: the full expected-a-posteriori coordinate (this paper)
+  against a naive per-axis sum-score, as item completeness falls. The posterior wins
+  at every level and the gap \emph{widens} as data get sparse ($+0.02$ at full data,
+  $+0.04$ at $25\%$ observed), because it shrinks noisy inputs toward the prior
+  instead of averaging them blindly; over $12$ seeds the posterior wins $100\%$ of the
+  time. The dotted line is the oracle AUC on the true latent ($0.80$).
+  \textbf{(B)} Coverage of the nominal $95\%$ interval when the data-generating
+  process \emph{violates} a model assumption, scored with the unperturbed
+  projection: correlated residuals (local-independence violation), an omitted ninth
+  factor, mismatched loadings, and heavy-tailed residuals. Coverage degrades
+  smoothly and never collapses --- the worst case, an extreme local-dependence
+  violation, still covers at $0.89$, and heavy tails are tolerated essentially
+  without loss.}
+  \label{fig:blockers}
+\end{figure}
+
+\subsection{Utility II --- carrying the posterior improves downstream prognosis, and calibration is robust}
+\label{sec:res-utility-prognosis}
+
+The instrument's foundational promise is that a coordinate carried with its
+uncertainty is worth more than a point estimate. Simulating item responses from the
+fitted model with a known latent-to-remission rule, and comparing the full
+expected-a-posteriori coordinate against a naive per-axis sum-score of the same
+observed items, the posterior predicts the outcome better at every level of item
+completeness, and the advantage grows as data thin
+(Fig.~\ref{fig:blockers}A): the out-of-sample AUC gap is $+0.018$ on complete data
+and $+0.039$ at a quarter of items observed, against an oracle AUC of $0.799$ on the
+true latent. The mechanism is the posterior's shrinkage --- where a sum-score
+propagates the full noise of a sparsely-measured axis, the projection pulls it
+toward the prior in proportion to how little was observed --- which is precisely why
+the gain concentrates in the sparse regime. The effect is not a simulation artifact:
+over twelve seeds and an alternative outcome rule the posterior wins every time (gap
+$+0.019\pm0.003$ on full data, $+0.032\pm0.006$ when sparse). We note the boundary of
+this claim honestly: on the real cohort, triaging patients by their posterior
+uncertainty does not raise remission prediction (out-of-sample AUC $0.709$ whether
+or not the least-certain patients are set aside), because remission at follow-up is
+driven substantially by treatment and course factors the baseline coordinate cannot
+see; the demonstrated value of the posterior is the sharper coordinate, not a
+confidence-triage of who is predictable.
+
+Because the calibration of \S\ref{sec:res-calib} samples from the model's own
+parameters, it establishes internal honesty but not robustness to misspecification.
+We therefore generate data from four data-generating processes that each violate a
+model assumption --- correlated residuals (breaking local independence), an omitted
+ninth latent factor, multiplicatively mismatched loadings, and heavy-tailed
+(Student-$t$) residuals --- and score them with the \emph{unperturbed} projection
+(Fig.~\ref{fig:blockers}B). Coverage of the nominal $95\%$ interval degrades
+gracefully in every case and collapses in none. Heavy tails are absorbed almost
+without loss (coverage $0.955$ at $t$ with three degrees of freedom); an omitted
+factor and mismatched loadings sag gently to $0.93$--$0.94$; the steepest and most
+consequential violation, correlated residuals, drifts monotonically to $0.889$ at an
+extreme shared-nuisance loading --- the expected direction, since local dependence is
+where factor-model intervals are most optimistic, yet even there the interval loses
+only six points of coverage. Calibration under this instrument is thus not a
+by-construction artifact: the intervals are honest when the model holds and fail
+predictably, not catastrophically, when it does not, with local dependence flagged
+as the assumption most worth checking on real data.

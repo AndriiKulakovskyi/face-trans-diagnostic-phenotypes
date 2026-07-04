@@ -1,0 +1,69 @@
+\section{Introduction}
+
+Dimensional models of psychopathology are displacing categorical diagnosis as
+the organizing frame for clinical research. Hierarchical and general-factor
+accounts \citep{caspi2014pfactor,lahey2017general,kotov2017hitop,ruggero2019hitop},
+normative and biotype modelling \citep{marquand2016,wolfers2018,clementz2016biotypes},
+and the transdiagnostic ambition of the Research Domain Criteria
+\citep{insel2010rdoc} all reduce a patient to a position in a low-dimensional
+latent space. That position is then read, plotted, correlated with outcomes, and
+increasingly proposed as a target for stratified care.
+
+A dimensional coordinate, however, is an \emph{estimate}, and an estimate without
+its uncertainty is a claim without an error bar. In practice the measurement step
+that produces the coordinate is treated as a solved preliminary: incomplete
+assessments are imputed or dropped, mixed item types are coerced to a common
+scale, and each patient is reported as a point. This hides exactly the quantities
+a user of the map needs. How sharply is a given patient actually located --- is a
+coordinate pinned down by a dozen observations or floated in from the prior on a
+single item? Which of the administered instruments earned that precision, and
+which contributed almost nothing? If the assessment is incomplete, what is the
+single most valuable thing left to measure? And when a coordinate is later fed
+into a prognostic model or a stratification rule, does its uncertainty travel with
+it, or is a floated-in prior mean treated as though it were pinned down by data?
+Point-estimate, imputation-based scoring cannot answer any of these; the questions
+are not about the map's content but about the \emph{quality of its measurement}.
+
+The components needed to answer them already exist, each well characterised in
+isolation. Item response theory gives the likelihood of a mixed-type response
+given a latent position and, through Fisher information, a currency for how much
+each item constrains that position
+\citep{lord1980irt,embretsonreise2000,samejima1969,reckase2009mirt}. Expected-a-posteriori
+scoring and the Woodbury identity make posterior coordinates and their covariance
+computable at scale \citep{bockaitkin1981,harville1997matrix}. Computerized
+adaptive testing turns information into a sequential item-selection rule
+\citep{vanderlinden2010cat}; value-of-information reasoning turns it into a design
+criterion \citep{covertthomas2006}; a principled treatment of missingness
+\citep{rubin1976missing,littlerubin2019} makes it legitimate to score a patient
+from observed cells alone; and archetypal analysis \citep{cutler1994archetypal}
+gives an interpretable low-dimensional summary of a continuous coordinate cloud.
+What has not been done is to assemble these into a single object and validate them
+\emph{together} on a real, pervasively incomplete, mixed-type transdiagnostic
+assessment --- and then to read the resulting map not as a set of coordinates but
+as an instrument that can be interrogated about its own measurement.
+
+Here we do exactly that. Using one missingness-native Bayesian bifactor /
+exploratory structural-equation model, fit to the harmonised baseline assessment
+of $N=9{,}013$ patients with bipolar disorder, schizophrenia or major depression
+from the three FACE cohorts, we treat the eight-dimensional dimensional map as a
+measurement instrument and ask four operational questions of it. \emph{Where is a
+patient, and how sharply} (projection)? \emph{Which items earned that precision}
+(information)? \emph{How few items suffice, and where is the instrument bank itself
+the limit} (adaptive sampling)? \emph{What is the cheapest next measurement, and
+which cohorts are under-measured} (value of information)? We then stress-test the
+instrument where a measurement reviewer will push hardest: we show by simulation
+that its credible intervals are calibrated, and we quantify how faithfully its
+five-archetype convex-blend summary reconstructs the full coordinate.
+
+The claim of this paper is therefore methodological, not clinical: \emph{a
+transdiagnostic dimensional map is not a fixed set of point-coordinates but a
+self-calibrating measurement instrument} --- one that returns, for every patient,
+a posterior coordinate and its uncertainty, quantifies how much information each
+indicator contributed (Fisher information, not loading), prescribes the cheapest
+next measurement that shrinks that uncertainty, and propagates that uncertainty
+into every downstream use. The clinical and biological findings that this map
+supports --- including the immunometabolic axis that recurs as its own archetype
+corner --- are the subject of a companion paper and are deliberately out of scope
+here; where a specific patient or a specific axis appears below, it is an
+illustration of an instrument property, never a substantive claim about
+psychopathology.

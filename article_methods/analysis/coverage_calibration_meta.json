@@ -1,0 +1,43 @@
+{
+  "n_sim": 10000,
+  "seed": 20260704,
+  "missingness_source": "bootstrap of real per-patient full 142-item observed/missing masks from data/processed/baseline_v0.parquet (the model's own input frame, 9013 patients); only the binary observed/missing indicator is used, never any clinical value",
+  "projection_scheme": "Fisher-scoring (expected-information Gauss-Newton / Laplace) EAP. Posterior precision S^-1 = Phi^-1 + sum_{j obs} w_j(eta) lam_j lam_j^T with per-item expected Fisher info w_j (gaussian 1/sigma^2; bernoulli p(1-p); count mu*r/(r+mu); ordinal graded-response sum_k dP_k^2/P_k), posterior mean by Newton iteration on the penalized score g = -Phi^-1 theta + sum_{j obs} s_j(eta) lam_j. Reduces EXACTLY (verified to 3e-15) to the paper's closed-form conditional_gaussian_scores on all-gaussian observed patterns; the Newton/Laplace step generalises it to the non-gaussian families. Prior Phi = frozen model's factor_prior (G and substance orthogonal); scored on the model-internal (rank-INT/copula-z) scale.",
+  "nominal_levels": [
+    0.5,
+    0.8,
+    0.9,
+    0.95
+  ],
+  "phi_source": "results/face/gllvm_oop/s8_full/model_state.pt factor_prior (== consolidate/phi.csv)",
+  "phi_note": "reports/copula_8factor_phi.csv differs from the frozen model Phi by <=0.11 on specific off-diagonals; the calibration test uses the frozen model's own Phi so generation and scoring share one prior (self-consistent by construction).",
+  "scale": "model-internal (gaussian channel on rank-INT/copula-z scale; discrete on native code)",
+  "gaussian_closed_form_match_maxabs": 3.3306690738754696e-15,
+  "factor_cols": [
+    "overall_severity",
+    "cognition",
+    "immunometabolic",
+    "sleep",
+    "suicidality",
+    "developmental_risk",
+    "mania_activation",
+    "substance"
+  ],
+  "families_count": {
+    "bernoulli": 36,
+    "count": 1,
+    "gaussian": 88,
+    "ordinal": 17
+  },
+  "sd_over_rmse_ratio": {
+    "overall_severity": 0.9553,
+    "cognition": 0.9193,
+    "immunometabolic": 0.9206,
+    "sleep": 0.9268,
+    "suicidality": 0.895,
+    "developmental_risk": 0.9138,
+    "mania_activation": 1.0065,
+    "substance": 0.9958
+  },
+  "notes": "Coverage measured as fraction with |theta_true-mean| <= z*posterior_sd per axis; joint via Mahalanobis under posterior cov vs chi2_8. Sanity: coverage in [0,1], monotone in nominal, and 0-observed (prior-dominated) axes recover ~nominal coverage by construction (prior in, prior out). Posterior SD runs modestly below residual RMSE on discrete-informed axes (per-axis sd/rmse ratio 0.90-1.01; lowest suicidality 0.895, mania/substance at parity 1.007/0.996) - a light-tailed Laplace-Gaussian approximation - yet 95%-level coverage is exact because it is set by the interval quantiles, not the SD."
+}

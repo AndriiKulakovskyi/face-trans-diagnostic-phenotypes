@@ -1,0 +1,16 @@
+# Archetype-simplex reconstruction fidelity (FACE-ATLAS, methods paper Fig 6)
+# X = 9013x8 EAP coordinates (coordinates.parquet __mean cols); Xhat = W@Z, W=arch_w0..4 (simplex), Z=archetype_profiles A_all9.
+# r2 = 1 - SS_res/SS_tot (SS_tot about each axis mean). OVERALL row = POOLED (variance-weighted) over all axis-cells; rmse OVERALL = pooled over all cells.
+# var_retained_frac = Var(Xhat_axis)/Var(X_axis) [fraction of each axis's spread reproduced]; OVERALL = sum Var(Xhat)/sum Var(X).
+# baselines: r2_kmeans5 = K=5 centroid hard-assignment; r2_pca5 = first-5-PC linear reconstruction (upper bound for any 5-dim LINEAR summary).
+# arm=A_all9; n=9013; generated 2026-07-04.
+axis,r2_archetype,rmse_archetype,r2_kmeans5,r2_pca5,var_retained_frac
+overall_severity,0.85936,0.35649,0.32669,0.84749,0.63251
+cognition,0.06116,0.79661,0.0858,0.5523,0.04205
+immunometabolic,0.89409,0.31367,0.35334,0.99604,0.64155
+sleep,0.76345,0.45148,0.36195,0.81846,0.63195
+suicidality,0.33611,0.77353,0.55855,0.98226,0.22557
+developmental_risk,0.75392,0.50009,0.38522,0.97844,0.55921
+mania_activation,0.41035,0.55787,0.16747,0.3646,0.35215
+substance,-0.00316,0.52454,0.00743,0.01269,0.00538
+OVERALL,0.58969,0.55887,0.32491,0.79563,0.44327

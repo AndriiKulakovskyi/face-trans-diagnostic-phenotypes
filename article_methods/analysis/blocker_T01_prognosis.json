@@ -1,0 +1,120 @@
+{
+  "A_selective_prediction": {
+    "endpoint": "egf__remission_V2",
+    "n": 2420,
+    "base_rate": 0.43842975206611573,
+    "auc_all_patients": 0.7086418674262205,
+    "fracs": [
+      1.0,
+      0.9,
+      0.8,
+      0.7,
+      0.6,
+      0.5,
+      0.4,
+      0.3
+    ],
+    "auc_retained_by_confidence": [
+      0.7086418674262205,
+      0.7120058333446778,
+      0.7100874167936483,
+      0.7081836739246832,
+      0.7017937986144872,
+      0.7019752294659178,
+      0.6889496100164203,
+      0.6826742640075973
+    ],
+    "auc_retained_by_severity": [
+      0.7086418674262205,
+      0.7169939633248675,
+      0.7220612549257612,
+      0.7302759172811943,
+      0.7364793548325304,
+      0.7466827402956848,
+      0.763911794721635,
+      0.7706225903729436
+    ],
+    "auc_retained_random": [
+      0.7086418674262203,
+      0.7085580682615087,
+      0.7091704539638961,
+      0.7083530257870305,
+      0.7076080102682638,
+      0.7056510136887433,
+      0.7047921401219698,
+      0.7102304693301604
+    ],
+    "note": "confidence = low mean per-axis posterior SD; a point estimate cannot produce this triage axis at all."
+  },
+  "B_simulation": [
+    {
+      "sparsity": "full",
+      "keep_frac": 1.0,
+      "estimator": "EAP",
+      "coord_recovery": 0.8953020004453878,
+      "prognostic_auc": 0.766118448135827
+    },
+    {
+      "sparsity": "full",
+      "keep_frac": 1.0,
+      "estimator": "SUM",
+      "coord_recovery": 0.8281258234692109,
+      "prognostic_auc": 0.7483999599461497
+    },
+    {
+      "sparsity": "moderate",
+      "keep_frac": 0.5,
+      "estimator": "EAP",
+      "coord_recovery": 0.8001973131336286,
+      "prognostic_auc": 0.7689727480084125
+    },
+    {
+      "sparsity": "moderate",
+      "keep_frac": 0.5,
+      "estimator": "SUM",
+      "coord_recovery": 0.7077683510806303,
+      "prognostic_auc": 0.744059016055368
+    },
+    {
+      "sparsity": "sparse",
+      "keep_frac": 0.25,
+      "estimator": "EAP",
+      "coord_recovery": 0.6832884195723358,
+      "prognostic_auc": 0.7411940315757328
+    },
+    {
+      "sparsity": "sparse",
+      "keep_frac": 0.25,
+      "estimator": "SUM",
+      "coord_recovery": 0.5777637075856219,
+      "prognostic_auc": 0.7020913133173812
+    },
+    {
+      "sparsity": "very_sparse",
+      "keep_frac": 0.12,
+      "estimator": "EAP",
+      "coord_recovery": 0.5392643031711761,
+      "prognostic_auc": 0.6984862868917014
+    },
+    {
+      "sparsity": "very_sparse",
+      "keep_frac": 0.12,
+      "estimator": "SUM",
+      "coord_recovery": 0.4386785037972175,
+      "prognostic_auc": 0.6612216906581617
+    }
+  ],
+  "B_oracle_auc_true_latent": 0.7992513814905163,
+  "B_true_weights": [
+    -0.9,
+    -0.3,
+    -0.8,
+    -0.2,
+    -0.5,
+    -0.2,
+    0.1,
+    -0.1
+  ],
+  "sim_N_train": 3000,
+  "sim_N_test": 3000
+}

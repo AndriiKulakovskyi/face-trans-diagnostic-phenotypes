@@ -1,0 +1,47 @@
+Dimensional maps of psychopathology are only as trustworthy as the measurement
+that produces them, yet they are typically read as fixed point-coordinates that
+hide how sharply each patient is located, how much each instrument contributed,
+and how cheaply the map could be measured better. We present the transdiagnostic
+dimensional map as a \emph{measurement instrument} rather than a finding. A
+missingness-native Bayesian bifactor / exploratory structural-equation model ---
+fit to each patient's observed cells only (no imputation), under mixed
+likelihoods and a Gaussian-copula continuous block --- returns for every one of
+$N=9{,}013$ patients (bipolar disorder, schizophrenia, major depression; 21
+sites) a posterior coordinate \emph{and} its uncertainty ellipsoid, and its
+closed-form structure makes four instrument properties computable on that one
+object. \textbf{Projection:} an expected-a-posteriori score map, reduced to the
+eight-dimensional factor space by a Woodbury identity, returns the prior --- never
+a false-precise point --- on unmeasured axes. \textbf{Information:} because
+indicators are conditionally independent given the factors, posterior precision
+accumulates additively, and the quantity that governs localization is the Fisher
+information each indicator contributes at its own likelihood family, \emph{not}
+its loading --- high-loading, low-prevalence flags contribute almost nothing.
+\textbf{Adaptive sampling:} a loading-dependent minimal-indicator rule recovers
+most of each axis's reliable signal in three to six items and exposes two axes
+that are intrinsically capped by the instrument bank (mania/activation $0.41$,
+substance $0.43$) rather than by missingness; a fully patient-adaptive selection
+order coincides with the fixed order, showing the population-mean reliability
+curve is a \emph{tight} upper bound. \textbf{Value of information:} the entropy
+reduction from a not-yet-measured indicator is closed-form (matrix-determinant
+lemma), so a greedy rule assembles a shared 27-item battery at mean reliability
+$0.70$ and localizes where each cohort is under-measured. We show by simulation
+that the posterior coordinate is well-calibrated (empirical coverage $0.95$ matches
+nominal, flat across observed-item counts and including the bank-limited axes) and
+that its calibration degrades gracefully rather than collapsing under four
+violations of the model's assumptions; that the shrinkage-corrected posterior-mean
+coordinate improves downstream prognosis over a naive sum-score, most under sparse
+measurement (while the posterior's uncertainty does not, on its own, triage who is
+predictable for a coarse remission endpoint); and that ranking items by information
+rather than loading changes which battery you would build ($+0.11$ reliability at
+$27$ items). A five-archetype convex-blend simplex
+summarizes the continuum --- which has no natural clusters --- as graded membership
+in five named clinical poles, locating a patient $\approx 9.7\times$ more tightly
+than the DSM-5 label; we show its modest reconstruction fidelity ($59\%$ of
+coordinate variance) is the wrong yardstick for it, since the near-isotropic
+variance lets even a random five-dimensional subspace retain more, and the simplex
+earns its place by interpretability, not variance retained. The contribution is the
+instrument: a map that reports its own uncertainty, weighs instruments by the
+information they carry, and prescribes how to measure the next cohort more
+cheaply. The clinical and biological findings this map supports are reported in
+a companion paper; here the map's biology serves only as a worked example of the
+instrument.

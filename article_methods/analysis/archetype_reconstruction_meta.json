@@ -1,0 +1,71 @@
+{
+  "arm_used": "A_all9",
+  "arm_note": "strata 'arm' column is a clinical diagnosis; the archetype arm is A_all9 (arch_w0..4). A_all9 chosen as primary: its dominant-name labels match strata.arch_dominant_name exactly, and it has complete 8-axis profiles (B_specifics has NaN overall_severity).",
+  "n_patients": 9013,
+  "n_archetypes": 5,
+  "n_axes": 8,
+  "axes": [
+    "overall_severity",
+    "cognition",
+    "immunometabolic",
+    "sleep",
+    "suicidality",
+    "developmental_risk",
+    "mania_activation",
+    "substance"
+  ],
+  "definitions": {
+    "r2": "1 - SS_res/SS_tot, SS_tot about each axis mean; per-axis or pooled(variance-weighted) for OVERALL.",
+    "var_retained_frac": "Var(Xhat_axis)/Var(X_axis); OVERALL = sum Var(Xhat)/sum Var(X) over 8 axes.",
+    "rmse": "per-axis sqrt(mean((x-xhat)^2)); OVERALL pooled over all cells.",
+    "per_patient_error_sd": "sqrt(mean_axis(((x-xhat)/SD_axis)^2)) \u2014 cross-axis RMSE in per-axis population-SD units.",
+    "reconstruction": "x_hat_i = sum_a w_ia * z_a  (X \u2248 W Z, convex/archetypal)."
+  },
+  "overall": {
+    "r2_archetype": 0.58969,
+    "r2_kmeans5": 0.32491,
+    "r2_pca5": 0.79563,
+    "r2_pca4_fair_affine_dim": 0.68021,
+    "var_retained_frac": 0.44327,
+    "archetype_vs_pca5_gap": 0.20593,
+    "archetype_vs_pca4_gap": 0.09052
+  },
+  "per_axis_r2_archetype": {
+    "overall_severity": 0.85936,
+    "cognition": 0.06116,
+    "immunometabolic": 0.89409,
+    "sleep": 0.76345,
+    "suicidality": 0.33611,
+    "developmental_risk": 0.75392,
+    "mania_activation": 0.41035,
+    "substance": -0.00316
+  },
+  "per_axis_mae_sd_units": {
+    "overall_severity": 0.27295,
+    "cognition": 0.7135,
+    "immunometabolic": 0.21379,
+    "sleep": 0.36938,
+    "suicidality": 0.65236,
+    "developmental_risk": 0.38946,
+    "mania_activation": 0.60555,
+    "substance": 0.5921
+  },
+  "best_axis": "immunometabolic",
+  "worst_axis": "substance",
+  "best_axis_note": "immunometabolic highest R2 (well-separated corners strongly load this axis).",
+  "worst_axis_note": "substance lowest R2: its profile values are ~0 across all 5 corners (range -0.120..0.113), so the blend carries almost no info on it; cognition is similarly weakly separated.",
+  "corr_entropy_error": -0.13366,
+  "corr_entropy_error_pearson_p": 3.3554021432472865e-37,
+  "corr_entropy_error_spearman": -0.14954,
+  "corr_entropy_error_spearman_p": 3.122767300757055e-46,
+  "entropy_error_direction": "negative \u2014 fog (high-entropy) patients reconstruct slightly better; interior blends lie inside the corner hull whereas near-corner patients include hull-exceeding extremes.",
+  "population_entropy_note": "most patients have entropy 0.6-1.0 (of max ln5=1.609): a fog-heavy, continuum-like population; few patients pin to a single corner.",
+  "sanity_checks": {
+    "W_rowsum_1": true,
+    "W_nonneg": true,
+    "xhat_shape_matches": true,
+    "arch_r2_le_pca5": true,
+    "join_1to1_9013": true
+  },
+  "notes": "Archetypes trade fidelity for interpretability+convexity: they recover 59.0% of pooled coordinate variance vs 79.6% for the 5-PC linear optimum (gap 20.6pp; vs the fair 4-affine-dim PCA4=68.0%, gap 9.1pp), and far exceed a 5-centroid hard partition (32.5%). No per-patient raw clinical values written."
+}

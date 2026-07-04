@@ -1,0 +1,51 @@
+# coverage_calibration.csv  --  FACE-ATLAS posterior-coordinate interval calibration (Fig 5, trust/calibration track)
+# generated 2026-07-04  |  n_sim=10000  seed=20260704
+# WHAT: empirical coverage of per-axis credible intervals (mean +/- z*posterior_sd) vs nominal level,
+#       measured on synthetic patients with KNOWN latent truth theta ~ N(0, Phi).
+# axis: one of the 8 map axes; 'ALL' = mean of per-axis coverage; 'joint_ellipsoid' = Mahalanobis
+#       chi2_8 coverage of the full 8-vector under the posterior covariance.
+# missingness_source: bootstrap of real per-patient full 142-item observed/missing masks from data/processed/baseline_v0.parquet (the model's own input frame, 9013 patients); only the binary observed/missing indicator is used, never any clinical value
+# projection_scheme: Fisher-scoring (expected-information Gauss-Newton / Laplace) EAP. Posterior precision S^-1 = Phi^-1 + sum_{j obs} w_j(eta) lam_j lam_j^T with per-item expected Fisher info w_j (gaussian 1/sigma^2; bernoulli p(1-p); count mu*r/(r+mu); ordinal graded-response sum_k dP_k^2/P_k), posterior mean by Newton iteration on the penalized score g = -Phi^-1 theta + sum_{j obs} s_j(eta) lam_j. Reduces EXACTLY (verified to 3e-15) to the paper's closed-form conditional_gaussian_scores on all-gaussian observed patterns; the Newton/Laplace step generalises it to the non-gaussian families. Prior Phi = frozen model's factor_prior (G and substance orthogonal); scored on the model-internal (rank-INT/copula-z) scale.
+# MC binomial SE at nominal 0.95 = 0.0022
+# columns: axis,nominal_level,empirical_coverage,n
+axis,nominal_level,empirical_coverage,n
+ALL,0.5,0.5012,10000
+ALL,0.8,0.8012,10000
+ALL,0.9,0.8995,10000
+ALL,0.95,0.9491,10000
+cognition,0.5,0.5046,10000
+cognition,0.8,0.8062,10000
+cognition,0.9,0.9033,10000
+cognition,0.95,0.9526,10000
+developmental_risk,0.5,0.4994,10000
+developmental_risk,0.8,0.7963,10000
+developmental_risk,0.9,0.8991,10000
+developmental_risk,0.95,0.9485,10000
+immunometabolic,0.5,0.5026,10000
+immunometabolic,0.8,0.8024,10000
+immunometabolic,0.9,0.8984,10000
+immunometabolic,0.95,0.9483,10000
+joint_ellipsoid,0.5,0.4995,10000
+joint_ellipsoid,0.8,0.7983,10000
+joint_ellipsoid,0.9,0.8986,10000
+joint_ellipsoid,0.95,0.9474,10000
+mania_activation,0.5,0.5069,10000
+mania_activation,0.8,0.8054,10000
+mania_activation,0.9,0.9032,10000
+mania_activation,0.95,0.952,10000
+overall_severity,0.5,0.4989,10000
+overall_severity,0.8,0.7976,10000
+overall_severity,0.9,0.8959,10000
+overall_severity,0.95,0.948,10000
+sleep,0.5,0.4957,10000
+sleep,0.8,0.8,10000
+sleep,0.9,0.8977,10000
+sleep,0.95,0.9474,10000
+substance,0.5,0.5004,10000
+substance,0.8,0.8044,10000
+substance,0.9,0.9018,10000
+substance,0.95,0.951,10000
+suicidality,0.5,0.5012,10000
+suicidality,0.8,0.797,10000
+suicidality,0.9,0.8966,10000
+suicidality,0.95,0.945,10000

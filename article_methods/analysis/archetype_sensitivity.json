@@ -1,0 +1,98 @@
+{
+  "A_sensitivity": {
+    "4": 0.5293466769825341,
+    "5": 0.6164722647515832,
+    "6": 0.6903238317817773
+  },
+  "A_sensitivity_full": {
+    "4": {
+      "pooled_r2": 0.5293466769825341,
+      "per_axis_r2": {
+        "overall_severity": 0.7808630280380164,
+        "cognition": 0.23563942911058378,
+        "immunometabolic": 0.8515631783148128,
+        "sleep": 0.5374287021779738,
+        "suicidality": 0.4531702570438585,
+        "developmental_risk": 0.5546737329712566,
+        "mania_activation": 0.24783563597655534,
+        "substance": 0.005987571647810497
+      }
+    },
+    "5": {
+      "pooled_r2": 0.6164722647515832,
+      "per_axis_r2": {
+        "overall_severity": 0.8234171906421831,
+        "cognition": 0.10419051701396442,
+        "immunometabolic": 0.8648034452395128,
+        "sleep": 0.5868201941384712,
+        "suicidality": 0.8124546702176068,
+        "developmental_risk": 0.6871954079301843,
+        "mania_activation": 0.37712150192023663,
+        "substance": 0.003772514294606677
+      }
+    },
+    "6": {
+      "pooled_r2": 0.6903238317817773,
+      "per_axis_r2": {
+        "overall_severity": 0.7112847711369372,
+        "cognition": 0.7587504552089165,
+        "immunometabolic": 0.8874427178168577,
+        "sleep": 0.6971456341671136,
+        "suicidality": 0.675552849866242,
+        "developmental_risk": 0.7964972213378446,
+        "mania_activation": 0.3870158312612779,
+        "substance": 0.0023730491918718677
+      }
+    }
+  },
+  "A5_published_reproduction": 0.5896946817126927,
+  "anchors": {
+    "raw_identity_8D": 1.0,
+    "single_centroid_A1": 1.4432899320127035e-15,
+    "random_rotation_5": 0.6241,
+    "random_rotation_5_sd": 0.0422,
+    "kmeans5": 0.32491,
+    "pca4": 0.68021,
+    "pca5": 0.79563,
+    "archetype5_published": 0.58969,
+    "random_rotation_5_analytic_kd": 0.625,
+    "random_rotation_5_n_seeds": 500,
+    "archetype5_percentile_within_random5": 21
+  },
+  "N": 9013,
+  "variance_spectrum": {
+    "pca_frac_per_component": [
+      0.269,
+      0.162,
+      0.131,
+      0.119,
+      0.115,
+      0.095,
+      0.065,
+      0.045
+    ],
+    "pca_cumulative": [
+      0.269,
+      0.431,
+      0.561,
+      0.68,
+      0.796,
+      0.89,
+      0.955,
+      1.0
+    ],
+    "top_pc_frac": 0.269,
+    "random5_mean": 0.6241,
+    "random5_sd": 0.0422,
+    "naive_kd_expectation": 0.625,
+    "archetype5_percentile_within_random5": 21,
+    "random5_analytic_kd": 0.625,
+    "random5_n_seeds": 500
+  },
+  "interpretation": {
+    "A_sensitivity": "Reconstruction R2 rises smoothly with A (0.53/0.62/0.69 at A=4/5/6); the fresh AA refit at A=5 (0.616) reproduces the published fixed-corner value (0.590) within reinit noise. The 59% headline is not fragile to the choice of A=5.",
+    "variance_is_flat": "The map's coordinate variance is near-isotropic (top PC only 26.9%, five PCs needed for 80%). The expected variance a Haar-random k-D subspace captures is exactly k/d (=5/8=0.625) regardless of the eigenvalue spectrum; the 500-seed empirical mean is 0.624 (sd 0.042), confirming this. The archetype-5 R^2 of 0.590 sits at the 21th percentile of random 5-D projections \u2014 i.e. slightly BELOW a typical random subspace (by 0.034 R^2 units, z=-0.82), not equal to it.",
+    "correct_framing": "Decisive evidence for the T1.2 reframe: archetypes do NOT compete on variance capture and were never meant to. Reconstruction R^2 is the wrong yardstick \u2014 a random 5-D subspace captures MORE variance (0.625) than the archetype simplex (0.590), and PCA-5 far more (0.796), yet none provide what the archetypes do: convex, interpretable, clinically-nameable corners with a per-patient simplex membership. Report R^2 only as an honesty check on how much continuum the corners encode, never as a competitive metric."
+  },
+  "_correction_note": "random_rotation_5 corrected from an unlucky 10-seed estimate (0.590, which spuriously coincided with archetype-5) to the 500-seed mean 0.624 (= analytic k/d 0.625). Conclusion direction changed from 'matches' to 'archetype-5 falls below a typical random 5-D subspace'."
+}

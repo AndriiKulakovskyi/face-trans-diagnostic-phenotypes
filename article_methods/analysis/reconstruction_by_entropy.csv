@@ -1,0 +1,16 @@
+# Per-patient reconstruction error vs archetype-weight entropy (FACE-ATLAS).
+# mean_recon_error_sd = mean over patients in bin of sqrt(mean_axis( ((x-xhat)/SD_axis)^2 )) [RMSE across 8 axes in per-axis SD units].
+# entropy = arch_entropy (natural-log Shannon entropy of the 5 simplex weights; max=ln5=1.609). Fixed 0.1-width bins.
+# corr(entropy, per-patient error): Pearson r=-0.1337 (p=3.36e-37); Spearman rho=-0.1495 (p=3.12e-46); n=9013.
+# Direction: NEGATIVE -> high-entropy 'fog' patients reconstruct slightly BETTER, not worse. arm=A_all9.
+entropy_bin,entropy_bin_lo,entropy_bin_hi,mean_recon_error_sd,n
+"[0.0,0.1)",0.0,0.1,0.3677,4
+"[0.1,0.2)",0.1,0.2,0.4449,2
+"[0.2,0.3)",0.2,0.3,0.7818,10
+"[0.3,0.4)",0.3,0.4,0.6469,54
+"[0.4,0.5)",0.4,0.5,0.6986,258
+"[0.5,0.6)",0.5,0.6,0.6892,678
+"[0.6,0.7)",0.6,0.7,0.6823,1899
+"[0.7,0.8)",0.7,0.8,0.65,2397
+"[0.8,0.9)",0.8,0.9,0.6345,2466
+"[0.9,1.0)",0.9,1.0,0.5559,1245

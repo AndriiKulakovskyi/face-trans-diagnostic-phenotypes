@@ -1,0 +1,69 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage[numbers,sort&compress]{natbib}
+
+\graphicspath{{figures/}}
+
+\newcommand{\Gfac}{\textit{G}}            % the general functional-burden factor
+\newcommand{\orth}{\ensuremath{\perp}}    % orthogonality, usable in text
+
+% Fisher-information shorthand
+\newcommand{\info}{\mathcal{I}}
+\newcommand{\rel}{\rho}
+
+\title{\bfseries A transdiagnostic dimensional map as a self-calibrating
+measurement instrument: projection, information, and value of information
+under structured missingness}
+
+\author{%
+  Andrii Kulakovskyi$^{1}$\thanks{Correspondence: andrii.kulakovskyi@fondation-fondamental.org}\and
+  Ophélia Godin$^{1,2}$\and
+  Léah Camarcat$^{1}$\and
+  Engin Altunlu$^{1}$\and
+  Marion Leboyer$^{1,2}$
+}
+
+\date{%
+  $^{1}$Fondation FondaMental \quad
+  $^{2}$Inserm\\[4pt]
+  \today
+}
+
+\begin{document}
+\maketitle
+
+%================================ ABSTRACT ====================================
+\begin{abstract}
+\noindent
+\input{sections/00_abstract}
+\end{abstract}
+
+\noindent\textbf{Keywords:} measurement model; item response theory; Fisher
+information; computerized adaptive testing; value of information; missing data;
+bifactor model; archetypal analysis; posterior calibration; transdiagnostic
+psychiatry.
+
+%================================ BODY ========================================
+\input{sections/01_introduction}
+\input{sections/02_methods}
+\input{sections/03_results}
+\input{sections/04_discussion}
+\input{sections/90_boilerplate}
+
+%================================ REFERENCES ==================================
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\end{document}

@@ -1,0 +1,307 @@
+\section{Methods}
+
+We describe the instrument in the order a reader uses it: the measurement model
+and the no-imputation data layer it rests on (\S\ref{sec:m-model}); the loading
+read as a measurement slope (\S\ref{sec:m-slope}); projection --- EAP scoring and
+the Woodbury reduction --- which turns a patient's observed cells into a posterior
+coordinate and covariance (\S\ref{sec:m-project}); the information accounting that
+weighs each indicator (\S\ref{sec:m-info}); adaptive sampling and value of
+information (\S\ref{sec:m-voi}); archetypes as a low-dimensional summary
+(\S\ref{sec:m-arch}); and the calibration protocol that tests whether the
+instrument's uncertainty is honest (\S\ref{sec:m-calib}). The model, its
+estimation, and its confirmatory checks are those of the companion paper and are
+recapitulated here only as far as the instrument properties require. The
+Supplementary Material gives the full derivations --- the measurement model and
+identifiability (Supplement~S1), the Woodbury projection and EAP scoring (S2), the
+loading-as-slope (S3), the per-family Fisher information and reliability accounting
+(S4), the value-of-information and adaptive-sampling results (S5), the archetype
+reconstruction (S6), and the calibration protocol (S7) --- with every proposition
+proved.
+
+\subsection{The measurement model and the observed-cell invariant}
+\label{sec:m-model}
+
+Each patient $i$ carries a latent coordinate $f_i\in\mathbb{R}^{K+1}$ --- a general
+functional-burden factor \Gfac{} and $K=7$ specific dimensions (cognition,
+immunometabolic load, sleep, mania/activation, suicidality, developmental risk,
+substance use) --- with prior $f_i\sim\mathcal N(\mathbf 0,\Phi)$. Each indicator
+$j$ is a linear reflection of those factors through a single linear predictor,
+\begin{equation}
+  \eta_{ij}=\alpha_j+\lambda_{jG}\,G_i+\sum_{k=1}^{K}\lambda_{jk}\,D_{ik}+\beta_j^{\top}c_i ,
+  \label{eq:measure}
+\end{equation}
+with item intercept $\alpha_j$, general loading $\lambda_{jG}$, specific loadings
+$\lambda_{jk}$ (row $j$ of $\Lambda=[\,\lambda_G\mid\Lambda_D\,]$), and item-level
+covariates $c_i$. Equation~\eqref{eq:measure} is the bifactor exploratory
+structural-equation model \citep{reise2012bifactor,asparouhov2009esem}. The
+predictor feeds a per-type observation density --- Gaussian or log-Gaussian for
+continuous and laboratory measures, ordered-logit for ordinal, Bernoulli for
+binary, negative-binomial for counts --- and continuous indicators additionally
+enter through a rank-based Gaussian-copula marginal
+$z_{ij}=\Phi_{\mathcal N}^{-1}\!\big(\hat F_j(X_{ij})\big)$, so that placing
+heterogeneous variables on a shared scale never manufactures covariance. The fitted map carries $109$ indicators
+across the eight axes --- $88$ in the Gaussian-copula continuous block and $21$ in an
+explicit non-Gaussian block of Bernoulli, ordinal and count items --- so that all four
+likelihood families are represented and the information accounting of
+\S\ref{sec:m-info} must reckon with each.
+
+Given the latent scores the indicators are conditionally independent (local
+independence): once the factors are fixed, only item-specific noise remains, with
+diagonal residual covariance $\Psi$. This single property is what makes the map an
+instrument, because it makes the factors the only source of shared covariance, so
+the model-implied covariance is
+\begin{equation}
+  \Sigma=\Lambda\,\Phi\,\Lambda^{\top}+\Psi ,
+  \label{eq:sigma}
+\end{equation}
+and it is also why imputation is forbidden: a filled-in cell would inject
+covariance that \eqref{eq:sigma} would misread as a factor. Accordingly the model
+is fit to each patient's \emph{observed cells only}. With $F_j$ the density of
+indicator $j$ and $O_i$ the set of cells patient $i$ actually has, the
+observed-data log-likelihood is
+\begin{equation}
+  \log p\!\left(X_{\mathrm{obs}}\mid\Theta\right)=\sum_{i=1}^{N}\ \sum_{j\in O_i}\ \log F_j\!\left(X_{ij}\mid\eta_{ij},\theta_j\right) .
+  \label{eq:obslik}
+\end{equation}
+A missing cell contributes no term and no completed $N\times J$ matrix is ever
+formed. For the Gaussian block this is exact full-information maximum likelihood
+\citep{rubin1976missing,littlerubin2019}: marginals of a normal are read off by
+deleting coordinates, so marginalizing the missing cells is the marginal property
+itself, not an imputation step. Equation~\eqref{eq:obslik} is the no-imputation
+invariant on which every instrument property below rests.
+
+The primary bifactor fit holds \Gfac{} orthogonal to the specific axes; a
+correlated-\Gfac{} arm instead estimates the cross-correlations
+\begin{equation}
+  \Phi=\begin{pmatrix}1 & \phi_{Gd}^{\top}\\[2pt] \phi_{Gd} & \Phi_D\end{pmatrix},
+  \qquad \phi_{Gd}=\operatorname{Corr}(G,D)\in[-1,1]^{K},
+  \label{eq:corrg}
+\end{equation}
+so that whether a domain is entangled with severity becomes a measured quantity
+rather than an imposed constraint. The model is fit globally at full sample
+($N=9{,}013$) under per-patient cohort weights $w_i=N/(3\,n_{c(i)})$; sampling used
+the No-U-Turn sampler \citep{hoffman2014nuts} in PyMC \citep{abrilpla2023pymc} with
+the NumPyro/JAX backend \citep{phan2019numpyro}. Estimation, convergence gating,
+measurement-invariance and robustness are as in the companion paper.
+
+\subsection{The loading as a measurement slope}
+\label{sec:m-slope}
+
+Equation~\eqref{eq:measure} separates two intrinsically different objects. The
+factor $f_i$ is a per-patient latent \emph{position}; a loading is a fixed
+\emph{slope} --- the rate at which a measurement changes as that position moves,
+shared by every patient. On the latent linear-predictor scale this slope is exact
+and patient-independent, $\partial\eta_{ij}/\partial f_{ik}=\lambda_{jk}$, so the
+loading matrix is the Jacobian of the measurement with respect to the latent. On
+the response scale, for the single-index likelihoods with conditional mean
+$\mathbb E[X_{ij}\mid f_i]=h_j(\eta_{ij})$, the chain rule gives the marginal
+effect of a factor on an indicator and its population average,
+\begin{equation}
+  \frac{\partial\,\mathbb E[X_{ij}\mid f_i]}{\partial f_{ik}}=h_j'(\eta_{ij})\,\lambda_{jk},
+  \qquad
+  s_{jk}\equiv\mathbb E\!\left[\frac{\partial\,\mathbb E[X_{ij}\mid f_i]}{\partial f_{ik}}\right]
+  =\kappa_j\,\lambda_{jk},\qquad
+  \kappa_j=\mathbb E\!\left[h_j'(\eta_{ij})\right]\ge 0 .
+  \label{eq:m-slope}
+\end{equation}
+The loading is thus how strongly an item \emph{reflects} a factor. It is not, as
+\S\ref{sec:m-info} shows, how much that item \emph{localizes} a patient --- and the
+distinction between the two is the paper's central measurement point.
+
+\subsection{Projection: EAP scoring and the Woodbury reduction}
+\label{sec:m-project}
+
+The evaluation of \eqref{eq:sigma} naively costs $\mathcal{O}(|C_i|^3)$ per
+patient. The Woodbury identity reduces it to the $(K{+}1)$-dimensional factor
+space,
+\begin{equation}
+  \Sigma_{C_i}^{-1}=\Psi_{C_i}^{-1}-\Psi_{C_i}^{-1}\Lambda_{C_i}
+  \big(\Phi^{-1}+\Lambda_{C_i}^{\top}\Psi_{C_i}^{-1}\Lambda_{C_i}\big)^{-1}
+  \Lambda_{C_i}^{\top}\Psi_{C_i}^{-1},
+  \label{eq:m-woodbury}
+\end{equation}
+whose inner $(K{+}1)\times(K{+}1)$ solve is independent of the number of observed
+cells $|C_i|$ and is shared by all patients with the same missingness pattern
+(computed once per pattern, with the matrix-determinant lemma for the
+log-determinant). This is what makes full-sample projection tractable
+\citep{harville1997matrix}. Each patient's coordinate is then the
+expected-a-posteriori (EAP) factor score from their observed cells; for an
+all-continuous pattern,
+\begin{equation}
+  \hat f_i=\mathbb E[f_i\mid X_{i,C_i}]
+  =\Phi\Lambda_{C_i}^{\top}\Sigma_{C_i}^{-1}\!\big(X_{i,C_i}-\mu_{i,C_i}\big),\qquad
+  S_i=\Phi-\Phi\Lambda_{C_i}^{\top}\Sigma_{C_i}^{-1}\Lambda_{C_i}\Phi ,
+  \label{eq:m-scores}
+\end{equation}
+obtained by Markov-chain Monte Carlo when non-Gaussian cells are present
+\citep{bockaitkin1981}. The posterior mean $x_i\equiv\hat f_i\in\mathbb R^{8}$ and
+the posterior covariance $S_i$ are the two objects every downstream analysis
+consumes. The structure of \eqref{eq:m-scores} makes the instrument's honesty
+mechanical: on an axis with no observed indicator the corresponding rows of
+$\Lambda_{C_i}$ are empty, the update term vanishes, and the posterior returns the
+prior $\mathcal N(0,\Phi)$ --- a wide interval, never a false-precise point. A
+patient with one observed indicator on an axis is not treated as equally
+characterised as one with six.
+
+\subsection{Information accounting: what localizes a patient}
+\label{sec:m-info}
+
+The posterior covariance $S_i$ in \eqref{eq:m-scores} inverts a precision matrix.
+Under local independence that precision is additive over observed items: from
+\eqref{eq:m-woodbury},
+\begin{equation}
+  S_i^{-1}=\Phi^{-1}+\sum_{j\in O_i}\info_j(f_i),
+  \label{eq:m-precision}
+\end{equation}
+where $\info_j$ is the Fisher information item $j$ contributes about the factors.
+Each observed cell adds a non-negative term; nothing an item measures is ever
+subtracted. For a single-index likelihood the information item $j$ carries about
+factor $k$ is
+\begin{equation}
+  \info_{jk}(f_i)=\lambda_{jk}^{2}\,\mathcal{J}_j(\eta_{ij}),
+  \label{eq:m-fisher}
+\end{equation}
+the squared loading times a family-specific unit information
+$\mathcal{J}_j$ evaluated at the item's linear predictor: for a Gaussian item
+$\mathcal{J}_j=1/\sigma_j^{2}$ (independent of $f_i$); for a Bernoulli item
+$\mathcal{J}_j=p_{ij}(1-p_{ij})$ with $p_{ij}=\mathrm{logit}^{-1}(\eta_{ij})$; for
+a negative-binomial count $\mathcal{J}_j=\mu_{ij}r_j/(r_j+\mu_{ij})$ with
+$\mu_{ij}=e^{\eta_{ij}}$; and for a graded-response ordinal item the standard sum
+$\sum_c (\partial_\eta P_{ijc})^2/P_{ijc}$ over category probabilities
+\citep{samejima1969,embretsonreise2000}. Reliability of an axis score is the
+familiar function of accumulated precision, $\rel_k=1-1/\big(1+\sum_j
+\info_{jk}\big)$, taking the standardized-factor prior precision as $1$.
+
+Equation~\eqref{eq:m-fisher} is why loading is not information. The loading
+$\lambda_{jk}$ enters squared, but it is multiplied by a unit information that
+collapses for a rare binary flag: a Bernoulli item endorsed by $1\%$ of patients
+contributes $\mathcal{J}_j=p(1-p)\approx0.01$ regardless of how strongly it loads,
+so a high-loading, low-prevalence indicator localizes almost nobody. The quantity
+that governs how sharply a patient sits on an axis is therefore \eqref{eq:m-fisher}
+evaluated per likelihood family, not the loading read off the factor table --- the
+lens \S\ref{sec:res-info} adopts.
+
+\subsection{Adaptive sampling and value of information}
+\label{sec:m-voi}
+
+Ordering the candidate items for an axis by their information \eqref{eq:m-fisher}
+and accumulating \eqref{eq:m-precision} gives a reliability-versus-items curve; the
+number of items to reach a target reliability is a loading-dependent
+minimal-indicator rule. Evaluated at the population mean $f_i=\mathbf 0$ this curve
+is the efficiency of a fixed, non-adaptive most-informative-first battery, and it
+is an \emph{upper bound} on the efficiency of a computerized adaptive test (CAT)
+that re-evaluates \eqref{eq:m-fisher} at each patient's provisional estimate
+\citep{vanderlinden2010cat}, because the CAT does not know $f_i$ in advance. To ask
+how loose that bound is, we simulate the CAT directly (\S\ref{sec:res-adaptive}):
+for each of $500$ simulated patients per axis (true $\theta\sim\mathcal N(0,1)$,
+seed $20240704$), starting from the prior we repeatedly select the
+highest-information not-yet-administered item at the current grid-EAP estimate
+$\hat\theta$, simulate its response from the model at the patient's true $\theta$,
+update $\hat\theta$ on a $401$-point grid, and accumulate the selection-time
+information. The realized reliability-versus-items curve, averaged over patients,
+is compared to the fixed-order upper bound on identical single-axis footing.
+
+The same information turns into a design criterion across axes. Because
+$S_i^{-1}$ is a precision, the entropy of the posterior coordinate is
+$\tfrac12\log\det(2\pi e\,S_i)$, and adding a candidate item $j^\star$ updates the
+determinant by the matrix-determinant lemma,
+\begin{equation}
+  \log\det S_i^{-1}\big|_{+j^\star}
+  -\log\det S_i^{-1}
+  =\log\!\big(1+\lambda_{j^\star}^{\top}\mathcal{J}_{j^\star} S_i\,\lambda_{j^\star}\big),
+  \label{eq:m-voi}
+\end{equation}
+a closed-form entropy reduction that \emph{depends on what has already been
+measured} through $S_i$ \citep{covertthomas2006,harville1997matrix}. Greedily
+selecting the item with the largest \eqref{eq:m-voi}, cycling across the eight
+axes, assembles a shared cross-axis battery whose value is exact at each step
+(\S\ref{sec:res-voi}); the same accounting, applied per cohort, localizes exactly
+where an axis is under-measured.
+
+\subsection{Archetypes as a low-dimensional summary}
+\label{sec:m-arch}
+
+The cloud of posterior coordinates $\{x_i\}$ is a graded continuum rather than a
+set of discrete biotypes (a single-Gaussian null reproduces the apparent
+clustering; \S\ref{sec:res-arch}). We summarize it, without imposing clusters, by
+archetypal analysis \citep{cutler1994archetypal}, which writes each patient as a
+convex blend of $A$ extreme phenotypes that are themselves convex combinations of
+patients,
+\begin{equation}
+  \min_{W,B}\ \sum_{i=1}^{N}\Big\|x_i-\sum_{a=1}^{A} w_{ia}\,z_a\Big\|^{2}
+  \quad\text{s.t.}\quad z_a=\sum_{j=1}^{N} b_{ja}\,x_j,\ \
+  w_{ia},b_{ja}\ge0,\ \ \textstyle\sum_a w_{ia}=\sum_j b_{ja}=1 ,
+  \label{eq:m-archetype}
+\end{equation}
+i.e.\ $X\approx WZ$ with $Z=BX$ and $W,B$ row-stochastic. The simplex weight
+$w_i\in\Delta^{A-1}$ is a patient's soft membership. The number of corners
+($A=5$) is the largest with cross-seed Tucker congruence $\ge0.8$ (a stability
+cliff at $A=6$), set by stability rather than parsimony, and $w_i$ is propagated by
+refitting across posterior draws. Because \eqref{eq:m-archetype} is a rank-$A$
+convex approximation, it discards information; \S\ref{sec:res-arch} quantifies how
+much by reconstructing $\hat x_i=\sum_a w_{ia}z_a$ and reporting the per-axis and
+pooled coefficient of determination against the full coordinate, with a $5$-cluster
+$k$-means partition and a $5$-component principal-component projection as the
+interpretable-floor and linear-optimum baselines.
+
+\subsection{Calibration protocol}
+\label{sec:m-calib}
+
+An instrument that reports uncertainty must be tested for whether that uncertainty
+is honest. Because the truth is unknown for real patients, we test coverage by
+simulation. We draw $10{,}000$ synthetic patients (seed $20260704$) with known
+latent coordinate $\theta\sim\mathcal N(0,\Phi)$ under the frozen model's own
+factor prior, generate each item's response from its fitted family at
+$\eta=\alpha_j+\lambda_j^{\top}\theta$, and impose a real missingness pattern by
+bootstrapping the observed/missing masks of the $9{,}013$ real patients (only the
+binary observed-or-missing indicator is used, never any clinical value). Each
+synthetic patient is projected through the same EAP machinery by Fisher-scoring
+(a Gauss--Newton/Laplace step using the expected information \eqref{eq:m-fisher}),
+which reduces exactly to the closed form \eqref{eq:m-scores} on all-Gaussian
+patterns (verified to $3\times10^{-15}$) and generalises it to the non-Gaussian
+families. We then measure, per axis and at nominal levels
+$\{0.50,0.80,0.90,0.95\}$, the empirical fraction of synthetic patients whose true
+$\theta_k$ lies within $\hat x_{ik}\pm z\,[S_i]_{kk}^{1/2}$, the joint coverage of
+the $8$-dimensional credible ellipsoid via the Mahalanobis distance against a
+$\chi^2_8$ quantile, and the $95\%$ coverage stratified by the number of observed
+indicators on the axis. A correctness check falls out by construction: on an axis
+with zero observed items the projection returns the prior, so coverage must equal
+nominal --- prior in, prior out.
+
+\subsection{Comparative validation: baselines, downstream utility, and robustness}
+\label{sec:m-validate}
+
+Four analyses test the instrument against the simpler tools a reader already has, and
+against violations of its own assumptions. \emph{(i) Battery rule.} We rebuild the
+shared battery of \S\ref{sec:m-voi} a second way, ranking the same pool of
+$(\text{item},\text{axis})$ candidates by loading magnitude $|\lambda_{jk}|$ instead
+of by Fisher information, and compare mean reliability across the eight axes at
+matched battery sizes; both rules accrue the same additive precision
+\eqref{eq:m-precision}, so the comparison isolates the ranking key. \emph{(ii)
+Reconstruction anchors.} To place the archetype reconstruction $R^2$ on an
+interpretable scale we compute, on the same coordinate cloud, the variance retained
+by the raw eight-dimensional coordinate ($1$ by definition), a five-component PCA
+($0.80$), a dimension-matched four-component PCA, a five-centroid $k$-means
+partition, a single centroid ($0$), and the mean over $500$ Haar-random
+five-dimensional subspaces, whose expectation is the analytic $k/d=5/8$; archetype
+counts $A\in\{4,5,6\}$ are refit to check stability. \emph{(iii) Downstream
+prognosis.} On items simulated from the frozen model (as in the calibration
+protocol) with a fixed logistic latent-to-remission rule
+$\mathrm{logit}\,p_i=w^{\top}\theta_i$, we compare two estimators as predictors of
+the held-out outcome: the full EAP coordinate, and a naive per-axis sum-score (the
+sign-oriented mean of observed items whose primary axis is $k$, standardized). Both
+feed an identical cross-validated logistic model; we sweep item completeness from
+full to $12\%$ and repeat over twelve seeds and a second weight vector. A parallel
+test on the \emph{real} cohort regresses observed remission on the eight EAP
+coordinates and asks whether triaging by posterior uncertainty (mean per-axis
+$[S_i]^{1/2}$, or the predictive-variance $w^{\top}S_i w$) raises out-of-sample AUC.
+\emph{(iv) Misspecification stress test.} We repeat the coverage protocol but
+generate data from four perturbed processes --- residuals sharing a nuisance factor
+(correlation $\rho\in\{0,.15,.30,.45\}$), an added ninth latent factor loading a
+random item subset (strength $\in\{0,.25,.5,.75\}$), loadings multiplicatively
+perturbed ($\lambda_{jk}(1+\varepsilon\,\xi)$, $\varepsilon\in\{0,.10,.20,.30\}$),
+and Student-$t$ residuals ($\mathrm{df}\in\{\infty,8,5,3\}$) --- score each with the
+\emph{unperturbed} projection, and track empirical $95\%$ coverage against
+perturbation magnitude. Full specifications and seeds are in the analysis scripts
+released with the paper.
+

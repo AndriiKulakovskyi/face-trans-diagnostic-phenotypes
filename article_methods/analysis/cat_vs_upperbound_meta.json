@@ -1,0 +1,138 @@
+{
+  "n_sim_patients": 500,
+  "seed": 20240704,
+  "theta_prior": "N(0,1) standardized factor prior",
+  "theta_grid": "linspace(-5,5,401), spacing 0.025, used for grid-EAP posterior",
+  "items_per_axis_pool_sizes": {
+    "overall_severity": 138,
+    "cognition": 16,
+    "immunometabolic": 42,
+    "sleep": 12,
+    "suicidality": 32,
+    "developmental_risk": 21,
+    "mania_activation": 2,
+    "substance": 4
+  },
+  "item_cap_per_axis": {
+    "overall_severity": 20,
+    "cognition": 16,
+    "immunometabolic": 20,
+    "sleep": 12,
+    "suicidality": 20,
+    "developmental_risk": 20,
+    "mania_activation": 2,
+    "substance": 4
+  },
+  "capped_ceilings": {
+    "mania_activation": 0.4081,
+    "substance": 0.4291
+  },
+  "update_rule_description": "Grid-based EAP (expected a posteriori). Log-posterior over a 401-point theta grid initialized to the N(0,1) log-prior; after each administered item the item's exact log-likelihood at the observed simulated response is added to the grid log-posterior; theta_hat = posterior mean = sum(theta*posterior). Item selection at each step uses the item with max Fisher information evaluated at the CURRENT theta_hat (theta_hat=0 at step 1). Posterior precision accumulates the selection-time Fisher info: precision = 1 + sum(info_at_theta_hat_when_selected); reliability = 1 - 1/precision (standardized-factor reliability, prior precision 1).",
+  "response_generation": "Model-based at the patient's TRUE theta: gaussian ~ N(alpha+lam*theta, sigma); bernoulli ~ Bern(sigmoid(alpha+lam*theta)); ordinal ~ graded-response categories (eta=lam*theta, alpha absorbed by cutpoints, matching the reference info recipe); count ~ NegBinom(mean=exp(alpha+lam*theta), r=count_alpha).",
+  "info_recipe_provenance": "Generalized from article/figures/scripts/fig_adaptive_assessment.py item_info_on_factor; verified to reduce EXACTLY (within float32, maxdiff 2.8e-7) to that reference at theta=0 for every pool item. Upper-bound curves reproduce curves8; immuno 3-item worked example and mania(0.408)/substance(0.429) ceilings match the published figure.",
+  "assumptions": [
+    "Single-factor (1-D) CAT per axis, matching how the population-mean upper-bound curves are defined; cross-factor correlations (Phi) are NOT used in the per-axis reliability (both methods on identical footing).",
+    "Ordinal linear predictor excludes alpha (cutpoints absorb location) exactly as the reference info fn does.",
+    "Reliability averaged across patients at each step count (per task spec); note reliability is concave in precision so this is the mean realized reliability, not reliability at mean precision. Observed CAT-vs-fixed-order divergence exceeds 0.0005 only on the two Bernoulli-containing banks: suicidality (-0.012 at 2 items, then +0.003 beyond 4) and substance (+0.0015 at the 4-item cap); all other axes match to within 0.0002 because their information-driving items are Gaussian (theta-independent info).",
+    "Fisher info for selection & precision uses the observed-information proxy = expected info at theta_hat (standard CAT test-information); it is theta-independent for gaussian items."
+  ],
+  "sanity_checks_passed": [
+    "generalized info == reference at theta=0 (maxdiff 2.8e-7)",
+    "vectorized pool info == curves8 at theta=0 for all 8 axes",
+    "all upper-bound curves monotonically increasing",
+    "CAT final reliability matches upper-bound ceiling within 0.003 on every axis"
+  ],
+  "ceiling_definition": "Per-axis 'ceiling' = full-item-bank reliability (reliability when the ENTIRE candidate pool is administered, = 1 - 1/(1+sum of all pool-item info at the population mean)). This is the reported/output 'ceiling'. NOTE: the curves in cat_vs_upperbound.csv and the preview figure are capped at min(20, pool) items, so for the 3 axes with pool>20 the plotted n=20 endpoint is below this full-bank ceiling. Both values are given per axis below.",
+  "per_axis_reliability": {
+    "overall_severity": {
+      "full_pool_ceiling": 0.8813,
+      "reliability_at_item_cap": 0.8736,
+      "cat_reliability_at_item_cap": 0.8736,
+      "item_cap": 20,
+      "pool_size": 138
+    },
+    "cognition": {
+      "full_pool_ceiling": 0.8527,
+      "reliability_at_item_cap": 0.8527,
+      "cat_reliability_at_item_cap": 0.8527,
+      "item_cap": 16,
+      "pool_size": 16
+    },
+    "immunometabolic": {
+      "full_pool_ceiling": 0.888,
+      "reliability_at_item_cap": 0.8861,
+      "cat_reliability_at_item_cap": 0.8862,
+      "item_cap": 20,
+      "pool_size": 42
+    },
+    "sleep": {
+      "full_pool_ceiling": 0.8355,
+      "reliability_at_item_cap": 0.8355,
+      "cat_reliability_at_item_cap": 0.8355,
+      "item_cap": 12,
+      "pool_size": 12
+    },
+    "suicidality": {
+      "full_pool_ceiling": 0.9144,
+      "reliability_at_item_cap": 0.9118,
+      "cat_reliability_at_item_cap": 0.9142,
+      "item_cap": 20,
+      "pool_size": 32
+    },
+    "developmental_risk": {
+      "full_pool_ceiling": 0.8792,
+      "reliability_at_item_cap": 0.8792,
+      "cat_reliability_at_item_cap": 0.8792,
+      "item_cap": 20,
+      "pool_size": 21
+    },
+    "mania_activation": {
+      "full_pool_ceiling": 0.4081,
+      "reliability_at_item_cap": 0.4081,
+      "cat_reliability_at_item_cap": 0.4081,
+      "item_cap": 2,
+      "pool_size": 2
+    },
+    "substance": {
+      "full_pool_ceiling": 0.4291,
+      "reliability_at_item_cap": 0.4291,
+      "cat_reliability_at_item_cap": 0.4306,
+      "item_cap": 4,
+      "pool_size": 4
+    }
+  },
+  "cat_vs_ub_max_abs_divergence": {
+    "overall_severity": {
+      "max_abs_diff": 0.00011,
+      "at_n_items": 14
+    },
+    "cognition": {
+      "max_abs_diff": 0.0,
+      "at_n_items": 10
+    },
+    "immunometabolic": {
+      "max_abs_diff": 4e-05,
+      "at_n_items": 20
+    },
+    "sleep": {
+      "max_abs_diff": -0.0,
+      "at_n_items": 6
+    },
+    "suicidality": {
+      "max_abs_diff": -0.01171,
+      "at_n_items": 2
+    },
+    "developmental_risk": {
+      "max_abs_diff": -0.0,
+      "at_n_items": 9
+    },
+    "mania_activation": {
+      "max_abs_diff": -0.0,
+      "at_n_items": 1
+    },
+    "substance": {
+      "max_abs_diff": 0.00147,
+      "at_n_items": 4
+    }
+  }
+}

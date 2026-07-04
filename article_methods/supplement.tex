@@ -1,0 +1,972 @@
+\documentclass[11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xr-hyper}
+\usepackage[numbers,sort&compress]{natbib}
+
+% Cross-reference the main manuscript's equation/section numbers with an M- prefix.
+\externaldocument[M-]{main}
+
+\newcommand{\Gfac}{\textit{G}}
+\newcommand{\info}{\mathcal{I}}
+\newcommand{\unitinfo}{\mathcal{J}}
+\newcommand{\eED}{\mathbb{E}}
+
+% Supplementary numbering: S-prefixed sections, equations, theorem-like blocks.
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thesubsection}{S\arabic{section}.\arabic{subsection}}
+\renewcommand{\theequation}{S\arabic{equation}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+% Main-text cross-reference helper: \MEq{label} -> "Eq. (M-3)" style.
+\newcommand{\MEq}[1]{Eq.~(\ref{M-#1})}
+\newcommand{\MSec}[1]{\S\ref{M-#1}}
+\newcommand{\MFig}[1]{Fig.~\ref{M-#1}}
+
+\title{\bfseries Supplementary Material\\[4pt]
+\large A transdiagnostic dimensional map as a self-calibrating measurement
+instrument: projection, information, and value of information under structured
+missingness}
+
+\author{Andrii Kulakovskyi \and Ophélia Godin \and Léah Camarcat \and
+Engin Altunlu \and Marion Leboyer}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\noindent
+This document gives the full derivations that the Methods section of the main text
+(\MSec{sec:m-model}--\MSec{sec:m-calib}) states as results and defers here. It is
+self-contained: every object it uses is defined below, and cross-references of the
+form ``\MEq{eq:m-scores}'' point to the numbered equations of the main manuscript.
+Sections~\ref{sec:model} and~\ref{sec:project} develop the measurement model and the
+projection machinery from first principles; Sections~\ref{sec:slope}--\ref{sec:calib}
+derive in full the five instrument properties that are the paper's contribution --- the
+loading as a measurement slope, the information accounting and per-family Fisher
+information, adaptive sampling and value of information, the archetypal summary and its
+reconstruction fidelity, and the calibration protocol. Propositions are proved;
+everything reported in the main text is an evaluation of the objects defined here.
+
+\tableofcontents
+\bigskip
+\hrule
+\bigskip
+
+%=============================================================================
+\section{The measurement model from first principles}
+\label{sec:model}
+
+\subsection{Generative factor model and local independence}
+\label{sub:gen}
+
+Index patients $i=1,\dots,N$, indicators $j=1,\dots,J$, specific factors
+$k=1,\dots,K$ and one general factor \Gfac. Each patient carries a factor vector
+$f_i=(G_i,D_{i1},\dots,D_{iK})^{\top}\in\mathbb{R}^{K+1}$ with
+\begin{equation}
+  f_i \sim \mathcal{N}_{K+1}\!\left(\mathbf{0},\,\Phi\right),
+  \qquad \operatorname{diag}(\Phi)=\mathbf{1},
+  \label{eq:factors}
+\end{equation}
+the factor \emph{correlation} matrix $\Phi$ carrying a unit diagonal to fix the latent
+scale. Each indicator is a linear reflection of the factors plus item-specific noise
+through a single linear predictor,
+\begin{equation}
+  \eta_{ij} = \alpha_j + \lambda_{jG}\,G_i + \sum_{k=1}^{K}\lambda_{jk}\,D_{ik}
+  + \beta_j^{\top} c_i ,
+  \label{eq:linpred}
+\end{equation}
+with item intercept $\alpha_j$, general loading $\lambda_{jG}$, specific loadings
+$\lambda_{jk}$ (row $j$ of the loading matrix
+$\Lambda=[\,\lambda_G\mid\Lambda_D\,]\in\mathbb{R}^{J\times(K+1)}$), and item-level
+covariates $c_i$ that adjust an indicator's mean but are never factor indicators. This
+is \MEq{eq:measure} of the main text. Stacking one patient's items,
+\begin{equation}
+  x_i=\mu_i+\lambda_G G_i+\Lambda_D D_i+\varepsilon_i,
+  \qquad \mu_i=\alpha+B c_i,\qquad \varepsilon_i\sim\mathcal{N}(\mathbf 0,\Psi),
+  \label{eq:xstack}
+\end{equation}
+with diagonal residual covariance $\Psi=\operatorname{diag}(\sigma_1^2,\dots,\sigma_J^2)$.
+
+\paragraph{Local independence.} Given a patient's latent scores the items are
+conditionally independent,
+\begin{equation}
+  p(x_i\mid f_i,\Theta)=\prod_{j\in O_i} p(x_{ij}\mid f_i,\Theta),
+  \label{eq:localindep}
+\end{equation}
+i.e.\ the factors are the only reason items covary. In the Gaussian linear model this is
+identical to ``$\Psi$ is diagonal'': local independence and diagonal residual covariance
+are two faces of one assumption. It is also why filling missing cells is forbidden --- an
+invented value injects covariance the model would mistake for a factor. Because $f_i$ is
+unobserved we integrate it out and multiply across independent patients,
+\begin{equation}
+  L(\Theta)=\prod_{i=1}^{N}\int\Bigl[\prod_{j\in O_i} p(x_{ij}\mid f_i,\Theta)\Bigr]\,
+  \mathcal{N}(f_i;\mathbf 0,\Phi)\,\mathrm{d}f_i .
+  \label{eq:fulllik}
+\end{equation}
+Equation~\eqref{eq:linpred} is a bifactor exploratory structural-equation model: every
+indicator may load on \Gfac{} and on its home specific factor, while off-home cells are
+governed by a sparsity-inducing prior (\S\ref{sub:rotation}) that keeps the map mostly
+simple-structure yet lets a few evidence-backed cross-loadings emerge. The fitted map has
+$K{+}1=8$ factors: \Gfac{} (overall burden) and seven specific axes --- cognition,
+immunometabolic, sleep, mania/activation, suicidality, developmental-risk and substance.
+The fitted map carries $109$ indicators
+($88$ in the Gaussian-copula continuous block, $21$ in the explicit non-Gaussian block).
+
+\subsection{Mixed-likelihood observation model and the Gaussian copula}
+\label{sub:mixed}
+
+Coercing variables onto a common scale would manufacture covariance and bias the very
+factors being estimated. Each indicator instead keeps the observation density appropriate
+to its type, all sharing the linear predictor \eqref{eq:linpred}:
+\begin{align}
+  \text{continuous / $z$-score:}\quad & X_{ij}\sim \mathcal{N}(\eta_{ij},\ \sigma_j^2),
+  \label{eq:fam-gauss}\\
+  \text{skewed laboratory:}\quad & \log X_{ij}\sim \mathcal{N}(\eta_{ij},\ \sigma_j^2), \\
+  \text{ordinal ($C_j$ levels):}\quad & \Pr(X_{ij}\le c)
+  =\operatorname{logit}^{-1}(\tau_{jc}-\eta_{ij}),\ \ \tau_{j1}<\dots<\tau_{j,C_j-1},
+  \label{eq:fam-ord}\\
+  \text{binary:}\quad & X_{ij}\sim \mathrm{Bernoulli}\!\left(\operatorname{logit}^{-1}(\eta_{ij})\right),
+  \label{eq:fam-bern}\\
+  \text{count:}\quad & X_{ij}\sim \mathrm{NegBinom}\!\left(\mu_{ij}=e^{\eta_{ij}},\ r_j\right).
+  \label{eq:fam-count}
+\end{align}
+The reported map replaces the raw Gaussian likelihood on the continuous block with a
+semiparametric Gaussian-copula model: each continuous indicator is mapped to a latent
+Gaussian score by its frozen empirical distribution function
+$\hat F_j$, $z_{ij}=\Phi_{\mathcal N}^{-1}(\hat F_j(X_{ij}))$, and the factor model is fit
+on $z_{ij}$. Because the rank transform is monotone it alters none of the identification
+arguments below. Writing $F_j(\cdot)$ for indicator $j$'s density and
+$O_i\subseteq\{1,\dots,J\}$ for its observed indicators, the observed-data log-likelihood
+sums over observed cells only,
+\begin{equation}
+  \log p(X_{\mathrm{obs}}\mid\Theta)=\sum_{i=1}^{N}\sum_{j\in O_i}
+  \log F_j\!\left(X_{ij}\mid\eta_{ij},\theta_j\right),
+  \label{eq:obslik}
+\end{equation}
+which is \MEq{eq:obslik} of the main text: a missing cell contributes no term and no
+completed $N\times J$ matrix is ever formed.
+
+\subsection{Missing data is the marginal property, not imputation}
+\label{sub:missing}
+
+\begin{proposition}[Marginalization]\label{prop:marg}
+For patient $i$ with observed continuous set $C_i\subseteq O_i$, the model-implied
+distribution of the observed sub-vector is obtained by \emph{deleting} the unobserved
+coordinates from $(\mu,\Sigma)$:
+\begin{equation}
+  X_{i,C_i}\sim\mathcal{N}\!\left(\mu_{i,C_i},\ \Sigma_{C_i}\right),\qquad
+  \Sigma_{C_i}=\Lambda_{C_i}\Phi\Lambda_{C_i}^{\top}+\Psi_{C_i},
+  \label{eq:margdist}
+\end{equation}
+with $\Lambda_{C_i}$ the observed-row loadings and
+$\Psi_{C_i}=\operatorname{diag}(\sigma_j^2)_{j\in C_i}$.
+\end{proposition}
+\begin{proof}
+A foundational property of the multivariate normal is that marginals are read off by
+deleting coordinates: if $x\sim\mathcal N(\mu,\Sigma)$ then any sub-vector $x_{C}$ is
+$\mathcal N(\mu_C,\Sigma_{CC})$. Apply this to $x_i\sim\mathcal N(\mu_i,\Sigma)$ with
+$\Sigma=\Lambda\Phi\Lambda^\top+\Psi$ (Proposition~\ref{prop:sigma}); the submatrix
+$\Sigma_{CC}$ retains exactly the observed rows and columns of $\Lambda$ and the observed
+diagonal of $\Psi$, giving \eqref{eq:margdist}.
+\end{proof}
+\noindent
+Hence ``integrating out'' the missing cells is not an extra step but the marginal property
+itself; summing $\log\mathcal N(\cdot)$ over each patient's observed sub-vector is precisely
+the full-information maximum-likelihood (FIML) objective for incomplete
+multivariate-normal data. This is the formal justification of the no-imputation invariant
+\eqref{eq:obslik}: any completed matrix would inject between-cell covariance that
+\eqref{eq:localindep} would misattribute to a latent factor.
+
+\subsection{Identifiability: rotation invariance and how the prior resolves it}
+\label{sub:rotation}
+
+\begin{proposition}[Rotation invariance of the likelihood]\label{prop:rotation}
+For any invertible $M\in\mathbb{R}^{(K+1)\times(K+1)}$, the reparameterization
+$\Lambda^{\star}=\Lambda M$, $\Phi^{\star}=M^{-1}\Phi M^{-\top}$, $f^{\star}=M^{-1}f$
+leaves the implied covariance, and hence the Gaussian likelihood, unchanged:
+\begin{equation}
+  \Lambda^{\star}\Phi^{\star}\Lambda^{\star\top}+\Psi
+  =\Lambda M\,(M^{-1}\Phi M^{-\top})\,M^{\top}\Lambda^{\top}+\Psi
+  =\Lambda\Phi\Lambda^{\top}+\Psi=\Sigma .
+  \label{eq:rotation}
+\end{equation}
+\end{proposition}
+\begin{proof}
+Immediate from $MM^{-1}=I$: the inner $M(M^{-1}\Phi M^{-\top})M^\top$ telescopes to $\Phi$.
+Since $x_i$ is determined in distribution by $(\mu_i,\Sigma)$ and $\Sigma$ is invariant, so
+is the likelihood.
+\end{proof}
+\noindent
+A factor model is therefore not identified from the likelihood alone. Confirmatory factor
+analysis breaks this by fixing loadings to exactly zero; the present model breaks it with
+the prior. Each (indicator, factor) cell is assigned a role and prior
+\begin{equation}
+  \lambda_{jk}\mid\rho(j,k)\ \sim\
+  \begin{cases}
+    \mathcal{N}_{+}(0.70,\,0.25^2) & \textsc{primary (home cell)},\\[2pt]
+    \text{regularized horseshoe } \eqref{eq:horseshoe} & \textsc{plausible cross},\\[2pt]
+    \mathcal{N}(0,\,0.05^2) & \textsc{unlikely},\\[2pt]
+    \delta_{0} & \textsc{forbidden},
+  \end{cases}
+  \label{eq:softprior}
+\end{equation}
+with $\mathcal{N}_{+}$ truncated to $(0,\infty)$ and $\delta_0$ fixing the loading at zero.
+The likelihood is rotation-invariant but the prior is not: a rotation moves a loading the
+prior wanted near zero away from zero, lowering $p(\Lambda)$, so the posterior
+$p(\Lambda\mid X)\propto p(X\mid\Lambda)\,p(\Lambda)$ concentrates at the orientation where
+small loadings align with the soft-zero priors and home loadings are positive and
+substantial; the positive truncation removes the residual sign-flip. The plausible-cross
+cells use a regularized (``Finnish'') horseshoe,
+\begin{equation}
+  \lambda_j=z_j\,\tau\,\tilde\eta_j,\qquad
+  \tilde\eta_j=\sqrt{\dfrac{c^2\,\eta_j^2}{c^2+\tau^2\eta_j^2}},\qquad
+  z_j\sim\mathcal N(0,1),\ \eta_j\sim\mathrm{HalfCauchy}(1),\ \tau\sim\mathrm{HalfNormal}(\tau_0),
+  \label{eq:horseshoe}
+\end{equation}
+with $\tau_0=0.05$ and slab $c=0.30$: default-off (global $\tau$ shrinks the set toward
+zero), evidence-on (heavy-tailed local $\eta_j$ lets a genuine cross-loading escape), and
+magnitude-capped ($\tilde\eta_j\to c/\tau$, so an escaped loading stays small). This is the
+honest treatment of weak signal in a factor with few indicators.
+
+\begin{corollary}[Flat-prior confirmation]\label{cor:flat}
+Under a flat loading prior (identification constraints only) the posterior mode equals the
+maximum-likelihood (FIML) solution. A prior-free refit landing on the same loadings
+therefore demonstrates that the structure is recovered from the data, not manufactured by
+the priors; empirically this refit reproduced the map to Tucker congruence $\varphi=1.00$.
+\end{corollary}
+
+\subsection{The covariance identity and the correlated-\texorpdfstring{\Gfac}{G} estimand}
+\label{sub:sigma}
+
+\begin{proposition}[Bifactor covariance]\label{prop:sigma}
+Under \eqref{eq:xstack} with $\operatorname{Var}(G_i)=1$,
+$\operatorname{Cov}(D_i)=\Phi_D$, $\eED[\varepsilon_i\varepsilon_i^\top]=\Psi$ diagonal,
+and the bifactor orthogonality $\eED[G_iD_i^\top]=\mathbf 0$ together with
+$(G_i,D_i)\perp\varepsilon_i$,
+\begin{equation}
+  \Sigma=\operatorname{Cov}(x_i)
+  =\underbrace{\lambda_G\lambda_G^{\top}}_{\text{general: rank one}}
+  +\underbrace{\Lambda_D\Phi_D\Lambda_D^{\top}}_{\text{specific factors}}
+  +\underbrace{\Psi}_{\text{private noise}}
+  =\Lambda\,\Phi\,\Lambda^{\top}+\Psi .
+  \label{eq:sigmaid}
+\end{equation}
+\end{proposition}
+\begin{proof}
+Expand $\Sigma=\eED[(x_i-\mu_i)(x_i-\mu_i)^\top]$ with
+$x_i-\mu_i=\lambda_G G_i+\Lambda_D D_i+\varepsilon_i$. The cross-terms
+$\lambda_G\,\eED[G_iD_i^\top]\,\Lambda_D^\top$ and
+$\eED[(\lambda_GG_i+\Lambda_DD_i)\varepsilon_i^\top]$ vanish by
+$\eED[G_iD_i^\top]=\mathbf 0$ and by independence of factors and noise respectively. The
+survivors are $\lambda_G\lambda_G^\top\operatorname{Var}(G_i)$, $\Lambda_D\Phi_D\Lambda_D^\top$
+and $\Psi$, giving \eqref{eq:sigmaid}.
+\end{proof}
+\noindent
+The general factor leaves a rank-one footprint: every pair of items covaries through \Gfac{}
+by exactly $\lambda_{jG}\lambda_{j'G}$. The correlated-\Gfac{} arm (\MEq{eq:corrg} of the
+main text) unzips the zero off-diagonal block, freeing
+$\phi_{Gd}=\operatorname{Corr}(G,D)$, whose immunometabolic entry near zero against far
+larger cognition and sleep entries is the estimand the companion paper interprets. Here it
+is used only as a worked example of the instrument.
+
+%=============================================================================
+\section{Projection: the Woodbury reduction and EAP scoring}
+\label{sec:project}
+
+\subsection{Woodbury reduction of the observed-cell covariance}
+\label{sub:woodbury}
+
+Evaluating \eqref{eq:margdist} naively costs $\mathcal{O}(|C_i|^3)$ per patient. The
+Woodbury identity and matrix-determinant lemma reduce it to the $(K{+}1)$-dimensional
+factor space.
+
+\begin{lemma}[Woodbury reduction]\label{lem:woodbury}
+With $\Psi_{C_i}$ diagonal and $\Lambda_{C_i}$ the observed-row loadings,
+\begin{align}
+  \Sigma_{C_i}^{-1} &= \Psi_{C_i}^{-1}-\Psi_{C_i}^{-1}\Lambda_{C_i}
+      \bigl(\Phi^{-1}+\Lambda_{C_i}^{\top}\Psi_{C_i}^{-1}\Lambda_{C_i}\bigr)^{-1}
+      \Lambda_{C_i}^{\top}\Psi_{C_i}^{-1}, \label{eq:woodbury}\\[2pt]
+  \log\!\left|\Sigma_{C_i}\right| &=
+      \log\!\left|\Phi^{-1}+\Lambda_{C_i}^{\top}\Psi_{C_i}^{-1}\Lambda_{C_i}\right|
+      +\log|\Phi|+\!\!\sum_{j\in C_i}\!\log\sigma_j^2 .
+      \label{eq:logdet}
+\end{align}
+\end{lemma}
+\begin{proof}
+Equation~\eqref{eq:woodbury} is the Woodbury matrix identity applied to
+$\Sigma_{C_i}=\Psi_{C_i}+\Lambda_{C_i}\Phi\Lambda_{C_i}^{\top}$ with the low-rank term
+$\Lambda_{C_i}\Phi\Lambda_{C_i}^{\top}$; \eqref{eq:logdet} is the matrix-determinant lemma
+$\log|\Psi+U\Phi U^\top|=\log|\Phi^{-1}+U^\top\Psi^{-1}U|+\log|\Phi|+\log|\Psi|$ with
+$U=\Lambda_{C_i}$ and $\Psi$ diagonal.
+\end{proof}
+\noindent
+The inner solve is $\mathcal{O}((K{+}1)^3)$, independent of $|C_i|$; patients sharing a
+missingness pattern share the inner $(K{+}1)\times(K{+}1)$ factorization, computed once per
+pattern. This makes full-sample ($N=9{,}013$) projection tractable and is \MEq{eq:m-woodbury}
+of the main text; the non-Gaussian block retains explicit per-patient latents.
+
+\subsection{EAP factor scores and Bayes/FIML equivalence}
+\label{sub:eap}
+
+\begin{proposition}[EAP scores]\label{prop:eap}
+For an all-continuous observed pattern, the posterior of $f_i$ given the observed cells is
+Gaussian with mean and covariance
+\begin{equation}
+  \hat f_i=\eED[f_i\mid X_{i,C_i}]
+  =\Phi\Lambda_{C_i}^{\top}\Sigma_{C_i}^{-1}\!\left(X_{i,C_i}-\mu_{i,C_i}\right),\qquad
+  S_i=\Phi-\Phi\Lambda_{C_i}^{\top}\Sigma_{C_i}^{-1}\Lambda_{C_i}\Phi ,
+  \label{eq:eap}
+\end{equation}
+which is \MEq{eq:m-scores} of the main text.
+\end{proposition}
+\begin{proof}
+Under \eqref{eq:factors} and \eqref{eq:xstack} the joint of $(f_i,X_{i,C_i})$ is Gaussian
+with $\operatorname{Cov}(f_i)=\Phi$,
+$\operatorname{Cov}(X_{i,C_i})=\Sigma_{C_i}$ and cross-covariance
+$\operatorname{Cov}(f_i,X_{i,C_i})=\Phi\Lambda_{C_i}^{\top}$. The Gaussian conditioning
+formula $\eED[f\mid X]=\operatorname{Cov}(f,X)\operatorname{Cov}(X)^{-1}(X-\mu_X)$ and
+$\operatorname{Cov}(f\mid X)=\operatorname{Cov}(f)-\operatorname{Cov}(f,X)
+\operatorname{Cov}(X)^{-1}\operatorname{Cov}(X,f)$ give \eqref{eq:eap} directly.
+\end{proof}
+
+\begin{proposition}[Equivalent precision form]\label{prop:precform}
+The posterior covariance \eqref{eq:eap} admits the precision form
+\begin{equation}
+  S_i^{-1}=\Phi^{-1}+\Lambda_{C_i}^{\top}\Psi_{C_i}^{-1}\Lambda_{C_i},
+  \label{eq:precform}
+\end{equation}
+so the posterior precision is the prior precision plus a data term that is a sum of
+per-item contributions.
+\end{proposition}
+\begin{proof}
+Substitute the Woodbury form \eqref{eq:woodbury} into
+$S_i=\Phi-\Phi\Lambda_{C_i}^{\top}\Sigma_{C_i}^{-1}\Lambda_{C_i}\Phi$ and simplify; the
+low-rank correction telescopes to give $S_i=(\Phi^{-1}+\Lambda_{C_i}^{\top}\Psi_{C_i}^{-1}
+\Lambda_{C_i})^{-1}$. Equivalently, \eqref{eq:precform} is the standard Gaussian
+information form of the posterior of a linear model with prior precision $\Phi^{-1}$ and
+per-observation precision $\Psi_{C_i}^{-1}$ propagated through $\Lambda_{C_i}$. Inverting
+gives the covariance form \eqref{eq:eap}.
+\end{proof}
+\noindent
+Equation~\eqref{eq:precform} is the pivot of the whole instrument: it exhibits the posterior
+precision as \emph{additive over observed items}, which \S\ref{sec:info} turns into the
+information accounting. When non-Gaussian cells are present the posterior is no longer exactly
+Gaussian; $\hat f_i$ and $S_i$ are then the posterior mean and covariance obtained by MCMC or,
+for the calibration study, by the Fisher-scoring Laplace approximation of \S\ref{sec:calib},
+which reduces to \eqref{eq:eap} exactly on all-Gaussian patterns.
+
+\begin{proposition}[Bayes/FIML equivalence]\label{prop:fiml}
+The marginalized Bayesian observed-data model and FIML optimize the same observed-data
+likelihood \eqref{eq:obslik} and differ only by the priors \eqref{eq:softprior}. In
+particular (Corollary~\ref{cor:flat}) the flat-prior MAP equals the FIML estimate, so a
+standalone FIML estimator adds no independent evidence and confirmation is done in-engine.
+\end{proposition}
+\begin{proof}
+By Proposition~\ref{prop:marg} the per-patient marginal density is the incomplete-data
+multivariate-normal density on $C_i$, whose log summed over patients is the FIML objective.
+The posterior is this likelihood times the prior; with a flat prior the log-posterior equals
+the log-likelihood up to a constant, so its mode is the FIML maximizer.
+\end{proof}
+\noindent
+Finally, the structure of \eqref{eq:eap} makes the instrument's honesty on unmeasured axes
+mechanical: on an axis with no observed indicator the corresponding rows of $\Lambda_{C_i}$
+are empty, the update term in \eqref{eq:precform} vanishes on that coordinate, and the
+posterior returns the prior $\mathcal N(0,\Phi)$ --- a wide interval, never a false-precise
+point. The per-patient posterior covariance $S_i$ is exported and propagated into every
+downstream analysis; a patient with one observed indicator on a factor is not treated as
+equally characterized as one with six.
+
+%=============================================================================
+\section{The loading as a measurement slope}
+\label{sec:slope}
+
+The main text (\MSec{sec:m-slope}) separates two objects that \eqref{eq:linpred} places on
+the same line: the per-patient latent \emph{position} $f_i$, and the fixed \emph{slope} at
+which a measurement changes as that position moves. This section derives the slope on both
+the latent and the response scale.
+
+\begin{proposition}[Latent-scale slope]\label{prop:latslope}
+On the linear-predictor scale the sensitivity of indicator $j$ to factor $k$ is exact,
+constant across patients, and equal to the loading:
+\begin{equation}
+  \frac{\partial\eta_{ij}}{\partial f_{ik}}=\lambda_{jk}.
+  \label{eq:latslope}
+\end{equation}
+Hence the loading matrix $\Lambda$ is the Jacobian $\partial\eta_i/\partial f_i$ of the
+measurement with respect to the latent coordinate.
+\end{proposition}
+\begin{proof}
+Differentiate \eqref{eq:linpred} with respect to $f_{ik}$; the intercept, the covariate
+term $\beta_j^\top c_i$ and the other factor terms do not depend on $f_{ik}$, leaving
+$\lambda_{jk}$.
+\end{proof}
+
+\begin{proposition}[Response-scale slope]\label{prop:respslope}
+For a single-index likelihood with conditional mean
+$\eED[X_{ij}\mid f_i]=h_j(\eta_{ij})$ (link mean function $h_j$), the marginal effect of a
+factor on the indicator and its population average are
+\begin{equation}
+  \frac{\partial\,\eED[X_{ij}\mid f_i]}{\partial f_{ik}}=h_j'(\eta_{ij})\,\lambda_{jk},
+  \qquad
+  s_{jk}\equiv\eED\!\left[\frac{\partial\,\eED[X_{ij}\mid f_i]}{\partial f_{ik}}\right]
+  =\kappa_j\,\lambda_{jk},\qquad
+  \kappa_j=\eED\!\left[h_j'(\eta_{ij})\right]\ge 0 ,
+  \label{eq:respslope}
+\end{equation}
+which is \MEq{eq:m-slope} of the main text.
+\end{proposition}
+\begin{proof}
+The chain rule applied to $\eED[X_{ij}\mid f_i]=h_j(\eta_{ij})$ with
+$\partial\eta_{ij}/\partial f_{ik}=\lambda_{jk}$ (Proposition~\ref{prop:latslope}) gives the
+first identity. Taking the expectation over the population distribution of $\eta_{ij}$ and
+factoring out the patient-independent $\lambda_{jk}$ defines
+$\kappa_j=\eED[h_j'(\eta_{ij})]$, which is non-negative because each family's mean function
+$h_j$ is non-decreasing ($h_j'=\sigma^{-2}$-scaled identity for the Gaussian,
+$p(1-p)$ for the logit-Bernoulli, $e^{\eta}$ for the log-count).
+\end{proof}
+\noindent
+The loading is therefore \emph{how strongly an item reflects a factor}. It is not how much
+that item localizes a patient --- that is the Fisher information of \S\ref{sec:info}, and the
+two coincide only for the Gaussian family, where $h_j'$ is constant. The response-scale
+average $\kappa_j$ is what makes a unit-loading rare binary flag a weak \emph{measurement}
+despite a large $\lambda$: $\kappa_j=\eED[p_{ij}(1-p_{ij})]$ collapses as the endorsement
+probability leaves $\tfrac12$.
+
+%=============================================================================
+\section{Information accounting: what localizes a patient}
+\label{sec:info}
+
+\subsection{Additivity of posterior precision}
+\label{sub:additive}
+
+\begin{proposition}[Additive precision]\label{prop:additive}
+Under local independence \eqref{eq:localindep} the posterior precision of the coordinate is
+the prior precision plus a sum of per-item Fisher-information contributions,
+\begin{equation}
+  S_i^{-1}=\Phi^{-1}+\sum_{j\in O_i}\info_j(f_i),
+  \qquad
+  \info_j(f_i)=-\,\eED_{X_{ij}\mid f_i}\!\left[\nabla^2_{f_i}\log F_j(X_{ij}\mid\eta_{ij})\right],
+  \label{eq:precision}
+\end{equation}
+which is \MEq{eq:m-precision} of the main text. Each observed cell adds a positive
+semidefinite term; nothing an item measures is ever subtracted.
+\end{proposition}
+\begin{proof}
+The log-posterior of $f_i$ given the observed cells is, up to a constant,
+$\log p(f_i\mid X_{i,O_i})=\log\mathcal N(f_i;\mathbf 0,\Phi)
++\sum_{j\in O_i}\log F_j(X_{ij}\mid\eta_{ij})$, the sum over items following from local
+independence \eqref{eq:localindep}. The negative Hessian in $f_i$ of the prior term is
+$\Phi^{-1}$; the negative expected Hessian of each item term is by definition the item's
+Fisher information $\info_j(f_i)$ about the factors. Summing gives \eqref{eq:precision}; each
+$\info_j$ is positive semidefinite as an expected outer product of score vectors (below), so
+observing an item can only increase precision. For the Gaussian family the expectation is
+exact and \eqref{eq:precision} coincides with \eqref{eq:precform}; for the other families it
+is the expected-information (Fisher-scoring) form used in \S\ref{sec:calib}.
+\end{proof}
+
+\subsection{Per-family unit information}
+\label{sub:family}
+
+Because $\eta_{ij}$ is a single index in $f_i$ with $\nabla_{f_i}\eta_{ij}=\lambda_j$
+(Proposition~\ref{prop:latslope}), the information that item $j$ carries about the factors
+factorizes through the scalar index:
+\begin{equation}
+  \info_j(f_i)=\unitinfo_j(\eta_{ij})\,\lambda_j\lambda_j^{\top},
+  \qquad
+  \unitinfo_j(\eta)=-\,\eED_{X\mid\eta}\!\left[\frac{\partial^2}{\partial\eta^2}\log F_j(X\mid\eta)\right],
+  \label{eq:unitinfo}
+\end{equation}
+so the per-factor information is $\info_{jk}(f_i)=\lambda_{jk}^{2}\,\unitinfo_j(\eta_{ij})$ ---
+\MEq{eq:m-fisher} of the main text --- with $\unitinfo_j$ the one-dimensional Fisher
+information of the item's own likelihood family. We derive $\unitinfo_j$ for each family.
+
+\begin{proposition}[Family unit informations]\label{prop:families}
+For the five families of \eqref{eq:fam-gauss}--\eqref{eq:fam-count},
+\begin{align}
+  \text{Gaussian:}\quad & \unitinfo_j(\eta)=\frac{1}{\sigma_j^2}, \label{eq:info-gauss}\\
+  \text{Bernoulli (logit):}\quad & \unitinfo_j(\eta)=p(1-p),\quad p=\operatorname{logit}^{-1}(\eta), \label{eq:info-bern}\\
+  \text{Negative-binomial (log link):}\quad & \unitinfo_j(\eta)=\frac{\mu\,r_j}{\mu+r_j},\quad \mu=e^{\eta}, \label{eq:info-nb}\\
+  \text{Graded-response ordinal:}\quad & \unitinfo_j(\eta)=\sum_{c=1}^{C_j}\frac{\bigl(\partial_\eta P_{jc}(\eta)\bigr)^2}{P_{jc}(\eta)}
+    =\sum_{c=1}^{C_j-1}\frac{\bigl(P_{jc}^{\star}(1-P_{jc}^{\star})-P_{j,c+1}^{\star}(1-P_{j,c+1}^{\star})\bigr)^2}{P_{jc}(\eta)}, \label{eq:info-ord}
+\end{align}
+where $P_{jc}(\eta)=P_{jc}^{\star}-P_{j,c+1}^{\star}$ is the probability of category $c$ and
+$P_{jc}^{\star}=\operatorname{logit}^{-1}(\eta-\tau_{jc})$ is the cumulative probability of
+exceeding threshold $\tau_{jc}$ (with $P_{j0}^{\star}=1$, $P_{j,C_j}^{\star}=0$).
+\end{proposition}
+\begin{proof}
+\emph{Gaussian.} $\log F_j=-\tfrac12\log(2\pi\sigma_j^2)-\tfrac{(X-\eta)^2}{2\sigma_j^2}$, so
+$\partial_\eta^2\log F_j=-1/\sigma_j^2$, a constant; its negative expectation is
+$1/\sigma_j^2$, independent of $\eta$.
+
+\emph{Bernoulli.} With $p=\operatorname{logit}^{-1}(\eta)$,
+$\log F_j=X\log p+(1-X)\log(1-p)$ and $\partial_\eta p=p(1-p)$. The score is
+$\partial_\eta\log F_j=X-p$, and
+$\unitinfo_j=\operatorname{Var}(X-p\mid\eta)=\operatorname{Var}(X)=p(1-p)$.
+
+\emph{Negative-binomial.} For $X\sim\mathrm{NegBinom}$ with mean $\mu=e^\eta$ and dispersion
+$r_j$, $\operatorname{Var}(X\mid\eta)=\mu+\mu^2/r_j$. With the log link
+$\partial_\eta\mu=\mu$, the generalized-linear-model information is
+$\unitinfo_j=(\partial_\eta\mu)^2/\operatorname{Var}(X)=\mu^2/(\mu+\mu^2/r_j)=\mu r_j/(\mu+r_j)$.
+
+\emph{Graded-response ordinal.} For a categorical likelihood
+$\log F_j=\sum_c \mathbf 1\{X=c\}\log P_{jc}(\eta)$, the score is
+$\partial_\eta\log F_j=\sum_c\mathbf 1\{X=c\}\,\partial_\eta P_{jc}/P_{jc}$ and the expected
+squared score is $\unitinfo_j=\sum_c(\partial_\eta P_{jc})^2/P_{jc}$, the standard
+graded-response information \citep{samejima1969}. Writing category probabilities as
+differences of the cumulative logits $P_{jc}^\star$ and using
+$\partial_\eta P_{jc}^\star=P_{jc}^\star(1-P_{jc}^\star)$ gives the closed form on the right
+of \eqref{eq:info-ord}.
+\end{proof}
+
+\subsection{Why loading is not information}
+\label{sub:notloading}
+
+Equation~\eqref{eq:unitinfo} is why localization and reflection part company. The loading
+$\lambda_{jk}$ enters $\info_{jk}$ squared, but it multiplies the unit information
+$\unitinfo_j(\eta_{ij})$, which for every non-Gaussian family depends on where the patient
+sits. The Bernoulli case \eqref{eq:info-bern} is the sharpest: a binary flag endorsed by a
+fraction $p$ of patients contributes $\unitinfo_j=p(1-p)$, which is $0.09$ at $p=0.1$ and
+collapses to $0$ as $p\to0$, \emph{regardless of $\lambda$}. A strongly-loading, rarely-endorsed
+symptom therefore localizes almost no one. Only for the Gaussian family
+\eqref{eq:info-gauss}, where $\unitinfo_j=1/\sigma_j^2$ is constant, does the ranking by
+information coincide with the ranking by (scaled) loading.
+
+\begin{corollary}[Reliability and the target-driven item count]\label{cor:reliability}
+On a single axis $k$, accumulating \eqref{eq:precision} gives a scalar precision
+$\pi_k=1+\sum_{j}\info_{jk}$ (prior precision $1$ for the standardized factor) and a
+reliability
+\begin{equation}
+  \rho_k=1-\frac{1}{\pi_k}=1-\frac{1}{\,1+\sum_j \lambda_{jk}^2\,\unitinfo_j\,}.
+  \label{eq:reliability}
+\end{equation}
+To reach a posterior standard deviation $\pi_k^{-1/2}\le\varsigma$ requires accumulated
+information $\sum_j\info_{jk}\ge \varsigma^{-2}-1$; at $\varsigma=0.5$ this is
+$\sum_j\info_{jk}\ge 3$. For a standardized continuous indicator of common loading
+$\lambda$ the residual variance is $1-\lambda^2$, so its Gaussian unit information is
+$\unitinfo=1/(1-\lambda^2)$ and it contributes $\lambda^2/(1-\lambda^2)$ per item; the
+required count is therefore
+\begin{equation}
+  n \ \ge\ \frac{\varsigma^{-2}-1}{\lambda^2/(1-\lambda^2)}
+  \ =\ 3\,\frac{1-\lambda^2}{\lambda^2}\quad(\varsigma=0.5),
+  \label{eq:itemcount}
+\end{equation}
+i.e.\ $3.1$ items at $\lambda=0.7$, $9.0$ at $\lambda=0.5$ and $30.3$ at $\lambda=0.3$ ---
+consistent with the ``roughly $4$, $9$ and $31$ items'' the full mixed-bank simulation
+reports in \MSec{sec:res-info}.
+\end{corollary}
+\begin{proof}
+Immediate from $\pi_k=1/\operatorname{Var}(f_{ik}\mid X)$ and \eqref{eq:reliability}: the
+item count solves $\lambda^2\unitinfo\cdot n=\varsigma^{-2}-1$ with the standardized-indicator
+unit information $\unitinfo=1/(1-\lambda^2)$, giving \eqref{eq:itemcount}.
+\end{proof}
+
+%=============================================================================
+\section{Adaptive sampling and value of information}
+\label{sec:voi}
+
+\subsection{The fixed order as an upper bound on adaptive efficiency}
+\label{sub:upperbound}
+
+Ordering the candidate items for an axis by their information \eqref{eq:unitinfo} and
+accumulating \eqref{eq:precision} gives the reliability-versus-items curve
+\eqref{eq:reliability}. Evaluated at the population mean $f_i=\mathbf 0$ this is the
+efficiency of a fixed, non-adaptive most-informative-first battery. A computerized adaptive
+test (CAT) instead re-evaluates $\unitinfo_j(\eta_{ij})$ at each patient's provisional
+estimate $\hat\theta$ and selects the currently most informative item.
+
+\begin{proposition}[Population-mean order is an upper bound]\label{prop:upperbound}
+Fix an axis and let $\bar{\info}_j=\unitinfo_j(\bar\eta_j)$ be the unit information evaluated
+at the population-mean linear predictor $\bar\eta_j=\alpha_j$. The fixed schedule that
+administers items in decreasing $\lambda_j^2\bar\info_j$ maximizes accumulated information at
+every step among schedules that do not use the patient's responses. Any adaptive schedule
+attains, in expectation over patients, no more accumulated information per item at the
+population mean than this fixed order.
+\end{proposition}
+\begin{proof}
+At the population mean the per-item increments $\lambda_j^2\bar\info_j$ are fixed constants;
+by the rearrangement inequality, administering them in decreasing order maximizes the
+partial sums $\sum_{j\le n}$ at every $n$, so the fixed most-informative-first order is
+optimal among response-independent schedules. An adaptive schedule can exceed a fixed one
+only by exploiting the dependence of $\unitinfo_j(\eta_{ij})$ on the unknown $f_i$; at the
+population mean, and for families whose $\unitinfo_j$ does not depend on $\eta$ (the Gaussian
+family, \eqref{eq:info-gauss}), that dependence is absent and the two schedules coincide.
+\end{proof}
+\noindent
+This is why the CAT simulation of \MSec{sec:res-adaptive} finds the bound \emph{tight}: on
+every axis whose leading items are Gaussian the adaptive and fixed curves coincide to within
+$2\times10^{-4}$ in reliability, because $\unitinfo_j$ is constant and there is nothing to
+adapt to; only Bernoulli-topped axes (whose $\unitinfo_j=p(1-p)$ varies with $\theta$) show a
+small adaptive signature, at most $0.012$ in reliability. The bank-limited axes are a
+separate phenomenon: mania/activation and substance plateau at reliability $0.41$ and $0.43$
+because $\sum_j\lambda_{jk}^2\unitinfo_j$ saturates over a $2$- and $4$-item bank
+respectively --- a ceiling of \eqref{eq:reliability} set by instrument content, not by any
+schedule.
+
+\subsection{Value of information: the matrix-determinant lemma}
+\label{sub:voi}
+
+Across axes the same information becomes a design criterion through the entropy of the
+posterior coordinate.
+
+\begin{proposition}[Closed-form entropy reduction]\label{prop:voi}
+The differential entropy of the Gaussian posterior is
+$H(f_i)=\tfrac12\log\det(2\pi e\,S_i)$. Adding a single not-yet-measured indicator
+$j^\star$ with loading $\lambda_{j^\star}$ and unit information
+$\unitinfo_{j^\star}=\unitinfo_{j^\star}(\hat\eta_{ij^\star})$ reduces the entropy by
+\begin{equation}
+  H(f_i)-H(f_i\mid j^\star)
+  =\tfrac12\log\!\left(1+\unitinfo_{j^\star}\,\lambda_{j^\star}^{\top} S_i\,\lambda_{j^\star}\right),
+  \label{eq:voi}
+\end{equation}
+a closed form that depends on what has already been measured through the current posterior
+covariance $S_i$. Equation~\eqref{eq:voi} is \MEq{eq:m-voi} of the main text.
+\end{proposition}
+\begin{proof}
+By Proposition~\ref{prop:additive} the updated precision is
+$S_i^{-1}\!\mid_{+j^\star}=S_i^{-1}+\unitinfo_{j^\star}\lambda_{j^\star}\lambda_{j^\star}^{\top}$,
+a rank-one update. The entropy change is
+$H(f_i)-H(f_i\mid j^\star)=\tfrac12\log\det(S_i^{-1}\!\mid_{+j^\star})-\tfrac12\log\det(S_i^{-1})
+=\tfrac12\log\frac{\det(S_i^{-1}+\unitinfo_{j^\star}\lambda_{j^\star}\lambda_{j^\star}^{\top})}{\det S_i^{-1}}$.
+The matrix-determinant lemma $\det(A+uv^\top)=\det(A)(1+v^\top A^{-1}u)$ with $A=S_i^{-1}$,
+$u=\unitinfo_{j^\star}\lambda_{j^\star}$, $v=\lambda_{j^\star}$ gives the ratio
+$1+\unitinfo_{j^\star}\lambda_{j^\star}^{\top}S_i\lambda_{j^\star}$, and the logarithm halves
+to \eqref{eq:voi}.
+\end{proof}
+\noindent
+Two properties make \eqref{eq:voi} the right design criterion. It is \emph{context-dependent}:
+the value of a candidate item scales with $\lambda_{j^\star}^{\top}S_i\lambda_{j^\star}$, the
+current posterior variance along the item's loading direction, so an item is worth most on an
+axis that is still uncertain and its value falls as that axis fills in. And it is
+\emph{diminishing}: because $S_i$ shrinks with each added item, the marginal entropy reduction
+of the next item decreases, so a greedy rule spreads measurement across axes rather than
+piling onto one. Cycling the greedy selection across the eight axes assembles the shared
+$27$-item battery at mean reliability $0.70$ of \MSec{sec:res-voi}; applied within a cohort,
+the same $S_i$-weighted criterion localizes where an axis is under-measured (e.g.\ the
+schizophrenia immunometabolic and sleep deficits, $20.7$ vs $34.9$ and $3.9$ vs $8.4$ items).
+
+\begin{corollary}[Greedy value is a lower bound on the jointly-optimal design]\label{cor:greedy}
+The entropy reduction $f\mapsto\log\det(\Phi^{-1}+\sum_{j\in S}\info_j)$ as a function of the
+selected set $S$ is monotone and submodular, so the greedy battery attains at least a
+$(1-1/e)$ fraction of the entropy reduction of the jointly-optimal same-size battery.
+\end{corollary}
+\begin{proof}
+Monotonicity holds because each $\info_j\succeq0$ (Proposition~\ref{prop:additive}) can only
+increase the log-determinant. Submodularity of $S\mapsto\log\det(A+\sum_{j\in S}\info_j)$ for
+positive semidefinite $\info_j$ is the standard concavity-of-log-det result: the marginal gain
+of adding $j^\star$, given by \eqref{eq:voi}, is non-increasing as the base set grows because
+$S_i$ (the inverse of the accumulated precision) is decreasing in the Loewner order. The
+$(1-1/e)$ guarantee is the Nemhauser–Wolsey–Fisher bound for greedy maximization of a
+monotone submodular function. This bounds the price of greediness noted as a limitation in
+the main text.
+\end{proof}
+
+%=============================================================================
+\section{Archetypes as a low-dimensional summary and its reconstruction fidelity}
+\label{sec:arch}
+
+\subsection{The archetypal-analysis program}
+\label{sub:aa}
+
+The cloud of posterior coordinates $\{x_i\}_{i=1}^N$, $x_i=\hat f_i\in\mathbb R^{K+1}$, is
+summarized by archetypal analysis \citep{cutler1994archetypal}: each patient is written as a
+convex blend of $A$ extreme phenotypes that are themselves convex combinations of patients,
+\begin{equation}
+  \min_{W,B}\ \sum_{i=1}^{N}\Big\|x_i-\sum_{a=1}^{A} w_{ia}\,z_a\Big\|^{2}
+  \quad\text{s.t.}\quad z_a=\sum_{j=1}^{N} b_{ja}\,x_j,\ \
+  w_{ia},b_{ja}\ge0,\ \ \textstyle\sum_a w_{ia}=\sum_j b_{ja}=1 ,
+  \label{eq:aa}
+\end{equation}
+i.e.\ $X\approx WZ$ with archetypes $Z=BX$ and both $W$ (patient$\times$archetype) and $B$
+(patient$\times$archetype) row-stochastic. This is \MEq{eq:m-archetype} of the main text. The
+constraints place each archetype $z_a$ inside the convex hull of the data and each patient's
+reconstruction $\hat x_i=\sum_a w_{ia}z_a$ inside the convex hull of the archetypes; the
+simplex weight $w_i\in\Delta^{A-1}$ is the patient's soft membership. The number of corners is
+fixed by stability: $A=5$ is the largest with cross-seed Tucker congruence $\ge0.8$, with a
+cliff at $A=6$, and $w_i$ is propagated across posterior draws.
+
+\subsection{Reconstruction fidelity as a variance decomposition}
+\label{sub:recon}
+
+Because \eqref{eq:aa} is a rank-$A$ convex approximation it discards information, and unlike
+an unconstrained projection its residual is not orthogonal to the fitted part. We quantify the
+loss by a coefficient of determination.
+
+\begin{definition}[Reconstruction $R^2$]\label{def:r2}
+With reconstruction $\hat x_i=\sum_a w_{ia}z_a$, the per-axis and pooled reconstruction
+$R^2$ are
+\begin{equation}
+  R^2_k=1-\frac{\sum_i (x_{ik}-\hat x_{ik})^2}{\sum_i (x_{ik}-\bar x_k)^2},
+  \qquad
+  R^2_{\mathrm{pool}}=1-\frac{\sum_i\|x_i-\hat x_i\|^2}{\sum_i\|x_i-\bar x\|^2}
+  =\frac{\sum_k \mathrm{SS}^{\mathrm{tot}}_k R^2_k}{\sum_k \mathrm{SS}^{\mathrm{tot}}_k},
+  \label{eq:r2}
+\end{equation}
+the pooled value being the variance-weighted mean of the per-axis values with weights
+$\mathrm{SS}^{\mathrm{tot}}_k=\sum_i (x_{ik}-\bar x_k)^2$.
+\end{definition}
+\noindent
+Evaluated on all $N=9{,}013$ patients the five-corner blend attains
+$R^2_{\mathrm{pool}}=0.590$: the convex summary retains $59\%$ of the coordinate variance. It is
+tempting to read this against the unconstrained linear optimum at the same dimension --- a
+five-component principal-component projection attains $R^2=0.796$, a dimension-matched
+four-component projection $0.680$ --- and conclude that convex interpretability costs
+$20.6$ percentage points of fidelity. That reading is wrong, and Proposition~\ref{prop:kd} below
+explains why: on this map the coordinate variance is nearly isotropic, so reconstruction $R^2$ is
+an uninformative test of any five-dimensional summary. A \emph{random} five-dimensional subspace
+retains an expected $k/d=5/8=0.625$ of the variance regardless of the covariance spectrum --- more
+than the archetype simplex --- and a $500$-seed simulation confirms it ($0.624\pm0.042$, placing
+the archetype value at the $21$st percentile of random projections). The simplex does not merely
+trail PCA; it trails a coin-flip subspace, because variance capture is not what it optimizes.
+What it does provide, and what neither PCA nor a random subspace can, is convex non-negative
+sum-to-one membership in $A$ \emph{named} corners: a principal component is a signed axis-mixing
+contrast that no patient can equal, whereas each archetype $z_a$ is a near-real extreme profile a
+patient can be a stated fraction of. Reconstruction $R^2$ is therefore reported here as an honesty
+check on how much of the continuum the corners span --- not as a competitive metric --- and the
+five-centroid $k$-means hard partition ($R^2=0.325$), the discrete alternative appropriate only if
+the cloud had clusters, is included to show that the least defensible summary is the categorical
+one. Per axis, $R^2_k$ is high where the corners separate (immunometabolic $0.89$, overall
+severity $0.86$, sleep $0.76$, developmental risk $0.75$) and near-flat on the two bank-limited
+axes (cognition $0.06$, substance $\approx0$), the same axes flagged by \eqref{eq:reliability} ---
+so the per-axis profile is a diagnostic of where the instrument is weak, not a scorecard.
+
+\begin{proposition}[A random $k$-subspace captures $k/d$ of the variance]\label{prop:kd}
+Let $x_1,\dots,x_N\in\mathbb R^d$ have mean zero and total variance
+$T=\tfrac1N\sum_i\|x_i\|^2$. Let $P$ be the orthogonal projector onto a $k$-dimensional subspace
+drawn uniformly (Haar) from the Grassmannian $\mathrm{Gr}(k,d)$. Then the expected variance
+captured by projecting the data onto that subspace is
+\begin{equation}
+  \mathbb E\!\left[\tfrac1N\textstyle\sum_i\|Px_i\|^2\right]=\frac{k}{d}\,T,
+  \qquad\text{i.e.}\qquad \mathbb E[R^2_{\text{rand-}k}]=\frac kd,
+  \label{eq:kd}
+\end{equation}
+\emph{independent of the eigenvalue spectrum} of the data covariance.
+\end{proposition}
+\begin{proof}
+Write the covariance $\Sigma=\tfrac1N\sum_i x_ix_i^\top$ with eigenvalues $\sigma_1^2\ge\dots\ge
+\sigma_d^2$ summing to $T$. The captured variance is
+$\tfrac1N\sum_i x_i^\top P x_i=\operatorname{tr}(P\Sigma)$. For a Haar-random rank-$k$ projector,
+$\mathbb E[P]=(k/d)I_d$ by rotational invariance (the only symmetric matrix commuting with all
+rotations is a scalar multiple of the identity, and $\operatorname{tr}\mathbb E[P]=k$ fixes the
+scalar). Hence $\mathbb E[\operatorname{tr}(P\Sigma)]=\operatorname{tr}((k/d)\Sigma)=(k/d)T$, and
+dividing by $T$ gives \eqref{eq:kd}. The result uses only $\mathbb E[P]=(k/d)I$; the spectrum
+$\{\sigma_j^2\}$ cancels, which is why an anisotropic (e.g.\ single-dominant-component) cloud and a
+near-isotropic one both give $k/d$ in expectation, while their PCA-optimal $R^2$ differ sharply.
+\end{proof}
+\noindent
+For this map $k/d=5/8=0.625$; the simulated mean $0.624$ matches to Monte-Carlo error, and the
+gap between that and the PCA-5 value $0.796$ is a direct measure of how far the coordinate cloud
+departs from isotropy --- here, modestly (the leading component carries $0.269$ of the variance,
+against $0.125$ for an exactly isotropic cloud).
+
+\begin{proposition}[Fidelity does not degrade for ambiguous patients]\label{prop:fog}
+Let $e_i=\|x_i-\hat x_i\|$ be a patient's reconstruction error and
+$H_i=-\sum_a w_{ia}\log w_{ia}$ the entropy of their archetype weights. Then
+$\operatorname{Corr}(e_i,H_i)<0$: interior ``fog'' patients reconstruct \emph{better}, not
+worse.
+\end{proposition}
+\begin{proof}[Argument]
+By construction each $\hat x_i$ lies in the convex hull of the archetypes. A high-entropy
+patient has weights spread across corners and therefore sits near the centroid of the hull,
+where the convex approximation is tight; a low-entropy (near-corner) patient sits near a
+single archetype $z_a$, but the true $x_i$ near a corner frequently lies \emph{outside} the
+hull spanned by the finite archetype set (the archetypes are interior convex combinations of
+data, not the extreme points themselves), so the clipped reconstruction incurs a larger
+residual. Empirically $\operatorname{Corr}(e_i,H_i)=-0.13$ ($p<10^{-30}$), consistent with
+this geometry. The negative sign is the useful conclusion: the summary is not purchased by
+sacrificing the ambiguous patients it is meant to describe.
+\end{proof}
+
+%=============================================================================
+\section{Calibration protocol}
+\label{sec:calib}
+
+The instrument reports posterior intervals; \MSec{sec:m-calib} tests whether those intervals
+are honest. Because the truth is unknown for real patients, coverage is tested by simulation
+under the model's own generative law with real missingness.
+
+\subsection{Synthetic-truth generative design}
+\label{sub:gen-calib}
+
+We draw $M=10{,}000$ synthetic patients (seed $20260704$) with known latent coordinate
+$\theta_m\sim\mathcal N(\mathbf 0,\Phi)$ under the frozen model's factor prior. For each we
+generate item responses from the fitted families
+\eqref{eq:fam-gauss}--\eqref{eq:fam-count} at $\eta_{mj}=\alpha_j+\lambda_j^{\top}\theta_m$,
+and impose a real missingness pattern by bootstrapping the observed/missing masks of the
+$9{,}013$ real patients --- only the binary observed-or-missing indicator is used, never any
+clinical value. This preserves the empirical joint distribution of \emph{which} axes are
+co-measured, which is what stresses the projection.
+
+\subsection{Fisher-scoring EAP and its exactness on Gaussian patterns}
+\label{sub:fisher-eap}
+
+Each synthetic patient is projected by the same machinery as a real one. For non-Gaussian
+patterns the posterior mode and curvature are found by Fisher scoring: starting from
+$\hat\theta^{(0)}=\mathbf 0$, iterate
+\begin{equation}
+  \hat\theta^{(t+1)}=\hat\theta^{(t)}
+  +\Big(\Phi^{-1}+\textstyle\sum_{j\in O_m}\info_j(\hat\theta^{(t)})\Big)^{-1}
+  \Big(\!-\Phi^{-1}\hat\theta^{(t)}+\textstyle\sum_{j\in O_m} u_{mj}(\hat\theta^{(t)})\Big),
+  \label{eq:fisherscore}
+\end{equation}
+where $u_{mj}=\lambda_j\,\partial_\eta\log F_j(X_{mj}\mid\eta_{mj})$ is the item score and
+$\info_j$ its expected information \eqref{eq:unitinfo}; the posterior covariance is the inverse
+information $S_m=(\Phi^{-1}+\sum_{j}\info_j(\hat\theta))^{-1}$ at convergence, the Laplace
+approximation to the posterior.
+
+\begin{proposition}[Exactness on Gaussian patterns]\label{prop:exact}
+If all observed items of patient $m$ are Gaussian \eqref{eq:fam-gauss}, the Fisher-scoring
+iteration \eqref{eq:fisherscore} converges in one step from any start to the closed-form EAP
+\eqref{eq:eap}, and $S_m$ equals the closed-form posterior covariance exactly.
+\end{proposition}
+\begin{proof}
+For a Gaussian item $\info_j=\lambda_j\lambda_j^\top/\sigma_j^2$ is independent of $\theta$
+and the score is affine, $u_{mj}(\theta)=\lambda_j(X_{mj}-\alpha_j-\lambda_j^\top\theta)/\sigma_j^2$.
+The bracketed Newton system \eqref{eq:fisherscore} is then exactly the normal equations of the
+Gaussian posterior, whose solution is \eqref{eq:precform}--\eqref{eq:eap}; a Newton step on a
+quadratic objective reaches the optimum in one iteration regardless of the starting point.
+\end{proof}
+\noindent
+We verified this numerically: on all-Gaussian patterns the Fisher-scoring coordinate matches
+the closed form \eqref{eq:eap} to $3\times10^{-15}$, so the calibration study exercises the
+\emph{same} estimator the instrument uses, extended to the non-Gaussian families.
+
+\subsection{Coverage statistics and the prior-in-prior-out check}
+\label{sub:coverage}
+
+For nominal levels $q\in\{0.50,0.80,0.90,0.95\}$ with standard-normal quantile $z_q$, we
+report three statistics: the per-axis marginal coverage
+\begin{equation}
+  \widehat{\mathrm{cov}}_k(q)=\frac{1}{M}\sum_{m=1}^{M}
+  \mathbf 1\!\left\{\,|\theta_{mk}-\hat x_{mk}|\le z_{(1+q)/2}\,[S_m]_{kk}^{1/2}\right\},
+  \label{eq:covax}
+\end{equation}
+the joint coverage of the $8$-dimensional credible ellipsoid via the Mahalanobis distance
+against a $\chi^2_{K+1}$ quantile,
+$\widehat{\mathrm{cov}}_{\mathrm{joint}}(q)=\tfrac1M\sum_m\mathbf 1\{(\theta_m-\hat x_m)^\top
+S_m^{-1}(\theta_m-\hat x_m)\le \chi^2_{K+1,q}\}$, and the $95\%$ coverage stratified by the
+number of observed indicators on the axis. The Monte-Carlo standard error of a coverage
+estimate at level $q$ is $\sqrt{q(1-q)/M}$; at $q=0.95$, $M=10^4$ this is $0.0022$.
+
+\begin{proposition}[Prior in, prior out]\label{prop:priorout}
+On an axis $k$ with no observed indicator, the projection returns the prior on that
+coordinate --- $\hat x_{mk}=0$ and $[S_m]_{kk}$ equal to the prior variance --- so the coverage
+\eqref{eq:covax} equals the nominal level exactly, up to Monte-Carlo error.
+\end{proposition}
+\begin{proof}
+With no observed item loading on axis $k$, the corresponding rows of $\Lambda_{O_m}$ are zero,
+so the data term $\sum_j\info_j$ in \eqref{eq:precision} has no entry on coordinate $k$ and the
+posterior marginal of $\theta_{mk}$ equals its prior $\mathcal N(0,\Phi_{kk})$. Since the
+synthetic truth is drawn from that same prior \eqref{eq:factors}, the interval
+$0\pm z_{(1+q)/2}\Phi_{kk}^{1/2}$ covers $\theta_{mk}$ with probability exactly $q$.
+\end{proof}
+\noindent
+This makes the zero-item stratum a built-in correctness check rather than a free parameter:
+the instrument \emph{must} recover nominal coverage there, and it does. Across all strata the
+empirical coverage tracks nominal --- $0.501$, $0.801$, $0.900$, $0.949$ against
+$0.50/0.80/0.90/0.95$, joint ellipsoid $0.947$ at $95\%$ --- and is flat from the
+prior-dominated stratum to the richly-observed one ($0.947$–$0.952$ across item-count bins),
+the result reported in \MSec{sec:res-calib}.
+
+\paragraph{What the study does and does not establish.} Coverage here demonstrates that the
+projection machinery is \emph{internally honest}: its $95\%$ intervals cover the truth $95\%$
+of the time when the data are generated by the fitted model under real missingness. It does
+not establish that the fitted model is the true data-generating process --- no coverage study
+can, since it conditions on the generative law. On the discrete-informed axes the Laplace
+posterior standard deviation runs slightly below the residual error (a light-tailed
+approximation), so interval \emph{width} is marginally optimistic even though the
+$95\%$-level coverage, fixed by the interval quantiles, is exact. The next subsection addresses
+the conditioning limitation directly.
+
+\subsection{Robustness of coverage under misspecification}
+\label{sub:misspec}
+
+The coverage study of \S\ref{sub:coverage} draws data from the fitted model, so it cannot
+distinguish a well-calibrated estimator from one that is calibrated only because it scores data
+it also generated. We therefore stress the projection with data drawn from processes it does
+\emph{not} assume, and ask how far coverage drifts. Four one-parameter families of violations are
+used, each targeting a specific assumption of \S\ref{sec:model}:
+\begin{enumerate}\itemsep2pt
+  \item \textbf{Correlated residuals} (violates local independence, \eqref{eq:localindep}): the
+    residual of every item receives a shared nuisance component,
+    $\varepsilon_j\leftarrow(\varepsilon_j+\rho\,g_\ast)/\sqrt{1+\rho^2}$ with common
+    $g_\ast\sim\mathcal N(0,1)$ and $\rho\in\{0,0.15,0.30,0.45\}$.
+  \item \textbf{Omitted factor} (violates the rank-$K$ assumption): a ninth latent
+    $g_9\sim\mathcal N(0,1)$ loads a random $40\%$ of items with strength $s\in\{0,0.25,0.5,0.75\}$,
+    absent from the scoring model.
+  \item \textbf{Loading mismatch} (parameter error / transfer to a new sample): the scoring model
+    uses $\lambda_{jk}(1+\varepsilon\xi_{jk})$, $\xi_{jk}\sim\mathcal N(0,1)$,
+    $\varepsilon\in\{0,0.10,0.20,0.30\}$, while data use the true $\lambda_{jk}$.
+  \item \textbf{Heavy tails} (violates Gaussian residuals): continuous residuals are Student-$t$
+    with $\mathrm{df}\in\{\infty,8,5,3\}$, rescaled to unit variance.
+\end{enumerate}
+Each cell draws $N=4{,}000$ synthetic patients keeping $50\%$ of items (three seeds), scores them
+with the \emph{unperturbed} Gaussian EAP, and records empirical coverage of the nominal $95\%$
+per-axis interval. The results (\MFig{fig:blockers}B; \MSec{sec:res-utility-prognosis})
+show graceful, monotone degradation and no collapse:
+\begin{center}\small
+\begin{tabular}{lcccc}
+\toprule
+Violation & none & low & med & high\\
+\midrule
+Correlated residuals ($\rho$) & $0.951$ & $0.943$ & $0.918$ & $0.889$\\
+Omitted ninth factor ($s$) & $0.951$ & $0.948$ & $0.939$ & $0.939$\\
+Loading mismatch ($\varepsilon$) & $0.949$ & $0.950$ & $0.927$ & $0.934$\\
+Heavy-tailed residuals ($\mathrm{df}$) & $0.949$ & $0.950$ & $0.950$ & $0.955$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Three features are worth noting. First, the unperturbed baseline recovers nominal ($0.949$--$0.951$)
+in every family, confirming the estimator is unbiased when its assumptions hold. Second, heavy
+tails are absorbed essentially without loss --- indeed slightly conservatively at the $50\%$
+level --- because the EAP posterior variance depends on the loadings and the residual
+\emph{variance}, not on higher residual moments. Third, the steepest degradation is under
+correlated residuals, and this is expected: local dependence inflates the effective information a
+naive independent-likelihood score believes it has, shrinking intervals below their honest width.
+Even so, an extreme shared-nuisance loading ($\rho=0.45$, a residual correlation the
+model-selection diagnostics of the main text would flag) costs only six points of coverage. The
+projection's intervals are thus honest under the model and degrade predictably, not
+catastrophically, away from it; local dependence is the assumption whose violation matters most,
+and the one most worth checking on real data before trusting interval \emph{widths}.
+
+%=============================================================================
+\section*{Summary of cross-references to the main text}
+\addcontentsline{toc}{section}{Cross-references to the main text}
+
+Each numbered result here underlies a specific claim in the main manuscript:
+\eqref{eq:obslik} and Proposition~\ref{prop:marg} justify the no-imputation invariant
+(\MEq{eq:obslik}); Lemma~\ref{lem:woodbury} and Proposition~\ref{prop:eap} are the projection
+(\MEq{eq:m-woodbury}, \MEq{eq:m-scores}); Propositions~\ref{prop:latslope}--\ref{prop:respslope}
+are the loading-as-slope (\MEq{eq:m-slope}); Propositions~\ref{prop:additive}--\ref{prop:families}
+and Corollary~\ref{cor:reliability} are the information accounting (\MEq{eq:m-precision},
+\MEq{eq:m-fisher}); Propositions~\ref{prop:upperbound}--\ref{prop:voi} and
+Corollary~\ref{cor:greedy} are adaptive sampling and value of information (\MEq{eq:m-voi});
+Definition~\ref{def:r2}, Proposition~\ref{prop:kd} (the random-subspace $k/d$ bound that reframes
+reconstruction $R^2$) and Proposition~\ref{prop:fog} are the archetype reconstruction; and
+Propositions~\ref{prop:exact}--\ref{prop:priorout} with the misspecification stress test of
+\S\ref{sub:misspec} are the calibration protocol and its robustness (\MSec{sec:m-calib},
+\MSec{sec:res-utility-prognosis}).
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\end{document}

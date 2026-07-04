@@ -1,0 +1,76 @@
+\documentclass[11pt]{letter}
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{parskip}
+\signature{The Authors}
+\address{}
+\begin{document}
+\begin{letter}{The Editors\\ \textit{[Target journal --- e.g.\ Psychological Methods / Behavior Research Methods]}}
+
+\opening{Dear Editors,}
+
+We submit for your consideration the manuscript \textbf{``A transdiagnostic dimensional map as
+a self-calibrating measurement instrument: projection, information, and value of information
+under structured missingness.''} We believe it is well suited to a quantitative-methods venue
+because its contribution is methodological rather than substantive: it reframes a fitted
+dimensional model of psychopathology as a \emph{measurement instrument} whose per-patient
+behaviour --- how sharply each person is located, which item would sharpen them next, and how
+far the reported uncertainty can be trusted --- is computable in closed form on a single fitted
+object.
+
+\textbf{The core idea.} Dimensional maps of psychopathology are typically read as fixed
+point-coordinates that hide how each patient was measured. We show instead that a
+missingness-native Bayesian latent-variable model, fit to each patient's observed cells only
+(no imputation) under mixed likelihoods, returns for every one of $N=9{,}013$ patients a
+posterior coordinate \emph{and} its uncertainty, and that four instrument properties follow
+from that one object by exact identities: (i) a Woodbury-reduced expected-a-posteriori
+projection that returns the prior --- never a false-precise point --- on unmeasured axes;
+(ii) an information accounting showing that what localizes a patient is the Fisher information
+an item carries, not its loading; (iii) a value-of-information rule, closed-form via the
+matrix-determinant lemma, for designing efficient batteries; and (iv) a simulation-validated,
+misspecification-stressed calibration of the reported intervals. A five-corner archetypal
+simplex then summarizes the continuum as graded membership in named clinical poles.
+
+\textbf{What is new in this version.} We have strengthened the paper specifically on the axis a
+methods reviewer cares about most --- \emph{does the instrument beat the simpler tools a reader
+already has?} --- by adding four head-to-head analyses. (1) Carrying the full posterior
+coordinate improves out-of-sample prognosis over a naive per-axis sum-score, and the advantage
+\emph{widens} as measurement grows sparse (the regime where a point estimate is least
+trustworthy). (2) Ranking battery items by information rather than by loading raises mean
+reliability by $0.11$ at a fixed $27$-item budget. (3) The posterior calibration degrades
+gracefully --- never catastrophically --- under four controlled violations of the model's own
+assumptions, converting an internal-consistency check into a robustness result. (4) We report,
+with equal prominence, two honest null results (a fully patient-adaptive item order coincides
+with the fixed order; and real-data confidence-triage does not improve one coarse clinical
+endpoint), because each delimits precisely what the instrument does and does not buy.
+
+We also correct and sharpen the archetype analysis: rather than defend the simplex on
+reconstruction fidelity --- which we now show is the \emph{wrong} yardstick, since the map's
+near-isotropic variance lets even a random five-dimensional subspace retain more variance than
+the archetypes --- we make the case on what the simplex uniquely provides over principal
+components: convex, non-negative, per-patient membership in five nameable clinical poles, over a
+population we confirm has no natural clusters.
+
+\textbf{Relationship to a companion paper.} This manuscript is the methodological half of a
+two-paper pair. A companion clinical paper (in preparation / under separate submission) reports
+the substantive findings from the same cohort --- the biology-general-factor separation, the
+durable axis, and the prognostic gradient across archetypes. The two papers share the fitted
+model but are disjoint in claims: the present paper makes no clinical discovery claim, and the
+companion makes no methodological one. We are happy to provide the companion manuscript to the
+editors on request to confirm the absence of overlap.
+
+\textbf{Declarations.} The work uses no external data beyond the cohort described; all analysis
+code and the fitted-model scoring scripts are released with the paper. The manuscript is not
+under consideration elsewhere, and all authors approve this submission. We have no competing
+interests to declare.
+
+We would be glad to suggest reviewers with expertise in item-response and computerized adaptive
+testing, latent-variable models under missing data, and Bayesian measurement calibration, and we
+thank you for considering the manuscript.
+
+\closing{With best regards,}
+
+\end{letter}
+\end{document}

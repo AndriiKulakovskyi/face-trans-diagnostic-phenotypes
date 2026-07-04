@@ -1,0 +1,107 @@
+\section{Discussion}
+
+We have argued that a transdiagnostic dimensional map is most useful when read not
+as a table of coordinates but as a measurement instrument, and we have shown that a
+single missingness-native Bayesian bifactor model makes five instrument properties
+computable and testable on one object: it projects each patient to a coordinate
+with its own uncertainty, weighs each indicator by the information it contributes,
+prescribes how few items suffice and where the item bank itself is the limit,
+values the cheapest next measurement, and --- as we verified by simulation ---
+reports uncertainty that is calibrated and a low-dimensional summary whose fidelity
+is quantified. None of the individual components is new: expected-a-posteriori
+scoring, Fisher information, adaptive testing, value-of-information design,
+full-information treatment of missing data, and archetypal analysis are each
+standard. The contribution is their integration, and their joint validation on a
+real, pervasively incomplete, mixed-type transdiagnostic assessment at $N=9{,}013$
+--- the setting where each component is usually assumed rather than demonstrated.
+
+The instrument framing changes what a map is for. A point-estimate map invites the
+reader to treat every coordinate as equally trustworthy and every axis as equally
+measured; the honest answer, visible in Figure~\ref{fig:projection}, is that a
+patient may be pinned to a posterior standard deviation of $0.22$ on one axis and
+floated in from the prior on another, and that the map should say so. Once the map
+reports information rather than only position, three practical capabilities follow
+directly. First, the item bank can be audited: Figure~\ref{fig:information} shows
+that loading and information part company, so a battery assembled to maximise
+loadings can be dominated by rare flags that localize no one, and the fix ---
+reorder by information --- is immediate. Second, assessment can be made cheaper
+without guessing: the minimal-indicator rule and the value-of-information battery
+(Figs.~\ref{fig:adaptive},~\ref{fig:voi}) turn ``which items do we actually need''
+into a closed-form calculation, and the finding that a fixed most-informative-first
+order is a tight upper bound on adaptive efficiency means the saving can be shipped
+as a static list rather than requiring adaptive-testing infrastructure. Third,
+under-measured cohorts are localized rather than assumed: the same accounting shows
+exactly which axis in which cohort would benefit most from additional measurement.
+
+These capabilities would be hollow if the instrument's machinery did not beat the
+simpler tools a reader already has, so we tested it against them directly. Ranking
+battery items by information rather than loading is not a cosmetic preference: at a
+fixed $27$-item budget it buys $0.11$ of mean reliability
+(Fig.~\ref{fig:added}A), because loading and prevalence pull in different
+directions. Carrying the full posterior coordinate rather than a per-axis sum-score
+improves out-of-sample prognosis, and does so most where it matters ---
+under sparse measurement, the regime in which a point estimate is least trustworthy
+(Fig.~\ref{fig:blockers}A). And the calibration that a same-model simulation can only
+show to be internally consistent survives genuine misspecification: coverage degrades
+smoothly, never catastrophically, when the data-generating process breaks local
+independence, omits a factor, or violates Gaussianity
+(Fig.~\ref{fig:blockers}B). These are the comparisons a measurement venue asks for. On the two design
+decisions the instrument is put to --- which items to collect, and which coordinate
+to carry downstream --- it wins outright, not by a wide margin on any single one but
+consistently, and for mechanistic reasons the framework predicts in advance. On the
+third, reconstruction fidelity, it does not win and does not need to: we show the
+metric itself cannot separate a convex summary from a random subspace on this
+near-isotropic cloud, so the archetype simplex earns its place on interpretability
+and graded named membership rather than on variance retained. Winning where the
+comparison is decision-relevant, and dismantling the yardstick where it is not, is
+the honest reading of the four analyses.
+
+Two results are worth stating as limits the instrument imposes on itself. The
+bank-limited axes --- mania/activation and substance, capped at reliability $0.41$
+and $0.43$ --- cannot be improved by any amount of adaptive scheduling or data
+completion, because the information is not present in the items; the same two axes
+are the ones the archetype summary reconstructs worst
+(Fig.~\ref{fig:archetype}C). This is not a failure of the method but a diagnosis it
+delivers: these constructs need better instruments, not better analysis. And the
+five-corner convex summary retains $59\%$ of coordinate variance against an $80\%$
+linear optimum --- but the honest reading of that gap is not that the simplex is a
+worse projection. The map's coordinate variance is nearly isotropic, so a
+\emph{random} five-dimensional subspace already retains $62\%$ (the analytic $k/d$),
+and the archetype simplex sits slightly below it: reconstruction $R^2$ is simply the
+wrong axis on which to judge this summary, because a coin-flip subspace beats it and
+a principal component --- a signed contrast no patient can \emph{be} --- beats it
+further while providing nothing a clinician can act on. The simplex earns its place
+not by variance retained but by what it uniquely supplies: convex, named, per-patient
+membership in five clinical poles over a population that has no natural clusters to
+begin with (silhouette $z=1.13$). Stating this plainly, rather than quoting the $R^2$
+one would prefer, is itself the point: an instrument that reports the axis on which
+it should \emph{not} be judged is more useful than one that claims a fidelity victory
+it does not have.
+
+Several limitations bound the claims. Calibration is established in simulation
+under the model's own generative assumptions and real missingness patterns; it
+demonstrates that the projection machinery is internally honest --- that its
+$95\%$ intervals cover at $95\%$ --- but not that the fitted model is the true data
+generating process, which no coverage study can. Posterior standard deviations run
+slightly below residual error on the discrete-informed axes (a light-tailed Laplace
+approximation), so interval width is marginally optimistic even though the
+$95\%$-level coverage, set by the interval quantiles, is exact. The
+value-of-information accounting is greedy and Gaussian-entropy based, an upper bound
+on a jointly-optimal design. The reliabilities and item counts are properties of
+this bank in these cohorts and will differ for another assessment --- which is
+precisely why the instrument is designed to be re-run on a new one. Finally, the
+adaptive-testing analysis is a single-axis simulation on model-generated responses;
+extending it to the joint eight-axis posterior with cross-axis information sharing
+is a natural next step that would only tighten the case for a fixed battery.
+
+This paper deliberately reports no clinical or biological finding. The immunometabolic
+axis that recurs throughout as a worked example, the archetype corners, the
+cohort-level prognosis --- these are substantive results, but they belong to the
+companion paper, where they are established on their own terms with the appropriate
+clinical framing and controls. The division is not cosmetic: a reader who wants to
+know whether the immunometabolic axis predicts remission should not have to
+adjudicate a measurement-model derivation to get there, and a reader who wants to
+reuse the instrument on a new cohort should not have to extract it from a clinical
+narrative. Kept separate, each paper is self-contained; the measurement instrument
+described here is what makes the clinical map trustworthy, and the clinical map is
+what makes the instrument worth building.
