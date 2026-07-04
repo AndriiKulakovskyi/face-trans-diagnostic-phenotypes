@@ -35,8 +35,21 @@ def _fit_inprocess(milestone: str, mode: str, overwrite: bool) -> int:
     if milestone == "m1":
         from face.measurement.run import run_m1
         run_m1(mode=mode, overwrite=overwrite)
-        return 0
-    raise SystemExit(f"fit {milestone}: runner not built yet (M2-M5 land as their engines are finalized)")
+    elif milestone == "m2":
+        from face.strata.run import run_m2
+        run_m2(mode=mode, overwrite=overwrite)
+    elif milestone == "m3":
+        from face.temporal.run import run_m3
+        run_m3(mode=mode, overwrite=overwrite)
+    elif milestone == "m4":
+        from face.prognosis.run import run_m4
+        run_m4(mode=mode, overwrite=overwrite)
+    elif milestone == "m5":
+        from face.treatment.run import run_m5
+        run_m5(mode=mode, overwrite=overwrite)
+    else:
+        raise SystemExit(f"fit {milestone}: unknown milestone")
+    return 0
 
 
 def _cmd_fit(args) -> int:
