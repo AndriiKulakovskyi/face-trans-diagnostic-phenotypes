@@ -38,6 +38,9 @@ variational = ["torch>=2.2"]
 # Convenience alias for "everything needed to export static figures".
 full = ["kaleido>=0.2"]
 
+[project.scripts]
+face = "face.cli:main"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/face"]
 
