@@ -12,9 +12,14 @@ per-axis observed-item counts, /tmp/ci_dist.npy) using the real loading matrix r
 both paths per patient, and report per-|C_i| and aggregate speedup. Correctness is checked
 by max abs difference of the two Sigma^{-1} (must be ~machine eps).
 """
-import os, json, time
+import json
+import os
+import time
+
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"; os.environ["OMP_NUM_THREADS"]="1"
-import numpy as np, torch, torch.nn.functional as F
+import numpy as np
+import torch
+import torch.nn.functional as F
 
 ROOT="/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr"
 sd=torch.load(f"{ROOT}/results/face/gllvm_oop/s8_full/model_state.pt", map_location="cpu", weights_only=False)
@@ -30,6 +35,7 @@ psi=sigma**2
 
 # Phi: factor correlation matrix (8x8)
 import pandas as pd
+
 Phi=pd.read_csv(f"{ROOT}/results/face/gllvm_oop/consolidate/phi.csv", index_col=0).values.astype(np.float64)
 Phi=0.5*(Phi+Phi.T)
 Phi_inv=np.linalg.inv(Phi)
@@ -88,5 +94,6 @@ print(f"\ncorrectness: max|Sigma^-1_naive - Sigma^-1_woodbury| = {maxdiff_global
 print(f"real |C_i| median={median_ci} (p10={res['real_ci_pct']['p10']}, p90={res['real_ci_pct']['p90']})")
 # speedup at the real median
 import numpy as _np
+
 sp_med=_np.interp(median_ci,[r['nobs'] for r in rows],[r['speedup'] for r in rows])
 print(f"interpolated speedup at real median |C_i|={median_ci}: {sp_med:.1f}x")

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from face.prognosis.repbench import data, harness
+from face.benchmark import data, harness
 
 
 def test_derive_p_monotone_and_bounds():

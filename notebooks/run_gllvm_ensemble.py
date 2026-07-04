@@ -42,8 +42,8 @@ for m in [n for n in sys.modules if n == "face" or n.startswith("face.")]:
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
-from face.models.variational import validate as V  # noqa: E402
-from face.models.variational.gllvm_model_oop import (  # noqa: E402
+from analyses.variational_gllvm import validate as V  # noqa: E402
+from analyses.variational_gllvm.engine import (  # noqa: E402
     G_KEY,
     GLLVMConfig,
     GLLVMProjector,

@@ -47,12 +47,12 @@ if loaded_face is not None and (
     for module_name in [name for name in sys.modules if name == "face" or name.startswith("face.")]:
         del sys.modules[module_name]
 
-from face.models.bayesian.measurement_model_oop import (  # noqa: E402
+from face.measurement.engine import (  # noqa: E402
     DEFAULT_EXPLICIT_FACTORS,
     MeasurementConfig,
     MeasurementDataset,
 )
-from face.models.bayesian.synthetic import (  # noqa: E402
+from face.measurement.synthetic import (  # noqa: E402
     export_loadings_summary,
     export_phi,
 )
@@ -60,7 +60,7 @@ from face.models.bayesian.synthetic import (  # noqa: E402
 # Canonical M1 map: the weighted full-N 8-factor operational fit (immunometabolic merge + 3 cross-loadings
 # + substance orthogonal). This is the MAIN map the whole vertical + the article are built on.
 DEFAULT_IDATA = REPO / "results" / "face" / "oop_measurement" / "copula" / "weighted_8d" / "hs_s5_merged_xc" / "idata.nc"
-FOLDED_MATRIX = REPO / "configs" / "prior_loading_matrix_v3_biomerge_xc.csv"
+FOLDED_MATRIX = REPO / "configs" / "loading_matrix.immunometabolic_crossload.csv"
 F8_FIT = ["overall_severity", "cognition", "immunometabolic", "sleep", "suicidality",
           "developmental_risk", "mania_activation", "substance"]
 

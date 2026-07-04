@@ -34,7 +34,7 @@ _SEV_ANCHORS = {"G", "baseline_cgi", "baseline_outcome"}
 
 @dataclass(frozen=True)
 class OutcomeSpec:
-    """One prognostic outcome from `configs/m4_outcomes.yaml`. `source_var` is the harmonized
+    """One prognostic outcome from `configs/prognosis_outcomes.yaml`. `source_var` is the harmonized
     canonical name; `family` drives the GLM likelihood; `cohort_scope` is the set of cohorts that
     collect it (others -> NaN, never imputed); `severity_anchor` selects the R2 baseline-severity term;
     the optional thresholds define the binary remission/response arms; `role` is primary|secondary."""

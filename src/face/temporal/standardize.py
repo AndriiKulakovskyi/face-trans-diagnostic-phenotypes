@@ -19,7 +19,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from face.models.bayesian.continuous_core import S5_FACTORS, prepare
+from face.measurement.kernel import S5_FACTORS, prepare
 
 
 @dataclass

@@ -17,9 +17,12 @@ Anchors (T2.5):
   random-rotation-5 floor                    -> project onto 5 random orthonormal directions
   A=1 (single centroid)                      -> R^2 = 0 by definition (lower anchor)
 """
-import os, json
+import json
+import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"; os.environ["OMP_NUM_THREADS"]="1"
-import numpy as np, pandas as pd
+import numpy as np
+import pandas as pd
 
 ROOT="/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr"
 AX=['overall_severity','cognition','immunometabolic','sleep','suicidality','developmental_risk','mania_activation','substance']
@@ -57,6 +60,8 @@ if Zpub is not None and Zpub.shape==(5,8):
 
 # --- refit AA for A=4,5,6 with the repo's solver ---
 from archetypes import AA
+
+
 def fit_reconstruct(A, seed=0):
     m=AA(n_archetypes=A, random_state=seed, n_init=3, max_iter=200)
     W=m.fit_transform(X)          # (N,A) simplex weights
@@ -110,7 +115,7 @@ for A in [4,5,6]:
     print(f"  A={A}:  pooled R^2 = {sens[A]['pooled_r2']:.3f}")
 print(f"  A=5 published reproduction (fixed corners+weights): R^2 = {r2_pub:.3f}" if r2_pub is not None else "  A=5 published: parse failed")
 print("\n=== T2.5  the 0 -> 100% range the 59% sits in ===")
-print(f"  raw 8-D coordinate (no summary)   R^2 = 1.000   (upper anchor)")
+print("  raw 8-D coordinate (no summary)   R^2 = 1.000   (upper anchor)")
 print(f"  PCA-5 (best 5-D linear)           R^2 = {r2_pca5:.3f}")
 print(f"  archetype-5 (published)           R^2 = {meta['overall']['r2_archetype']:.3f}")
 print(f"  PCA-4 (fair affine dim)           R^2 = {r2_pca4:.3f}")

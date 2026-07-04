@@ -43,7 +43,7 @@ if loaded_face is not None and (
     for module_name in [name for name in sys.modules if name == "face" or name.startswith("face.")]:
         del sys.modules[module_name]
 
-from face.models.bayesian.measurement_model_oop import (  # noqa: E402
+from face.measurement.engine import (  # noqa: E402
     MeasurementConfig,
     MeasurementDataset,
     StageRunner,

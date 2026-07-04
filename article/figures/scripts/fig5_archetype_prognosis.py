@@ -21,12 +21,14 @@ script reproduces that figure exactly. Run with the repo venv:
     ../.venv/bin/python figures/scripts/fig5_archetype_prognosis.py
 """
 import os
-import pandas as pd
-import numpy as np
+
 import matplotlib as mpl
+import numpy as np
+import pandas as pd
+
 mpl.use("Agg")
-import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
 
 # repo root = two levels up from this file (article/figures/scripts/ -> repo)
 _HERE = os.path.dirname(os.path.abspath(__file__))

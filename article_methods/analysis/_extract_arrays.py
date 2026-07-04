@@ -2,8 +2,12 @@
 simulation kernel can stay pure-numpy / OMP-free). Also join the real remission
 endpoint to the EAP coordinates -> /tmp/real_prog.parquet."""
 import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"; os.environ["OMP_NUM_THREADS"]="1"
-import numpy as np, pandas as pd, torch, torch.nn.functional as F
+import numpy as np
+import pandas as pd
+import torch
+import torch.nn.functional as F
 
 ROOT="/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr"
 sd=torch.load(f"{ROOT}/results/face/gllvm_oop/s8_full/model_state.pt", map_location="cpu", weights_only=False)
@@ -39,7 +43,7 @@ prim=np.argmax(np.abs(lam),axis=1)
 Phi=pd.read_csv(f"{ROOT}/results/face/gllvm_oop/consolidate/phi.csv",index_col=0).values.astype(np.float64)
 Phi=0.5*(Phi+Phi.T)
 
-np.savez(f"/tmp/face_arrays.npz", lam=lam, alpha=alpha, sigma=sigma, count_alpha=count_alpha,
+np.savez("/tmp/face_arrays.npz", lam=lam, alpha=alpha, sigma=sigma, count_alpha=count_alpha,
          fam_int=fam_int, cuts_pad=cuts_pad, ncut=ncut, prim=prim, Phi=Phi,
          factor_cols=np.array(factor_cols), items=np.array(items))
 

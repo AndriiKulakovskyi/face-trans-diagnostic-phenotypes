@@ -25,8 +25,13 @@ Run (repo venv):
 Smoke:  ... tierB_vi_axis_vs_correlate.py --smoke
 """
 from __future__ import annotations
-import argparse, sys, time, json
+
+import argparse
+import json
+import sys
+import time
 from pathlib import Path
+
 import numpy as np
 
 _HERE = Path(__file__).resolve().parent
@@ -37,10 +42,14 @@ OUT = ROOT / "results" / "face" / "tierB_vi_axis_vs_correlate"
 OUT.mkdir(parents=True, exist_ok=True)
 
 import torch
-from face.models.variational.gllvm_model_oop import GLLVMDataset, GLLVMConfig, F8_FIT
+
 from face.models.variational.gllvm import (
-    VariationalGLLVM, LoadingOntology, GLLVMTrainer, TrainingConfig,
+    GLLVMTrainer,
+    LoadingOntology,
+    TrainingConfig,
+    VariationalGLLVM,
 )
+from face.models.variational.gllvm_model_oop import F8_FIT, GLLVMConfig, GLLVMDataset
 
 
 def drop_immuno_column(ont: LoadingOntology, imm_col: int) -> LoadingOntology:

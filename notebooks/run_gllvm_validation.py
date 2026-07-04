@@ -36,8 +36,8 @@ for m in [n for n in sys.modules if n == "face" or n.startswith("face.")]:
 
 import pandas as pd  # noqa: E402
 
-from face.models.variational import validate as V  # noqa: E402
-from face.models.variational.gllvm_model_oop import GLLVMConfig  # noqa: E402
+from analyses.variational_gllvm import validate as V  # noqa: E402
+from analyses.variational_gllvm.engine import GLLVMConfig  # noqa: E402
 
 DEFAULT_NUTS_IDATA = (
     REPO / "results" / "face" / "oop_measurement" / "copula" / "weighted_8d" / "hs_s5_merged_xc" / "idata.nc"

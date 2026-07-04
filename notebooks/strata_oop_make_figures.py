@@ -31,7 +31,7 @@ SRC = REPO / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from face.strata.strata_model_oop import StrataConfig, StrataRunner, StrataVisualizer  # noqa: E402
+from face.strata.engine import StrataConfig, StrataRunner, StrataVisualizer  # noqa: E402
 
 
 def main() -> None:

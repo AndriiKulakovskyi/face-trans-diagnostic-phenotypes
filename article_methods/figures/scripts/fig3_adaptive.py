@@ -10,9 +10,12 @@ RIGHT: upper_bound (solid) vs CAT (dashed) for suicidality (genuine Bernoulli-to
 Run FROM article_methods/figures/ .  Requires figure-style apply_figure_style()/panel_letter().
 """
 import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"; os.environ["OMP_NUM_THREADS"] = "1"
-import numpy as np, pandas as pd
-import matplotlib as mpl, matplotlib.pyplot as plt
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from matplotlib.lines import Line2D
 
 ROOT = "/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr"

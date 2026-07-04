@@ -42,14 +42,14 @@ for m in [n for n in sys.modules if n == "face" or n.startswith("face.")]:
     if f and SRC not in Path(f).resolve().parents:
         del sys.modules[m]
 
-from face.models.bayesian.measurement_model_oop import (  # noqa: E402
+from face.measurement.engine import (  # noqa: E402
     DEFAULT_EXPLICIT_FACTORS,
     MeasurementConfig,
     StageDefinition,
     StageRunner,
 )
 
-MERGED_MATRIX = REPO / "configs" / "prior_loading_matrix_v3_biomerge.csv"
+MERGED_MATRIX = REPO / "configs" / "loading_matrix.immunometabolic.csv"
 F1 = ["overall_severity", "cognition", "immunometabolic", "sleep"]
 F3 = F1 + ["developmental_risk", "mania_activation"]
 F8 = ["overall_severity", "cognition", "immunometabolic", "sleep",
@@ -67,7 +67,7 @@ def parse_args():
                         "or hardzero (the operational map for M2-M5, converges like the certified fit).")
     p.add_argument("--fold", action="store_true",
                    help="final operational map = hard-zero + the 6 sparse-ESEM-SELECTED cross-loadings "
-                        "(configs/prior_loading_matrix_v3_biomerge_xc.csv, freed via specific_cross). "
+                        "(configs/loading_matrix.immunometabolic_crossload.csv, freed via specific_cross). "
                         "A small identified refinement between well-separated factors.")
     p.add_argument("--weighted", action="store_true",
                    help="fit at FULL N with cohort-weighting (the operational map M2-M5 consume, analogue of "
@@ -117,7 +117,7 @@ def main():
 
     if a.fold:
         # operational map + the 6 data-selected cross-loadings (specific_cross frees exactly those cells)
-        xc = REPO / "configs" / "prior_loading_matrix_v3_biomerge_xc.csv"
+        xc = REPO / "configs" / "loading_matrix.immunometabolic_crossload.csv"
         final_cfg = replace(base, prior_matrix=xc)
         import pandas as _pd
         n_xc = int((_pd.read_csv(xc)["rationale"].astype(str).str.contains("folded")).sum())

@@ -38,7 +38,7 @@ if str(SRC) not in sys.path:
 
 import arviz as az  # noqa: E402
 
-from face.models.bayesian.measurement_model_oop import (  # noqa: E402
+from face.measurement.engine import (  # noqa: E402
     MeasurementConfig,
     MeasurementDataset,
     MeasurementVisualizer,

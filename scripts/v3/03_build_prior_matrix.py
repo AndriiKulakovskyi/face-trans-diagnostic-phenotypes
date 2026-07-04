@@ -3,8 +3,8 @@
 
     python3 scripts/v3/03_build_prior_matrix.py
 
-Reads  configs/dimensions.yaml + priors.yaml + likelihood_map_v3.yaml
-Writes configs/prior_loading_matrix_v3.csv + configs/likelihoods.yaml
+Reads  configs/dimensions.yaml + priors.yaml + likelihood_map.yaml
+Writes configs/loading_matrix.csv + configs/likelihoods.yaml
 
 This is the config-first replacement for the hard-coded model SPEC: the matrix it
 produces is the single source the Bayesian ESEM-bifactor engine reads to build Lambda.

@@ -3,7 +3,7 @@
 
 The raw FACE cohort data are confidential, which blocks external reproduction. This builds a synthetic
 baseline with the SAME shape as the real one — the real modelled-indicator set + likelihood families +
-burden signs from ``configs/prior_loading_matrix_v3.csv``, FACE-like cohort imbalance (BP ≫ SZ > DR) and
+burden signs from ``configs/loading_matrix.csv``, FACE-like cohort imbalance (BP ≫ SZ > DR) and
 missingness — but drawn from a KNOWN bifactor model (G ⟂ specifics; biology near-⟂G by construction).
 Point the engine at it with ``FACE_DATA_DIR`` and you can run / certify on synthetic data and recover the
 planted structure.
@@ -25,7 +25,7 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-from face.models.bayesian.continuous_core import G_KEY, MATRIX, S1_FACTORS  # noqa: E402
+from face.measurement.kernel import G_KEY, MATRIX, S1_FACTORS  # noqa: E402
 
 COHORTS = {"bp": 0.62, "sz": 0.24, "dr": 0.14}            # FACE-like imbalance
 # Planted G-loading per factor: biology near-⟂G (the headline), cognition/sleep partly track G.

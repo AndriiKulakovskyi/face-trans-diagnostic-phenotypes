@@ -12,19 +12,21 @@ shared setup (model load + per-family Fisher-information arrays) to be present.
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-import numpy as np
 import pandas as pd
+from matplotlib.gridspec import GridSpec
 
 # apply_figure_style (from figure-style skill)
 META_GREY = "#888888"
 
 def apply_figure_style(*, frame="open", font=None, sizes=(8, 7, 6), grid=False):
-    import matplotlib as mpl
     if frame not in ("open", "boxed", "none"):
         raise ValueError(f"frame must be 'open'|'boxed'|'none', got {frame!r}")
     try:
-        import os, sys, glob, matplotlib.font_manager as fm
+        import glob
+        import os
+        import sys
+
+        import matplotlib.font_manager as fm
         fdir = os.path.join(os.environ.get("CONDA_PREFIX") or sys.prefix, "fonts")
         if os.path.isdir(fdir):
             known = {f.fname for f in fm.fontManager.ttflist}

@@ -46,13 +46,13 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 from scipy import stats  # noqa: E402
 
-from face.models.bayesian.measurement_model_oop import (  # noqa: E402
+from face.measurement.engine import (  # noqa: E402
     DEFAULT_EXPLICIT_FACTORS,
     S5_FACTORS,
     MeasurementConfig,
     MeasurementDataset,
 )
-from face.models.bayesian.synthetic import (  # noqa: E402
+from face.measurement.synthetic import (  # noqa: E402
     export_fitted_model,
     generate_synthetic,
     save_fitted_model,

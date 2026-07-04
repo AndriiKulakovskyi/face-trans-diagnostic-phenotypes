@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from face.prognosis.repbench import ARCH, CANON, cv, data, metrics
+from face.benchmark import ARCH, CANON, cv, data, metrics
 
 # ------------------------------------------------------------------ data: RAW (143 indicators + mask)
 

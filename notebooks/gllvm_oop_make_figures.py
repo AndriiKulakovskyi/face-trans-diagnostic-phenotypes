@@ -35,7 +35,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
-from face.models.variational.gllvm_model_oop import GLLVMConfig, GLLVMVisualizer  # noqa: E402
+from analyses.variational_gllvm.engine import GLLVMConfig, GLLVMVisualizer  # noqa: E402
 
 GOOD, BAD = "#2a9d8f", "#e76f51"
 KIND_COLOR = {"primary": "#264653", "g_anchor": "#264653", "bifactor_G": "#e9c46a",

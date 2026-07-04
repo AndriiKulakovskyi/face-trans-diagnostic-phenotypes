@@ -17,12 +17,13 @@ Reads the frozen products in article_methods/analysis/ + the strata parquet. Run
 article_methods/figures/ so the relative savefig lands there.
 """
 import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 os.environ["OMP_NUM_THREADS"] = "1"
-import numpy as np
-import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from matplotlib.lines import Line2D
 from numpy.random import default_rng
 

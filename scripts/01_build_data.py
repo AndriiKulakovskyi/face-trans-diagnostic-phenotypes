@@ -5,7 +5,7 @@
 
 Loads the harmonized FACE V0 baseline (FULL sample, all 3 cohorts — no completeness
 selection, methods §3.6), applies deterministic skip-logic structural-zero decoding, and
-restricts to the modeled indicators declared in configs/prior_loading_matrix_v3.csv. Persists:
+restricts to the modeled indicators declared in configs/loading_matrix.csv. Persists:
 
   data/processed/baseline_v0.parquet         one row per patient × modeled indicator
                                              (raw harmonized values, NaN = missing, NEVER imputed)
@@ -31,7 +31,7 @@ sys.path.insert(0, str(REPO / "src"))
 from face.data import build_unified_dataframe, load_variables, to_harmonized_dataset  # noqa: E402
 
 XLSX = REPO / "data" / "face-common-vars.xlsx"
-MATRIX = REPO / "configs" / "prior_loading_matrix_v3.csv"
+MATRIX = REPO / "configs" / "loading_matrix.csv"
 PROC = REPO / "data" / "processed"
 REPORTS = REPO / "reports"
 

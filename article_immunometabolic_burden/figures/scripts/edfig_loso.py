@@ -10,10 +10,10 @@ cells. This file is the exact producing cell; if run standalone it may require t
 shared setup (model load + per-family Fisher-information arrays) to be present.
 """
 
-import pandas as pd
-import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 mpl.rcParams.update({
     "font.family": "sans-serif",
@@ -43,6 +43,7 @@ mpl.rcParams.update({
 })
 
 import os as _os
+
 _HERE = _os.path.dirname(_os.path.abspath(__file__))
 _OUT = _os.path.dirname(_HERE)                       # article/figures/
 # LOSO summary lives only in the artifact store upstream; a committed copy is kept

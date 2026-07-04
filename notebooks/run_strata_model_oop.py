@@ -42,7 +42,7 @@ if loaded is not None and (loaded_file is None or SRC not in Path(loaded_file).r
     for name in [n for n in list(sys.modules) if n == "face" or n.startswith("face.")]:
         del sys.modules[name]
 
-from face.strata.strata_model_oop import StrataConfig, StrataRunner, StrataVisualizer  # noqa: E402
+from face.strata.engine import StrataConfig, StrataRunner, StrataVisualizer  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:

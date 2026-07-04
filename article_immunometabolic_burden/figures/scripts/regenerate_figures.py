@@ -13,8 +13,13 @@ The generator function names predate the manuscript numbering; MANIFEST below is
 the single source of truth mapping manuscript figure -> generator -> output file.
 Generators that emit a non-manuscript filename are renamed in place after they run.
 """
-import os, sys, shutil, subprocess
+import os
+import shutil
+import subprocess
+import sys
+
 import matplotlib
+
 matplotlib.use("Agg")
 
 _HERE = os.path.dirname(os.path.abspath(__file__))            # article_v2/figures/scripts
@@ -44,8 +49,9 @@ MANIFEST = [
 def _fig1_with_flagship_title():
     """Fig 1's embedded title must match its flagship caption; override at render
     time so the shared module default (used by the technical report) is untouched."""
-    import matplotlib.pyplot as plt
     import make_figures_copula as m
+    import matplotlib.pyplot as plt
+
     from face.reporting import loading_atlas as LA
     L = m._load_loadings()
     rows = LA.atlas_rows(L, m.AXES, 8)

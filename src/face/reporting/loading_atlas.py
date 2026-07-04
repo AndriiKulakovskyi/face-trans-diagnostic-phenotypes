@@ -8,7 +8,7 @@ by home factor, and the general-factor (G) column carries shaded depression/anxi
 All house style (colormap, per-block colours, factor labels and short tags, fonts) is passed in, so
 the article (mako / Okabe-Ito) and the technical report (sequential blue) share one implementation
 rather than maintaining two copies.  Input is the CI-aware copula loadings table written by
-:func:`face.models.bayesian.synthetic.export_loadings_summary`
+:func:`face.measurement.synthetic.export_loadings_summary`
 (``reports/copula_s5_9dim_loadings.csv``): one row per meaningful (item, factor) cell with columns
 ``item, factor, home, kind, loading, abs_loading, ci_low, ci_high, excludes_zero``.
 """

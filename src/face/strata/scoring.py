@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from face.models.bayesian.continuous_core import _patterns, _woodbury_potential
+from face.measurement.kernel import _patterns, _woodbury_potential
 
 
 def fixed_params(idata, mp) -> dict:

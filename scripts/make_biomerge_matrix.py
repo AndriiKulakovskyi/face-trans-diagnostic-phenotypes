@@ -7,7 +7,7 @@ This is the one-factor arm of the one-vs-two model comparison for the biology bl
 construct; v3 split it into two. We test which the data prefer (WAIC/LOO) by fitting both.
 
     python scripts/make_biomerge_matrix.py
-    -> configs/prior_loading_matrix_v3_biomerge.csv
+    -> configs/loading_matrix.immunometabolic.csv
 """
 from __future__ import annotations
 
@@ -16,8 +16,8 @@ from pathlib import Path
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[1]
-SRC = REPO / "configs" / "prior_loading_matrix_v3.csv"
-OUT = REPO / "configs" / "prior_loading_matrix_v3_biomerge.csv"
+SRC = REPO / "configs" / "loading_matrix.csv"
+OUT = REPO / "configs" / "loading_matrix.immunometabolic.csv"
 MERGE = ["metabolic", "inflammatory"]
 NEW = "immunometabolic"
 # permissiveness order for collapsing a non-home item's two cross rows into one

@@ -39,7 +39,7 @@ for m in [n for n in sys.modules if n == "face" or n.startswith("face.")]:
     if f and SRC not in Path(f).resolve().parents:
         del sys.modules[m]
 
-from face.models.variational.gllvm_model_oop import GLLVMConfig, GLLVMRunner  # noqa: E402
+from analyses.variational_gllvm.engine import GLLVMConfig, GLLVMRunner  # noqa: E402
 
 
 def parse_args() -> argparse.Namespace:

@@ -19,7 +19,7 @@ SRC = REPO / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from face.temporal.temporal_model_oop import (  # noqa: E402
+from face.temporal.engine import (  # noqa: E402
     F8_FIT,
     CopulaPanelScorer,
     TemporalConfig,
@@ -27,7 +27,7 @@ from face.temporal.temporal_model_oop import (  # noqa: E402
 )
 from face.temporal.variance import decompose, patient_patterns, raw_icc  # noqa: E402
 
-XC = REPO / "configs" / "prior_loading_matrix_v3_biomerge_xc.csv"
+XC = REPO / "configs" / "loading_matrix.immunometabolic_crossload.csv"
 EXCL_MAP = REPO / "results/face/oop_measurement/copula/horseshoe_8d_excl-bmi-weight-wstcir"
 EXCL = ("bmi", "weight", "wstcir")
 
@@ -41,7 +41,7 @@ class NoBMITemporalData(TemporalData):
             return self._mp, self._idata
         import arviz as az
 
-        from face.models.bayesian.measurement_model_oop import (
+        from face.measurement.engine import (
             DEFAULT_EXPLICIT_FACTORS,
             MeasurementConfig,
             MeasurementDataset,

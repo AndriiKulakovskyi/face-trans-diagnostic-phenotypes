@@ -139,6 +139,7 @@ ax = fig2.add_subplot(gs[0,0])
 dom  = W.argmax(1)                                     # dominant archetype per patient
 ARCH_C = {0:"#CC79A7", 1:"#E69F00", 2:"#D55E00", 3:"#0072B2", 4:"#009E73"}
 from numpy.random import default_rng
+
 _ord = default_rng(0).permutation(len(P))              # shuffle so no colour is drawn last on top
 ax.scatter(P[_ord,0], P[_ord,1], c=[ARCH_C[d] for d in dom[_ord]],
            s=4, alpha=.45, linewidths=0, zorder=2)

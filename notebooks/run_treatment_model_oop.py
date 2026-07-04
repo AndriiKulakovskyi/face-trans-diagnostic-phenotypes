@@ -38,7 +38,7 @@ if loaded is not None and (loaded_file is None or SRC not in Path(loaded_file).r
     for name in [n for n in list(sys.modules) if n == "face" or n.startswith("face.")]:
         del sys.modules[name]
 
-from face.treatment.treatment_model_oop import (  # noqa: E402
+from face.treatment.engine import (  # noqa: E402
     TreatmentConfig,
     TreatmentRunner,
     TreatmentVisualizer,

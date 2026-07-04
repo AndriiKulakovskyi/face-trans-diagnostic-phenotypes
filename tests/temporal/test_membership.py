@@ -36,7 +36,7 @@ def test_archetype_membership_shapes_and_simplex():
 @pytest.mark.skipif(not (_PROC / "baseline_v0.parquet").exists(), reason="baseline_v0 not built")
 def test_prep_visit_mixed_reproduces_v0_structure():
     # the follow-up mixed prep, applied to V0, must reproduce M2.0's arrays bit-for-bit (else V1/V2 mis-scaled)
-    from face.models.bayesian.continuous_core import S5_FACTORS, prepare_mixed
+    from face.measurement.kernel import S5_FACTORS, prepare_mixed
     from face.strata.scoring import align_ordinals_to_fit
     from face.temporal.standardize import capture_v0_spec, prep_visit_mixed
 

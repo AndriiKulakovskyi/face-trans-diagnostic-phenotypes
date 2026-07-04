@@ -44,10 +44,10 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 warnings.filterwarnings("ignore")
 
-from face.confirm import corr_no_g_prep  # noqa: E402
 from face.io import manifest, progress  # noqa: E402
-from face.models.bayesian.continuous_core import S1_FACTORS, prepare  # noqa: E402
-from face.runner import quick_diag, sample_marginalized  # noqa: E402
+from face.measurement.confirm import corr_no_g_prep  # noqa: E402
+from face.measurement.kernel import S1_FACTORS, prepare  # noqa: E402
+from face.measurement.sampling import quick_diag, sample_marginalized  # noqa: E402
 
 REPORTS = REPO / "reports"
 OUT = REPO / "results" / "face" / "biology_g_confound"

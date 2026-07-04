@@ -37,7 +37,7 @@ from scipy import stats  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[3]
 PROC = REPO / "data" / "processed"
-MATRIX = REPO / "configs" / "prior_loading_matrix_v3.csv"
+MATRIX = REPO / "configs" / "loading_matrix.csv"
 RESULTS_HTML = REPO / "results" / "reports" / "qa_distributions.html"
 SUMMARY_CSV = REPO / "reports" / "qa_distributions_summary.csv"
 
