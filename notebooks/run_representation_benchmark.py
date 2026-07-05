@@ -17,7 +17,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from face.benchmark import harness  # noqa: E402
 
-OUT = ROOT / "results" / "face" / "m4_repbench"
+OUT = ROOT / "results" / "m4_prognosis" / "repbench"
 
 
 def main() -> None:
