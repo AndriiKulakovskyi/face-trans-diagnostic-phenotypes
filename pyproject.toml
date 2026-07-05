@@ -25,19 +25,21 @@ dependencies = [
 [project.optional-dependencies]
 figures = ["kaleido>=0.2"]                            # static export of plotly figures
 dev = ["pytest>=7.0", "pytest-cov>=4.0", "ruff==0.12.0", "pip-tools>=7.0"]  # ruff pinned: lint rules change between versions (keep CI == local)
-# Bayesian discovery engine (scripts/04_fit.py): patient-level observed-likelihood latent model.
-# numpyro+jax enable the NumPyro/JAX NUTS backend (scripts/04_fit.py --gpu); on a CUDA box also
-# `pip install -U "jax[cuda12]"` to use the GPU (e.g. RTX 4090).
+# Bayesian measurement engine (face.measurement): patient-level observed-likelihood latent model.
+# numpyro+jax provide the NUTS backend; on a CUDA box also `pip install -U "jax[cuda12]"` for GPU.
 bayesian = ["pymc>=5.10", "arviz>=0.17", "h5netcdf>=1.0", "numpyro>=0.13", "jax>=0.4"]
 # M2 stratification engine: archetypal analysis (PCHA), Hartigan dip test, density clustering +
 # mapper-graph topology for the structure gate. Pinned exactly in requirements.lock.
 strata = ["archetypes>=0.12", "diptest>=0.11", "hdbscan>=0.8.40", "umap-learn>=0.5.7", "networkx>=3.0"]
-# Variational GLLVM atlas engine (src/face/models/variational): a PyTorch SVI re-estimation
-# of the M1 measurement model (exploration/acceleration arm). Kept out of core deps so the
-# default install stays light and the NUTS engine never imports torch.
+# Variational GLLVM atlas engine (analyses/variational_gllvm): a PyTorch SVI re-estimation of the
+# M1 measurement model (exploration/acceleration arm), separated from the core package so the
+# installed `face` wheel and the core golden tests never import torch.
 variational = ["torch>=2.2"]
 # Convenience alias for "everything needed to export static figures".
 full = ["kaleido>=0.2"]
+
+[project.scripts]
+face = "face.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/face"]
@@ -45,6 +47,9 @@ packages = ["src/face"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
+# importlib mode: milestone test dirs have no __init__.py, so same-basename modules
+# (e.g. tests/prognosis/test_endpoints.py + tests/treatment/test_endpoints.py) must not collide.
+addopts = "--import-mode=importlib"
 
 [tool.ruff]
 line-length = 100

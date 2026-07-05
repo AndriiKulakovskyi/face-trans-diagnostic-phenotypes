@@ -60,5 +60,5 @@ def build_endpoints(df: pd.DataFrame, *, mars_low: float = 5, resistance_cgis: f
 
 
 def load_m5_config(path: str | Path) -> dict:
-    """Parse configs/m5_outcomes.yaml (meta + signals + endpoint registry)."""
+    """Parse configs/treatment_outcomes.yaml (meta + signals + endpoint registry)."""
     return yaml.safe_load(Path(path).read_text())

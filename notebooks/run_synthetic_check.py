@@ -13,7 +13,7 @@ Two likelihood verticals:
     PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_synthetic_check.py --likelihood-mode native
 
 Writes (suffix '' for copula, '_native' for native):
-  results/face/oop_measurement/<dir>/fitted_model[_native]/   portable params
+  results/m1_measurement/<dir>/fitted_model[_native]/   portable params
   results/reports/synthetic_vs_real[_native].html             per-item real-vs-synthetic overlays + corr match
   reports/synthetic_vs_real[_native]_summary.csv              per-item summary (committable aggregate)
 """
@@ -46,13 +46,13 @@ import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 from scipy import stats  # noqa: E402
 
-from face.models.bayesian.measurement_model_oop import (  # noqa: E402
+from face.measurement.engine import (  # noqa: E402
     DEFAULT_EXPLICIT_FACTORS,
     S5_FACTORS,
     MeasurementConfig,
     MeasurementDataset,
 )
-from face.models.bayesian.synthetic import (  # noqa: E402
+from face.measurement.synthetic import (  # noqa: E402
     export_fitted_model,
     generate_synthetic,
     save_fitted_model,
@@ -168,7 +168,7 @@ def main() -> None:
     native = args.likelihood_mode == "native"
     base_out = MeasurementConfig().output_dir
     if native:
-        # PREVIOUS best: the certified native 9-dim mixed map (results/face/oop_measurement/<stage>),
+        # PREVIOUS best: the certified native 9-dim mixed map (results/m1_measurement/<stage>),
         # fit at the medium balanced-2000 scale (cohort-weighted full-N was a copula-era addition).
         fit_dir, full_n, label, suffix = base_out, False, "native (pre-copula) tiered mixed", "_native"
         # include_covariates=False so the per-item moments are the ORIGINAL-scale mu/sd (the fit

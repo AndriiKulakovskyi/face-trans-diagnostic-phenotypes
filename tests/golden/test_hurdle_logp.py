@@ -11,7 +11,7 @@ import numpy as np
 import pytensor.tensor as pt
 from scipy.stats import nbinom
 
-from face.models.bayesian.continuous_core import _hurdle_nb_logp
+from face.measurement.kernel import _hurdle_nb_logp
 
 
 def _ref_hurdle_logp(y, psi, mu, alpha):

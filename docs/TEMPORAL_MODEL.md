@@ -20,7 +20,7 @@
 > ICC 0.91, cognition 0.70) while symptoms are state, severity trait-by-rank with population improvement; **G4**
 > archetype weights persist (cosine 0.81) and the spine moves while biology holds — the one honest limit is the
 > weak G3⟷G4 *cross-route* synthesis (ρ ≈ 0.07; A = 5 argmax churn, orthogonal substance ICC 0.49). Findings:
-> [TEMPORAL_OOP_FINDINGS.md](TEMPORAL_OOP_FINDINGS.md).
+> [TEMPORAL_FINDINGS.md](TEMPORAL_FINDINGS.md).
 
 ---
 
@@ -332,7 +332,7 @@ extractor + informative-dropout), `standardize` (V0 spec — the core new piece)
 `tucker_phi` + the `06` harness, `eta_squared`/`ari`/`cramers_v`, `prepare`/`prepare_mixed`.
 
 **Pipeline** `scripts/30–37` (**RETIRED 2026-06-24** — canonical M3 is the OOP engine
-`temporal_model_oop.py` / [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md); the IPW it produces under
+`temporal_model_oop.py` / [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md); the IPW it produces under
 `results/face/temporal_oop/attrition/` feeds M4. Script list kept as the methods record): run order =
 file order; each writes `reports/3N_*.md` + a figure, then a
 discussion gate: 30 inventory **(done)** · 31 attrition (G6) · 32 build-panel + V0 spec · 33 invariance

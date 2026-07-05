@@ -17,12 +17,13 @@ Reads the frozen products in article_methods/analysis/ + the strata parquet. Run
 article_methods/figures/ so the relative savefig lands there.
 """
 import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 os.environ["OMP_NUM_THREADS"] = "1"
-import numpy as np
-import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from matplotlib.lines import Line2D
 from numpy.random import default_rng
 
@@ -63,7 +64,7 @@ except NameError:
 # DATA
 # ================================================================================
 # --- simplex weights + entropy (Panels A, B) ---
-ps = pd.read_parquet(os.path.join(ROOT, "results/face/strata_oop/consolidate/patient_strata.parquet"))
+ps = pd.read_parquet(os.path.join(ROOT, "results/m2_strata/consolidate/patient_strata.parquet"))
 W = ps[[f"arch_w{a}" for a in range(5)]].values.astype(float)
 W = W / W.sum(1, keepdims=True)
 dom = W.argmax(1)

@@ -15,7 +15,7 @@
 > *both* representations (the **A2 immunometabolic archetype corner** 7.7%/6.4% IPW *and* the immunometabolic
 > durable axis 6.4%/4.1%); **describes** course heterogeneity (archetype ΔAUC
 > +0.012/+0.034/+0.042; the immunometabolic corner carries ~2× resistance/side-effect risk; resistance
-> AUC-marginal p 0.205). Findings: [`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md).
+> AUC-marginal p 0.205). Findings: [`TREATMENT_FINDINGS.md`](TREATMENT_FINDINGS.md).
 
 > **Re-scope (2026-06-24) — what M5 credibly delivers.** This baseline cohort has **no randomization**
 > (`arm` is a DSM-5 subtype, not a randomized assignment) and only coarse, late-found drug-class

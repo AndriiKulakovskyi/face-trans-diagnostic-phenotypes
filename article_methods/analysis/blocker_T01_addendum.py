@@ -11,12 +11,15 @@ carried uncertainty demonstrably improves a real decision; if not, we report the
 
 Also runs a precision-weighted logistic (down-weight high-v_i patients in the fit) vs unweighted.
 """
-import os, json
+import json
+import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"; os.environ["OMP_NUM_THREADS"]="1"
-import numpy as np, pandas as pd
+import numpy as np
+import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import StratifiedKFold
 
 ROOT="/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr"
 AX=['overall_severity','cognition','immunometabolic','sleep','suicidality','developmental_risk','mania_activation','substance']

@@ -26,8 +26,8 @@ notable coupling mania–sleep ≈ 0.24). Anhedonia **rejected**; impulsivity/ne
 `src/face/models/bayesian/measurement_model_oop.py`; data layer `scripts/01_build_data` kept; loadings/Φ in
 `reports/copula_8factor_{loadings,phi}.csv`; figures `fig2_map` (dot-atlas), `fig_factors` (lollipops + 8×8 Φ),
 `edfig_full_atlas`. **M2 stratification COMPLETE** (PI sign-off 2026-06-27) —
-canonical findings [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md), atlas
-[`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md), methods [`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md). The transdiagnostic space is a **continuum** (not biotypes): best-partition
+canonical findings [`STRATA_FINDINGS.md`](STRATA_FINDINGS.md), atlas
+[`STRATA_ATLAS.md`](STRATA_ATLAS.md), methods [`STRATIFICATION_MODEL.md`](STRATIFICATION_MODEL.md). The transdiagnostic space is a **continuum** (not biotypes): best-partition
 silhouette **0.140** is indistinguishable from a structureless-Gaussian null **0.137 ± 0.002 (z = 1.13,
 n.s.)**, HDBSCAN 0 clusters, one connected component. The **load-bearing objects are the continuous 8-dim
 coordinates + a stable A=5 archetype simplex** (largest A with cross-seed Tucker ≥ 0.8; clean stability cliff
@@ -43,7 +43,7 @@ axes invariant — G, cognition, immunometabolic φ 0.987, sleep), and the M2 ge
 are durable (trait) while severity + symptoms slide (state), and archetype identity persists. G3:
 **immunometabolic ICC 0.91 — the single most durable axis**; cognition 0.70 trait; severity 0.62 trait-by-rank
 (population improves, suicidality slides hardest −0.84); developmental 0.39 state. G4: archetype weights
-persist (Arm-B cosine median **0.81**). Findings: [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md).
+persist (Arm-B cosine median **0.81**). Findings: [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md).
 **M4 prognosis is COMPLETE** (PI sign-off 2026-06-27) — on the fixed M1/M2/M3 objects, a baseline transdiagnostic
 profile **predicts 2-year functioning incrementally beyond DSM-5 + severity + baseline functioning**: the
 **A=5 archetypes** add **ΔELPD +62.8** (held-out), IPW-robust (+54.4), permutation-null (−2.4),
@@ -53,7 +53,7 @@ the **immunometabolic corner (A2) the worst-prognosis pole** and the well pole (
 (BP 27→73%, DR 31→72%, SZ 9→25%; composition explains only 4%; cohort-adjusted best-vs-worst OR 6.3). The map
 predicts **functioning, not severity** (autoregression-saturated), and the answer to the M2 K-question is
 **operative K = none** (the continuous/archetype encoding dominates any hard tessellation). Findings:
-[`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md). Honest: small individual-binary lift (remission AUC
+[`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md). Honest: small individual-binary lift (remission AUC
 +0.010 — the value is group-level stratification + continuous forecasting); a representation benchmark shows
 the map is **sufficient for deterioration** (AUC tie vs raw) and **near-sufficient for recovery** (raw +0.04
 AUC; 92–97% within-factor compression — the residual is item-level, not a missing axis). **M5 treatment is
@@ -72,9 +72,9 @@ representations — the **A2 immunometabolic archetype corner** (attenuation 7.7
 side-effects 25% vs the well pole's 20% / 11%) — stratification clears (LR p ≤ 1e-3, within-cohort, composition
 ≤ 5%), discrimination clears for response/side-effects (perm p 0.010 / 0.015), resistance AUC-marginal (p
 0.205); archetype ΔAUC +0.012 / +0.034 / +0.042. Canonical engine `src/face/treatment/treatment_model_oop.py`;
-findings [`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md).
+findings [`TREATMENT_FINDINGS.md`](TREATMENT_FINDINGS.md).
 **The full vertical (M1→M2→M3→M4→M5) is consolidated** in
-[`COPULA_VERTICAL_FINDINGS.md`](COPULA_VERTICAL_FINDINGS.md). **The program is M1–M5 complete (pending PI
+[`VERTICAL_FINDINGS.md`](VERTICAL_FINDINGS.md). **The program is M1–M5 complete (pending PI
 sign-off); a true M5b — treatment *selection* — needs randomized/trial-arm data.**
 **Honest positioning (the calibrated claim):** the program demonstrates **scientific validity** — a real,
 stable, *continuum* (not biotypes) map carrying a *small but genuine, group-level* incremental prognostic
@@ -101,15 +101,15 @@ shrinks the attenuation monotonically (mean-field 21% → low-rank 20% → full-
 the correlation hyperparameter** (not a per-patient-posterior limitation) — the boundary for which
 NUTS is the authority is now *earned*, not assumed. Also: a
 **6-seed ensemble** gives loading credible bands (268/277 cells); a **dot-atlas** loading map
-(`docs/figures/gllvm_oop/gllvm_dot_atlas*.png`) and a **generative round-trip**
+(`docs/figures/sensitivity/variational_gllvm/gllvm_dot_atlas*.png`) and a **generative round-trip**
 (`run_gllvm_synthetic_check.py` + `gllvm_synthetic_check.ipynb`). It is **congruent, not certified** —
 NUTS stays the authority for Φ, loading uncertainty, and paper claims; the VI arm is for fast reruns /
 sensitivity sweeps / synthetic cohorts / an independent-estimator robustness check. NOT committed; pending PI review.
 
 ## M2 — stratification (COMPLETE, PI sign-off 2026-06-27)
 
-> **Canonical record: [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md) +
-> [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md).** On the 8-dim coordinates the transdiagnostic space is a
+> **Canonical record: [`STRATA_FINDINGS.md`](STRATA_FINDINGS.md) +
+> [`STRATA_ATLAS.md`](STRATA_ATLAS.md).** On the 8-dim coordinates the transdiagnostic space is a
 > **continuum** (confirmed by a single-Gaussian falsification null), the archetypes are **A=5 stable**, and the
 > tessellation is exported as a **nested K-family (2/3/4) with no privileged K** — the load-bearing objects are
 > the continuous coordinates + the A=5 simplex; the operative K is deferred to M4/M5. Engine:
@@ -184,13 +184,13 @@ win only — predictive/treatment is M4/M5. Engine `src/face/strata/strata_model
 **M2.5 consolidation DONE — M2 COMPLETE (PI sign-off 2026-06-27).** Unified hand-off
 `results/face/strata_oop/consolidate/patient_strata.parquet` (9,013 × 50: archetype weights + sd, tessellation
 responsibilities, dominant labels, entropy, arm — diagnosis for validation only); paper-facing
-[`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md) + [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md). Figures
+[`STRATA_FINDINGS.md`](STRATA_FINDINGS.md) + [`STRATA_ATLAS.md`](STRATA_ATLAS.md). Figures
 `fig4_continuum`, `fig4b_archetypes`. **PI sign-off on the findings + atlas locks M2; then M3 temporal
 coherence (do the coordinates + phenotype memberships persist V1–V4?).**
 
 ## M3 — temporal coherence (COMPLETE, PI sign-off 2026-06-27)
 
-**Findings: [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md); methods: [`TEMPORAL_MODEL.md`](TEMPORAL_MODEL.md).** Does the V0 map + strata cohere and persist over
+**Findings: [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md); methods: [`TEMPORAL_MODEL.md`](TEMPORAL_MODEL.md).** Does the V0 map + strata cohere and persist over
 follow-up (V0→V1→V2, yearly; n=2,958 completers)? Scored onto the **FIXED** M1/M2 model — observed cells only,
 uncertainty propagated, **never re-discovered** (V1/V2 scored under the fixed M1 via `copula_forward` +
 frozen-V0 covariate-FWL; V0 reproduced at r≈0.99). Engine `src/face/temporal/temporal_model_oop.py`; its
@@ -226,8 +226,8 @@ Caveats carried forward: developmental's "state" = CTQ recall noise (trait by de
 
 ## M4 — prognosis (COMPLETE, PI sign-off 2026-06-27)
 
-Findings [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md) · methods [`PROGNOSIS_MODEL.md`](PROGNOSIS_MODEL.md) ·
-clinician atlas [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
+Findings [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md) · methods [`PROGNOSIS_MODEL.md`](PROGNOSIS_MODEL.md) ·
+clinician atlas [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md).
 Engine `src/face/prognosis/prognosis_model_oop.py` (frame · reference · glm · compare · endpoints ·
 clinical_value · transdiagnostic · robustness); the representation benchmark in `src/face/prognosis/repbench/`.
 Consumes the **fixed** M1/M2/M3 objects (panel, draws, strata, IPW) — nothing re-discovered or re-scored.
@@ -258,7 +258,7 @@ is sufficient. *Structurally faithful summary, parsimony for a sliver of resolut
 
 ## M5 — treatment (COMPLETE, PI sign-off 2026-06-27)
 
-Findings [`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md) · methods [`TREATMENT_MODEL.md`](TREATMENT_MODEL.md).
+Findings [`TREATMENT_FINDINGS.md`](TREATMENT_FINDINGS.md) · methods [`TREATMENT_MODEL.md`](TREATMENT_MODEL.md).
 Engine `src/face/treatment/treatment_model_oop.py` (endpoints · frame · medications · propensity · moderation).
 Treatment data was found **late** in the per-cohort thesaurus `TRAITEMENTS` tabs (never in the harmonized set),
 harmonized to common drug-class exposures (ATC[SZ] / class-string[DR] / lifetime-flag[BP]).

@@ -45,7 +45,7 @@ for m in [n for n in sys.modules if n == "face" or n.startswith("face.")]:
     if f and SRC not in Path(f).resolve().parents:
         del sys.modules[m]
 
-from face.models.bayesian.measurement_model_oop import (  # noqa: E402
+from face.measurement.engine import (  # noqa: E402
     S1_FACTORS,
     MeasurementConfig,
     MeasurementDataset,
@@ -53,7 +53,7 @@ from face.models.bayesian.measurement_model_oop import (  # noqa: E402
     StageRunner,
 )
 
-MERGED_MATRIX = REPO / "configs" / "prior_loading_matrix_v3_biomerge.csv"
+MERGED_MATRIX = REPO / "configs" / "loading_matrix.immunometabolic.csv"
 # Continuous core (S1) with the biology block as TWO factors (split) vs ONE (merge).
 SPLIT_FACTORS = list(S1_FACTORS)                                              # G, cognition, metabolic, inflammatory, sleep
 MERGE_FACTORS = ["overall_severity", "cognition", "immunometabolic", "sleep"]  # biology collapsed to one

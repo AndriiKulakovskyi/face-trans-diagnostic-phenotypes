@@ -1,0 +1,17 @@
+{
+  "stage": 1,
+  "N": 9013,
+  "J": 68,
+  "factors": [
+    "overall_severity",
+    "cognition",
+    "metabolic",
+    "inflammatory",
+    "sleep"
+  ],
+  "rhat_max": 1.01,
+  "ess_min": 1939.0,
+  "divergences": 0,
+  "heywood": false,
+  "certified": true
+}

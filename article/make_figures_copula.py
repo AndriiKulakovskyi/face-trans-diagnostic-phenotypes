@@ -4,7 +4,7 @@ FACE-ATLAS — publication figure system (Gaussian-copula vertical).
 
 Regenerates all main + Extended Data figures directly from the canonical
 copula results under results/face/{strata_oop,temporal_oop,prognosis_oop,
-treatment_oop,m4_repbench} and reports/. Uniform style, colorblind-safe
+treatment_oop,m4_prognosis/repbench} and reports/. Uniform style, colorblind-safe
 (Okabe-Ito), vector PDF + 300-dpi PNG into article/figures/.
 
 Run:  cd <repo root>;  python article/make_figures_copula.py
@@ -26,7 +26,25 @@ warnings.filterwarnings("ignore")
 
 # ----------------------------------------------------------------------------- paths
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-R = lambda *p: os.path.join(ROOT, "results", "face", *p)
+
+# Re-point: the pipeline was regenerated to clean result paths (results/<milestone>/...);
+# the old results/face/{strata_oop,temporal_oop,prognosis_oop,treatment_oop} layout is gone.
+# Map the legacy first-component used at each call site to its clean location so the call
+# sites do not have to change.
+_RMAP = {
+    "strata_oop": ("m2_strata",),
+    "temporal_oop": ("m3_temporal",),
+    "prognosis_oop": ("m4_prognosis",),
+    "treatment_oop": ("m5_treatment",),
+}
+
+
+def R(*p):
+    if p and p[0] in _RMAP:
+        p = _RMAP[p[0]] + tuple(p[1:])
+    return os.path.join(ROOT, "results", *p)
+
+
 REP = lambda *p: os.path.join(ROOT, "reports", *p)
 OUT = os.path.join(ROOT, "article", "figures")
 os.makedirs(OUT, exist_ok=True)
@@ -646,7 +664,7 @@ def edfig_treatment():
     save(fig, "edfig_treatment")
 
 def edfig_repbench():
-    sc = pd.read_csv(R("m4_repbench", "scalar.csv"))
+    sc = pd.read_csv(R("m4_prognosis/repbench", "scalar.csv"))
     fig, axes = plt.subplots(1, 2, figsize=(9.6, 4.2))
     for ax, (tgt, ttl) in zip(axes, [("egf_deterioration", "Deterioration"), ("egf_recovery", "Recovery")]):
         d = sc[(sc.target == tgt) & (sc.scope == "pooled") & (sc.horizon == "V2")].set_index("arm")

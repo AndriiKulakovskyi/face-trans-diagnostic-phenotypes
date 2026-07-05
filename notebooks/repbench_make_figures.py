@@ -1,4 +1,4 @@
-"""Figures for the M4 representation benchmark — reads results/face/m4_repbench/*.csv, writes PNGs to
+"""Figures for the M4 representation benchmark — reads results/analyses/representation_benchmark/*.csv, writes PNGs to
 docs/figures/repbench/ and report/figures/. Run after the P1/P2 drivers.
 
     PYTHONPATH=$PWD/src python notebooks/repbench_make_figures.py

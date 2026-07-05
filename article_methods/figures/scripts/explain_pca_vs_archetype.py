@@ -5,8 +5,10 @@ Two heatmaps: (A) PCA loadings as signed axis-mixing contrasts; (B) archetype
 corners as nameable patient poles in axis-SD units.
 """
 import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"; os.environ["OMP_NUM_THREADS"]="1"
-import numpy as np, matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.colors import TwoSlopeNorm
 
 d = np.load("/tmp/pca_vs_arch.npz", allow_pickle=True)

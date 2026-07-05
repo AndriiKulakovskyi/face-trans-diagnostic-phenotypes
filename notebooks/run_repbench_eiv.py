@@ -12,7 +12,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from face.prognosis.repbench import eiv  # noqa: E402
+from face.benchmark import eiv  # noqa: E402
 
 OUT = ROOT / "results" / "face" / "m4_repbench"
 

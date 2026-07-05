@@ -4,7 +4,8 @@ Only ``src/`` needs to be importable to run the tests without installing the
 project (``import face`` resolves from there).
 
 The confidential 3-cohort data (``data/processed/``) and the large model results
-(``results/face/``) are gitignored and therefore **absent in CI**. The unit + golden tests run on
+(``results/m1_measurement/`` … ``results/m5_treatment/``) are gitignored and therefore **absent in
+CI**. The unit + golden tests run on
 synthetic fixtures, but a handful of integration tests load those artifacts directly; rather than let
 them *fail* in CI, a missing-data ``FileNotFoundError`` pointing at those paths is reclassified as a
 **skip** (locally, where the data is present, the tests run normally).
@@ -20,7 +21,9 @@ if _src not in sys.path:
     sys.path.insert(0, _src)
 
 # Path fragments that mark a confidential / gitignored artifact absent in CI.
-_CI_ABSENT = ("data/processed", "results/face", "baseline_v")
+_CI_ABSENT = ("data/processed", "results/m1_measurement", "results/m2_strata",
+              "results/m3_temporal", "results/m4_prognosis", "results/m5_treatment",
+              "results/analyses", "baseline_v")
 
 
 @pytest.hookimpl(hookwrapper=True)

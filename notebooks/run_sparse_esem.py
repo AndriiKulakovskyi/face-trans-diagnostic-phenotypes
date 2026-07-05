@@ -43,7 +43,7 @@ for m in [n for n in sys.modules if n == "face" or n.startswith("face.")]:
 
 import arviz as az  # noqa: E402
 
-from face.models.bayesian.measurement_model_oop import (  # noqa: E402
+from face.measurement.engine import (  # noqa: E402
     MeasurementConfig,
     MeasurementDataset,
     StageDefinition,
@@ -51,7 +51,7 @@ from face.models.bayesian.measurement_model_oop import (  # noqa: E402
 )
 from face.reporting.loading_atlas import DISP  # noqa: E402
 
-MERGED = REPO / "configs" / "prior_loading_matrix_v3_biomerge.csv"
+MERGED = REPO / "configs" / "loading_matrix.immunometabolic.csv"
 F6 = ["overall_severity", "cognition", "immunometabolic", "sleep", "developmental_risk", "mania_activation"]
 
 

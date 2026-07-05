@@ -1,0 +1,22 @@
+{
+  "stage": 3,
+  "N": 4000,
+  "J": 83,
+  "factors": [
+    "overall_severity",
+    "cognition",
+    "metabolic",
+    "inflammatory",
+    "sleep",
+    "developmental_risk"
+  ],
+  "correlated": true,
+  "n_specific_cross_cells": 0,
+  "n_window_cells": 8,
+  "rhat_max": 1.01,
+  "ess_min": 347.0,
+  "divergences": 0,
+  "heywood": false,
+  "mean_abs_phi_offdiag": 0.092,
+  "certified": false
+}

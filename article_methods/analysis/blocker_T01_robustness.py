@@ -2,7 +2,9 @@
 T0.1 robustness — is the EAP-over-sumscore prognostic gap (simulation B) stable across
 random draws and an alternative outcome rule? Repeat full & sparse regimes over 12 seeds.
 """
-import os, json
+import json
+import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"; os.environ["OMP_NUM_THREADS"]="1"
 import numpy as np
 from sklearn.linear_model import LogisticRegression

@@ -16,8 +16,13 @@ Figure 5 (money) is its own standalone script (fig5_archetype_prognosis.py).
 Figure 6 is the treatment-free rebuild (fig6_prognosis_rebuilt.py).
 Extended Data E1-E6 come from make_figures_copula.py.
 """
-import os, sys, shutil, subprocess
+import os
+import shutil
+import subprocess
+import sys
+
 import matplotlib
+
 matplotlib.use("Agg")
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
@@ -48,8 +53,9 @@ MANIFEST = [
 
 # Fig 1 needs the flagship title override (embedded title must match the caption).
 def _fig1_with_flagship_title():
-    import matplotlib.pyplot as plt
     import make_figures_copula as m
+    import matplotlib.pyplot as plt
+
     from face.reporting import loading_atlas as LA
     L = m._load_loadings()
     rows = LA.atlas_rows(L, m.AXES, 8)

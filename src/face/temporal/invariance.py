@@ -12,9 +12,9 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from face.confirm import corr_no_g_prep
-from face.models.bayesian.continuous_core import S1_FACTORS, prepare
-from face.runner import quick_diag, sample_marginalized
+from face.measurement.confirm import corr_no_g_prep
+from face.measurement.kernel import S1_FACTORS, prepare
+from face.measurement.sampling import quick_diag, sample_marginalized
 
 PHI_GOOD, PHI_OK = 0.95, 0.85
 MIN_OBS = 30                       # an item is "testable" at a visit if observed in ≥ this many patients

@@ -1,0 +1,21 @@
+endpoint,polarity,n,prevalence,model,auc,brier,ci,p_gain>0
+egf_remission,good,2114,0.432,DSM-5 only,0.66,0.221,,
+egf_remission,good,2114,0.432,map only,0.639,0.231,,
+egf_remission,good,2114,0.432,reference (DSM-5+severity),0.763,0.195,,
+egf_remission,good,2114,0.432,reference + map,0.78,0.188,,
+egf_remission,good,2114,0.432,ΔAUC (map added),0.017,,"[+0.009,+0.026]",1.0
+egf_deterioration,poor,2114,0.154,DSM-5 only,0.528,0.131,,
+egf_deterioration,poor,2114,0.154,map only,0.516,0.131,,
+egf_deterioration,poor,2114,0.154,reference (DSM-5+severity),0.726,0.121,,
+egf_deterioration,poor,2114,0.154,reference + map,0.729,0.12,,
+egf_deterioration,poor,2114,0.154,ΔAUC (map added),0.003,,"[-0.007,+0.013]",0.735
+egf_sustained_impair,poor,1555,0.261,DSM-5 only,0.704,0.163,,
+egf_sustained_impair,poor,1555,0.261,map only,0.653,0.184,,
+egf_sustained_impair,poor,1555,0.261,reference (DSM-5+severity),0.828,0.137,,
+egf_sustained_impair,poor,1555,0.261,reference + map,0.836,0.135,,
+egf_sustained_impair,poor,1555,0.261,ΔAUC (map added),0.008,,"[+0.000,+0.015]",0.979
+cgi_relapse,poor,2345,0.102,DSM-5 only,0.604,0.09,,
+cgi_relapse,poor,2345,0.102,map only,0.532,0.092,,
+cgi_relapse,poor,2345,0.102,reference (DSM-5+severity),0.871,0.071,,
+cgi_relapse,poor,2345,0.102,reference + map,0.872,0.071,,
+cgi_relapse,poor,2345,0.102,ΔAUC (map added),0.002,,"[-0.004,+0.008]",0.697

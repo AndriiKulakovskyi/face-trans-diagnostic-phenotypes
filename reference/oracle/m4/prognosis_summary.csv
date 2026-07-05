@@ -1,0 +1,15 @@
+outcome,model,d_elpd_vs_ref,se_d_elpd,verdict,n,operative_K,operative_verdict
+egf,+archetypesA,62.76,11.24,predictive,2114,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it
+egf,+specifics8,38.05,9.17,predictive,2114,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it
+egf,+archetypesB,33.46,8.66,predictive,2114,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it
+egf,+tess_k3,19.57,6.62,predictive,2114,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it
+egf,+tess_k4,16.56,6.37,predictive,2114,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it
+egf,+tess_k2,15.88,5.9,predictive,2114,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it
+egf,+durable,2.31,2.88,ambiguous,2114,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it
+cgi_s,+archetypesB,13.98,6.25,predictive,2345,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it
+cgi_s,+specifics8,13.27,6.71,ambiguous,2345,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it
+cgi_s,+archetypesA,11.95,5.91,predictive,2345,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it
+cgi_s,+tess_k3,5.55,3.82,ambiguous,2345,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it
+cgi_s,+tess_k2,4.91,3.48,ambiguous,2345,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it
+cgi_s,+tess_k4,4.4,3.8,ambiguous,2345,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it
+cgi_s,+durable,-0.72,1.4,ambiguous,2345,null,no hard K — the continuous/archetype encoding (+archetypesA) wins; the tessellation adds nothing beyond it

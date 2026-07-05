@@ -9,7 +9,7 @@ indicators (proportional-height panels).  Reuses the shared article atlas
 (`face.reporting.loading_atlas`).
 
 Input: the CI-aware loadings written by the seed ensemble
-(`results/face/gllvm_oop/ensemble/loadings_summary.csv`); falls back to the single-fit
+(`results/analyses/variational_gllvm/ensemble/loadings_summary.csv`); falls back to the single-fit
 `consolidate/loadings_summary.csv` (NaN CIs) if the ensemble has not been run.
 
     python notebooks/run_gllvm_dot_atlas.py

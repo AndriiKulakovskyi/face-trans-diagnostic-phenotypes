@@ -16,7 +16,7 @@ from face.data import build_unified_dataframe, load_variables, to_harmonized_dat
 
 REPO = Path(__file__).resolve().parents[3]
 XLSX = REPO / "data" / "face-common-vars.xlsx"
-MATRIX = REPO / "configs" / "prior_loading_matrix_v3.csv"
+MATRIX = REPO / "configs" / "loading_matrix.csv"
 
 
 def modeled_items() -> list[str]:

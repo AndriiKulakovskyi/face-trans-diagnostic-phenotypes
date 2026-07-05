@@ -19,7 +19,7 @@ pytest.importorskip("pymc")
 def test_engine_recovers_synthetic_loadings(tmp_path):
     import pymc as pm
 
-    import face.models.bayesian.continuous_core as cc
+    import face.measurement.kernel as cc
     from synthetic.generate_face_like import generate
 
     outdir, truth = generate(n=900, seed=0, out=tmp_path)

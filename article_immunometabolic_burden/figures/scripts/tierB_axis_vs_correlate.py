@@ -24,8 +24,14 @@ Run (repo venv):  cd article_v2 && ../.venv/bin/python figures/scripts/tierB_axi
 Smoke:            ... tierB_axis_vs_correlate.py --smoke
 """
 from __future__ import annotations
-import argparse, sys, time, json, warnings
+
+import argparse
+import json
+import sys
+import time
+import warnings
 from pathlib import Path
+
 import numpy as np
 
 _HERE = Path(__file__).resolve().parent
@@ -74,7 +80,7 @@ def build_correlate_prep(base):
 
 
 def fit(prep, *, draws, tune, chains, seed, label, sampler="pymc"):
-    import pymc as pm, arviz as az
+    import pymc as pm
     model = cc.build_marginalized(prep)
     # attach per-patient pointwise log-lik as a deterministic so az.loo can read it
     t0 = time.time()
@@ -97,7 +103,6 @@ def fit(prep, *, draws, tune, chains, seed, label, sampler="pymc"):
 def pointwise_ll(idata, model, prep):
     """Compute per-patient log-lik posterior array [chain,draw,N] from the marginalized
     Woodbury potential, evaluated at posterior draws — the input az.loo needs."""
-    import pytensor, pytensor.tensor as pt
     import numpy as np
     # rebuild the per-patient ll expression as a compiled function of the free RVs
     # (simpler: recompute from posterior of Lam, Phi, sigma via the model's cached tensors)

@@ -11,7 +11,7 @@ pole (A4) the best (63%).
 
 Data source (per-patient archetype weights AND two-year outcomes together, so
 no fragile join is needed):
-    results/face/prognosis_oop/consolidate/prognosis_patient_risk.parquet
+    results/m4_prognosis/consolidate/prognosis_patient_risk.parquet
 
 Output: article/figures/fig5_archetype_prognosis.{png,pdf}
 Maps to manuscript Figure 5 (article_v2, fig:money).
@@ -21,19 +21,21 @@ script reproduces that figure exactly. Run with the repo venv:
     ../.venv/bin/python figures/scripts/fig5_archetype_prognosis.py
 """
 import os
-import pandas as pd
-import numpy as np
+
 import matplotlib as mpl
+import numpy as np
+import pandas as pd
+
 mpl.use("Agg")
-import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
 
 # <manuscript>/figures/scripts/ -> repo root is three dirnames up; OUT is this
 # script's own figures dir, so the script is location-independent.
 _HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(_HERE)))
 OUT = os.path.dirname(_HERE)                                      # <manuscript>/figures
-PARQUET = os.path.join(ROOT, "results", "face", "prognosis_oop",
+PARQUET = os.path.join(ROOT, "results", "m4_prognosis",
                        "consolidate", "prognosis_patient_risk.parquet")
 
 

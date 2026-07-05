@@ -1,0 +1,27 @@
+{
+  "stage": "5_rp",
+  "N": 2000,
+  "cont_J": 84,
+  "explicit_factors": [
+    "overall_severity",
+    "suicidality",
+    "developmental_risk"
+  ],
+  "n_nongaussian": 18,
+  "factors": [
+    "overall_severity",
+    "cognition",
+    "metabolic",
+    "inflammatory",
+    "sleep",
+    "suicidality",
+    "developmental_risk"
+  ],
+  "rhat_max": 1.09,
+  "ess_min": 47.0,
+  "z_e_ess_min": 62.0,
+  "divergences": 0,
+  "heywood": false,
+  "mean_abs_phi_offdiag": 0.09,
+  "certified": false
+}

@@ -1,7 +1,7 @@
 # Tier-0 blockers — results (T0.1, T0.2)
 
 The two gate items from `REVIEW_article_methods.md` that required new simulation, not reruns.
-Both run on the fitted model (`results/face/gllvm_oop/s8_full/model_state.pt`).
+Both run on the fitted model (`results/analyses/variational_gllvm/s8_full/model_state.pt`).
 
 ---
 

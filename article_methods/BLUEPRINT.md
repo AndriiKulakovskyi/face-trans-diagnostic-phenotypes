@@ -268,7 +268,7 @@ its own contribution beyond reframing.
      full coordinate, across all 9,013 patients.
    - _Output:_ `analysis/archetype_reconstruction.csv` + figure-ready data → Fig 6.
 
-All three read only committed model objects (`results/face/gllvm_oop/…`, `strata_oop/…`) and derived
+All three read only committed model objects (`results/analyses/variational_gllvm/…`, `strata_oop/…`) and derived
 aggregates; no per-patient raw clinical value is emitted.
 
 ---

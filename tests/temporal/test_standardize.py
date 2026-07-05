@@ -17,7 +17,7 @@ _PROC = Path(__file__).resolve().parents[2] / "data" / "processed"
 
 @pytest.mark.skipif(not (_PROC / "baseline_v0.parquet").exists(), reason="baseline_v0.parquet not built")
 def test_v0_roundtrip_reproduces_prepare():
-    from face.models.bayesian.continuous_core import S5_FACTORS, prepare
+    from face.measurement.kernel import S5_FACTORS, prepare
     from face.temporal.standardize import capture_v0_spec
 
     spec = capture_v0_spec(S5_FACTORS)

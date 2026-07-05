@@ -17,15 +17,18 @@ Anchors (T2.5):
   random-rotation-5 floor                    -> project onto 5 random orthonormal directions
   A=1 (single centroid)                      -> R^2 = 0 by definition (lower anchor)
 """
-import os, json
+import json
+import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"; os.environ["OMP_NUM_THREADS"]="1"
-import numpy as np, pandas as pd
+import numpy as np
+import pandas as pd
 
 ROOT="/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr"
 AX=['overall_severity','cognition','immunometabolic','sleep','suicidality','developmental_risk','mania_activation','substance']
 
 # --- coordinates (the 8-D cloud being summarized) ---
-cov=pd.read_parquet(f"{ROOT}/results/face/gllvm_oop/consolidate/coordinates.parquet")
+cov=pd.read_parquet(f"{ROOT}/results/analyses/variational_gllvm/consolidate/coordinates.parquet")
 X=np.column_stack([pd.to_numeric(cov[a+"__mean"],errors="coerce").values for a in AX]).astype(np.float64)
 ok=~np.isnan(X).any(1); X=X[ok]
 N=len(X); xbar=X.mean(0)
@@ -38,7 +41,7 @@ def per_axis_r2(Xhat):
     return 1.0 - ((X-Xhat)**2).sum(0)/SS_tot_axis
 
 # --- A=5 published reproduction ---
-prof=pd.read_csv(f"{ROOT}/results/face/strata_oop/consolidate/archetype_profiles.csv")
+prof=pd.read_csv(f"{ROOT}/results/m2_strata/consolidate/archetype_profiles.csv")
 # A_all9 arm, 5 corners, columns = the 8 axes (selected by NAME below, so column order is irrelevant)
 prof_a=prof[prof["arm"]=="A_all9"] if "arm" in prof.columns else prof
 Zpub=None
@@ -47,7 +50,7 @@ try:
     Zpub=Zpub[~np.isnan(Zpub).any(1)]
 except Exception as e:
     print("profile parse note:", e)
-strata=pd.read_parquet(f"{ROOT}/results/face/strata_oop/consolidate/patient_strata.parquet")
+strata=pd.read_parquet(f"{ROOT}/results/m2_strata/consolidate/patient_strata.parquet")
 Wpub=np.column_stack([pd.to_numeric(strata[f"arch_w{k}"],errors="coerce").values for k in range(5)]).astype(np.float64)
 Wpub=Wpub[ok]
 r2_pub=None
@@ -57,6 +60,8 @@ if Zpub is not None and Zpub.shape==(5,8):
 
 # --- refit AA for A=4,5,6 with the repo's solver ---
 from archetypes import AA
+
+
 def fit_reconstruct(A, seed=0):
     m=AA(n_archetypes=A, random_state=seed, n_init=3, max_iter=200)
     W=m.fit_transform(X)          # (N,A) simplex weights
@@ -110,7 +115,7 @@ for A in [4,5,6]:
     print(f"  A={A}:  pooled R^2 = {sens[A]['pooled_r2']:.3f}")
 print(f"  A=5 published reproduction (fixed corners+weights): R^2 = {r2_pub:.3f}" if r2_pub is not None else "  A=5 published: parse failed")
 print("\n=== T2.5  the 0 -> 100% range the 59% sits in ===")
-print(f"  raw 8-D coordinate (no summary)   R^2 = 1.000   (upper anchor)")
+print("  raw 8-D coordinate (no summary)   R^2 = 1.000   (upper anchor)")
 print(f"  PCA-5 (best 5-D linear)           R^2 = {r2_pca5:.3f}")
 print(f"  archetype-5 (published)           R^2 = {meta['overall']['r2_archetype']:.3f}")
 print(f"  PCA-4 (fair affine dim)           R^2 = {r2_pca4:.3f}")

@@ -48,7 +48,7 @@ J    = len(items)
 Phi_inv = np.linalg.inv(Phi)
 iG, iIM = FACT.index("overall_severity"), FACT.index("immunometabolic")
 
-ap = pd.read_csv(f"{ROOT}/results/face/strata_oop/consolidate/archetype_profiles.csv")
+ap = pd.read_csv(f"{ROOT}/results/m2_strata/consolidate/archetype_profiles.csv")
 ap = ap[ap["arm"] == "A_all9"].sort_values("archetype")
 Z  = ap[FACT].values                                               # 5 corners x 8
 TRUE = 2                                                           # A2 immunometabolic

@@ -1,0 +1,13 @@
+question,mode,outcome,representation,n,ate,e_value,moderation_d_elpd,moderation_se,moderation_any_axis,ate_mde,int_mde_min,int_mde_max,moderation_verdict
+lithium_bp,active_comparator,functioning,durable,662,-0.03,1.2,-1.55,1.37,False,0.185,0.201,0.219,no moderation (bounded null)
+lithium_bp,active_comparator,functioning,archetypes,662,-0.055,1.28,-2.43,1.73,False,0.177,0.205,0.226,no moderation (bounded null)
+lithium_bp,active_comparator,cgi_response,durable,633,0.08,1.25,-1.9,1.36,False,0.494,0.522,0.578,no moderation (underpowered)
+lithium_bp,active_comparator,cgi_response,archetypes,633,0.046,1.18,3.49,4.19,True,0.496,0.57,0.634,"suggestive (HDI, ΔELPD weak)"
+antipsychotic_bp,active_comparator,functioning,durable,701,-0.242,1.8,3.36,3.4,True,0.199,0.178,0.213,"suggestive (HDI, ΔELPD weak)"
+antipsychotic_bp,active_comparator,functioning,archetypes,701,-0.238,1.79,1.8,4.27,True,0.193,0.195,0.25,"suggestive (HDI, ΔELPD weak)"
+antipsychotic_bp,active_comparator,cgi_response,durable,674,-0.292,1.59,-0.84,1.6,False,0.533,0.505,0.616,no moderation (underpowered)
+antipsychotic_bp,active_comparator,cgi_response,archetypes,674,-0.287,1.58,-1.94,2.33,False,0.542,0.582,0.697,no moderation (underpowered)
+clozapine_sz,on_off,functioning,durable,515,0.033,1.21,-1.84,0.66,False,0.391,0.375,0.428,no moderation (underpowered)
+clozapine_sz,on_off,functioning,archetypes,515,0.02,1.16,-4.48,1.88,False,0.398,0.445,0.531,no moderation (underpowered)
+clozapine_sz,on_off,cgi_response,durable,488,0.365,1.69,-1.79,1.14,False,0.911,0.9,0.982,no moderation (underpowered)
+clozapine_sz,on_off,cgi_response,archetypes,488,0.388,1.73,-1.63,2.78,False,0.922,1.083,1.251,no moderation (underpowered)

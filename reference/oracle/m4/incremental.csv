@@ -1,0 +1,13 @@
+model,elpd_loo,se_elpd,p_loo,d_elpd_vs_ref,se_d_elpd,verdict,max_pareto_k,rhat,divergences,outcome,n
++archetypesA,-2508.48,33.15,40.0,58.22,11.06,predictive,0.51,1.01,0,egf,2114
++specifics8,-2509.87,32.56,365.0,56.84,10.36,predictive,1.01,1.17,0,egf,2114
++tessellation,-2519.52,33.0,35.7,47.19,9.74,predictive,0.47,1.0,0,egf,2114
++archetypesB,-2520.27,32.94,39.5,46.44,10.27,predictive,0.47,1.01,0,egf,2114
++durable,-2559.61,32.15,40.2,7.1,4.45,ambiguous,0.57,1.0,0,egf,2114
+R3y,-2566.71,32.13,32.2,0.0,0.0,ambiguous,0.48,1.0,0,egf,2114
++specifics8,-3006.09,30.34,218.9,16.68,7.2,predictive,1.17,1.03,0,cgi_s,2345
++archetypesB,-3007.58,30.3,32.1,15.18,6.99,predictive,0.39,1.01,0,cgi_s,2345
++archetypesA,-3009.79,30.35,32.3,12.98,6.65,ambiguous,0.36,1.0,0,cgi_s,2345
++tessellation,-3012.08,30.38,28.0,10.69,5.2,predictive,0.34,1.0,0,cgi_s,2345
+R3y,-3022.77,30.45,25.4,0.0,0.0,ambiguous,0.27,1.0,0,cgi_s,2345
++durable,-3023.1,30.42,29.3,-0.34,2.03,ambiguous,0.4,1.0,0,cgi_s,2345

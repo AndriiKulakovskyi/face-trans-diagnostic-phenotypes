@@ -1,0 +1,21 @@
+{
+  "stage": 2,
+  "N": 9013,
+  "J": 71,
+  "factors": [
+    "overall_severity",
+    "cognition",
+    "metabolic",
+    "inflammatory",
+    "sleep"
+  ],
+  "correlated": true,
+  "n_specific_cross_cells": 0,
+  "n_window_cells": 8,
+  "rhat_max": 1.01,
+  "ess_min": 676.0,
+  "divergences": 0,
+  "heywood": false,
+  "mean_abs_phi_offdiag": 0.09,
+  "certified": true
+}

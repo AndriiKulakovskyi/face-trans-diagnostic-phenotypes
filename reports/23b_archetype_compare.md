@@ -5,8 +5,8 @@
 > `inflammatory` axes, peaks/shares in native z-units — e.g. low-burden pole share 0.549, metabolic corner peak
 > 3.1/3.7, inflammatory corner only at A=8). The reported map is the **8-factor Gaussian-copula** map with a
 > single `immunometabolic` axis and an **A = 5** simplex. Canonical copula A = 5 corner profiles and population
-> shares (A4 0.283 · A3 0.222 · A1 0.176 · A0 0.161 · A2 0.158): **[docs/STRATA_OOP_ATLAS.md](../docs/STRATA_OOP_ATLAS.md)**,
-> **[docs/STRATA_OOP_FINDINGS.md](../docs/STRATA_OOP_FINDINGS.md)** (Result 3 + 4b), and
+> shares (A4 0.283 · A3 0.222 · A1 0.176 · A0 0.161 · A2 0.158): **[docs/STRATA_ATLAS.md](../docs/STRATA_ATLAS.md)**,
+> **[docs/STRATA_FINDINGS.md](../docs/STRATA_FINDINGS.md)** (Result 3 + 4b), and
 > `results/face/strata_oop/consolidate/archetype_profiles.csv`. Kept for provenance only.
 
 Scree has no elbow (continuum) ⇒ A is a parsimony/interpretability choice; archetypes are stable at any A (M2.3 congruence 0.999). Below: which **axis-extreme corners** each A recovers, their peak z and population share. Higher = more burden. Arm A (full 9-d phenotype).

@@ -43,14 +43,14 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
-from face.models.variational.generative import (  # noqa: E402
+from analyses.variational_gllvm.engine import (  # noqa: E402
+    GLLVMConfig,
+    GLLVMRunner,
+)
+from analyses.variational_gllvm.generative import (  # noqa: E402
     correlation_block,
     generate_synthetic,
     marginal_summary,
-)
-from face.models.variational.gllvm_model_oop import (  # noqa: E402
-    GLLVMConfig,
-    GLLVMRunner,
 )
 
 # A representative panel spanning factors + families for the marginal-overlay figure.

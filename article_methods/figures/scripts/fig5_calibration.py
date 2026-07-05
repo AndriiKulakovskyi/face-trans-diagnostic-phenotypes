@@ -13,14 +13,14 @@ Reads the frozen analysis products in article_methods/analysis/. Run from
 article_methods/figures/ so the relative savefig lands there.
 """
 import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 os.environ["OMP_NUM_THREADS"] = "1"
-import numpy as np
-import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from matplotlib.lines import Line2D
-from matplotlib.patches import Patch
 
 ROOT = os.path.expanduser("~/Desktop/face-common-bp-sz-dr")
 AN = os.path.join(ROOT, "article_methods", "analysis")
@@ -113,6 +113,7 @@ axL.set_ylabel("Empirical coverage")
 axL.set_title("Credible intervals are calibrated\nacross all levels", fontsize=8)
 
 from matplotlib.legend_handler import HandlerTuple
+
 # multi-colour swatch (4 representative c8 hues) honestly keys the threaded per-axis points
 halo_swatch = tuple(Line2D([0], [0], marker="o", color=c8[f], lw=0, markersize=5, alpha=0.7)
                     for f in ["overall_severity", "immunometabolic", "sleep", "cognition"])

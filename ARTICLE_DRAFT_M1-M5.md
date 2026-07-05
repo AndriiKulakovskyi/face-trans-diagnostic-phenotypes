@@ -23,7 +23,7 @@ diagnostic cohorts → transdiagnostic dimensions → continuous map + archetype
 
 Three invariants are load-bearing at every stage. (1) **No imputation** — structure is estimated from each patient's observed cells via an observed-data (FIML) likelihood, never a filled matrix. (2) **Diagnosis is metadata** — cohort/DSM subtype is a covariate and a validation label, never a clustering input or a dimension indicator. (3) **Baseline defines, follow-up validates** — dimensions and strata are discovered on V0 and then *held fixed* when scoring later visits, treatment and outcome. Two reporting commitments follow from the methods-paper stance: we present the eight factors **uniformly** (loadings, direct G-loadings, factor correlations), and we keep **measurement separate from interpretation** — the clinically interesting properties of the map are read off the neutral structural tables, not built into them.
 
-**Methods note (provenance reconciliation).** All milestones consume one chain of *reported* objects: the cohort-weighted full-N Gaussian-copula map `copula/weighted_8d/hs_s5_merged_xc` (M1) → the A = 5 strata `strata_oop_2026_06_26_v2_8factor` (M2) → the temporal panel `temporal_oop_2026_06_26_v2_8factor` (M3) → the prognosis frame `prognosis_oop_2026_06_27_v2` (M4) → the treatment pipeline `treatment_oop_2026_06_27_v3` (M5). Each milestone's data lineage was audited and confirmed to consume the copula A = 5 objects; earlier *native* (9-indicator, A = 8) and *A = 4* artifacts that survive on disk are superseded. The numbers below are the reconciled copula A = 5 values. Full vertical synthesis: [`docs/COPULA_VERTICAL_FINDINGS.md`](docs/COPULA_VERTICAL_FINDINGS.md).
+**Methods note (provenance reconciliation).** All milestones consume one chain of *reported* objects: the cohort-weighted full-N Gaussian-copula map `copula/weighted_8d/hs_s5_merged_xc` (M1) → the A = 5 strata `strata_oop_2026_06_26_v2_8factor` (M2) → the temporal panel `temporal_oop_2026_06_26_v2_8factor` (M3) → the prognosis frame `prognosis_oop_2026_06_27_v2` (M4) → the treatment pipeline `treatment_oop_2026_06_27_v3` (M5). Each milestone's data lineage was audited and confirmed to consume the copula A = 5 objects; earlier *native* (9-indicator, A = 8) and *A = 4* artifacts that survive on disk are superseded. The numbers below are the reconciled copula A = 5 values. Full vertical synthesis: [`docs/VERTICAL_FINDINGS.md`](docs/VERTICAL_FINDINGS.md).
 
 ---
 
@@ -108,7 +108,7 @@ Each diagnosis is a *mixture* of corners and each corner draws from every diagno
 ### Documentation and data
 
 - Methods: [`docs/STRATIFICATION_MODEL.md`](docs/STRATIFICATION_MODEL.md)
-- Findings (incl. the copula A = 5 validation, *Result 4b*): [`docs/STRATA_OOP_FINDINGS.md`](docs/STRATA_OOP_FINDINGS.md); atlas: [`docs/STRATA_OOP_ATLAS.md`](docs/STRATA_OOP_ATLAS.md); archetype robustness: [`docs/ARCHETYPE_ROBUSTNESS.md`](docs/ARCHETYPE_ROBUSTNESS.md)
+- Findings (incl. the copula A = 5 validation, *Result 4b*): [`docs/STRATA_FINDINGS.md`](docs/STRATA_FINDINGS.md); atlas: [`docs/STRATA_ATLAS.md`](docs/STRATA_ATLAS.md); archetype robustness: [`docs/ARCHETYPE_ROBUSTNESS.md`](docs/ARCHETYPE_ROBUSTNESS.md)
 - Engine: `src/face/strata/strata_model_oop.py`; driver: `notebooks/run_strata_model_oop.py`
 - Hand-off: `results/face/strata_oop/consolidate/{patient_strata.parquet (9,013×50), archetype_profiles.csv, k_family_menu.csv}`; copula A = 5 validation: `results/face/strata_oop/usefulness/a5_archetype_validation.{json,csv}` (driver `notebooks/compute_a5_archetype_validation.py`)
 
@@ -159,7 +159,7 @@ The added value of the modelling is exactly this **separation of durable from mo
 
 ### Documentation and data
 
-- Methods: [`docs/TEMPORAL_MODEL.md`](docs/TEMPORAL_MODEL.md); findings: [`docs/TEMPORAL_OOP_FINDINGS.md`](docs/TEMPORAL_OOP_FINDINGS.md)
+- Methods: [`docs/TEMPORAL_MODEL.md`](docs/TEMPORAL_MODEL.md); findings: [`docs/TEMPORAL_FINDINGS.md`](docs/TEMPORAL_FINDINGS.md)
 - Engine: `src/face/temporal/temporal_model_oop.py`; driver: `notebooks/run_temporal_model_oop.py`
 - Hand-off: `results/face/temporal_oop/{trait_state/trait_state.csv, invariance/{congruence,license}.csv, persistence/{persistence.json,reliable_change.csv}, attrition/ipw_weights.parquet}`
 
@@ -211,7 +211,7 @@ The 22% → 63% gradient is genuinely **within-diagnosis** — cohort compositio
 
 ### Documentation and data
 
-- Methods: [`docs/PROGNOSIS_MODEL.md`](docs/PROGNOSIS_MODEL.md); findings + atlas: [`docs/PROGNOSIS_OOP_FINDINGS.md`](docs/PROGNOSIS_OOP_FINDINGS.md); representation benchmark: [`docs/M4_REPRESENTATION_BENCHMARK.md`](docs/M4_REPRESENTATION_BENCHMARK.md)
+- Methods: [`docs/PROGNOSIS_MODEL.md`](docs/PROGNOSIS_MODEL.md); findings + atlas: [`docs/PROGNOSIS_FINDINGS.md`](docs/PROGNOSIS_FINDINGS.md); representation benchmark: [`docs/M4_REPRESENTATION_BENCHMARK.md`](docs/M4_REPRESENTATION_BENCHMARK.md)
 - Engine: `src/face/prognosis/prognosis_model_oop.py` (+ `src/face/prognosis/repbench/`); drivers: `notebooks/run_prognosis_model_oop.py`, `notebooks/run_representation_benchmark.py`, `notebooks/run_repbench_recovery_shap.py`
 - Hand-off: `results/face/prognosis_oop/{incremental/{incremental_comparison.csv,operative_k.json}, endpoints/archetype_atlas.csv, within_cohort/decomposition.json, clinical_value/clinical_value.csv}`; benchmark: `results/face/m4_repbench/`
 
@@ -264,7 +264,7 @@ Discrimination clears the permutation null for response and side-effects but is 
 
 ### Documentation and data
 
-- Methods: [`docs/TREATMENT_MODEL.md`](docs/TREATMENT_MODEL.md); findings: [`docs/TREATMENT_OOP_FINDINGS.md`](docs/TREATMENT_OOP_FINDINGS.md)
+- Methods: [`docs/TREATMENT_MODEL.md`](docs/TREATMENT_MODEL.md); findings: [`docs/TREATMENT_FINDINGS.md`](docs/TREATMENT_FINDINGS.md)
 - Engine: `src/face/treatment/treatment_model_oop.py`; driver: `notebooks/run_treatment_model_oop.py`
 - Hand-off: `results/face/treatment_oop/{propensity/propensity_summary.csv, moderation/moderation.csv, confounder/confounder.csv, atlas/{atlas_gates.csv,treatment_course_atlas.csv}}`
 
@@ -286,4 +286,4 @@ Run end-to-end on the FACE data, the pipeline also delivers one coherent substan
 
 The limitations are stated plainly and consistently. All findings are **internal-validity** results on observational baseline-plus-follow-up data: there is no external replication cohort, the horizon is two years with ~33% reaching V2, individual-level predictive lift is modest, and — decisively for the prescriptive question — there are no randomised treatment arms, so M5 is bounded rather than confirmatory. On the methods side, the M1 confirmation battery (WAIC/PPC/invariance) was reported on sibling fits rather than the exact 8-factor specification, and the archetype simplex is a soft reading lens over a continuum whose hard labels are intrinsically unstable. None of these undercut the methodological contribution, but each marks where confirmatory work — an external cohort, longer follow-up, and trial-arm data for M5b — would convert these reconciled internal findings into deployable claims.
 
-*Full vertical synthesis of record: [`docs/COPULA_VERTICAL_FINDINGS.md`](docs/COPULA_VERTICAL_FINDINGS.md). Project map and current state: [`CLAUDE.md`](CLAUDE.md), [`docs/STATE.md`](docs/STATE.md).*
+*Full vertical synthesis of record: [`docs/VERTICAL_FINDINGS.md`](docs/VERTICAL_FINDINGS.md). Project map and current state: [`CLAUDE.md`](CLAUDE.md), [`docs/STATE.md`](docs/STATE.md).*

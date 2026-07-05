@@ -26,7 +26,7 @@ import arviz as az  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
-from face.models.bayesian.measurement_model_oop import MeasurementConfig, StageRunner  # noqa: E402
+from face.measurement.engine import MeasurementConfig, StageRunner  # noqa: E402
 
 SEEDS = [20260606, 20260607, 20260608]
 config = MeasurementConfig(output_dir=MeasurementConfig().output_dir / "hardzero")  # hard-zero is now the default

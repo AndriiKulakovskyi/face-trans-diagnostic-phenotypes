@@ -1,14 +1,14 @@
 """I/O utilities for reproducible, observable runs.
 
 - ``runstate``  — atomic read/write of ``run/<job>.json`` job-state files (used by the detached
-  launcher ``scripts/run_job.py`` and the dashboard ``scripts/status.py``).
+  launcher ``face.io.jobs`` and the ``face status`` dashboard).
 - ``progress``  — ``heartbeat(...)`` so long fits report stage/progress into their run-state.
-- ``manifest``  — persist exact fit metadata (N, cohort counts, seed, patient-index hash, commit,
-  package versions, diagnostics) + the exact sampled patient index, so scoring/QC loads the real
-  index instead of reconstructing it from a seed (issue P2-03).
+- ``jobs``      — the detached, wake-locked job launcher behind ``face fit <m> --detach``.
+
+(Fit manifests moved to ``face.caching.manifest``.)
 """
 from __future__ import annotations
 
-from . import manifest, progress, runstate
+from . import progress, runstate
 
-__all__ = ["runstate", "progress", "manifest"]
+__all__ = ["runstate", "progress"]

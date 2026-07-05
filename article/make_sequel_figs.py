@@ -113,7 +113,7 @@ print("wrote fig_voi", summary["voi"])
 # =====================================================================================
 # FIGURE 2 -- the simplex "fog": membership entropy over all patients
 # =====================================================================================
-ps = pd.read_parquet(f"{ROOT}/results/face/strata_oop/consolidate/patient_strata.parquet")
+ps = pd.read_parquet(f"{ROOT}/results/m2_strata/consolidate/patient_strata.parquet")
 W  = ps[[f"arch_w{a}" for a in range(5)]].values
 W  = W / W.sum(1, keepdims=True)
 H  = -(W*np.log(np.clip(W,1e-12,None))).sum(1)         # entropy, max = ln5
@@ -139,6 +139,7 @@ ax = fig2.add_subplot(gs[0,0])
 dom  = W.argmax(1)                                     # dominant archetype per patient
 ARCH_C = {0:"#CC79A7", 1:"#E69F00", 2:"#D55E00", 3:"#0072B2", 4:"#009E73"}
 from numpy.random import default_rng
+
 _ord = default_rng(0).permutation(len(P))              # shuffle so no colour is drawn last on top
 ax.scatter(P[_ord,0], P[_ord,1], c=[ARCH_C[d] for d in dom[_ord]],
            s=4, alpha=.45, linewidths=0, zorder=2)
@@ -172,7 +173,7 @@ print("wrote fig_simplexfog", summary["fog"])
 # =====================================================================================
 # FIGURE 3 -- trait/state thermometer
 # =====================================================================================
-ts = pd.read_csv(f"{ROOT}/results/face/temporal_oop/trait_state/trait_state.csv")
+ts = pd.read_csv(f"{ROOT}/results/m3_temporal/trait_state/trait_state.csv")
 ts = ts.sort_values("icc", ascending=True).reset_index(drop=True)   # ascending so trait at top
 tot = ts[["var_between","var_within","var_meas"]].sum(1)
 fb, fw, fm = (ts["var_between"]/tot, ts["var_within"]/tot, ts["var_meas"]/tot)

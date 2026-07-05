@@ -5,7 +5,7 @@
 
 Loads the harmonized FACE V0 baseline (FULL sample, all 3 cohorts — no completeness
 selection, methods §3.6), applies deterministic skip-logic structural-zero decoding, and
-restricts to the modeled indicators declared in configs/prior_loading_matrix_v3.csv. Persists:
+restricts to the modeled indicators declared in configs/loading_matrix.csv. Persists:
 
   data/processed/baseline_v0.parquet         one row per patient × modeled indicator
                                              (raw harmonized values, NaN = missing, NEVER imputed)
@@ -31,7 +31,7 @@ sys.path.insert(0, str(REPO / "src"))
 from face.data import build_unified_dataframe, load_variables, to_harmonized_dataset  # noqa: E402
 
 XLSX = REPO / "data" / "face-common-vars.xlsx"
-MATRIX = REPO / "configs" / "prior_loading_matrix_v3.csv"
+MATRIX = REPO / "configs" / "loading_matrix.csv"
 PROC = REPO / "data" / "processed"
 REPORTS = REPO / "reports"
 
@@ -128,6 +128,16 @@ def main() -> None:
     (REPORTS / "01_build_data.md").write_text("\n".join(lines))
     print("\n".join(lines))
     print(f"\nwrote data/processed/baseline_v0.parquet  shape={B.shape}")
+
+    # ---- follow-up visits V1/V2 (same pipeline; modeled indicators, NaN = missing) — M3/M4 inputs ----
+    # Identical harmonization to V0 (skip-logic on, no normalization), parameterized by visit; the
+    # per-visit roster is the completers at that visit. Downstream engines align columns on read.
+    for v in ("V1", "V2"):
+        dsv = to_harmonized_dataset(df, variables, visit=v, normalize=False, apply_skip_logic=True)
+        presv = [it for it in modeled if it in dsv.X.columns]
+        Bv = dsv.X[presv].apply(pd.to_numeric, errors="coerce")
+        Bv.to_parquet(PROC / f"baseline_{v.lower()}.parquet")
+        print(f"wrote data/processed/baseline_{v.lower()}.parquet  shape={Bv.shape}")
 
 
 if __name__ == "__main__":

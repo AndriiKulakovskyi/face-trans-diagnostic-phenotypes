@@ -9,7 +9,7 @@ dominant pull is that corner) + a real MEDOID exemplar patient. Corners/centroid
 the continuum — NOT discovered subgroups.
 
 Reads existing strata_oop artifacts only (no fitting). Writes:
-  - results/face/strata_oop/reading_guide/reading_guide.csv
+  - results/m2_strata/reading_guide/reading_guide.csv
   - docs/figures/strata_oop/reading_guide.png
 
     PYTHONPATH=$PWD/src python notebooks/m2_reframe/build_reading_guide.py

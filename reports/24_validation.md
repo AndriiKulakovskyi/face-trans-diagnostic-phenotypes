@@ -6,7 +6,7 @@
 > single `immunometabolic` axis, an **A = 5** archetype simplex, and a nested **K = 2/3/4** tessellation family.
 > The legacy archetype-level numbers here (archetype ARI_dsm5 0.046 / ARI_cohort 0.060, mean η²(specifics)
 > 0.319, free K=4 BIC 199,325 vs DSM-5 206,016, mean η² 0.209) are **NOT** the reported copula values. Canonical
-> copula numbers: **[docs/STRATA_OOP_FINDINGS.md](../docs/STRATA_OOP_FINDINGS.md)** (Result 4 = K=2 tessellation;
+> copula numbers: **[docs/STRATA_FINDINGS.md](../docs/STRATA_FINDINGS.md)** (Result 4 = K=2 tessellation;
 > Result 4b = A=5 archetypes) and `results/face/strata_oop/usefulness/{data.json, a5_archetype_validation.json}`.
 > Reported copula equivalents: archetype ARI_dsm5 **0.021**, K=2 tessellation ARI_dsm5 **0.006**, free K=2 BIC
 > **185,557** vs DSM-5 **188,168**. Kept for provenance only.

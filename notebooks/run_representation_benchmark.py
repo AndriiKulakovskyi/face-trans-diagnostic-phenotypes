@@ -15,9 +15,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from face.prognosis.repbench import harness  # noqa: E402
+from face.benchmark import harness  # noqa: E402
 
-OUT = ROOT / "results" / "face" / "m4_repbench"
+OUT = ROOT / "results" / "m4_prognosis" / "repbench"
 
 
 def main() -> None:

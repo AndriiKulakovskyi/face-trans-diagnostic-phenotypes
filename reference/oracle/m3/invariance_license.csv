@@ -1,0 +1,5 @@
+axis,min_phi,license
+cognition,0.995,invariant
+immunometabolic,0.987,invariant
+overall_severity,0.991,invariant
+sleep,0.996,invariant

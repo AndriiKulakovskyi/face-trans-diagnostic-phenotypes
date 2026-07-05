@@ -1,0 +1,5 @@
+domain,A0_unadjusted,A1_demo_site,A2_antipsychotic,A3_bmi
+inflammatory,0.064,0.051,0.06,0.051
+metabolic,0.127,0.066,0.069,0.06
+cognition,0.402,0.261,0.265,0.273
+sleep,0.371,0.358,0.361,0.357

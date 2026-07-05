@@ -6,7 +6,7 @@
 > and **substance** (pinned orthogonal). The map is otherwise simple-structure with **3 earned cross-loadings**
 > (CTQ-37 → cognition, PSQI-latency → cognition, PSQI-daytime → cognition). On this map the strata reading lens
 > is **A = 5 archetypes (A0–A4)**. Canonical findings: [`HORSESHOE_ESEM.md`](HORSESHOE_ESEM.md) (map),
-> [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md) (archetypes). diagnosis is validation-only.
+> [`STRATA_FINDINGS.md`](STRATA_FINDINGS.md) (archetypes). diagnosis is validation-only.
 
 > **The paper-facing synthesis of Milestone 1**: what we did, what we observed, what we found, and what it
 > means. This is the canonical *findings + discussion* record for traceability, PI review, and the manuscript.

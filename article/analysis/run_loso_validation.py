@@ -22,13 +22,21 @@ Design + endpoints: see the LOSO validation plan (out/loso_validation_plan.md).
     on your data; P1 and P2 are fully tested. ***
 """
 from __future__ import annotations
-import argparse, json, os, shutil, sys, time
+
+import argparse
+import os
+import shutil
+import sys
+import time
+
 os.environ.setdefault("KMP_DUPLICATE_LIB_OK", "TRUE")   # torch + MKL both ship libomp on macOS
 os.environ.setdefault("OMP_NUM_THREADS", "4")
 from dataclasses import replace
 from pathlib import Path
+
 import numpy as np
 import pandas as pd
+
 
 def _find_repo(start: Path) -> Path:
     """Walk up from a starting point until we find the repo (has data/processed + src/face).
@@ -48,8 +56,8 @@ SRC = REPO / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from face.models.variational.gllvm_model_oop import GLLVMConfig, GLLVMRunner   # noqa: E402
-from face.models.variational import validate as vv                            # noqa: E402
+from face.models.variational import validate as vv  # noqa: E402
+from face.models.variational.gllvm_model_oop import GLLVMConfig, GLLVMRunner  # noqa: E402
 
 PROC = REPO / "data" / "processed"
 ALIGNED_PARQUETS = ("baseline_v0.parquet", "site_v0.parquet", "covariates_v0.parquet")

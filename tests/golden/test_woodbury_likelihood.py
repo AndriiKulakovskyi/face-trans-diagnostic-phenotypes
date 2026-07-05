@@ -11,7 +11,7 @@ import numpy as np
 import pytensor.tensor as pt
 from scipy.stats import multivariate_normal
 
-from face.models.bayesian.continuous_core import _patterns, _woodbury_potential
+from face.measurement.kernel import _patterns, _woodbury_potential
 
 
 def _woodbury_eval(M, Lam, Phi, sigma):

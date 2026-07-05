@@ -36,9 +36,9 @@ and all generators live under `article_v2/figures/scripts/`.
 ## Data sources
 
 - Main copula figures read `reports/*.csv` and `results/face/{strata_oop,temporal_oop,prognosis_oop}/…`.
-- **Fig 5 (money)** reads `results/face/prognosis_oop/consolidate/prognosis_patient_risk.parquet`
+- **Fig 5 (money)** reads `results/m4_prognosis/consolidate/prognosis_patient_risk.parquet`
   — per-patient archetype weights and two-year outcomes together (N=9,013), so no join.
-- **Fig 6** reads `results/face/prognosis_oop/endpoints/archetype_atlas.csv`.
+- **Fig 6** reads `results/m4_prognosis/endpoints/archetype_atlas.csv`.
 - **ED E4 (LOSO)** reads `article_v2/figures/data/loso_summary_production.csv` (a committed copy of a
   summary that otherwise lives only in the artifact store).
 

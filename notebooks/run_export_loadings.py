@@ -11,8 +11,8 @@ loadings table with equal-tailed 95% credible intervals plus the 9x9 Phi matrix.
     PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_export_loadings.py
 
 Outputs (default):
-* results/face/oop_measurement/copula/s5_9dim_mixed/loadings_summary.csv   (canonical)
-* results/face/oop_measurement/copula/s5_9dim_mixed/phi.csv                (canonical)
+* results/m1_measurement/primary/loadings_summary.csv   (canonical)
+* results/m1_measurement/primary/phi.csv                (canonical)
 * reports/copula_s5_9dim_loadings.csv     (article-facing; supersedes stale native 11_s5_9dim_loadings.csv)
 * reports/copula_s5_9dim_phi.csv          (article-facing; supersedes stale native 04_stage5_phi.csv)
 """
@@ -47,12 +47,12 @@ if loaded_face is not None and (
     for module_name in [name for name in sys.modules if name == "face" or name.startswith("face.")]:
         del sys.modules[module_name]
 
-from face.models.bayesian.measurement_model_oop import (  # noqa: E402
+from face.measurement.engine import (  # noqa: E402
     DEFAULT_EXPLICIT_FACTORS,
     MeasurementConfig,
     MeasurementDataset,
 )
-from face.models.bayesian.synthetic import (  # noqa: E402
+from face.measurement.synthetic import (  # noqa: E402
     export_loadings_summary,
     export_phi,
 )
@@ -60,7 +60,7 @@ from face.models.bayesian.synthetic import (  # noqa: E402
 # Canonical M1 map: the weighted full-N 8-factor operational fit (immunometabolic merge + 3 cross-loadings
 # + substance orthogonal). This is the MAIN map the whole vertical + the article are built on.
 DEFAULT_IDATA = REPO / "results" / "face" / "oop_measurement" / "copula" / "weighted_8d" / "hs_s5_merged_xc" / "idata.nc"
-FOLDED_MATRIX = REPO / "configs" / "prior_loading_matrix_v3_biomerge_xc.csv"
+FOLDED_MATRIX = REPO / "configs" / "loading_matrix.immunometabolic_crossload.csv"
 F8_FIT = ["overall_severity", "cognition", "immunometabolic", "sleep", "suicidality",
           "developmental_risk", "mania_activation", "substance"]
 

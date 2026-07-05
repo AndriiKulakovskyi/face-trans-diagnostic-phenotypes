@@ -1,0 +1,58 @@
+{
+  "purpose": "Frozen numeric oracle \u2014 reproduction target for the ground-up refactor",
+  "frozen_at_git_sha": "8cf4f3ea93c3bf581879d110d025ed83cfaf4ed7",
+  "frozen_tag": "pre-refactor-2026-07-04",
+  "branch": "refactor/ground-up-2026-07",
+  "seed_of_record": 20260605,
+  "requirements_lock_sha256_16": "af3938bf75c435dd",
+  "raw_backup": {
+    "location": "~/FACE_raw_backup_2026-07-04",
+    "manifest_meta_sha256": "732c714f5210f59d2fc6a6d2c1013b80da68a9de7d139dd3a9acbfd3b972d6a3",
+    "n_files": 11,
+    "size": "117M"
+  },
+  "env_of_record": {
+    "python": "3.13.9 (from tracked manifests)",
+    "note": "manifests/*.json were generated under Python 3.13.9; see package_versions in any manifests/*.json",
+    "seed": 20260605,
+    "model_version_legacy": "oop_measurement_2026_06_20_v5",
+    "N": 9013,
+    "J": 88,
+    "factors": [
+      "overall_severity",
+      "cognition",
+      "immunometabolic",
+      "sleep",
+      "suicidality",
+      "developmental_risk",
+      "mania_activation",
+      "substance"
+    ]
+  },
+  "current_local_env": {
+    "python": "3.11.15",
+    "numpy": "2.4.6",
+    "scipy": "1.17.1",
+    "pandas": "2.3.3",
+    "sklearn": "1.9.0",
+    "pymc": "5.28.5",
+    "pytensor": "2.38.3",
+    "numpyro": "0.21.0",
+    "jax": "0.10.2",
+    "jaxlib": "0.10.2",
+    "arviz": "0.23.4",
+    "archetypes": "0.12.2",
+    "hdbscan": "absent",
+    "torch": "2.12.1"
+  },
+  "reconciliation_tolerances": {
+    "loadings_phi": "Tucker phi >= 0.99 per factor; Phi off-diag within CI, max|d|<=0.05",
+    "cross_loadings": "exactly {CTQ-37, PSQI-latency, PSQI-daytime -> cognition}, same sign, within CI",
+    "convergence": "cont S1-S3 rhat<=1.01 ess~800+ 0 div; mixed S5 backbone ~1.00-1.01; dev periphery <=~1.14, 0 div",
+    "m2": "continuum verdict unchanged; A=5 + A=6 cliff; ARI(new,oracle)>=0.90 post-alignment; atlas +-0.03",
+    "m3": "V0 r>=0.99; ICC +-0.03, trait/state label unchanged",
+    "m4": "dELPD in [+45,+72], stays predictive+top-ranked; remission gradient monotone",
+    "m5": "per-contrast null-vs-signal verdict preserved; E-values in band; A2 survival +-1.5%",
+    "manifest_identity": "N==9013, index HASH==oracle at every stage"
+  }
+}

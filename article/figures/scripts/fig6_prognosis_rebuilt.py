@@ -4,23 +4,27 @@ Figure-generation code for FACE-ATLAS: fig6_prognosis_rebuilt.png
 Provenance: extracted verbatim from artifact lineage (version_id be3d9846-abf2-4716-b73a-3a8ecbac6ad8).
 Environment: face-dev
 NOTE: these figures were produced in a shared `face-dev` kernel session in which the
-fitted GLLVM model state (results/face/gllvm_oop/s8_full/model_state.pt) and derived
+fitted GLLVM model state (results/analyses/variational_gllvm/s8_full/model_state.pt) and derived
 arrays (loadings, sigmas, families, coordinates) were loaded once and reused across
 cells. This file is the exact producing cell; if run standalone it may require that
 shared setup (model load + per-family Fisher-information arrays) to be present.
 """
 
-import pandas as pd
-import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
 
 def apply_figure_style(*, frame="open", font=None, sizes=(8, 7, 6), grid=False):
-    import matplotlib as mpl
     if frame not in ("open", "boxed", "none"):
         raise ValueError(f"frame must be 'open'|'boxed'|'none', got {frame!r}")
     try:
-        import os, sys, glob, matplotlib.font_manager as fm
+        import glob
+        import os
+        import sys
+
+        import matplotlib.font_manager as fm
         fdir = os.path.join(os.environ.get("CONDA_PREFIX") or sys.prefix, "fonts")
         if os.path.isdir(fdir):
             known = {f.fname for f in fm.fontManager.ttflist}
@@ -64,10 +68,11 @@ def apply_figure_style(*, frame="open", font=None, sizes=(8, 7, 6), grid=False):
 apply_figure_style()
 
 import os as _os
+
 _HERE = _os.path.dirname(_os.path.abspath(__file__))
 _ROOT = _os.path.dirname(_os.path.dirname(_os.path.dirname(_HERE)))
 _OUT = _os.path.join(_ROOT, "article", "figures")
-atlas = pd.read_csv(_os.path.join(_ROOT, "results", "face", "prognosis_oop", "endpoints", "archetype_atlas.csv"))
+atlas = pd.read_csv(_os.path.join(_ROOT, "results", "m4_prognosis", "endpoints", "archetype_atlas.csv"))
 egf = atlas[atlas.outcome == "egf"].copy()
 
 short = {0: "A0 ↑sleep/mania", 1: "A1 ↑burden", 2: "A2 ↑immuno", 3: "A3 ↑dev/suic", 4: "A4 low-sev"}

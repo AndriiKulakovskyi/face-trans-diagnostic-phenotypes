@@ -10,12 +10,17 @@ Both build a shared battery over all 8 axes; we compare mean reliability at matc
 (20/27/35) and report the reliability gap. If loading-ranked ties, Fig 2's thesis is weak;
 if it loses, that gap is the demonstrated added value of the information-based rule.
 """
-import os, json
+import json
+import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"; os.environ["OMP_NUM_THREADS"]="1"
-import numpy as np, pandas as pd, torch, torch.nn.functional as F
+import numpy as np
+import pandas as pd
+import torch
+import torch.nn.functional as F
 
 ROOT="/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr"
-sd=torch.load(f"{ROOT}/results/face/gllvm_oop/s8_full/model_state.pt", map_location="cpu", weights_only=False)
+sd=torch.load(f"{ROOT}/results/analyses/variational_gllvm/s8_full/model_state.pt", map_location="cpu", weights_only=False)
 st=sd["state_dict"]; items=sd["items"]; families=sd["families"]; factor_cols=sd["factor_cols"]; J=len(items)
 
 raw_loading=st["raw_loading"]; loading_free=st["loading_free"].bool(); loading_positive=st["loading_positive"].bool()

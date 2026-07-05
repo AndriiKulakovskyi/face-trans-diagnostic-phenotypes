@@ -1,7 +1,7 @@
 """M4 outcome registry + endpoints — the outcome config (`load_outcome_config`), native-scale outcome
 extraction (`extract_outcomes`), and the derived remission / recovery / deterioration endpoints
-(`derive_endpoints`). Consumed by the copula OOP M4 (`prognosis_model_oop.py`), which assembles its own
-analysis frame from the `strata_oop` hand-off. Outcomes are read on the **native clinical scale**
+(`derive_endpoints`). Consumed by the copula OOP M4 (`prognosis.engine.py`), which assembles its own
+analysis frame from the `m2_strata` hand-off. Outcomes are read on the **native clinical scale**
 (`data/processed/baseline_v{0,1,2}.parquet`, NaN = missing) — never standardized, never imputed; a cohort
 that does not collect an outcome stays NaN. (The native-panel assembler `build_analysis_frame` /
 `predictor_draw_tensor` was removed with the native M4 pipeline, 2026-06-24.) Methods: docs/PROGNOSIS_MODEL.md.
@@ -34,7 +34,7 @@ _SEV_ANCHORS = {"G", "baseline_cgi", "baseline_outcome"}
 
 @dataclass(frozen=True)
 class OutcomeSpec:
-    """One prognostic outcome from `configs/m4_outcomes.yaml`. `source_var` is the harmonized
+    """One prognostic outcome from `configs/prognosis_outcomes.yaml`. `source_var` is the harmonized
     canonical name; `family` drives the GLM likelihood; `cohort_scope` is the set of cohorts that
     collect it (others -> NaN, never imputed); `severity_anchor` selects the R2 baseline-severity term;
     the optional thresholds define the binary remission/response arms; `role` is primary|secondary."""

@@ -10,11 +10,11 @@ A=8 fit (separate metabolic+inflammatory axes). This driver recomputes them on
 the reported copula A=5 dominant assignment so the docs cite the right object.
 
 Reads:
-  - results/face/strata_oop/consolidate/patient_strata.parquet  (arch_dominant, arm=DSM dx, cohort)
-  - results/face/strata_oop/coordinates/coordinates_full.parquet (per-axis posterior-mean coords)
+  - results/m2_strata/consolidate/patient_strata.parquet  (arch_dominant, arm=DSM dx, cohort)
+  - results/m2_strata/coordinates/coordinates_full.parquet (per-axis posterior-mean coords)
 Writes:
-  - results/face/strata_oop/usefulness/a5_archetype_validation.json
-  - results/face/strata_oop/usefulness/a5_archetype_validation.csv  (eta^2 per axis x grouping)
+  - results/m2_strata/usefulness/a5_archetype_validation.json
+  - results/m2_strata/usefulness/a5_archetype_validation.csv  (eta^2 per axis x grouping)
 """
 
 from __future__ import annotations

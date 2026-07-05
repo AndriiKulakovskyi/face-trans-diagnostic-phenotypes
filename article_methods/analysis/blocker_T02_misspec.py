@@ -23,7 +23,9 @@ For each: report empirical coverage of the 95% interval (and 50%), averaged over
 n=4000 patients per cell, real-ish missingness (keep 50% of items). Grace = coverage stays
 near nominal or drifts smoothly & conservatively; break = coverage collapses.
 """
-import os, json
+import json
+import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"; os.environ["OMP_NUM_THREADS"]="1"
 import numpy as np
 from scipy import stats

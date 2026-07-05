@@ -38,7 +38,7 @@ cohort-enrichment and monitoring target that a diagnosis or a severity score can
 ### The money figure (Fig 5) — newly computed
 
 Computed directly from real patient-level data
-(`results/face/prognosis_oop/consolidate/prognosis_patient_risk.parquet`), which carries, per
+(`results/m4_prognosis/consolidate/prognosis_patient_risk.parquet`), which carries, per
 `patient_id` for all 9,013 patients, both the archetype weights (`arch_w0..w4`) and the two-year
 outcomes (`egf__remission_V2`). Panel **a**: all 9,013 patients projected onto the five-archetype
 simplex as convex blends. Panel **b**: the same map, the 2,420 with follow-up shaded by two-year

@@ -4,7 +4,7 @@ Figure-generation code for FACE-ATLAS: fig_worked_patient.png
 Provenance: extracted verbatim from artifact lineage (version_id 0bbd7815-3d9f-4ee1-823b-29a03c883f40).
 Environment: face-dev
 NOTE: these figures were produced in a shared `face-dev` kernel session in which the
-fitted GLLVM model state (results/face/gllvm_oop/s8_full/model_state.pt) and derived
+fitted GLLVM model state (results/analyses/variational_gllvm/s8_full/model_state.pt) and derived
 arrays (loadings, sigmas, families, coordinates) were loaded once and reused across
 cells. This file is the exact producing cell; if run standalone it may require that
 shared setup (model load + per-family Fisher-information arrays) to be present.
@@ -12,19 +12,21 @@ shared setup (model load + per-family Fisher-information arrays) to be present.
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-import numpy as np
 import pandas as pd
+from matplotlib.gridspec import GridSpec
 
 # apply_figure_style (from figure-style skill)
 META_GREY = "#888888"
 
 def apply_figure_style(*, frame="open", font=None, sizes=(8, 7, 6), grid=False):
-    import matplotlib as mpl
     if frame not in ("open", "boxed", "none"):
         raise ValueError(f"frame must be 'open'|'boxed'|'none', got {frame!r}")
     try:
-        import os, sys, glob, matplotlib.font_manager as fm
+        import glob
+        import os
+        import sys
+
+        import matplotlib.font_manager as fm
         fdir = os.path.join(os.environ.get("CONDA_PREFIX") or sys.prefix, "fonts")
         if os.path.isdir(fdir):
             known = {f.fname for f in fm.fontManager.ttflist}
@@ -68,10 +70,10 @@ def apply_figure_style(*, frame="open", font=None, sizes=(8, 7, 6), grid=False):
 apply_figure_style()
 
 # Load data
-coords = pd.read_parquet("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/face/gllvm_oop/consolidate/coordinates.parquet")
-aa = pd.read_csv("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/face/prognosis_oop/endpoints/archetype_atlas.csv")
-L = pd.read_csv("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/face/gllvm_oop/consolidate/loadings_summary.csv")
-strata = pd.read_parquet("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/face/strata_oop/consolidate/patient_strata.parquet")
+coords = pd.read_parquet("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/analyses/variational_gllvm/consolidate/coordinates.parquet")
+aa = pd.read_csv("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/m4_prognosis/endpoints/archetype_atlas.csv")
+L = pd.read_csv("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/analyses/variational_gllvm/consolidate/loadings_summary.csv")
+strata = pd.read_parquet("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/m2_strata/consolidate/patient_strata.parquet")
 
 factors = ["overall_severity","cognition","immunometabolic","sleep","suicidality","developmental_risk","mania_activation","substance"]
 
@@ -170,4 +172,4 @@ axD.annotate(f"first item ({items[0]})\n→ reliability {rr[0]:.2f}",xy=(1,rr[0]
 # Title and bottom caption paragraph intentionally removed — that text now lives in the
 # LaTeX figure caption (\caption{} for fig:localization in sections/03_results.tex).
 fig.subplots_adjust(top=0.955,bottom=0.075,left=0.13,right=0.97)
-fig.savefig("fig_worked_patient.png",dpi=200,bbox_inches='tight')
+fig.savefig("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/article/figures/fig_worked_patient.png",dpi=200,bbox_inches='tight')

@@ -20,12 +20,15 @@ Two complementary demonstrations, both on the fitted model:
     on (i) coordinate recovery (corr to truth) and (ii) prognostic AUC. The gap should widen
     as data get sparse, where a point estimate ignores that its inputs are noisier.
 """
-import os, json
+import json
+import os
+
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"; os.environ["OMP_NUM_THREADS"]="1"
-import numpy as np, pandas as pd
+import numpy as np
+import pandas as pd
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score
+from sklearn.model_selection import StratifiedKFold
 
 ROOT="/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr"
 AX=['overall_severity','cognition','immunometabolic','sleep','suicidality','developmental_risk','mania_activation','substance']

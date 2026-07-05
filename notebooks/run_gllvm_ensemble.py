@@ -42,8 +42,8 @@ for m in [n for n in sys.modules if n == "face" or n.startswith("face.")]:
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
-from face.models.variational import validate as V  # noqa: E402
-from face.models.variational.gllvm_model_oop import (  # noqa: E402
+from analyses.variational_gllvm import validate as V  # noqa: E402
+from analyses.variational_gllvm.engine import (  # noqa: E402
     G_KEY,
     GLLVMConfig,
     GLLVMProjector,
@@ -134,7 +134,7 @@ def main() -> None:
     nuts_loadings = pd.read_csv(base.output_dir / "nuts_targets" / "loadings_summary.csv")
     nuts_phi = pd.read_csv(base.output_dir / "nuts_targets" / "phi.csv", index_col=0)
     nuts_coords = pd.read_parquet(
-        REPO / "results/face/strata_oop/coordinates/coordinates_full.parquet"
+        REPO / "results/m2_strata/coordinates/coordinates_full.parquet"
     ).astype({"cohort": str, "patient_id": str}).set_index(["cohort", "patient_id"])
     rep = V.run_congruence(ens_dir, nuts_loadings, nuts_phi, nuts_coords=nuts_coords,
                            out_csv=ens_dir / "validation_report.csv")

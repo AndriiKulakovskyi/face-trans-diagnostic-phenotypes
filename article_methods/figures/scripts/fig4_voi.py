@@ -4,29 +4,31 @@ Figure-generation code for FACE-ATLAS: fig_value_of_information.png
 Provenance: extracted verbatim from artifact lineage (version_id b20b8658-bc27-44ab-af04-783d6808aeac).
 Environment: face-dev
 NOTE: these figures were produced in a shared `face-dev` kernel session in which the
-fitted GLLVM model state (results/face/gllvm_oop/s8_full/model_state.pt) and derived
+fitted GLLVM model state (results/analyses/variational_gllvm/s8_full/model_state.pt) and derived
 arrays (loadings, sigmas, families, coordinates) were loaded once and reused across
 cells. This file is the exact producing cell; if run standalone it may require that
 shared setup (model load + per-family Fisher-information arrays) to be present.
 """
 
-import os
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import torch
 import torch.nn.functional as F
-import matplotlib as mpl
-import matplotlib.pyplot as plt
 
 META_GREY = "#888888"
 
 
 def apply_figure_style(*, frame="open", font=None, sizes=(8, 7, 6), grid=False):
-    import matplotlib as mpl
     if frame not in ("open", "boxed", "none"):
         raise ValueError(f"frame must be 'open'|'boxed'|'none', got {frame!r}")
     try:
-        import os, sys, glob, matplotlib.font_manager as fm
+        import glob
+        import os
+        import sys
+
+        import matplotlib.font_manager as fm
         fdir = os.path.join(os.environ.get("CONDA_PREFIX") or sys.prefix, "fonts")
         if os.path.isdir(fdir):
             known = {f.fname for f in fm.fontManager.ttflist}
@@ -70,7 +72,7 @@ def apply_figure_style(*, frame="open", font=None, sizes=(8, 7, 6), grid=False):
 
 apply_figure_style()
 
-sd = torch.load('/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/face/gllvm_oop/s8_full/model_state.pt', map_location="cpu", weights_only=False)
+sd = torch.load('/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/analyses/variational_gllvm/s8_full/model_state.pt', map_location="cpu", weights_only=False)
 st = sd["state_dict"]
 items = sd["items"]
 families = sd["families"]
@@ -160,7 +162,8 @@ for k, (_, it) in enumerate(pool8.iterrows(), start=1):
     budget8.append(dict(k=k, item=it["item"], axis=it.axis, mean_rel=mean_rel))
 budget8 = pd.DataFrame(budget8)
 
-cov = pd.read_parquet('/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/face/gllvm_oop/consolidate/coordinates.parquet')
+cov = pd.read_parquet('/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/m2_strata/coordinates/coordinates_full.parquet')
+cov = cov.set_index(["cohort", "patient_id"])
 
 c8 = {"overall_severity": "#333333", "cognition": "#55a868", "immunometabolic": "#c44e52", "sleep": "#8172b3",
       "suicidality": "#dd8452", "developmental_risk": "#4c72b0", "mania_activation": "#937860", "substance": "#da8bc3"}
