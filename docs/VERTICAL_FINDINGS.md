@@ -6,18 +6,18 @@
 > (orthogonal) — with **3 earned cross-loadings** into cognition. The strata reading lens is **A = 5
 > archetypes (A0–A4)**, and **A2 is the immunometabolic (biology) corner**: the most distinct (M2), the most
 > durable (M3), and the worst-prognosis (M4). Per-milestone canonical records:
-> [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md), [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md),
-> [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md), [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md),
-> [`TREATMENT_OOP_FINDINGS.md`](TREATMENT_OOP_FINDINGS.md). diagnosis is validation-only.
+> [`STRATA_FINDINGS.md`](STRATA_FINDINGS.md), [`STRATA_ATLAS.md`](STRATA_ATLAS.md),
+> [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md), [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md),
+> [`TREATMENT_FINDINGS.md`](TREATMENT_FINDINGS.md). diagnosis is validation-only.
 
 > **Paper-facing synthesis.** On the certified cohort-weighted full-N
 > **Gaussian-copula** measurement map (M1), the M2 stratification, M3 temporal coherence, M4 prognosis, and M5
 > treatment moderation were each rebuilt as **parallel OOP engines that wrap the proven kernels** and leave the
 > the operational engines (`src/face/{strata,temporal,prognosis,treatment}`). This is the one-page read of what the vertical found and what it
 > means.
-> Per-milestone canonical records: [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md) ·
-> [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md) · [`TEMPORAL_OOP_FINDINGS.md`](TEMPORAL_OOP_FINDINGS.md) ·
-> [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md). One-figure summary:
+> Per-milestone canonical records: [`STRATA_FINDINGS.md`](STRATA_FINDINGS.md) ·
+> [`STRATA_ATLAS.md`](STRATA_ATLAS.md) · [`TEMPORAL_FINDINGS.md`](TEMPORAL_FINDINGS.md) ·
+> [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md). One-figure summary:
 > `docs/figures/copula_vertical/synthesis.png`. Pending PI sign-off. Updated 2026-06-24.
 
 ![synthesis](figures/copula_vertical/synthesis.png)
@@ -122,7 +122,7 @@ with uncertainty propagated and no imputation at any step. A stratification that
 would be a re-dressed CGI-S; this one separates patients who look equally ill but are biologically opposite,
 and that separation is durable and prognostically meaningful.
 
-## M5 — treatment: bounds and defends the clinical claim (full record: [TREATMENT_OOP_FINDINGS.md](TREATMENT_OOP_FINDINGS.md))
+## M5 — treatment: bounds and defends the clinical claim (full record: [TREATMENT_FINDINGS.md](TREATMENT_FINDINGS.md))
 
 This baseline cohort has **no randomization** (`arm` is a DSM-5 subtype), so treatment *selection* is out of
 reach — it is M5b. M5's standalone contribution is to **bound and defend** the vertical's clinical claim. (1)

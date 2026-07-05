@@ -2,8 +2,8 @@
 
 > **The methods + math of record for Milestone 4.** Logic, estimand, the nested model ladder, the
 > errors-in-variables engine, the clinical-endpoint layer, the acceptance gates, and the staged
-> pipeline. Findings: [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md); clinician atlas:
-> [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
+> pipeline. Findings: [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md); clinician atlas:
+> [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md).
 > Read before any M4 modelling work. *Status: COMPLETE, PI sign-off 2026-06-27. 2026-06-11.*
 >
 > **Model of record (2026-06-27; PI sign-off 2026-06-27).** M4 runs on the **8-factor** M1/M2/M3 objects (G +
@@ -16,7 +16,7 @@
 > durable-*pair*-alone EIV stays ambiguous (the archetype representation is the carrier). Two follow-up
 > sub-analyses run on the same map: the within-cohort de-confounding (composition only ~4%, OR 6.3,
 > BP-carried) and the raw-vs-map representation benchmark (sufficient for deterioration, ≥92% within-factor for
-> recovery; xgboost under `OMP_NUM_THREADS=1`). Findings: [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md).
+> recovery; xgboost under `OMP_NUM_THREADS=1`). Findings: [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md).
 
 ## 1. Estimand and invariants
 
@@ -103,7 +103,7 @@ The milestone locks when, per primary outcome, Q1+Q2 pass and Q3+Q4 pass-or-docu
 ## 6. Pipeline (`scripts/40–48`, **RETIRED 2026-06-24**) and engine (`src/face/prognosis/`)
 
 > The native driver pipeline below was **retired** — the canonical M4 is the copula OOP engine
-> (`prognosis_model_oop.py`, [`PROGNOSIS_OOP_FINDINGS.md`](PROGNOSIS_OOP_FINDINGS.md)) plus the representation
+> (`prognosis_model_oop.py`, [`PROGNOSIS_FINDINGS.md`](PROGNOSIS_FINDINGS.md)) plus the representation
 > benchmark ([`M4_REPRESENTATION_BENCHMARK.md`](M4_REPRESENTATION_BENCHMARK.md)). The shared array-in/array-out
 > kernels in `src/face/prognosis/` (glm · compare · clinical_value · frame · endpoints · reference ·
 > transdiagnostic · robustness) and `tests/m4/` remain. The script list is kept as the native methods record.

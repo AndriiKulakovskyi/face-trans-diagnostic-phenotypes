@@ -3,7 +3,7 @@
 > **Map of record (read first).** The strata reading lens is **A = 5 archetypes (A0–A4)** on the **8-factor
 > immunometabolic map** — the largest A whose corners reproduce across seeds (cross-seed Tucker ≥ 0.8), with a
 > clean stability cliff at **A = 6** (0.979 → 0.436; EV 0.60). Canonical archetype findings:
-> [`STRATA_OOP_FINDINGS.md`](STRATA_OOP_FINDINGS.md), atlas [`STRATA_OOP_ATLAS.md`](STRATA_OOP_ATLAS.md). The
+> [`STRATA_FINDINGS.md`](STRATA_FINDINGS.md), atlas [`STRATA_ATLAS.md`](STRATA_ATLAS.md). The
 > battery below is the robustness *protocol* (A-selection, cross-seed reproducibility, n_init sensitivity, anchor
 > recovery, degeneracy, membership health, split-half) that establishes the simplex is earned and not a fitting
 > artefact; read it for the method.

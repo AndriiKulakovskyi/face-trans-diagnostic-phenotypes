@@ -143,9 +143,9 @@ Conclusions must hold across model classes to count.
 
 - **This doc** = the methods record for the benchmark (linked from PROGNOSIS_MODEL.md).
 - `docs/PROGNOSIS_MODEL.md`: add a short "§ Representation benchmark" (estimand + design pointer). No mass retitling / no new Q-gate proliferation.
-- `docs/PROGNOSIS_OOP_FINDINGS.md`: add one "Representation: sufficient / efficient / uncertainty-aware / transportable" results section (the benchmark table + the 4 verdicts).
+- `docs/PROGNOSIS_FINDINGS.md`: add one "Representation: sufficient / efficient / uncertainty-aware / transportable" results section (the benchmark table + the 4 verdicts).
 - `report/sections/m4_prognosis.tex`: one new subsection + one figure, folded near the existing "Is it worth using?" subsection.
-- `docs/STATE.md` (M4 block) + `docs/COPULA_VERTICAL_FINDINGS.md` (M4 paragraph): one-line additions.
+- `docs/STATE.md` (M4 block) + `docs/VERTICAL_FINDINGS.md` (M4 paragraph): one-line additions.
 
 ## 12. Tests (`tests/prognosis/test_representation_benchmark.py`)
 

@@ -20,7 +20,7 @@
 > immunometabolic, sleep, mania}`, `EXPL_AXES = {suicidality, developmental_risk, substance}` (Ke = 4); (ii)
 > substance carries **no** off-diagonal Φ, so its coordinate is informed by its own SUD items only
 > (DR = prior-dominated, not imputed). The cross-seed-stable archetype count is **A = 5** — see
-> [STRATA_OOP_FINDINGS.md](STRATA_OOP_FINDINGS.md).
+> [STRATA_FINDINGS.md](STRATA_FINDINGS.md).
 
 ---
 
@@ -427,7 +427,7 @@ data layer (covariates)─┘       full-N f_e projection · cov/draws · labels
                             24 validate  (Q1–Q4, both views · robustness)   ─►  reports/24 + figs
                                          │
                                          ▼
-                            25 atlas  ·  26 score   ─►  patient_strata.parquet · STRATA_OOP_ATLAS.md · figures
+                            25 atlas  ·  26 score   ─►  patient_strata.parquet · STRATA_ATLAS.md · figures
 ```
 
 | Stage | Adds | Gate before advancing |
@@ -499,7 +499,7 @@ r_i1…r_iK (mixture soft membership) · MAP label · assignment confidence (max
 (archetype soft membership) · per-region/archetype posterior summaries`. Uncertainty preserved (optionally as
 draws) so M3/M4 can propagate it.
 
-**The atlas** (`docs/STRATA_OOP_ATLAS.md` + figures) — the scientific story, mirroring M1's dimension atlas.
+**The atlas** (`docs/STRATA_ATLAS.md` + figures) — the scientific story, mirroring M1's dimension atlas.
 Reports: the **structure-discovery shape verdict** (§3.1) with the Mapper figure; for each **stratum** —
 size, **diagnostic composition at both granularities** (3 cohorts + 7 DSM-5 subtypes), the **mean 8-D profile with uncertainty** + defining
 axes, separation, a **data-driven** label (e.g. "high-immunometabolic / average-G" — *not* theory-imposed),
@@ -539,7 +539,7 @@ density/distance, so a PCA companion guards against illusory clusters).
 - **F-R9 G-arm comparison** — Arm A vs Arm B strata (cross-tab + aligned embedding): how much of the
   partition is severity vs profile (§3.5).
 
-**Paper-facing synthesis** (`docs/STRATA_OOP_FINDINGS.md`): findings + discussion, the M2 sibling of
+**Paper-facing synthesis** (`docs/STRATA_FINDINGS.md`): findings + discussion, the M2 sibling of
 [`M1_FINDINGS.md`](M1_FINDINGS.md); every numeric claim backed by a committed `reports/2x_*.md`.
 
 ---
@@ -586,7 +586,7 @@ scripts/  20_prep_coordinates → 21_structure → 22_mixture → 23_archetypes 
 configs/  strata.yaml          # K_max, α, A range, Σ geometry, S_i fidelity, prior-dominated handling, Mapper/embedding cfg, seeds
 results/face/patient_strata.parquet                                          # per-patient soft membership (gitignored)
 reports/  2x_*.md per stage (+ figures in docs/figures/)
-docs/     STRATIFICATION_MODEL.md (this) · STRATA_OOP_FINDINGS.md · STRATA_OOP_ATLAS.md
+docs/     STRATIFICATION_MODEL.md (this) · STRATA_FINDINGS.md · STRATA_ATLAS.md
 ```
 
 Reuse M1 infrastructure: `src/face/scoring` (conditional scores, reliability flags), the 8-factor copula fit,

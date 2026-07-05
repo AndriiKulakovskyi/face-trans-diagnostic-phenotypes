@@ -3,7 +3,7 @@
 > **Reframe note.** M2 is a *coordinate system + reading guide*, not a typology. The 8-dim copula space is a
 > **continuum**; the **continuous coordinates** are the load-bearing object, and the archetype corners /
 > K-tessellation are **interpretation lenses**, not discovered decision-regions or natural kinds (M4 confirms:
-> *operative K = none*). Canonical companions: [STRATA_OOP_ATLAS.md](STRATA_OOP_ATLAS.md),
+> *operative K = none*). Canonical companions: [STRATA_ATLAS.md](STRATA_ATLAS.md),
 > docs/STRATA_READING_GUIDE.md. Read the framing below as the *derivation* of those lenses, not a claim that
 > patients fall into discrete strata.
 
@@ -13,7 +13,7 @@
 > orthogonal** (its cross-factor correlations are non-identifiable). Map: `copula/weighted_8d/hs_s5_merged_xc`
 > (R̂ 1.03, 0 div). Engine [`src/face/strata/strata_model_oop.py`](../src/face/strata/strata_model_oop.py);
 > driver [`notebooks/run_strata_model_oop.py`](../notebooks/run_strata_model_oop.py). Detailed atlas of what
-> the K-family and A mean: [STRATA_OOP_ATLAS.md](STRATA_OOP_ATLAS.md).
+> the K-family and A mean: [STRATA_ATLAS.md](STRATA_ATLAS.md).
 
 ## What this is
 

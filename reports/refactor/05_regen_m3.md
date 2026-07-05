@@ -18,7 +18,7 @@ scoring V1/V2 under the FIXED copula M1/M2 (never re-discovered). Hand-off
 ## Oracle-harvest caveat (Step-0 imperfection, corrected understanding — NOT an M3 defect)
 Two Step-0 oracle CSVs were harvested from the **pre-merge NATIVE vintage** (`reports/35_trait_state.csv`,
 `reports/33_congruence.csv`) — they carry *separate* `metabolic` (ICC 0.932) + `inflammatory` (0.854) axes, whereas
-the copula-canonical M3 (the one M4/M5 + the article consume, per STATE.md/TEMPORAL_OOP_FINDINGS.md) has the
+the copula-canonical M3 (the one M4/M5 + the article consume, per STATE.md/TEMPORAL_FINDINGS.md) has the
 **merged immunometabolic** axis. The correctly-harvested copula artifact (`invariance_license.csv`, from
 `temporal_oop/`) reproduces **exactly**, and the new immunometabolic ICC 0.909 ≈ the metabolic/inflammatory pair
 merged — consistent, not divergent. The reconciliation target for M3 is the copula values (STATE.md), which the

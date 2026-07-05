@@ -7,13 +7,13 @@
 > docs/STRATA_READING_GUIDE.md + report §sec:strata. Read the framing below as the *derivation* of those lenses,
 > not a claim that patients fall into discrete strata.
 
-> **The canonical 8-factor numbers live in [STRATA_OOP_FINDINGS.md](STRATA_OOP_FINDINGS.md)** (continuum null
+> **The canonical 8-factor numbers live in [STRATA_FINDINGS.md](STRATA_FINDINGS.md)** (continuum null
 > silhouette 0.140 vs 0.137±0.002 z = 1.13; K-family BIC 185.0–185.6k; transdiagnostic ARI 0.006 vs DSM-5;
 > tighter-than-DSM-5 η² 0.074 vs 0.026). Map: `copula/weighted_8d/hs_s5_merged_xc`. The detail tables in §0b/§1
 > reconcile to those figures.
 
 > Detailed results analysis for the M2 continuum of soft operational regions on the
-> Gaussian-copula map). Paper-facing summary: [STRATA_OOP_FINDINGS.md](STRATA_OOP_FINDINGS.md). Engine:
+> Gaussian-copula map). Paper-facing summary: [STRATA_FINDINGS.md](STRATA_FINDINGS.md). Engine:
 > [`src/face/strata/strata_model_oop.py`](../src/face/strata/strata_model_oop.py). Figures:
 > `docs/figures/strata_oop/`. All coordinates are on the latent z-scale (0 = population mean, units = SD).
 
