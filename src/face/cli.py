@@ -114,6 +114,15 @@ def _cmd_run(args) -> int:
     return 0
 
 
+def _cmd_report(args) -> int:
+    if args.what == "discoveries":
+        from face.reporting.discoveries import build_discoveries_html
+        out = build_discoveries_html()
+        print(f"[face] wrote {out}  ({out.stat().st_size / 1e6:.1f} MB) — open in a browser (offline).")
+        return 0
+    raise SystemExit(f"unknown report {args.what!r}")
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="face", description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -135,6 +144,9 @@ def build_parser() -> argparse.ArgumentParser:
     r = sub.add_parser("run", help="run any command detached (wake-locked)")
     r.add_argument("job")
     r.add_argument("cmd", nargs=argparse.REMAINDER, help="-- <command ...>")
+
+    rep = sub.add_parser("report", help="build a report artifact")
+    rep.add_argument("what", choices=["discoveries"], help="discoveries = the interactive HTML")
     return p
 
 
@@ -152,6 +164,8 @@ def main(argv=None) -> int:
         cmd = args.cmd[1:] if args.cmd and args.cmd[0] == "--" else args.cmd
         args.cmd = cmd
         return _cmd_run(args)
+    if args.command == "report":
+        return _cmd_report(args)
     return 2
 
 

@@ -140,3 +140,10 @@ report/*.aux
 report/*.log
 report/*.out
 report/*.toc
+
+# Interactive discoveries doc — regenerable via `face report discoveries`; embeds the per-patient
+# continuum cloud (latent coordinates), so never commit it (the builder src/face/reporting/discoveries.py is tracked).
+report/FACE-discoveries.html
+
+# Local preview / dev-tool config (machine-specific)
+.claude/launch.json
