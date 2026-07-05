@@ -22,7 +22,7 @@ import torch
 import torch.nn.functional as F
 
 ROOT="/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr"
-sd=torch.load(f"{ROOT}/results/face/gllvm_oop/s8_full/model_state.pt", map_location="cpu", weights_only=False)
+sd=torch.load(f"{ROOT}/results/analyses/variational_gllvm/s8_full/model_state.pt", map_location="cpu", weights_only=False)
 st=sd["state_dict"]; items=sd["items"]; families=sd["families"]; factor_cols=sd["factor_cols"]; J=len(items); K1=len(factor_cols)
 
 raw_loading=st["raw_loading"]; loading_free=st["loading_free"].bool(); loading_positive=st["loading_positive"].bool()
@@ -36,7 +36,7 @@ psi=sigma**2
 # Phi: factor correlation matrix (8x8)
 import pandas as pd
 
-Phi=pd.read_csv(f"{ROOT}/results/face/gllvm_oop/consolidate/phi.csv", index_col=0).values.astype(np.float64)
+Phi=pd.read_csv(f"{ROOT}/results/analyses/variational_gllvm/consolidate/phi.csv", index_col=0).values.astype(np.float64)
 Phi=0.5*(Phi+Phi.T)
 Phi_inv=np.linalg.inv(Phi)
 

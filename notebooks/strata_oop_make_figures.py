@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Generate the soft-region strata figures from cached stage artifacts (never recomputes).
 
-Run AFTER ``run_strata_model_oop.py`` has populated ``results/face/strata_oop/<stage>/``.
+Run AFTER ``run_strata_model_oop.py`` has populated ``results/m2_strata/<stage>/``.
 
     PYTHONPATH=$PWD/src python notebooks/strata_oop_make_figures.py
     PYTHONPATH=$PWD/src python notebooks/strata_oop_make_figures.py --full-si

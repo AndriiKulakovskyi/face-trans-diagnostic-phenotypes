@@ -1,7 +1,6 @@
 """M4 canonical fit — prognosis: does the durable map *predict* beyond DSM-5 + severity?
 
-Encodes the ONE canonical recipe (the deterministic 8-stage plan the copula M4 engine walks), replacing
-``run_prognosis_model_oop.py``. The engine is a pure *consumer* of the fixed upstream objects — it never
+Encodes the ONE canonical recipe (the deterministic 8-stage plan the copula M4 engine walks), replacing its retired notebook driver. The engine is a pure *consumer* of the fixed upstream objects — it never
 re-discovers or re-scores:
 
   M2 (results/m2_strata)  — baseline coordinates (mean/sd/reliability) + the A=5 archetype simplex +

@@ -4,7 +4,7 @@ Figure-generation code for FACE-ATLAS: fig_adaptive_assessment.png
 Provenance: extracted verbatim from artifact lineage (version_id e5e23816-6ab3-47a0-96b3-e415afc39256).
 Environment: face-dev
 NOTE: these figures were produced in a shared `face-dev` kernel session in which the
-fitted GLLVM model state (results/face/gllvm_oop/s8_full/model_state.pt) and derived
+fitted GLLVM model state (results/analyses/variational_gllvm/s8_full/model_state.pt) and derived
 arrays (loadings, sigmas, families, coordinates) were loaded once and reused across
 cells. This file is the exact producing cell; if run standalone it may require that
 shared setup (model load + per-family Fisher-information arrays) to be present.
@@ -72,7 +72,7 @@ def apply_figure_style(*, frame="open", font=None, sizes=(8, 7, 6), grid=False):
 apply_figure_style()
 
 # Load model state
-sd = torch.load('/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/face/gllvm_oop/s8_full/model_state.pt', map_location="cpu", weights_only=False)
+sd = torch.load('/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/analyses/variational_gllvm/s8_full/model_state.pt', map_location="cpu", weights_only=False)
 st = sd["state_dict"]
 items = sd["items"]
 families = sd["families"]
@@ -219,4 +219,6 @@ axR.set_xlim(0.5, 20)
 # Title and bottom caption paragraph intentionally removed — that text now lives in the
 # LaTeX figure caption (\caption{} for fig:mincount in sections/03_results.tex).
 fig.subplots_adjust(top=0.96, bottom=0.11, left=0.075, right=0.985)
-fig.savefig("fig_adaptive_assessment.png", dpi=200, bbox_inches='tight')
+import os as _os
+_OUT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))  # article/figures/
+fig.savefig(_os.path.join(_OUT, "fig_adaptive_assessment.png"), dpi=200, bbox_inches='tight')

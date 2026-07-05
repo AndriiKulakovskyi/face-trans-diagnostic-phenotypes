@@ -4,7 +4,7 @@ Figure-generation code for FACE-ATLAS: fig_worked_patient.png
 Provenance: extracted verbatim from artifact lineage (version_id 0bbd7815-3d9f-4ee1-823b-29a03c883f40).
 Environment: face-dev
 NOTE: these figures were produced in a shared `face-dev` kernel session in which the
-fitted GLLVM model state (results/face/gllvm_oop/s8_full/model_state.pt) and derived
+fitted GLLVM model state (results/analyses/variational_gllvm/s8_full/model_state.pt) and derived
 arrays (loadings, sigmas, families, coordinates) were loaded once and reused across
 cells. This file is the exact producing cell; if run standalone it may require that
 shared setup (model load + per-family Fisher-information arrays) to be present.
@@ -70,10 +70,10 @@ def apply_figure_style(*, frame="open", font=None, sizes=(8, 7, 6), grid=False):
 apply_figure_style()
 
 # Load data
-coords = pd.read_parquet("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/face/gllvm_oop/consolidate/coordinates.parquet")
-aa = pd.read_csv("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/face/prognosis_oop/endpoints/archetype_atlas.csv")
-L = pd.read_csv("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/face/gllvm_oop/consolidate/loadings_summary.csv")
-strata = pd.read_parquet("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/face/strata_oop/consolidate/patient_strata.parquet")
+coords = pd.read_parquet("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/analyses/variational_gllvm/consolidate/coordinates.parquet")
+aa = pd.read_csv("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/m4_prognosis/endpoints/archetype_atlas.csv")
+L = pd.read_csv("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/analyses/variational_gllvm/consolidate/loadings_summary.csv")
+strata = pd.read_parquet("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/m2_strata/consolidate/patient_strata.parquet")
 
 factors = ["overall_severity","cognition","immunometabolic","sleep","suicidality","developmental_risk","mania_activation","substance"]
 

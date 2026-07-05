@@ -6,7 +6,7 @@ Augments ``data/processed/covariates_v0.parquet`` (age/sex/edu — built by
 biology⊥G headline can be re-derived adjusting for medication and adiposity (not just age/sex/site):
 
   - ``on_antipsychotic`` : harmonized antipsychotic exposure
-                           (``results/face/treatment_oop/exposures/treatment_exposures.parquet``).
+                           (``results/m5_treatment/exposures/treatment_exposures.parquet``).
                            BP = lifetime, SZ/DR = current; coverage ~54 % (NaN where no treatment data,
                            mean-imputed for the design only — a stated limitation).
   - ``bmi``              : body-mass index from the V0 baseline. NB: BMI is itself a *metabolic indicator*,

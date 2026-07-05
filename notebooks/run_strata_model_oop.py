@@ -3,7 +3,7 @@
 
 Mirrors ``run_measurement_model_oop.py``: it walks the deterministic strata plan
 (coordinates -> structure -> regions -> archetypes -> usefulness -> consolidate) on the certified
-cohort-weighted copula map, caching each stage under ``results/face/strata_oop/<stage>/``.
+cohort-weighted copula map, caching each stage under ``results/m2_strata/<stage>/``.
 
     PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_strata_model_oop.py --mode smoke
     PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_strata_model_oop.py --mode full --stop-after structure

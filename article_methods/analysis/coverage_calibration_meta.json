@@ -9,7 +9,7 @@
     0.9,
     0.95
   ],
-  "phi_source": "results/face/gllvm_oop/s8_full/model_state.pt factor_prior (== consolidate/phi.csv)",
+  "phi_source": "results/analyses/variational_gllvm/s8_full/model_state.pt factor_prior (== consolidate/phi.csv)",
   "phi_note": "reports/copula_8factor_phi.csv differs from the frozen model Phi by <=0.11 on specific off-diagonals; the calibration test uses the frozen model's own Phi so generation and scoring share one prior (self-consistent by construction).",
   "scale": "model-internal (gaussian channel on rank-INT/copula-z scale; discrete on native code)",
   "gaussian_closed_form_match_maxabs": 3.3306690738754696e-15,

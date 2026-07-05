@@ -1,6 +1,6 @@
 """M3 canonical fit — temporal coherence of the map + strata (V0 defines, follow-up validates).
 
-Encodes the ONE canonical recipe, replacing the notebook driver ``run_temporal_model_oop.py``. Scores
+Encodes the ONE canonical recipe, replacing its retired notebook driver. Scores
 V1/V2 under the FIXED copula M1/M2 — never re-discovers the 8-dim map or the A=5 archetypes on later
 visits — and walks the deterministic plan:
 

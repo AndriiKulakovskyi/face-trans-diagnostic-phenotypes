@@ -3,7 +3,7 @@
 
 Mirrors the other OOP drivers: walks the plan (exposures -> frame -> propensity -> moderation -> confounder ->
 tolerability -> consolidate) on the copula objects, caching each stage under
-``results/face/treatment_oop/<stage>/``. Wraps the proven M5 + M4 kernels; native M5 untouched.
+``results/m5_treatment/<stage>/``. Wraps the proven M5 + M4 kernels; native M5 untouched.
 
     PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_treatment_model_oop.py --mode smoke --stop-after propensity
     PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_treatment_model_oop.py --mode full

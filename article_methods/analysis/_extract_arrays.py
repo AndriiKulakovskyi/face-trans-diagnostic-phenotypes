@@ -10,7 +10,7 @@ import torch
 import torch.nn.functional as F
 
 ROOT="/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr"
-sd=torch.load(f"{ROOT}/results/face/gllvm_oop/s8_full/model_state.pt", map_location="cpu", weights_only=False)
+sd=torch.load(f"{ROOT}/results/analyses/variational_gllvm/s8_full/model_state.pt", map_location="cpu", weights_only=False)
 st=sd["state_dict"]; items=sd["items"]; families=sd["families"]; factor_cols=sd["factor_cols"]; J=len(items)
 
 raw_loading=st["raw_loading"]; lf=st["loading_free"].bool(); lp=st["loading_positive"].bool()
@@ -40,7 +40,7 @@ for j,c in cutlist.items(): cuts_pad[j,:len(c)]=c; ncut[j]=len(c)
 # primary axis per item = argmax |lambda|
 prim=np.argmax(np.abs(lam),axis=1)
 
-Phi=pd.read_csv(f"{ROOT}/results/face/gllvm_oop/consolidate/phi.csv",index_col=0).values.astype(np.float64)
+Phi=pd.read_csv(f"{ROOT}/results/analyses/variational_gllvm/consolidate/phi.csv",index_col=0).values.astype(np.float64)
 Phi=0.5*(Phi+Phi.T)
 
 np.savez("/tmp/face_arrays.npz", lam=lam, alpha=alpha, sigma=sigma, count_alpha=count_alpha,
@@ -49,8 +49,8 @@ np.savez("/tmp/face_arrays.npz", lam=lam, alpha=alpha, sigma=sigma, count_alpha=
 
 # ---- join remission endpoint to EAP coordinates ----
 AX=list(factor_cols)
-cov=pd.read_parquet(f"{ROOT}/results/face/gllvm_oop/consolidate/coordinates.parquet").reset_index()
-prog=pd.read_parquet(f"{ROOT}/results/face/prognosis_oop/consolidate/prognosis_patient_risk.parquet")
+cov=pd.read_parquet(f"{ROOT}/results/analyses/variational_gllvm/consolidate/coordinates.parquet").reset_index()
+prog=pd.read_parquet(f"{ROOT}/results/m4_prognosis/consolidate/prognosis_patient_risk.parquet")
 keep=["cohort","patient_id","egf__remission_V2","cgi_s__remission_V2","arch_dominant_name","arm"]
 m=cov.merge(prog[keep], on=["cohort","patient_id"], how="left")
 m.to_parquet("/tmp/real_prog.parquet")

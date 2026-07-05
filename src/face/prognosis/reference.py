@@ -23,7 +23,7 @@ from face.prognosis import CANON
 RUNGS = ("R0", "R1", "R2", "R3y")
 _COVARS = ("age", "sex", "siteid_city", "arm")
 SPECIFICS = tuple(a for a in CANON if a != "overall_severity")   # the 7 ⊥G specific axes (8-factor; the ceiling)
-# NB legacy/unused: the live +archetypesA path discovers arch_w* dynamically (prognosis_model_oop.arch_cols);
+# NB legacy/unused: the live +archetypesA path discovers arch_w* dynamically (prognosis.engine.arch_cols);
 # this constant is kept only as documentation and is A=5 (drop-one of 5) on the 8-factor map.
 ARCH_COLS = tuple(f"arch_w{k}" for k in range(4))                 # 5 archetype weights, drop-one reference
 TESS_COLS = tuple(f"tess_r{k}" for k in range(3))                 # 4 tessellation regions, drop-one reference

@@ -3,8 +3,8 @@
 
 Mirrors ``run_strata_model_oop.py``: it walks the deterministic plan
 (frame -> reference -> incremental -> transdiagnostic -> endpoints -> clinical_value -> robustness ->
-consolidate) on the copula M2 hand-off (``results/face/strata_oop/``), caching each stage under
-``results/face/prognosis_oop/<stage>/``. Wraps the proven kernels (``glm``/``compare``/``reference``); never
+consolidate) on the copula M2 hand-off (``results/m2_strata/``), caching each stage under
+``results/m4_prognosis/<stage>/``. Wraps the proven kernels (``glm``/``compare``/``reference``); never
 touches the native ``results/face/m4`` or ``scripts/40-48``.
 
     PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_prognosis_model_oop.py --mode smoke

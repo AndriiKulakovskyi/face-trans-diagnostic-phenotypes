@@ -27,7 +27,7 @@ from face.measurement.engine import (  # noqa: E402
 from face.measurement.synthetic import export_loadings_summary, export_phi  # noqa: E402
 
 XC = REPO / "configs" / "loading_matrix.immunometabolic_crossload.csv"
-IDATA = REPO / "results/face/oop_measurement/copula/horseshoe_8d_excl-bmi-weight-wstcir/hs_s5_merged_xc/idata.nc"
+IDATA = REPO / "results/m1_measurement/copula/horseshoe_8d_excl-bmi-weight-wstcir/hs_s5_merged_xc/idata.nc"
 F8 = ["overall_severity", "cognition", "immunometabolic", "sleep", "suicidality",
       "developmental_risk", "mania_activation", "substance"]
 EXCL = ("bmi", "weight", "wstcir")

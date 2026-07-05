@@ -1,6 +1,6 @@
 # Tier-0 / low-effort reruns — results
 
-Four analyses run on the fitted model (`results/face/gllvm_oop/s8_full/model_state.pt`),
+Four analyses run on the fitted model (`results/analyses/variational_gllvm/s8_full/model_state.pt`),
 reusing the published Fisher-information and reconstruction accounting verbatim. Each maps to
 an improvement item in `REVIEW_article_methods.md`.
 

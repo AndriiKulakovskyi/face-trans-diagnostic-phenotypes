@@ -20,7 +20,7 @@ import torch
 import torch.nn.functional as F
 
 ROOT="/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr"
-sd=torch.load(f"{ROOT}/results/face/gllvm_oop/s8_full/model_state.pt", map_location="cpu", weights_only=False)
+sd=torch.load(f"{ROOT}/results/analyses/variational_gllvm/s8_full/model_state.pt", map_location="cpu", weights_only=False)
 st=sd["state_dict"]; items=sd["items"]; families=sd["families"]; factor_cols=sd["factor_cols"]; J=len(items)
 
 raw_loading=st["raw_loading"]; loading_free=st["loading_free"].bool(); loading_positive=st["loading_positive"].bool()

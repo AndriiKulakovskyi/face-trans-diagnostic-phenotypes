@@ -1,6 +1,6 @@
 """OOP implementation of the FACE M1 Bayesian sparse bifactor/ESEM model.
 
-This module intentionally lives beside, not inside, the original ``continuous_core``
+This module intentionally lives beside, not inside, the original ``measurement.kernel``
 engine.  It reads the same processed artifacts but rebuilds the measurement model
 with a small set of explicit classes:
 
@@ -166,7 +166,7 @@ class MeasurementConfig:
     """Paths and modeling switches for the parallel implementation.
 
     The default object is the **hard-zero primary** (matching the certified
-    ``continuous_core`` engine): unlikely cross-loadings are fixed at exactly 0,
+    ``measurement.kernel`` engine): unlikely cross-loadings are fixed at exactly 0,
     covariates are residualized, and there are no in-likelihood mean terms.
 
     Why hard-zero is the default (empirically established 2026-06-19): freeing the
@@ -199,7 +199,7 @@ class MeasurementConfig:
     # equivalent routes (for Gaussian/log-Gaussian items the choice is FWL-equivalent):
     #   * ``"residualize"`` (default): OLS-partial each item on the covariate design
     #     BEFORE z-scoring, so the marginalized likelihood stays zero-mean and adds
-    #     ZERO sampler parameters.  This is what the certified ``continuous_core``
+    #     ZERO sampler parameters.  This is what the certified ``measurement.kernel``
     #     engine does (its covariate-adjusted arm) and is what keeps the fit
     #     tractable at N=9013.
     #   * ``"in_likelihood"``: sample item intercepts ``alpha`` and covariate slopes
@@ -998,7 +998,7 @@ class MeasurementDataset:
         observed rows; item NaNs are preserved.  For a Gaussian/log-Gaussian item
         this is Frisch-Waugh-Lovell-equivalent to the in-likelihood item-mean
         covariate adjustment, so Lambda/Phi are unchanged but no per-item alpha/beta
-        is sampled (mirrors ``continuous_core._residualize_on_covariates``)."""
+        is sampled (mirrors ``measurement.kernel._residualize_on_covariates``)."""
         design, _names = self._covariate_design(raw_df.index)
         A = np.column_stack([np.ones((len(raw_df), 1), dtype="float64"), design])
         out = raw_df.copy()

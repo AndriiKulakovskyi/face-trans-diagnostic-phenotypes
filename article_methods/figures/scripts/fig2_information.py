@@ -4,7 +4,7 @@ Figure-generation code for FACE-ATLAS: fig_loading_vs_info.png
 Provenance: extracted verbatim from artifact lineage (version_id ecfd1aed-0f2e-4407-9b89-dfc10ab9899e).
 Environment: face-dev
 NOTE: these figures were produced in a shared `face-dev` kernel session in which the
-fitted GLLVM model state (results/face/gllvm_oop/s8_full/model_state.pt) and derived
+fitted GLLVM model state (results/analyses/variational_gllvm/s8_full/model_state.pt) and derived
 arrays (loadings, sigmas, families, coordinates) were loaded once and reused across
 cells. This file is the exact producing cell; if run standalone it may require that
 shared setup (model load + per-family Fisher-information arrays) to be present.
@@ -74,7 +74,7 @@ def apply_figure_style(*, frame="open", font=None, sizes=(8, 7, 6), grid=False):
 apply_figure_style()
 
 # Load model state
-sd = torch.load('/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/face/gllvm_oop/s8_full/model_state.pt', map_location="cpu", weights_only=False)
+sd = torch.load('/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/results/analyses/variational_gllvm/s8_full/model_state.pt', map_location="cpu", weights_only=False)
 st = sd["state_dict"]
 items = sd["items"]
 families = sd["families"]

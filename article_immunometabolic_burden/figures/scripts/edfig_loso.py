@@ -4,7 +4,7 @@ Figure-generation code for FACE-ATLAS: edfig_loso.png
 Provenance: extracted verbatim from artifact lineage (version_id cdb599be-7fa7-4ff5-a265-9fe8d7546b61).
 Environment: face-dev
 NOTE: these figures were produced in a shared `face-dev` kernel session in which the
-fitted GLLVM model state (results/face/gllvm_oop/s8_full/model_state.pt) and derived
+fitted GLLVM model state (results/analyses/variational_gllvm/s8_full/model_state.pt) and derived
 arrays (loadings, sigmas, families, coordinates) were loaded once and reused across
 cells. This file is the exact producing cell; if run standalone it may require that
 shared setup (model load + per-family Fisher-information arrays) to be present.

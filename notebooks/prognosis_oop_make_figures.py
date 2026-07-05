@@ -3,7 +3,7 @@
 
     PYTHONPATH=$PWD/src python notebooks/prognosis_oop_make_figures.py
 
-Reads ``results/face/prognosis_oop/<stage>/`` and writes ``docs/figures/prognosis_oop/``.
+Reads ``results/m4_prognosis/<stage>/`` and writes ``docs/figures/prognosis_oop/``.
 """
 from __future__ import annotations
 

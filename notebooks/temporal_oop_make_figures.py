@@ -3,7 +3,7 @@
 
     PYTHONPATH=$PWD/src python notebooks/temporal_oop_make_figures.py
 
-Reads ``results/face/temporal_oop/<stage>/`` and writes ``docs/figures/temporal_oop/``.
+Reads ``results/m3_temporal/<stage>/`` and writes ``docs/figures/temporal_oop/``.
 """
 from __future__ import annotations
 

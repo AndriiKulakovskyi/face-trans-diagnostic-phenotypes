@@ -1,7 +1,7 @@
 """M2 canonical fit — soft-region stratification on the M1 transdiagnostic map.
 
 Encodes the ONE canonical recipe that turns the fixed M1 primary map into the operational strata
-hand-off M3-M5 consume, replacing the ``run_strata_model_oop.py`` notebook invocation. The engine is
+hand-off M3-M5 consume, replacing its retired notebook driver. The engine is
 deterministic numpy/EM (no MCMC, no warm-start): a six-stage plan cached under ``results/m2_strata/<stage>/``.
 
 Plan of record: coordinates (score 9,013 patients on the 8 axes from the M1 copula posterior) ->

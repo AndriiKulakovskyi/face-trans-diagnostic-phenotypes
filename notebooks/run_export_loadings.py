@@ -11,8 +11,8 @@ loadings table with equal-tailed 95% credible intervals plus the 9x9 Phi matrix.
     PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_export_loadings.py
 
 Outputs (default):
-* results/face/oop_measurement/copula/s5_9dim_mixed/loadings_summary.csv   (canonical)
-* results/face/oop_measurement/copula/s5_9dim_mixed/phi.csv                (canonical)
+* results/m1_measurement/primary/loadings_summary.csv   (canonical)
+* results/m1_measurement/primary/phi.csv                (canonical)
 * reports/copula_s5_9dim_loadings.csv     (article-facing; supersedes stale native 11_s5_9dim_loadings.csv)
 * reports/copula_s5_9dim_phi.csv          (article-facing; supersedes stale native 04_stage5_phi.csv)
 """

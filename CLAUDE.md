@@ -76,8 +76,8 @@ loadings/Φ at `reports/copula_8factor_{loadings,phi}.csv`. Map location:
 `results/face/.../copula/weighted_8d/hs_s5_merged_xc`.
 
 **M2 — stratification (complete).** Methods **[docs/STRATIFICATION_MODEL.md](docs/STRATIFICATION_MODEL.md)**,
-findings **[docs/STRATA_OOP_FINDINGS.md](docs/STRATA_OOP_FINDINGS.md)**, atlas
-**[docs/STRATA_OOP_ATLAS.md](docs/STRATA_OOP_ATLAS.md)**. On the 8-dim coordinates (uncertainty-propagated,
+findings **[docs/STRATA_FINDINGS.md](docs/STRATA_FINDINGS.md)**, atlas
+**[docs/STRATA_ATLAS.md](docs/STRATA_ATLAS.md)**. On the 8-dim coordinates (uncertainty-propagated,
 diagnosis = validation-only) the space is a **continuum, not biotypes** (silhouette 0.140 ≈ structureless null
 0.137 ± 0.002, z = 1.13 n.s.; HDBSCAN 0 clusters). Load-bearing objects = the continuous coordinates + a stable
 **A = 5 archetype simplex** (clean stability cliff at A = 6): **A0** activation/sleep, **A1** severe clean-biology,
@@ -90,7 +90,7 @@ decided by M4/M5 incremental validity (answer: none). Engine `src/face/strata/st
 `results/face/strata_oop/coordinates/`.
 
 **M3 — temporal coherence (complete).** Methods **[docs/TEMPORAL_MODEL.md](docs/TEMPORAL_MODEL.md)**, findings
-**[docs/TEMPORAL_OOP_FINDINGS.md](docs/TEMPORAL_OOP_FINDINGS.md)**. Scoring V1/V2 under the **fixed** M1/M2 model
+**[docs/TEMPORAL_FINDINGS.md](docs/TEMPORAL_FINDINGS.md)**. Scoring V1/V2 under the **fixed** M1/M2 model
 (observed cells, uncertainty propagated, never re-discovered; V0 reproduced at r ≈ 0.99) shows the map + strata
 are temporally coherent: **G1 invariance** all 4/4 backbone axes invariant (G, cognition, immunometabolic φ
 0.987, sleep); **G3 trait/state** immunometabolic ICC 0.91 the single most durable axis, cognition 0.70 trait,
@@ -101,7 +101,7 @@ Engine `src/face/temporal/temporal_model_oop.py`; driver `notebooks/run_temporal
 repbench).
 
 **M4 — prognosis (complete).** Methods **[docs/PROGNOSIS_MODEL.md](docs/PROGNOSIS_MODEL.md)**, findings + atlas
-**[docs/PROGNOSIS_OOP_FINDINGS.md](docs/PROGNOSIS_OOP_FINDINGS.md)**. On the fixed M1/M2/M3 objects, an
+**[docs/PROGNOSIS_FINDINGS.md](docs/PROGNOSIS_FINDINGS.md)**. On the fixed M1/M2/M3 objects, an
 errors-in-variables Bayesian GLM tests whether a baseline coordinate/stratum predicts a 2-year outcome
 incrementally beyond DSM-5 + severity + baseline outcome. The **A = 5 archetypes predict 2-year functioning**
 (ΔELPD +62.8 held-out; IPW-robust +54.4; permutation-null; **co-informative with DSM-5**; course-dependent,
@@ -116,7 +116,7 @@ a missing axis). Engine `src/face/prognosis/prognosis_model_oop.py`; driver
 `notebooks/run_prognosis_model_oop.py`; hand-off `results/face/prognosis_oop/`.
 
 **M5 — treatment (complete, bounds-and-defends).** Methods **[docs/TREATMENT_MODEL.md](docs/TREATMENT_MODEL.md)**,
-findings **[docs/TREATMENT_OOP_FINDINGS.md](docs/TREATMENT_OOP_FINDINGS.md)**. Treatment data live in the
+findings **[docs/TREATMENT_FINDINGS.md](docs/TREATMENT_FINDINGS.md)**. Treatment data live in the
 per-cohort thesaurus `TRAITEMENTS` tabs, harmonized to common drug-class exposures (ATC[SZ] / class-string[DR] /
 lifetime-flag[BP]). A causal pipeline (**overlap gate → propensity[severity+diagnosis+demographics+map] →
 doubly-robust EIV moderation [treat×durable-axis] + A=5 archetype interaction + E-value**) asks whether the map
@@ -130,6 +130,6 @@ the **A2 immunometabolic archetype corner** (attenuation 7.7% / 6.4% IPW) and th
 response/side-effects (archetype ΔAUC +0.012 / +0.034 / +0.042). Genuine treatment **selection** needs
 randomized/trial-arm data (a future **M5b**). Engine `src/face/treatment/treatment_model_oop.py`; driver
 `notebooks/run_treatment_model_oop.py`; hand-off `results/face/treatment_oop/`. **Full vertical synthesis:
-[docs/COPULA_VERTICAL_FINDINGS.md](docs/COPULA_VERTICAL_FINDINGS.md).**
+[docs/VERTICAL_FINDINGS.md](docs/VERTICAL_FINDINGS.md).**
 
 **Open follow-ups:** FondaMental treatment-data (RCT/prescription) check for M5b; a DR-MARS harmonization fix.

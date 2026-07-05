@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Figures for the variational GLLVM arm: training curves + VI-vs-NUTS congruence.
 
-Reads the fitted outputs under ``results/face/gllvm_oop/`` (stage training histories, the
+Reads the fitted outputs under ``results/analyses/variational_gllvm/`` (stage training histories, the
 ``consolidate/`` exports, the cached ``nuts_targets/``, and ``metrics.json``) and writes PNGs
 to ``docs/figures/gllvm_oop/``.  Run AFTER the production fit + ``run_gllvm_validation.py``.
 

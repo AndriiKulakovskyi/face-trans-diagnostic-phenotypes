@@ -3,7 +3,7 @@
 
 Mirrors ``run_prognosis_model_oop.py``: walks the plan (invariance -> panel -> attrition -> trait_state ->
 persistence -> consolidate) on the copula M1/M2 objects, caching each stage under
-``results/face/temporal_oop/<stage>/``. Wraps the proven temporal kernels; never touches native M3.
+``results/m3_temporal/<stage>/``. Wraps the proven temporal kernels; never touches native M3.
 
     PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_temporal_model_oop.py --mode smoke --stop-after panel
     PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_temporal_model_oop.py --mode full

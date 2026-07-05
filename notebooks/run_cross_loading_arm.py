@@ -4,7 +4,7 @@
 Normal(0, 0.25), warm-started from the certified ``s5_9dim_mixed`` so it starts in the hard-zero basin.
 
 This NEVER re-runs or overwrites the certified fit: it only reads the cached
-``results/face/oop_measurement/copula/s5_9dim_mixed/idata.nc`` for the warm start, and writes the new
+``results/m1_measurement/primary/idata.nc`` for the warm start, and writes the new
 fit to a separate stage dir ``.../copula/s5_xcross/``.
 
     # quick wiring check (tiny draws, verifies the 37 cells are freed + warm-start loads):

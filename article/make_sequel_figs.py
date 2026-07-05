@@ -113,7 +113,7 @@ print("wrote fig_voi", summary["voi"])
 # =====================================================================================
 # FIGURE 2 -- the simplex "fog": membership entropy over all patients
 # =====================================================================================
-ps = pd.read_parquet(f"{ROOT}/results/face/strata_oop/consolidate/patient_strata.parquet")
+ps = pd.read_parquet(f"{ROOT}/results/m2_strata/consolidate/patient_strata.parquet")
 W  = ps[[f"arch_w{a}" for a in range(5)]].values
 W  = W / W.sum(1, keepdims=True)
 H  = -(W*np.log(np.clip(W,1e-12,None))).sum(1)         # entropy, max = ln5
@@ -173,7 +173,7 @@ print("wrote fig_simplexfog", summary["fog"])
 # =====================================================================================
 # FIGURE 3 -- trait/state thermometer
 # =====================================================================================
-ts = pd.read_csv(f"{ROOT}/results/face/temporal_oop/trait_state/trait_state.csv")
+ts = pd.read_csv(f"{ROOT}/results/m3_temporal/trait_state/trait_state.csv")
 ts = ts.sort_values("icc", ascending=True).reset_index(drop=True)   # ascending so trait at top
 tot = ts[["var_between","var_within","var_meas"]].sum(1)
 fb, fw, fm = (ts["var_between"]/tot, ts["var_within"]/tot, ts["var_meas"]/tot)

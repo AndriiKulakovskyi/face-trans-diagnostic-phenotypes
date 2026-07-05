@@ -55,7 +55,7 @@ def fixed_params(idata, mp) -> dict:
 def build_projection(mp, P, psi_floor: float = 0.05):
     """The fixed-parameter projection model: only the per-patient explicit latents ``z_e`` are free.
 
-    Mirrors ``continuous_core.build_mixed`` exactly, but every measurement parameter is a numpy
+    Mirrors ``measurement.kernel.build_mixed`` exactly, but every measurement parameter is a numpy
     constant from ``P`` (the certified posterior means) — so the posterior over ``z_e`` (hence
     ``f_e``) is the conditional projection of each patient onto the fixed map. The continuous block is
     the same marginalized Woodbury (residual ``r = x − f_e Bᵀ``); the non-Gaussian items keep their

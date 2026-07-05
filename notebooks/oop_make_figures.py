@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Generate core measurement-model figures + patient-projection demos from cached OOP fits.
 
-Run AFTER a staged fit has populated ``results/face/oop_measurement/<stage>/idata.nc``
+Run AFTER a staged fit has populated ``results/m1_measurement/<stage>/idata.nc``
 (e.g. ``python notebooks/run_measurement_model_oop.py --mode medium``).  This reuses the
 cached posteriors; it never refits.
 

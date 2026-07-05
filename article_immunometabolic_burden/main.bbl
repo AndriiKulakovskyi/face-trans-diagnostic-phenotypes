@@ -1,0 +1,370 @@
+\begin{thebibliography}{35}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Insel et~al.(2010)Insel, Cuthbert, Garvey, Heinssen, Pine, Quinn,
+  Sanislow, and Wang]{insel2010rdoc}
+Thomas Insel, Bruce Cuthbert, Marjorie Garvey, Robert Heinssen, Daniel~S Pine,
+  Kevin Quinn, Charles Sanislow, and Philip Wang.
+\newblock {Research domain criteria (RDoC): toward a new classification
+  framework for research on mental disorders}.
+\newblock \emph{Am J Psychiatry}, 167\penalty0 (7):\penalty0 748--51, 2010.
+\newblock \doi{10.1176/appi.ajp.2010.09091379}.
+\newblock PMID: 20595427.
+
+\bibitem[Kotov et~al.(2017)Kotov, Krueger, Watson, Achenbach, Althoff, Bagby,
+  Brown, Carpenter, Caspi, Clark, Eaton, Forbes, Forbush, Goldberg, Hasin,
+  Hyman, Ivanova, Lynam, Markon, Miller, Moffitt, Morey, Mullins-Sweatt, Ormel,
+  Patrick, Regier, Rescorla, Ruggero, Samuel, Sellbom, Simms, Skodol, Slade,
+  South, Tackett, Waldman, Waszczuk, Widiger, Wright, and
+  Zimmerman]{kotov2017hitop}
+Roman Kotov, Robert~F Krueger, David Watson, Thomas~M Achenbach, Robert~R
+  Althoff, R~Michael Bagby, Timothy~A Brown, William~T Carpenter, Avshalom
+  Caspi, Lee~Anna Clark, Nicholas~R Eaton, Miriam~K Forbes, Kelsie~T Forbush,
+  David Goldberg, Deborah Hasin, Steven~E Hyman, Masha~Y Ivanova, Donald~R
+  Lynam, Kristian Markon, Joshua~D Miller, Terrie~E Moffitt, Leslie~C Morey,
+  Stephanie~N Mullins-Sweatt, Johan Ormel, Christopher~J Patrick, Darrel~A
+  Regier, Leslie Rescorla, Camilo~J Ruggero, Douglas~B Samuel, Martin Sellbom,
+  Leonard~J Simms, Andrew~E Skodol, Tim Slade, Susan~C South, Jennifer~L
+  Tackett, Irwin~D Waldman, Monika~A Waszczuk, Thomas~A Widiger, Aidan G~C
+  Wright, and Mark Zimmerman.
+\newblock {The Hierarchical Taxonomy of Psychopathology (HiTOP): A dimensional
+  alternative to traditional nosologies}.
+\newblock \emph{J Abnorm Psychol}, 126\penalty0 (4):\penalty0 454--477, 2017.
+\newblock \doi{10.1037/abn0000258}.
+\newblock PMID: 28333488.
+
+\bibitem[Ruggero et~al.(2019)Ruggero, Kotov, Hopwood, First, Clark, Skodol,
+  Mullins-Sweatt, Patrick, Bach, Cicero, Docherty, Simms, Bagby, Krueger,
+  Callahan, Chmielewski, Conway, De~Clercq, Dornbach-Bender, Eaton, Forbes,
+  Forbush, Haltigan, Miller, Morey, Patalay, Regier, Reininghaus, Shackman,
+  Waszczuk, Watson, Wright, and Zimmermann]{ruggero2019hitop}
+Camilo~J Ruggero, Roman Kotov, Christopher~J Hopwood, Michael First, Lee~Anna
+  Clark, Andrew~E Skodol, Stephanie~N Mullins-Sweatt, Christopher~J Patrick,
+  Bo~Bach, David~C Cicero, Anna Docherty, Leonard~J Simms, R~Michael Bagby,
+  Robert~F Krueger, Jennifer~L Callahan, Michael Chmielewski, Christopher~C
+  Conway, Barbara De~Clercq, Allison Dornbach-Bender, Nicholas~R Eaton,
+  Miriam~K Forbes, Kelsie~T Forbush, John~D Haltigan, Joshua~D Miller, Leslie~C
+  Morey, Praveetha Patalay, Darrel~A Regier, Ulrich Reininghaus, Alexander~J
+  Shackman, Monika~A Waszczuk, David Watson, Aidan G~C Wright, and Johannes
+  Zimmermann.
+\newblock {Integrating the Hierarchical Taxonomy of Psychopathology (HiTOP)
+  into clinical practice}.
+\newblock \emph{J Consult Clin Psychol}, 87\penalty0 (12):\penalty0 1069--1084,
+  2019.
+\newblock \doi{10.1037/ccp0000452}.
+\newblock PMID: 31724426.
+
+\bibitem[Caspi et~al.(2014)Caspi, Houts, Belsky, Goldman-Mellor, Harrington,
+  Israel, Meier, Ramrakha, Shalev, Poulton, and Moffitt]{caspi2014pfactor}
+Avshalom Caspi, Renate~M Houts, Daniel~W Belsky, Sidra~J Goldman-Mellor,
+  HonaLee Harrington, Salomon Israel, Madeline~H Meier, Sandhya Ramrakha, Idan
+  Shalev, Richie Poulton, and Terrie~E Moffitt.
+\newblock {The p Factor: One General Psychopathology Factor in the Structure of
+  Psychiatric Disorders?}
+\newblock \emph{Clin Psychol Sci}, 2\penalty0 (2):\penalty0 119--137, 2014.
+\newblock \doi{10.1177/2167702613497473}.
+\newblock PMID: 25360393.
+
+\bibitem[Lahey et~al.(2017)Lahey, Zald, Perkins, Villalta-Gil, Werts,
+  Van~Hulle, Rathouz, Applegate, Class, Poore, Watts, and
+  Waldman]{lahey2017general}
+Benjamin~B Lahey, David~H Zald, Scott~F Perkins, Victoria Villalta-Gil,
+  Katherine~B Werts, Carol~A Van~Hulle, Paul~J Rathouz, Brooks Applegate,
+  Quetzal~A Class, Holly~E Poore, Ashley~L Watts, and Irwin~D Waldman.
+\newblock {Measuring the hierarchical general factor model of psychopathology
+  in young adults}.
+\newblock \emph{Int J Methods Psychiatr Res}, 27\penalty0 (1), 2017.
+\newblock \doi{10.1002/mpr.1593}.
+\newblock PMID: 28990308.
+
+\bibitem[Marquand et~al.(2016)Marquand, Rezek, Buitelaar, and
+  Beckmann]{marquand2016}
+Andre~F Marquand, Iead Rezek, Jan Buitelaar, and Christian~F Beckmann.
+\newblock {Understanding Heterogeneity in Clinical Cohorts Using Normative
+  Models: Beyond Case-Control Studies}.
+\newblock \emph{Biol Psychiatry}, 80\penalty0 (7):\penalty0 552--61, 2016.
+\newblock \doi{10.1016/j.biopsych.2015.12.023}.
+\newblock PMID: 26927419.
+
+\bibitem[Wolfers et~al.(2018)Wolfers, Doan, Kaufmann, Aln\ae~s, Moberget,
+  Agartz, Buitelaar, Ueland, Melle, Franke, Andreassen, Beckmann, Westlye, and
+  Marquand]{wolfers2018}
+Thomas Wolfers, Nhat~Trung Doan, Tobias Kaufmann, Dag Aln\ae~s, Torgeir
+  Moberget, Ingrid Agartz, Jan~K Buitelaar, Torill Ueland, Ingrid Melle,
+  Barbara Franke, Ole~A Andreassen, Christian~F Beckmann, Lars~T Westlye, and
+  Andre~F Marquand.
+\newblock {Mapping the Heterogeneous Phenotype of Schizophrenia and Bipolar
+  Disorder Using Normative Models}.
+\newblock \emph{JAMA Psychiatry}, 75\penalty0 (11):\penalty0 1146--1155, 2018.
+\newblock \doi{10.1001/jamapsychiatry.2018.2467}.
+\newblock PMID: 30304337.
+
+\bibitem[Segal et~al.(2023)Segal, Parkes, Aquino, Kia, Wolfers, Franke,
+  Hoogman, Beckmann, Westlye, Andreassen, Zalesky, Harrison, Davey,
+  Soriano-Mas, Cardoner, Tiego, Y\"ucel, Braganza, Suo, Berk, Cotton,
+  Bellgrove, Marquand, and Fornito]{segal2023}
+Ashlea Segal, Linden Parkes, Kevin Aquino, Seyed~Mostafa Kia, Thomas Wolfers,
+  Barbara Franke, Martine Hoogman, Christian~F Beckmann, Lars~T Westlye, Ole~A
+  Andreassen, Andrew Zalesky, Ben~J Harrison, Christopher~G Davey, Carles
+  Soriano-Mas, Narc\'is Cardoner, Jeggan Tiego, Murat Y\"ucel, Leah Braganza,
+  Chao Suo, Michael Berk, Sue Cotton, Mark~A Bellgrove, Andre~F Marquand, and
+  Alex Fornito.
+\newblock {Regional, circuit and network heterogeneity of brain abnormalities
+  in psychiatric disorders}.
+\newblock \emph{Nat Neurosci}, 26\penalty0 (9):\penalty0 1613--1629, 2023.
+\newblock \doi{10.1038/s41593-023-01404-6}.
+\newblock PMID: 37580620.
+
+\bibitem[Vancampfort et~al.(2015)Vancampfort, Stubbs, Mitchell, De~Hert,
+  Wampers, Ward, Rosenbaum, and Correll]{vancampfort2015mets}
+Davy Vancampfort, Brendon Stubbs, Alex~J Mitchell, Marc De~Hert, Martien
+  Wampers, Philip~B Ward, Simon Rosenbaum, and Christoph~U Correll.
+\newblock {Risk of metabolic syndrome and its components in people with
+  schizophrenia and related psychotic disorders, bipolar disorder and major
+  depressive disorder: a systematic review and meta-analysis}.
+\newblock \emph{World Psychiatry}, 14\penalty0 (3):\penalty0 339--47, 2015.
+\newblock \doi{10.1002/wps.20252}.
+\newblock PMID: 26407790.
+
+\bibitem[Pillinger et~al.(2017)Pillinger, Beck, Gobjila, Donocik, Jauhar, and
+  Howes]{pillinger2017}
+Toby Pillinger, Katherine Beck, Cristian Gobjila, Jacek~G Donocik, Sameer
+  Jauhar, and Oliver~D Howes.
+\newblock {Impaired Glucose Homeostasis in First-Episode Schizophrenia: A
+  Systematic Review and Meta-analysis}.
+\newblock \emph{JAMA Psychiatry}, 74\penalty0 (3):\penalty0 261--269, 2017.
+\newblock \doi{10.1001/jamapsychiatry.2016.3803}.
+\newblock PMID: 28097367.
+
+\bibitem[Perry et~al.(2019)Perry, Upthegrove, Thompson, Marwaha, Zammit, Singh,
+  and Khandaker]{perry2019}
+Benjamin~Ian Perry, Rachel Upthegrove, Andrew Thompson, Steven Marwaha, Stanley
+  Zammit, Swaran~Preet Singh, and Golam Khandaker.
+\newblock {Dysglycaemia, Inflammation and Psychosis: Findings From the UK
+  ALSPAC Birth Cohort}.
+\newblock \emph{Schizophr Bull}, 45\penalty0 (2):\penalty0 330--338, 2019.
+\newblock \doi{10.1093/schbul/sby040}.
+\newblock PMID: 29635418.
+
+\bibitem[Penninx et~al.(2024)Penninx, Lamers, Jansen, Berk, Khandaker,
+  De~Picker, and Milaneschi]{penninx2024imd}
+Brenda W J~H Penninx, Femke Lamers, Rick Jansen, Michael Berk, Golam~M
+  Khandaker, Livia De~Picker, and Yuri Milaneschi.
+\newblock {Immuno-metabolic depression: from concept to implementation}.
+\newblock \emph{Lancet Reg Health Eur}, 48:\penalty0 101166, 2024.
+\newblock \doi{10.1016/j.lanepe.2024.101166}.
+\newblock PMID: 39801616.
+
+\bibitem[Milaneschi et~al.(2020)Milaneschi, Lamers, Berk, and
+  Penninx]{milaneschi2020}
+Yuri Milaneschi, Femke Lamers, Michael Berk, and Brenda W J~H Penninx.
+\newblock {Depression Heterogeneity and Its Biological Underpinnings: Toward
+  Immunometabolic Depression}.
+\newblock \emph{Biol Psychiatry}, 88\penalty0 (5):\penalty0 369--380, 2020.
+\newblock \doi{10.1016/j.biopsych.2020.01.014}.
+\newblock PMID: 32247527.
+
+\bibitem[Lamers et~al.(2020)Lamers, Milaneschi, Vinkers, Schoevers, Giltay, and
+  Penninx]{lamers2020}
+Femke Lamers, Yuri Milaneschi, Christiaan~H Vinkers, Robert~A Schoevers, Erik~J
+  Giltay, and Brenda W J~H Penninx.
+\newblock {Depression profilers and immuno-metabolic dysregulation:
+  Longitudinal results from the NESDA study}.
+\newblock \emph{Brain Behav Immun}, 88:\penalty0 174--183, 2020.
+\newblock \doi{10.1016/j.bbi.2020.04.002}.
+\newblock PMID: 32272220.
+
+\bibitem[Lamers et~al.(2012)Lamers, Vogelzangs, Merikangas, de~Jonge, Beekman,
+  and Penninx]{lamers2013}
+F~Lamers, N~Vogelzangs, K~R Merikangas, P~de~Jonge, A~T~F Beekman, and B~W J~H
+  Penninx.
+\newblock {Evidence for a differential role of HPA-axis function, inflammation
+  and metabolic syndrome in melancholic versus atypical depression}.
+\newblock \emph{Mol Psychiatry}, 18\penalty0 (6):\penalty0 692--9, 2012.
+\newblock \doi{10.1038/mp.2012.144}.
+\newblock PMID: 23089630.
+
+\bibitem[Vancampfort et~al.(2016)Vancampfort, Correll, Galling, Probst,
+  De~Hert, Ward, Rosenbaum, Gaughran, Lally, and
+  Stubbs]{vancampfort2016diabetes}
+Davy Vancampfort, Christoph~U Correll, Britta Galling, Michel Probst, Marc
+  De~Hert, Philip~B Ward, Simon Rosenbaum, Fiona Gaughran, John Lally, and
+  Brendon Stubbs.
+\newblock {Diabetes mellitus in people with schizophrenia, bipolar disorder and
+  major depressive disorder: a systematic review and large scale
+  meta-analysis}.
+\newblock \emph{World Psychiatry}, 15\penalty0 (2):\penalty0 166--74, 2016.
+\newblock \doi{10.1002/wps.20309}.
+\newblock PMID: 27265707.
+
+\bibitem[Garrido-Torres et~al.(2022)Garrido-Torres, Ruiz-Veguilla, Alameda,
+  Canal-Rivero, Ruiz, G\'omez-Revuelta, Ayesa-Arriola, Rubio-Garc\'ia,
+  Crespo-Facorro, and V\'azquez-Bourgon]{garridotorres2022}
+Nathalia Garrido-Torres, Miguel Ruiz-Veguilla, Luis Alameda, Manuel
+  Canal-Rivero, Mar\'ia~Juncal Ruiz, Marcos G\'omez-Revuelta, Rosa
+  Ayesa-Arriola, Ana Rubio-Garc\'ia, Benedicto Crespo-Facorro, and Javier
+  V\'azquez-Bourgon.
+\newblock {Prevalence of metabolic syndrome and related factors in a large
+  sample of antipsychotic na\"ive patients with first-episode psychosis:
+  Baseline results from the PAFIP cohort}.
+\newblock \emph{Schizophr Res}, 246:\penalty0 277--285, 2022.
+\newblock \doi{10.1016/j.schres.2022.07.007}.
+\newblock PMID: 35878542.
+
+\bibitem[Osimo et~al.(2019)Osimo, Baxter, Lewis, Jones, and
+  Khandaker]{osimo2019}
+Emanuele~Felice Osimo, Luke~James Baxter, Glyn Lewis, Peter~B Jones, and
+  Golam~M Khandaker.
+\newblock {Prevalence of low-grade inflammation in depression: a systematic
+  review and meta-analysis of CRP levels}.
+\newblock \emph{Psychol Med}, 49\penalty0 (12):\penalty0 1958--1970, 2019.
+\newblock \doi{10.1017/S0033291719001454}.
+\newblock PMID: 31258105.
+
+\bibitem[Fernandes et~al.(2016)Fernandes, Steiner, Molendijk, Dodd, Nardin,
+  Gon\, Jacka, K\"ohler, Karmakar, Carvalho, and Berk]{fernandes2016bd}
+Brisa~S Fernandes, Johann Steiner, Marc~L Molendijk, Seetal Dodd, Patricia
+  Nardin, Carlos-Alberto Gon\, calves, Felice Jacka, Cristiano~A K\"ohler,
+  Chandan Karmakar, Andr\'e~F Carvalho, and Michael Berk.
+\newblock {C-reactive protein concentrations across the mood spectrum in
+  bipolar disorder: a systematic review and meta-analysis}.
+\newblock \emph{Lancet Psychiatry}, 3\penalty0 (12):\penalty0 1147--1156, 2016.
+\newblock \doi{10.1016/S2215-0366(16)30370-4}.
+\newblock PMID: 27838212.
+
+\bibitem[Fernandes et~al.(2015)Fernandes, Steiner, Bernstein, Dodd, Pasco,
+  Dean, Nardin, Gon\, and Berk]{fernandes2016sz}
+B~S Fernandes, J~Steiner, H-G Bernstein, S~Dodd, J~A Pasco, O~M Dean, P~Nardin,
+  C-A Gon\, calves, and M~Berk.
+\newblock {C-reactive protein is increased in schizophrenia but is not altered
+  by antipsychotics: meta-analysis and implications}.
+\newblock \emph{Mol Psychiatry}, 21\penalty0 (4):\penalty0 554--64, 2015.
+\newblock \doi{10.1038/mp.2015.87}.
+\newblock PMID: 26169974.
+
+\bibitem[Milaneschi et~al.(2017)Milaneschi, Lamers, Peyrot, Baune, Breen,
+  Dehghan, Forstner, Grabe, Homuth, Kan, Lewis, Mullins, Nauck, Pistis,
+  Preisig, Rivera, Rietschel, Streit, Strohmaier, Teumer, Van~der Auwera, Wray,
+  Boomsma, and Penninx]{milaneschi2017}
+Yuri Milaneschi, Femke Lamers, Wouter~J Peyrot, Bernhard~T Baune, Gerome Breen,
+  Abbas Dehghan, Andreas~J Forstner, Hans~J Grabe, Georg Homuth, Carol Kan,
+  Cathryn Lewis, Niamh Mullins, Matthias Nauck, Giorgio Pistis, Martin Preisig,
+  Margarita Rivera, Marcella Rietschel, Fabian Streit, Jana Strohmaier,
+  Alexander Teumer, Sandra Van~der Auwera, Naomi~R Wray, Dorret~I Boomsma, and
+  Brenda W J~H Penninx.
+\newblock {Genetic Association of Major Depression With Atypical Features and
+  Obesity-Related Immunometabolic Dysregulations}.
+\newblock \emph{JAMA Psychiatry}, 74\penalty0 (12):\penalty0 1214--1225, 2017.
+\newblock \doi{10.1001/jamapsychiatry.2017.3016}.
+\newblock PMID: 29049554.
+
+\bibitem[Reise(2012)]{reise2012bifactor}
+Steven~P Reise.
+\newblock {Invited Paper: The Rediscovery of Bifactor Measurement Models}.
+\newblock \emph{Multivariate Behav Res}, 47\penalty0 (5):\penalty0 667--696,
+  2012.
+\newblock \doi{10.1080/00273171.2012.715555}.
+\newblock PMID: 24049214.
+
+\bibitem[Asparouhov and Muth\'en(2009)]{asparouhov2009esem}
+Tihomir Asparouhov and Bengt Muth\'en.
+\newblock Exploratory structural equation modeling.
+\newblock \emph{Structural Equation Modeling}, 16\penalty0 (3):\penalty0
+  397--438, 2009.
+\newblock \doi{10.1080/10705510903008204}.
+
+\bibitem[Carvalho et~al.(2009)Carvalho, Polson, and
+  Scott]{carvalho2009horseshoe}
+Carlos~M Carvalho, Nicholas~G Polson, and James~G Scott.
+\newblock Handling sparsity via the horseshoe.
+\newblock In \emph{Proceedings of the Twelfth International Conference on
+  Artificial Intelligence and Statistics (AISTATS)}, volume~5, pages 73--80,
+  2009.
+
+\bibitem[Piironen and Vehtari(2017)]{piironen2017horseshoe}
+Juho Piironen and Aki Vehtari.
+\newblock Sparsity information and regularization in the horseshoe and other
+  shrinkage priors.
+\newblock \emph{Electronic Journal of Statistics}, 11\penalty0 (2):\penalty0
+  5018--5051, 2017.
+\newblock \doi{10.1214/17-EJS1337SI}.
+
+\bibitem[Hui et~al.(2017)Hui, Warton, Ormerod, Haapaniemi, and
+  Taskinen]{hui2017gllvm}
+Francis K~C Hui, David~I Warton, John~T Ormerod, Viivi Haapaniemi, and Sara
+  Taskinen.
+\newblock Variational approximations for generalized linear latent variable
+  models.
+\newblock \emph{J Comput Graph Stat}, 26\penalty0 (1):\penalty0 35--43, 2017.
+\newblock \doi{10.1080/10618600.2016.1164708}.
+
+\bibitem[Hoffman and Gelman(2014)]{hoffman2014nuts}
+Matthew~D Hoffman and Andrew Gelman.
+\newblock The no-u-turn sampler: Adaptively setting path lengths in hamiltonian
+  monte carlo.
+\newblock \emph{Journal of Machine Learning Research}, 15:\penalty0 1593--1623,
+  2014.
+
+\bibitem[Abril-Pla et~al.(2023)Abril-Pla, Andreani, Carroll, Dong, Fonnesbeck,
+  Kochurov, Kumar, Lao, Luhmann, Martin, Osthege, Vieira, Wiecki, and
+  Zinkov]{abrilpla2023pymc}
+Oriol Abril-Pla, Virgile Andreani, Colin Carroll, Larry Dong, Christopher~J
+  Fonnesbeck, Maxim Kochurov, Ravin Kumar, Junpeng Lao, Christian~C Luhmann,
+  Osvaldo~A Martin, Michael Osthege, Ricardo Vieira, Thomas Wiecki, and Robert
+  Zinkov.
+\newblock {PyMC}: a modern, and comprehensive probabilistic programming
+  framework in {Python}.
+\newblock \emph{PeerJ Computer Science}, 9:\penalty0 e1516, 2023.
+\newblock \doi{10.7717/peerj-cs.1516}.
+
+\bibitem[Phan et~al.(2019)Phan, Pradhan, and Jankowiak]{phan2019numpyro}
+Du~Phan, Neeraj Pradhan, and Martin Jankowiak.
+\newblock Composable effects for flexible and accelerated probabilistic
+  programming in {NumPyro}.
+\newblock \emph{arXiv preprint arXiv:1912.11554}, 2019.
+\newblock \doi{10.48550/arXiv.1912.11554}.
+
+\bibitem[Blei et~al.(2017)Blei, Kucukelbir, and McAuliffe]{blei2017vi}
+David~M Blei, Alp Kucukelbir, and Jon~D McAuliffe.
+\newblock Variational inference: A review for statisticians.
+\newblock \emph{J Am Stat Assoc}, 112\penalty0 (518):\penalty0 859--877, 2017.
+\newblock \doi{10.1080/01621459.2017.1285773}.
+
+\bibitem[Hoffman et~al.(2013)Hoffman, Blei, Wang, and Paisley]{hoffman2013svi}
+Matthew~D Hoffman, David~M Blei, Chong Wang, and John Paisley.
+\newblock Stochastic variational inference.
+\newblock \emph{J Mach Learn Res}, 14:\penalty0 1303--1347, 2013.
+
+\bibitem[Kingma and Welling(2014)]{kingma2014vae}
+Diederik~P Kingma and Max Welling.
+\newblock Auto-encoding variational {Bayes}.
+\newblock In \emph{International Conference on Learning Representations
+  (ICLR)}, 2014.
+\newblock \doi{10.48550/arXiv.1312.6114}.
+
+\bibitem[Cutler and Breiman(1994)]{cutler1994archetypal}
+Adele Cutler and Leo Breiman.
+\newblock Archetypal analysis.
+\newblock \emph{Technometrics}, 36\penalty0 (4):\penalty0 338--347, 1994.
+\newblock \doi{10.1080/00401706.1994.10485840}.
+
+\bibitem[Vehtari et~al.(2017)Vehtari, Gelman, and Gabry]{vehtari2017loo}
+Aki Vehtari, Andrew Gelman, and Jonah Gabry.
+\newblock Practical bayesian model evaluation using leave-one-out
+  cross-validation and waic.
+\newblock \emph{Statistics and Computing}, 27\penalty0 (5):\penalty0
+  1413--1432, 2017.
+\newblock \doi{10.1007/s11222-016-9696-4}.
+
+\bibitem[Watanabe(2010)]{watanabe2010waic}
+Sumio Watanabe.
+\newblock Asymptotic equivalence of bayes cross validation and widely
+  applicable information criterion in singular learning theory.
+\newblock \emph{Journal of Machine Learning Research}, 11:\penalty0 3571--3594,
+  2010.
+
+\end{thebibliography}

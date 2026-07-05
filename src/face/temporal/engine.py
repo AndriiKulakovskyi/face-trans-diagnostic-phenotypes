@@ -1,7 +1,7 @@
 """OOP temporal-coherence engine on the Gaussian-copula M1/M2 objects (M3, reworked).
 
-Parallel OOP engine that reruns the FACE M3 temporal-coherence layer on the **copula** map + the A=4
-copula archetypes, mirroring `strata_model_oop.py` / `prognosis_model_oop.py` and **wrapping the proven
+Parallel OOP engine that reruns the FACE M3 temporal-coherence layer on the **copula** map + the A=5
+copula archetypes, mirroring `strata.engine.py` / `prognosis.engine.py` and **wrapping the proven
 temporal kernels** (`standardize` / `invariance` / `variance` / `persistence` / `membership` / `dropout`)
 and the strata scoring kernels (`scoring.conditional_gaussian_draws`, `scoring.project_explicit_full_n`) —
 **no edits to native M3** (`scripts/30-37`).
@@ -12,8 +12,8 @@ the frozen rank-INT map `z = Φ⁻¹(F_j(y))` AND residualizes covariates (age-s
 faithful follow-up score is: (1) orient + `copula_forward` each gaussianized cell onto the V0 z-scale via the
 frozen `CoreData.copula[item]` map; (2) apply the **frozen-V0 covariate residualization** with the visit's
 covariates (per-visit age); (3) project onto the fixed copula Λ/Φ/σ (continuous: `conditional_gaussian_draws`;
-explicit: `project_explicit_full_n`); (4) project onto the A=4 copula archetypes. This module is that scorer +
-the staged orchestration; the gates (G1/G3/G4) wrap the established kernels with `A=4`.
+explicit: `project_explicit_full_n`); (4) project onto the A=5 copula archetypes. This module is that scorer +
+the staged orchestration; the gates (G1/G3/G4) wrap the established kernels with `A=5`.
 
 This file is built incrementally (incremental-QC): the **copula follow-up scorer foundation** (this module's
 `copula_forward`, `FrozenCovariateDesign`, `TemporalData`, `CopulaPanelScorer.score_continuous`) is validated
@@ -52,12 +52,12 @@ EXPL3 = ["suicidality", "developmental_risk", "substance"]
 
 
 # ----------------------------------------------------------------------------------------------------------
-# The frozen copula forward transform (the sibling of measurement_model_oop.copula_invert)
+# The frozen copula forward transform (the sibling of measurement.engine.copula_invert)
 # ----------------------------------------------------------------------------------------------------------
 def copula_forward(raw_oriented: np.ndarray, sorted_values: np.ndarray, sorted_z: np.ndarray) -> np.ndarray:
     """Gaussian-copula FORWARD map: a follow-up visit's ORIENTED raw values -> the V0 latent z-scale, via the
     frozen empirical map ``CoreData.copula[item] = (sorted_oriented_values, sorted_z)`` (the same object whose
-    inverse is ``measurement_model_oop.copula_invert``). Monotone-interp, clamped to the V0 support; NaN in ->
+    inverse is ``measurement.engine.copula_invert``). Monotone-interp, clamped to the V0 support; NaN in ->
     NaN out (never imputed). This holds M1 fixed — F_j is NOT re-estimated on the follow-up sample."""
     y = np.asarray(raw_oriented, dtype="float64")
     out = np.full(y.shape, np.nan)
@@ -417,7 +417,7 @@ class CopulaPanelScorer:
 
 
 # ----------------------------------------------------------------------------------------------------------
-# Panel assembly — V0 reused from strata_oop; V1/V2 scored; A=4 archetype memberships per visit
+# Panel assembly — V0 reused from strata_oop; V1/V2 scored; A=5 archetype memberships per visit
 # ----------------------------------------------------------------------------------------------------------
 def _uid(index: pd.MultiIndex) -> np.ndarray:
     return np.array([f"{c}|{p}" for c, p in zip(index.get_level_values("cohort"),
@@ -426,7 +426,7 @@ def _uid(index: pd.MultiIndex) -> np.ndarray:
 
 class PanelBuilder:
     """Assemble the long temporal panel (one row per patient×visit): V0 reused from the copula M2 coords,
-    V1/V2 scored under the fixed copula M1, A=4 archetype memberships projected onto the frozen profiles per
+    V1/V2 scored under the fixed copula M1, A=5 archetype memberships projected onto the frozen profiles per
     visit (arms A all-9 + B ⊥G), retention, and the G1 license (attached by the runner)."""
 
     def __init__(self, config: TemporalConfig | None = None, scorer: CopulaPanelScorer | None = None):
@@ -484,7 +484,7 @@ class PanelBuilder:
 
 
 # ----------------------------------------------------------------------------------------------------------
-# Gates — G1 invariance, G3 trait/state, G4 persistence (wrap the kernels with A=4)
+# Gates — G1 invariance, G3 trait/state, G4 persistence (wrap the kernels with A=5)
 # ----------------------------------------------------------------------------------------------------------
 class InvarianceGate:
     """G1 longitudinal measurement invariance: re-fit the simple-structure backbone per visit (scale-invariant
@@ -540,7 +540,7 @@ class TraitStateModel:
 
 
 class PersistenceModel:
-    """G4 persistence + spine-vs-corner geometry (A=4 archetypes), and the G3⟷G4 synthesis."""
+    """G4 persistence + spine-vs-corner geometry (A=5 archetypes), and the G3⟷G4 synthesis."""
 
     def __init__(self, config: TemporalConfig | None = None):
         self.config = config or TemporalConfig()
@@ -765,7 +765,7 @@ class TemporalRunner:
 
 
 class TemporalProjector:
-    """The M4-contract hand-off: ``patient_panel.parquet`` (panel coords + A=4 memberships + license +
+    """The M4-contract hand-off: ``patient_panel.parquet`` (panel coords + A=5 memberships + license +
     retention/IPW) — produced by the consolidate stage above; this thin wrapper exposes it for reuse."""
 
     def __init__(self, config: TemporalConfig | None = None):

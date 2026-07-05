@@ -1,8 +1,8 @@
 """M1 canonical fit — the transdiagnostic dimensional map (the load-bearing milestone).
 
 Encodes the ONE canonical recipe that produces the 8-factor operational map M2-M5 consume, replacing the
-tangle of `run_horseshoe_map.py --weighted --fold --salvage` notebook invocations (and their stale
-`results/face/oop_measurement/...` paths). Two phases, each warm-starting the next:
+tangle of `--weighted --fold --salvage` notebook invocations (and their stale `results/face/...` paths).
+Two phases, each warm-starting the next:
 
   Phase 1 — balanced anchor (N=2000, cohort-balanced): the horseshoe immunometabolic-merge ladder
     hs_s1_merged (G,cognition,immunometabolic,sleep) -> hs_s3_merged (+developmental,mania) ->

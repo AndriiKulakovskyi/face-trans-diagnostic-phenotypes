@@ -1,6 +1,6 @@
 """M4 outcome registry + endpoints — the outcome config (`load_outcome_config`), native-scale outcome
 extraction (`extract_outcomes`), and the derived remission / recovery / deterioration endpoints
-(`derive_endpoints`). Consumed by the copula OOP M4 (`prognosis_model_oop.py`), which assembles its own
+(`derive_endpoints`). Consumed by the copula OOP M4 (`prognosis.engine.py`), which assembles its own
 analysis frame from the `strata_oop` hand-off. Outcomes are read on the **native clinical scale**
 (`data/processed/baseline_v{0,1,2}.parquet`, NaN = missing) — never standardized, never imputed; a cohort
 that does not collect an outcome stays NaN. (The native-panel assembler `build_analysis_frame` /

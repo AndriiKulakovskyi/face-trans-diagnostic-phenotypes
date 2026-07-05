@@ -12,7 +12,7 @@ evidence; instead we answer §5's actual questions in the existing engine:
 
 This module is pure-NumPy post-hoc analysis over a fitted posterior (Λ, Φ, σ draws) — it never
 re-reads raw data or imputes. The per-patient marginal log-lik mirrors the engine's Woodbury kernel
-(`continuous_core._woodbury_potential`) but in NumPy, so PPC/WAIC reuse one likelihood.
+(`measurement.kernel._woodbury_potential`) but in NumPy, so PPC/WAIC reuse one likelihood.
 """
 from __future__ import annotations
 

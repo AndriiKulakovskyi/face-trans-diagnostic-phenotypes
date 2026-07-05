@@ -5,7 +5,7 @@ Each `<figure>.py` here is the **verbatim producing code** for the corresponding
 (version_id noted in each file header).
 
 These figures were produced in a shared `face-dev` kernel session in which the fitted
-GLLVM model state (`results/face/gllvm_oop/s8_full/model_state.pt`) and derived arrays
+GLLVM model state (`results/analyses/variational_gllvm/s8_full/model_state.pt`) and derived arrays
 (loadings, residual sigmas, likelihood families, posterior coordinates) were loaded once
 and reused across cells. Each file is the exact figure cell; run standalone it may need
 that shared setup (model load + per-family Fisher-information arrays) reconstructed first.

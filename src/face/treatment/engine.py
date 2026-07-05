@@ -1,7 +1,7 @@
 """OOP treatment-moderation engine on the Gaussian-copula objects (M5, reworked).
 
-Parallel OOP engine that reruns the FACE M5 treatment causal pipeline on the copula map + the A=4 copula
-archetypes, mirroring `strata_model_oop.py` / `prognosis_model_oop.py` / `temporal_model_oop.py` and
+Parallel OOP engine that reruns the FACE M5 treatment causal pipeline on the copula map + the A=5 copula
+archetypes, mirroring `strata.engine.py` / `prognosis.engine.py` / `temporal.engine.py` and
 **wrapping the proven kernels** (`treatment.{medications,endpoints,propensity,moderation}`,
 `prognosis.{glm,reference,compare}`) — **no edits to native M5** (`scripts/50-57`).
 
@@ -9,13 +9,13 @@ The causal question is the strongest "actionable" test: does the map **moderate*
 pipeline is the identification-first arc: overlap gate (propensity common support) → doubly-robust EIV
 moderation (treat × map-axis interaction) + E-value → confounder-survival (does the copula-M4 carrier survive
 treatment adjustment?) → tolerability (side-effects × map). Per the build decision, moderation interacts
-treatment with **both** the durable trio (native parity) **and** the A=4 archetypes (the copula-M4 carrier).
+treatment with **both** the durable trio (native parity) **and** the A=5 archetypes (the copula-M4 carrier).
 
 Nothing here is map-specific except the *inputs*: the analysis frame's predictor side is the copula
-prognosis_oop frame (copula coords + A=4 archetypes + covariates + outcomes + IPW); treatment exposures are
+prognosis_oop frame (copula coords + A=5 archetypes + covariates + outcomes + IPW); treatment exposures are
 the map-independent harmonized drug-class flags (reused `build_treatment_exposures`). Honest expectation: the
 observational-TAU boundary replays (same data/confounding); the contribution is parity on the better map + the
-archetype-moderation view + the copula-carrier survival check. Output under `results/face/treatment_oop/`.
+archetype-moderation view + the copula-carrier survival check. Output under `results/m5_treatment/`.
 """
 from __future__ import annotations
 
@@ -68,7 +68,7 @@ OUTCOMES = [("functioning", "egf__V2", "gaussian", SPEC_EGF),
 
 
 # ----------------------------------------------------------------------------------------------------------
-# The archetype EIV block (the A=4 analogue of reference.coord_eiv_block) — the only new kernel
+# The archetype EIV block (the A=5 analogue of reference.coord_eiv_block) — the only new kernel
 # ----------------------------------------------------------------------------------------------------------
 def arch_cols(frame: pd.DataFrame) -> list[str]:
     return sorted((c for c in frame.columns if c.startswith("arch_w") and not c.endswith("_sd")),
@@ -544,7 +544,7 @@ class Heterogeneity:
 # Treatment-course atlas — the clinician-legible monitoring artifact + the proof gates (the M5 co-headline)
 # ----------------------------------------------------------------------------------------------------------
 class TreatmentAtlas:
-    """Per A=4 archetype corner, the 2-year rate (Wilson CI) of each treatment-response endpoint
+    """Per A=5 archetype corner, the 2-year rate (Wilson CI) of each treatment-response endpoint
     (resistance / response / side-effects), pooled and within cohort — the monitoring artifact (the M4-atlas
     analogue). Plus the gates that make it *proven* rather than chance: **specificity** (the corner adds beyond
     baseline severity + substance comorbidity + demographics; and how much substance alone carries),

@@ -26,7 +26,25 @@ warnings.filterwarnings("ignore")
 
 # ----------------------------------------------------------------------------- paths
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-R = lambda *p: os.path.join(ROOT, "results", "face", *p)
+
+# Re-point: the pipeline was regenerated to clean result paths (results/<milestone>/...);
+# the old results/face/{strata_oop,temporal_oop,prognosis_oop,treatment_oop} layout is gone.
+# Map the legacy first-component used at each call site to its clean location so the call
+# sites do not have to change.
+_RMAP = {
+    "strata_oop": ("m2_strata",),
+    "temporal_oop": ("m3_temporal",),
+    "prognosis_oop": ("m4_prognosis",),
+    "treatment_oop": ("m5_treatment",),
+}
+
+
+def R(*p):
+    if p and p[0] in _RMAP:
+        p = _RMAP[p[0]] + tuple(p[1:])
+    return os.path.join(ROOT, "results", *p)
+
+
 REP = lambda *p: os.path.join(ROOT, "reports", *p)
 OUT = os.path.join(ROOT, "article", "figures")
 os.makedirs(OUT, exist_ok=True)

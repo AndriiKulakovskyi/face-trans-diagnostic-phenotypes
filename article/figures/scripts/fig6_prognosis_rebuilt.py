@@ -4,7 +4,7 @@ Figure-generation code for FACE-ATLAS: fig6_prognosis_rebuilt.png
 Provenance: extracted verbatim from artifact lineage (version_id be3d9846-abf2-4716-b73a-3a8ecbac6ad8).
 Environment: face-dev
 NOTE: these figures were produced in a shared `face-dev` kernel session in which the
-fitted GLLVM model state (results/face/gllvm_oop/s8_full/model_state.pt) and derived
+fitted GLLVM model state (results/analyses/variational_gllvm/s8_full/model_state.pt) and derived
 arrays (loadings, sigmas, families, coordinates) were loaded once and reused across
 cells. This file is the exact producing cell; if run standalone it may require that
 shared setup (model load + per-family Fisher-information arrays) to be present.

@@ -1,7 +1,6 @@
 """M5 canonical fit — treatment-response heterogeneity on the fixed M1-M4 objects (bounds-and-defends).
 
-Encodes the ONE canonical recipe that produces the M5 treatment verdict the article consumes, replacing
-``run_treatment_model_oop.py``. Consumes the FIXED M4 frame (results/m4_prognosis/frame/analysis_frame.parquet)
+Encodes the ONE canonical recipe that produces the M5 treatment verdict the article consumes, replacing its retired notebook driver. Consumes the FIXED M4 frame (results/m4_prognosis/frame/analysis_frame.parquet)
 + the harmonized drug-class exposures (raw TRAITEMENTS) + response endpoints, and walks the causal arc:
 
   exposures -> frame -> propensity (overlap gate) -> moderation (treat x map-axis EIV/fixed interaction

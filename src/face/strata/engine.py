@@ -3,9 +3,9 @@
 This is a clean, config-first OOP engine that reworks the FACE M2 stratification as a **continuum with
 soft operational regions** built on the Gaussian-copula map (the cohort-weighted full-N **8-dimension**
 map — the immunometabolic merge + 3 earned cross-loadings — at
-``results/face/oop_measurement/copula/weighted_8d``). It is a parallel engine beside the
+``results/m1_measurement/primary``). It is a parallel engine beside the
 imperative ``scripts/20-26`` + ``src/face/strata/{mixture,structure,archetypes,validation}.py``, exactly as
-``src/face/models/bayesian/measurement_model_oop.py`` lives beside the certified ``continuous_core``.
+``src/face/models/bayesian/measurement.engine.py`` lives beside the certified ``measurement.kernel``.
 
 Design stance (deliberate):
   * The 8-dim space is a **continuum, not a clustering problem.** We do not look for natural kinds; we
@@ -19,7 +19,7 @@ Design stance (deliberate):
     SD and self-down-weight in the measurement-error mixture). **Diagnosis is validation-only**, never a
     model input. UMAP/PCA are **visualization-only**, never a clustering input.
 
-Layers (mirroring ``measurement_model_oop``):
+Layers (mirroring ``measurement.engine``):
   * ``StrataConfig``      — frozen config + ``with_*()`` factories + ``_config_sig`` cache key.
   * ``StrataStage``       — one stage recipe of the deterministic plan.
   * ``CoordinateSet``     — the per-patient (X, S, draws) coordinate container + ``arm()`` slicing.
@@ -32,7 +32,7 @@ Layers (mirroring ``measurement_model_oop``):
   * ``StrataProjector``   — per-patient membership frame (the M3-compatible hand-off).
   * ``StrataVisualizer``  — figures (structure panel, region/archetype profiles, soft-boundary map, ...).
 
-Unlike ``measurement_model_oop`` the stages are deterministic numpy/EM (not MCMC), so ``StrataRunner``
+Unlike ``measurement.engine`` the stages are deterministic numpy/EM (not MCMC), so ``StrataRunner``
 caches ``.npz``/``.parquet`` artifacts (not ``idata.nc``) with the same ``model_version`` + ``stage_spec`` +
 ``config_sig`` reuse guard, and there is **no warm-start** (the one intentional simplification).
 """

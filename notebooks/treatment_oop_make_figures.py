@@ -3,7 +3,7 @@
 
     PYTHONPATH=$PWD/src python notebooks/treatment_oop_make_figures.py
 
-Reads ``results/face/treatment_oop/<stage>/`` and writes ``docs/figures/treatment_oop/``.
+Reads ``results/m5_treatment/<stage>/`` and writes ``docs/figures/treatment_oop/``.
 """
 from __future__ import annotations
 

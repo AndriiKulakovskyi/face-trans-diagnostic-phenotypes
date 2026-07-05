@@ -1,9 +1,9 @@
 """OOP prognosis engine on the Gaussian-copula M2 object (M4, reworked).
 
 A clean, config-first OOP engine that reruns the FACE M4 prognosis layer on the **copula** M2 stratification
-(the continuum: continuous coordinates + a stable A=4 archetype simplex + a nested K-family tessellation),
-parallel to the imperative ``scripts/40-48`` exactly as ``strata_model_oop.py`` sits beside ``scripts/20-26``
-and ``measurement_model_oop.py`` beside ``continuous_core``.
+(the continuum: continuous coordinates + a stable A=5 archetype simplex + a nested K-family tessellation),
+parallel to the imperative ``scripts/40-48`` exactly as ``strata.engine.py`` sits beside ``scripts/20-26``
+and ``measurement.engine.py`` beside ``measurement.kernel``.
 
 Design stance (deliberate):
   * **Wrap, do not reimplement.** Every statistical kernel is reused verbatim from the proven native modules
@@ -13,23 +13,23 @@ Design stance (deliberate):
     ``outcome_vector``, ``site_index``). This module is orchestration + the copula-source frame + the
     **operative-K selection** + caching/visualization. **No edits to the native M3/M4 modules.**
   * **The operative-K question lives here.** On a continuum K is a granularity convention, not a discovered
-    kind-count; *which* encoding — continuous durable coords, A=4 archetypes, or the tessellation at K=2/3/4 —
+    kind-count; *which* encoding — continuous durable coords, A=5 archetypes, or the tessellation at K=2/3/4 —
     adds incremental predictive value beyond DSM-5 + severity + baseline outcome is an *outcome* question,
     answered by ``IncrementalValidator`` (the only generalization vs the native engine: it discovers the
     archetype/K-family columns dynamically and loops the family, instead of the hard-coded A=8/K=4 constants).
   * **Consumer of fixed objects; no re-scoring, no imputation.** V0 predictors are read directly from the
-    copula M2 hand-off (``results/face/strata_oop/``); outcomes are the native-scale follow-up scales
+    copula M2 hand-off (``results/m2_strata/``); outcomes are the native-scale follow-up scales
     (``data/processed/baseline_v{0,1,2}.parquet``); attrition IPW is reused from the native M3
     (strata-independent, retention-on-V0-covariates). M4 needs no V1/V2 coordinate re-scoring.
 
-Layers (mirroring ``strata_model_oop``):
+Layers (mirroring ``strata.engine``):
   * ``PrognosisConfig``     — frozen config + ``with_smoke_defaults`` + ``_config_sig`` cache key + paths.
   * ``PrognosisStage``      — one rung of the deterministic plan (dispatch ``kind``).
   * ``PrognosisData``       — build (``prepare``) + load the copula-sourced V0 analysis frame.
   * ``ReferenceLadder``     — R0->R1->R2->R3y reference bar (wraps ``reference`` + ``glm``).      [stage: reference]
   * ``IncrementalValidator``— R3y + {durable, archetypesA/B, tess K-family, specifics} -> operative-K. [incremental]
   * ``TransdiagnosticH2H``  — foundation / +DSM-5 / +map / +both head-to-head.                    [transdiagnostic]
-  * ``EndpointAtlas``       — A=4 archetype prognostic atlas (endpoint rates per archetype x cohort). [endpoints]
+  * ``EndpointAtlas``       — A=5 archetype prognostic atlas (endpoint rates per archetype x cohort). [endpoints]
   * ``ClinicalValue``       — 5-fold CV AUC, foundation vs +map.                                  [clinical_value]
   * ``RobustnessSweep``     — IPW / reliability / leave-one-cohort-out / permutation ΔELPD.        [robustness]
   * ``PrognosisProjector``  — consolidate: prognosis_summary + per-patient risk (M5 hand-off).    [consolidate]
@@ -336,7 +336,7 @@ class ReferenceLadder:
 # ----------------------------------------------------------------------------------------------------------
 class IncrementalValidator:
     """On top of R3y, add each candidate encoding and rank by held-out ΔELPD: continuous durable coords (EIV),
-    A=4 archetypes (Arm A and the ⊥G Arm B), the **whole tessellation K-family** (K=2/3/4), and the
+    A=5 archetypes (Arm A and the ⊥G Arm B), the **whole tessellation K-family** (K=2/3/4), and the
     8-specifics ceiling. The operative K is whichever tessellation granularity (if any) is predictive and best
     — or the verdict that the continuous/archetype representation wins and no hard K is needed. Wraps
     ``reference`` builders + ``glm.fit_glm`` + ``compare.delta_elpd``; the family loop + dynamic discovery are
@@ -420,7 +420,7 @@ class IncrementalValidator:
 # ----------------------------------------------------------------------------------------------------------
 class TransdiagnosticH2H:
     """foundation (age+sex+severity+baseline) / +DSM-5 arm / +map / +both — does the map add beyond DSM-5 and
-    vice-versa? Wraps ``foundation_design`` + ``arm_block`` + the operative map block (default: A=4 Arm-B
+    vice-versa? Wraps ``foundation_design`` + ``arm_block`` + the operative map block (default: A=5 Arm-B
     archetypes; falls back to durable coords)."""
 
     def __init__(self, config: PrognosisConfig | None = None):
@@ -453,7 +453,7 @@ class TransdiagnosticH2H:
 
 
 # ----------------------------------------------------------------------------------------------------------
-# Archetype prognostic atlas (stage: endpoints) — descriptive, A=4, no model
+# Archetype prognostic atlas (stage: endpoints) — descriptive, A=5, no model
 # ----------------------------------------------------------------------------------------------------------
 class EndpointAtlas:
     """Per dominant archetype (A discovered) x cohort: endpoint rate (Wilson CI) and mean horizon outcome —
@@ -499,7 +499,7 @@ class EndpointAtlas:
 # ----------------------------------------------------------------------------------------------------------
 class ClinicalValue:
     """Decision-relevant currency: for each binary remission endpoint, 5-fold cross-validated AUC of a
-    foundation logistic (age+sex+severity+baseline) vs +map (A=4 Arm-A archetype weights), with the ΔAUC. A
+    foundation logistic (age+sex+severity+baseline) vs +map (A=5 Arm-A archetype weights), with the ΔAUC. A
     frequentist CV check (not Bayesian) — the deployable-classifier read."""
 
     def __init__(self, config: PrognosisConfig | None = None):

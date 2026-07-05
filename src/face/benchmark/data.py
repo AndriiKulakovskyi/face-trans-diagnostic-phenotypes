@@ -4,8 +4,8 @@ Three feature *representations* of the same patients, plus the outcomes, on the 
 
 * **RAW** — the exact 143 indicators M1 ingested (``data/processed/baseline_v0.parquet``), native clinical
   scales, NaN preserved + an explicit observed-mask. No imputation; the missingness *is* information.
-* **LATENT** — the copula M1/M2 hand-off: 9 coordinate means (+ sds for the uncertainty arm) and the A=4
-  archetype weights, read from ``results/face/strata_oop/`` (the certified copula objects).
+* **LATENT** — the copula M1/M2 hand-off: 9 coordinate means (+ sds for the uncertainty arm) and the A=5
+  archetype weights, read from ``results/m2_strata/`` (the certified copula objects).
 * **REFERENCE** — the clinician bar: DSM-5 arm + baseline severity + baseline GAF.
 
 Outcomes are the V0->V2 functional endpoints (``endpoints.build_endpoints``): recovery (impaired -> GAF>=71)
@@ -52,7 +52,7 @@ def raw_mask(raw: pd.DataFrame) -> pd.DataFrame:
 # --------------------------------------------------------------------------- LATENT (copula coords + arch)
 def load_latent() -> pd.DataFrame:
     """Copula M1/M2 latent features per patient: ``{ax}__mean`` and ``{ax}__sd`` for the 8 axes, plus the
-    A=5 archetype weights. Source = the certified Gaussian-copula objects under ``results/face/strata_oop``."""
+    A=5 archetype weights. Source = the certified Gaussian-copula objects under ``results/m2_strata``."""
     coords = _keyed(pd.read_parquet(COPULA_COORDS / "coordinates_full.parquet"))
     strata = _keyed(pd.read_parquet(COPULA_CONSOLIDATE / "patient_strata.parquet"))
     mean_cols = [f"{ax}__mean" for ax in CANON]

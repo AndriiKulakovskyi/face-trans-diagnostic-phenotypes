@@ -28,7 +28,7 @@ from face.temporal.engine import (  # noqa: E402
 from face.temporal.variance import decompose, patient_patterns, raw_icc  # noqa: E402
 
 XC = REPO / "configs" / "loading_matrix.immunometabolic_crossload.csv"
-EXCL_MAP = REPO / "results/face/oop_measurement/copula/horseshoe_8d_excl-bmi-weight-wstcir"
+EXCL_MAP = REPO / "results/m1_measurement/copula/horseshoe_8d_excl-bmi-weight-wstcir"
 EXCL = ("bmi", "weight", "wstcir")
 
 
@@ -83,7 +83,7 @@ def main() -> None:
     ts = decompose(panel, ["immunometabolic"], patterns, draws=cfg.proj_draws,
                    tune=cfg.proj_tune, chains=cfg.proj_chains, seed=cfg.seed)
     naive = raw_icc(panel, ["immunometabolic"])
-    out = REPO / "results/face/oop_measurement/copula/horseshoe_8d_excl-bmi-weight-wstcir" / "nobmi_immunometabolic_icc.csv"
+    out = REPO / "results/m1_measurement/copula/horseshoe_8d_excl-bmi-weight-wstcir" / "nobmi_immunometabolic_icc.csv"
     ts.to_csv(out, index=False)
     print("\n=== no-anthropometry immunometabolic trait/state ===")
     print(ts.to_string(index=False))
