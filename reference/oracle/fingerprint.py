@@ -102,10 +102,10 @@ def _archetype_fingerprint(df: pd.DataFrame, label: str) -> dict:
 def build(results_root: Path) -> dict:
     R = results_root
     targets = {
-        "m1m2_coordinates": (R / "face/strata_oop/coordinates/coordinates_full.parquet", _coord_fingerprint),
-        "m2_patient_strata": (R / "face/strata_oop/consolidate/patient_strata.parquet", _archetype_fingerprint),
-        "m3_patient_panel": (R / "face/temporal_oop/consolidate/patient_panel.parquet", _coord_fingerprint),
-        "m4_patient_risk": (R / "face/prognosis_oop/consolidate/prognosis_patient_risk.parquet", _archetype_fingerprint),
+        "m1m2_coordinates": (R / "m2_strata/coordinates/coordinates_full.parquet", _coord_fingerprint),
+        "m2_patient_strata": (R / "m2_strata/consolidate/patient_strata.parquet", _archetype_fingerprint),
+        "m3_patient_panel": (R / "m3_temporal/consolidate/patient_panel.parquet", _coord_fingerprint),
+        "m4_patient_risk": (R / "m4_prognosis/consolidate/prognosis_patient_risk.parquet", _archetype_fingerprint),
     }
     out: dict = {"results_root": str(R), "arrays": {}}
     for key, (path, fn) in targets.items():
