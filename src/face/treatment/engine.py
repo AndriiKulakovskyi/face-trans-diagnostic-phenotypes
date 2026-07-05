@@ -12,7 +12,7 @@ treatment adjustment?) → tolerability (side-effects × map). Per the build dec
 treatment with **both** the durable trio (native parity) **and** the A=5 archetypes (the copula-M4 carrier).
 
 Nothing here is map-specific except the *inputs*: the analysis frame's predictor side is the copula
-prognosis_oop frame (copula coords + A=5 archetypes + covariates + outcomes + IPW); treatment exposures are
+m4_prognosis frame (copula coords + A=5 archetypes + covariates + outcomes + IPW); treatment exposures are
 the map-independent harmonized drug-class flags (reused `build_treatment_exposures`). Honest expectation: the
 observational-TAU boundary replays (same data/confounding); the contribution is parity on the better map + the
 archetype-moderation view + the copula-carrier survival check. Output under `results/m5_treatment/`.
@@ -206,10 +206,10 @@ def _stage_spec(s: TreatmentStage) -> dict:
 
 
 # ----------------------------------------------------------------------------------------------------------
-# Data — the copula M5 frame (prognosis_oop predictor side + treatment-response endpoints) + exposures
+# Data — the copula M5 frame (m4_prognosis predictor side + treatment-response endpoints) + exposures
 # ----------------------------------------------------------------------------------------------------------
 class TreatmentData:
-    """Assemble the copula M5 analysis frame (the prognosis_oop predictor side + the `ep_*` treatment-response
+    """Assemble the copula M5 analysis frame (the m4_prognosis predictor side + the `ep_*` treatment-response
     endpoints) and the map-independent harmonized treatment exposures. No re-scoring, no imputation."""
 
     def __init__(self, config: TreatmentConfig | None = None):

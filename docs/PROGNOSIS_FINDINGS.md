@@ -88,7 +88,7 @@ SZ low-floor), so a pooled gradient must be checked within cohort. De-confoundin
 cohort?): **BP yes** (LR χ² = 59.7, p = 3e-12), **SZ no** (p = 0.25), **DR no** (p = 0.22, underpowered). This
 is *why* the LOCO ΔELPD is BP-carried — the predictive increment concentrates in the open-course cohorts that
 have room above the floor, even though the relative gradient is present everywhere. Figure
-`docs/figures/prognosis_oop/within_cohort_gradient.png`.
+`docs/figures/m4_prognosis/within_cohort_gradient.png`.
 
 ## Result 5 — group-level forecasting, not a large individual-binary boost (honest)
 
@@ -152,7 +152,7 @@ share is unaffected.)*
 `reference/`, `transdiagnostic/h2h_dsm5.csv`, `endpoints/archetype_atlas.csv`,
 `clinical_value/clinical_value.csv`, `robustness/robustness.csv`, and the M5 hand-off
 `consolidate/{prognosis_summary.csv (carries the operative-K verdict), prognosis_patient_risk.parquet}`. Figure:
-`docs/figures/prognosis_oop/incremental_added_value.png`. Reproduce:
+`docs/figures/m4_prognosis/incremental_added_value.png`. Reproduce:
 `PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_prognosis_model_oop.py --mode full`.
 
 **Verdict: the 8-factor map predicts 2-year functioning** — the A = 5 archetypes add ΔELPD +62.8 beyond

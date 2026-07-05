@@ -141,7 +141,7 @@ proven as **stratification for monitoring**, but individual discrimination is mo
 p=0.010) and side-effects (p=0.015) clear, **resistance is the steepest gradient yet AUC-marginal (p=0.205)**,
 the same continuous→group collapse as M4. The map *describes who faces a difficult course* without *selecting* a
 drug — selection needs randomized data (**M5b**). Figures:
-`docs/figures/treatment_oop/{moderation.png, treatment_course_atlas.png}`.
+`docs/figures/m5_treatment/{moderation.png, treatment_course_atlas.png}`.
 
 ## Honest tensions (the calibration)
 

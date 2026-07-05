@@ -21,7 +21,7 @@ patient. Reporting the triplet keeps both the defining signal (pole) and the rea
 
 ## The five representative profiles (Arm A, all eight axes)
 
-![reading guide](figures/strata_oop/reading_guide.png)
+![reading guide](figures/m2_strata/reading_guide.png)
 
 | corner | plain clinical label | share | enrichment | defining signal |
 |---|---|---|---|---|

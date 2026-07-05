@@ -101,7 +101,7 @@ shrinks the attenuation monotonically (mean-field 21% → low-rank 20% → full-
 the correlation hyperparameter** (not a per-patient-posterior limitation) — the boundary for which
 NUTS is the authority is now *earned*, not assumed. Also: a
 **6-seed ensemble** gives loading credible bands (268/277 cells); a **dot-atlas** loading map
-(`docs/figures/gllvm_oop/gllvm_dot_atlas*.png`) and a **generative round-trip**
+(`docs/figures/sensitivity/variational_gllvm/gllvm_dot_atlas*.png`) and a **generative round-trip**
 (`run_gllvm_synthetic_check.py` + `gllvm_synthetic_check.ipynb`). It is **congruent, not certified** —
 NUTS stays the authority for Φ, loading uncertainty, and paper claims; the VI arm is for fast reruns /
 sensitivity sweeps / synthetic cohorts / an independent-estimator robustness check. NOT committed; pending PI review.

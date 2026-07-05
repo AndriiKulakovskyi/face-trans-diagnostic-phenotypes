@@ -25,7 +25,7 @@ def test_config_sig_and_smoke_factory():
 
 
 def test_copula_forward_monotone_and_inverts():
-    """The new forward map is monotone and is the inverse of measurement_model_oop.copula_invert."""
+    """The new forward map is monotone and is the inverse of measurement.engine.copula_invert."""
     rng = np.random.default_rng(0)
     sorted_values = np.sort(rng.normal(size=80))
     sorted_z = np.sort(rng.normal(size=80))

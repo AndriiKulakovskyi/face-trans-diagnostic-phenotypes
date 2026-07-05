@@ -92,7 +92,7 @@ variance ranks.
 `results/face/temporal_oop/`: `invariance/{license,congruence}.csv`, `trait_state/trait_state.csv`,
 `persistence/{reliable_change.csv, persistence.json}`, `attrition/ipw_weights.parquet` (feeds M4 + repbench),
 and the M4-contract hand-off `consolidate/{patient_panel.parquet (16,241 × 92: panel coords + **A = 5**
-memberships + G1 license + retention/IPW), panel_draws.npz}`. Figure: `docs/figures/temporal_oop/
+memberships + G1 license + retention/IPW), panel_draws.npz}`. Figure: `docs/figures/m3_temporal/
 trait_state_icc.png`. Reproduce:
 `PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_temporal_model_oop.py --mode full`.
 

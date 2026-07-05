@@ -7,7 +7,7 @@
 # It does NOT hand-score patients. It seeds the soft priors; the patient-level
 # latent model may confirm / split / merge / reject / cross-load any of these.
 # Provenance only: `scripts/v3/01_eligibility_audit.py` + `scripts/v3/03_build_prior_matrix.py`
-# expand this ontology into the committed configs/prior_loading_matrix_v3.csv the engine reads.
+# expand this ontology into the committed configs/loading_matrix.csv the engine reads.
 #
 # role: core | extension | module | proxy_only | historical | unsupported | covariate
 # indicators: names: [..]  and/or  sections: [..]  and/or  name_regex: "…"  (− exclude:)

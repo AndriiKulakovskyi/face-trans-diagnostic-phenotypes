@@ -15,7 +15,7 @@
 > Detailed results analysis for the M2 continuum of soft operational regions on the
 > Gaussian-copula map). Paper-facing summary: [STRATA_FINDINGS.md](STRATA_FINDINGS.md). Engine:
 > [`src/face/strata/strata_model_oop.py`](../src/face/strata/strata_model_oop.py). Figures:
-> `docs/figures/strata_oop/`. All coordinates are on the latent z-scale (0 = population mean, units = SD).
+> `docs/figures/m2_strata/`. All coordinates are on the latent z-scale (0 = population mean, units = SD).
 
 ## 0. One continuum, three views — the load-bearing objects and the (un-privileged) K
 

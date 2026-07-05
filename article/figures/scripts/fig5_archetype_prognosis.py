@@ -34,7 +34,7 @@ import matplotlib.pyplot as plt
 _HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(_HERE)))
 OUT = os.path.join(ROOT, "article", "figures")
-PARQUET = os.path.join(ROOT, "results", "face", "prognosis_oop",
+PARQUET = os.path.join(ROOT, "results", "m4_prognosis",
                        "consolidate", "prognosis_patient_risk.parquet")
 
 

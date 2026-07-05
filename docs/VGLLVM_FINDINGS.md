@@ -251,7 +251,7 @@ mapping — **all 142 model indicators** (no per-block cap), grouped by home fac
 46, suicidality 30, developmental 23, …): an indicator×factor bubble grid (size/colour = |loading|,
 ring = seed-CI ≠ 0, heavy ring = home anchor), the G windows shaded. Companions: a standalone 8×8
 Φ panel and per-factor lollipops showing **every** home indicator (proportional-height panels,
-|loading| + seed-ensemble CI) — `docs/figures/gllvm_oop/{gllvm_dot_atlas, gllvm_factor_lollipops,
+|loading| + seed-ensemble CI) — `docs/figures/sensitivity/variational_gllvm/{gllvm_dot_atlas, gllvm_factor_lollipops,
 gllvm_phi}.png`. The driver asserts every model indicator appears (completeness check).
 
 ### 4. Generative round-trip (synthetic patients vs raw data)

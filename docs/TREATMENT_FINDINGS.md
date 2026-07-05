@@ -122,7 +122,7 @@ alone describe almost no response heterogeneity (ΔAUC ≈ 0); the **archetype c
 `moderation/moderation.csv` (+ `ate_se`, `int_ses` for the MDE), `confounder/confounder.csv`,
 `tolerability/`, `heterogeneity/heterogeneity.csv` (held-out ΔAUC), `atlas/{treatment_course_atlas.csv,
 atlas_gates.csv}`, `consolidate/treatment_summary.csv` (+ `ate_mde`, `int_mde_min/max`, `moderation_verdict`).
-Figures: `docs/figures/treatment_oop/{moderation.png, treatment_course_atlas.png}`. Reproduce:
+Figures: `docs/figures/m5_treatment/{moderation.png, treatment_course_atlas.png}`. Reproduce:
 `PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE OMP_NUM_THREADS=1 python notebooks/run_treatment_model_oop.py --mode full`.
 
 **Verdict: M5 bounds and defends the vertical's clinical claim on the 8-factor map** — the map is **prognostic +

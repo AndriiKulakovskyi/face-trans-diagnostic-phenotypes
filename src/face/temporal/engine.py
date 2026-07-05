@@ -417,7 +417,7 @@ class CopulaPanelScorer:
 
 
 # ----------------------------------------------------------------------------------------------------------
-# Panel assembly — V0 reused from strata_oop; V1/V2 scored; A=5 archetype memberships per visit
+# Panel assembly — V0 reused from m2_strata; V1/V2 scored; A=5 archetype memberships per visit
 # ----------------------------------------------------------------------------------------------------------
 def _uid(index: pd.MultiIndex) -> np.ndarray:
     return np.array([f"{c}|{p}" for c, p in zip(index.get_level_values("cohort"),
