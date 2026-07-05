@@ -4,7 +4,7 @@ FACE-ATLAS — publication figure system (Gaussian-copula vertical).
 
 Regenerates all main + Extended Data figures directly from the canonical
 copula results under results/face/{strata_oop,temporal_oop,prognosis_oop,
-treatment_oop,m4_repbench} and reports/. Uniform style, colorblind-safe
+treatment_oop,m4_prognosis/repbench} and reports/. Uniform style, colorblind-safe
 (Okabe-Ito), vector PDF + 300-dpi PNG into article/figures/.
 
 Run:  cd <repo root>;  python article/make_figures_copula.py
@@ -664,7 +664,7 @@ def edfig_treatment():
     save(fig, "edfig_treatment")
 
 def edfig_repbench():
-    sc = pd.read_csv(R("m4_repbench", "scalar.csv"))
+    sc = pd.read_csv(R("m4_prognosis/repbench", "scalar.csv"))
     fig, axes = plt.subplots(1, 2, figsize=(9.6, 4.2))
     for ax, (tgt, ttl) in zip(axes, [("egf_deterioration", "Deterioration"), ("egf_recovery", "Recovery")]):
         d = sc[(sc.target == tgt) & (sc.scope == "pooled") & (sc.horizon == "V2")].set_index("arm")

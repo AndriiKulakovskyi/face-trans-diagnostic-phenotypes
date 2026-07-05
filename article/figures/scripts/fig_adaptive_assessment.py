@@ -220,5 +220,6 @@ axR.set_xlim(0.5, 20)
 # LaTeX figure caption (\caption{} for fig:mincount in sections/03_results.tex).
 fig.subplots_adjust(top=0.96, bottom=0.11, left=0.075, right=0.985)
 import os as _os
+
 _OUT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))  # article/figures/
 fig.savefig(_os.path.join(_OUT, "fig_adaptive_assessment.png"), dpi=200, bbox_inches='tight')

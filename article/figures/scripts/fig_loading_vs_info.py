@@ -227,6 +227,7 @@ fig.text(0.5, -0.065,
          ha='center', fontsize=5.1, color='#555', wrap=True)
 fig.subplots_adjust(top=0.86, bottom=0.245, left=0.085, right=0.985)
 import os as _os
+
 _OUT = _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))  # article/figures/
 fig.savefig(_os.path.join(_OUT, "fig_loading_vs_info.png"), dpi=200, bbox_inches='tight')
 print("re-saved: collisions fixed, link-scale labelled on axis + caption")
