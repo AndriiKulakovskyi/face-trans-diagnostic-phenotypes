@@ -172,4 +172,4 @@ axD.annotate(f"first item ({items[0]})\n→ reliability {rr[0]:.2f}",xy=(1,rr[0]
 # Title and bottom caption paragraph intentionally removed — that text now lives in the
 # LaTeX figure caption (\caption{} for fig:localization in sections/03_results.tex).
 fig.subplots_adjust(top=0.955,bottom=0.075,left=0.13,right=0.97)
-fig.savefig("fig_worked_patient.png",dpi=200,bbox_inches='tight')
+fig.savefig("/Users/andriikulakovskyi/Desktop/face-common-bp-sz-dr/article/figures/fig_worked_patient.png",dpi=200,bbox_inches='tight')
