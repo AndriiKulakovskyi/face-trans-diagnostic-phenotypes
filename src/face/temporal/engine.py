@@ -8,10 +8,11 @@ and the strata scoring kernels (`scoring.conditional_gaussian_draws`, `scoring.p
 
 The one genuinely new component is **scoring V1/V2 coordinates under the FIXED copula M1**. The native M3
 freezes the V0 *parametric* standardization (`apply_spec`: mean/sd/sign/logmin); the copula M1 instead uses
-the frozen rank-INT map `z = Φ⁻¹(F_j(y))` AND residualizes covariates (age-spline+sex+edu+site, FWL). So a
-faithful follow-up score is: (1) orient + `copula_forward` each gaussianized cell onto the V0 z-scale via the
-frozen `CoreData.copula[item]` map; (2) apply the **frozen-V0 covariate residualization** with the visit's
-covariates (per-visit age); (3) project onto the fixed copula Λ/Φ/σ (continuous: `conditional_gaussian_draws`;
+the frozen rank-INT map `z = Φ⁻¹(F_j(y))` and estimates covariates jointly in the measurement likelihood. A
+faithful follow-up score therefore: (1) orients + `copula_forward`s every Gaussianized cell onto the V0
+z-scale; (2) applies the **frozen V0 covariate design** using stored fills, knots, scales, and reference
+levels; (3) projects with `alpha + C_visit beta` under the fixed copula Λ/Φ/σ (continuous:
+`conditional_gaussian_draws`;
 explicit: `project_explicit_full_n`); (4) project onto the A=5 copula archetypes. This module is that scorer +
 the staged orchestration; the gates (G1/G3/G4) wrap the established kernels with `A=5`.
 
@@ -36,7 +37,7 @@ DURABLE: tuple[str, ...] = ("cognition", "immunometabolic")             # the tr
 SPINE: str = "overall_severity"                                          # the general/severity axis
 
 REPO = Path(__file__).resolve().parents[3]
-COPULA_MAP = REPO / "results" / "m1_measurement"
+COPULA_MAP = REPO / "results" / "m1_measurement" / "corrected_v2" / "production"
 MAP_STAGE = "primary"                                            # the weighted 8-factor operational fit
 FOLDED_MATRIX = REPO / "configs" / "loading_matrix.immunometabolic_crossload.csv"
 STRATA_DIR = REPO / "results" / "m2_strata"
@@ -47,8 +48,14 @@ MODEL_VERSION = "m3_temporal"
 # Fit order (matches the idata's Lam/Phi/f_e columns); CANON is the presentation order from the package.
 F8_FIT = ["overall_severity", "cognition", "immunometabolic", "sleep", "suicidality",
           "developmental_risk", "mania_activation", "substance"]
-CONT5 = ["overall_severity", "cognition", "immunometabolic", "sleep", "mania_activation"]
-EXPL3 = ["suicidality", "developmental_risk", "substance"]
+MARGINALIZED3 = ["cognition", "sleep", "mania_activation"]
+EXPLICIT5 = [
+    "overall_severity",
+    "immunometabolic",
+    "suicidality",
+    "developmental_risk",
+    "substance",
+]
 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -68,63 +75,22 @@ def copula_forward(raw_oriented: np.ndarray, sorted_values: np.ndarray, sorted_z
 
 
 # ----------------------------------------------------------------------------------------------------------
-# Frozen-V0 covariate residualization (FWL), applied per-visit (age at visit)
+# Frozen V0 in-likelihood covariate design, applied per visit
 # ----------------------------------------------------------------------------------------------------------
 @dataclass
 class FrozenCovariateDesign:
-    """The V0 covariate design frozen for out-of-sample (follow-up) application — the faithful analog of the
-    copula fit's in-sample FWL residualization (``MeasurementDataset._residualize_on_covariates`` with
-    ``covariate_mode='residualize'``, age-spline(4)+sex+edu+site, no cohort). We freeze the fitted age-spline
-    basis + the block standardization (mean/sd) + the site dummy columns from V0, plus the per-item OLS
-    residualization coefficients, and reapply them with each visit's covariates (per-visit age)."""
-    spline: object                       # the fitted sklearn SplineTransformer (V0 age)
-    age_basis_mean: np.ndarray
-    age_basis_sd: np.ndarray
-    edu_mean: float
-    edu_sd: float
-    edu_name: str
-    site_columns: list                   # the V0 site-dummy columns (drop-first), as object labels
-    names: list[str]
-    betas: dict[str, np.ndarray]         # item -> OLS beta on [1, design] (frozen on V0 observed cells)
+    """Frozen projection-time view of the M1 in-likelihood design contract."""
+
+    metadata: dict
 
     def design(self, cov: pd.DataFrame) -> np.ndarray:
-        """Build the covariate design [N, P] for a visit's covariate frame (columns age/sex/edu + site),
-        on the FROZEN V0 basis/standardization. Missing numerics -> 0 after centring (mean-impute on the
-        frozen mean is implicit since we standardize by V0 moments)."""
-        n = len(cov)
+        """Build ``C_visit`` without fitting anything on the visit sample."""
+        from face.measurement.engine import apply_frozen_covariate_design
 
-        def col(name, default_mean):
-            v = (pd.to_numeric(cov[name], errors="coerce").to_numpy("float64")
-                 if name in cov.columns else np.full(n, np.nan))
-            return np.nan_to_num(v, nan=default_mean).reshape(-1, 1)
-
-        age = col("age", float(self.spline.bsplines_[0].t.mean()) if hasattr(self.spline, "bsplines_") else 0.0)
-        sex = col("sex", 0.0)
-        edu = col(self.edu_name, self.edu_mean)
-        age_basis = self.spline.transform(age)
-        age_basis = (age_basis - self.age_basis_mean) / np.where(self.age_basis_sd > 0, self.age_basis_sd, 1.0)
-        edu = (edu - self.edu_mean) / (self.edu_sd if self.edu_sd > 0 else 1.0)
-        blocks = [age_basis, sex, edu, age_basis * sex]
-        if self.site_columns:
-            site = (cov["siteid_city"].reindex(cov.index) if "siteid_city" in cov.columns
-                    else pd.Series(np.nan, index=cov.index)).round().astype("Int64")
-            dum = pd.get_dummies(site.astype("object"), prefix="site", dummy_na=False)
-            dum = dum.reindex(columns=self.site_columns, fill_value=0)
-            blocks.append(dum.to_numpy("float64"))
-        return np.column_stack(blocks).astype("float64")
-
-    def residualize(self, z: pd.DataFrame, cov: pd.DataFrame) -> pd.DataFrame:
-        """Subtract the frozen-V0 covariate fit from each item's z (FWL), using the visit's covariates."""
-        A = np.column_stack([np.ones((len(z), 1)), self.design(cov.reindex(z.index))])
-        out = z.copy()
-        for item in out.columns:
-            if item not in self.betas:
-                continue
-            y = out[item].to_numpy("float64").copy()
-            obs = np.isfinite(y)
-            y[obs] = y[obs] - A[obs] @ self.betas[item]
-            out[item] = y
-        return out
+        site = cov["siteid_city"] if "siteid_city" in cov else None
+        return apply_frozen_covariate_design(
+            cov.index, cov, site, self.metadata
+        )
 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -174,8 +140,8 @@ def _config_sig(c: TemporalConfig) -> dict:
 # ----------------------------------------------------------------------------------------------------------
 class TemporalData:
     """Freeze the V0 standardization spec, rebuild the frozen copula F_j maps + signs + the certified mixed
-    structure from the copula M1 (the exact call ``StrataData.prepare`` uses), and build the frozen-V0
-    covariate design. No re-fit, no imputation."""
+    structure from the copula M1 (the exact call ``StrataData.prepare`` uses), and reuse the frozen V0
+    in-likelihood covariate transform. No re-fit, no outcome imputation."""
 
     def __init__(self, config: TemporalConfig | None = None):
         self.config = config or TemporalConfig()
@@ -208,13 +174,23 @@ class TemporalData:
         )
         # Match the 8-factor operational map's config exactly (folded matrix + substance pinned orthogonal)
         # so the rebuilt MixedData is row/column-aligned to the frozen idata's Lam/Phi/f_e.
-        mcfg = MeasurementConfig(likelihood_mode="gaussian_copula", cohort_weighted=True,
-                                 prior_matrix=FOLDED_MATRIX,
-                                 output_dir=self.config.map_dir).with_substance_orthogonal()
+        mcfg = MeasurementConfig(
+            likelihood_mode="gaussian_copula",
+            covariate_mode="in_likelihood",
+            cohort_weighted=True,
+            prior_matrix=FOLDED_MATRIX,
+            output_dir=self.config.map_dir,
+        ).with_substance_orthogonal()
         dataset = MeasurementDataset(mcfg)
         self._dataset = dataset
         self._mp = dataset.mixed(F8_FIT, explicit_factors=DEFAULT_EXPLICIT_FACTORS, min_cohorts=2,
                                  balanced=False, n_subsample=None)
+        manifest_path = self.config.map_dir / MAP_STAGE / "manifest.json"
+        manifest = json.loads(manifest_path.read_text())
+        if manifest.get("certification", {}).get("full_m1_certified") is not True:
+            raise RuntimeError(
+                "M3 is blocked: the corrected M1 primary has not passed full certification"
+            )
         self._idata = az.from_netcdf(str(self.config.map_dir / MAP_STAGE / "idata.nc"))
         return self._mp, self._idata
 
@@ -231,45 +207,14 @@ class TemporalData:
         out["siteid_city"] = site
         return out
 
-    def frozen_covariates(self, z0: pd.DataFrame) -> FrozenCovariateDesign:
-        """Freeze the V0 covariate design (fitted age-spline basis + block standardization + site columns) and
-        the per-item OLS residualization betas, from the V0 copula-z block ``z0`` (index = V0 patients)."""
+    def frozen_covariates(self, core) -> FrozenCovariateDesign:
+        """Return the exact covariate transform stored with the fitted M1 core."""
         if self._frozen_cov is not None:
             return self._frozen_cov
-        from sklearn.preprocessing import SplineTransformer
-        cov0 = self.covariate_frame(z0.index, "V0")
-        age = np.nan_to_num(pd.to_numeric(cov0.get("age"), errors="coerce").to_numpy("float64"),
-                            nan=float(np.nanmean(pd.to_numeric(cov0.get("age"), errors="coerce")))).reshape(-1, 1)
-        sex = np.nan_to_num(pd.to_numeric(cov0.get("sex"), errors="coerce").to_numpy("float64"), nan=0.0).reshape(-1, 1)
-        edu_name = "edulevel" if "edulevel" in cov0.columns else "education_years"
-        edu_raw = pd.to_numeric(cov0.get(edu_name), errors="coerce").to_numpy("float64")
-        edu_mean = float(np.nanmean(edu_raw)) if np.isfinite(np.nanmean(edu_raw)) else 0.0
-        edu = np.nan_to_num(edu_raw, nan=edu_mean).reshape(-1, 1)
-        spline = SplineTransformer(n_knots=4, degree=3, include_bias=False).fit(age)
-        ab = spline.transform(age)
-        ab_mean, ab_sd = ab.mean(0), ab.std(0)
-        ab_std = (ab - ab_mean) / np.where(ab_sd > 0, ab_sd, 1.0)
-        edu_sd = float(edu.std()) or 1.0
-        edu_std = (edu - edu_mean) / edu_sd
-        site = cov0["siteid_city"].round().astype("Int64") if "siteid_city" in cov0.columns else pd.Series(dtype="Int64")
-        dum = pd.get_dummies(site.astype("object"), prefix="site", dummy_na=False, drop_first=True)
-        blocks = [ab_std, sex, edu_std, ab_std * sex]
-        names = [f"age_spline_{i}" for i in range(ab.shape[1])] + ["sex", edu_name] + \
-                [f"age_spline_{i}:sex" for i in range(ab.shape[1])]
-        site_columns = list(dum.columns)
-        if site_columns:
-            blocks.append(dum.to_numpy("float64")); names.extend(site_columns)
-        X0 = np.column_stack(blocks).astype("float64")
-        A0 = np.column_stack([np.ones((len(z0), 1)), X0])
-        betas: dict[str, np.ndarray] = {}
-        min_obs = A0.shape[1] + 2
-        for item in z0.columns:
-            y = z0[item].to_numpy("float64"); obs = np.isfinite(y)
-            if int(obs.sum()) >= min_obs:
-                betas[item], *_ = np.linalg.lstsq(A0[obs], y[obs], rcond=None)
-        self._frozen_cov = FrozenCovariateDesign(
-            spline=spline, age_basis_mean=ab_mean, age_basis_sd=ab_sd, edu_mean=edu_mean, edu_sd=edu_sd,
-            edu_name=edu_name, site_columns=site_columns, names=names, betas=betas)
+        metadata = dict(core.covariate_metadata)
+        if metadata.get("mode") != "in_likelihood":
+            raise ValueError("temporal scoring requires an in-likelihood M1 covariate map")
+        self._frozen_cov = FrozenCovariateDesign(metadata=metadata)
         return self._frozen_cov
 
 
@@ -278,9 +223,9 @@ class TemporalData:
 # ----------------------------------------------------------------------------------------------------------
 class CopulaPanelScorer:
     """Score a follow-up visit's coordinates under the FIXED copula M1. The continuous-axis path (this slice):
-    orient + ``copula_forward`` each gaussianized cell onto the V0 z-scale, apply the frozen-V0 covariate
-    residualization with the visit's covariates, then ``scoring.conditional_gaussian_draws`` under the copula
-    posterior Λ/Φ/σ. The explicit-axis projection (``project_explicit_full_n``) is layered on next."""
+    orient + ``copula_forward`` each Gaussianized cell onto the V0 z-scale, construct the frozen V0
+    in-likelihood covariate design for the visit, then call ``scoring.conditional_gaussian_draws`` under
+    the copula posterior Λ/Φ/σ. The explicit-axis projection uses the same design."""
 
     def __init__(self, config: TemporalConfig | None = None, data: TemporalData | None = None):
         self.config = config or TemporalConfig()
@@ -307,34 +252,44 @@ class CopulaPanelScorer:
         mp, idata = self.data.copula_mixed()
         B = self.data.baseline(visit)
         items = list(mp.base.items)                                  # the continuous-block items (copula-z)
-        # V0 copula-z block to freeze the covariate residualization on
-        z0 = self._copula_z_block(mp, self.data.baseline("V0"), items)
-        frozen = self.data.frozen_covariates(z0)
-        # this visit's copula-z, residualized on the frozen-V0 covariates with the visit's covariates
+        frozen = self.data.frozen_covariates(mp.base)
+        # This visit's raw cells are mapped to the frozen V0 copula scale; the
+        # covariate mean is subtracted by the scoring kernel, not pre-residualized.
         zv = self._copula_z_block(mp, B, items)
         cov_v = self.data.covariate_frame(B.index, visit)
-        zv = frozen.residualize(zv, cov_v)
+        design_v = frozen.design(cov_v)
         Mv = zv[items].to_numpy("float64")
         post = idata.posterior
-        cg = conditional_gaussian_draws(Mv, post, list(mp.base.factor_cols),
-                                        n_draws=self.config.n_keep_draws, seed=self.config.seed)
+        cg = conditional_gaussian_draws(
+            Mv,
+            post,
+            list(mp.base.factor_cols),
+            covariates=design_v,
+            n_draws=self.config.n_keep_draws,
+            seed=self.config.seed,
+        )
         cidx = {f: i for i, f in enumerate(mp.base.factor_cols)}
         return {"index": B.index, "factor_cols": list(mp.base.factor_cols), "cidx": cidx,
                 "mean": cg["mean"], "sd": cg["sd"], "draws": cg["draws"]}
 
     def _copula_prep_visit_mixed(self, mp_v0, B_visit, visit, *, cert_index, B_v0):
-        """A MixedPrep with the certified copula V0 STRUCTURE but the visit's data: continuous block on the
-        frozen copula z-scale (``copula_forward`` + frozen-V0 covariate residualization), native non-Gaussian
+        """A MixedPrep with the certified copula V0 structure but the visit's data: continuous block on the
+        frozen copula z-scale plus the frozen in-likelihood covariate design, native non-Gaussian
         cells read raw, ordinals re-coded to the certified V0 categories. The copula analog of
         ``standardize.prep_visit_mixed`` — feeds ``project_explicit_full_n`` unchanged."""
         items = mp_v0.base.items
-        z0 = self._copula_z_block(mp_v0, self.data.baseline("V0"), items)
-        frozen = self.data.frozen_covariates(z0)
+        frozen = self.data.frozen_covariates(mp_v0.base)
         zc = self._copula_z_block(mp_v0, B_visit, items)
-        zc = frozen.residualize(zc, self.data.covariate_frame(B_visit.index, visit))
+        design_v = frozen.design(self.data.covariate_frame(B_visit.index, visit))
         Mvis = zc[items].to_numpy("float64")
         cohort = np.asarray(B_visit.index.get_level_values("cohort"))
-        base_vis = replace(mp_v0.base, M=Mvis, index=B_visit.index, cohort=cohort)
+        base_vis = replace(
+            mp_v0.base,
+            M=Mvis,
+            covariates=design_v,
+            index=B_visit.index,
+            cohort=cohort,
+        )
 
         def grab(cols):
             return pd.DataFrame({c: (pd.to_numeric(B_visit[c], errors="coerce") if c in B_visit.columns
@@ -358,7 +313,7 @@ class CopulaPanelScorer:
         return mp_vis
 
     def score_explicit(self, visit: str) -> dict:
-        """Explicit 3-axis coordinates for a follow-up visit: project the per-patient explicit latents under
+        """Explicit 5-axis coordinates for a follow-up visit: project the per-patient explicit latents under
         the fixed copula M1 (``project_explicit_full_n``), cached to ``proj_{visit}.npz``."""
         from face.strata.scoring import project_explicit_full_n
         mp, idata = self.data.copula_mixed()
@@ -380,8 +335,11 @@ class CopulaPanelScorer:
         return {"mean": res["mean"], "sd": res["sd"], "draws": res["draws"], "fcols": res["fcols"]}
 
     def score_visit(self, visit: str) -> tuple[pd.DataFrame, np.ndarray]:
-        """Assemble the full 8-dim coordinates (+ [n_keep, N, 8] draws) for a follow-up visit: continuous 5
-        axes (conditional-Gaussian) + explicit 3 axes (projection), on the copula scale."""
+        """Assemble the full eight-dimensional follow-up coordinates.
+
+        The three marginalized axes come from the conditional Gaussian block;
+        the five explicit axes come from the native-plus-Gaussian projection.
+        """
         from scipy.stats import norm
 
         from face.strata.scoring import explicit_nobs
@@ -396,17 +354,18 @@ class CopulaPanelScorer:
         df = pd.DataFrame(index=index)
         draws = np.full((nk, len(index), len(CANON)), np.nan, dtype="float32")
         for di, f in enumerate(CANON):
-            if f in CONT5:
-                ci = cont["cidx"][f]
-                m, s = cont["mean"][:, ci], cont["sd"][:, ci]
-                draws[:, :, di] = cont["draws"][:nk, :, ci]
-                n = np.full(len(index), 3); rel = np.full(len(index), "well")     # continuous coverage tier
-            else:
+            if f in EXPLICIT5:
                 k = expl["fcols"].index(f)
                 m, s = expl["mean"][:, k], expl["sd"][:, k]
                 draws[:, :, di] = expl["draws"][:nk, :, k]
                 n = en_df[f].to_numpy() if f in en_df.columns else np.full(len(index), 0)
                 rel = np.where(n >= 3, "well", np.where(n >= 1, "partial", "prior-dominated"))
+            else:
+                ci = cont["cidx"][f]
+                m, s = cont["mean"][:, ci], cont["sd"][:, ci]
+                draws[:, :, di] = cont["draws"][:nk, :, ci]
+                n = np.full(len(index), 3)
+                rel = np.full(len(index), "well")
             df[f"{f}__mean"] = np.round(m, 3)
             df[f"{f}__sd"] = np.round(s, 3)
             df[f"{f}__hdi_lo"] = np.round(m - z * s, 3)

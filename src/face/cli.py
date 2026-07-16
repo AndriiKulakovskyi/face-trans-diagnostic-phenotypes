@@ -2,7 +2,7 @@
 
     face build-data                 # harmonize raw cohorts -> data/processed/*.parquet
     face build-covariates
-    face fit m1 [--mode smoke|production] [--detach] [--overwrite]   # the transdiagnostic map (the long pole)
+    face fit m1 [--mode smoke|diagnostic|production] [--detach] [--overwrite]   # the transdiagnostic map (the long pole)
     face fit m2|m3|m4|m5 [--detach]
     face status [--watch] [--logs JOB]      # detached-job dashboard
     face run <job> -- <cmd ...>             # run any command detached (wake-locked, survives sleep/turn-limit)
@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import subprocess
 import sys
 import time
@@ -68,6 +69,30 @@ def _cmd_fit(args) -> int:
     return _fit_inprocess(args.milestone, args.mode, args.overwrite)
 
 
+def _chain_progress(name: str, stage: str) -> str:
+    """Return the most recent per-chain percentages for the active stage."""
+    log = paths.REPO / "logs" / f"{name}.log"
+    if not log.exists() or not stage:
+        return ""
+    with log.open("rb") as handle:
+        handle.seek(max(0, log.stat().st_size - 1_000_000))
+        text = handle.read().decode("utf-8", errors="replace")
+    marker = f"[m1-stage] START {stage}:"
+    if marker in text:
+        text = text.rsplit(marker, 1)[-1]
+    text = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", text)
+    latest: dict[int, int] = {}
+    for chain, percent in re.findall(
+        r"Running chain\s+(\d+):\s+(\d+)%", text
+    ):
+        latest[int(chain)] = int(percent)
+    if not latest:
+        return ""
+    return " chains=" + ",".join(
+        f"{chain}:{latest[chain]}%" for chain in sorted(latest)
+    )
+
+
 def _fmt_state(s: dict) -> str:
     name = s.get("name", "?")
     status = s.get("status", "?")
@@ -76,7 +101,11 @@ def _fmt_state(s: dict) -> str:
     hb = s.get("last_heartbeat", "")
     rc = s.get("exit_code")
     tail = f" rc={rc}" if rc is not None else ""
-    return f"  {name:20s} {status:10s} {stage:12s} start={started} hb={hb}{tail}"
+    progress = _chain_progress(name, stage) if status == "running" else ""
+    return (
+        f"  {name:20s} {status:10s} {stage:12s} "
+        f"start={started} hb={hb}{progress}{tail}"
+    )
 
 
 def _cmd_status(args) -> int:
@@ -133,7 +162,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     f = sub.add_parser("fit", help="fit a milestone (m1..m5)")
     f.add_argument("milestone", choices=MILESTONES)
-    f.add_argument("--mode", choices=["smoke", "production"], default="production")
+    f.add_argument("--mode", choices=["smoke", "diagnostic", "production"], default="production")
     f.add_argument("--detach", action="store_true", help="run as a wake-locked background job")
     f.add_argument("--overwrite", action="store_true", help="refit stages even when cached")
 

@@ -44,6 +44,29 @@ def test_cascade_isf05_to_isf08a_via_isf08():
     assert np.isnan(out["isf08a"].tolist()[2])  # real attempter, count unrecorded
 
 
+def test_never_smoker_recovers_zero_pack_years_without_zeroing_fagerstrom():
+    df = pd.DataFrame({
+        # 1=never, 2=former, 3=current, missing=unknown.
+        "suncf_cigarettes_lt": [1.0, 2.0, 3.0, np.nan, 1.0],
+        "sudose_cigarettes_lt": [np.nan, np.nan, np.nan, np.nan, 4.0],
+        "fagers": [np.nan, np.nan, np.nan, np.nan, np.nan],
+    })
+
+    out, report = decode_skip_logic(df)
+
+    assert out["sudose_cigarettes_lt"].tolist()[0] == 0.0
+    assert np.isnan(out["sudose_cigarettes_lt"].tolist()[1])
+    assert np.isnan(out["sudose_cigarettes_lt"].tolist()[2])
+    assert np.isnan(out["sudose_cigarettes_lt"].tolist()[3])
+    assert out["sudose_cigarettes_lt"].tolist()[4] == 4.0
+    assert out["fagers"].isna().all()
+    assert {
+        "gate": "suncf_cigarettes_lt",
+        "dependent": "sudose_cigarettes_lt",
+        "n_filled": 1,
+    } in report
+
+
 def test_report_counts_filled_cells():
     df = pd.DataFrame({"isf05": [0.0, 0.0, 1.0], "isf07": [np.nan, np.nan, np.nan]})
     _, report = decode_skip_logic(df, rules=[SkipRule("isf05", ("isf07",))])
@@ -99,3 +122,33 @@ def test_integration_recovers_isf07_coverage():
     cov_off = ds_off.X["isf07"].notna().mean()
     assert cov_on > cov_off          # decoding strictly recovers data
     assert cov_on > 0.6              # ~0.72-0.92 per cohort, pooled well above raw ~0.3
+
+
+@pytest.mark.skipif(
+    not __import__("pathlib").Path("data/bipolar.csv").exists(),
+    reason="confidential cohort CSVs absent (clean clone)",
+)
+def test_integration_recovers_never_smoker_pack_years_only():
+    from face.data import (
+        build_unified_dataframe,
+        load_variables,
+        to_harmonized_dataset,
+    )
+
+    variables = load_variables("data/face-common-vars.xlsx")
+    df = build_unified_dataframe(
+        "data", "data/face-common-vars.xlsx",
+        readiness=["READY", "PARTIAL"], format="long",
+    )
+    ds_on = to_harmonized_dataset(df, variables, visit="V0", apply_skip_logic=True)
+    ds_off = to_harmonized_dataset(df, variables, visit="V0", apply_skip_logic=False)
+
+    status = ds_off.X["suncf_cigarettes_lt"]
+    pack_off = ds_off.X["sudose_cigarettes_lt"]
+    pack_on = ds_on.X["sudose_cigarettes_lt"]
+    recovered = status.eq(1) & pack_off.isna()
+
+    assert int(recovered.sum()) > 3000
+    assert pack_on.loc[recovered].eq(0).all()
+    assert pack_on.loc[~recovered].equals(pack_off.loc[~recovered])
+    assert ds_on.X["fagers"].equals(ds_off.X["fagers"])

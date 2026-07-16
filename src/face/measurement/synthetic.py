@@ -71,6 +71,10 @@ class FittedMeasurementModel:
     meta: dict                             # provenance (likelihood_mode, cohort_weighted, n_fit, ...)
     mode: str = "gaussian_copula"          # continuous-block inversion: "gaussian_copula" | "native"
     native: dict[str, tuple] = field(default_factory=dict)  # native mode: item -> (family, sign, log_min, mu, sd)
+    covariate_names: list[str] = field(default_factory=list)
+    covariate_metadata: dict = field(default_factory=dict)
+    continuous_alpha: np.ndarray | None = None
+    continuous_beta: np.ndarray | None = None
 
 
 def _pm(idata, name):
@@ -112,19 +116,32 @@ def export_fitted_model(idata, mixed, config, *, meta: dict | None = None) -> Fi
     # explicit-item GLM params
     post = idata.posterior
     explicit: dict[str, dict] = {}
+    beta_native = _pm(idata, "beta_native") if "beta_native" in post else None
+
+    def common(it: str, family: str) -> dict:
+        out = {
+            "family": family,
+            "home_e": int(mixed.ng_home[it]),
+            "lh": float(_pm(idata, f"lh_{it}")),
+        }
+        if f"lg_{it}" in post:
+            out["lg"] = float(_pm(idata, f"lg_{it}"))
+        if beta_native is not None:
+            out["beta"] = beta_native[mixed.ng_index[it]].tolist()
+        return out
+
     for it in mixed.bin_items:
-        explicit[it] = {"family": "bernoulli", "home_e": int(mixed.ng_home[it]),
-                        "a": float(_pm(idata, f"a_{it}")), "lh": float(_pm(idata, f"lh_{it}")),
-                        "lg": float(_pm(idata, f"lg_{it}"))}
+        explicit[it] = common(it, "bernoulli") | {"a": float(_pm(idata, f"a_{it}"))}
     for it in mixed.cnt_items:
-        explicit[it] = {"family": "neg_binomial", "home_e": int(mixed.ng_home[it]),
-                        "a": float(_pm(idata, f"a_{it}")), "lh": float(_pm(idata, f"lh_{it}")),
-                        "lg": float(_pm(idata, f"lg_{it}")),
-                        "nb_alpha": float(_pm(idata, f"alpha_{it}"))}
+        explicit[it] = common(it, "neg_binomial") | {
+            "a": float(_pm(idata, f"a_{it}")),
+            "nb_alpha": float(_pm(idata, f"alpha_{it}")),
+        }
     for k, it in enumerate(mixed.ord_items):
-        explicit[it] = {"family": "ordered_logistic", "home_e": int(mixed.ng_home[it]),
-                        "lh": float(_pm(idata, f"lh_{it}")), "lg": float(_pm(idata, f"lg_{it}")),
-                        "cutpoints": _pm(idata, f"c_{it}").tolist(), "ord_K": int(mixed.ord_K[k])}
+        explicit[it] = common(it, "ordered_logistic") | {
+            "cutpoints": _pm(idata, f"c_{it}").tolist(),
+            "ord_K": int(mixed.ord_K[k]),
+        }
     return FittedMeasurementModel(
         factor_cols=list(base.factor_cols), items=list(base.items), home=list(base.home),
         signs=dict(base.signs), Lam=Lam, Phi=Phi, sigma=sigma, copula=copula,
@@ -132,6 +149,10 @@ def export_fitted_model(idata, mixed, config, *, meta: dict | None = None) -> Fi
         meta=(meta or {}) | {"likelihood_mode": config.likelihood_mode,
                              "cohort_weighted": bool(config.cohort_weighted), "J": int(Lam.shape[0]),
                              "F": int(Lam.shape[1]), "n_explicit": len(explicit)},
+        covariate_names=list(base.covariate_names),
+        covariate_metadata=dict(base.covariate_metadata),
+        continuous_alpha=(_pm(idata, "alpha") if "alpha" in post else None),
+        continuous_beta=(_pm(idata, "beta") if "beta" in post else None),
     )
 
 
@@ -205,8 +226,10 @@ def export_loadings_summary(idata, mixed, config, *, hdi_prob: float = 0.95,
               **{it: "ordered_logistic" for it in mixed.ord_items}}
     for item in list(mixed.bin_items) + list(mixed.cnt_items) + list(mixed.ord_items):
         home_factor = factor_cols[mixed.e_cols[mixed.ng_home[item]]]
-        for var, factor, kk in ((f"lh_{item}", home_factor, "primary"),
-                                (f"lg_{item}", G_KEY, "bifactor_G")):
+        cells = [(f"lh_{item}", home_factor, "primary")]
+        if f"lg_{item}" in idata.posterior:
+            cells.append((f"lg_{item}", G_KEY, "bifactor_G"))
+        for var, factor, kk in cells:
             d = _draws(idata, var)
             lo, med, hi = (float(v) for v in np.quantile(d, [lo_q, 0.5, hi_q]))
             rows.append(
@@ -233,6 +256,10 @@ def save_fitted_model(model: FittedMeasurementModel, path: str | Path) -> Path:
     path = Path(path)
     path.mkdir(parents=True, exist_ok=True)
     arrays = {"Lam": model.Lam, "Phi": model.Phi, "sigma": model.sigma}
+    if model.continuous_alpha is not None:
+        arrays["continuous_alpha"] = model.continuous_alpha
+    if model.continuous_beta is not None:
+        arrays["continuous_beta"] = model.continuous_beta
     for it, (v, z) in model.copula.items():
         arrays[f"cop_v__{it}"] = v
         arrays[f"cop_z__{it}"] = z
@@ -241,7 +268,9 @@ def save_fitted_model(model: FittedMeasurementModel, path: str | Path) -> Path:
         "factor_cols": model.factor_cols, "items": model.items, "home": model.home,
         "signs": model.signs, "e_cols": model.e_cols, "explicit": model.explicit,
         "copula_items": list(model.copula), "mode": model.mode,
-        "native": {it: list(v) for it, v in model.native.items()}, "meta": model.meta}, indent=2))
+        "native": {it: list(v) for it, v in model.native.items()}, "meta": model.meta,
+        "covariate_names": model.covariate_names,
+        "covariate_metadata": model.covariate_metadata}, indent=2))
     return path
 
 
@@ -255,10 +284,20 @@ def load_fitted_model(path: str | Path) -> FittedMeasurementModel:
         factor_cols=d["factor_cols"], items=d["items"], home=d["home"],
         signs={k: int(v) for k, v in d["signs"].items()}, Lam=arr["Lam"], Phi=arr["Phi"],
         sigma=arr["sigma"], copula=copula, e_cols=d["e_cols"], explicit=d["explicit"],
-        mode=d.get("mode", "gaussian_copula"), native=native, meta=d["meta"])
+        mode=d.get("mode", "gaussian_copula"), native=native, meta=d["meta"],
+        covariate_names=d.get("covariate_names", []),
+        covariate_metadata=d.get("covariate_metadata", {}),
+        continuous_alpha=(arr["continuous_alpha"] if "continuous_alpha" in arr else None),
+        continuous_beta=(arr["continuous_beta"] if "continuous_beta" in arr else None))
 
 
-def generate_synthetic(model: FittedMeasurementModel, n: int, *, seed: int = 0) -> pd.DataFrame:
+def generate_synthetic(
+    model: FittedMeasurementModel,
+    n: int,
+    *,
+    covariates: np.ndarray | None = None,
+    seed: int = 0,
+) -> pd.DataFrame:
     """Generate ``n`` synthetic patients on the ORIGINAL indicator scales.  Continuous items are inverted
     through the copula map (``mode='gaussian_copula'``) or the parametric (log-)normal native encoding
     (``mode='native'``); explicit items are drawn from their fitted GLMs.  Columns = continuous + explicit
@@ -270,7 +309,19 @@ def generate_synthetic(model: FittedMeasurementModel, n: int, *, seed: int = 0) 
     out: dict[str, np.ndarray] = {}
     # --- continuous (copula) block ---
     J = model.Lam.shape[0]
-    z = eta @ model.Lam.T + rng.standard_normal((n, J)) * model.sigma[None, :]   # z ~ N(0, LamPhiLam'+Psi)
+    if covariates is None:
+        covariates = np.zeros((n, len(model.covariate_names)), dtype="float64")
+    covariates = np.asarray(covariates, dtype="float64")
+    if covariates.shape != (n, len(model.covariate_names)):
+        raise ValueError(
+            f"covariates shape {covariates.shape} != {(n, len(model.covariate_names))}"
+        )
+    mean = np.zeros((n, J), dtype="float64")
+    if model.continuous_alpha is not None:
+        mean += model.continuous_alpha[None, :]
+    if model.continuous_beta is not None:
+        mean += covariates @ model.continuous_beta.T
+    z = mean + eta @ model.Lam.T + rng.standard_normal((n, J)) * model.sigma[None, :]
     # The stored copula map uses the DATA's standard-normal rank-INT scale; the model-implied per-item
     # variance diag(Lam Phi Lam' + Psi) is ~1 but not exactly, so standardize z per item before inverting
     # (u = Phi(z / implied_sd)) -- otherwise heavy-tailed marginals come out mis-scaled.
@@ -287,15 +338,18 @@ def generate_synthetic(model: FittedMeasurementModel, n: int, *, seed: int = 0) 
     g = f_e[:, 0]
     for it, p in model.explicit.items():
         fh = f_e[:, p["home_e"]]
+        linear = p["lh"] * fh + p.get("lg", 0.0) * g
+        if "beta" in p:
+            linear = linear + covariates @ np.asarray(p["beta"], dtype="float64")
         if p["family"] == "bernoulli":
-            prob = _sigmoid(p["a"] + p["lh"] * fh + p["lg"] * g)
+            prob = _sigmoid(p["a"] + linear)
             out[it] = rng.binomial(1, prob).astype(float)
         elif p["family"] == "neg_binomial":
-            mu = np.exp(np.clip(p["a"] + p["lh"] * fh + p["lg"] * g, -20, 20))
+            mu = np.exp(np.clip(p["a"] + linear, -20, 20))
             a = max(p["nb_alpha"], 1e-3)
             out[it] = rng.negative_binomial(a, a / (a + mu)).astype(float)
         elif p["family"] == "ordered_logistic":
-            eta_lin = p["lh"] * fh + p["lg"] * g
+            eta_lin = linear
             cut = np.asarray(p["cutpoints"])
             # PyMC OrderedLogistic: P(y > k) = sigmoid(eta - c_k)
             surv = _sigmoid(eta_lin[:, None] - cut[None, :])     # (n, K-1) = P(y>k)

@@ -12,13 +12,20 @@ import xarray as xr
 from face.scoring import conditional_gaussian_scores
 
 
-def _post(Lam, Phi, sigma):
+def _post(Lam, Phi, sigma, alpha=None, beta=None):
     """Wrap point parameters as a 1-chain/1-draw posterior (the function takes posterior means)."""
-    return {
+    out = {
         "Lam": xr.DataArray(Lam[None, None], dims=("chain", "draw", "item", "factor")),
         "Phi": xr.DataArray(Phi[None, None], dims=("chain", "draw", "fi", "fj")),
         "sigma": xr.DataArray(sigma[None, None], dims=("chain", "draw", "item")),
     }
+    if alpha is not None:
+        out["alpha"] = xr.DataArray(alpha[None, None], dims=("chain", "draw", "item"))
+    if beta is not None:
+        out["beta"] = xr.DataArray(
+            beta[None, None], dims=("chain", "draw", "item", "covariate")
+        )
+    return out
 
 
 def _ref(M, Lam, Phi, sigma):
@@ -66,3 +73,19 @@ def test_hdi_is_gaussian_quantile_of_sd():
     z = norm.ppf(1 - (1 - 0.94) / 2)
     obs = ~np.isnan(out["mean"])
     assert np.allclose((out["hdi_high"] - out["mean"])[obs], (z * out["sd"])[obs], atol=1e-8)
+
+
+def test_covariate_mean_is_removed_before_scoring():
+    X, Lam, Phi, sigma = _toy(seed=9, miss=0.0)
+    rng = np.random.default_rng(10)
+    covariates = rng.normal(size=(X.shape[0], 2))
+    alpha = rng.normal(0, 0.2, size=X.shape[1])
+    beta = rng.normal(0, 0.2, size=(X.shape[1], 2))
+    shifted = X + alpha[None, :] + covariates @ beta.T
+    post = _post(Lam, Phi, sigma, alpha=alpha, beta=beta)
+    got = conditional_gaussian_scores(
+        shifted, post, ["g", "s"], covariates=covariates, psi_floor=0.0
+    )
+    ref = conditional_gaussian_scores(X, _post(Lam, Phi, sigma), ["g", "s"], psi_floor=0.0)
+    assert np.allclose(got["mean"], ref["mean"], atol=1e-8)
+    assert np.allclose(got["sd"], ref["sd"], atol=1e-8)

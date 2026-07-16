@@ -10,9 +10,11 @@ missing data**: they are *structural zeros* (no attempts ⇒ 0 attempts, 0 viole
 patient has zero and collapses the coverage of the count features (ISF07 sits at
 ~25–38 % observed when ~90 % of patients actually have a known value).
 
-This module decodes that skip logic: where a gate is explicitly **No**
-(harmonized to ``0``) *and* a dependent is currently missing, the dependent is
-set to its structural value (``0``).
+This module decodes that skip logic: where a gate has a value that logically
+determines a dependent and the dependent is currently missing, the dependent is
+set to its structural value. Most rules use a binary ``No == 0`` gate. Smoking
+status is categorical instead: ``1 == never smoker`` determines lifetime
+pack-years to be zero.
 
 It is deliberately **not imputation** — we only fill cells the instrument's own
 logic determines:
@@ -28,6 +30,9 @@ cascades into a later one (ISF05=No → ISF08=0 → ISF08A=0). The ISF module is
 present and structurally identical in all three FACE cohorts (the gate coding
 differs — BP/SZ ``Oui/Non``, DR ``1/0`` — but ``rules.py`` harmonizes it to
 ``0/1`` before this step runs). The engine generalizes to any gated family.
+Fagerstrom scores are deliberately not filled for never/former smokers: the
+source instrument is administered to current smokers only, so those cells are
+not applicable rather than observed zero nicotine-dependence scores.
 """
 from __future__ import annotations
 
@@ -36,7 +41,13 @@ from dataclasses import dataclass
 
 import pandas as pd
 
-__all__ = ["SkipRule", "SUICIDE_SKIP_RULES", "decode_skip_logic"]
+__all__ = [
+    "DEFAULT_SKIP_RULES",
+    "SMOKING_SKIP_RULES",
+    "SUICIDE_SKIP_RULES",
+    "SkipRule",
+    "decode_skip_logic",
+]
 
 
 @dataclass(frozen=True)
@@ -75,9 +86,29 @@ SUICIDE_SKIP_RULES: tuple[SkipRule, ...] = (
 )
 
 
+# Smoking status is harmonized to 1=never smoker, 2=former smoker,
+# 3=current smoker in all cohorts. The source questionnaires leave pack-years
+# blank for never smokers, but this is a known zero exposure, not missing data.
+# Existing contradictory values are preserved for audit, as for all SkipRules.
+SMOKING_SKIP_RULES: tuple[SkipRule, ...] = (
+    SkipRule(
+        "suncf_cigarettes_lt",
+        ("sudose_cigarettes_lt",),
+        no_value=1.0,
+        rationale="Never smoker -> 0 lifetime cigarette pack-years.",
+    ),
+)
+
+
+DEFAULT_SKIP_RULES: tuple[SkipRule, ...] = (
+    *SUICIDE_SKIP_RULES,
+    *SMOKING_SKIP_RULES,
+)
+
+
 def decode_skip_logic(
     frame: pd.DataFrame,
-    rules: Iterable[SkipRule] = SUICIDE_SKIP_RULES,
+    rules: Iterable[SkipRule] = DEFAULT_SKIP_RULES,
     *,
     inplace: bool = False,
 ) -> tuple[pd.DataFrame, list[dict]]:

@@ -26,6 +26,7 @@ def _supervise(job: str, cmd: list[str]) -> int:
     env["PYTHONPATH"] = f"{REPO / 'src'}:" + env.get("PYTHONPATH", "")
     env.setdefault("PYTHONUNBUFFERED", "1")
     env.setdefault("HDF5_USE_FILE_LOCKING", "FALSE")
+    env["FACE_JOB_NAME"] = job
     runstate.merge_state(job, pid=os.getpid(), status="running", stage="running",
                          started_at=runstate.utcnow(), last_heartbeat=runstate.utcnow(), cmd=" ".join(cmd))
     prefix = ["caffeinate", "-i"] if shutil.which("caffeinate") else []

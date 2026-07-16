@@ -66,9 +66,10 @@ def test_membership_persistence_a4():
     assert res["cos_median"] > 0.8                            # near-identical weights -> high cosine
 
 
-def test_frozen_covariate_design_residualizes():
-    """FrozenCovariateDesign.residualize subtracts the frozen per-item fit (FWL) using visit covariates."""
+def test_frozen_covariate_design_reuses_training_transform():
+    """Follow-up design uses frozen knots and scales rather than refitting."""
     from sklearn.preprocessing import SplineTransformer
+
     rng = np.random.default_rng(2)
     n = 300
     idx = pd.MultiIndex.from_arrays([rng.choice(["bp", "sz"], n), [f"p{i}" for i in range(n)]],
@@ -78,19 +79,43 @@ def test_frozen_covariate_design_residualizes():
                         "education_years": rng.normal(12, 3, n)}, index=idx)
     spline = SplineTransformer(n_knots=4, degree=3, include_bias=False).fit(age.reshape(-1, 1))
     ab = spline.transform(age.reshape(-1, 1))
-    item = "x"
-    z0 = pd.DataFrame({item: 0.5 * (age - age.mean()) / age.std() + rng.normal(0, 0.5, n)}, index=idx)
-    # build a frozen design directly and fit betas
-    A0 = np.column_stack([np.ones(n), (ab - ab.mean(0)) / (ab.std(0) + 1e-9),
-                          cov["sex"].to_numpy(), (cov["education_years"] - cov["education_years"].mean()).to_numpy()
-                          / cov["education_years"].std(),
-                          ((ab - ab.mean(0)) / (ab.std(0) + 1e-9)) * cov["sex"].to_numpy()[:, None]])
-    beta, *_ = np.linalg.lstsq(A0, z0[item].to_numpy(), rcond=None)
-    fcd = FrozenCovariateDesign(spline=spline, age_basis_mean=ab.mean(0), age_basis_sd=ab.std(0),
-                                edu_mean=float(cov["education_years"].mean()),
-                                edu_sd=float(cov["education_years"].std()), edu_name="education_years",
-                                site_columns=[], names=[], betas={item: beta})
-    resid = fcd.residualize(z0, cov)
-    # residual should be ~uncorrelated with age (the covariate fit was removed)
-    r = np.corrcoef(resid[item].to_numpy(), age)[0, 1]
-    assert abs(r) < abs(np.corrcoef(z0[item].to_numpy(), age)[0, 1])     # correlation reduced
+    ab_mean, ab_sd = ab.mean(0), ab.std(0)
+    edu = cov["education_years"].to_numpy()
+    edu_mean, edu_sd = float(edu.mean()), float(edu.std())
+    names = [f"age_spline_{k}" for k in range(ab.shape[1])]
+    names += ["sex", "education_years"]
+    names += [f"age_spline_{k}:sex" for k in range(ab.shape[1])]
+    metadata = {
+        "mode": "in_likelihood",
+        "names": names,
+        "transform": {
+            "numeric": {
+                "age": {"fill": float(age.mean())},
+                "sex": {"fill": float(cov["sex"].mean())},
+                "education_years": {
+                    "fill": edu_mean,
+                    "center": [edu_mean],
+                    "scale": [edu_sd],
+                },
+            },
+            "age_spline": {
+                "degree": 3,
+                "include_bias": False,
+                "knot_vector": np.asarray(spline.bsplines_[0].t).tolist(),
+                "center": ab_mean.tolist(),
+                "scale": ab_sd.tolist(),
+            },
+        },
+    }
+    fcd = FrozenCovariateDesign(metadata=metadata)
+    got = fcd.design(cov)
+    ab_std = (ab - ab_mean) / ab_sd
+    expected = np.column_stack(
+        [
+            ab_std,
+            cov["sex"].to_numpy(),
+            (edu - edu_mean) / edu_sd,
+            ab_std * cov["sex"].to_numpy()[:, None],
+        ]
+    )
+    assert np.allclose(got, expected, atol=1e-12)

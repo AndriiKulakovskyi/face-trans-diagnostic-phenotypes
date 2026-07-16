@@ -10,20 +10,18 @@ with a small set of explicit classes:
 * ``StageRunner``: cached staged sampling with diagnostics.
 * ``PatientProjector`` and ``MeasurementVisualizer``: scoring and summary figures.
 
-The primary configuration matches the certified engine: ``unlikely_cross`` cells are
-exact zeros (hard-zero), covariates are residualized out (FWL-equivalent, zero added
-sampler parameters), and continuous observations are Gaussian/log-Gaussian (Student-t
-latents are not analytically marginalizable by the Woodbury identity).  The
-theory-faithful *soft* variant (free ``unlikely_cross`` / near-zero
-``g_anchor_on_specific``, via ``MeasurementConfig.with_soft_unlikely()``) and the
-*in-likelihood* covariate mode remain available as opt-in sensitivity arms.  Hard-zero
-is the default because the soft cells flood thin factors' columns with weak
-cross-loadings and de-identify them (see ``MeasurementConfig`` for the full rationale).
+The corrected canonical fit keeps ``unlikely_cross`` cells at exact zero, estimates
+covariate effects jointly in every observation-family likelihood, routes every retained
+indicator exactly once, and uses an LKJ prior for the free factor-correlation block.
+Continuous observations are Gaussian after rank-INT transformation; native binary,
+ordinal, and count observations retain their corresponding link-scale likelihoods.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import threading
 import time
 from dataclasses import dataclass, field, replace
 from pathlib import Path
@@ -35,6 +33,7 @@ import numpy as np  # type: ignore[reportMissingImports]
 import pandas as pd  # type: ignore[reportMissingImports]
 import pymc as pm  # type: ignore[reportMissingImports]
 import pytensor.tensor as pt  # type: ignore[reportMissingImports]
+from scipy.interpolate import BSpline  # type: ignore[reportMissingImports]
 from scipy.linalg import solve_triangular  # type: ignore[reportMissingImports]
 from scipy.special import logsumexp  # type: ignore[reportMissingImports]
 from scipy.stats import multivariate_normal, norm, rankdata  # type: ignore[reportMissingImports]
@@ -45,7 +44,7 @@ PROC = Path(os.environ.get("FACE_DATA_DIR", str(REPO / "data" / "processed")))
 MATRIX = REPO / "configs" / "loading_matrix.csv"
 RESULTS = REPO / "results" / "m1_measurement"
 FIGURES = REPO / "docs" / "figures" / "m1_measurement"
-MODEL_VERSION = "m1_measurement"
+MODEL_VERSION = "m1_measurement_v4_correlated_substance_tiered_certification"
 
 G_KEY = "overall_severity"
 
@@ -78,7 +77,13 @@ S3_CONT_FACTORS = S1_FACTORS + ["developmental_risk", "mania_activation"]
 # Gaussian covariance.  For factors carrying those indicators we keep patient
 # latent coordinates in the sampler and attach Bernoulli / ordered-logistic /
 # negative-binomial likelihoods to them.
-DEFAULT_EXPLICIT_FACTORS = ["overall_severity", "suicidality", "developmental_risk", "substance"]
+DEFAULT_EXPLICIT_FACTORS = [
+    "overall_severity",
+    "immunometabolic",
+    "suicidality",
+    "developmental_risk",
+    "substance",
+]
 
 # Clinically, these scales are broad composites. They mix several things:
 # - general illness burden / distress
@@ -144,7 +149,9 @@ class StageDefinition:
     correlated: bool = False
     windows: bool = False
     mixed: bool = False
-    explicit_factors: list[str] = field(default_factory=lambda: list(DEFAULT_EXPLICIT_FACTORS))
+    # Empty means "derive from retained native loading support".  A nonempty list
+    # is an assertion checked against that derived set, never the routing source.
+    explicit_factors: list[str] = field(default_factory=list)
     min_cohorts: int = 3
     n_subsample: int | None = None
     balanced: bool = False
@@ -159,15 +166,19 @@ class StageDefinition:
     # Default False/0.25 reproduces the certified hard-zero map exactly.
     specific_cross: bool = False
     cross_sd_scale: float = 0.25
+    g_correlated: bool = False
+    hurdle_counts: bool = False
+    enforce_gates: bool = False
 
 
 @dataclass(frozen=True)
 class MeasurementConfig:
     """Paths and modeling switches for the parallel implementation.
 
-    The default object is the **hard-zero primary** (matching the certified
-    ``measurement.kernel`` engine): unlikely cross-loadings are fixed at exactly 0,
-    covariates are residualized, and there are no in-likelihood mean terms.
+    The default object is a hard-zero, joint-covariate model: unlikely
+    cross-loadings are fixed at exactly zero and item-specific covariate effects
+    are estimated inside the likelihood.  The canonical M1 runner additionally
+    selects the Gaussian-copula family and corrected eight-factor prior map.
 
     Why hard-zero is the default (empirically established 2026-06-19): freeing the
     ~980 ``unlikely_cross`` cells as soft Normal(0, 0.05) FLOODS every factor's
@@ -195,21 +206,18 @@ class MeasurementConfig:
     lkj_eta: float = 2.0
     soft_unlikely: bool = False
     soft_g_anchor_specific: bool = False
-    # Covariates calibrate item means before the latent temperature is read.  Two
-    # equivalent routes (for Gaussian/log-Gaussian items the choice is FWL-equivalent):
-    #   * ``"residualize"`` (default): OLS-partial each item on the covariate design
-    #     BEFORE z-scoring, so the marginalized likelihood stays zero-mean and adds
-    #     ZERO sampler parameters.  This is what the certified ``measurement.kernel``
-    #     engine does (its covariate-adjusted arm) and is what keeps the fit
-    #     tractable at N=9013.
-    #   * ``"in_likelihood"``: sample item intercepts ``alpha`` and covariate slopes
-    #     ``beta`` inside PyMC (the published equation written literally).  More
-    #     parameters (J + J*P), slower, kept as an opt-in.
+    # Covariates calibrate item means before the latent coordinate is read.
+    #   * ``"in_likelihood"`` (default): estimate item intercepts and covariate
+    #     slopes jointly for Gaussian and every native family.  This is the M1
+    #     estimand and propagates covariate-effect uncertainty.
+    #   * ``"residualize"``: legacy Gaussian-only FWL shortcut retained for
+    #     controlled sensitivities; it is not the corrected mixed-family model.
     #   * ``"none"``: no covariate adjustment.
     # ``include_covariates`` is the master on/off; when False no covariates are used
     # regardless of ``covariate_mode``.
     include_covariates: bool = True
-    covariate_mode: str = "residualize"
+    covariate_mode: str = "in_likelihood"
+    covariate_missingness: str = "mean_indicator"
     include_cohort_covariates: bool = False
     age_spline_knots: int = 4
     fast_mode: bool = False
@@ -238,12 +246,17 @@ class MeasurementConfig:
     # (exclude bmi/weight/wstcir) testing whether a coherent cardiometabolic-inflammatory axis remains once
     # the body-size anchors are gone.  Not a primary fit: the canonical map keeps all indicators.
     exclude_items: tuple[str, ...] = ()
-    # ``orthogonal_factors``: specific factors pinned orthogonal to the correlated block (G is always
-    # pinned -- bifactor).  Use for a factor whose cross-factor correlations are non-identifiable and
-    # unstable across samples/weightings (substance: its SUD indicators are BP/SZ-only + rare, so its
-    # Phi-row swings, e.g. substance↔inflammatory 0.33 vs 0.82).  Pinning models it as an independent
-    # axis -- justified by non-identifiability, not asserted as an empirical zero.
+    # ``orthogonal_factors``: optional sensitivity restriction pinning named
+    # specific factors outside the correlated block (G is always pinned by the
+    # bifactor parameterization).  The primary model leaves this empty so all
+    # seven specifics, including Substance, remain in one LKJ block.
     orthogonal_factors: tuple[str, ...] = ()
+    # ``equal_home_loading_factors``: identify a thin factor by constraining all
+    # of its retained Gaussian home indicators to share one positive loading.
+    # This is a measurement restriction only; it does not constrain Phi.  The
+    # repaired primary uses it for the two-indicator substance factor until
+    # validated alcohol/cannabis indicators are restored.
+    equal_home_loading_factors: tuple[str, ...] = ()
     # ``cross_loading_prior``: how the off-home specific<->specific cross-loadings are treated.
     #   "hard_zero" (default): fixed at exactly 0 (the certified rigid map).
     #   "horseshoe": freed under a REGULARIZED (Finnish) horseshoe — a sparsity-inducing prior with a
@@ -263,6 +276,23 @@ class MeasurementConfig:
     # while mixing far better).  Defaults reproduce the canonical sampled-tau Cauchy horseshoe.
     hs_fixed_tau: bool = False
     hs_local_df: float = 1.0
+    rhat_max: float = 1.01
+    # Intercepts and covariate calibration slopes are high-dimensional nuisance
+    # terms, not the latent measurement map.  They retain an explicit convergence
+    # gate, but a small number may lie between the strict map threshold and this
+    # continuation threshold without vetoing an otherwise aligned factor map.
+    nuisance_rhat_max: float = 1.02
+    ess_min: float = 400.0
+    # Substance remains in the scientific covariance model, but its current
+    # two-indicator measurement basis receives a separate *provisional* Monte
+    # Carlo gate.  Passing these limits permits continuation; it does not confer
+    # strict Substance certification, which still uses rhat_max/ess_min.
+    substance_rhat_max: float = 1.05
+    substance_ess_min: float = 100.0
+    bfmi_min: float = 0.30
+    max_depth_fraction: float = 0.05
+    loading_congruence_min: float = 0.95
+    loading_sign_threshold: float = 0.10
 
     def with_horseshoe(self, *, tau0: float = 0.05, slab_c: float = 0.30,
                        fixed_tau: bool = False, local_df: float = 1.0) -> MeasurementConfig:
@@ -294,10 +324,22 @@ class MeasurementConfig:
         return replace(self, likelihood_mode="gaussian_copula")
 
     def with_substance_orthogonal(self) -> MeasurementConfig:
-        """Pin the substance factor orthogonal to the other specifics (G stays bifactor-orthogonal too).
-        The recommended substance handling: its cross-factor correlations are non-identifiable and
-        unstable, so it is modeled as an independent axis defined by its own indicators."""
+        """Optional sensitivity arm pinning Substance outside the specific LKJ block."""
         return replace(self, orthogonal_factors=tuple(sorted(set(self.orthogonal_factors) | {"substance"})))
+
+    def with_equal_home_loadings(self, *factors: str) -> MeasurementConfig:
+        """Share one positive home loading within each named thin factor.
+
+        Factor variances remain fixed to one and the full configured correlation
+        block remains free.  The constraint is therefore a tau-equivalent
+        measurement identification restriction, not a covariance restriction.
+        """
+        return replace(
+            self,
+            equal_home_loading_factors=tuple(
+                sorted(set(self.equal_home_loading_factors) | set(factors))
+            ),
+        )
 
     def with_cohort_weighted(self) -> MeasurementConfig:
         """Return the §3.6 cohort-weighted variant: use ALL patients with per-patient weights that
@@ -463,6 +505,7 @@ class CoreData:
     # Gaussian-copula inversion map (copula likelihood_mode only): item -> (sorted oriented
     # observed values, sorted rank-INT z), aligned by rank, for y = F_j^-1(Phi(z)).  None in native mode.
     copula: dict[str, tuple[np.ndarray, np.ndarray]] | None = None
+    covariate_metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -492,6 +535,13 @@ class MixedData:
     ng_home: dict[str, int]
     ng_hp: dict[str, tuple[float, float]]
     ng_gp: dict[str, tuple[float, float]]
+    ng_index: dict[str, int]
+    routing_report: list[dict[str, Any]] = field(default_factory=list)
+
+    @property
+    def native_items(self) -> list[str]:
+        """Stable native-parameter row order shared by fit, export, and scoring."""
+        return self.bin_items + self.cnt_items + self.ord_items
 
 
 @dataclass
@@ -755,6 +805,7 @@ class MeasurementDataset:
         cov_enabled = self.config.include_covariates if include_covariates is None else include_covariates
         mode = self.config.covariate_mode if cov_enabled else "none"
         empty_cov = (np.zeros((len(raw_df), 0), dtype="float64"), [])
+        design_metadata: dict[str, Any] = {}
         copula: dict[str, tuple[np.ndarray, np.ndarray]] | None = None
 
         if copula_mode:
@@ -777,7 +828,13 @@ class MeasurementDataset:
             if mode == "residualize":
                 # FWL in z-space (keeps ~zero-mean); inversion uses the stored marginal copula map.
                 Mdf = self._residualize_on_covariates(Mdf)
-            covariates, covariate_names = empty_cov
+                covariates, covariate_names = empty_cov
+            elif mode == "in_likelihood":
+                covariates, covariate_names, design_metadata = self._covariate_design(
+                    raw_df.index, with_metadata=True
+                )
+            else:
+                covariates, covariate_names = empty_cov
         else:
             if mode == "residualize":
                 # FWL: partial each item out on the covariate design before z-scoring, so the
@@ -785,7 +842,9 @@ class MeasurementDataset:
                 raw_df = self._residualize_on_covariates(raw_df)
                 covariates, covariate_names = empty_cov
             elif mode == "in_likelihood":
-                covariates, covariate_names = self._covariate_design(raw_df.index)
+                covariates, covariate_names, design_metadata = self._covariate_design(
+                    raw_df.index, with_metadata=True
+                )
             else:
                 covariates, covariate_names = empty_cov
 
@@ -812,6 +871,17 @@ class MeasurementDataset:
             Mdf = Mdf.iloc[ix]
             covariates = covariates[ix]
             cohort = cohort[ix]
+        covariate_metadata = {
+            "mode": mode,
+            "missingness": self.config.covariate_missingness,
+            "names": list(covariate_names),
+            "age_spline_knots": int(self.config.age_spline_knots),
+            "include_cohort_covariates": bool(self.config.include_cohort_covariates),
+            "transform": design_metadata,
+            "design_sha256": hashlib.sha256(
+                np.ascontiguousarray(covariates, dtype="float64").tobytes()
+            ).hexdigest(),
+        }
         homes = [self.home.get(item, "") for item in items]
         families = {item: str(self.meta.loc[item, "likelihood_family"]) for item in items}
         signs = {item: int(self.meta.loc[item, "item_sign"]) for item in items}
@@ -830,6 +900,7 @@ class MeasurementDataset:
             signs=signs,
             moments=moments,
             copula=copula,
+            covariate_metadata=covariate_metadata,
         )
 
     def mixed(
@@ -837,6 +908,7 @@ class MeasurementDataset:
         factors: list[str] | None = None,
         *,
         explicit_factors: list[str] | None = None,
+        specific_cross: bool = False,
         min_obs: int = 1500,
         min_cohorts: int = 3,
         balanced: bool = False,
@@ -844,13 +916,14 @@ class MeasurementDataset:
         seed: int = 20260605,
         cohort_subset: list[str] | None = None,
     ) -> MixedData:
-        """Return hybrid mixed-likelihood inputs."""
+        """Return exhaustively routed hybrid mixed-likelihood inputs.
+
+        Native items are selected before factors are partitioned.  The explicit
+        factor set is then the union of the free loading columns touched by those
+        items; all remaining factors are marginalized.  ``explicit_factors`` is
+        therefore only an optional assertion supplied by a stage recipe.
+        """
         factors = factors or list(S3_FACTORS)
-        explicit_factors = explicit_factors or list(DEFAULT_EXPLICIT_FACTORS)
-        # Explicit-specific -> G loadings are tightened by default.  Otherwise a
-        # binary/ordinal/count item can try to define both its home factor and G,
-        # creating weak-identification ridges in the mixed model.
-        bifactor_g_sd = {f: 0.05 for f in explicit_factors if f != G_KEY}
         base = self.core(
             factors,
             correlated=True,
@@ -861,40 +934,109 @@ class MeasurementDataset:
             cohort_subset=cohort_subset,
         )
         matrix = self.matrix
-        e_cols = [base.factor_cols.index(f) for f in explicit_factors if f in base.factor_cols]
-        m_cols = [i for i, f in enumerate(base.factor_cols) if f not in explicit_factors]
-        e_idx = {base.factor_cols[c]: i for i, c in enumerate(e_cols)}
-
         full = pd.read_parquet(self.config.processed_dir / "baseline_v0.parquet")
         cohort_full = np.asarray(full.index.get_level_values("cohort"))
-        explicit_specifics = [f for f in explicit_factors if f != G_KEY]
-        # Candidate non-Gaussian items come from the same prior matrix, but only
-        # items with enough observed data are allowed to identify loadings.  A
-        # sparse item can still exist in the data contract; it just should not
-        # drive a fragile explicit-latent posterior.
-        candidates = [
-            item
-            for item, h in self.home.items()
-            if h in explicit_specifics
-            and item in self.meta.index
-            and item in full.columns
-            and self.meta.loc[item, "modeling_block"] == "explicit"
-        ]
         copula_mode = self.config.likelihood_mode == "gaussian_copula"
-        candidates = [
-            item
-            for item in candidates
-            if self._covered(full[item], cohort_full, min_obs=min_obs, min_cohorts=min_cohorts)
-            and not (copula_mode and self._gaussianizable(item, full))  # promoted -> continuous block
-        ]
-        if copula_mode:
-            # A factor whose explicit items were all promoted to the Gaussianized block becomes fully
-            # marginalized; keep G + only the explicit factors that still carry an explicit item.
-            surviving = {G_KEY} | {self.home[it] for it in candidates}
-            explicit_factors = [f for f in explicit_factors if f in surviving]
-            e_cols = [base.factor_cols.index(f) for f in explicit_factors if f in base.factor_cols]
-            m_cols = [i for i, f in enumerate(base.factor_cols) if f not in explicit_factors]
-            e_idx = {base.factor_cols[c]: i for i, c in enumerate(e_cols)}
+        routing_report: list[dict[str, Any]] = []
+        candidates: list[str] = []
+        for item, home in sorted(self.home.items()):
+            if home not in base.factor_cols or item not in self.meta.index or item not in full.columns:
+                continue
+            if self.meta.loc[item, "modeling_block"] != "explicit":
+                continue
+            covered = self._covered(
+                full[item], cohort_full, min_obs=min_obs, min_cohorts=min_cohorts
+            )
+            promoted = bool(copula_mode and self._gaussianizable(item, full))
+            if covered and not promoted:
+                route, reason = "native", "retained_native"
+                candidates.append(item)
+            elif promoted:
+                route, reason = "gaussian", "promoted_gaussian_copula"
+            else:
+                route, reason = "excluded", "coverage_gate"
+            routing_report.append(
+                {
+                    "item": item,
+                    "home": home,
+                    "family": str(self.meta.loc[item, "likelihood_family"]),
+                    "route": route,
+                    "reason": reason,
+                    "n_observed": int(pd.to_numeric(full[item], errors="coerce").notna().sum()),
+                }
+            )
+
+        overlap = set(base.items) & set(candidates)
+        if overlap:
+            raise ValueError(f"indicator routing overlap: {sorted(overlap)}")
+        reported = {row["item"] for row in routing_report}
+        for item in base.items:
+            if item not in reported:
+                routing_report.append(
+                    {
+                        "item": item,
+                        "home": self.home.get(item, ""),
+                        "family": str(self.meta.loc[item, "likelihood_family"]),
+                        "route": "gaussian",
+                        "reason": "continuous_gaussian_copula",
+                        "n_observed": int(
+                            pd.to_numeric(full[item], errors="coerce").notna().sum()
+                        ),
+                    }
+                )
+
+        allowed_native_types = {"primary", "g_anchor", "plausible_cross"}
+        cell_rows = {
+            (str(r.item), str(r.factor)): r
+            for r in matrix.itertuples()
+        }
+        support: dict[str, list[str]] = {}
+        for item in candidates:
+            home = self.home[item]
+            home_row = cell_rows.get((item, home))
+            if home_row is None or str(home_row.prior_type) not in {"primary", "g_anchor"}:
+                raise ValueError(f"native item {item!r} has no positive home/G anchor prior")
+            free = [home]
+            if home != G_KEY:
+                g_row = cell_rows.get((item, G_KEY))
+                if g_row is not None and str(g_row.prior_type) in allowed_native_types:
+                    free.append(G_KEY)
+            unsupported = []
+            item_rows = matrix[matrix["item"] == item]
+            for row in item_rows.itertuples():
+                factor = str(row.factor)
+                ptype = str(row.prior_type)
+                if factor in base.factor_cols and factor not in free and ptype in allowed_native_types:
+                    unsupported.append((factor, ptype))
+            # A plausible-cross row is free only in an ESEM stage that explicitly
+            # enables specific cross-loadings.  Simple-structure stages correctly
+            # keep the same prior-map cell at zero.  Native ESEM cross-loadings
+            # are not yet parameterized by the mixed likelihood, so fail closed
+            # rather than silently dropping one when they are requested.
+            if unsupported and specific_cross:
+                raise ValueError(
+                    f"native item {item!r} has unsupported free cross-loadings: {unsupported}"
+                )
+            support[item] = free
+
+        explicit_set = {factor for free in support.values() for factor in free}
+        e_cols = [i for i, factor in enumerate(base.factor_cols) if factor in explicit_set]
+        m_cols = [i for i, factor in enumerate(base.factor_cols) if factor not in explicit_set]
+        derived_explicit = [base.factor_cols[i] for i in e_cols]
+        requested = [factor for factor in (explicit_factors or []) if factor in base.factor_cols]
+        if requested and set(requested) != set(derived_explicit):
+            raise ValueError(
+                "stage explicit_factors does not match native routing closure: "
+                f"requested={requested}, derived={derived_explicit}"
+            )
+        if candidates and G_KEY not in explicit_set:
+            raise ValueError("native routing did not retain the general factor")
+        e_idx = {base.factor_cols[c]: i for i, c in enumerate(e_cols)}
+
+        for row in routing_report:
+            if row["item"] in support:
+                row["free_factors"] = support[row["item"]]
+
         stage = full.loc[base.index]
         families = {item: str(self.meta.loc[item, "likelihood_family"]) for item in candidates}
         bin_items = sorted(item for item in candidates if families[item] == "bernoulli")
@@ -923,20 +1065,36 @@ class MeasurementDataset:
             Ord[:, k] = col
             ord_K.append(max(2, len(unique)))
 
-        cell = {
-            (r.item, r.factor): (float(r.prior_mean), float(r.prior_sd))
-            for r in matrix.itertuples()
-        }
         ng_home: dict[str, int] = {}
         ng_hp: dict[str, tuple[float, float]] = {}
         ng_gp: dict[str, tuple[float, float]] = {}
         for item in bin_items + ord_items + cnt_items:
             home = self.home[item]
             ng_home[item] = e_idx[home]
-            ng_hp[item] = cell.get((item, home), (0.6, 0.3))
-            g_mu, g_sd = cell.get((item, G_KEY), (0.0, 0.25))
-            ng_gp[item] = (g_mu, bifactor_g_sd.get(home, g_sd))
-        return MixedData(base, e_cols, m_cols, bin_items, Bin, ord_items, Ord, ord_K, cnt_items, Cnt, ng_home, ng_hp, ng_gp)
+            home_row = cell_rows[(item, home)]
+            ng_hp[item] = (float(home_row.prior_mean), float(home_row.prior_sd))
+            if home != G_KEY and G_KEY in support[item]:
+                g_row = cell_rows[(item, G_KEY)]
+                ng_gp[item] = (float(g_row.prior_mean), float(g_row.prior_sd))
+        native_order = bin_items + cnt_items + ord_items
+        ng_index = {item: i for i, item in enumerate(native_order)}
+        return MixedData(
+            base,
+            e_cols,
+            m_cols,
+            bin_items,
+            Bin,
+            ord_items,
+            Ord,
+            ord_K,
+            cnt_items,
+            Cnt,
+            ng_home,
+            ng_hp,
+            ng_gp,
+            ng_index,
+            routing_report,
+        )
 
     def loading_spec(
         self,
@@ -949,7 +1107,7 @@ class MeasurementDataset:
         bifactor_g_sd: dict[str, float] | None = None,
     ) -> LoadingSpec:
         """Resolve a theory-faithful loading spec for an encoded core block."""
-        return LoadingSpec.from_core(
+        spec = LoadingSpec.from_core(
             core,
             self.matrix,
             windows=windows,
@@ -961,6 +1119,92 @@ class MeasurementDataset:
             bifactor_g_sd=bifactor_g_sd,
             flat=flat,
         )
+        free = [(j, c) for j, c, _mu, _sd in spec.pos_cells]
+        free += [(j, c) for j, c, _mu, _sd in spec.signed_cells]
+        free += list(spec.hs_cells)
+        if len(free) != len(set(free)):
+            raise ValueError("loading topology assigns more than one parameter to a cell")
+        col = {factor: c for c, factor in enumerate(core.factor_cols)}
+        positive = {(j, c) for j, c, _mu, _sd in spec.pos_cells}
+        for j, home in enumerate(core.home):
+            if home in col and (j, col[home]) not in positive:
+                raise ValueError(
+                    f"indicator {core.items[j]!r} lacks a positive home loading on {home!r}"
+                )
+        return spec
+
+    def conceptual_loading_map(
+        self, mixed: MixedData, spec: LoadingSpec
+    ) -> list[dict[str, Any]]:
+        """Return the auditable full retained-item by active-factor topology."""
+        base = mixed.base
+        pos = {
+            (j, c): (k, mu, sd)
+            for k, (j, c, mu, sd) in enumerate(spec.pos_cells)
+        }
+        signed = {
+            (j, c): (k, mu, sd)
+            for k, (j, c, mu, sd) in enumerate(spec.signed_cells)
+        }
+        hs = {(j, c): k for k, (j, c) in enumerate(spec.hs_cells)}
+        gaussian_row = {item: j for j, item in enumerate(base.items)}
+        route = {row["item"]: row for row in mixed.routing_report}
+        matrix_rows = {
+            (str(row.item), str(row.factor)): row for row in self.matrix.itertuples()
+        }
+        retained = list(base.items) + list(mixed.native_items)
+        cells: list[dict[str, Any]] = []
+        for item in retained:
+            home = self.home.get(item, "")
+            block = "gaussian" if item in gaussian_row else "native"
+            free_native = set(route.get(item, {}).get("free_factors", []))
+            for c, factor in enumerate(base.factor_cols):
+                matrix_row = matrix_rows.get((item, factor))
+                prior_type = (
+                    str(matrix_row.prior_type) if matrix_row is not None else "unlikely_cross"
+                )
+                prior_mean = float(matrix_row.prior_mean) if matrix_row is not None else 0.0
+                prior_sd = float(matrix_row.prior_sd) if matrix_row is not None else 0.05
+                sign = (
+                    str(matrix_row.sign_constraint) if matrix_row is not None else "signed"
+                )
+                parameter = None
+                topology_role = "structural_zero"
+                if block == "gaussian":
+                    key = (gaussian_row[item], c)
+                    if key in pos:
+                        parameter = f"lam_pos[{pos[key][0]}]"
+                        topology_role = spec.kind[key]
+                    elif key in signed:
+                        parameter = f"lam_cross[{signed[key][0]}]"
+                        topology_role = spec.kind[key]
+                    elif key in hs:
+                        parameter = f"lam_hs[{hs[key]}]"
+                        topology_role = spec.kind[key]
+                elif factor in free_native:
+                    if factor == home:
+                        parameter = f"lh_{item}"
+                        topology_role = "g_anchor" if factor == G_KEY else "primary"
+                    elif factor == G_KEY:
+                        parameter = f"lg_{item}"
+                        topology_role = "bifactor_G"
+                cells.append(
+                    {
+                        "item": item,
+                        "block": block,
+                        "family": str(self.meta.loc[item, "likelihood_family"]),
+                        "home": home,
+                        "factor": factor,
+                        "parameter": parameter,
+                        "topology_role": topology_role,
+                        "prior_type": prior_type,
+                        "prior_mean": prior_mean,
+                        "prior_sd": prior_sd,
+                        "sign_constraint": sign,
+                        "structural_zero_reason": None if parameter else prior_type,
+                    }
+                )
+        return cells
 
     def residualize(self, df: pd.DataFrame) -> pd.DataFrame:
         """Public FWL covariate-residualization of gaussian-scale columns (delegates to
@@ -1013,52 +1257,128 @@ class MeasurementDataset:
             out[col] = y
         return out
 
-    def _covariate_design(self, index: pd.Index) -> tuple[np.ndarray, list[str]]:
+    def _covariate_design(
+        self,
+        index: pd.Index,
+        *,
+        with_metadata: bool = False,
+    ) -> tuple[np.ndarray, list[str]] | tuple[np.ndarray, list[str], dict[str, Any]]:
         cov_path = self.config.processed_dir / "covariates_v0.parquet"
         site_path = self.config.processed_dir / "site_v0.parquet"
         cov = pd.read_parquet(cov_path).reindex(index) if cov_path.exists() else pd.DataFrame(index=index)
         blocks: list[np.ndarray] = []
         names: list[str] = []
         n = len(index)
+        metadata: dict[str, Any] = {
+            "source": {
+                "covariates": str(cov_path),
+                "site": str(site_path),
+            }
+        }
 
-        def numeric_col(name: str) -> np.ndarray:
+        if self.config.covariate_missingness != "mean_indicator":
+            raise ValueError(
+                "covariate_missingness must be 'mean_indicator' for the corrected M1 model"
+            )
+
+        def numeric_col(name: str) -> tuple[np.ndarray, np.ndarray, float]:
             if name in cov.columns:
                 values = pd.to_numeric(cov[name], errors="coerce").to_numpy("float64")
             else:
                 values = np.full(n, np.nan, dtype="float64")
-            mean = float(np.nanmean(values)) if np.isfinite(np.nanmean(values)) else 0.0
-            return np.nan_to_num(values, nan=mean).reshape(-1, 1)
+            missing = ~np.isfinite(values)
+            finite = values[np.isfinite(values)]
+            mean = float(finite.mean()) if finite.size else 0.0
+            filled = np.nan_to_num(values, nan=mean).reshape(-1, 1)
+            return filled, missing.astype("float64").reshape(-1, 1), mean
 
-        age = numeric_col("age")
-        sex = numeric_col("sex")
+        age, age_missing, age_fill = numeric_col("age")
+        sex, sex_missing, sex_fill = numeric_col("sex")
         education_name = "edulevel" if "edulevel" in cov.columns else "education_years"
-        education = numeric_col(education_name)
-        age_basis = SplineTransformer(
+        education, education_missing, education_fill = numeric_col(education_name)
+        spline = SplineTransformer(
             n_knots=self.config.age_spline_knots,
             degree=3,
             include_bias=False,
-        ).fit_transform(age)
-        age_basis = _standardize_block(age_basis)
-        education = _standardize_block(education)
+        )
+        age_basis_raw = spline.fit_transform(age)
+        age_center = np.mean(age_basis_raw, axis=0)
+        age_scale = np.std(age_basis_raw, axis=0)
+        age_scale[age_scale <= 0] = 1.0
+        age_basis = (age_basis_raw - age_center) / age_scale
+        education_center = np.mean(education, axis=0)
+        education_scale = np.std(education, axis=0)
+        education_scale[education_scale <= 0] = 1.0
+        education = (education - education_center) / education_scale
         blocks.extend([age_basis, sex, education, age_basis * sex])
         names.extend([f"age_spline_{i}" for i in range(age_basis.shape[1])])
         names.extend(["sex", education_name])
         names.extend([f"age_spline_{i}:sex" for i in range(age_basis.shape[1])])
+        for name, missing in (
+            ("age_missing", age_missing),
+            ("sex_missing", sex_missing),
+            (f"{education_name}_missing", education_missing),
+        ):
+            if missing.any():
+                blocks.append(missing)
+                names.append(name)
+        metadata["numeric"] = {
+            "age": {"fill": age_fill},
+            "sex": {"fill": sex_fill},
+            education_name: {
+                "fill": education_fill,
+                "center": education_center.tolist(),
+                "scale": education_scale.tolist(),
+            },
+        }
+        metadata["age_spline"] = {
+            "degree": 3,
+            "n_knots": int(self.config.age_spline_knots),
+            "include_bias": False,
+            "knot_vector": np.asarray(spline.bsplines_[0].t).tolist(),
+            "center": age_center.tolist(),
+            "scale": age_scale.tolist(),
+        }
+        metadata["interactions"] = ["age_spline:sex"]
         if site_path.exists():
-            site = pd.read_parquet(site_path)["siteid_city"].reindex(index).round().astype("Int64")
+            site_raw = pd.to_numeric(
+                pd.read_parquet(site_path)["siteid_city"].reindex(index), errors="coerce"
+            )
+            site_missing = site_raw.isna().to_numpy("float64").reshape(-1, 1)
+            site = site_raw.round().astype("Int64")
             dummies = pd.get_dummies(site.astype("object"), prefix="site", dummy_na=False, drop_first=True)
             if dummies.shape[1]:
                 blocks.append(dummies.to_numpy("float64"))
                 names.extend(list(dummies.columns))
+            if site_missing.any():
+                blocks.append(site_missing)
+                names.append("site_missing")
+            site_levels = sorted(int(v) for v in site.dropna().unique())
+            metadata["site"] = {
+                "levels": site_levels,
+                "reference": site_levels[0] if site_levels else None,
+                "dummy_columns": list(dummies.columns),
+                "missing_indicator": bool(site_missing.any()),
+            }
         if self.config.include_cohort_covariates:
             cohort = pd.Series(index.get_level_values("cohort"), index=index)
             dummies = pd.get_dummies(cohort, prefix="cohort", drop_first=True)
             if dummies.shape[1]:
                 blocks.append(dummies.to_numpy("float64"))
                 names.extend(list(dummies.columns))
+            cohort_levels = sorted(str(v) for v in cohort.unique())
+            metadata["cohort"] = {
+                "levels": cohort_levels,
+                "reference": cohort_levels[0] if cohort_levels else None,
+                "dummy_columns": list(dummies.columns),
+            }
         if not blocks:
-            return np.zeros((n, 0), dtype="float64"), []
-        return np.column_stack(blocks).astype("float64"), names
+            result = (np.zeros((n, 0), dtype="float64"), [])
+        else:
+            result = (np.column_stack(blocks).astype("float64"), names)
+        if with_metadata:
+            return result[0], result[1], metadata
+        return result
 
     @staticmethod
     def _covered(series: pd.Series, cohort: np.ndarray, *, min_obs: int, min_cohorts: int) -> bool:
@@ -1162,8 +1482,15 @@ class BayesianBifactorESEM:
             pm.Potential("obs_ll", total)
         return model
 
-    def build_mixed(self, mixed: MixedData, spec: LoadingSpec, *, hurdle_counts: bool = False,
-                    weights: np.ndarray | None = None) -> pm.Model:
+    def build_mixed(
+        self,
+        mixed: MixedData,
+        spec: LoadingSpec,
+        *,
+        hurdle_counts: bool = False,
+        g_correlated: bool = False,
+        weights: np.ndarray | None = None,
+    ) -> pm.Model:
         """Build the hybrid explicit/marginalized mixed-likelihood model.
 
         The mixed model keeps two ideas in one posterior:
@@ -1194,7 +1521,9 @@ class BayesianBifactorESEM:
         with pm.Model() as model:
             Lam = self._build_loadings(spec, J, F)
             pm.Deterministic("Lam", Lam)
-            Phi, _R = self._build_phi(base, correlated=True, g_correlated=False)
+            Phi, _R = self._build_phi(
+                base, correlated=True, g_correlated=g_correlated
+            )
             pm.Deterministic("Phi", Phi)
             Se_t = pt.as_tensor(Se)
             Sm_t = pt.as_tensor(Sm)
@@ -1234,6 +1563,14 @@ class BayesianBifactorESEM:
                 mu = alpha[None, :] + pt.as_tensor(base.covariates) @ beta.T
             else:
                 mu = None
+            if P:
+                beta_native = pm.Normal(
+                    "beta_native", 0.0, 0.25, shape=(len(mixed.native_items), P)
+                )
+                covariates_t = pt.as_tensor(base.covariates)
+            else:
+                beta_native = None
+                covariates_t = None
             sigma = self.config.psi_floor + pm.HalfNormal("sigma", 1.0, shape=J)
             base_resid = pt.as_tensor(x) if mu is None else pt.as_tensor(x) - mu
             residual = base_resid - f_e @ Bmat.T
@@ -1253,8 +1590,14 @@ class BayesianBifactorESEM:
                     sigma=mixed.ng_hp[item][1],
                     lower=0.0,
                 )
-                lg = pm.Normal(f"lg_{item}", mixed.ng_gp[item][0], mixed.ng_gp[item][1])
-                eta = a + lh * f_e[:, mixed.ng_home[item]][obs] + lg * f_e[:, 0][obs]
+                eta = a + lh * f_e[:, mixed.ng_home[item]][obs]
+                if item in mixed.ng_gp:
+                    lg = pm.Normal(
+                        f"lg_{item}", mixed.ng_gp[item][0], mixed.ng_gp[item][1]
+                    )
+                    eta = eta + lg * f_e[:, 0][obs]
+                if beta_native is not None and covariates_t is not None:
+                    eta = eta + covariates_t[obs] @ beta_native[mixed.ng_index[item]]
                 yv = y[obs].astype("int8")
                 if w is None:
                     pm.Bernoulli(f"y_{item}", logit_p=eta, observed=yv)
@@ -1273,9 +1616,15 @@ class BayesianBifactorESEM:
                     sigma=mixed.ng_hp[item][1],
                     lower=0.0,
                 )
-                lg = pm.Normal(f"lg_{item}", mixed.ng_gp[item][0], mixed.ng_gp[item][1])
                 alpha = pm.HalfNormal(f"alpha_{item}", 2.0)
-                eta = a + lh * f_e[:, mixed.ng_home[item]][obs] + lg * f_e[:, 0][obs]
+                eta = a + lh * f_e[:, mixed.ng_home[item]][obs]
+                if item in mixed.ng_gp:
+                    lg = pm.Normal(
+                        f"lg_{item}", mixed.ng_gp[item][0], mixed.ng_gp[item][1]
+                    )
+                    eta = eta + lg * f_e[:, 0][obs]
+                if beta_native is not None and covariates_t is not None:
+                    eta = eta + covariates_t[obs] @ beta_native[mixed.ng_index[item]]
                 if hurdle_counts:
                     psi = pm.Deterministic(f"psi_{item}", pm.math.sigmoid(pm.Normal(f"apsi_{item}", 0.0, 1.5)))
                     hl = _hurdle_nb_logp(pt.as_tensor(np.rint(y[obs]).astype("float64")), psi, pt.exp(eta), alpha)
@@ -1306,8 +1655,14 @@ class BayesianBifactorESEM:
                     sigma=mixed.ng_hp[item][1],
                     lower=0.0,
                 )
-                lg = pm.Normal(f"lg_{item}", mixed.ng_gp[item][0], mixed.ng_gp[item][1])
-                eta = lh * f_e[:, mixed.ng_home[item]][obs] + lg * f_e[:, 0][obs]
+                eta = lh * f_e[:, mixed.ng_home[item]][obs]
+                if item in mixed.ng_gp:
+                    lg = pm.Normal(
+                        f"lg_{item}", mixed.ng_gp[item][0], mixed.ng_gp[item][1]
+                    )
+                    eta = eta + lg * f_e[:, 0][obs]
+                if beta_native is not None and covariates_t is not None:
+                    eta = eta + covariates_t[obs] @ beta_native[mixed.ng_index[item]]
                 yv = y[obs].astype("int32")
                 if w is None:
                     pm.OrderedLogistic(f"y_{item}", eta=eta, cutpoints=cut, observed=yv, compute_p=False)
@@ -1329,7 +1684,40 @@ class BayesianBifactorESEM:
             # Positive home loadings orient the factors.  Without this, the same
             # factor could be multiplied by -1 and all its loadings flipped, with
             # the exact same likelihood.
-            values = pm.TruncatedNormal("lam_pos", mu=pmu, sigma=psd, lower=0.0, shape=len(pr))
+            equal_groups = self._equal_pos_groups(spec)
+            if equal_groups:
+                grouped = {index for indices in equal_groups.values() for index in indices}
+                free = np.array(
+                    [index for index in range(len(pr)) if index not in grouped],
+                    dtype="int64",
+                )
+                values = pt.zeros(len(pr))
+                if len(free):
+                    free_values = pm.TruncatedNormal(
+                        "lam_pos_free",
+                        mu=pmu[free],
+                        sigma=psd[free],
+                        lower=0.0,
+                        shape=len(free),
+                    )
+                    values = pt.set_subtensor(values[free], free_values)
+                for factor, indices in equal_groups.items():
+                    index = np.asarray(indices, dtype="int64")
+                    shared = pm.TruncatedNormal(
+                        f"lam_equal_{factor}",
+                        mu=float(np.mean(pmu[index])),
+                        sigma=float(np.mean(psd[index])),
+                        lower=0.0,
+                    )
+                    values = pt.set_subtensor(values[index], shared)
+                # Preserve the expanded item-by-loading representation used by
+                # the loading atlas and elementwise diagnostics.  Repeated
+                # entries are the same sampled parameter by construction.
+                values = pm.Deterministic("lam_pos", values)
+            else:
+                values = pm.TruncatedNormal(
+                    "lam_pos", mu=pmu, sigma=psd, lower=0.0, shape=len(pr)
+                )
             Lam = pt.set_subtensor(Lam[pr, pc], values)
         if len(sr):
             # Cross-loadings are signed because a broad instrument can relate to
@@ -1360,6 +1748,22 @@ class BayesianBifactorESEM:
             Lam = pt.set_subtensor(Lam[hr, hc], lam_hs)
         return Lam
 
+    def _equal_pos_groups(self, spec: LoadingSpec) -> dict[str, list[int]]:
+        """Expanded ``lam_pos`` indices sharing one sampled home loading."""
+        groups: dict[str, list[int]] = {}
+        for factor in self.config.equal_home_loading_factors:
+            if factor not in spec.factor_cols:
+                continue
+            factor_col = spec.factor_cols.index(factor)
+            indices = [
+                index
+                for index, (_row, col, _mu, _sd) in enumerate(spec.pos_cells)
+                if col == factor_col
+            ]
+            if len(indices) >= 2:
+                groups[factor] = indices
+        return groups
+
     def _build_phi(self, core: CoreData, *, correlated: bool, g_correlated: bool):
         # Phi is the latent-factor correlation matrix.  It controls how dimensions
         # co-vary before we look at indicators.  In a strict bifactor model, G
@@ -1369,20 +1773,18 @@ class BayesianBifactorESEM:
         if not correlated or F <= 2:
             return pt.eye(F), pt.eye(F)
         if g_correlated:
-            # Sensitivity variant: allow all factors, including G, to correlate.
-            # We parameterize a Cholesky-like lower triangle and normalize each
-            # row so L L' is a valid correlation matrix with unit diagonal.
-            lower_idx = np.tril_indices(F, -1)
-            lower = pm.Normal("Phi_lower", 0.0, 1.0, shape=len(lower_idx[0]))
-            Lr = pt.set_subtensor(pt.eye(F)[lower_idx], lower)
-            L = Lr / pt.sqrt((Lr**2).sum(1, keepdims=True))
-            Phi = L @ L.T
-            return Phi, pt.linalg.cholesky(Phi + 1e-8 * pt.eye(F))
+            # Construct the LKJ prior through its independent vine partial
+            # correlations.  This is distributionally equivalent to LKJCorr,
+            # while avoiding a PyMC 6.0.1 cross-model initializer cache defect
+            # when continuation stages have different matrix dimensions.
+            Phi, R = self._lkj_vine_correlation(
+                f"Phi_all_{F}", n=F, eta=float(self.config.lkj_eta)
+            )
+            return Phi, R
         # Primary bifactor variant: only the *correlated* specific block gets a free correlation.
-        # G is always orthogonal (bifactor); ``orthogonal_factors`` pins additional factors ⊥ the
-        # block too (e.g. substance, whose cross-factor correlations are non-identifiable/unstable --
-        # see docs).  Pinned factors get an identity row/col (correlation 0 with everything by
-        # construction), exactly like G.
+        # G is always orthogonal (bifactor); ``orthogonal_factors`` optionally
+        # pins additional sensitivity-arm factors outside the block.  The
+        # primary configuration leaves it empty, so all specifics share the LKJ.
         orthogonal = {core.g_col}
         for f in self.config.orthogonal_factors:
             if f in core.factor_cols:
@@ -1391,13 +1793,10 @@ class BayesianBifactorESEM:
         ns = len(corr_idx)
         if ns <= 1:
             return pt.eye(F), pt.eye(F)  # nothing left to correlate -> all factors orthogonal
-        # Normalized lower-triangle correlation prior (avoids the pm.LKJCorr n>=5 init issues): weakly
-        # informative, guaranteed PD with unit diagonal.
-        lower_idx = np.tril_indices(ns, -1)
-        lower = pm.Normal("Phi_spec_lower", 0.0, 0.5, shape=len(lower_idx[0]))
-        Lr = pt.set_subtensor(pt.eye(ns)[lower_idx], lower)
-        Ls = Lr / pt.sqrt((Lr**2).sum(1, keepdims=True))
-        Cs = pm.Deterministic("Phi_spec", Ls @ Ls.T)
+        Cs_rv, Rs = self._lkj_vine_correlation(
+            f"Phi_spec_{ns}", n=ns, eta=float(self.config.lkj_eta)
+        )
+        Cs = pm.Deterministic("Phi_spec", Cs_rv)
         E = np.zeros((F, ns))
         for k, i in enumerate(corr_idx):
             E[i, k] = 1.0
@@ -1407,6 +1806,42 @@ class BayesianBifactorESEM:
         # Embed the correlated block; orthogonal factors (G + any pinned) get unit diagonal, zero off.
         Phi = pt.as_tensor(E) @ Cs @ pt.as_tensor(E).T + pt.as_tensor(diag_orth)
         return Phi, pt.linalg.cholesky(Phi + 1e-8 * pt.eye(F))
+
+    @staticmethod
+    def _lkj_vine_correlation(name: str, *, n: int, eta: float):
+        """Return an LKJ(eta) correlation and its Cholesky factor.
+
+        In the C-vine representation, canonical partial correlations in column
+        ``j`` are independent shifted symmetric Beta variables with shape
+        ``eta + (n - j - 2) / 2``.  The row-wise recursion below maps those
+        unconstrained partial correlations bijectively to a positive-definite
+        unit-diagonal matrix.  It is the LKJ construction of Lewandowski,
+        Kurowicka, and Joe (2009), not an approximation to an LKJ prior.
+        """
+        if n <= 1:
+            return pt.eye(n), pt.eye(n)
+        partials: list[pt.TensorVariable] = []
+        for j in range(n - 1):
+            alpha = float(eta) + 0.5 * (n - j - 2)
+            unit = pm.Beta(
+                f"{name}_partial_{j}",
+                alpha=alpha,
+                beta=alpha,
+                shape=n - j - 1,
+            )
+            partials.append(2.0 * unit - 1.0)
+
+        chol = pt.zeros((n, n))
+        chol = pt.set_subtensor(chol[0, 0], 1.0)
+        for i in range(1, n):
+            remaining = pt.as_tensor_variable(1.0)
+            for j in range(i):
+                partial = partials[j][i - j - 1]
+                chol = pt.set_subtensor(chol[i, j], partial * remaining)
+                remaining = remaining * pt.sqrt(pt.clip(1.0 - partial**2, 1e-12, 1.0))
+            chol = pt.set_subtensor(chol[i, i], remaining)
+        corr = chol @ chol.T
+        return corr, chol
 
     @staticmethod
     def patterns(mask: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -1523,13 +1958,66 @@ class StageRunner:
             if (
                 manifest.get("model_version") == MODEL_VERSION
                 and manifest.get("stage_spec") == _stage_spec(stage)
-                and manifest.get("config_sig") == _config_sig(self.config)
+                and _cached_model_sig(manifest) == _config_sig(self.config)
             ):
-                # Cache reuse is safe only if the model version, the full stage
-                # recipe, AND the model-affecting config (soft/hard, covariate mode,
-                # floors) all match -- otherwise e.g. a soft fit would be silently
-                # reused for a hard-zero run.
-                return az.from_netcdf(str(idata_path)), manifest
+                # Certification policy does not affect posterior draws.  Recompute
+                # diagnostics from the cached NetCDF so a policy correction can be
+                # applied without repeating a multi-hour fit.  Model-affecting
+                # fields remain protected by the cache signature above.
+                idata = az.from_netcdf(str(idata_path))
+                cached_mixed = None
+                if stage.mixed:
+                    cached_mixed = self.dataset.mixed(
+                        stage.factors,
+                        explicit_factors=stage.explicit_factors,
+                        specific_cross=stage.specific_cross,
+                        min_cohorts=stage.min_cohorts,
+                        balanced=stage.balanced,
+                        n_subsample=stage.n_subsample,
+                        seed=stage.seed,
+                    )
+                    cached_core = cached_mixed.base
+                else:
+                    cached_core = self.dataset.core(
+                        stage.factors,
+                        correlated=stage.correlated,
+                        windows=stage.windows,
+                        balanced=stage.balanced,
+                        n_subsample=stage.n_subsample,
+                        seed=stage.seed,
+                    )
+                cached_spec = self.dataset.loading_spec(
+                    cached_core,
+                    windows=stage.windows,
+                    specific_cross=stage.specific_cross,
+                    cross_sd_scale=stage.cross_sd_scale,
+                )
+                diag = self.diagnostics(
+                    idata,
+                    core=cached_core,
+                    spec=cached_spec,
+                    mixed=cached_mixed,
+                )
+                gate_pass = self._passes_gates(diag)
+                manifest["config_sig"] = _config_sig(self.config)
+                manifest["certification_policy"] = _certification_policy(self.config)
+                manifest["diagnostics"] = diag
+                manifest["certification"] = self._certification(stage, diag, gate_pass)
+                manifest["revalidated_at"] = time.strftime(
+                    "%Y-%m-%dT%H:%M:%SZ", time.gmtime()
+                )
+                manifest_path.write_text(json.dumps(manifest, indent=2))
+                print(
+                    f"[m1-stage] REVALIDATED {stage.name}: "
+                    f"passed={gate_pass} diagnostics={diag}",
+                    flush=True,
+                )
+                if stage.enforce_gates and not gate_pass:
+                    raise RuntimeError(
+                        f"cached stage {stage.name!r} failed certification gates; "
+                        f"see {manifest_path}"
+                    )
+                return idata, manifest
 
         start = time.time()
         if stage.mixed:
@@ -1539,6 +2027,7 @@ class StageRunner:
             data = self.dataset.mixed(
                 stage.factors,
                 explicit_factors=stage.explicit_factors,
+                specific_cross=stage.specific_cross,
                 min_cohorts=stage.min_cohorts,
                 balanced=stage.balanced,
                 n_subsample=stage.n_subsample,
@@ -1549,10 +2038,15 @@ class StageRunner:
                 windows=stage.windows,
                 specific_cross=stage.specific_cross,
                 cross_sd_scale=stage.cross_sd_scale,
-                bifactor_g_sd={f: 0.05 for f in stage.explicit_factors if f != G_KEY},
             )
             weights = _cohort_weights(data.base.cohort) if self.config.cohort_weighted else None
-            model = self.builder.build_mixed(data, spec, weights=weights)
+            model = self.builder.build_mixed(
+                data,
+                spec,
+                hurdle_counts=stage.hurdle_counts,
+                g_correlated=stage.g_correlated,
+                weights=weights,
+            )
             payload_data = data.base
         else:
             # Continuous stages are the fast path: no patient latent coordinates
@@ -1572,10 +2066,43 @@ class StageRunner:
                 cross_sd_scale=stage.cross_sd_scale,
             )
             weights = _cohort_weights(payload_data.cohort) if self.config.cohort_weighted else None
-            model = self.builder.build_marginalized(payload_data, spec, correlated=stage.correlated, weights=weights)
+            model = self.builder.build_marginalized(
+                payload_data,
+                spec,
+                correlated=stage.correlated,
+                g_correlated=stage.g_correlated,
+                weights=weights,
+            )
 
         initvals = self._warmstart(payload_data, spec, prev_stage)
-        with model:
+        job_name = os.environ.get("FACE_JOB_NAME")
+        heartbeat_stop = threading.Event()
+        heartbeat_thread: threading.Thread | None = None
+        if job_name:
+            from face.io import runstate
+
+            runstate.merge_state(
+                job_name,
+                stage=stage.name,
+                last_heartbeat=runstate.utcnow(),
+                output_dir=str(out),
+            )
+
+            def heartbeat() -> None:
+                while not heartbeat_stop.wait(30.0):
+                    runstate.merge_state(
+                        job_name, stage=stage.name, last_heartbeat=runstate.utcnow()
+                    )
+
+            heartbeat_thread = threading.Thread(target=heartbeat, daemon=True)
+            heartbeat_thread.start()
+        print(
+            f"[m1-stage] START {stage.name}: N={payload_data.M.shape[0]} "
+            f"Jg={payload_data.M.shape[1]} factors={payload_data.factor_cols}",
+            flush=True,
+        )
+        try:
+            with model:
             # NUTS is Hamiltonian Monte Carlo with automatic path length choice.
             # ``tune`` adapts the step size / mass matrix; ``draws`` are kept as
             # posterior samples.  NumPyro/JAX executes the gradient-based sampler
@@ -1583,34 +2110,142 @@ class StageRunner:
             # the non-deprecated route that forwards ``max_tree_depth`` to numpyro
             # (PyMC routes it through ``_sample_external_nuts``); ``initvals`` is the
             # continuation warm-start (None on the first rung).
-            idata = pm.sample(
-                draws=stage.draws,
-                tune=stage.tune,
-                chains=stage.chains,
-                target_accept=stage.target_accept,
-                random_seed=stage.seed,
-                nuts_sampler="numpyro",
-                initvals=initvals,
-                nuts={"max_tree_depth": self.config.max_tree_depth},
-                idata_kwargs={"log_likelihood": False},
-                progressbar=True,
-            )
+                idata = pm.sample(
+                    draws=stage.draws,
+                    tune=stage.tune,
+                    chains=stage.chains,
+                    target_accept=stage.target_accept,
+                    random_seed=stage.seed,
+                    nuts_sampler="numpyro",
+                    initvals=initvals,
+                    nuts={"max_tree_depth": self.config.max_tree_depth},
+                    idata_kwargs={"log_likelihood": False},
+                    progressbar=True,
+                )
+        finally:
+            heartbeat_stop.set()
+            if heartbeat_thread is not None:
+                heartbeat_thread.join(timeout=2.0)
         elapsed = time.time() - start
-        diag = self.diagnostics(idata)
+        # Persist completed chains before any reporting code runs.  A diagnostic
+        # or manifest bug must never discard a multi-hour sampling result.
+        tmp_idata_path = idata_path.with_suffix(".tmp.nc")
+        idata.to_netcdf(str(tmp_idata_path))
+        tmp_idata_path.replace(idata_path)
+        diag = self.diagnostics(
+            idata,
+            core=payload_data,
+            spec=spec,
+            mixed=data if stage.mixed else None,
+        )
         payload = {
             "model_version": MODEL_VERSION,
             "stage": stage.name,
             "stage_spec": _stage_spec(stage),
             "config_sig": _config_sig(self.config),
+            "certification_policy": _certification_policy(self.config),
             "elapsed_sec": elapsed,
             "N": int(payload_data.M.shape[0]),
             "J": int(payload_data.M.shape[1]),
             "factors": payload_data.factor_cols,
+            "covariates": payload_data.covariate_metadata,
             "diagnostics": diag,
         }
-        idata.to_netcdf(str(idata_path))
+        if stage.mixed:
+            cohort_totals = None
+            if weights is not None:
+                cohort_totals = {
+                    str(c): float(weights[np.asarray(payload_data.cohort) == c].sum())
+                    for c in dict.fromkeys(payload_data.cohort)
+                }
+            loading_cells = self.dataset.conceptual_loading_map(data, spec)
+            payload["routing"] = {
+                "J_gaussian": int(payload_data.M.shape[1]),
+                "J_native": int(len(data.native_items)),
+                "J_retained": int(payload_data.M.shape[1] + len(data.native_items)),
+                "n_binary": int(len(data.bin_items)),
+                "n_ordinal": int(len(data.ord_items)),
+                "n_count": int(len(data.cnt_items)),
+                "explicit_factors": [payload_data.factor_cols[c] for c in data.e_cols],
+                "marginalized_factors": [payload_data.factor_cols[c] for c in data.m_cols],
+                "items": data.routing_report,
+                "sha256": _json_sha256(data.routing_report),
+            }
+            payload["loading_map"] = {
+                "cells": loading_cells,
+                "sha256": _json_sha256(loading_cells),
+            }
+            payload["likelihood"] = {
+                "count_family": "hurdle_negative_binomial"
+                if stage.hurdle_counts
+                else "negative_binomial",
+                "cohort_weighting": "generalized_posterior"
+                if weights is not None
+                else "ordinary_posterior",
+                "weight_sum": None if weights is None else float(weights.sum()),
+                "cohort_weight_totals": cohort_totals,
+            }
+        gate_pass = self._passes_gates(diag)
+        payload["certification"] = self._certification(stage, diag, gate_pass)
         manifest_path.write_text(json.dumps(payload, indent=2))
+        print(
+            f"[m1-stage] END {stage.name}: elapsed={elapsed:.1f}s diagnostics={diag}",
+            flush=True,
+        )
+        if stage.enforce_gates and not gate_pass:
+            raise RuntimeError(
+                f"stage {stage.name!r} failed certification gates; see {manifest_path}"
+            )
         return idata, payload
+
+    def _certification(
+        self, stage: StageDefinition, diagnostics: dict[str, Any], gate_pass: bool
+    ) -> dict[str, Any]:
+        components = self._gate_components(diagnostics)
+        nuisance_over_strict = int(
+            diagnostics.get("nuisance_parameters_above_map_rhat_max", 0)
+        )
+        warnings = []
+        if nuisance_over_strict:
+            warnings.append(
+                f"{nuisance_over_strict} nuisance calibration parameters exceed "
+                f"the strict map R-hat threshold but remain subject to the "
+                f"{self.config.nuisance_rhat_max:.3f} nuisance continuation gate"
+            )
+        substance_count = int(diagnostics.get("substance_parameter_count", 0))
+        if substance_count and components["substance_provisional"] and not components[
+            "substance_strict"
+        ]:
+            warnings.append(
+                "Substance parameters satisfy only the provisional "
+                f"R-hat <= {self.config.substance_rhat_max:.3f}, ESS >= "
+                f"{self.config.substance_ess_min:.0f} continuation gate; Substance "
+                "loadings and correlations are not strictly certified"
+            )
+        return {
+            "scope": "strict_core_provisional_substance_geometry_and_chain_alignment",
+            "enforced": bool(stage.enforce_gates),
+            "passed": bool(gate_pass) if stage.enforce_gates else None,
+            "core_certified": bool(components["core_passed"]),
+            "substance_provisional_passed": bool(
+                components["substance_provisional"]
+                and components["substance_alignment"]
+            ),
+            "substance_strictly_certified": bool(
+                components["substance_strict"]
+                and components["substance_alignment"]
+            ),
+            "strict_sampling_certified": bool(
+                components["strict_sampling_passed"]
+            ),
+            "gate_components": components,
+            "full_m1_certified": False,
+            "warnings": warnings,
+            "pending": [
+                "posterior_predictive_calibration",
+                "patient_level_cohort_stratified_resampling",
+            ],
+        }
 
     def _stage_core(self, stage: StageDefinition) -> CoreData:
         """Reconstruct the encoded continuous block a stage was fit on (deterministic
@@ -1619,6 +2254,7 @@ class StageRunner:
             return self.dataset.mixed(
                 stage.factors,
                 explicit_factors=stage.explicit_factors,
+                specific_cross=stage.specific_cross,
                 min_cohorts=stage.min_cohorts,
                 balanced=stage.balanced,
                 n_subsample=stage.n_subsample,
@@ -1667,11 +2303,27 @@ class StageRunner:
         }
         init: dict[str, np.ndarray] = {}
         if spec.pos_cells:
-            init["lam_pos"] = np.array(
+            expanded = np.array(
                 [max(0.02, src_load.get((spec.items[j], spec.factor_cols[c]), mu))
                  for j, c, mu, _sd in spec.pos_cells],
                 dtype="float64",
             )
+            equal_groups = self.builder._equal_pos_groups(spec)
+            if equal_groups:
+                grouped = {
+                    index for indices in equal_groups.values() for index in indices
+                }
+                free = [
+                    index for index in range(len(spec.pos_cells)) if index not in grouped
+                ]
+                if free:
+                    init["lam_pos_free"] = expanded[free]
+                for factor, indices in equal_groups.items():
+                    init[f"lam_equal_{factor}"] = np.asarray(
+                        float(np.mean(expanded[indices])), dtype="float64"
+                    )
+            else:
+                init["lam_pos"] = expanded
         if spec.signed_cells:
             init["lam_cross"] = np.array(
                 [src_load.get((spec.items[j], spec.factor_cols[c]), 0.0)
@@ -1690,28 +2342,696 @@ class StageRunner:
             print(f"  warm-start from {prev_stage.name}: {sorted(init)}", flush=True)
         return init or None
 
-    @staticmethod
-    def diagnostics(idata) -> dict[str, float | int]:
-        """Structural sampler diagnostics.
+    def diagnostics(
+        self,
+        idata,
+        *,
+        core: CoreData | None = None,
+        spec: LoadingSpec | None = None,
+        mixed: MixedData | None = None,
+    ) -> dict[str, Any]:
+        """Return tiered convergence and geometry diagnostics.
 
-        R-hat asks whether independent chains agree.  ESS asks how many
-        independent samples the autocorrelated chains are worth.  Divergences
-        flag failures of the Hamiltonian trajectory to follow posterior geometry.
+        Map-defining parameters (loadings, factor correlations, residual scales,
+        and native-family dispersion terms) are separated from high-dimensional
+        mean-calibration nuisance parameters (intercepts, thresholds, and
+        covariate slopes).  Explicit patient coordinates are checked on a bounded
+        panel.  The separation prevents one of thousands of nuisance slopes from
+        being mislabeled as a failure of the latent factor map.
         """
         post = idata.posterior
-        names = [v for v in ["lam_pos", "lam_cross", "sigma", "Phi_spec", "beta", "alpha"] if v in post]
-        names += [v for v in post.data_vars if str(v).startswith(("lh_", "lg_"))]
-        summary = az.summary(idata, var_names=names)
-        if "sd" in summary.columns:
-            summary = summary[pd.to_numeric(summary["sd"], errors="coerce") > 0]
-        ess_col = next((c for c in summary.columns if c.startswith("ess")), None)
-        rhat_col = "r_hat" if "r_hat" in summary.columns else "rhat"
-        div = int(np.asarray(idata.sample_stats["diverging"]).sum()) if "diverging" in idata.sample_stats else 0
+        nuisance_names = [
+            v for v in ["alpha", "beta", "beta_native"] if v in post
+        ]
+        nuisance_prefixes = ("a_", "c_")
+        nuisance_names += [
+            str(v)
+            for v in post.data_vars
+            if str(v).startswith(nuisance_prefixes) and str(v) not in nuisance_names
+        ]
+
+        def empty_summary() -> dict[str, Any]:
+            return {
+                "rhat": float("nan"),
+                "ess_bulk": float("nan"),
+                "ess_tail": float("nan"),
+                "parameter_count": 0,
+                "above_map_rhat_max": 0,
+            }
+
+        def summarize_names(names: list[str]) -> dict[str, Any]:
+            if not names:
+                return empty_summary()
+            # ArviZ otherwise rounds R-hat to two decimals before the gate, which
+            # turns a numerical diagnostic into an accidental 0.005-wide bin.
+            summary = az.summary(idata, var_names=names, round_to="none")
+            if "sd" in summary.columns:
+                summary = summary[pd.to_numeric(summary["sd"], errors="coerce") > 0]
+            rhat_col = "r_hat" if "r_hat" in summary.columns else "rhat"
+            rhat = pd.to_numeric(summary[rhat_col], errors="coerce")
+            bulk = pd.to_numeric(summary["ess_bulk"], errors="coerce")
+            tail = pd.to_numeric(summary["ess_tail"], errors="coerce")
+            return {
+                "rhat": float(rhat.max()),
+                "ess_bulk": float(bulk.min()),
+                "ess_tail": float(tail.min()),
+                "parameter_count": int(rhat.notna().sum()),
+                "above_map_rhat_max": int((rhat > self.config.rhat_max).sum()),
+            }
+
+        def summarize_arrays(arrays: list[Any]) -> dict[str, Any]:
+            """Summarize already-selected scalar posterior elements."""
+            rhat_values: list[np.ndarray] = []
+            bulk_values: list[np.ndarray] = []
+            tail_values: list[np.ndarray] = []
+            for values in arrays:
+                if values.size == 0:
+                    continue
+                try:
+                    parameter_dims = [
+                        dim for dim in values.dims if dim not in {"chain", "draw"}
+                    ]
+                    if parameter_dims:
+                        if len(parameter_dims) == 1:
+                            scalar_dim = parameter_dims[0]
+                        else:
+                            values = values.stack(
+                                _diagnostic_scalar=parameter_dims
+                            )
+                            scalar_dim = "_diagnostic_scalar"
+                        sd = np.asarray(
+                            values.std(dim=("chain", "draw")), dtype="float64"
+                        ).reshape(-1)
+                        varying = np.flatnonzero((sd > 0) & np.isfinite(sd))
+                        if not varying.size:
+                            continue
+                        values = values.isel({scalar_dim: varying})
+                    else:
+                        sd_scalar = float(
+                            np.asarray(values.std(dim=("chain", "draw")))
+                        )
+                        if not np.isfinite(sd_scalar) or sd_scalar <= 0:
+                            continue
+                    rhat = np.asarray(az.rhat(values), dtype="float64").reshape(-1)
+                    bulk = np.asarray(
+                        az.ess(values, method="bulk"), dtype="float64"
+                    ).reshape(-1)
+                    tail = np.asarray(
+                        az.ess(values, method="tail"), dtype="float64"
+                    ).reshape(-1)
+                except Exception:
+                    continue
+                keep = np.isfinite(rhat) & np.isfinite(bulk) & np.isfinite(tail)
+                if np.any(keep):
+                    rhat_values.append(rhat[keep])
+                    bulk_values.append(bulk[keep])
+                    tail_values.append(tail[keep])
+            if not rhat_values:
+                return empty_summary()
+            rhat = np.concatenate(rhat_values)
+            bulk = np.concatenate(bulk_values)
+            tail = np.concatenate(tail_values)
+            return {
+                "rhat": float(np.max(rhat)),
+                "ess_bulk": float(np.min(bulk)),
+                "ess_tail": float(np.min(tail)),
+                "parameter_count": int(rhat.size),
+                "above_map_rhat_max": int(np.sum(rhat > self.config.rhat_max)),
+            }
+
+        def select_vector(name: str, indices: list[int]) -> Any | None:
+            if name not in post or not indices:
+                return None
+            values = post[name]
+            return values.isel({values.dims[2]: np.asarray(indices, dtype="int64")})
+
+        core_map_arrays: list[Any] = []
+        substance_map_arrays: list[Any] = []
+        substance_loading_arrays: list[Any] = []
+        substance_correlation_arrays: list[Any] = []
+        if core is not None and spec is not None:
+            substance_col = (
+                core.factor_cols.index("substance")
+                if "substance" in core.factor_cols
+                else None
+            )
+            loading_cells = {
+                "lam_pos": [(row, col) for row, col, _mu, _sd in spec.pos_cells],
+                "lam_cross": [
+                    (row, col) for row, col, _mu, _sd in spec.signed_cells
+                ],
+                "lam_hs": list(spec.hs_cells),
+            }
+            for name, cells in loading_cells.items():
+                core_indices = [
+                    index
+                    for index, (_row, col) in enumerate(cells)
+                    if col != substance_col
+                ]
+                substance_indices = [
+                    index
+                    for index, (_row, col) in enumerate(cells)
+                    if col == substance_col
+                ]
+                selected = select_vector(name, core_indices)
+                if selected is not None:
+                    core_map_arrays.append(selected)
+                selected = select_vector(name, substance_indices)
+                if selected is not None:
+                    substance_map_arrays.append(selected)
+                    substance_loading_arrays.append(selected)
+
+            if "sigma" in post:
+                core_map_arrays.append(post["sigma"])
+
+            # Gate the scientific correlation coefficients, not an arbitrary
+            # chunk of the C-vine's raw partial-correlation vectors.  Only the
+            # unique lower triangle is used; fixed G-orthogonal entries have
+            # zero posterior SD and are removed by summarize_arrays().
+            if "Phi" in post:
+                phi = post["Phi"]
+                factor_count = len(core.factor_cols)
+                core_pairs: list[int] = []
+                substance_pairs: list[int] = []
+                for row in range(factor_count):
+                    for col in range(row):
+                        flat_index = row * factor_count + col
+                        if substance_col is not None and substance_col in (row, col):
+                            substance_pairs.append(flat_index)
+                        else:
+                            core_pairs.append(flat_index)
+                phi_flat = phi.stack(
+                    _diagnostic_pair=(phi.dims[-2], phi.dims[-1])
+                )
+                if core_pairs:
+                    core_map_arrays.append(
+                        phi_flat.isel(_diagnostic_pair=core_pairs)
+                    )
+                if substance_pairs:
+                    selected_phi = phi_flat.isel(
+                        _diagnostic_pair=substance_pairs
+                    )
+                    substance_map_arrays.append(selected_phi)
+                    substance_correlation_arrays.append(selected_phi)
+
+            native_structural = [
+                str(name)
+                for name in post.data_vars
+                if str(name).startswith(("lh_", "lg_", "alpha_", "apsi_"))
+            ]
+            for name in native_structural:
+                is_substance_loading = False
+                if name.startswith("lh_") and mixed is not None:
+                    item = name[3:]
+                    if item in mixed.ng_home:
+                        home_col = mixed.e_cols[mixed.ng_home[item]]
+                        is_substance_loading = (
+                            core.factor_cols[home_col] == "substance"
+                        )
+                if is_substance_loading:
+                    substance_map_arrays.append(post[name])
+                    substance_loading_arrays.append(post[name])
+                else:
+                    core_map_arrays.append(post[name])
+
+            core_map_diag = summarize_arrays(core_map_arrays)
+            substance_diag = summarize_arrays(substance_map_arrays)
+            substance_loading_diag = summarize_arrays(substance_loading_arrays)
+            substance_correlation_diag = summarize_arrays(
+                substance_correlation_arrays
+            )
+            map_diag = summarize_arrays(core_map_arrays + substance_map_arrays)
+        else:
+            # Backward-compatible fallback for external callers without the
+            # stage's item/factor metadata.  No Substance exception is inferred.
+            map_names = [
+                name
+                for name in ["lam_pos", "lam_cross", "lam_hs", "sigma"]
+                if name in post
+            ]
+            map_prefixes = ("Phi_spec_", "lh_", "lg_", "alpha_", "apsi_")
+            map_names += [
+                str(name)
+                for name in post.data_vars
+                if str(name).startswith(map_prefixes) and str(name) not in map_names
+            ]
+            map_diag = summarize_names(map_names)
+            core_map_diag = dict(map_diag)
+            substance_diag = empty_summary()
+            substance_loading_diag = empty_summary()
+            substance_correlation_diag = empty_summary()
+
+        nuisance_diag = summarize_names(nuisance_names)
+
+        core_latent_diag = empty_summary()
+        substance_latent_diag = empty_summary()
+        latent_panel_n = 0
+        core_latent_panel_n = 0
+        substance_latent_panel_n = 0
+        latent_name = "f_e" if "f_e" in post else "z_e" if "z_e" in post else None
+        if latent_name is not None and post.sizes.get("chain", 0) > 1:
+            latent = post[latent_name]
+            patient_dim = latent.dims[2]
+            factor_dim = latent.dims[3]
+            n_patient = int(latent.sizes[patient_dim])
+            panel = np.unique(
+                np.linspace(0, n_patient - 1, min(256, n_patient), dtype=int)
+            )
+            latent_panel = latent.isel({patient_dim: panel})
+            if mixed is not None and len(mixed.e_cols) == latent.sizes[factor_dim]:
+                explicit_names = [core.factor_cols[col] for col in mixed.e_cols]
+                core_indices = [
+                    index
+                    for index, factor in enumerate(explicit_names)
+                    if factor != "substance"
+                ]
+                substance_indices = [
+                    index
+                    for index, factor in enumerate(explicit_names)
+                    if factor == "substance"
+                ]
+            else:
+                core_indices = list(range(int(latent.sizes[factor_dim])))
+                substance_indices = []
+            if core_indices:
+                core_latent_diag = summarize_arrays(
+                    [latent_panel.isel({factor_dim: core_indices})]
+                )
+                core_latent_panel_n = int(panel.size)
+            if substance_indices:
+                substance_latent_diag = summarize_arrays(
+                    [latent_panel.isel({factor_dim: substance_indices})]
+                )
+                substance_latent_panel_n = int(panel.size)
+            latent_panel_n = int(panel.size)
+
+        latent_diags = [core_latent_diag, substance_latent_diag]
+        latent_rhats = [
+            value["rhat"] for value in latent_diags if np.isfinite(value["rhat"])
+        ]
+        latent_bulks = [
+            value["ess_bulk"]
+            for value in latent_diags
+            if np.isfinite(value["ess_bulk"])
+        ]
+        latent_tails = [
+            value["ess_tail"]
+            for value in latent_diags
+            if np.isfinite(value["ess_tail"])
+        ]
+        latent_rhat = max(latent_rhats) if latent_rhats else float("nan")
+        latent_bulk = min(latent_bulks) if latent_bulks else float("nan")
+        latent_tail = min(latent_tails) if latent_tails else float("nan")
+
+        sample_stats = idata.sample_stats
+        div = (
+            int(np.asarray(sample_stats["diverging"]).sum())
+            if "diverging" in sample_stats
+            else 0
+        )
+        divergences_by_chain = (
+            np.asarray(sample_stats["diverging"]).sum(axis=1).astype(int).tolist()
+            if "diverging" in sample_stats
+            else []
+        )
+        bfmi: list[float] = []
+        if "energy" in sample_stats:
+            energy = np.asarray(sample_stats["energy"], dtype="float64")
+            for chain in energy:
+                variance = float(np.var(chain))
+                bfmi.append(
+                    float(np.mean(np.diff(chain) ** 2) / variance)
+                    if variance > 0
+                    else float("nan")
+                )
+        depth_max = None
+        depth_cap_fraction = 0.0
+        depth_cap_fraction_by_chain: list[float] = []
+        if "tree_depth" in sample_stats:
+            depth = np.asarray(sample_stats["tree_depth"])
+            depth_max = int(np.nanmax(depth))
+            depth_cap_fraction = float(
+                np.mean(depth >= self.config.max_tree_depth)
+            )
+            depth_cap_fraction_by_chain = np.mean(
+                depth >= self.config.max_tree_depth, axis=1
+            ).astype(float).tolist()
+        steps_max = None
+        steps_cap_fraction = 0.0
+        steps_cap_fraction_by_chain: list[float] = []
+        if "n_steps" in sample_stats:
+            steps = np.asarray(sample_stats["n_steps"])
+            steps_max = int(np.nanmax(steps))
+            step_cap = 2 ** self.config.max_tree_depth - 1
+            steps_cap_fraction = float(np.mean(steps >= step_cap))
+            steps_cap_fraction_by_chain = np.mean(
+                steps >= step_cap, axis=1
+            ).astype(float).tolist()
+        acceptance = None
+        if "acceptance_rate" in sample_stats:
+            rate = np.asarray(sample_stats["acceptance_rate"], dtype="float64")
+            acceptance = {
+                "mean": float(np.nanmean(rate)),
+                "min": float(np.nanmin(rate)),
+                "max": float(np.nanmax(rate)),
+                "mean_by_chain": np.nanmean(rate, axis=1).astype(float).tolist(),
+            }
+        congruence_min = float("nan")
+        congruence_by_factor: list[float] = []
+        salient_sign_disagreements = 0
+        core_loading_congruence_min = float("nan")
+        substance_loading_congruence = float("nan")
+        core_loading_sign_disagreements = 0
+        substance_loading_sign_disagreements = 0
+        if "Lam" in post and post.sizes.get("chain", 0) > 1:
+            lam_chain = np.asarray(post["Lam"].mean("draw"), dtype="float64")
+            chain_count, _items, factor_count = lam_chain.shape
+            congruence_by_factor = [1.0] * factor_count
+            for factor in range(factor_count):
+                values: list[float] = []
+                for left in range(chain_count):
+                    for right in range(left + 1, chain_count):
+                        a = lam_chain[left, :, factor]
+                        b = lam_chain[right, :, factor]
+                        denom = float(np.linalg.norm(a) * np.linalg.norm(b))
+                        values.append(float(a @ b / denom) if denom > 0 else float("nan"))
+                finite_values = [value for value in values if np.isfinite(value)]
+                congruence_by_factor[factor] = (
+                    float(min(finite_values)) if finite_values else 1.0
+                )
+            congruence_min = float(np.nanmin(congruence_by_factor))
+            salient = np.min(np.abs(lam_chain), axis=0) >= self.config.loading_sign_threshold
+            sign_disagreement = np.ptp(np.sign(lam_chain), axis=0) > 0
+            disagreements_by_factor = np.sum(
+                salient & sign_disagreement, axis=0
+            ).astype(int)
+            salient_sign_disagreements = int(np.sum(disagreements_by_factor))
+            if core is not None and len(core.factor_cols) == factor_count:
+                substance_factor = (
+                    core.factor_cols.index("substance")
+                    if "substance" in core.factor_cols
+                    else None
+                )
+                core_factors = [
+                    index
+                    for index in range(factor_count)
+                    if index != substance_factor
+                ]
+                if core_factors:
+                    core_loading_congruence_min = float(
+                        np.nanmin(np.asarray(congruence_by_factor)[core_factors])
+                    )
+                    core_loading_sign_disagreements = int(
+                        np.sum(disagreements_by_factor[core_factors])
+                    )
+                if substance_factor is not None:
+                    substance_loading_congruence = congruence_by_factor[
+                        substance_factor
+                    ]
+                    substance_loading_sign_disagreements = int(
+                        disagreements_by_factor[substance_factor]
+                    )
+            else:
+                core_loading_congruence_min = congruence_min
+                core_loading_sign_disagreements = salient_sign_disagreements
+        rhat_values = [map_diag["rhat"], nuisance_diag["rhat"], latent_rhat]
+        bulk_values = [map_diag["ess_bulk"], nuisance_diag["ess_bulk"], latent_bulk]
+        tail_values = [map_diag["ess_tail"], nuisance_diag["ess_tail"], latent_tail]
+        finite_rhat = [float(v) for v in rhat_values if np.isfinite(v)]
+        finite_bulk = [float(v) for v in bulk_values if np.isfinite(v)]
+        finite_tail = [float(v) for v in tail_values if np.isfinite(v)]
         return {
-            "rhat": float(pd.to_numeric(summary[rhat_col], errors="coerce").max()),
-            "ess": float(pd.to_numeric(summary[ess_col], errors="coerce").min()) if ess_col else float("nan"),
+            # Aggregate values remain useful for reporting but do not define the
+            # tiered pass/fail decision below.
+            "rhat": max(finite_rhat) if finite_rhat else float("nan"),
+            "ess_bulk": min(finite_bulk) if finite_bulk else float("nan"),
+            "ess_tail": min(finite_tail) if finite_tail else float("nan"),
+            "map_rhat": map_diag["rhat"],
+            "map_ess_bulk": map_diag["ess_bulk"],
+            "map_ess_tail": map_diag["ess_tail"],
+            "map_parameter_count": map_diag["parameter_count"],
+            "core_map_rhat": core_map_diag["rhat"],
+            "core_map_ess_bulk": core_map_diag["ess_bulk"],
+            "core_map_ess_tail": core_map_diag["ess_tail"],
+            "core_map_parameter_count": core_map_diag["parameter_count"],
+            "substance_rhat": substance_diag["rhat"],
+            "substance_ess_bulk": substance_diag["ess_bulk"],
+            "substance_ess_tail": substance_diag["ess_tail"],
+            "substance_parameter_count": substance_diag["parameter_count"],
+            "substance_loading_rhat": substance_loading_diag["rhat"],
+            "substance_loading_ess_bulk": substance_loading_diag["ess_bulk"],
+            "substance_loading_ess_tail": substance_loading_diag["ess_tail"],
+            "substance_loading_parameter_count": substance_loading_diag[
+                "parameter_count"
+            ],
+            "substance_correlation_rhat": substance_correlation_diag["rhat"],
+            "substance_correlation_ess_bulk": substance_correlation_diag[
+                "ess_bulk"
+            ],
+            "substance_correlation_ess_tail": substance_correlation_diag[
+                "ess_tail"
+            ],
+            "substance_correlation_parameter_count": substance_correlation_diag[
+                "parameter_count"
+            ],
+            "nuisance_rhat": nuisance_diag["rhat"],
+            "nuisance_ess_bulk": nuisance_diag["ess_bulk"],
+            "nuisance_ess_tail": nuisance_diag["ess_tail"],
+            "nuisance_parameter_count": nuisance_diag["parameter_count"],
+            "nuisance_parameters_above_map_rhat_max": nuisance_diag[
+                "above_map_rhat_max"
+            ],
+            # Backward-compatible names now have their literal intended meaning:
+            # structural == map-defining, not map plus alpha/beta nuisance terms.
+            "structural_rhat": map_diag["rhat"],
+            "structural_ess_bulk": map_diag["ess_bulk"],
+            "structural_ess_tail": map_diag["ess_tail"],
+            "latent_panel_rhat": latent_rhat,
+            "latent_panel_ess_bulk": latent_bulk,
+            "latent_panel_ess_tail": latent_tail,
+            "latent_panel_patients": latent_panel_n,
+            "core_latent_panel_rhat": core_latent_diag["rhat"],
+            "core_latent_panel_ess_bulk": core_latent_diag["ess_bulk"],
+            "core_latent_panel_ess_tail": core_latent_diag["ess_tail"],
+            "core_latent_panel_patients": core_latent_panel_n,
+            "substance_latent_panel_rhat": substance_latent_diag["rhat"],
+            "substance_latent_panel_ess_bulk": substance_latent_diag["ess_bulk"],
+            "substance_latent_panel_ess_tail": substance_latent_diag["ess_tail"],
+            "substance_latent_panel_patients": substance_latent_panel_n,
+            "bfmi": bfmi,
+            "bfmi_min": float(np.nanmin(bfmi)) if bfmi else float("nan"),
             "divergences": div,
+            "divergences_by_chain": divergences_by_chain,
+            "tree_depth_max": depth_max,
+            "tree_depth_cap_fraction": depth_cap_fraction,
+            "tree_depth_cap_fraction_by_chain": depth_cap_fraction_by_chain,
+            "n_steps_max": steps_max,
+            "n_steps_cap_fraction": steps_cap_fraction,
+            "n_steps_cap_fraction_by_chain": steps_cap_fraction_by_chain,
+            "acceptance_rate": acceptance,
+            "loading_congruence_min": congruence_min,
+            "loading_congruence_by_factor": congruence_by_factor,
+            "salient_loading_sign_disagreements": salient_sign_disagreements,
+            "core_loading_congruence_min": core_loading_congruence_min,
+            "substance_loading_congruence": substance_loading_congruence,
+            "core_loading_sign_disagreements": core_loading_sign_disagreements,
+            "substance_loading_sign_disagreements": (
+                substance_loading_sign_disagreements
+            ),
         }
+
+    @staticmethod
+    def _finite(values: tuple[Any, ...]) -> bool:
+        return all(value is not None and np.isfinite(value) for value in values)
+
+    def _gate_components(self, diagnostics: dict[str, Any]) -> dict[str, bool]:
+        """Evaluate strict-core, provisional-Substance, and global gates."""
+        core_map_values = (
+            diagnostics.get(
+                "core_map_rhat",
+                diagnostics.get("map_rhat", diagnostics.get("structural_rhat")),
+            ),
+            diagnostics.get(
+                "core_map_ess_bulk",
+                diagnostics.get("map_ess_bulk", diagnostics.get("structural_ess_bulk")),
+            ),
+            diagnostics.get(
+                "core_map_ess_tail",
+                diagnostics.get("map_ess_tail", diagnostics.get("structural_ess_tail")),
+            ),
+        )
+        core_map_ok = bool(
+            self._finite(core_map_values)
+            and core_map_values[0] <= self.config.rhat_max
+            and core_map_values[1] >= self.config.ess_min
+            and core_map_values[2] >= self.config.ess_min
+        )
+
+        nuisance_count = int(diagnostics.get("nuisance_parameter_count", 0))
+        nuisance_ok = True
+        if nuisance_count:
+            nuisance_values = (
+                diagnostics.get("nuisance_rhat"),
+                diagnostics.get("nuisance_ess_bulk"),
+                diagnostics.get("nuisance_ess_tail"),
+            )
+            nuisance_ok = bool(
+                self._finite(nuisance_values)
+                and diagnostics["nuisance_rhat"] <= self.config.nuisance_rhat_max
+                and diagnostics["nuisance_ess_bulk"] >= self.config.ess_min
+                and diagnostics["nuisance_ess_tail"] >= self.config.ess_min
+            )
+
+        core_latent_count = int(
+            diagnostics.get(
+                "core_latent_panel_patients",
+                diagnostics.get("latent_panel_patients", 0),
+            )
+        )
+        core_latent_ok = True
+        if core_latent_count:
+            core_latent_values = (
+                diagnostics.get(
+                    "core_latent_panel_rhat", diagnostics.get("latent_panel_rhat")
+                ),
+                diagnostics.get(
+                    "core_latent_panel_ess_bulk",
+                    diagnostics.get("latent_panel_ess_bulk"),
+                ),
+                diagnostics.get(
+                    "core_latent_panel_ess_tail",
+                    diagnostics.get("latent_panel_ess_tail"),
+                ),
+            )
+            core_latent_ok = bool(
+                self._finite(core_latent_values)
+                and core_latent_values[0] <= self.config.rhat_max
+                and core_latent_values[1] >= self.config.ess_min
+                and core_latent_values[2] >= self.config.ess_min
+            )
+
+        substance_count = int(diagnostics.get("substance_parameter_count", 0))
+        substance_values = (
+            diagnostics.get("substance_rhat"),
+            diagnostics.get("substance_ess_bulk"),
+            diagnostics.get("substance_ess_tail"),
+        )
+        substance_provisional_ok = True
+        substance_strict_ok = True
+        if substance_count:
+            substance_provisional_ok = bool(
+                self._finite(substance_values)
+                and substance_values[0] <= self.config.substance_rhat_max
+                and substance_values[1] >= self.config.substance_ess_min
+                and substance_values[2] >= self.config.substance_ess_min
+            )
+            substance_strict_ok = bool(
+                self._finite(substance_values)
+                and substance_values[0] <= self.config.rhat_max
+                and substance_values[1] >= self.config.ess_min
+                and substance_values[2] >= self.config.ess_min
+            )
+
+        substance_latent_count = int(
+            diagnostics.get("substance_latent_panel_patients", 0)
+        )
+        if substance_latent_count:
+            substance_latent_values = (
+                diagnostics.get("substance_latent_panel_rhat"),
+                diagnostics.get("substance_latent_panel_ess_bulk"),
+                diagnostics.get("substance_latent_panel_ess_tail"),
+            )
+            substance_provisional_ok = bool(
+                substance_provisional_ok
+                and self._finite(substance_latent_values)
+                and substance_latent_values[0] <= self.config.substance_rhat_max
+                and substance_latent_values[1] >= self.config.substance_ess_min
+                and substance_latent_values[2] >= self.config.substance_ess_min
+            )
+            substance_strict_ok = bool(
+                substance_strict_ok
+                and self._finite(substance_latent_values)
+                and substance_latent_values[0] <= self.config.rhat_max
+                and substance_latent_values[1] >= self.config.ess_min
+                and substance_latent_values[2] >= self.config.ess_min
+            )
+
+        core_loading_congruence = diagnostics.get(
+            "core_loading_congruence_min",
+            diagnostics.get("loading_congruence_min"),
+        )
+        core_alignment_ok = bool(
+            core_loading_congruence is not None
+            and np.isfinite(core_loading_congruence)
+            and core_loading_congruence >= self.config.loading_congruence_min
+            and diagnostics.get(
+                "core_loading_sign_disagreements",
+                diagnostics.get("salient_loading_sign_disagreements", 1),
+            )
+            == 0
+        )
+        substance_loading_count = int(
+            diagnostics.get("substance_loading_parameter_count", 0)
+        )
+        substance_alignment_ok = True
+        if substance_loading_count:
+            substance_loading_congruence = diagnostics.get(
+                "substance_loading_congruence"
+            )
+            substance_alignment_ok = bool(
+                substance_loading_congruence is not None
+                and np.isfinite(substance_loading_congruence)
+                and substance_loading_congruence
+                >= self.config.loading_congruence_min
+                and diagnostics.get("substance_loading_sign_disagreements", 1)
+                == 0
+            )
+
+        bfmi = diagnostics.get("bfmi_min")
+        geometry_ok = bool(
+            bfmi is not None
+            and np.isfinite(bfmi)
+            and bfmi >= self.config.bfmi_min
+            and diagnostics.get("divergences", 0) == 0
+            and diagnostics.get("tree_depth_cap_fraction", 1.0)
+            <= self.config.max_depth_fraction
+            and max(
+                diagnostics.get("tree_depth_cap_fraction_by_chain") or [1.0]
+            )
+            <= self.config.max_depth_fraction
+            and diagnostics.get("n_steps_cap_fraction", 1.0)
+            <= self.config.max_depth_fraction
+            and max(diagnostics.get("n_steps_cap_fraction_by_chain") or [1.0])
+            <= self.config.max_depth_fraction
+        )
+        core_passed = bool(
+            core_map_ok
+            and nuisance_ok
+            and core_latent_ok
+            and core_alignment_ok
+            and geometry_ok
+        )
+        return {
+            "core_map": core_map_ok,
+            "nuisance": nuisance_ok,
+            "core_latent": core_latent_ok,
+            "core_alignment": core_alignment_ok,
+            "substance_provisional": substance_provisional_ok,
+            "substance_strict": substance_strict_ok,
+            "substance_alignment": substance_alignment_ok,
+            "geometry": geometry_ok,
+            "core_passed": core_passed,
+            "operational_passed": bool(
+                core_passed and substance_provisional_ok and substance_alignment_ok
+            ),
+            "strict_sampling_passed": bool(
+                core_passed and substance_strict_ok and substance_alignment_ok
+            ),
+        }
+
+    def _passes_gates(self, diagnostics: dict[str, Any]) -> bool:
+        """Operational gate: strict core/global diagnostics plus provisional Substance."""
+        return self._gate_components(diagnostics)["operational_passed"]
 
 
 class PatientProjector:
@@ -1990,22 +3310,129 @@ def _selection(rows: list[int], F: int) -> np.ndarray:
     return out
 
 
+def apply_frozen_covariate_design(
+    index: pd.Index,
+    covariates: pd.DataFrame,
+    site: pd.Series | None,
+    metadata: dict[str, Any],
+) -> np.ndarray:
+    """Apply the exact covariate transform learned by ``MeasurementDataset.core``.
+
+    This is the projection-time counterpart of ``_covariate_design``. It uses
+    the stored fill values, spline knots, scaling constants, reference levels,
+    and final column order; it never re-fits a transform on the target sample.
+    """
+    names = list(metadata.get("names", []))
+    transform = metadata.get("transform", metadata)
+    if not names:
+        return np.zeros((len(index), 0), dtype="float64")
+    cov = covariates.reindex(index)
+    columns: dict[str, np.ndarray] = {}
+    numeric = transform["numeric"]
+
+    def raw_numeric(name: str) -> tuple[np.ndarray, np.ndarray]:
+        raw = (
+            pd.to_numeric(cov[name], errors="coerce").to_numpy("float64")
+            if name in cov.columns
+            else np.full(len(index), np.nan, dtype="float64")
+        )
+        missing = ~np.isfinite(raw)
+        fill = float(numeric[name]["fill"])
+        return np.nan_to_num(raw, nan=fill), missing.astype("float64")
+
+    age, age_missing = raw_numeric("age")
+    sex, sex_missing = raw_numeric("sex")
+    education_name = next(name for name in numeric if name not in {"age", "sex"})
+    education, education_missing = raw_numeric(education_name)
+
+    spline = transform["age_spline"]
+    degree = int(spline["degree"])
+    knots = np.asarray(spline["knot_vector"], dtype="float64")
+    # SplineTransformer(extrapolation="constant") evaluates the boundary
+    # basis outside the fitted support. Clipping reproduces that behavior.
+    age_eval = np.clip(age, knots[degree], knots[-degree - 1])
+    age_full = BSpline.design_matrix(
+        age_eval, knots, degree, extrapolate=True
+    ).toarray()
+    age_basis = age_full if bool(spline["include_bias"]) else age_full[:, :-1]
+    age_basis = (
+        age_basis - np.asarray(spline["center"], dtype="float64")
+    ) / np.asarray(spline["scale"], dtype="float64")
+    for k in range(age_basis.shape[1]):
+        columns[f"age_spline_{k}"] = age_basis[:, k]
+        columns[f"age_spline_{k}:sex"] = age_basis[:, k] * sex
+    columns["sex"] = sex
+    edu_center = float(np.asarray(numeric[education_name]["center"]).ravel()[0])
+    edu_scale = float(np.asarray(numeric[education_name]["scale"]).ravel()[0])
+    columns[education_name] = (education - edu_center) / edu_scale
+    columns["age_missing"] = age_missing
+    columns["sex_missing"] = sex_missing
+    columns[f"{education_name}_missing"] = education_missing
+
+    site_meta = transform.get("site")
+    if site_meta is not None:
+        site_values = (
+            pd.to_numeric(site.reindex(index), errors="coerce")
+            if site is not None
+            else pd.Series(np.nan, index=index, dtype="float64")
+        )
+        site_missing = site_values.isna().to_numpy("float64")
+        site_codes = site_values.round().astype("Int64")
+        dummies = pd.get_dummies(
+            site_codes.astype("object"), prefix="site", dummy_na=False
+        )
+        for name in site_meta.get("dummy_columns", []):
+            columns[name] = (
+                dummies[name].to_numpy("float64")
+                if name in dummies
+                else np.zeros(len(index), dtype="float64")
+            )
+        columns["site_missing"] = site_missing
+
+    cohort_meta = transform.get("cohort")
+    if cohort_meta is not None:
+        cohort = pd.Series(index.get_level_values("cohort"), index=index)
+        dummies = pd.get_dummies(cohort, prefix="cohort", drop_first=True)
+        for name in cohort_meta.get("dummy_columns", []):
+            columns[name] = (
+                dummies[name].to_numpy("float64")
+                if name in dummies
+                else np.zeros(len(index), dtype="float64")
+            )
+
+    missing = [name for name in names if name not in columns]
+    if missing:
+        raise ValueError(f"cannot reconstruct frozen covariate columns: {missing}")
+    return np.column_stack([columns[name] for name in names]).astype("float64")
+
+
 def _config_sig(config: MeasurementConfig) -> dict[str, Any]:
     """Model-affecting config fields that must match for a cached fit to be reused.
 
     Distinguishes a hard-zero fit from a soft-unlikely fit (and the covariate mode),
     which the stage signature alone does not capture."""
     sig = {
+        "model_version": MODEL_VERSION,
         "soft_unlikely": bool(config.soft_unlikely),
         "soft_g_anchor_specific": bool(config.soft_g_anchor_specific),
+        "include_covariates": bool(config.include_covariates),
         "covariate_mode": config.covariate_mode if config.include_covariates else "none",
+        "covariate_missingness": str(config.covariate_missingness),
         "include_cohort_covariates": bool(config.include_cohort_covariates),
         "psi_floor": float(config.psi_floor),
+        "correlation_prior": "LKJ",
         "lkj_eta": float(config.lkj_eta),
         "age_spline_knots": int(config.age_spline_knots),
         "likelihood_mode": str(config.likelihood_mode),
         "cohort_weighted": bool(config.cohort_weighted),
         "orthogonal_factors": sorted(config.orthogonal_factors),
+        "equal_home_loading_factors": sorted(config.equal_home_loading_factors),
+        "exclude_items": list(config.exclude_items),
+        "prior_matrix_sha256": _file_sha256(config.prior_matrix),
+        "processed_inputs_sha256": {
+            name: _optional_file_sha256(config.processed_dir / name)
+            for name in ("baseline_v0.parquet", "covariates_v0.parquet", "site_v0.parquet")
+        },
     }
     if config.cross_loading_prior != "hard_zero":
         # Only emitted for the sparse-ESEM variant, so existing hard-zero caches stay valid.
@@ -2017,6 +3444,29 @@ def _config_sig(config: MeasurementConfig) -> dict[str, Any]:
     if config.likelihood_mode == "gaussian_copula":
         sig["copula_min_distinct"] = int(config.copula_min_distinct)
         sig["copula_max_modal_frac"] = float(config.copula_max_modal_frac)
+    return sig
+
+
+def _certification_policy(config: MeasurementConfig) -> dict[str, Any]:
+    """Diagnostic thresholds, deliberately separate from the fit cache key."""
+    return {
+        "map_rhat_max": float(config.rhat_max),
+        "nuisance_rhat_max": float(config.nuisance_rhat_max),
+        "ess_min": float(config.ess_min),
+        "substance_rhat_max": float(config.substance_rhat_max),
+        "substance_ess_min": float(config.substance_ess_min),
+        "bfmi_min": float(config.bfmi_min),
+        "max_depth_fraction": float(config.max_depth_fraction),
+        "loading_congruence_min": float(config.loading_congruence_min),
+        "loading_sign_threshold": float(config.loading_sign_threshold),
+    }
+
+
+def _cached_model_sig(manifest: dict[str, Any]) -> dict[str, Any]:
+    """Read a model-only cache key, including manifests written before gates
+    were correctly separated from model-affecting configuration."""
+    sig = dict(manifest.get("config_sig") or {})
+    sig.pop("certification_gates", None)
     return sig
 
 
@@ -2037,13 +3487,30 @@ def _stage_spec(stage: StageDefinition) -> dict[str, Any]:
         "chains": stage.chains,
         "target_accept": stage.target_accept,
         "seed": stage.seed,
+        "specific_cross": bool(stage.specific_cross),
+        "cross_sd_scale": float(stage.cross_sd_scale),
+        "g_correlated": bool(stage.g_correlated),
+        "hurdle_counts": bool(stage.hurdle_counts),
+        "enforce_gates": bool(stage.enforce_gates),
     }
-    if stage.specific_cross:
-        # Only emitted for the cross-loading arm, so existing hard-zero stage caches
-        # (whose manifests predate these keys) stay valid and are not silently re-run.
-        spec["specific_cross"] = True
-        spec["cross_sd_scale"] = stage.cross_sd_scale
     return spec
+
+
+def _file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for block in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _optional_file_sha256(path: Path) -> str | None:
+    return _file_sha256(path) if Path(path).exists() else None
+
+
+def _json_sha256(value: Any) -> str:
+    encoded = json.dumps(value, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def _hurdle_nb_logp(y, psi, mu, alpha):

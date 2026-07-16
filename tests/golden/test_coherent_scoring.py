@@ -32,9 +32,16 @@ def _setup(seed=0, F=4, Jc=8, N=80):
     return rng, e_cols, m_cols, Km, Ke, Jc, N, P, Mmat, Lam, sigma
 
 
-def _mp(M, e_cols, m_cols):
-    return SimpleNamespace(base=SimpleNamespace(M=M, factor_cols=["g", "e1", "m1", "m2"]),
-                           e_cols=e_cols, m_cols=m_cols)
+def _mp(M, e_cols, m_cols, covariates=None):
+    return SimpleNamespace(
+        base=SimpleNamespace(
+            M=M,
+            factor_cols=["g", "e1", "m1", "m2"],
+            covariates=covariates,
+        ),
+        e_cols=e_cols,
+        m_cols=m_cols,
+    )
 
 
 def test_no_data_returns_prior_conditional_mean():
@@ -65,3 +72,43 @@ def test_observed_data_recovers_fm_and_shrinks_variance():
     assert r > 0.8, f"f_m recovery corr = {r:.3f}"
     # shrinkage: observing data reduces posterior SD below the prior conditional SD
     assert fm_obs.std(0).mean() < fm_prior.std(0).mean(), "observing data did not shrink variance"
+
+
+def test_conditional_fm_removes_frozen_covariate_mean():
+    rng, e_cols, m_cols, _km, ke, jc, n, P, mmat, lam, sigma = _setup(seed=8)
+    fe = rng.normal(size=(30, n, ke))
+    fm = fe[0] @ mmat.T + rng.normal(size=(n, len(m_cols))) * 0.2
+    x = fm @ lam[:, m_cols].T + rng.normal(0, sigma, size=(n, jc))
+    covariates = rng.normal(size=(n, 2))
+    alpha = rng.normal(0, 0.3, size=jc)
+    beta = rng.normal(0, 0.2, size=(jc, 2))
+    shifted = x + alpha[None, :] + covariates @ beta.T
+    adjusted = dict(P, alpha=alpha, beta=beta)
+    got = conditional_fm_given_fe(
+        _mp(shifted, e_cols, m_cols, covariates), adjusted, fe, seed=21
+    )
+    ref = conditional_fm_given_fe(_mp(x, e_cols, m_cols), P, fe, seed=21)
+    assert np.allclose(got, ref, atol=1e-6)
+
+
+def test_matched_parameter_draws_equal_fixed_path_when_states_are_identical():
+    rng, e_cols, m_cols, _km, ke, jc, n, P, _mmat, _lam, _sigma = _setup(
+        seed=13
+    )
+    fe = rng.normal(size=(5, n, ke))
+    x = rng.normal(size=(n, jc))
+    parameter_draws = {
+        name: np.repeat(np.asarray(P[name])[None, ...], len(fe), axis=0)
+        for name in ("Lam", "Phi", "sigma")
+    }
+    fixed = conditional_fm_given_fe(
+        _mp(x, e_cols, m_cols), P, fe, seed=44
+    )
+    matched = conditional_fm_given_fe(
+        _mp(x, e_cols, m_cols),
+        P,
+        fe,
+        parameter_draws=parameter_draws,
+        seed=44,
+    )
+    assert np.allclose(matched, fixed, atol=1e-6)

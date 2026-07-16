@@ -106,7 +106,7 @@ psqi14,sleep,continuous,gaussian,7474,0.829,0.94,0.56,0.61
 psqi15,sleep,continuous,gaussian,7509,0.833,0.95,0.57,0.62
 psqi17,sleep,continuous,gaussian,7497,0.832,0.95,0.56,0.62
 fagers,substance,continuous,gaussian,3397,0.377,0.37,0.43,0.25
-sudose_cigarettes_lt,substance,explicit,neg_binomial,3572,0.396,0.39,0.43,0.34
+sudose_cigarettes_lt,substance,explicit,neg_binomial,7109,0.789,0.79,0.79,0.8
 suoccur_alcool,substance,explicit,bernoulli,8461,0.939,1.0,1.0,0.0
 suoccur_cannabis,substance,explicit,bernoulli,8461,0.939,1.0,1.0,0.0
 cssrs01,suicidality,explicit,bernoulli,1408,0.156,0.15,0.0,0.81

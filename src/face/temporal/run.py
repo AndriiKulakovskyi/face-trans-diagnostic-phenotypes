@@ -7,7 +7,8 @@ visits — and walks the deterministic plan:
     invariance (G1) -> panel (V1/V2 scoring + A=5 membership) -> attrition (G6 IPW)
         -> trait_state (G3 ICC) -> persistence (G4) -> consolidate (M4 hand-off)
 
-Prior-milestone objects consumed, all frozen: M1 map at results/m1_measurement/primary/idata.nc; M2
+Prior-milestone objects consumed, all frozen: M1 map at
+results/m1_measurement/corrected_v2/production/primary/idata.nc; M2
 coords + frozen archetype profiles at results/m2_strata/{coordinates,consolidate}; the V0 standardization
 spec + the V1/V2 baselines + V0 covariates under data/processed/. Config of record: A=5, seed 20260622,
 projection draws=500 tune=600 chains=2, n_keep_draws=200 (smoke: draws=80 tune=80, n_keep=40).

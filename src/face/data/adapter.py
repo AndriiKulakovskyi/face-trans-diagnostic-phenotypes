@@ -279,11 +279,11 @@ def to_harmonized_dataset(
     apply_skip_logic:
         If ``True`` (default), decode instrument skip-logic on the raw numeric
         matrix via :func:`~face.data.skip_logic.decode_skip_logic`: where a gate
-        item is explicitly "No" and a conditional item is missing, fill the
-        structural zero (e.g. ISF05="never attempted" ⇒ ISF07/08A/09A = 0). This
-        recovers count-feature coverage from ~25-38 % to ~72-92 % without any
-        imputation (only cells the instrument's own logic determines). Set
-        ``False`` to keep the raw structural blanks as NaN.
+        determines a conditional item and that item is missing, fill the
+        structural zero (e.g. ISF05="never attempted" implies zero attempts;
+        smoking status="never smoker" implies zero lifetime pack-years). This is
+        not statistical imputation: only cells fixed by instrument logic are
+        filled. Set ``False`` to keep the raw structural blanks as NaN.
     schema_version:
         Version string stamped on the generated schema and embedding artifacts.
     """

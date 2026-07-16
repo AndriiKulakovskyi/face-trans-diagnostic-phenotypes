@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Export CI-aware posterior factor loadings + Phi from the canonical Gaussian-copula M1 fit.
 
-The copula s5_9dim_mixed fit stores loadings in two places — the continuous ``Lam`` matrix and the
+The corrected eight-dimensional mixed fit stores loadings in two places — the continuous ``Lam`` matrix and the
 per-explicit-item ``lh_``/``lg_`` scalars — and only as a NetCDF posterior; no CSV / credible-interval
 summary has ever been exported.  This driver rebuilds the prepared mixed dataset DETERMINISTICALLY
 (so the item ordering aligns with the saved ``Lam``), reads only the loading variables out of the
@@ -11,10 +11,10 @@ loadings table with equal-tailed 95% credible intervals plus the 9x9 Phi matrix.
     PYTHONPATH=$PWD/src HDF5_USE_FILE_LOCKING=FALSE python notebooks/run_export_loadings.py
 
 Outputs (default):
-* results/m1_measurement/primary/loadings_summary.csv   (canonical)
-* results/m1_measurement/primary/phi.csv                (canonical)
-* reports/copula_s5_9dim_loadings.csv     (article-facing; supersedes stale native 11_s5_9dim_loadings.csv)
-* reports/copula_s5_9dim_phi.csv          (article-facing; supersedes stale native 04_stage5_phi.csv)
+* results/m1_measurement/corrected_v2/production/primary/loadings_summary.csv
+* results/m1_measurement/corrected_v2/production/primary/phi.csv
+* reports/copula_8factor_loadings.csv
+* reports/copula_8factor_phi.csv
 """
 from __future__ import annotations
 
@@ -59,7 +59,15 @@ from face.measurement.synthetic import (  # noqa: E402
 
 # Canonical M1 map: the weighted full-N 8-factor operational fit (immunometabolic merge + 3 cross-loadings
 # + substance orthogonal). This is the MAIN map the whole vertical + the article are built on.
-DEFAULT_IDATA = REPO / "results" / "face" / "oop_measurement" / "copula" / "weighted_8d" / "hs_s5_merged_xc" / "idata.nc"
+DEFAULT_IDATA = (
+    REPO
+    / "results"
+    / "m1_measurement"
+    / "corrected_v2"
+    / "production"
+    / "primary"
+    / "idata.nc"
+)
 FOLDED_MATRIX = REPO / "configs" / "loading_matrix.immunometabolic_crossload.csv"
 F8_FIT = ["overall_severity", "cognition", "immunometabolic", "sleep", "suicidality",
           "developmental_risk", "mania_activation", "substance"]
@@ -90,7 +98,7 @@ def _load_loading_posterior(idata_path: Path) -> _IData:
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--idata", type=Path, default=DEFAULT_IDATA,
-                   help="Path to the copula s5_9dim_mixed idata.nc (default: canonical run).")
+                   help="Path to the corrected eight-factor M1 idata.nc (default: canonical run).")
     p.add_argument("--reports-dir", type=Path, default=REPO / "reports",
                    help="Where to write the article-facing CSV copies.")
     p.add_argument("--hdi-prob", type=float, default=0.95,

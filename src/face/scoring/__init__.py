@@ -21,8 +21,15 @@ from __future__ import annotations
 import numpy as np
 
 
-def conditional_gaussian_scores(M: np.ndarray, post, factor_cols: list[str], *,
-                                psi_floor: float = 0.05, hdi_prob: float = 0.94):
+def conditional_gaussian_scores(
+    M: np.ndarray,
+    post,
+    factor_cols: list[str],
+    *,
+    covariates: np.ndarray | None = None,
+    psi_floor: float = 0.05,
+    hdi_prob: float = 0.94,
+):
     """Per-patient conditional factor-score posterior for a marginalized Gaussian fit (observed cells
     only), evaluated at the posterior-mean loadings. For patient i with observed cols O:
 
@@ -40,7 +47,15 @@ def conditional_gaussian_scores(M: np.ndarray, post, factor_cols: list[str], *,
     N, J = M.shape
     F = len(factor_cols)
     mask = ~np.isnan(M)
-    X = np.nan_to_num(M, nan=0.0)
+    mu = np.zeros_like(M)
+    if "alpha" in post:
+        mu += np.asarray(post["alpha"].mean(("chain", "draw")).values)[None, :]
+    if "beta" in post:
+        if covariates is None:
+            raise ValueError("covariates are required to score a fit containing beta")
+        beta = np.asarray(post["beta"].mean(("chain", "draw")).values)
+        mu += np.asarray(covariates, dtype="float64") @ beta.T
+    X = np.nan_to_num(M - mu, nan=0.0)
     pats, inv = np.unique(mask, axis=0, return_inverse=True)
     inv = inv.reshape(-1)
     mean = np.full((N, F), np.nan)

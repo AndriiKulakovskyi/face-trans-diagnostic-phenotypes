@@ -1,0 +1,36 @@
+# Substance harmonization audit
+
+This report contains aggregate counts only. It does not export patient identifiers.
+
+| cohort   | family       | metric                                           |   value | status   | detail                                                                         |
+|:---------|:-------------|:-------------------------------------------------|--------:|:---------|:-------------------------------------------------------------------------------|
+| BP       | lifetime_sud | parent_positive                                  |    1880 | info     | Any lifetime SUD.                                                              |
+| BP       | lifetime_sud | any_child_positive                               |     239 | info     | Union of unpacked substance flags.                                             |
+| BP       | lifetime_sud | parent_positive_without_child                    |    1647 | fail     | Parent-positive rows were not assigned to a substance by the unpacked fields.  |
+| BP       | alcool       | current_positive_but_lifetime_summary_zero       |     242 | fail     | The current-symptom branch contradicts the unpacked lifetime negative.         |
+| BP       | alcool       | onset_recorded_but_lifetime_summary_zero         |     803 | fail     | A recorded disorder-onset age contradicts the unpacked lifetime negative.      |
+| BP       | cannabis     | current_positive_but_lifetime_summary_zero       |     169 | fail     | The current-symptom branch contradicts the unpacked lifetime negative.         |
+| BP       | cannabis     | onset_recorded_but_lifetime_summary_zero         |     662 | fail     | A recorded disorder-onset age contradicts the unpacked lifetime negative.      |
+| SZ       | lifetime_sud | parent_positive                                  |      92 | info     | Any lifetime SUD.                                                              |
+| SZ       | alcool       | lifetime_summary_positive                        |       0 | fail     | The V0 summary is constant No despite positive diagnostic branches.            |
+| SZ       | alcool       | rows_with_two_or_more_lifetime_criteria          |     298 | evidence | Contradiction evidence only; not used to reconstruct a diagnosis.              |
+| SZ       | cannabis     | lifetime_summary_positive                        |       0 | fail     | The V0 summary is constant No despite positive diagnostic branches.            |
+| SZ       | cannabis     | rows_with_two_or_more_lifetime_criteria          |     459 | evidence | Contradiction evidence only; not used to reconstruct a diagnosis.              |
+| SZ       | alcool       | followup_checkbox_selected_but_unpacked_negative |      24 | fail     | Later visits retain checkbox text, exposing false negatives in unpacked flags. |
+| SZ       | cannabis     | followup_checkbox_selected_but_unpacked_negative |      27 | fail     | Later visits retain checkbox text, exposing false negatives in unpacked flags. |
+| BP       | smoking      | never_smoker_pack_year_zeros_recovered           |    2506 | pass     | Structural zero recovery; existing values are not overwritten.                 |
+| BP       | smoking      | current_smokers_with_fagerstrom_score            |    2301 | info     | Fagerstrom is current-smoker-only; skipped scores remain missing, not zero.    |
+| SZ       | smoking      | never_smoker_pack_year_zeros_recovered           |     779 | pass     | Structural zero recovery; existing values are not overwritten.                 |
+| SZ       | smoking      | current_smokers_with_fagerstrom_score            |     904 | info     | Fagerstrom is current-smoker-only; skipped scores remain missing, not zero.    |
+| DR       | smoking      | never_smoker_pack_year_zeros_recovered           |     252 | pass     | Structural zero recovery; existing values are not overwritten.                 |
+| DR       | smoking      | current_smokers_with_fagerstrom_score            |     140 | info     | Fagerstrom is current-smoker-only; skipped scores remain missing, not zero.    |
+
+## Decision
+
+- `suoccur_alcool` and `suoccur_cannabis` are not valid M1 baseline indicators in the current export.
+- Do not replace them with `suoccur_*lt`: those fields measure lifetime exposure, not disorder.
+- Do not derive diagnoses from criterion counts without a validated scoring/window rule.
+- Quarantine both SUD indicators from the primary M1 fit pending a corrected upstream export or adjudication.
+- Retain Fagerstrom missingness outside current smokers; recover zero pack-years only for known never-smokers.
+
+Failing aggregate checks: **9**.

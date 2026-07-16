@@ -1,8 +1,8 @@
 """M2.0 — full-N projection of the explicit (non-Gaussian) factors + uncertainty export.
 
-The certified 9-dim mixed fit (``results/face/s5_cert9_s1``) instantiated explicit latents
-``f_e = (overall_severity, suicidality, developmental_risk, substance)`` only for its ~1,884-patient
-fit subsample. To stratify on all nine dimensions at full N (M2), we **project** ``f_e`` onto every
+The corrected eight-factor mixed fit instantiates the explicit coordinates
+``f_e = (overall_severity, immunometabolic, suicidality, developmental_risk, substance)``.
+To stratify on all eight dimensions at full N (M2), we **project** ``f_e`` onto every
 patient: hold the certified measurement parameters FIXED (continuous loadings Λ, factor correlation
 Φ, residual σ, and each non-Gaussian item's intercept / home-loading / G-loading / cutpoints /
 dispersion) and sample only each patient's ``f_e`` from their OBSERVED cells (continuous + binary /
@@ -14,10 +14,9 @@ no-imputation invariant carries over: an unobserved cell contributes no term, so
 only by what they actually have (e.g. DR patients have no substance items → their substance score is
 prior-dominated, not imputed).
 
-The continuous-anchored axes (overall_severity / cognition / immunometabolic / sleep / mania) are
-scored full-N analytically by ``face.scoring.conditional_gaussian_scores`` already; this module adds
-the explicit block and a draw-wise uncertainty export. (The kernels are factor-count agnostic — they
-operate on ``mp.base.factor_cols`` — so the 9→8 immunometabolic merge needs no kernel change.)
+The remaining cognition, sleep, and mania coordinates are scored conditionally from the Gaussian
+block; this module combines them with the explicit block in a draw-wise uncertainty export.  The
+kernels are factor-count agnostic and operate on ``mp.base.factor_cols``.
 """
 from __future__ import annotations
 
@@ -36,18 +35,27 @@ def fixed_params(idata, mp) -> dict:
     post = idata.posterior
     mean = lambda v: np.asarray(post[v].mean(("chain", "draw")).values)  # noqa: E731
     P = {"Lam": mean("Lam"), "Phi": mean("Phi"), "sigma": 0.05 + mean("sigma")}  # psi_floor=0.05
+    if "alpha" in post:
+        P["alpha"] = mean("alpha")
+    if "beta" in post:
+        P["beta"] = mean("beta")
+    if "beta_native" in post:
+        P["beta_native"] = mean("beta_native")
     for it in mp.bin_items:
         P[f"a_{it}"] = float(mean(f"a_{it}"))
         P[f"lh_{it}"] = float(mean(f"lh_{it}"))
-        P[f"lg_{it}"] = float(mean(f"lg_{it}"))
+        if f"lg_{it}" in post:
+            P[f"lg_{it}"] = float(mean(f"lg_{it}"))
     for it in mp.cnt_items:
         P[f"a_{it}"] = float(mean(f"a_{it}"))
         P[f"lh_{it}"] = float(mean(f"lh_{it}"))
-        P[f"lg_{it}"] = float(mean(f"lg_{it}"))
+        if f"lg_{it}" in post:
+            P[f"lg_{it}"] = float(mean(f"lg_{it}"))
         P[f"alpha_{it}"] = float(mean(f"alpha_{it}"))
     for it in mp.ord_items:
         P[f"lh_{it}"] = float(mean(f"lh_{it}"))
-        P[f"lg_{it}"] = float(mean(f"lg_{it}"))
+        if f"lg_{it}" in post:
+            P[f"lg_{it}"] = float(mean(f"lg_{it}"))
         P[f"c_{it}"] = mean(f"c_{it}")
     return P
 
@@ -91,7 +99,12 @@ def build_projection(mp, P, psi_floor: float = 0.05):
     with pm.Model() as model:
         z = pm.Normal("z_e", 0.0, 1.0, shape=(N, Ke))
         f_e = pm.Deterministic("f_e", z @ L_ee.T)       # Cov(rows) = Phi_ee
-        r = pt.as_tensor(x) - f_e @ Bmat.T              # [N, Jc] continuous residual
+        mu = np.zeros_like(x)
+        if "alpha" in P:
+            mu = mu + P["alpha"][None, :]
+        if "beta" in P and base.covariates.shape[1]:
+            mu = mu + base.covariates @ P["beta"].T
+        r = pt.as_tensor(x - mu) - f_e @ Bmat.T         # [N, Jc] continuous residual
         ll = _woodbury_potential(pt, r, mask, pt.as_tensor(Lt), pt.as_tensor(sig2),
                                  pat_mask, pat_inv, kobs, Km, log2pi)
         pm.Potential("cont_ll", ll.sum())
@@ -99,18 +112,36 @@ def build_projection(mp, P, psi_floor: float = 0.05):
         for k, it in enumerate(mp.bin_items):
             y = mp.Bin[:, k]
             obs = np.flatnonzero(~np.isnan(y))
-            eta = P[f"a_{it}"] + P[f"lh_{it}"] * f_e[:, mp.ng_home[it]][obs] + P[f"lg_{it}"] * f_e[:, 0][obs]
+            eta = P[f"a_{it}"] + P[f"lh_{it}"] * f_e[:, mp.ng_home[it]][obs]
+            if f"lg_{it}" in P:
+                eta = eta + P[f"lg_{it}"] * f_e[:, 0][obs]
+            if "beta_native" in P and base.covariates.shape[1]:
+                eta = eta + pt.as_tensor(base.covariates[obs]) @ pt.as_tensor(
+                    P["beta_native"][mp.ng_index[it]]
+                )
             pm.Bernoulli(f"y_{it}", logit_p=eta, observed=y[obs].astype("int8"))
         for k, it in enumerate(mp.cnt_items):
             y = mp.Cnt[:, k]
             obs = np.flatnonzero(~np.isnan(y))
-            eta = P[f"a_{it}"] + P[f"lh_{it}"] * f_e[:, mp.ng_home[it]][obs] + P[f"lg_{it}"] * f_e[:, 0][obs]
+            eta = P[f"a_{it}"] + P[f"lh_{it}"] * f_e[:, mp.ng_home[it]][obs]
+            if f"lg_{it}" in P:
+                eta = eta + P[f"lg_{it}"] * f_e[:, 0][obs]
+            if "beta_native" in P and base.covariates.shape[1]:
+                eta = eta + pt.as_tensor(base.covariates[obs]) @ pt.as_tensor(
+                    P["beta_native"][mp.ng_index[it]]
+                )
             pm.NegativeBinomial(f"y_{it}", mu=pt.exp(eta), alpha=P[f"alpha_{it}"],
                                 observed=np.rint(y[obs]).astype("int64"))
         for k, it in enumerate(mp.ord_items):
             y = mp.Ord[:, k]
             obs = np.flatnonzero(~np.isnan(y))
-            eta = P[f"lh_{it}"] * f_e[:, mp.ng_home[it]][obs] + P[f"lg_{it}"] * f_e[:, 0][obs]
+            eta = P[f"lh_{it}"] * f_e[:, mp.ng_home[it]][obs]
+            if f"lg_{it}" in P:
+                eta = eta + P[f"lg_{it}"] * f_e[:, 0][obs]
+            if "beta_native" in P and base.covariates.shape[1]:
+                eta = eta + pt.as_tensor(base.covariates[obs]) @ pt.as_tensor(
+                    P["beta_native"][mp.ng_index[it]]
+                )
             pm.OrderedLogistic(f"y_{it}", eta=eta, cutpoints=pt.as_tensor(P[f"c_{it}"]),
                                observed=y[obs].astype("int32"), compute_p=False)
     return model
@@ -196,8 +227,16 @@ def explicit_nobs(mp) -> dict:
     return {"n_obs": n_obs, "fcols": fcols}
 
 
-def conditional_gaussian_draws(M: np.ndarray, post, factor_cols: list[str], *, n_draws: int = 200,
-                               psi_floor: float = 0.05, seed: int = 20260609):
+def conditional_gaussian_draws(
+    M: np.ndarray,
+    post,
+    factor_cols: list[str],
+    *,
+    covariates: np.ndarray | None = None,
+    n_draws: int = 200,
+    psi_floor: float = 0.05,
+    seed: int = 20260609,
+):
     """Draw-wise continuous factor scores: per patient, sample from the conditional-Gaussian posterior
     ``f_i | x_O ~ N(mean_i, cov_pattern)`` (observed cells only), evaluated at posterior-mean loadings.
 
@@ -211,7 +250,15 @@ def conditional_gaussian_draws(M: np.ndarray, post, factor_cols: list[str], *, n
     N, _ = M.shape
     F = len(factor_cols)
     mask = ~np.isnan(M)
-    X = np.nan_to_num(M, nan=0.0)
+    mu = np.zeros_like(M)
+    if "alpha" in post:
+        mu += np.asarray(post["alpha"].mean(("chain", "draw")).values)[None, :]
+    if "beta" in post:
+        if covariates is None:
+            raise ValueError("covariates are required to score a fit containing beta")
+        beta = np.asarray(post["beta"].mean(("chain", "draw")).values)
+        mu += np.asarray(covariates, dtype="float64") @ beta.T
+    X = np.nan_to_num(M - mu, nan=0.0)
     pats, inv = np.unique(mask, axis=0, return_inverse=True)
     inv = inv.reshape(-1)
     mean = np.full((N, F), np.nan)
@@ -246,18 +293,24 @@ def conditional_gaussian_draws(M: np.ndarray, post, factor_cols: list[str], *, n
     return dict(mean=mean, sd=sd, draws=draws)
 
 
-def conditional_fm_given_fe(mp, P, fe_draws, *, seed: int = 20260609):
+def conditional_fm_given_fe(
+    mp,
+    P,
+    fe_draws,
+    *,
+    parameter_draws: dict[str, np.ndarray] | None = None,
+    seed: int = 20260609,
+):
     """Marginalized-specifics draws ``f_m | f_e, x`` conditioned on each explicit-latent draw (P2-02).
 
     Closes the cross-block incoherence: the old pipeline scored the continuous specifics from a
-    SEPARATE posterior-mean object, so the assembled 9D vector mixed two unrelated posterior states and
+    SEPARATE posterior-mean object, so the assembled 8D vector mixed two unrelated posterior states and
     dropped the cross-block correlation. Here ``f_m`` is conditioned on the SAME ``f_e`` draw under the
     SAME shared Φ via the model's own conditional decomposition ``f_m = M f_e + δ``, ``δ ~ N(0, S)``,
     combined with the observed continuous data. Per observed pattern the posterior of ``δ`` is Gaussian
-    (precision ``S⁻¹ + Λ_mᵀ Ψ⁻¹ Λ_m``); its map/cov are pattern-only, computed once and reused over
-    draws. Measurement params are the certified posterior means ``P`` (the explicit-latent block is the
-    documented full-N frontier; loading/cutpoint uncertainty is small vs the conditional uncertainty).
-    Returns ``f_m`` draws ``[S, N, Km]`` in ``mp.m_cols`` order.
+    (precision ``S⁻¹ + Λ_mᵀ Ψ⁻¹ Λ_m``). ``parameter_draws`` optionally supplies one matched structural
+    posterior state per explicit-latent draw; omitting it uses the documented posterior-mean fixed-map
+    approximation for out-of-sample panels. Returns ``f_m`` draws ``[S, N, Km]`` in ``mp.m_cols`` order.
     """
     rng = np.random.default_rng(seed)
     base = mp.base
@@ -265,34 +318,69 @@ def conditional_fm_given_fe(mp, P, fe_draws, *, seed: int = 20260609):
     N, _ = M.shape
     e, m = mp.e_cols, mp.m_cols
     Km = len(m)
-    Phi, Lam, sigma = P["Phi"], P["Lam"], P["sigma"]
-    Phi_ee, Phi_mm, Phi_me = Phi[np.ix_(e, e)], Phi[np.ix_(m, m)], Phi[np.ix_(m, e)]
-    Mmat = Phi_me @ np.linalg.inv(Phi_ee)                      # [Km, Ke]
-    Sres = Phi_mm - Mmat @ Phi_me.T                           # [Km, Km] prior residual cov of δ
-    Lam_m = Lam[:, m]                                          # [Jc, Km]
-    Bmat = Lam[:, e] + Lam_m @ Mmat                           # [Jc, Ke] mean loadings on f_e
-    sig2 = sigma ** 2
     mask = ~np.isnan(M)
-    X = np.nan_to_num(M, nan=0.0)
     pats, inv = np.unique(mask, axis=0, return_inverse=True)
     inv = inv.reshape(-1)
-    Sres_inv = np.linalg.inv(Sres + 1e-9 * np.eye(Km))
 
-    patinfo = []                                              # per pattern: (Bd [Km,k] or None, cols, chol(cov))
-    for p in range(pats.shape[0]):
-        cols = np.flatnonzero(pats[p])
-        if cols.size == 0:
-            patinfo.append((None, cols, np.linalg.cholesky(Sres + 1e-9 * np.eye(Km))))
-            continue
-        Lo = Lam_m[cols]                                      # [k, Km]
-        prec = Sres_inv + Lo.T @ (Lo / sig2[cols][:, None])  # [Km, Km]
-        cov = np.linalg.inv(prec)
-        Bd = cov @ Lo.T @ np.diag(1.0 / sig2[cols])          # [Km, k]: μ_δ = Bd @ r_obs
-        patinfo.append((Bd, cols, np.linalg.cholesky(0.5 * (cov + cov.T) + 1e-9 * np.eye(Km))))
+    def conditional_state(params):
+        Phi = np.asarray(params["Phi"], dtype="float64")
+        Lam = np.asarray(params["Lam"], dtype="float64")
+        sigma = np.asarray(params["sigma"], dtype="float64")
+        Phi_ee = Phi[np.ix_(e, e)]
+        Phi_mm = Phi[np.ix_(m, m)]
+        Phi_me = Phi[np.ix_(m, e)]
+        Mmat = Phi_me @ np.linalg.inv(Phi_ee)
+        Sres = Phi_mm - Mmat @ Phi_me.T
+        Sres = 0.5 * (Sres + Sres.T)
+        Lam_m = Lam[:, m]
+        Bmat = Lam[:, e] + Lam_m @ Mmat
+        sig2 = sigma**2
+        mu_obs = np.zeros_like(M)
+        if "alpha" in params:
+            mu_obs += np.asarray(params["alpha"], dtype="float64")[None, :]
+        if "beta" in params:
+            covariates = getattr(base, "covariates", None)
+            if covariates is None:
+                raise ValueError(
+                    "base.covariates is required to score a fit containing beta"
+                )
+            mu_obs += np.asarray(covariates, dtype="float64") @ np.asarray(
+                params["beta"], dtype="float64"
+            ).T
+        X = np.nan_to_num(M - mu_obs, nan=0.0)
+        Sres_inv = np.linalg.inv(Sres + 1e-9 * np.eye(Km))
+        patinfo = []
+        for pattern in pats:
+            cols = np.flatnonzero(pattern)
+            if cols.size == 0:
+                chol = np.linalg.cholesky(Sres + 1e-9 * np.eye(Km))
+                patinfo.append((None, cols, chol))
+                continue
+            Lo = Lam_m[cols]
+            prec = Sres_inv + Lo.T @ (Lo / sig2[cols][:, None])
+            cov = np.linalg.inv(prec)
+            Bd = (cov @ Lo.T) / sig2[cols][None, :]
+            chol = np.linalg.cholesky(
+                0.5 * (cov + cov.T) + 1e-9 * np.eye(Km)
+            )
+            patinfo.append((Bd, cols, chol))
+        return Mmat, Bmat, X, patinfo
 
     S = fe_draws.shape[0]
+    if parameter_draws is not None:
+        for name in ("Lam", "Phi", "sigma"):
+            if name not in parameter_draws or len(parameter_draws[name]) != S:
+                raise ValueError(
+                    f"parameter_draws[{name!r}] must contain one entry per f_e draw"
+                )
+    fixed_state = conditional_state(P) if parameter_draws is None else None
     fm = np.empty((S, N, Km), dtype="float32")
     for s in range(S):
+        if fixed_state is None:
+            params = {name: values[s] for name, values in parameter_draws.items()}
+            Mmat, Bmat, X, patinfo = conditional_state(params)
+        else:
+            Mmat, Bmat, X, patinfo = fixed_state
         fe = fe_draws[s]                                      # [N, Ke]
         r = X - fe @ Bmat.T                                   # [N, Jc] residual (observed cols only used)
         base_fm = fe @ Mmat.T                                 # [N, Km] conditional mean part M f_e
@@ -306,16 +394,15 @@ def conditional_fm_given_fe(mp, P, fe_draws, *, seed: int = 20260609):
 
 def coherent_joint_coords(mp, idata, *, projection=None, n_draws: int = 200, proj_draws: int = 400,
                           proj_tune: int = 500, proj_chains: int = 2, seed: int = 20260609):
-    """One coherent draw-wise 9D coordinate sample (fixes P2-01 comment / P2-02 / P2-04 export).
+    """One coherent draw-wise 8D coordinate sample (fixes P2-01 comment / P2-02 / P2-04 export).
 
-    Every exported 9D draw comes from ONE internally-coherent model state: the explicit latents ``f_e``
+    Every exported 8D draw comes from ONE internally-coherent model state: the explicit latents ``f_e``
     (incl the explicit block's OWN G — the old pipeline discarded it and used the continuous block's G)
     plus the marginalized specifics ``f_m`` conditioned on that same ``f_e`` under the shared Φ. Exports
-    the joint draws AND the full per-patient covariance ``S_i`` (not just the diagonal SD — enabling the
-    full-``S_i`` XD arm, P2-04). Honest scope: measurement parameters are the certified posterior means
-    (the full-N explicit-latent block is the documented frontier); the export propagates explicit-latent
-    + conditional + cross-block-correlation uncertainty coherently, which the old dimension-wise assembly
-    did not.
+    the joint draws AND the full per-patient covariance ``S_i``. When ``projection`` carries indices into
+    the original M1 posterior, each reconstruction also uses its matching structural-parameter draw. A
+    separately projected out-of-sample block has no such joint index and uses the fixed-map approximation
+    recorded in its diagnostics.
 
     Returns ``mean``/``sd`` [N, F], ``cov`` [N, F, F] (per-patient ``S_i``), ``draws`` [S, N, F], the
     factor names ``cols`` (``mp.base.factor_cols`` order), and the projection ``diag``.
@@ -328,7 +415,40 @@ def coherent_joint_coords(mp, idata, *, projection=None, n_draws: int = 200, pro
     Se = fe.shape[0]
     pick = np.unique(np.linspace(0, Se - 1, min(n_draws, Se)).astype(int))
     fe = fe[pick]
-    fm = conditional_fm_given_fe(mp, P, fe, seed=seed)        # [S, N, Km], m_cols order
+    parameter_draws = None
+    posterior_indices = projection.get("posterior_indices")
+    if posterior_indices is not None:
+        posterior_indices = np.asarray(posterior_indices, dtype="int64")[pick]
+        post = idata.posterior
+
+        def selected(name):
+            values = np.asarray(post[name])
+            return values.reshape((-1,) + values.shape[2:])[posterior_indices]
+
+        parameter_draws = {
+            "Lam": selected("Lam"),
+            "Phi": selected("Phi"),
+            "sigma": 0.05 + selected("sigma"),
+        }
+        for name in ("alpha", "beta"):
+            if name in post:
+                parameter_draws[name] = selected(name)
+        projection["diag"] = dict(
+            projection.get("diag", {}),
+            structural_parameters="matched_posterior_draws",
+        )
+    else:
+        projection["diag"] = dict(
+            projection.get("diag", {}),
+            structural_parameters="posterior_mean_fixed_map_approximation",
+        )
+    fm = conditional_fm_given_fe(
+        mp,
+        P,
+        fe,
+        parameter_draws=parameter_draws,
+        seed=seed,
+    )
 
     base = mp.base
     F = len(base.factor_cols)

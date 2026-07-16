@@ -9,7 +9,7 @@ structure (continuum gate + falsification null) -> regions (operational-K XD mix
 archetypes (operational-A archetypal analysis, arms A/B; the reported A=5 simplex) -> usefulness
 (internal 5-criterion battery) -> consolidate (per-patient membership frame + nested K-family overlay +
 frozen archetype anchors). The map is a CONTINUUM; the operative K is deferred to M4/M5 incremental
-validity. Consumes results/m1_measurement/primary; writes results/m2_strata/{coordinates/,
+validity. Consumes results/m1_measurement/corrected_v2/production/primary; writes results/m2_strata/{coordinates/,
 consolidate/{patient_strata.parquet, k_family_menu.csv, archetype_profiles.csv}}.
 """
 from __future__ import annotations
@@ -35,7 +35,8 @@ def run_m2(*, mode: str = "production", seed: int = SEED, overwrite: bool = Fals
     """Run the canonical six-stage M2 strata fit. ``mode`` in {smoke, production}.
 
     Deterministic (numpy/EM); each stage caches under ``results/m2_strata/<stage>/`` (``consolidate``
-    always rebuilds). Reads the fixed M1 primary map at ``results/m1_measurement/primary/``. Returns a
+    always rebuilds). Reads the fixed M1 primary map at
+    ``results/m1_measurement/corrected_v2/production/primary/``. Returns a
     summary dict; the operational hand-off lands at ``results/m2_strata/consolidate/``.
     """
     smoke = mode == "smoke"
